@@ -14,8 +14,6 @@
 #include "device_launch_parameters.h"
 #include "cuda_gl_interop.h"
 
-#include "zlibrary/error/cuda_exception.h"
-
 
 namespace zilliz {
 namespace render {

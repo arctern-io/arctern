@@ -1,11 +1,7 @@
 #pragma once
 
-#include "zcommon/plan/plan/fused_node.h"
-#include "zcommon/plan/plan/plan_node.h"
 #include "zcommon/plan/plan/expr.h"
-#include "zcommon/plan/node/render/render_node.h"
-#include "zcommon/plan/expr/column_expr.h"
-#include "zcommon/plan/expr/string_column_expr.h"
+#include "zcommon/plan/plan/target_entry_table.h"
 #include "zcommon/plan/expr/func_expr.h"
 #include "zcommon/plan/expr/const_expr.h"
 
