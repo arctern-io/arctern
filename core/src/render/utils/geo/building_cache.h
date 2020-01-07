@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include <render/utils/geo/geo_abstractor.h>
+#include "render/utils/geo/geo_abstractor.h"
 
 namespace zilliz {
 namespace render {
