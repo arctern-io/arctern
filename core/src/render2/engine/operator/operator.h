@@ -7,14 +7,13 @@
 
 namespace zilliz {
 namespace render {
-namespace engine {
 
 
 class Operator {
  public:
     Operator() = default;
 
-    virtual DatasetPtr
+    virtual std::shared_ptr<arrow::Array>
     Render() = 0;
 
  public:
@@ -51,6 +50,5 @@ class Operator {
 
 using OperatorPtr = std::shared_ptr<Operator>;
 
-} // namespace engine
 } // namespace render
 } // namespace zilliz

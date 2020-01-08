@@ -84,15 +84,15 @@ const std::string GeoBuildingReader::ReadJsonById(const int64_t &geo_id, GeoType
 //const std::string GeoBuildingReader::GetFilePathByGeoType(const GeoType &geo_type) {
 //    switch (geo_type) {
 //        case GeoType::kBuilding : {
-//            auto building_file_path = common::megawise::DevCfg::render_engine::building_file_path();
+//            auto building_file_path = utils::megawise::DevCfg::render_engine::building_file_path();
 //            return std::string(building_file_path);
 //        }
 //        case GeoType::kBlock : {
-//            auto block_file_path = common::megawise::DevCfg::render_engine::block_file_path();
+//            auto block_file_path = utils::megawise::DevCfg::render_engine::block_file_path();
 //            return std::string(block_file_path);
 //        }
 //        case GeoType::kDistrict : {
-//            auto district_file_path = common::megawise::DevCfg::render_engine::block_file_path();
+//            auto district_file_path = utils::megawise::DevCfg::render_engine::block_file_path();
 //            return std::string(district_file_path);
 //        }
 //        default: {

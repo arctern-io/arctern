@@ -4,7 +4,7 @@
 // version history:
 //      1.03 -  compile as C++ maybe
 //      1.02 -  tweaks to syntax for no good reason
-//      1.01 -  added a "common uses" documentation section
+//      1.01 -  added a "utils uses" documentation section
 //      1.0  -  fixed bug in the version I posted prematurely
 //      0.9  -  rewrite to try to avoid strict-aliasing optimization
 //              issues, but won't compile as C++
@@ -16,7 +16,7 @@
 //    This implements an approximation to C++ vector<> for C, in that it
 //    provides a generic definition for dynamic arrays which you can
 //    still access in a typesafe way using arr[i] or *(arr+i). However,
-//    it is simply a convenience wrapper around the common idiom of
+//    it is simply a convenience wrapper around the utils idiom of
 //    of keeping a set of variables (in a struct or globals) which store
 //        - pointer to array
 //        - the length of the "in-use" part of the array
@@ -98,7 +98,7 @@
 //    a file or through a process which produces an unpredictable
 //    number.
 //
-//    My most common idiom is something like:
+//    My most utils idiom is something like:
 //
 //       SomeStruct *arr = NULL;
 //       while (something)
