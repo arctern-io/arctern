@@ -11,7 +11,7 @@ namespace zilliz {
 namespace render {
 namespace engine {
 
-struct Dataset {
+struct Input {
  public:
     using DataID = zilliz::common::TableIDAttrEx;
     using ObjectBuffer = zilliz::chewie::Buffer;
