@@ -38,7 +38,7 @@ extern int WIN_SetErrorFromHRESULT(const char *prefix, HRESULT hr);
 /* Sets an error message based on GetLastError(). Always return -1. */
 extern int WIN_SetError(const char *prefix);
 
-/* Wrap up the oddities of CoInitialize() into a common function. */
+/* Wrap up the oddities of CoInitialize() into a utils function. */
 extern HRESULT WIN_CoInitialize(void);
 extern void WIN_CoUninitialize(void);
 

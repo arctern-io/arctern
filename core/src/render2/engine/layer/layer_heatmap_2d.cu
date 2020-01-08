@@ -95,6 +95,7 @@ void LayerHeatMap2D::Init() {
 
 void LayerHeatMap2D::Shader() {}
 
+
 void
 LayerHeatMap2D::Render() {}
 
