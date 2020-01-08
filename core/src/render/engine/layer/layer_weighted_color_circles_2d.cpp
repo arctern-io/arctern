@@ -58,7 +58,7 @@ void LayerWeightedColorCircles2D::Init() {
             break;
         default:
             std::string msg = "cannot find value type";
-            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
+//            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
     }
 }
 

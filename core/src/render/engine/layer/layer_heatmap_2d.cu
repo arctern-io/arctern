@@ -3,7 +3,7 @@
 #include "render/utils/dataset/dataset_accessor.h"
 #include "render/utils/color/color_parser.h"
 #include <thrust/functional.h>
-
+#include <exception>
 
 namespace zilliz {
 namespace render {
@@ -89,7 +89,7 @@ void LayerHeatMap2D::Init() {
         case ValueType::kValDouble:Interop<double>();
             break;
         default:std::string msg = "cannot find value type";
-            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
+//            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
     }
 }
 
@@ -203,7 +203,7 @@ LayerHeatMap2D::Interop() {
     if (num_vertices_ <= 0) {
         colors_ = (unsigned char *) mem_pool.Malloc(window_size * 4 * sizeof(unsigned char));
         memset(colors_, 0, window_size * 4 * sizeof(unsigned char));
-        RENDER_ENGINE_LOG_INFO << "Failed, because num of vertices <= 0";
+//        RENDER_ENGINE_LOG_INFO << "Failed, because num of vertices <= 0";
         return;
     }
 

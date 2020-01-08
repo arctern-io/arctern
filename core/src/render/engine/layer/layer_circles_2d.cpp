@@ -23,7 +23,7 @@ LayerCircles2D::Init() {
 
 void
 LayerCircles2D::Shader() {
-    CHECK_CUDA(cudaSetDevice(plan_node()->dev_id()));
+//    CHECK_CUDA(cudaSetDevice(plan_node()->dev_id()));
     // 1.vertex shader
     const char *vertex_shader_source = \
         "#version 430 core\n"
@@ -56,7 +56,7 @@ LayerCircles2D::Shader() {
     glCompileShader(vertex_shader);
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "vertex shader compile failed.";
+//        RENDER_ENGINE_LOG_ERROR << "vertex shader compile failed.";
     }
 
     // 4.create fragment shader and compile it
@@ -65,7 +65,7 @@ LayerCircles2D::Shader() {
     glCompileShader(fragment_shader);
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "fragment shader compile failed.";
+//        RENDER_ENGINE_LOG_ERROR << "fragment shader compile failed.";
     }
 
     // 5.link shader
@@ -75,7 +75,7 @@ LayerCircles2D::Shader() {
     glLinkProgram(shader_program);
     glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "shader program link failed.";
+//        RENDER_ENGINE_LOG_ERROR << "shader program link failed.";
     }
 
     // 6.delete shader, we don't need it anymore.
@@ -97,7 +97,7 @@ LayerCircles2D::Shader() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(uint32_t), vertices_y_.get(), GL_STATIC_DRAW);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(uint32_t), nullptr);
-    
+
     // 10.enable vertex attribute, which is disabled by default
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "zcommon/id/table_id.h"
-#include "zcommon/id/table_id_attr_ex.h"
+#include "render/dependences/common/table_id.h"
+#include "render/dependences/common/table_id_attr_ex.h"
 
 
 namespace zilliz {
