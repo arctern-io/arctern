@@ -19,9 +19,9 @@ class Layer {
     Layer() = default;
 
     ~Layer() {
-        for (auto &ref : dataset_accessor()->data_to_release()) {
-            dataset_accessor()->data_client()->Release(ref.first, ref.second);
-        }
+//        for (auto &ref : dataset_accessor()->data_to_release()) {
+//            dataset_accessor()->data_client()->Release(ref.first, ref.second);
+//        }
     }
 
     virtual void

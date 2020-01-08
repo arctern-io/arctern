@@ -58,7 +58,7 @@ void LayerWeightedPointSizeCircles2D::Init() {
             break;
         default:
             std::string msg = "cannot find value type";
-            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
+//            THROW_RENDER_ENGINE_ERROR(VALUE_TYPE_NOT_FOUND, msg);
     }
 }
 
@@ -94,14 +94,14 @@ void LayerWeightedPointSizeCircles2D::Shader() {
     glCompileShader(vertexShader);
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "vertex shader compile failed.";
+//        RENDER_ENGINE_LOG_ERROR << "vertex shader compile failed.";
     }
     int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "fragment shader compile failed.";
+//        RENDER_ENGINE_LOG_ERROR << "fragment shader compile failed.";
     }
     int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -109,7 +109,7 @@ void LayerWeightedPointSizeCircles2D::Shader() {
     glLinkProgram(shaderProgram);
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        RENDER_ENGINE_LOG_ERROR << "shader program compile failed.";
+//        RENDER_ENGINE_LOG_ERROR << "shader program compile failed.";
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

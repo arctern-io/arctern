@@ -2,7 +2,7 @@
 
 #include "render/engine/common/table_id.h"
 #include "zcommon/id/table_id.h"
-#include "chewie/store/obj_store.h"
+#include "render/engine/store/obj_store.h"
 #include "bulletin/accessor/accessor.h"
 #include "bulletin/accessor/fragment.h"
 #include "chewie/grpc/data_client.h"
@@ -16,7 +16,7 @@ struct Dataset {
     using DataID = zilliz::common::TableIDAttrEx;
     using ObjectBuffer = zilliz::chewie::Buffer;
     using ObjectBufferPtr = zilliz::chewie::BufferPtr;
-    using DeviceID = zilliz::chewie::DeviceID;
+    using DeviceID = zilliz::common::DeviceID;
 
     struct TableInfo {
         std::vector<ColumnField> columns;

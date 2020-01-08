@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <render/engine/lib/cuda_check.h>
 #include "layer.h"
 #include "render/engine/operator/dataset.h"
 #include "render/engine/plan/prim/circle.h"
@@ -70,7 +71,7 @@ class LayerHeatMap2D : public Layer {
 };
 
 using LayerHeatMap2DPtr = std::shared_ptr<LayerHeatMap2D>;
-
+using ErrorCode = lib::ErrorCode;
 } // namespace engine
 } // namespace render
 } // namespace zilliz

@@ -11,7 +11,7 @@
 #define STBIW_ZLIB_COMPRESS my_zlib_compress
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "stb/stb_image_write.h"
+#include "../../../../../thirdparty/stb/stb_image_write.h"
 
 
 namespace zilliz {
@@ -47,7 +47,7 @@ OpGeneral2D::Init() {
     if (plan_type == RenderPlan::Type::k2D) {
         window->set_window_type(WindowType::k2D);
     } else {
-        THROW_RENDER_ENGINE_ERROR(UNKNOWN_PLAN_TYPE, "unknown render plan type.")
+//        THROW_RENDER_ENGINE_ERROR(UNKNOWN_PLAN_TYPE, "unknown render plan type.")
     }
 
     window->Init();
@@ -113,7 +113,7 @@ OpGeneral2D::Output() {
                                              output_image_size_,
                                              chewie::CacheHint::fNotDroppable);
     if (create_resp->buffer->data() == nullptr) {
-        THROW_RENDER_ENGINE_ERROR(CREATE_RESPONSE_DATA_NULL, "chewie buffer data created is null.")
+//        THROW_RENDER_ENGINE_ERROR(CREATE_RESPONSE_DATA_NULL, "chewie buffer data created is null.")
     }
     std::memcpy((unsigned char *) (create_resp->buffer->data()), output_image_, size_t(output_image_size_));
 
@@ -122,7 +122,7 @@ OpGeneral2D::Output() {
         std::cout << "******************" << output_image_size_ << "******************" << std::endl;
         FILE *f = fopen("/tmp/offscreen.png", "wb");
         if (!f) {
-            RENDER_ENGINE_LOG_ERROR << "export png error";
+//            RENDER_ENGINE_LOG_ERROR << "export png error";
         } else {
             fwrite(output_image_, 1, output_image_size_, f);
             fclose(f);

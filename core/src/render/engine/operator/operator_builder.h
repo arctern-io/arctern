@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render/engine/plan/node/plan_node_building_weighted_2d.h"
+#include <render/engine/plan/node/plan_node_building_weighted_2d.h>
 #include "zcommon/plan/plan/fused_node.h"
 #include "zcommon/plan/expr/func_expr.h"
 #include "render/engine/operator/operator.h"
