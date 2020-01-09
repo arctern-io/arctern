@@ -1,28 +1,18 @@
-from python.util.vega.vega_node import *
+from python.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 
 import json
 
-def test_node():
-    width = Width(width=1900)
-    height = Height(height=1410)
-    description = Description(desc="circlesds_2d")
-    data = Data(name="nyc_taxi", url="/data/0_5m_nyc_taxi.csv")
-    domain1 = Scales.Scale.Domain(data="nyc_taxi", field="longitude_pickup")
-    domain2 = Scales.Scale.Domain(data="nyc_taxi", field="latitude_pickup")
-    scale1 = Scales.Scale(name="x", type="linear", domain=domain1)
-    scale2 = Scales.Scale(name="y", type="linear", domain=domain2)
-    scales = Scales([scale1, scale2])
-    encode = Marks.Encode(shape=Marks.Encode.Value("circle"), stroke=Marks.Encode.Value("#23f31a"),
-                          strokeWidth=Marks.Encode.Value(3), opacity=Marks.Encode.Value(0.5))
-    marks = Marks(encode)
-    root = Root(width=width, height=height, description=description,
-                data=data, scales=scales, marks=marks)
-
-    root_json = json.dumps(root.to_dict(), indent=2, sort_keys=True)
-    print(root_json)
-    dic = json.loads(root_json)
-    print(dic)
-
+def test_circle2d():
+    vega_circle2d = VegaCircle2d(1900, 1410, 3, "#2DEF4A", 0.5)
+    vega_json = vega_circle2d.build()
+    vega_dict = json.loads(vega_json)
+    assert vega_dict["width"] == 1900
+    assert vega_dict["height"] == 1410
+    assert vega_dict["marks"][0]["encode"]["enter"]["shape"]["value"] == "circle"
+    assert vega_dict["marks"][0]["encode"]["enter"]["stroke"]["value"] == "#2DEF4A"
+    assert vega_dict["marks"][0]["encode"]["enter"]["strokeWidth"]["value"] == 3
+    assert vega_dict["marks"][0]["encode"]["enter"]["opacity"]["value"] == 0.5
+    print("circle2d test pass")
 
 if __name__ == "__main__":
-    test_node()
+    test_circle2d()
