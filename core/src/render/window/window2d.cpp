@@ -1,10 +1,8 @@
-#include "render/engine/common/error.h"
-#include "render/engine/window/window2d.h"
+#include "render/window/window2d.h"
 
 
 namespace zilliz {
 namespace render {
-namespace engine {
 
 
 void Window2D::Init() {
@@ -73,7 +71,5 @@ void Window2D::Terminate() {
     eglTerminate(mutable_egl_dpy());
 }
 
-
-} // namespace engine
 } // namespace render
 } // namespace zilliz

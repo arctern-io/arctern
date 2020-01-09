@@ -15,7 +15,7 @@
 
 //#define STBDS_SIPHASH_2_4
 #define STB_DS_IMPLEMENTATION
-#include "../stb_ds.h"
+#include "thirdparty/stb/stb_ds.h"
 
 size_t churn_inserts, churn_deletes;
 

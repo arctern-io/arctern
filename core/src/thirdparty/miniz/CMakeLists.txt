@@ -13,7 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(miniz_SOURCE miniz.c miniz_zip.c miniz_tinfl.c miniz_tdef.c)
 
 add_library(miniz ${miniz_SOURCE})
-target_include_directories(miniz PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(miniz PUBLIC ".")
 
 # add_executable(miniz_tester ${MINIZ_TESTER_SRC_LIST})
 # target_link_libraries(miniz_tester miniz)

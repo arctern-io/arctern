@@ -2,12 +2,11 @@
 
 
 #include "arrow/api.h"
+#include "render/utils/vega/vega.h"
 
 
 namespace zilliz {
 namespace render {
-namespace engine {
-
 
 struct Input {
  public:
@@ -15,7 +14,7 @@ struct Input {
     std::shared_ptr<Vega> vega;
 };
 
+using InputPtr = std::shared_ptr<Input>;
 
-} // namespace engine
 } // namespace render
 } // namespace zilliz

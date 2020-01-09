@@ -5,13 +5,10 @@
 #include <GL/gl.h>
 
 
-#include "render/engine/common/window_params.h"
-
-
+#include "render/window/window_params.h"
 
 namespace zilliz {
 namespace render {
-namespace engine {
 
 enum class WindowType {
     kUnknown = 0,
@@ -55,6 +52,5 @@ class Window {
 
 using WindowPtr = std::shared_ptr<Window>;
 
-} // namespace engine
 } // namespace render
 } // namespace zilliz

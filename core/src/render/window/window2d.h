@@ -1,11 +1,10 @@
 #pragma once
 
-#include "window.h"
+#include "render/window/window.h"
 
 
 namespace zilliz {
 namespace render {
-namespace engine {
 
 class Window2D : public Window {
  public:
@@ -17,7 +16,7 @@ class Window2D : public Window {
 
 };
 
+using Window2DPtr = std::shared_ptr<Window2D>;
 
-} // namespace engine
 } // namespace render
 } // namespace zilliz
