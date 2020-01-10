@@ -11,7 +11,7 @@ namespace render {
 struct Input {
  public:
     arrow::ArrayVector array_vector;
-    std::string vega_json;
+    std::string vega;
 };
 
 using InputPtr = std::shared_ptr<Input>;
