@@ -202,7 +202,7 @@ CREDITS
   Ethan Lee (flibitijibibo)
 */
 
-#include <stdarg.h>
+#include "../../../../../../../../usr/lib/gcc/x86_64-linux-gnu/5/include/stdarg.h"
 
 #ifndef STB__INCLUDE_STB_H
 #define STB__INCLUDE_STB_H
@@ -237,10 +237,10 @@ CREDITS
    #endif
 #endif
 
-#include <stdlib.h>     // stdlib could have min/max
-#include <stdio.h>      // need FILE
-#include <string.h>     // stb_define_hash needs memcpy/memset
-#include <time.h>       // stb_dirtree
+#include "../../../../../../../../usr/include/stdlib.h"     // stdlib could have min/max
+#include "../../../../../../../../usr/include/stdio.h"      // need FILE
+#include "../../../../../../../../usr/include/string.h"     // stb_define_hash needs memcpy/memset
+#include "../../../../../../../../usr/include/time.h"       // stb_dirtree
 #ifdef __MINGW32__
    #include <fcntl.h>   // O_RDWR
 #endif

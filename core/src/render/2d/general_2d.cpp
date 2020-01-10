@@ -14,6 +14,12 @@ namespace zilliz {
 namespace render {
 
 void
+General2D::InputInit() {
+    array_vector_ = input_.array_vector;
+    vega_ = (Vega &)(input_.vega_json);
+}
+
+void
 General2D::WindowsInit(WindowParams window_params) {
     auto window = mutable_window();
     window = std::make_shared<Window2D>();
@@ -49,12 +55,20 @@ General2D::Output() {
     // export image to memory
     ExportImage();
 
-    auto data_type = std::make_shared<arrow::DataType>(arrow::UInt8Type());
+    auto bit_map = (uint8_t*)malloc(output_image_size_);
+    memset(bit_map, output_image_size_, 0xff);
+    std::shared_ptr<arrow::Buffer> buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_image_size_);
+    std::shared_ptr<arrow::Buffer> buffer1 = std::make_shared<arrow::Buffer>(output_image_, output_image_size_);
     auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
-    buffers.push_back(std::make_shared<arrow::Buffer>(arrow::Buffer(output_image_, output_image_size_)));
-    auto array_data = arrow::ArrayData(data_type, output_image_size_, buffers);
-    auto output = std::make_shared<arrow::Array>();
-    output->data() = std::make_shared<arrow::ArrayData>(array_data);
+    buffers.emplace_back(buffer0);
+    buffers.emplace_back(buffer1);
+
+    std::shared_ptr<arrow::DataType> data_type = arrow::uint8();
+    std::shared_ptr<arrow::ArrayData> array_data = arrow::ArrayData::Make(data_type, output_image_size_, buffers);
+    std::shared_ptr<arrow::Array> array = arrow::MakeArray(array_data);
+
+    assert(array->length() == output_image_size_);
+    assert(array->type_id() == arrow::uint8()->id());
 
     auto write_image = true;
     if (write_image) {
@@ -68,7 +82,7 @@ General2D::Output() {
         }
     }
 
-    return output;
+    return array;
 }
 
 void
