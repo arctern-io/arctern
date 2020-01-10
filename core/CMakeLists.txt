@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(libGIS LANGUAGES CXX CUDA)
+project(GIS LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -8,10 +8,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(DEPEN)
 
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    message("building libGIS on x86 architecture")
+    message("building GIS on x86 architecture")
     set(RENDER_ENGINE_BUILD_ARCH x86_64)
 elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ppc)")
-    message("building libGIS on ppc architecture")
+    message("building GIS on ppc architecture")
     set(RENDER_ENGINE_BUILD_ARCH ppc64le)
 else ()
     message("unknown processor type")
@@ -21,10 +21,10 @@ endif ()
 
 
 if (DEFINED APPLE)
-    message("building libGIS on MacOS")
+    message("building GIS on MacOS")
     set(RENDER_ENGINE_BUILD_SYSTEM macos)
 elseif (DEFINED UNIX)
-    message("building libGIS on Unix")
+    message("building GIS on Unix")
     set(RENDER_ENGINE_BUILD_SYSTEM unix)
 else ()
     message("unknown OS")
@@ -50,6 +50,11 @@ endif()
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
+set(THIRD_PARTY_PATH ${ZDB_BUILD_HOME}/third_party)
+set(THIRD_PARTY_INCLUDE ${THIRD_PARTY_PATH}/include)
+set(THIRD_PARTY_LIB64 ${THIRD_PARTY_PATH}/lib64)
+set(THIRD_PARTY_LIB ${THIRD_PARTY_PATH}/lib)
+
 set(LIB_GIS_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 set(LIB_GIS_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 
@@ -68,8 +73,17 @@ message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
+include_directories(${THIRD_PARTY_INCLUDE})
+message("THIRD_PARTY_INCLUDE = ${THIRD_PARTY_INCLUDE}")
+link_directories(${THIRD_PARTY_LIB64})
+link_directories(${THIRD_PARTY_LIB})
 
 add_subdirectory(src)
+
+if (BUILD_UNIT_TEST)
+    add_subdirectory(unittest)
+endif (BUILD_UNIT_TEST)
+unset(BUILD_UNIT_TEST CACHE)
 
 #install
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/src DESTINATION .
