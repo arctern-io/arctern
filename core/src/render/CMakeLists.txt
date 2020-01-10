@@ -7,22 +7,33 @@ set(window_src
         )
 
 if (STATIC_LIB_SWITCH)
-    add_library(libGIS STATIC
+    add_library(GIS STATIC
             ${2d_src}
             ${window_src}
             )
 else()
-    add_library(libGIS SHARED
+    add_library(GIS SHARED
             ${2d_src}
             ${window_src}
             )
 endif(STATIC_LIB_SWITCH)
 
-install(TARGETS libGIS
+install(TARGETS GIS
         DESTINATION lib)
 
 include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
-set_property(TARGET libGIS PROPERTY CUDA_STANDARD 11)
+set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
+target_link_libraries(GIS
+        GL
+        EGL
+        tbb
+        cudart
+        arrow
+        pthread
+        miniz
+        )
 
+install(TARGETS GIS
+        LIBRARY DESTINATION lib)

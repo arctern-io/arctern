@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rapidjson/document.h"
+#include "render/window/window_params.h"
 
 namespace zilliz {
 namespace render {
@@ -21,6 +22,11 @@ class Vega {
 
     virtual std::string
     Build() = 0;
+    const CircleParams2D&
+    point_format() const { return point_format_; }
+
+    const WindowParams&
+    window_params() const { return window_params_; }
 
  protected:
     // vega json to vega struct
@@ -40,6 +46,7 @@ class Vega {
     JsonNullCheck(rapidjson::Value &value);
 
  protected:
+    CircleParams2D point_format_;
     WindowParams window_params_;
 };
 

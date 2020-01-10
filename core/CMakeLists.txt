@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(libGIS LANGUAGES CXX CUDA)
+project(GIS LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -8,10 +8,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(DEPEN)
 
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    message("building libGIS on x86 architecture")
+    message("building GIS on x86 architecture")
     set(RENDER_ENGINE_BUILD_ARCH x86_64)
 elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ppc)")
-    message("building libGIS on ppc architecture")
+    message("building GIS on ppc architecture")
     set(RENDER_ENGINE_BUILD_ARCH ppc64le)
 else ()
     message("unknown processor type")
@@ -21,10 +21,10 @@ endif ()
 
 
 if (DEFINED APPLE)
-    message("building libGIS on MacOS")
+    message("building GIS on MacOS")
     set(RENDER_ENGINE_BUILD_SYSTEM macos)
 elseif (DEFINED UNIX)
-    message("building libGIS on Unix")
+    message("building GIS on Unix")
     set(RENDER_ENGINE_BUILD_SYSTEM unix)
 else ()
     message("unknown OS")
@@ -70,6 +70,11 @@ link_directories(${cuda_lib})
 
 
 add_subdirectory(src)
+
+if (BUILD_UNIT_TEST)
+    add_subdirectory(unittest)
+endif (BUILD_UNIT_TEST)
+unset(BUILD_UNIT_TEST CACHE)
 
 #install
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/src DESTINATION .
