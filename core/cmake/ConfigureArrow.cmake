@@ -1,6 +1,7 @@
 set(ARROW_ROOT ${CMAKE_BINARY_DIR}/arrow)
 
 set(ARROW_CMAKE_ARGS    " -DARROW_BUILD_BENCHMARKS=OFF"
+                        " -DCMAKE_BUILD_TYPE=Release"
                         " -DARROW_BUILD_STATIC=OFF"
                         " -DARROW_BUILD_SHARED=ON"
                         " -DARROW_BUILD_TESTS=OFF"
