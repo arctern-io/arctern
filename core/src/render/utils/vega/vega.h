@@ -27,6 +27,18 @@ class Vega {
     virtual void
     Parse(const std::string& json) = 0;
 
+    bool
+    JsonLabelCheck(rapidjson::Value &value, const std::string &label);
+
+    bool
+    JsonSizeCheck(rapidjson::Value &value, const std::string &label, size_t size);
+
+    bool
+    JsonTypeCheck(rapidjson::Value &value, rapidjson::Type type);
+
+    bool
+    JsonNullCheck(rapidjson::Value &value);
+
  protected:
     WindowParams window_params_;
 };
