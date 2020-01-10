@@ -21,11 +21,11 @@ namespace render {
 
 void
 General2D::WindowsInit(WindowParams window_params) {
-    auto window = mutable_window();
-    window = std::make_shared<Window2D>();
-    window->set_window_params(window_params);
+//    auto window = mutable_window();
+    window_ = std::make_shared<Window2D>();
+    window_->set_window_params(window_params);
 
-    window->Init();
+    window_->Init();
     InitBuffer(window_params);
 }
 

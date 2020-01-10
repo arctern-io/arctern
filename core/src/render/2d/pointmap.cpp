@@ -8,13 +8,15 @@ namespace zilliz {
 namespace render {
 
 PointMap::PointMap()
-    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0), point_vega_(""){
+    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0){
 }
 
 void
 PointMap::InputInit() {
-    auto array_vector_ = input().array_vector;
-    point_vega_ = (VegaCircle2d &)(input().vega);
+    array_vector_ = input().array_vector;
+    VegaCircle2d vega_circle_2d(input().vega);
+    point_vega_ = vega_circle_2d;
+
 }
 
 void
@@ -31,6 +33,7 @@ PointMap::DataInit() {
     assert(x_length == y_length);
     assert(x_type == arrow::Type::UINT32);
     assert(y_type == arrow::Type::UINT32);
+    num_vertices_ = x_length / sizeof(uint32_t);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
     auto x_data = (uint32_t*)x_array->data()->GetValues<uint8_t >(1);

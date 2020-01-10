@@ -9,6 +9,7 @@ set(window_src
 set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega_scatter_plot/vega_circle2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/utils/color/color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega.cpp
         )
 
 if (STATIC_LIB_SWITCH)

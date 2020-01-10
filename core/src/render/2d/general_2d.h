@@ -67,7 +67,7 @@ class General2D {
 //    const Vega&
 //    vega() const { return vega_; }
 
- private:
+ protected:
     Input input_;
     arrow::ArrayVector array_vector_;
 //    Vega vega_;

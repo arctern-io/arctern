@@ -9,6 +9,8 @@ namespace render {
 
 class VegaCircle2d: public VegaScatterPlot {
  public:
+    VegaCircle2d() = default;
+
     VegaCircle2d(const std::string& json);
 
     std::string
