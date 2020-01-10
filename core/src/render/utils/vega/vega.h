@@ -1,40 +1,34 @@
 #pragma once
 
+#include "rapidjson/document.h"
 
 namespace zilliz {
 namespace render {
 
-struct CircleParams2D {
-    struct Color {
-        float r;
-        float g;
-        float b;
-        float a;
-    };
-
-    float radius;
-    Color color;
-};
 
 /***
  * TODO: add comments
  */
-struct Vega {
+class Vega {
  public:
-    Vega(const std::string& json);
+    struct WindowParams {
+        int width;
+        int height;
+    };
 
+ public:
     std::string ToString();
 
-    const CircleParams2D
-    point_format() {return point_format_; }
+    virtual std::string
+    Build() = 0;
 
- private:
+ protected:
     // vega json to vega struct
-    void
-    Parse(const std::string& json);
+    virtual void
+    Parse(const std::string& json) = 0;
 
- private:
-    CircleParams2D point_format_;
+ protected:
+    WindowParams window_params_;
 };
 
 
