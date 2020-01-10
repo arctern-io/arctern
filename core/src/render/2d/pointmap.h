@@ -19,6 +19,9 @@ class PointMap : public General2D {
     void
     Shader() final;
 
+    void
+    Draw() final;
+
  public:
     void
     set_vega(Vega vega) { vega_ = vega; }

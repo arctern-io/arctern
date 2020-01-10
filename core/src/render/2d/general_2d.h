@@ -19,7 +19,13 @@ class General2D {
     virtual void
     Shader() = 0;
 
+    virtual void
+    Draw() = 0;
+
  protected:
+    void
+    InputInit();
+
     void
     WindowsInit(WindowParams window_params);
 
