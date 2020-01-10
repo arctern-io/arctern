@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../vega.h"
-#include "../color_parser/color.h"
+#include "render/utils/vega/vega.h"
+#include "render/utils/color/color.h"
 
 namespace zilliz {
 namespace render {

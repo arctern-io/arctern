@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "vega_scatter_plot.h"
+#include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
 namespace zilliz {
 namespace render {

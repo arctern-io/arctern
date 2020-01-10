@@ -8,7 +8,7 @@ namespace render {
 
 class General2D {
  public:
-    General2D() : vega_(""){}
+//    General2D();
 
     virtual void
     DataInit() = 0;
@@ -22,9 +22,10 @@ class General2D {
     virtual void
     Draw() = 0;
 
+    virtual void
+    InputInit() = 0;
+
  protected:
-    void
-    InputInit();
 
     void
     WindowsInit(WindowParams window_params);
@@ -63,13 +64,13 @@ class General2D {
     const arrow::ArrayVector&
     array_vector() const { return array_vector_; }
 
-    const Vega&
-    vega() const { return vega_; }
+//    const Vega&
+//    vega() const { return vega_; }
 
  private:
     Input input_;
     arrow::ArrayVector array_vector_;
-    Vega vega_;
+//    Vega vega_;
     Window2DPtr window_;
     unsigned char *buffer_;
     unsigned char *output_image_;

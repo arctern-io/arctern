@@ -38,7 +38,7 @@ TEST(CIRCLE_2D_TEST, SINGLE_COLOR_TEST) {
 
     Input input;
     input.array_vector = array_vector;
-    input.vega_json = "hahah";
+    input.vega = "";
 
     point_map.set_input(input);
     point_map.Draw();

@@ -50,6 +50,11 @@ endif()
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
+set(THIRD_PARTY_PATH ${ZDB_BUILD_HOME}/third_party)
+set(THIRD_PARTY_INCLUDE ${THIRD_PARTY_PATH}/include)
+set(THIRD_PARTY_LIB64 ${THIRD_PARTY_PATH}/lib64)
+set(THIRD_PARTY_LIB ${THIRD_PARTY_PATH}/lib)
+
 set(LIB_GIS_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 set(LIB_GIS_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 
@@ -68,6 +73,10 @@ message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
+include_directories(${THIRD_PARTY_INCLUDE})
+message("THIRD_PARTY_INCLUDE = ${THIRD_PARTY_INCLUDE}")
+link_directories(${THIRD_PARTY_LIB64})
+link_directories(${THIRD_PARTY_LIB})
 
 add_subdirectory(src)
 

@@ -8,7 +8,13 @@ namespace zilliz {
 namespace render {
 
 PointMap::PointMap()
-    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {
+    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0), point_vega_(""){
+}
+
+void
+PointMap::InputInit() {
+    auto array_vector_ = input().array_vector;
+    point_vega_ = (VegaCircle2d &)(input().vega);
 }
 
 void
@@ -123,7 +129,7 @@ PointMap::Shader() {
     glUseProgram(shader_program);
     auto window_params = window()->window_params();
     glUniform2f(2, window_params.width(), window_params.height());
-    auto point_format = vega().point_format();
+    auto point_format = point_vega_.circle_params();
     glUniform1f(3, point_format.radius);
     glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b, point_format.color.a);
 }
@@ -131,7 +137,7 @@ PointMap::Shader() {
 std::shared_ptr<arrow::Array>
 PointMap::Render(){
     InputInit();
-    WindowsInit(vega().window_params());
+    WindowsInit(point_vega_.window_params());
     DataInit();
     Shader();
     Draw();

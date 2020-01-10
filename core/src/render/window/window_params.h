@@ -9,11 +9,17 @@ namespace render {
 class WindowParams {
  public:
 
-    float
+    const float
     width() const { return width_;}
 
-    float
+    const float
     height() const { return height_;}
+
+    float&
+    mutable_width() { return width_;}
+
+    float&
+    mutable_height() { return height_;}
 
     void
     set_width(float w) { width_ = w;}

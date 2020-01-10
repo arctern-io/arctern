@@ -13,11 +13,11 @@
 namespace zilliz {
 namespace render {
 
-void
-General2D::InputInit() {
-    array_vector_ = input_.array_vector;
-    vega_ = (Vega &)(input_.vega_json);
-}
+//void
+//General2D::InputInit() {
+//    array_vector_ = input_.array_vector;
+//    vega_ = (Vega &)(input_.vega_json);
+//}
 
 void
 General2D::WindowsInit(WindowParams window_params) {

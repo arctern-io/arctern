@@ -12,18 +12,10 @@ namespace render {
  */
 class Vega {
  public:
-    struct WindowParams {
-        int width;
-        int height;
-    };
-
- public:
     std::string ToString();
 
     virtual std::string
     Build() = 0;
-    const CircleParams2D&
-    point_format() const { return point_format_; }
 
     const WindowParams&
     window_params() const { return window_params_; }
@@ -35,7 +27,6 @@ class Vega {
 
 
  protected:
-    CircleParams2D point_format_;
     WindowParams window_params_;
 };
 

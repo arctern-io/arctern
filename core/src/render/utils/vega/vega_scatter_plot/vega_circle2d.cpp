@@ -1,5 +1,5 @@
-#include "vega_circle2d.h"
-#include "../color_parser/color.h"
+#include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
+#include "render/utils/color/color.h"
 
 namespace zilliz {
 namespace render {
@@ -25,8 +25,8 @@ VegaCircle2d::Parse(const std::string &json) {
         printf("illegal");
     }
 
-    window_params_.width = document["width"].GetInt();
-    window_params_.height = document["height"].GetInt();
+    window_params_.mutable_width() = document["width"].GetInt();
+    window_params_.mutable_height() = document["height"].GetInt();
 
     rapidjson::Value mark_enter;
     mark_enter = document["marks"][0]["encode"]["enter"];

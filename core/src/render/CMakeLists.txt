@@ -6,15 +6,22 @@ set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/window/window2d.cpp
         )
 
+set(util_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega_scatter_plot/vega_circle2d.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/color/color.cpp
+        )
+
 if (STATIC_LIB_SWITCH)
     add_library(GIS STATIC
             ${2d_src}
             ${window_src}
+            ${util_src}
             )
 else()
     add_library(GIS SHARED
             ${2d_src}
             ${window_src}
+            ${util_src}
             )
 endif(STATIC_LIB_SWITCH)
 
@@ -33,6 +40,7 @@ target_link_libraries(GIS
         arrow
         pthread
         miniz
+        jemalloc_pic
         )
 
 install(TARGETS GIS
