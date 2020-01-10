@@ -1,2 +1,3 @@
-add_subdirectory(render)
+
 add_subdirectory(thirdparty)
+add_subdirectory(render)

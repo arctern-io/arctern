@@ -1,5 +1,6 @@
 #pragma once
 
+#include "render/window/window_params.h"
 
 namespace zilliz {
 namespace render {
@@ -25,8 +26,11 @@ struct Vega {
 
     std::string ToString();
 
-    const CircleParams2D
-    point_format() {return point_format_; }
+    const CircleParams2D&
+    point_format() const { return point_format_; }
+
+    const WindowParams&
+    window_params() const { return window_params_; }
 
  private:
     // vega json to vega struct
@@ -35,6 +39,7 @@ struct Vega {
 
  private:
     CircleParams2D point_format_;
+    WindowParams window_params_;
 };
 
 

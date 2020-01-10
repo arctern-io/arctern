@@ -8,7 +8,7 @@ namespace render {
 
 class General2D {
  public:
-    General2D() = default;
+    General2D() : vega_(""){}
 
     virtual void
     DataInit() = 0;
@@ -60,8 +60,16 @@ class General2D {
     unsigned char*
     mutable_buffer() { return buffer_; }
 
+    const arrow::ArrayVector&
+    array_vector() const { return array_vector_; }
+
+    const Vega&
+    vega() const { return vega_; }
+
  private:
     Input input_;
+    arrow::ArrayVector array_vector_;
+    Vega vega_;
     Window2DPtr window_;
     unsigned char *buffer_;
     unsigned char *output_image_;

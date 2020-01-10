@@ -15,7 +15,8 @@ namespace render {
 
 void
 General2D::InputInit() {
-
+    array_vector_ = input_.array_vector;
+    vega_ = (Vega &)(input_.vega_json);
 }
 
 void
@@ -56,8 +57,8 @@ General2D::Output() {
 
     auto bit_map = (uint8_t*)malloc(output_image_size_);
     memset(bit_map, output_image_size_, 0xff);
-    std::shared_ptr<arrow::Buffer> buffer0 = std::make_shared<arrow::Buffer>(arrow::Buffer(bit_map, output_image_size_));
-    std::shared_ptr<arrow::Buffer> buffer1 = std::make_shared<arrow::Buffer>(arrow::Buffer(output_image_, output_image_size_));
+    std::shared_ptr<arrow::Buffer> buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_image_size_);
+    std::shared_ptr<arrow::Buffer> buffer1 = std::make_shared<arrow::Buffer>(output_image_, output_image_size_);
     auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
     buffers.emplace_back(buffer0);
     buffers.emplace_back(buffer1);

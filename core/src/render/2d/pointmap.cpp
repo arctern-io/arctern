@@ -8,15 +8,15 @@ namespace zilliz {
 namespace render {
 
 PointMap::PointMap()
-    : vertices_x_(nullptr), vertices_y_(nullptr), vega_(""), num_vertices_(0) {
+    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {
 }
 
 void
 PointMap::DataInit() {
     //set point_value
-    auto input_data = input();
-    auto x_array = input_data.array_vector[0];
-    auto y_array = input_data.array_vector[1];
+    auto input_data = array_vector();
+    auto x_array = input_data[0];
+    auto y_array = input_data[1];
 
     auto x_length = x_array->length();
     auto y_length = y_array->length();
@@ -27,8 +27,10 @@ PointMap::DataInit() {
     assert(y_type == arrow::Type::UINT32);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    vertices_x_ = std::make_shared<uint32_t >(x_array->data()->GetValues<uint8_t >(1));
-    vertices_y_ = std::make_shared<uint32_t >(y_array->data()->GetValues<uint8_t >(1));
+    auto x_data = (uint32_t*)x_array->data()->GetValues<uint8_t >(1);
+    auto y_data = (uint32_t*)y_array->data()->GetValues<uint8_t >(1);
+    vertices_x_ = std::shared_ptr<uint32_t >(x_data);
+    vertices_y_ = std::shared_ptr<uint32_t >(y_data);
 }
 
 void
@@ -119,8 +121,9 @@ PointMap::Shader() {
     glEnableVertexAttribArray(1);
 
     glUseProgram(shader_program);
-    glUniform2f(2, window_params_.width(), window_params_.height());
-    auto point_format = vega_.point_format();
+    auto window_params = window()->window_params();
+    glUniform2f(2, window_params.width(), window_params.height());
+    auto point_format = vega().point_format();
     glUniform1f(3, point_format.radius);
     glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b, point_format.color.a);
 }
@@ -128,7 +131,7 @@ PointMap::Shader() {
 std::shared_ptr<arrow::Array>
 PointMap::Render(){
     InputInit();
-    WindowsInit(window()->window_params());
+    WindowsInit(vega().window_params());
     DataInit();
     Shader();
     Draw();

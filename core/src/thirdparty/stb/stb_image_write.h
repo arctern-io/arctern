@@ -853,7 +853,7 @@ static unsigned int stbiw__zhash(unsigned char *data)
 
 #define stbiw__ZHASH   16384
 #else
-#include "miniz/miniz.h"
+#include "../miniz/miniz.h"
 
 STBIWDEF unsigned char * my_zlib_compress(unsigned char *data, int data_len, int *out_len, int quality){
     mz_ulong buflen = mz_compressBound(data_len);
