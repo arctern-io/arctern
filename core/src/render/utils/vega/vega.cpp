@@ -21,7 +21,7 @@ bool
 Vega::JsonSizeCheck(rapidjson::Value &value, const std::string &label, size_t size) {
 
     if (value.Size() != size) {
-        std::cout << "Member [" << label << "].size should be " << size;
+        std::cout << "Member [" << label << "].size should be " << size << ", but get " << value.Size() << std::endl;
         return false;
     }
     return true;
@@ -34,24 +34,24 @@ Vega::JsonTypeCheck(rapidjson::Value &value, rapidjson::Type type) {
     switch (type) {
         case rapidjson::Type::kNumberType:
             if (!value.IsNumber()) {
-                std::cout << "illegal" << std::endl;
+                std::cout << "not number type" << std::endl;
                 return false;
             }
             return true;
         case rapidjson::Type::kArrayType:
             if (!value.IsArray()) {
-                std::cout << "illegal" << std::endl;
+                std::cout << "not array type" << std::endl;
                 return false;
             }
             return true;
         case rapidjson::Type::kStringType :
             if (!value.IsString()) {
-                std::cout << "illegal" << std::endl;
+                std::cout << "not string type" << std::endl;
                 return false;
             }
             return true;
         default: {
-            std::cout << "illegal" << std::endl;
+            std::cout << "unknown type" << std::endl;
             return false;
         }
     }
@@ -62,7 +62,7 @@ bool
 Vega::JsonNullCheck(rapidjson::Value &value) {
 
     if (value.IsNull()) {
-        std::cout << "illegal" << std::endl;
+        std::cout << "null!!!" << std::endl;
         return false;
     }
     return true;

@@ -23,7 +23,7 @@ VegaCircle2d::Parse(const std::string &json) {
     rapidjson::ParseResult parse_result = document.Parse(json.c_str());
 
     if (parse_result.IsError()) {
-        printf("illegal\n");
+        printf("json format error\n");
         return;
     }
 
@@ -38,7 +38,7 @@ VegaCircle2d::Parse(const std::string &json) {
 
     if (!JsonLabelCheck(document, "marks") ||
         !JsonTypeCheck(document["marks"], rapidjson::Type::kArrayType) ||
-        !JsonNullCheck(document["marks"]) ||
+        !JsonSizeCheck(document["marks"], "marks", 1) ||
         !JsonLabelCheck(document["marks"][0], "encode") ||
         !JsonLabelCheck(document["marks"][0]["encode"], "enter")) {
         return;
@@ -65,3 +65,4 @@ VegaCircle2d::Parse(const std::string &json) {
 
 } //namespace render
 } //namespace zilliz
+
