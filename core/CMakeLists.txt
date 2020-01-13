@@ -1,9 +1,15 @@
-cmake_minimum_required(VERSION 3.5)
+project(ZILLIZ_GIS)
 
-project(GIS LANGUAGES CXX CUDA)
+cmake_minimum_required(VERSION 3.12)
+message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/include")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/lib")
+
+include(ExternalProject)
+include(ThirdParty)
 
 set(DEPEN)
 
@@ -100,4 +106,3 @@ install(FILES
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/images/
         DESTINATION conf/image
         FILES_MATCHING PATTERN "*.png")
-
