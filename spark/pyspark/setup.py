@@ -12,7 +12,7 @@ from distutils.core import setup
 from Cython.Build import cythonize
 
 
-gis_core_modules = cythonize("./cython/zilliz_gis_core.pyx", compiler_directives = {'language_level': 2})
+gis_core_modules = cythonize("./cython/zilliz_gis_core.pyx", compiler_directives = {'language_level': 3})
 
 for ext in gis_core_modules:
     # The Numpy C headers are currently required
