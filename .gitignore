@@ -1,4 +1,5 @@
 .idea/
+.idea/*
 build/
 *.so
 .vscode/
