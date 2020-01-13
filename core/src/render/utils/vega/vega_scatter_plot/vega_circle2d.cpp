@@ -1,6 +1,10 @@
 
-#include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
-#include "render/utils/color/color.h"
+//#include <rapidjson/document.h>
+//#include "thirdparty/include/arrow/api.h"
+//#include "color.h"
+#include "vega_circle2d.h"
+#include "../../color/color.h"
+
 
 namespace zilliz {
 namespace render {
@@ -20,9 +24,9 @@ void
 VegaCircle2d::Parse(const std::string &json) {
 
     rapidjson::Document document;
-    rapidjson::ParseResult parse_result = document.Parse(json.c_str());
+    document.Parse(json.c_str());
 
-    if (parse_result.IsError()) {
+    if (document.Parse(json.c_str()).HasParseError()) {
         printf("json format error\n");
         return;
     }
@@ -61,7 +65,7 @@ VegaCircle2d::Parse(const std::string &json) {
     }
     circle_params_.radius = mark_enter["strokeWidth"]["value"].GetInt();
     circle_params_.color = ColorParser(mark_enter["stroke"]["value"].GetString()).color();
-    circle_params_.color.a = mark_enter["opacity"]["value"].GetFloat();
+    circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
 
 

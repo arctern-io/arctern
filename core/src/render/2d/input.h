@@ -2,7 +2,7 @@
 
 
 #include "arrow/api.h"
-#include "render/utils/vega/vega.h"
+#include "../utils/vega/vega.h"
 
 
 namespace zilliz {

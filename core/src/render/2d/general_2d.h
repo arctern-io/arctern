@@ -1,7 +1,7 @@
 #pragma once
 
-#include "render/2d/input.h"
-#include "render/window/window2d.h"
+#include "input.h"
+#include "../window/window2d.h"
 
 namespace zilliz {
 namespace render {

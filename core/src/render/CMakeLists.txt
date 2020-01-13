@@ -1,6 +1,7 @@
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/2d/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/2d/general_2d.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/2d/render_builder.cpp
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/window/window2d.cpp
@@ -33,6 +34,7 @@ include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
+add_dependencies(GIS miniz_ep arrow_ep)
 target_link_libraries(GIS
         GL
         EGL

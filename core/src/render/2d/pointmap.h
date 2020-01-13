@@ -1,8 +1,8 @@
 #pragma once
 
-#include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
-#include "render/2d/input.h"
-#include "render/2d/general_2d.h"
+#include "../utils/vega/vega_scatter_plot/vega_circle2d.h"
+#include "input.h"
+#include "general_2d.h"
 
 namespace zilliz {
 namespace render {

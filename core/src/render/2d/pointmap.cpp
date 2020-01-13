@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <GLES3/gl3.h>
 #include <iostream>
-#include "render/2d/pointmap.h"
+#include "pointmap.h"
 
 namespace zilliz {
 namespace render {
