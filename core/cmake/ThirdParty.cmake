@@ -2,4 +2,5 @@
 # include(ConfigureSqlite3)
 # # include(ConfigureProj)
 # include(ConfigureGoogleTest)
-include(ConfigureSbt)
+# include(ConfigureSbt)
+include(ConfigureMiniz)
