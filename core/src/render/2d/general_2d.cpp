@@ -3,10 +3,11 @@
 #include "arrow/type.h"
 #include "arrow/vendored/string_view.hpp"
 #include "render/2d/general_2d.h"
+#include "render/2d/my_zlib_compress.h"
 
 #define STBIW_ZLIB_COMPRESS my_zlib_compress
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "thirdparty/stb/stb_image_write.h"
+#include "stb/stb_image_write.h"
 
 
 

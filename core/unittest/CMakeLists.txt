@@ -8,5 +8,3 @@ set(unittest_libs
         )
 
 add_subdirectory(render)
-
-# gen_unittest_grouped(renderengine_all ./)
