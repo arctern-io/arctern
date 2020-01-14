@@ -14,5 +14,4 @@ ExternalProject_Add(arrow_ep
                     GIT_TAG             apache-arrow-0.15.1
                     SOURCE_DIR          "${ARROW_ROOT}/arrow"
                     SOURCE_SUBDIR       "cpp"
-                    BINARY_DIR          "${ARROW_ROOT}/build"
                     CMAKE_ARGS          ${ARROW_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty)
