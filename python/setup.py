@@ -28,7 +28,6 @@ for ext in gis_core_modules:
 
 setup(
     name = "zilliz_gis",
-#    py_modules = ['register'],
-    ext_modules=cythonize(gis_core_modules)
+    ext_modules=cythonize(gis_core_modules),
 )
 
