@@ -2,14 +2,6 @@ set(PROJ_SOURCE_URL "https://download.osgeo.org/proj/proj-6.2.1.tar.gz")
 
 set(PROJ_ROOT   ${CMAKE_BINARY_DIR}/proj_ep-prefix/src)
 
-# don't work in configure command
-string(CONCAT PROJ_CMAKE_ARGS       " -DCMAKE_PREFIX_PATH=${CMAKE_BINARY_DIR}/thirdpart"
-                                    " -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty"
-                                    " -DSQLITE3_INCLUDE_DIR=${CMAKE_BINARY_DIR}/thirdparty/include"
-                                    " -DSQLITE3_LIBRARY=${CMAKE_BINARY_DIR}/thirdparty/lib/libsqlite3.so"
-                                    " -DEXE_SQLITE3=${CMAKE_BINARY_DIR}/thirdparty/bin/sqlite3"
-                                    " -DPROJ_TESTS=OFF")
-
 file(MAKE_DIRECTORY     ${PROJ_ROOT}/proj-build)
 ExternalProject_Add(proj_ep
     URL
