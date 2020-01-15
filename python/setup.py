@@ -15,8 +15,8 @@ for ext in gis_core_modules:
     # The Numpy C headers are currently required
     ext.include_dirs.append(np.get_include())
     ext.include_dirs.append(pa.get_include())
-    ext.libraries.extend(pa.get_libraries())
-    ext.library_dirs.extend(pa.get_library_dirs())
+    ext.libraries.extend(['GIS'] + pa.get_libraries())
+    # ext.library_dirs.extend(['/home/ljq/czs/GIS/core/build/core/lib'])
 
     if os.name == 'posix':
         ext.extra_compile_args.append('-std=c++11')
@@ -24,7 +24,6 @@ for ext in gis_core_modules:
     # Try uncommenting the following line on Linux
     # if you get weird linker errors or runtime crashes
     ext.define_macros.append(("_GLIBCXX_USE_CXX11_ABI", "0"))
-
 
 setup(
     name = "zilliz_gis",
