@@ -1,3 +1,0 @@
-repository='https://github.com/richgel999/miniz'
-module=''
-tag='origin'

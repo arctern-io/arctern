@@ -1,3 +1,0 @@
-repository='external project URL'
-module='https://github.com/OSGeo/gdal/releases/download/v3.0.2/gdal-3.0.2.tar.gz'
-tag='MD5=8a31507806b26f070858558aaad42277'

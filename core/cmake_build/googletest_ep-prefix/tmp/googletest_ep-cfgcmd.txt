@@ -1,1 +1,0 @@
-cmd='/usr/local/bin/cmake;-DCMAKE_INSTALL_PREFIX=/home/czp/test/GIS/core/cmake_build/thirdparty;-DCMAKE_INSTALL_LIBDIR=/home/czp/test/GIS/core/cmake_build/thirdparty/lib;-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0;-DCMAKE_BUILD_TYPE=Release;-GUnix Makefiles;<SOURCE_DIR><SOURCE_SUBDIR>'

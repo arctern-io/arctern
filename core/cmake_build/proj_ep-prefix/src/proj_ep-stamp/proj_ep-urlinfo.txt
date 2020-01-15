@@ -1,3 +1,0 @@
-repository='external project URL'
-module='https://download.osgeo.org/proj/proj-6.2.1.tar.gz'
-tag=''
