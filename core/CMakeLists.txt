@@ -1,17 +1,25 @@
-cmake_minimum_required(VERSION 3.5)
+project(zillizgis LANGUAGES CUDA CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CUDA_STANDARD 11)
 
-project(libGIS LANGUAGES CXX CUDA)
+cmake_minimum_required(VERSION 3.12)
+message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/include")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/lib")
+
+include(ExternalProject)
+include(ThirdParty)
 
 set(DEPEN)
 
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    message("building libGIS on x86 architecture")
+    message("building GIS on x86 architecture")
     set(RENDER_ENGINE_BUILD_ARCH x86_64)
 elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ppc)")
-    message("building libGIS on ppc architecture")
+    message("building GIS on ppc architecture")
     set(RENDER_ENGINE_BUILD_ARCH ppc64le)
 else ()
     message("unknown processor type")
@@ -21,10 +29,10 @@ endif ()
 
 
 if (DEFINED APPLE)
-    message("building libGIS on MacOS")
+    message("building GIS on MacOS")
     set(RENDER_ENGINE_BUILD_SYSTEM macos)
 elseif (DEFINED UNIX)
-    message("building libGIS on Unix")
+    message("building GIS on Unix")
     set(RENDER_ENGINE_BUILD_SYSTEM unix)
 else ()
     message("unknown OS")
@@ -36,6 +44,7 @@ if (RENDER_ENGINE_BUILD_ARCH STREQUAL "ppc64le")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
@@ -68,22 +77,18 @@ message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
+include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
+link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
 
 add_subdirectory(src)
 
-#install
-INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/src DESTINATION .
-        FILES_MATCHING
-        PATTERN "*.h")
+if (BUILD_UNIT_TEST)
+    add_subdirectory(unittest)
+endif (BUILD_UNIT_TEST)
+unset(BUILD_UNIT_TEST CACHE)
 
-
-install(FILES
-        package.conf
-        DESTINATION package/${PROJECT_NAME})
-
-# install images
-
-INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/images/
-        DESTINATION conf/image
-        FILES_MATCHING PATTERN "*.png")
-
+install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/thirdparty/lib/
+    DESTINATION ${CMAKE_BINARY_DIR}/core/lib
+    FILES_MATCHING PATTERN "lib*"
+)
