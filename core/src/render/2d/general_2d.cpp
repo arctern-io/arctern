@@ -2,9 +2,8 @@
 #include "thirdparty/include/arrow/buffer.h"
 #include "thirdparty/include/arrow/type.h"
 #include "general_2d.h"
-#include "../window/window_params.h"
-#include "../window/window2d.h"
-//#define STBIW_ZLIB_COMPRESS my_zlib_compress
+#include "render/window/window2d.h"
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "thirdparty/include/stb_image_write.h"
 
@@ -50,25 +49,10 @@ General2D::Finalize() {
     window()->Terminate();
 }
 
-std::shared_ptr<arrow::Array>
+std::shared_ptr<uint8_t >
 General2D::Output() {
     // export image to memory
     ExportImage();
-
-    auto bit_map = (uint8_t*)malloc(output_image_size_);
-    memset(bit_map, output_image_size_, 0xff);
-    auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_image_size_);
-    auto buffer1 = std::make_shared<arrow::Buffer>(output_image_, output_image_size_);
-    auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
-    buffers.emplace_back(buffer0);
-    buffers.emplace_back(buffer1);
-
-    auto data_type = arrow::uint8();
-    auto array_data = arrow::ArrayData::Make(data_type, output_image_size_, buffers);
-    auto array = arrow::MakeArray(array_data);
-
-    assert(array->length() == output_image_size_);
-    assert(array->type_id() == arrow::uint8()->id());
 
     auto write_image = true;
     if (write_image) {
@@ -82,7 +66,7 @@ General2D::Output() {
         }
     }
 
-    return array;
+    return std::shared_ptr<uint8_t >(output_image_);
 }
 
 void

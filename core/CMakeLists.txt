@@ -40,8 +40,8 @@ if (GIS_BUILD_ARCH STREQUAL "ppc64le")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
-#set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
-#
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
+
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     message("Building Release version")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
@@ -62,31 +62,31 @@ set(THIRD_PARTY_LIB ${THIRD_PARTY_PATH}/lib)
 #set(LIB_GIS_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/src)
 #message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
 
-#set(cuda_inc /usr/local/cuda/include)
-#if (DEFINED APPLE)
-#    set(cuda_lib /usr/local/cuda/lib)
-#elseif (DEFINED UNIX)
-#    set(cuda_lib /usr/local/cuda/lib64)
-#endif ()
+set(cuda_inc /usr/local/cuda/include)
+if (DEFINED APPLE)
+    set(cuda_lib /usr/local/cuda/lib)
+elseif (DEFINED UNIX)
+    set(cuda_lib /usr/local/cuda/lib64)
+endif ()
 
 #include_directories(${LIB_GIS_INCLUDE})
 #include_directories(${LIB_GIS_SRC_INCLUDE})
 include_directories(${PROJECT_BINARY_DIR})
 message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
-#include_directories(${cuda_inc})
-#link_directories(${cuda_lib})
-#
+include_directories(${cuda_inc})
+link_directories(${cuda_lib})
+
 include_directories(${THIRD_PARTY_INCLUDE})
 message("THIRD_PARTY_INCLUDE = ${THIRD_PARTY_INCLUDE}")
 link_directories(${THIRD_PARTY_LIB})
 
 add_subdirectory(src)
 
-if (BUILD_UNIT_TEST)
+if (BUILD_UNITTEST)
     add_subdirectory(unittest)
-endif (BUILD_UNIT_TEST)
-unset(BUILD_UNIT_TEST CACHE)
+endif (BUILD_UNITTEST)
+unset(BUILD_UNITTEST CACHE)
 
 #install
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/src DESTINATION .

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "input.h"
-#include "../window/window2d.h"
+#include "render/window/window2d.h"
 
 namespace zilliz {
 namespace render {
@@ -13,7 +13,7 @@ class General2D {
     virtual void
     DataInit() = 0;
 
-    virtual std::shared_ptr<arrow::Array>
+    virtual std::shared_ptr<uint8_t >
     Render() = 0;
 
     virtual void
@@ -33,7 +33,7 @@ class General2D {
     void
     Finalize();
 
-    std::shared_ptr<arrow::Array>
+    std::shared_ptr<uint8_t >
     Output();
 
     void

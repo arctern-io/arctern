@@ -1,7 +1,10 @@
+include_directories(${CMAKE_SOURCE_DIR}/src)
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/2d/pointmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/2d/heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/2d/general_2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/2d/render_builder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/2d/cuda/heatmap.cu
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/window/window2d.cpp
@@ -9,21 +12,30 @@ set(window_src
 
 set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega_scatter_plot/vega_circle2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/utils/color/color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega_heatmap/vega_heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/utils/vega/vega.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/color/color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/color/color_gradient.cpp
         )
 
+set(arrow_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/arrow/render_api.cpp
+        )
+
+#add_subdirectory(2d)
 if (STATIC_LIB_SWITCH)
     add_library(GIS STATIC
             ${2d_src}
             ${window_src}
             ${util_src}
+            ${arrow_src}
             )
 else()
     add_library(GIS SHARED
             ${2d_src}
             ${window_src}
             ${util_src}
+            ${arrow_src}
             )
 endif(STATIC_LIB_SWITCH)
 

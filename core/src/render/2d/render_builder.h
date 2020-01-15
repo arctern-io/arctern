@@ -4,8 +4,8 @@
 namespace zilliz {
 namespace render {
 
-std::shared_ptr<arrow::Array>
-get_pointmap(arrow::ArrayVector input_array);
+std::pair<std::shared_ptr<uint8_t>, int64_t>
+pointmap(std::shared_ptr<uint32_t > arr_x, std::shared_ptr<uint32_t > arr_y, int64_t num_vertices);
 
 
 } //namespace render

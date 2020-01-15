@@ -2,12 +2,11 @@
 
 namespace zilliz {
 namespace render {
-std::shared_ptr<arrow::Array>
-get_pointmap(arrow::ArrayVector input_array) {
-   PointMap point_map;
-   Input input;
-   input.array_vector = input_array;
-   input.vega = "{\n"
+
+std::pair<std::shared_ptr<uint8_t >,int64_t>
+pointmap(std::shared_ptr<uint32_t > arr_x, std::shared_ptr<uint32_t > arr_y, int64_t num) {
+    PointMap point_map(arr_x, arr_y, num);
+    std::string vega = "{\n"
                 "  \"width\": 300,\n"
                 "  \"height\": 200,\n"
                 "  \"description\": \"circle_2d\",\n"
@@ -42,8 +41,10 @@ get_pointmap(arrow::ArrayVector input_array) {
                 "    }\n"
                 "  ]\n"
                 "}";
-    point_map.set_input(input);
-    return point_map.Render();
+    VegaCircle2d vega_circle_2d(vega);
+    point_map.mutable_point_vega() = vega_circle_2d;
+
+    return std::make_pair(point_map.Render(), point_map.num_vertices());
 }
 
 } //namespace render

@@ -1,22 +1,20 @@
-
-#include "vega_circle2d.h"
+#include "vega_heatmap.h"
 
 namespace zilliz {
 namespace render {
 
-VegaCircle2d::VegaCircle2d(const std::string &json) {
+VegaHeatMap::VegaHeatMap(const std::string &json) {
     Parse(json);
 }
 
 std::string
-VegaCircle2d::Build() {
+VegaHeatMap::Build() {
     // TODO: add Build() api to build a vega json string.
     return "";
 }
 
-
 void
-VegaCircle2d::Parse(const std::string &json) {
+VegaHeatMap::Parse(const std::string &json) {
 
     rapidjson::Document document;
     document.Parse(json.c_str());
@@ -33,9 +31,9 @@ VegaCircle2d::Parse(const std::string &json) {
         !JsonTypeCheck(document["height"], rapidjson::Type::kNumberType)) {
         return;
     }
+
     window_params_.mutable_width() = document["width"].GetInt();
     window_params_.mutable_height() = document["height"].GetInt();
-
 
     if (!JsonLabelCheck(document, "marks") ||
         !JsonTypeCheck(document["marks"], rapidjson::Type::kArrayType) ||
@@ -53,17 +51,11 @@ VegaCircle2d::Parse(const std::string &json) {
         !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
         !JsonLabelCheck(mark_enter["stroke"], "value") ||
         !JsonLabelCheck(mark_enter["opacity"], "value") ||
-        !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType) ||
-        !JsonTypeCheck(mark_enter["stroke"]["value"], rapidjson::Type::kStringType) ||
-        !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
+        !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType)) {
         return;
     }
-    circle_params_.radius = mark_enter["strokeWidth"]["value"].GetInt();
-    circle_params_.color = ColorParser(mark_enter["stroke"]["value"].GetString()).color();
-    circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
+    map_scale_ = mark_enter["strokeWidth"]["value"].GetDouble();
 }
-
 
 } //namespace render
 } //namespace zilliz
-
