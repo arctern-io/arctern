@@ -89,6 +89,6 @@ unset(BUILD_UNIT_TEST CACHE)
 
 install(
     DIRECTORY ${CMAKE_BINARY_DIR}/thirdparty/lib/
-    DESTINATION ${CMAKE_BINARY_DIR}/core/lib
+    DESTINATION lib
     FILES_MATCHING PATTERN "lib*"
 )

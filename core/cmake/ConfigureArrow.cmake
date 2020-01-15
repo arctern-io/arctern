@@ -80,6 +80,6 @@ message("arrow library directory is here: ${ARROW_LIB_DIRS}")
 # the command below will mv original directory structure to destination
 install(
     DIRECTORY ${ARROW_LIB_DIRS}/
-    DESTINATION ${CMAKE_BINARY_DIR}/core/lib
+    DESTINATION lib
     FILES_MATCHING PATTERN "lib*.so*"
 )
