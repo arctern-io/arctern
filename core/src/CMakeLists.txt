@@ -32,7 +32,7 @@ add_library(
     ${render_src}
     ${gis_src}
 )
-add_dependencies(GIS arrow_ep miniz_ep)
+add_dependencies(GIS miniz_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 target_link_libraries(GIS
