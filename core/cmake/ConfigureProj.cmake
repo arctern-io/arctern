@@ -18,6 +18,7 @@ ExternalProject_Add(proj_ep
     ${PROJ_ROOT}/proj-build
     CONFIGURE_COMMAND
     cmake
+    -DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0
     -DCMAKE_PREFIX_PATH=${CMAKE_BINARY_DIR}/thirdparty
     -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty
     -DSQLITE3_INCLUDE_DIR=${CMAKE_BINARY_DIR}/thirdparty/include

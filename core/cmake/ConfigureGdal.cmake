@@ -10,6 +10,7 @@ ExternalProject_Add(gdal_ep
     8a31507806b26f070858558aaad42277
     CONFIGURE_COMMAND
     ./configure
+    CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0
     --prefix=${CMAKE_BINARY_DIR}/thirdparty
     --with-proj=${CMAKE_BINARY_DIR}/thirdparty
     --without-libtool

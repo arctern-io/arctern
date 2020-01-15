@@ -13,6 +13,7 @@ ExternalProject_Add(rapidjson_ep
     ${RAPIDJSON_ROOT}/rapidjson-build
     CONFIGURE_COMMAND
     cmake
+    -DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0
     -DCMAKE_BUILD_TYPE=Release
     -DRAPIDJSON_BUILD_TESTS=OFF
     -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty

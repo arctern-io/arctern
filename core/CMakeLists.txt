@@ -44,6 +44,7 @@ if (RENDER_ENGINE_BUILD_ARCH STREQUAL "ppc64le")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
@@ -86,5 +87,8 @@ if (BUILD_UNIT_TEST)
 endif (BUILD_UNIT_TEST)
 unset(BUILD_UNIT_TEST CACHE)
 
-file(GLOB THIRDPARTY_LIBS ${CMAKE_BINARY_DIR}/thirdparty/lib/lib*)
-install(FILES ${THIRDPARTY_LIBS} DESTINATION lib)
+install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/thirdparty/lib/
+    DESTINATION ${CMAKE_BINARY_DIR}/core/lib
+    FILES_MATCHING PATTERN "lib*"
+)

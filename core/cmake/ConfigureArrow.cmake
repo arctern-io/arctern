@@ -1,5 +1,6 @@
 set(ARROW_ROOT ${CMAKE_BINARY_DIR}/arrow)
 
+                        # " -DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0"
 set(ARROW_CMAKE_ARGS    " -DARROW_BUILD_BENCHMARKS=OFF"
                         " -DCMAKE_BUILD_TYPE=Release"
                         " -DARROW_BUILD_STATIC=OFF"
