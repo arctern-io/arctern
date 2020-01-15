@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/rapidjson_ep"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/rapidjson_ep.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/rapidjson_ep-complete.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-install.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-mkdir.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-download.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-update.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-patch.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-configure.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/rapidjson_ep-prefix/src/rapidjson_ep-stamp/rapidjson_ep-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"rapidjson_ep"
+		],
+		"name" : "rapidjson_ep"
+	}
+}

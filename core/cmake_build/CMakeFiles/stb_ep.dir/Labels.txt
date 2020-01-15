@@ -1,0 +1,13 @@
+# Target labels
+ stb_ep
+# Source files and their labels
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/stb_ep
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/stb_ep.rule
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/stb_ep-complete.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-install.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-mkdir.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-download.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-update.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-patch.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-configure.rule
+/home/czp/test/GIS/core/cmake_build/stb_ep-prefix/src/stb_ep-stamp/stb_ep-build.rule

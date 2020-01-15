@@ -23,6 +23,10 @@ set(gis_src
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/point_map.cpp
 )
 
+set(gis_cpp_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpp/geometry/points.cpp
+)
+
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
@@ -32,7 +36,13 @@ add_library(
     ${render_src}
     ${gis_src}
 )
+
+add_library(
+        zgeo SHARED
+        ${gis_cpp_src}
+)
 add_dependencies(GIS arrow_ep miniz_ep)
+add_dependencies(zgeo arrow_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 target_link_libraries(GIS
@@ -44,5 +54,12 @@ target_link_libraries(GIS
         miniz
         )
 
+target_link_libraries(zgeo
+        arrow
+        )
+
 install(TARGETS GIS
+        DESTINATION lib)
+
+install(TARGETS zgeo
         DESTINATION lib)

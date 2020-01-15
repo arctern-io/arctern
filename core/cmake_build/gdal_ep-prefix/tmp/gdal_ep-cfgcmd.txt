@@ -1,0 +1,1 @@
+cmd='./configure;CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0;--prefix=/home/czp/test/GIS/core/cmake_build/thirdparty;--with-proj=/home/czp/test/GIS/core/cmake_build/thirdparty;--without-libtool;--with-zstd=no;--with-cryptopp=no;--with-expat=no;--with-crypto=no'

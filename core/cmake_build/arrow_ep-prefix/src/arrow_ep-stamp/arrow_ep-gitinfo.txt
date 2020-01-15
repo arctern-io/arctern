@@ -1,0 +1,3 @@
+repository='https://github.com/apache/arrow.git'
+module=''
+tag='origin'

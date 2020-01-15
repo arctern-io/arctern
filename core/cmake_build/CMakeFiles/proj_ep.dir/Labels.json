@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/proj_ep"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/proj_ep.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/proj_ep-complete.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-install.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-mkdir.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-download.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-update.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-patch.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-configure.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/proj_ep-prefix/src/proj_ep-stamp/proj_ep-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"proj_ep"
+		],
+		"name" : "proj_ep"
+	}
+}

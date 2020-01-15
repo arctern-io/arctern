@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/arrow_ep"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/arrow_ep.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/CMakeFiles/arrow_ep-complete.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-install.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-mkdir.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-download.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-update.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-patch.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-configure.rule"
+		},
+		{
+			"file" : "/home/czp/test/GIS/core/cmake_build/arrow_ep-prefix/src/arrow_ep-stamp/arrow_ep-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"arrow_ep"
+		],
+		"name" : "arrow_ep"
+	}
+}

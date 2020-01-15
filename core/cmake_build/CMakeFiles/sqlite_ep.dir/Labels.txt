@@ -1,0 +1,13 @@
+# Target labels
+ sqlite_ep
+# Source files and their labels
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/sqlite_ep
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/sqlite_ep.rule
+/home/czp/test/GIS/core/cmake_build/CMakeFiles/sqlite_ep-complete.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-install.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-mkdir.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-download.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-update.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-patch.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-configure.rule
+/home/czp/test/GIS/core/cmake_build/sqlite_ep-prefix/src/sqlite_ep-stamp/sqlite_ep-build.rule
