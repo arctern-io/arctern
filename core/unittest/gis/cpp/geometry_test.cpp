@@ -2,14 +2,14 @@
 #include <iostream>
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "gis/cpp/geometry/points.h"
+#include "gis/cpp/geometry/geometry.h"
 using namespace zilliz::gis::cpp::gemetry;
 
 TEST(geometry_test, make_point_from_double){
   double d_arr_x[] = {1, 2};
   double d_arr_y[] = {3, 4};
 
-  auto res = ST_make_point(d_arr_x, d_arr_y, 2);
+  auto res = ST_point(d_arr_x, d_arr_y, 2);
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> expect_res;
