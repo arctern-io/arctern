@@ -53,9 +53,9 @@ target_link_libraries(GIS
         miniz
         )
 
-#target_link_libraries(zgeo
-#        arrow
-#        )
+target_link_libraries(zgeo
+        arrow
+        )
 
 install(TARGETS GIS
         DESTINATION lib)
