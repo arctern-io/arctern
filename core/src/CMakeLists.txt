@@ -41,8 +41,7 @@ add_library(
         zgeo SHARED
         ${gis_cpp_src}
 )
-add_dependencies(GIS arrow_ep miniz_ep)
-add_dependencies(zgeo arrow_ep)
+add_dependencies(GIS miniz_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 target_link_libraries(GIS

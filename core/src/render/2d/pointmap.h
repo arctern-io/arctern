@@ -1,8 +1,8 @@
 #pragma once
 
 #include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
-#include "render/2d/input.h"
-#include "render/2d/general_2d.h"
+#include "input.h"
+#include "general_2d.h"
 
 namespace zilliz {
 namespace render {
@@ -11,10 +11,12 @@ class PointMap : public General2D {
  public:
     PointMap();
 
+    PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, int64_t num_vertices);
+
     void
     DataInit() final;
 
-    std::shared_ptr<arrow::Array>
+    std::shared_ptr<uint8_t >
     Render() final;
 
     void
@@ -25,6 +27,19 @@ class PointMap : public General2D {
 
     void
     InputInit() final;
+
+ public:
+    std::shared_ptr<uint32_t >
+    mutable_vertices_x() { return vertices_x_; }
+
+    std::shared_ptr<uint32_t >
+    mutable_vertices_y() { return vertices_y_; }
+
+    VegaCircle2d&
+    mutable_point_vega() {return point_vega_; }
+
+    const size_t
+    num_vertices() const { return num_vertices_; }
 
  private:
     unsigned int VAO_;
