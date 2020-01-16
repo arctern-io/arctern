@@ -1,11 +1,13 @@
 #include <iostream>
-#include "thirdparty/include/arrow/buffer.h"
-#include "thirdparty/include/arrow/type.h"
-#include "general_2d.h"
-#include "render/window/window2d.h"
+#include "arrow/buffer.h"
+#include "arrow/type.h"
+#include "arrow/vendored/string_view.hpp"
+#include "render/2d/general_2d.h"
+#include "render/2d/my_zlib_compress.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "thirdparty/include/stb_image_write.h"
+#include "stb/stb_image_write.h"
+
 
 
 
