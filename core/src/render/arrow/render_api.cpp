@@ -77,7 +77,7 @@ get_heatmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> a
         case arrow::Type::UINT32 : {
             auto c_data_uint32 = (uint32_t *) arr_c->data()->GetValues<uint8_t>(1);
             auto input_c_uint32 = std::shared_ptr<uint32_t>(c_data_uint32);
-            output = heatmap<uint32_t>(input_x, input_y, input_c_uint32, num_vertices);
+            output = heatmap<uint32_t >(input_x, input_y, input_c_uint32, num_vertices);
             break;
         }
         default:
