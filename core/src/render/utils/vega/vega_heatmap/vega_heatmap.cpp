@@ -45,16 +45,12 @@ VegaHeatMap::Parse(const std::string &json) {
     rapidjson::Value mark_enter;
     mark_enter = document["marks"][0]["encode"]["enter"];
 
-    if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
-        !JsonLabelCheck(mark_enter, "stroke") ||
-        !JsonLabelCheck(mark_enter, "opacity") ||
-        !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
-        !JsonLabelCheck(mark_enter["stroke"], "value") ||
-        !JsonLabelCheck(mark_enter["opacity"], "value") ||
+    if (!JsonLabelCheck(mark_enter, "map_scale") ||
+        !JsonLabelCheck(mark_enter["map_scale"], "value") ||
         !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType)) {
         return;
     }
-    map_scale_ = mark_enter["strokeWidth"]["value"].GetDouble();
+    map_scale_ = mark_enter["map_scale"]["value"].GetDouble();
 }
 
 } //namespace render
