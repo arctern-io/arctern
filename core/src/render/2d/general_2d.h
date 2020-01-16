@@ -1,6 +1,6 @@
 #pragma once
 
-#include "input.h"
+#include "render/2d/input.h"
 #include "render/window/window2d.h"
 
 namespace zilliz {
@@ -63,6 +63,9 @@ class General2D {
 
     const arrow::ArrayVector&
     array_vector() const { return array_vector_; }
+
+    const int
+    output_image_size() const { return output_image_size_; }
 
 //    const Vega&
 //    vega() const { return vega_; }

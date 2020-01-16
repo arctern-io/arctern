@@ -1,7 +1,7 @@
 include(ConfigureArrow)
 include(ConfigureSqlite3)
 include(ConfigureProj)
-include(ConfigureGoogleTest)
+#include(ConfigureGoogleTest)
 include(ConfigureStb)
 include(ConfigureMiniz)
 include(ConfigureGdal)

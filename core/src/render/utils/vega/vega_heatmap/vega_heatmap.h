@@ -17,8 +17,8 @@ class VegaHeatMap: public Vega {
     Build() final;
 
  public:
-    const double
-    map_scale() const{ return map_scale_; }
+    const double&
+    map_scale() const { return map_scale_; }
 
  protected:
     // vega json to vega struct

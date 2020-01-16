@@ -1,6 +1,6 @@
 #pragma once
 
-#include "thirdparty/include/arrow/api.h"
+#include "arrow/api.h"
 
 namespace zilliz {
 namespace render {

@@ -1,9 +1,12 @@
 #include <iostream>
+
 #include "arrow/buffer.h"
 #include "arrow/type.h"
 #include "arrow/vendored/string_view.hpp"
 #include "render/2d/general_2d.h"
-#include "render/2d/my_zlib_compress.h"
+#include "my_zlib_compress.h"
+//#include "window/window_params.h"
+//#include "window/window2d.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
@@ -34,8 +37,8 @@ void
 General2D::Finalize() {
     eglSwapBuffers(mutable_window()->mutable_egl_dpy(),
                    mutable_window()->mutable_egl_surf());
-    auto width = mutable_window()->window_params().width();
-    auto height = mutable_window()->window_params().height();
+    auto width = window()->window_params().width();
+    auto height = window()->window_params().height();
 
     for (int i = 0; i < width * height * 4; i++) {
         mutable_buffer()[i] = 0;
