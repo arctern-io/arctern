@@ -5,7 +5,7 @@
 #include <GL/gl.h>
 
 
-#include "render/window/window_params.h"
+#include "window_params.h"
 
 namespace zilliz {
 namespace render {
