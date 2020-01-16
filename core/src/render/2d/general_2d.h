@@ -13,7 +13,7 @@ class General2D {
     virtual void
     DataInit() = 0;
 
-    virtual std::shared_ptr<arrow::Array>
+    virtual std::shared_ptr<uint8_t >
     Render() = 0;
 
     virtual void
@@ -33,7 +33,7 @@ class General2D {
     void
     Finalize();
 
-    std::shared_ptr<arrow::Array>
+    std::shared_ptr<uint8_t >
     Output();
 
     void
@@ -63,6 +63,9 @@ class General2D {
 
     const arrow::ArrayVector&
     array_vector() const { return array_vector_; }
+
+    const int
+    output_image_size() const { return output_image_size_; }
 
 //    const Vega&
 //    vega() const { return vega_; }
