@@ -23,6 +23,10 @@ set(gis_src
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/point_map.cpp
 )
 
+set(gis_cpp_src
+        gis/cpp/geometry/geometry.cpp
+)
+
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
@@ -31,6 +35,11 @@ add_library(
     GIS ${LIBRARY_TYPE}
     ${render_src}
     ${gis_src}
+)
+
+add_library(
+        zgeo SHARED
+        ${gis_cpp_src}
 )
 add_dependencies(GIS miniz_ep)
 
@@ -44,5 +53,12 @@ target_link_libraries(GIS
         miniz
         )
 
+target_link_libraries(zgeo
+        arrow
+        )
+
 install(TARGETS GIS
+        DESTINATION lib)
+
+install(TARGETS zgeo
         DESTINATION lib)
