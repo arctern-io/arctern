@@ -46,6 +46,10 @@ class HeatMap : public General2D {
     inline static unsigned int
     iDivUp( const unsigned int &a, const unsigned int &b ) { return (a+b-1)/b; }
 
+ public:
+    VegaHeatMap&
+    mutable_heatmap_vega() {return heatmap_vega_; }
+
  private:
     unsigned int VAO_;
     unsigned int VBO_[2];

@@ -5,7 +5,7 @@
 
 using namespace zilliz::render;
 
-TEST(CIRCLE_2D_TEST, SINGLE_COLOR_TEST) {
+TEST(TWOD_TEST, POINTMAP_TEST) {
     PointMap point_map;
 
     auto bit_map = new uint8_t{0xff};
