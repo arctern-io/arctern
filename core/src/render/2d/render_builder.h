@@ -1,5 +1,5 @@
 #pragma once
-#include "pointmap.h"
+#include "render/2d/pointmap.h"
 
 namespace zilliz {
 namespace render {

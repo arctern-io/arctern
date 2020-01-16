@@ -1,4 +1,4 @@
-#include "render_builder.h"
+#include "render/2d/render_builder.h"
 
 namespace zilliz {
 namespace render {
@@ -44,7 +44,7 @@ pointmap(std::shared_ptr<uint32_t > arr_x, std::shared_ptr<uint32_t > arr_y, int
     VegaCircle2d vega_circle_2d(vega);
     point_map.mutable_point_vega() = vega_circle_2d;
 
-    return std::make_pair(point_map.Render(), point_map.num_vertices());
+    return std::make_pair(point_map.Render(), point_map.output_image_size());
 }
 
 } //namespace render

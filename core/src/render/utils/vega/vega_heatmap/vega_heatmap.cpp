@@ -1,4 +1,4 @@
-#include "vega_heatmap.h"
+#include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 
 namespace zilliz {
 namespace render {

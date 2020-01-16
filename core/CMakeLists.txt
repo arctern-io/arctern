@@ -59,8 +59,8 @@ message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
 
-set(LIB_GIS_INCLUDE ${PROJECT_SOURCE_DIR}/src)
-set(LIB_GIS_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/src)
+set(LIB_GIS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(LIB_GIS_SRC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(cuda_inc /usr/local/cuda/include)
 if (DEFINED APPLE)
