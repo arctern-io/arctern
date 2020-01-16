@@ -33,7 +33,7 @@ do
                 ;;
              u)
                 echo "[INFO] building unittests" ;
-                BUILD_UNITTEST_OPT="-DBUILD_UNIT_TEST=ON";
+                BUILD_UNITTEST_OPT="-DBUILD_UNITTEST=ON";
                 ;;
              s)
                 echo "[INFO] compile static lib" ;

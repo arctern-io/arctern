@@ -42,7 +42,6 @@ add_library(
         ${gis_cpp_src}
 )
 add_dependencies(GIS miniz_ep)
-add_dependencies(zgeo arrow_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 target_link_libraries(GIS
@@ -54,9 +53,9 @@ target_link_libraries(GIS
         miniz
         )
 
-#target_link_libraries(zgeo
-#        arrow
-#        )
+target_link_libraries(zgeo
+        arrow
+        )
 
 install(TARGETS GIS
         DESTINATION lib)

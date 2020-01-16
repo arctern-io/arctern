@@ -69,8 +69,8 @@ elseif (DEFINED UNIX)
     set(cuda_lib /usr/local/cuda/lib64)
 endif ()
 
-#include_directories(${LIB_GIS_INCLUDE})
-#include_directories(${LIB_GIS_SRC_INCLUDE})
+include_directories(${LIB_GIS_INCLUDE})
+include_directories(${LIB_GIS_SRC_INCLUDE})
 include_directories(${PROJECT_BINARY_DIR})
 message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
