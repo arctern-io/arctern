@@ -44,6 +44,7 @@ add_library(
     GIS ${LIBRARY_TYPE}
     ${render_src}
     ${gis_src}
+    ${gis_cpp_src}
 )
 
 add_library(

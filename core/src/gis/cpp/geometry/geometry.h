@@ -19,6 +19,9 @@ namespace gemetry {
 std::shared_ptr<arrow::Array>
 ST_point(const double *const ptr_x, const double *const ptr_y, const int64_t len);
 
+std::shared_ptr<arrow::Array>
+ST_point(std::shared_ptr<arrow::Array> ptr_x, std::shared_ptr<arrow::Array> ptr_y);
+
 //points_list.size() % 2 ==0
 //points_list.size() >= 4
 std::shared_ptr<arrow::Array>
