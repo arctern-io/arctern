@@ -37,7 +37,7 @@
 find_package(Python3 COMPONENTS Interpreter Development)
 if(NOT Python3_Interpreter_FOUND)
 #if(NOT PYTHONINTERP_FOUND)
-    message("connot find python interpreter")
+    message("cannot find python interpreter")
     exit()
 endif()
 
