@@ -78,8 +78,8 @@ message("arrow library directory is here: ${ARROW_LIB_DIRS}")
 
 # TODO: only copy files directly under lib, not deeper folder;
 # the command below will mv original directory structure to destination
-install(
-    DIRECTORY ${ARROW_LIB_DIRS}/
-    DESTINATION lib
-    FILES_MATCHING PATTERN "lib*.so*"
-)
+# install(
+#     DIRECTORY ${ARROW_LIB_DIRS}/
+#     DESTINATION lib
+#     FILES_MATCHING PATTERN "lib*.so*"
+# )
