@@ -3,7 +3,8 @@ set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap.cpp
-#        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/set_color.cpp
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp

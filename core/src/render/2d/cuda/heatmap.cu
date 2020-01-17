@@ -1,12 +1,20 @@
+#include <iostream>
+#include <memory>
+#include <cmath>
+
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
 #include "render/utils/color/color_gradient.h"
-#include "render/2d/heatmap.h"
+#include "render/2d/set_color.h"
 
 namespace zilliz {
 namespace render {
+
+unsigned int
+iDivUp(const unsigned int &a, const unsigned int &b) { return (a + b - 1) / b; }
+
 
 template<typename T>
 __global__ void SetCountValue_gpu(float *out,
@@ -72,9 +80,16 @@ MeanKernel_gpu(float *img_in, float *img_out, int64_t r, int64_t img_w, int64_t 
     }
 }
 
+
+
 template<typename T>
-void HeatMap<T>::set_colors_gpu() {
-    WindowParams window_params = heatmap_vega_.window_params();
+void set_colors_gpu(float *colors,
+                    std::shared_ptr<uint32_t> input_x,
+                    std::shared_ptr<uint32_t> input_y,
+                    std::shared_ptr<T> input_c,
+                    int64_t num,
+                    VegaHeatMap &vega_heat_map) {
+    WindowParams window_params = vega_heat_map.window_params();
     int64_t width = window_params.width();
     int64_t height = window_params.height();
     int64_t window_size = width * height;
@@ -82,10 +97,10 @@ void HeatMap<T>::set_colors_gpu() {
     float *pix_count;
     cudaMalloc((void **) &pix_count, window_size * sizeof(float));
     cudaMemset(pix_count, 0, window_size * sizeof(float));
-    SetCountValue_gpu < T > << <256, 1024 >>
-        > (pix_count, vertices_x_.get(), vertices_y_.get(), count_.get(), num_vertices_, width, height);
+    SetCountValue_gpu<T> << < 256, 1024 >>
+        > (pix_count, input_x.get(), input_y.get(), input_c.get(), num, width, height);
 
-    double scale = heatmap_vega_.map_scale() * 0.4;
+    double scale = vega_heat_map.map_scale() * 0.4;
     int d = pow(2, scale);
     int64_t kernel_size = d * 2 + 3;
 
@@ -124,19 +139,19 @@ void HeatMap<T>::set_colors_gpu() {
     }
     ColorGradient color_gradient;
     color_gradient.createDefaultHeatMapGradient();
-    colors_ = (float*) malloc(window_size * 4 * sizeof(float));
+    colors = (float *) malloc(window_size * 4 * sizeof(float));
 
     int64_t c_offset = 0;
     for (auto j = 0; j < window_size; j++) {
         float value = host_count[j] / max_pix;
         float color_r, color_g, color_b;
         color_gradient.getColorAtValue(value, color_r, color_g, color_b);
-        colors_[c_offset++] = color_r;
-        colors_[c_offset++] = color_g;
-        colors_[c_offset++] = color_b;
-        colors_[c_offset++] = value;
+        colors[c_offset++] = color_r;
+        colors[c_offset++] = color_g;
+        colors[c_offset++] = color_b;
+        colors[c_offset++] = value;
     }
-    
+
     free(kernel);
     free(host_count);
     cudaFree(pix_count);

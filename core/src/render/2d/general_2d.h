@@ -64,8 +64,8 @@ class General2D {
     const arrow::ArrayVector&
     array_vector() const { return array_vector_; }
 
-    const int
-    output_image_size() const { return output_image_size_; }
+    int
+    output_image_size() { return output_image_size_; }
 
 //    const Vega&
 //    vega() const { return vega_; }

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "render/utils/vega/vega_heatmap/vega_heatmap.h"
-#include "general_2d.h"
-#define CPU_ONLY
+#include "render/2d/general_2d.h"
+#include "render/2d/set_color.h"
 
 namespace zilliz {
 namespace render {
@@ -32,19 +31,6 @@ class HeatMap : public General2D {
     void
     InputInit() final;
 
- private:
-    inline void
-    set_colors();
-
-    void
-    set_colors_cpu();
-
-    void
-    set_colors_gpu();
-
-    inline static unsigned int
-    iDivUp( const unsigned int &a, const unsigned int &b ) { return (a+b-1)/b; }
-
  public:
     VegaHeatMap&
     mutable_heatmap_vega() {return heatmap_vega_; }
@@ -60,21 +46,6 @@ class HeatMap : public General2D {
     VegaHeatMap heatmap_vega_;
 
 };
-
-template <typename T>
-inline void HeatMap<T>::set_colors() {
-#ifdef CPU_ONLY
-    set_colors_cpu();
-#else
-    set_colors_gpu();
-#endif
-}
-
-void guassiankernel(float *kernel, int size, float sigma);
-
-void matproduct(float a[], float b[], float c[], int m, int n, int p);
-
-void guassiankernel2d(float *kernel, int sizeX, int sizeY, float sigmaX, float sigmaY);
 
 } // namespace render
 } // namespace zilliz
