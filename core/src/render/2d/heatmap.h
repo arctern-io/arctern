@@ -3,7 +3,6 @@
 
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 #include "general_2d.h"
-#define CPU_ONLY
 
 namespace zilliz {
 namespace render {

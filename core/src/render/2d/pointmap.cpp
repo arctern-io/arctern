@@ -4,15 +4,16 @@
 #include <iostream>
 #include "pointmap.h"
 
+
 namespace zilliz {
 namespace render {
 
 PointMap::PointMap()
-    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0){
+    : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {
 }
 
-PointMap::PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, int64_t num_vertices)
-    : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices){
+PointMap::PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t> input_y, int64_t num_vertices)
+    : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices) {
 }
 
 void
@@ -39,15 +40,14 @@ PointMap::DataInit() {
     num_vertices_ = x_length / sizeof(uint32_t);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t*)x_array->data()->GetValues<uint8_t >(1);
-    auto y_data = (uint32_t*)y_array->data()->GetValues<uint8_t >(1);
-    vertices_x_ = std::shared_ptr<uint32_t >(x_data);
-    vertices_y_ = std::shared_ptr<uint32_t >(y_data);
+    auto x_data = (uint32_t *) x_array->data()->GetValues<uint8_t>(1);
+    auto y_data = (uint32_t *) y_array->data()->GetValues<uint8_t>(1);
+    vertices_x_ = std::shared_ptr<uint32_t>(x_data);
+    vertices_y_ = std::shared_ptr<uint32_t>(y_data);
 }
 
 void
 PointMap::Draw() {
-    glEnable(GL_PROGRAM_POINT_SIZE);
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -55,11 +55,37 @@ PointMap::Draw() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_POINT_SMOOTH);
 
+#ifdef CPU_ONLY
+    glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1, 1);
+
+    glPointSize(point_vega_.circle_params().radius);
+
+    auto &color = point_vega_.circle_params().color;
+    glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    int offset = 0;
+    std::vector<int32_t> vertices(num_vertices_ * 2);
+
+    for (auto i = 0; i < num_vertices_; i++) {
+        vertices[offset++] = vertices_x_.get()[i];
+        vertices[offset++] = vertices_y_.get()[i];
+    }
+    glVertexPointer(2, GL_INT, 0, &vertices[0]);
+
+    glDrawArrays(GL_POINTS, 0, num_vertices_);
+    glFinish();
+
+#else
+    glEnable(GL_PROGRAM_POINT_SIZE);
+
     glDrawArrays(GL_POINTS, 0, num_vertices_);
     glFlush();
 
     glDeleteVertexArrays(1, &VAO_);
     glDeleteBuffers(2, VBO_);
+#endif
 }
 
 void
@@ -140,12 +166,14 @@ PointMap::Shader() {
     glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b, point_format.color.a);
 }
 
-std::shared_ptr<uint8_t >
-PointMap::Render(){
+std::shared_ptr<uint8_t>
+PointMap::Render() {
 //    InputInit();
     WindowsInit(point_vega_.window_params());
 //    DataInit();
+#ifndef CPU_ONLY
     Shader();
+#endif
     Draw();
     Finalize();
     return Output();

@@ -209,6 +209,9 @@ void HeatMap<T>::set_colors_cpu() {
 
 template<typename T>
 void HeatMap<T>::Draw() {
+#ifdef CPU_ONLY
+    // TODO: Add cpu render here
+#else
     glEnable(GL_PROGRAM_POINT_SIZE);
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -222,6 +225,7 @@ void HeatMap<T>::Draw() {
 
     glDeleteVertexArrays(1, &VAO_);
     glDeleteBuffers(2, VBO_);
+#endif
 }
 
 template<typename T>
@@ -318,7 +322,9 @@ HeatMap<T>::Render(){
 //    InputInit();
     WindowsInit(heatmap_vega_.window_params());
 //    DataInit();
+#ifndef CPU_ONLY
     Shader();
+#endif
     Draw();
     Finalize();
     return Output();

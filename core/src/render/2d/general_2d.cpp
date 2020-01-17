@@ -5,36 +5,41 @@
 #include "arrow/vendored/string_view.hpp"
 #include "render/2d/general_2d.h"
 #include "my_zlib_compress.h"
-//#include "window/window_params.h"
-//#include "window/window2d.h"
+
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "stb/stb_image_write.h"
-
-
 
 
 namespace zilliz {
 namespace render {
 
-//void
-//General2D::InputInit() {
-//    array_vector_ = input_.array_vector;
-//    vega_ = (Vega &)(input_.vega_json);
-//}
 
 void
 General2D::WindowsInit(WindowParams window_params) {
-//    auto window = mutable_window();
-    window_ = std::make_shared<Window2D>();
+#ifdef CPU_ONLY
+    window_ = std::make_shared<WindowCPU2D>();
     window_->set_window_params(window_params);
-
+    // We'v been init buffer in Window.
+    window_->Init();
+#else
+    window_ = std::make_shared<WindowGPU2D>();
+    window_->set_window_params(window_params);
     window_->Init();
     InitBuffer(window_params);
+#endif
 }
 
 void
 General2D::Finalize() {
+#ifdef CPU_ONLY
+    // OSMesa bind image buffer to OSMesaContext,
+    // buffer have been written after glFinish(),
+    // so we don't need SwapBuffer or ReadPixels here.
+    buffer_ = window_->mutable_buffer();
+    window_->Terminate();
+#else
     eglSwapBuffers(mutable_window()->mutable_egl_dpy(),
                    mutable_window()->mutable_egl_surf());
     auto width = window()->window_params().width();
@@ -52,9 +57,10 @@ General2D::Finalize() {
                  GL_UNSIGNED_INT_8_8_8_8_REV,
                  mutable_buffer());
     window()->Terminate();
+#endif
 }
 
-std::shared_ptr<uint8_t >
+std::shared_ptr<uint8_t>
 General2D::Output() {
     // export image to memory
     ExportImage();
@@ -71,13 +77,12 @@ General2D::Output() {
         }
     }
 
-    return std::shared_ptr<uint8_t >(output_image_);
+    return std::shared_ptr<uint8_t>(output_image_);
 }
 
 void
 General2D::InitBuffer(zilliz::render::WindowParams &window_params) {
     buffer_ = (unsigned char *) calloc(size_t(window_params.width() * window_params.height()), 4);
-
 }
 
 void
@@ -93,7 +98,6 @@ General2D::ExportImage() {
                                           window_params.height(),
                                           4,
                                           &output_image_size_);
-
 }
 
 } //namespace render
