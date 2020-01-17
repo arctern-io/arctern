@@ -2,7 +2,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/render_builder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap.cpp
         #        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
         )
@@ -15,9 +14,10 @@ endif ()
 
 set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_heatmap/vega_heatmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color_gradient.cpp
         )
 set(arrow_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/arrow/render_api.cpp

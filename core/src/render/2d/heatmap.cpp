@@ -8,6 +8,15 @@
 namespace zilliz {
 namespace render {
 
+template
+class HeatMap<float>;
+
+template
+class HeatMap<double>;
+
+template
+class HeatMap<uint32_t >;
+
 const double eps = 1e-6;
 
 void
@@ -122,7 +131,7 @@ HeatMap<T>::HeatMap()
 }
 
 template<typename T>
-HeatMap<T>::HeatMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, std::shared_ptr<uint32_t > count, int64_t num_vertices)
+HeatMap<T>::HeatMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, std::shared_ptr<T> count, int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), count_(count), num_vertices_(num_vertices) {
 }
 
@@ -148,11 +157,12 @@ HeatMap<T>::DataInit() {
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             input_x[i * width + j] = j;
-            input_y[i * width + j] = height - i;
+            input_y[i * width + j] = height - i - 1;
         }
     }
     vertices_x_ = std::shared_ptr<uint32_t >(input_x);
     vertices_y_ = std::shared_ptr<uint32_t >(input_y);
+    num_vertices_ = window_size;
 }
 
 template<typename T>
@@ -168,7 +178,7 @@ void HeatMap<T>::set_colors_cpu() {
 
     double scale = heatmap_vega_.map_scale() * 0.4;
     int d = pow(2, scale);
-    int64_t kernel_size = d * 2 + 3;
+    float kernel_size = d * 2 + 3;
 
     float *kernel = (float *) malloc(kernel_size * kernel_size * sizeof(float));
     guassiankernel2d(kernel, kernel_size, kernel_size, kernel_size, kernel_size);
@@ -177,9 +187,10 @@ void HeatMap<T>::set_colors_cpu() {
     HeatMapArray_cpu(pix_count, heat_count, kernel, kernel_size, width, height);
 
     float* color_count = (float *) malloc(window_size * sizeof(float));
+    memset(color_count, 0, window_size * sizeof(float));
     int64_t mean_radius = (int) (log((kernel_size - 3) / 2) / 0.4);
-    MeanKernel_cpu(color_count, heat_count, mean_radius + 1, width, height);
     MeanKernel_cpu(heat_count, color_count, mean_radius / 2 + 1, width, height);
+    MeanKernel_cpu(color_count, heat_count, mean_radius + 1, width, height);
 
     float max_pix = 0;
     for (auto k = 0; k < window_size; k++) {
@@ -254,7 +265,6 @@ void HeatMap<T>::Shader() {
         "   FragColor = color;\n"
         "}";
 
-
     int success;
     int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -321,7 +331,7 @@ template<typename T> std::shared_ptr<uint8_t >
 HeatMap<T>::Render(){
 //    InputInit();
     WindowsInit(heatmap_vega_.window_params());
-//    DataInit();
+    DataInit();
 #ifndef CPU_ONLY
     Shader();
 #endif

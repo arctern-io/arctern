@@ -46,8 +46,7 @@ VegaHeatMap::Parse(const std::string &json) {
     mark_enter = document["marks"][0]["encode"]["enter"];
 
     if (!JsonLabelCheck(mark_enter, "map_scale") ||
-        !JsonLabelCheck(mark_enter["map_scale"], "value") ||
-        !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType)) {
+        !JsonTypeCheck(mark_enter["map_scale"]["value"], rapidjson::Type::kNumberType)) {
         return;
     }
     map_scale_ = mark_enter["map_scale"]["value"].GetDouble();

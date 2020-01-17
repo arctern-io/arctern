@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 #include "general_2d.h"
 
@@ -14,7 +13,7 @@ class HeatMap : public General2D {
 
     HeatMap(std::shared_ptr<uint32_t> input_x,
             std::shared_ptr<uint32_t> input_y,
-            std::shared_ptr<uint32_t> count,
+            std::shared_ptr<T> count,
             int64_t num_vertices);
 
     void
@@ -39,15 +38,19 @@ class HeatMap : public General2D {
     void
     set_colors_cpu();
 
-    void
-    set_colors_gpu();
+//    void
+//    set_colors_gpu();
 
     inline static unsigned int
     iDivUp( const unsigned int &a, const unsigned int &b ) { return (a+b-1)/b; }
 
+ public:
+    VegaHeatMap&
+    mutable_heatmap_vega() {return heatmap_vega_; }
+
  private:
     unsigned int VAO_;
-    unsigned int VBO_[2];
+    unsigned int VBO_[3];
     std::shared_ptr<uint32_t> vertices_x_;
     std::shared_ptr<uint32_t> vertices_y_;
     std::shared_ptr<T> count_;
@@ -62,7 +65,7 @@ inline void HeatMap<T>::set_colors() {
 #ifdef CPU_ONLY
     set_colors_cpu();
 #else
-    set_colors_gpu();
+//    set_colors_gpu();
 #endif
 }
 
