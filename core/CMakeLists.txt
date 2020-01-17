@@ -58,6 +58,9 @@ endif()
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
+if (CPU_ONLY)
+    add_compile_definitions(CPU_ONLY)
+endif ()
 
 set(LIB_GIS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LIB_GIS_SRC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)

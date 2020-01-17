@@ -47,5 +47,7 @@ class HeatMap : public General2D {
 
 };
 
+
+
 } // namespace render
 } // namespace zilliz

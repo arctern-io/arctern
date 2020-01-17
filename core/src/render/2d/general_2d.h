@@ -1,15 +1,14 @@
 #pragma once
 
 #include "render/2d/input.h"
-#include "render/window/window2d.h"
+#include "render/window/window_egl/window_gpu_2d.h"
+#include "render/window/window_osmesa/window_cpu_2d.h"
 
 namespace zilliz {
 namespace render {
 
 class General2D {
  public:
-//    General2D();
-
     virtual void
     DataInit() = 0;
 
@@ -49,15 +48,6 @@ class General2D {
     const Input&
     input() const { return input_; }
 
-    void
-    set_window(Window2DPtr window) { window_ = window; }
-
-    const Window2DPtr &
-    window() const { return window_; }
-
-    Window2DPtr
-    mutable_window() { return window_; }
-
     unsigned char*
     mutable_buffer() { return buffer_; }
 
@@ -67,17 +57,38 @@ class General2D {
     int
     output_image_size() { return output_image_size_; }
 
-//    const Vega&
-//    vega() const { return vega_; }
-
  protected:
     Input input_;
     arrow::ArrayVector array_vector_;
-//    Vega vega_;
-    Window2DPtr window_;
     unsigned char *buffer_;
     unsigned char *output_image_;
     int output_image_size_;
+
+#ifdef CPU_ONLY
+ public:
+    void
+    set_window(WindowCPU2DPtr window) { window_ = window; }
+
+    const WindowCPU2DPtr &
+    window() const { return window_; }
+
+    WindowCPU2DPtr
+    mutable_window() { return window_; }
+ protected:
+    WindowCPU2DPtr window_;
+#else
+ public:
+    void
+    set_window(WindowGPU2DPtr window) { window_ = window; }
+
+    const WindowGPU2DPtr &
+    window() const { return window_; }
+
+    WindowGPU2DPtr
+    mutable_window() { return window_; }
+ protected:
+    WindowGPU2DPtr window_;
+#endif
 
 };
 

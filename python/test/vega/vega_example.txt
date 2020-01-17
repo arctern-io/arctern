@@ -33,3 +33,37 @@
     }
   ]
 }
+
+
+{
+  "width": 300,
+  "height": 200,
+  "description": "circle_2d",
+  "data": [
+    {
+      "name": "nyc_taxi",
+      "url": "data/nyc_taxi_0_5m.csv"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "longitude_pickup"}
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "latitude_pickup"}
+    }
+  ],
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "map_scale": {"value": 10}
+        }
+      }
+    }
+  ]
+}
