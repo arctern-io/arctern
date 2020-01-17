@@ -33,13 +33,16 @@
 
 # To keep compatibility with python bind, we need to link to arrow
 # under python package
-find_package(PythonInterp)
-if(NOT PYTHONINTERP_FOUND)
+#find_package(PythonInterp)
+find_package(Python3 COMPONENTS Interpreter Development)
+if(NOT Python3_Interpreter_FOUND)
+#if(NOT PYTHONINTERP_FOUND)
     message("connot find python interpreter")
     exit()
 endif()
 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
+execute_process(COMMAND "${Python3_EXECUTABLE}" "-c"
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     "import pyarrow; print(pyarrow.get_include());"
     RESULT_VARIABLE PYARROW_INCLUDE_SEARCH_SUCCESS
     OUTPUT_VARIABLE PYARROW_INCLUDE_VALUES_OUTPUT
@@ -47,7 +50,8 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
+execute_process(COMMAND "${Python3_EXECUTABLE}" "-c"
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     "import pyarrow; print(pyarrow.get_library_dirs());"
     RESULT_VARIABLE PYARROW_LIBRARYDIRS_SEARCH_SUCCESS
     OUTPUT_VARIABLE PYARROW_LIBRARYDIRS_VALUES_OUTPUT
