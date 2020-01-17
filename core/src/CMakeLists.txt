@@ -44,9 +44,10 @@ if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
 endif (STATIC_LIB_SWITCH)
 add_library(
-        GIS ${LIBRARY_TYPE}
-        ${render_src}
-        ${gis_src}
+    GIS ${LIBRARY_TYPE}
+    ${render_src}
+    ${gis_src}
+    ${gis_cpp_src}
 )
 
 add_library(
