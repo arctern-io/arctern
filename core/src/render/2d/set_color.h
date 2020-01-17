@@ -118,18 +118,18 @@ inline void set_colors(float *colors,
 } //namespace render
 } //namespace zilliz
 
-#ifndef CPU_ONLY
-
-#define TEMPLATE_GEN_PREFIX extern
-#define T uint32_t
-#include "set_color.inl"
-
-#define TEMPLATE_GEN_PREFIX extern
-#define T float
-#include "set_color.inl"
-
-#define TEMPLATE_GEN_PREFIX extern
-#define T double
-#include "set_color.inl"
-
-#endif
+//#ifndef CPU_ONLY
+//
+//#define TEMPLATE_GEN_PREFIX extern
+//#define T uint32_t
+//#include "set_color.inl"
+//
+//#define TEMPLATE_GEN_PREFIX extern
+//#define T float
+//#include "set_color.inl"
+//
+//#define TEMPLATE_GEN_PREFIX extern
+//#define T double
+//#include "set_color.inl"
+//
+//#endif

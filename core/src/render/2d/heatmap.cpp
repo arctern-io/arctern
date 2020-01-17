@@ -65,6 +65,19 @@ template<typename T>
 void HeatMap<T>::Draw() {
 #ifdef CPU_ONLY
     // TODO: Add cpu render here
+    glEnable(GL_PROGRAM_POINT_SIZE);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_POINT_SMOOTH);
+
+    glDrawArrays(GL_POINTS, 0, num_vertices_);
+    glFlush();
+
+    glDeleteVertexArrays(1, &VAO_);
+    glDeleteBuffers(2, VBO_);
 #else
     glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -177,6 +190,8 @@ HeatMap<T>::Render() {
     WindowsInit(heatmap_vega_.window_params());
     DataInit();
 #ifndef CPU_ONLY
+    Shader();
+#else
     Shader();
 #endif
     Draw();
