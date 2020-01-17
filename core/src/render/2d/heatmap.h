@@ -2,7 +2,6 @@
 
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 #include "general_2d.h"
-#define CPU_ONLY
 
 namespace zilliz {
 namespace render {
@@ -39,8 +38,8 @@ class HeatMap : public General2D {
     void
     set_colors_cpu();
 
-    void
-    set_colors_gpu();
+//    void
+//    set_colors_gpu();
 
     inline static unsigned int
     iDivUp( const unsigned int &a, const unsigned int &b ) { return (a+b-1)/b; }
@@ -66,7 +65,7 @@ inline void HeatMap<T>::set_colors() {
 #ifdef CPU_ONLY
     set_colors_cpu();
 #else
-    set_colors_gpu();
+//    set_colors_gpu();
 #endif
 }
 

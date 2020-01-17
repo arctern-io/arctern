@@ -1,11 +1,11 @@
-#include "window2d.h"
+#include "window_gpu_2d.h"
 
 
 namespace zilliz {
 namespace render {
 
 
-void Window2D::Init() {
+void WindowGPU2D::Init() {
     const EGLint configAttribs[] = {
         EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
         EGL_RED_SIZE, 8,
@@ -17,8 +17,8 @@ void Window2D::Init() {
         EGL_NONE
     };
 
-    GLint screen_width = window_params().width();
-    GLint screen_height = window_params().height();
+    GLint screen_width = (GLint) window_params().width();
+    GLint screen_height = (GLint) window_params().height();
 
     const EGLint pbufferAttribs[] = {
         EGL_WIDTH, screen_width,
@@ -48,25 +48,25 @@ void Window2D::Init() {
     // 3. Create a surface
     auto &eglSurf = mutable_egl_surf();
     eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg,
-                                                 pbufferAttribs);
+                                      pbufferAttribs);
 
     // 4. Bind the API
     eglBindAPI(EGL_OPENGL_API);
 
     // 5. Create a context and make it current
-    auto & eglCtx = mutable_egl_context();
+    auto &eglCtx = mutable_egl_context();
     eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT,
-                                         contextAttribs);
+                              contextAttribs);
 
     eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
 
     glOrtho(0, screen_width, 0, screen_height, -1, 1);
 }
 
-void Window2D::Terminate() {
-    eglMakeCurrent(mutable_egl_dpy(),EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
-    eglDestroyContext(mutable_egl_dpy(),mutable_egl_context());
-    eglDestroySurface(mutable_egl_dpy(),mutable_egl_surf());
+void WindowGPU2D::Terminate() {
+    eglMakeCurrent(mutable_egl_dpy(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroyContext(mutable_egl_dpy(), mutable_egl_context());
+    eglDestroySurface(mutable_egl_dpy(), mutable_egl_surf());
     eglReleaseThread();
     eglTerminate(mutable_egl_dpy());
 }
