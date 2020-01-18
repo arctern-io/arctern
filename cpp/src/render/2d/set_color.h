@@ -3,7 +3,7 @@
 #include <memory>
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 #include "render/utils/color/color_gradient.h"
-#define CPU_ONLY
+//#define USE_GPU
 
 namespace zilliz {
 namespace render {
@@ -110,7 +110,7 @@ inline void set_colors(float *colors,
                        std::shared_ptr<T> input_c,
                        int64_t num,
                        VegaHeatMap &vega_heat_map) {
-#ifdef CPU_ONLY
+#ifndef USE_GPU
     set_colors_cpu<T>(colors, input_x, input_y, input_c, num, vega_heat_map);
 #else
     set_colors_gpu<T>(colors, input_x, input_y, input_c, num, vega_heat_map);
@@ -120,7 +120,7 @@ inline void set_colors(float *colors,
 } //namespace render
 } //namespace zilliz
 
-#ifndef CPU_ONLY
+#ifdef USE_GPU
 
 #define TEMPLATE_GEN_PREFIX extern
 #define T uint32_t

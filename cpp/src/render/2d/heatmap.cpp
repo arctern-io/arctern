@@ -63,35 +63,34 @@ HeatMap<T>::DataInit() {
 
 template<typename T>
 void HeatMap<T>::Draw() {
-#ifdef CPU_ONLY
-    // TODO: Add cpu render here
-    glEnable(GL_PROGRAM_POINT_SIZE);
-
+//    glEnable(GL_PROGRAM_POINT_SIZE);
     glClear(GL_COLOR_BUFFER_BIT);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_POINT_SMOOTH);
 
+#ifdef USE_GPU
     glDrawArrays(GL_POINTS, 0, num_vertices_);
     glFlush();
 
     glDeleteVertexArrays(1, &VAO_);
     glDeleteBuffers(2, VBO_);
 #else
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1, 1);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_POINT_SMOOTH);
+    int offset = 0;
+    std::vector<int32_t> vertices(num_vertices_ * 2);
+    for (auto i = 0; i < num_vertices_; i++) {
+        vertices[offset++] = vertices_x_.get()[i];
+        vertices[offset++] = vertices_y_.get()[i];
+    }
+    glColorPointer(4, GL_FLOAT, 0, colors_);
+    glVertexPointer(2, GL_INT, 0, &vertices[0]);
 
     glDrawArrays(GL_POINTS, 0, num_vertices_);
     glFlush();
-
-    glDeleteVertexArrays(1, &VAO_);
-    glDeleteBuffers(2, VBO_);
 #endif
 }
 
@@ -189,9 +188,7 @@ HeatMap<T>::Render() {
 //    InputInit();
     WindowsInit(heatmap_vega_.window_params());
     DataInit();
-#ifndef CPU_ONLY
-    Shader();
-#else
+#ifdef USE_GPU
     Shader();
 #endif
     Draw();

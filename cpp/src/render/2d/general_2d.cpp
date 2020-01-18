@@ -17,7 +17,7 @@ namespace render {
 
 void
 General2D::WindowsInit(WindowParams window_params) {
-#ifdef CPU_ONLY
+#ifndef USE_GPU
     window_ = std::make_shared<WindowCPU2D>();
     window_->set_window_params(window_params);
     // We'v been init buffer in Window.
@@ -32,7 +32,7 @@ General2D::WindowsInit(WindowParams window_params) {
 
 void
 General2D::Finalize() {
-#ifdef CPU_ONLY
+#ifndef USE_GPU
     // OSMesa bind image buffer to OSMesaContext,
     // buffer have been written after glFinish(),
     // so we don't need SwapBuffer or ReadPixels here.

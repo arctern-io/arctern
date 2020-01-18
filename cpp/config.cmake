@@ -1,0 +1,5 @@
+set(USE_GPU on)
+set(CMAKE_BUILD_TYPE Debug)
+set(BUILD_UNITTEST on)
+#set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+set(PYTHON_EXECUTABLE /home/xge/anaconda2/envs/GIS/bin/python)

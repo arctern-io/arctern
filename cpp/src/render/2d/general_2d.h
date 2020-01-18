@@ -64,7 +64,7 @@ class General2D {
     unsigned char *output_image_;
     int output_image_size_;
 
-#ifdef CPU_ONLY
+#ifndef USE_GPU
  public:
     void
     set_window(WindowCPU2DPtr window) { window_ = window; }
