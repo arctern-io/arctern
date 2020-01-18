@@ -1,10 +1,10 @@
 .idea/
 .idea/*
 build/
-core/cmake_build/
-core/cmake_build/*
+cpp/cmake_build/
+cpp/cmake_build/*
 *.so
 .vscode/
-core/cmake-build-debug/
-core/cmake-build-debug/*
+cpp/cmake-build-debug/
+cpp/cmake-build-debug/*
 python/cython/*.cpp
