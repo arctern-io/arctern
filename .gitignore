@@ -6,7 +6,7 @@ core/cmake_build/*
 .vscode/
 core/cmake-build-debug/
 core/cmake-build-debug/*
-python/cython/*.cpp
+python/zilliz_gis/cython/*.cpp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

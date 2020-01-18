@@ -1,8 +1,8 @@
 # set(ARROW_SOURCE_URL
 #         "https://github.com/apache/arrow.git")
-# 
+#
 # set(ARROW_ROOT ${CMAKE_BINARY_DIR}/arrow)
-# 
+#
 # set(ARROW_PREFIX ${CMAKE_BINARY_DIR}/arrow_ep-prefix/src)
 # set(ARROW_BINARY_DIR ${CMAKE_BINARY_DIR}/arrow_ep-prefix/src/arrow-build)
 # file(MAKE_DIRECTORY ${ARROW_BINARY_DIR})

@@ -12,7 +12,7 @@ namespace render {
  */
 class Vega {
  public:
-    std::string ToString();
+//    std::string ToString();
 
     virtual std::string
     Build() = 0;

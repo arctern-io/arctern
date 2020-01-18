@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <GLES3/gl3.h>
 #include <iostream>
-#include "render/2d/pointmap.h"
+#include "pointmap.h"
 
 namespace zilliz {
 namespace render {
@@ -11,12 +11,15 @@ PointMap::PointMap()
     : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0){
 }
 
+PointMap::PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, int64_t num_vertices)
+    : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices){
+}
+
 void
 PointMap::InputInit() {
     array_vector_ = input().array_vector;
     VegaCircle2d vega_circle_2d(input().vega);
     point_vega_ = vega_circle_2d;
-
 }
 
 void
@@ -137,11 +140,11 @@ PointMap::Shader() {
     glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b, point_format.color.a);
 }
 
-std::shared_ptr<arrow::Array>
+std::shared_ptr<uint8_t >
 PointMap::Render(){
-    InputInit();
+//    InputInit();
     WindowsInit(point_vega_.window_params());
-    DataInit();
+//    DataInit();
     Shader();
     Draw();
     Finalize();
