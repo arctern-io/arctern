@@ -54,8 +54,8 @@ class General2D {
     const arrow::ArrayVector&
     array_vector() const { return array_vector_; }
 
-    const int
-    output_image_size() const { return output_image_size_; }
+    int
+    output_image_size() { return output_image_size_; }
 
  protected:
     Input input_;
@@ -64,7 +64,7 @@ class General2D {
     unsigned char *output_image_;
     int output_image_size_;
 
-#ifdef CPU_ONLY
+#ifndef USE_GPU
  public:
     void
     set_window(WindowCPU2DPtr window) { window_ = window; }

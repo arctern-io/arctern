@@ -1,12 +1,11 @@
-#include <gtest/gtest.h>
-#include <iostream>
-#include "render/arrow/render_api.h"
-#include "render/2d/pointmap.h"
+#include "gtest/gtest.h"
+#include "arrow/render_api.h"
+#include "render/2d/heatmap.h"
 
 using namespace zilliz::render;
 
-TEST(TWOD_TEST, POINTMAP_TEST) {
-    PointMap point_map;
+TEST(TWOD_TEST, HEATMAP_TEST) {
+    HeatMap<uint32_t > heat_map;
 
     auto bit_map = new uint8_t{0xff};
 
@@ -38,7 +37,20 @@ TEST(TWOD_TEST, POINTMAP_TEST) {
     auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5 * sizeof(uint32_t), buffers2);
     auto array2 = arrow::MakeArray(array_data2);
 
-    get_pointmap(array1, array2);
-}
+    auto bit_map3 = new uint8_t{0xff};
 
+    auto buff_data3 = (uint32_t* )malloc(5 * sizeof(uint32_t));
+    for (int i = 0; i < 5; ++i) {
+        buff_data3[i] = i + 50;
+    }
+    auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
+    auto buffer31 = std::make_shared<arrow::Buffer>((uint8_t *)buff_data3, 5 * sizeof(uint32_t));
+    std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
+    buffers3.emplace_back(buffer30);
+    buffers3.emplace_back(buffer31);
+    auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5 * sizeof(uint32_t), buffers3);
+    auto array3 = arrow::MakeArray(array_data3);
+
+    get_heatmap(array1, array2, array3);
+}
 

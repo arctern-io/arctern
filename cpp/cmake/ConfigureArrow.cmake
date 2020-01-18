@@ -41,6 +41,7 @@ if(NOT PYTHONINTERP_FOUND)
     message("connot find python interpreter")
     exit()
 endif()
+message("PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
 
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     "import pyarrow; print(pyarrow.get_include());"

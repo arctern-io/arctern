@@ -1,12 +1,20 @@
+#include <iostream>
+#include <memory>
+#include <cmath>
+
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
 #include "render/utils/color/color_gradient.h"
-#include "render/2d/heatmap.h"
+#include "render/2d/set_color.h"
 
 namespace zilliz {
 namespace render {
+
+unsigned int
+iDivUp(const unsigned int &a, const unsigned int &b) { return (a + b - 1) / b; }
+
 
 template<typename T>
 __global__ void SetCountValue_gpu(float *out,
@@ -19,7 +27,9 @@ __global__ void SetCountValue_gpu(float *out,
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     for (; i < num; i += blockDim.x * gridDim.x) {
         uint32_t vertice_x = in_x[i];
-        uint32_t vertice_y = in_y[i];
+        uint32_t vertice_y = height - in_y[i] - 1;
+        if (vertice_y > height || vertice_x > width)
+            continue;
         int64_t index = vertice_y * width + vertice_x;
         if (index >= width * height)
             continue;
@@ -46,6 +56,7 @@ HeatMapArray_gpu(float *in_count, float *out_count, float *kernel, int64_t kerne
             }
         }
     }
+
 }
 
 __global__ void
@@ -73,19 +84,32 @@ MeanKernel_gpu(float *img_in, float *img_out, int64_t r, int64_t img_w, int64_t 
 }
 
 template<typename T>
-void HeatMap<T>::set_colors_gpu() {
-    WindowParams window_params = heatmap_vega_.window_params();
+void set_colors_gpu(float *colors,
+                    std::shared_ptr<uint32_t> input_x,
+                    std::shared_ptr<uint32_t> input_y,
+                    std::shared_ptr<T> input_c,
+                    int64_t num,
+                    VegaHeatMap &vega_heat_map) {
+    WindowParams window_params = vega_heat_map.window_params();
     int64_t width = window_params.width();
     int64_t height = window_params.height();
     int64_t window_size = width * height;
 
     float *pix_count;
+    uint32_t *in_x, *in_y;
+    T *in_c;
     cudaMalloc((void **) &pix_count, window_size * sizeof(float));
+    cudaMalloc((void **) &in_x, num * sizeof(uint32_t));
+    cudaMalloc((void **) &in_y, num * sizeof(uint32_t));
+    cudaMalloc((void **) &in_c, num * sizeof(T));
     cudaMemset(pix_count, 0, window_size * sizeof(float));
-    SetCountValue_gpu < T > << <256, 1024 >>
-        > (pix_count, vertices_x_.get(), vertices_y_.get(), count_.get(), num_vertices_, width, height);
+    cudaMemcpy(in_x, input_x.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_y, input_y.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_c, input_c.get(), num * sizeof(T), cudaMemcpyHostToDevice);
+    SetCountValue_gpu<T> << < 256, 1024 >>
+        > (pix_count, in_x, in_y, in_c, num, width, height);
 
-    double scale = heatmap_vega_.map_scale() * 0.4;
+    double scale = vega_heat_map.map_scale() * 0.4;
     int d = pow(2, scale);
     int64_t kernel_size = d * 2 + 3;
 
@@ -124,19 +148,18 @@ void HeatMap<T>::set_colors_gpu() {
     }
     ColorGradient color_gradient;
     color_gradient.createDefaultHeatMapGradient();
-    colors_ = (float*) malloc(window_size * 4 * sizeof(float));
 
     int64_t c_offset = 0;
     for (auto j = 0; j < window_size; j++) {
         float value = host_count[j] / max_pix;
         float color_r, color_g, color_b;
         color_gradient.getColorAtValue(value, color_r, color_g, color_b);
-        colors_[c_offset++] = color_r;
-        colors_[c_offset++] = color_g;
-        colors_[c_offset++] = color_b;
-        colors_[c_offset++] = value;
+        colors[c_offset++] = color_r;
+        colors[c_offset++] = color_g;
+        colors[c_offset++] = color_b;
+        colors[c_offset++] = value;
     }
-    
+
     free(kernel);
     free(host_count);
     cudaFree(pix_count);
@@ -147,3 +170,15 @@ void HeatMap<T>::set_colors_gpu() {
 
 } //namespace render
 } //namespace
+
+#define TEMPLATE_GEN_PREFIX
+#define T uint32_t
+#include "render/2d/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+#define T float
+#include "render/2d/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+#define T double
+#include "render/2d/set_color.inl"

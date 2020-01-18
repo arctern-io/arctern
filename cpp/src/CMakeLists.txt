@@ -3,13 +3,18 @@ set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap.cpp
-        #        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/set_color.cpp
+#        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+        )
+set(window_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
         )
 
-if (CPU_ONLY)
-    set(window_src render/window/window_osmesa/window_cpu_2d.cpp)
+if (USE_GPU)
+    set(window_src render/window/window_egl/window_gpu_2d.cpp
+            render/2d/cuda/heatmap.cu)
 else ()
-    set(window_src render/window/window_egl/window_gpu_2d.cpp)
+    set(window_src render/window/window_osmesa/window_cpu_2d.cpp)
 endif ()
 
 set(util_src
@@ -20,7 +25,7 @@ set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color_gradient.cpp
         )
 set(arrow_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/arrow/render_api.cpp
+        arrow/render_api.cpp
         )
 
 set(render_src
@@ -54,22 +59,23 @@ add_library(
         zgeo SHARED
         ${gis_cpp_src}
 )
-add_dependencies(GIS miniz_ep)
+add_dependencies(GIS miniz_ep gdal_ep rapidjson_ep)
+add_dependencies(zgeo miniz_ep gdal_ep rapidjson_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
-if (CPU_ONLY)
+if (USE_GPU)
     target_link_libraries(GIS
-            GLU
-            OSMesa
+            GL
+            EGL
+            cudart
             arrow
             pthread
             miniz
             )
 else ()
     target_link_libraries(GIS
-            GL
-            EGL
-            cudart
+            GLU
+            OSMesa
             arrow
             pthread
             miniz

@@ -55,7 +55,7 @@ PointMap::Draw() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_POINT_SMOOTH);
 
-#ifdef CPU_ONLY
+#ifndef USE_GPU
     glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1, 1);
 
     glPointSize(point_vega_.circle_params().radius);
@@ -171,7 +171,7 @@ PointMap::Render() {
 //    InputInit();
     WindowsInit(point_vega_.window_params());
 //    DataInit();
-#ifndef CPU_ONLY
+#ifdef USE_GPU
     Shader();
 #endif
     Draw();
