@@ -16,7 +16,7 @@ namespace gis {
 namespace cpp {
 namespace gemetry {
 
-std::shared_ptr<arrow::Array>
+std::shared_ptr<std::vector<std::string>>
 ST_point(const double *const ptr_x, const double *const ptr_y, const int64_t len);
 
 std::shared_ptr<arrow::Array>

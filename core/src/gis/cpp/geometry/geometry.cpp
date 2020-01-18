@@ -8,12 +8,11 @@ namespace gemetry {
 
 typedef boost::geometry::model::d2::point_xy<double> point_2d;
 
-std::shared_ptr<arrow::Array>
+std::shared_ptr<std::vector<std::string>>
 ST_point(const double *const ptr_x,
          const double *const ptr_y,
          const int64_t len) {
-  std::shared_ptr<arrow::Array> point_arr;
-  arrow::StringBuilder builder;
+  auto point_arr = std::make_shared<std::vector<std::string>>();
 
 //  for (int64_t i = 0; i < len; i++) {
 //    std::string point_wkt_str = boost::lexical_cast<std::string>(
@@ -24,9 +23,10 @@ ST_point(const double *const ptr_x,
     auto point2d = point_2d(*((double *) (ptr_x + i)), *((double *) (ptr_y + i)));
     auto point_wkt = boost::geometry::wkt(point2d);
     auto point_wkt_str = boost::lexical_cast<std::string>(point_wkt);
-    CHECK_STATUS(builder.Append(point_wkt_str));
+    // CHECK_STATUS(builder.Append(point_wkt_str));
+    point_arr->push_back(point_wkt_str);
   }
-  CHECK_STATUS(builder.Finish(&point_arr));
+  // CHECK_STATUS(builder.Finish(&point_arr));
 
   return point_arr;
 }
@@ -36,7 +36,15 @@ ST_point(std::shared_ptr<arrow::Array> ptr_x, std::shared_ptr<arrow::Array> ptr_
   auto double_ptr_x = reinterpret_cast<const double *>(ptr_x->data()->buffers[1].get()->data());
   auto double_ptr_y = reinterpret_cast<const double *>(ptr_y->data()->buffers[1].get()->data());
   auto length = ptr_x->length();
-  return ST_point( double_ptr_x,double_ptr_y,length);
+
+  auto point_arr = ST_point( double_ptr_x,double_ptr_y,length);
+
+  arrow::StringBuilder builder;
+  builder.AppendValues(*point_arr);
+  std::shared_ptr<arrow::Array> array;
+  builder.Finish(&array);
+
+  return array;
 }
 
 } // geometry
