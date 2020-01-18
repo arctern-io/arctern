@@ -9,10 +9,10 @@ namespace render {
 class WindowParams {
  public:
 
-    const float
+    const float&
     width() const { return width_;}
 
-    const float
+    const float&
     height() const { return height_;}
 
     float&
