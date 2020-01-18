@@ -15,7 +15,7 @@ if (USE_GPU)
     add_compile_definitions(USE_GPU)
 endif ()
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
