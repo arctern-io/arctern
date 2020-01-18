@@ -1,11 +1,7 @@
-from distutils.core import setup
-import os
-
-real_path = os.path.realpath(__file__)
-dir_path = os.path.dirname(real_path)
+from setuptools import find_packages, setup
 
 setup(
-    name = "zilliz_pyspark",
-    py_modules = ['register'],
+    name="zilliz_pyspark",
+    packages=find_packages(),
 )
 
