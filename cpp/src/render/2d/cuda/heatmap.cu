@@ -1,6 +1,3 @@
-//#include "render/2d/set_color.h"
-//#include "render/2d/cuda/heatmap.cuh"
-
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -24,25 +21,24 @@ __global__ void SetCountValue_gpu(float *out,
                                   uint32_t *in_x,
                                   uint32_t *in_y,
                                   T *in_c,
-                                  int& nn,
                                   int64_t num,
                                   int64_t width,
                                   int64_t height) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     for (; i < num; i += blockDim.x * gridDim.x) {
         uint32_t vertice_x = in_x[i];
-        uint32_t vertice_y = in_y[i];
+        uint32_t vertice_y = height - in_y[i] - 1;
+        if (vertice_y > height || vertice_x > width)
+            continue;
         int64_t index = vertice_y * width + vertice_x;
-//        if (index >= width * height)
-//            continue;
-//        out[index] += in_c[i];
-        in_c[i] = 0;
-        nn = index;
+        if (index >= width * height)
+            continue;
+        out[index] += in_c[i];
     }
 }
 
 __global__ void
-HeatMapArray_gpu(float *in_count, float *out_count, int& nn, float *kernel, int64_t kernel_size, int64_t width, int64_t height) {
+HeatMapArray_gpu(float *in_count, float *out_count, float *kernel, int64_t kernel_size, int64_t width, int64_t height) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int count_index = y * width + x;
@@ -60,7 +56,7 @@ HeatMapArray_gpu(float *in_count, float *out_count, int& nn, float *kernel, int6
             }
         }
     }
-    nn = count_index;
+
 }
 
 __global__ void
@@ -87,8 +83,6 @@ MeanKernel_gpu(float *img_in, float *img_out, int64_t r, int64_t img_w, int64_t 
     }
 }
 
-
-
 template<typename T>
 void set_colors_gpu(float *colors,
                     std::shared_ptr<uint32_t> input_x,
@@ -101,16 +95,19 @@ void set_colors_gpu(float *colors,
     int64_t height = window_params.height();
     int64_t window_size = width * height;
 
-    int nn =0;
     float *pix_count;
+    uint32_t *in_x, *in_y;
+    T *in_c;
     cudaMalloc((void **) &pix_count, window_size * sizeof(float));
+    cudaMalloc((void **) &in_x, num * sizeof(uint32_t));
+    cudaMalloc((void **) &in_y, num * sizeof(uint32_t));
+    cudaMalloc((void **) &in_c, num * sizeof(T));
     cudaMemset(pix_count, 0, window_size * sizeof(float));
+    cudaMemcpy(in_x, input_x.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_y, input_y.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_c, input_c.get(), num * sizeof(T), cudaMemcpyHostToDevice);
     SetCountValue_gpu<T> << < 256, 1024 >>
-        > (pix_count, input_x.get(), input_y.get(), input_c.get(), nn, num, width, height);
-
-    float *test1 = (float *) malloc(window_size * sizeof(float));
-    memset(test1, 1, window_size * sizeof(float));
-    cudaMemcpy(test1, pix_count, window_size * sizeof(float), cudaMemcpyDeviceToHost);
+        > (pix_count, in_x, in_y, in_c, num, width, height);
 
     double scale = vega_heat_map.map_scale() * 0.4;
     int d = pow(2, scale);
@@ -130,10 +127,7 @@ void set_colors_gpu(float *colors,
     const dim3 threadBlock(blockW, blockH);
     const dim3 grid(iDivUp(width, blockW), iDivUp(height, blockH));
     HeatMapArray_gpu << < grid, threadBlock >>
-        > (pix_count, dev_count, nn, dev_kernel, kernel_size, width, height);
-
-    float *test2 = (float *) malloc(kernel_size * kernel_size * sizeof(float));
-    cudaMemcpy(test2, pix_count, kernel_size * kernel_size * sizeof(float), cudaMemcpyDeviceToHost);
+        > (pix_count, dev_count, dev_kernel, kernel_size, width, height);
 
     float *color_count;
     cudaMalloc((void **) &color_count, window_size * sizeof(float));
@@ -154,7 +148,6 @@ void set_colors_gpu(float *colors,
     }
     ColorGradient color_gradient;
     color_gradient.createDefaultHeatMapGradient();
-    colors = (float *) malloc(window_size * 4 * sizeof(float));
 
     int64_t c_offset = 0;
     for (auto j = 0; j < window_size; j++) {
@@ -178,16 +171,14 @@ void set_colors_gpu(float *colors,
 } //namespace render
 } //namespace
 
-//#define TEMPLATE_GEN_PREFIX
-//#define T uint32_t
-//#include "render/2d/set_color.inl"
-//
-//#define TEMPLATE_GEN_PREFIX
-//#define T float
-//#include "render/2d/set_color.inl"
-//
-//#define TEMPLATE_GEN_PREFIX
-//#define T double
-//#include "render/2d/set_color.inl"
+#define TEMPLATE_GEN_PREFIX
+#define T uint32_t
+#include "render/2d/set_color.inl"
 
+#define TEMPLATE_GEN_PREFIX
+#define T float
+#include "render/2d/set_color.inl"
 
+#define TEMPLATE_GEN_PREFIX
+#define T double
+#include "render/2d/set_color.inl"

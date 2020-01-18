@@ -4,7 +4,7 @@ set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/set_color.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+#        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
@@ -24,7 +24,7 @@ set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color_gradient.cpp
         )
 set(arrow_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/arrow/render_api.cpp
+        arrow/render_api.cpp
         )
 
 set(render_src

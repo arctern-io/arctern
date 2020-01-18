@@ -27,7 +27,9 @@ void SetCountValue_cpu(float *out,
                        int64_t height) {
     for (int i = 0; i < num; i++) {
         uint32_t vertice_x = in_x[i];
-        uint32_t vertice_y = in_y[i];
+        uint32_t vertice_y = height - in_y[i] - 1;
+        if (vertice_y > height || vertice_x > width)
+            continue;
         int64_t index = vertice_y * width + vertice_x;
         if (index >= width * height)
             continue;
@@ -118,18 +120,18 @@ inline void set_colors(float *colors,
 } //namespace render
 } //namespace zilliz
 
-//#ifndef CPU_ONLY
-//
-//#define TEMPLATE_GEN_PREFIX extern
-//#define T uint32_t
-//#include "set_color.inl"
-//
-//#define TEMPLATE_GEN_PREFIX extern
-//#define T float
-//#include "set_color.inl"
-//
-//#define TEMPLATE_GEN_PREFIX extern
-//#define T double
-//#include "set_color.inl"
-//
-//#endif
+#ifndef CPU_ONLY
+
+#define TEMPLATE_GEN_PREFIX extern
+#define T uint32_t
+#include "set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX extern
+#define T float
+#include "set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX extern
+#define T double
+#include "set_color.inl"
+
+#endif
