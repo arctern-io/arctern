@@ -2,7 +2,7 @@
 namespace zilliz {
 namespace render {
 
-std::pair<std::shared_ptr<uint8_t>, int64_t>
+std::pair<uint8_t*, int64_t>
 pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num) {
     PointMap point_map(arr_x, arr_y, num);
     std::string vega = "{\n"
@@ -47,7 +47,7 @@ pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num) {
 }
 
 template<typename T>
-std::pair<std::shared_ptr<uint8_t>, int64_t>
+std::pair<uint8_t*, int64_t>
 heatmap(uint32_t* arr_x,
         uint32_t* arr_y,
         T* arr_c,

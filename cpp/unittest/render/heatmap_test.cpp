@@ -20,7 +20,7 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
     std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
     buffers1.emplace_back(buffer0);
     buffers1.emplace_back(buffer1);
-    auto array_data1 = arrow::ArrayData::Make(data_type, 5 * sizeof(uint32_t), buffers1);
+    auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
     auto array1 = arrow::MakeArray(array_data1);
 
     auto bit_map2 = new uint8_t{0xff};
@@ -34,7 +34,7 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
     std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
     buffers2.emplace_back(buffer20);
     buffers2.emplace_back(buffer21);
-    auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5 * sizeof(uint32_t), buffers2);
+    auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
     auto array2 = arrow::MakeArray(array_data2);
 
     auto bit_map3 = new uint8_t{0xff};
@@ -48,7 +48,7 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
     std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
     buffers3.emplace_back(buffer30);
     buffers3.emplace_back(buffer31);
-    auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5 * sizeof(uint32_t), buffers3);
+    auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers3);
     auto array3 = arrow::MakeArray(array_data3);
 
     get_heatmap(array1, array2, array3);

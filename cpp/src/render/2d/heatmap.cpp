@@ -30,6 +30,13 @@ HeatMap<T>::HeatMap(uint32_t* input_x,
 }
 
 template<typename T>
+HeatMap<T>::~HeatMap() {
+    free(vertices_x_);
+    free(vertices_y_);
+    free(colors_);
+}
+
+template<typename T>
 void
 HeatMap<T>::InputInit() {
     array_vector_ = input().array_vector;
@@ -182,7 +189,7 @@ void HeatMap<T>::Shader() {
 }
 
 template<typename T>
-std::shared_ptr<uint8_t>
+uint8_t*
 HeatMap<T>::Render() {
 //    InputInit();
     WindowsInit(heatmap_vega_.window_params());

@@ -9,10 +9,12 @@ namespace render {
 
 class General2D {
  public:
+    ~General2D();
+
     virtual void
     DataInit() = 0;
 
-    virtual std::shared_ptr<uint8_t >
+    virtual uint8_t*
     Render() = 0;
 
     virtual void
@@ -32,7 +34,7 @@ class General2D {
     void
     Finalize();
 
-    std::shared_ptr<uint8_t >
+    uint8_t*
     Output();
 
     void

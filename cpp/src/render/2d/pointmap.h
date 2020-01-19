@@ -16,7 +16,7 @@ class PointMap : public General2D {
     void
     DataInit() final;
 
-    std::shared_ptr<uint8_t >
+    uint8_t*
     Render() final;
 
     void
