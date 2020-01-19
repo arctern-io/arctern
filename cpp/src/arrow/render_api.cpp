@@ -17,10 +17,10 @@ get_pointmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> 
     int64_t num_vertices = x_length / sizeof(uint32_t);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
-    auto y_data = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
-    auto input_x = std::shared_ptr<uint32_t>(x_data);
-    auto input_y = std::shared_ptr<uint32_t>(y_data);
+    auto input_x = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
+    auto input_y = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
+//    auto input_x = std::shared_ptr<uint32_t>(x_data);
+//    auto input_y = std::shared_ptr<uint32_t>(y_data);
 
     auto output = pointmap(input_x, input_y, num_vertices);
 
@@ -55,28 +55,28 @@ get_heatmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> a
     int64_t num_vertices = x_length / sizeof(uint32_t);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
-    auto y_data = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
-    auto input_x = std::shared_ptr<uint32_t>(x_data);
-    auto input_y = std::shared_ptr<uint32_t>(y_data);
+    auto input_x = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
+    auto input_y = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
+//    auto input_x = std::shared_ptr<uint32_t>(x_data);
+//    auto input_y = std::shared_ptr<uint32_t>(y_data);
 
     std::pair<std::shared_ptr<uint8_t >,int64_t> output;
     switch(c_type) {
         case arrow::Type::FLOAT : {
-            auto c_data_float = (float *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_float = std::shared_ptr<float>(c_data_float);
+            auto input_c_float = (float *) arr_c->data()->GetValues<uint8_t>(1);
+//            auto input_c_float = std::shared_ptr<float>(c_data_float);
             output = heatmap<float>(input_x, input_y, input_c_float, num_vertices);
             break;
         }
         case arrow::Type::DOUBLE : {
-            auto c_data_double = (double *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_double = std::shared_ptr<double>(c_data_double);
+            auto input_c_double = (double *) arr_c->data()->GetValues<uint8_t>(1);
+//            auto input_c_double = std::shared_ptr<double>(c_data_double);
             output = heatmap<double>(input_x, input_y, input_c_double, num_vertices);
             break;
         }
         case arrow::Type::UINT32 : {
-            auto c_data_uint32 = (uint32_t *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_uint32 = std::shared_ptr<uint32_t>(c_data_uint32);
+            auto input_c_uint32 = (uint32_t *) arr_c->data()->GetValues<uint8_t>(1);
+//            auto input_c_uint32 = std::shared_ptr<uint32_t>(c_data_uint32);
             output = heatmap<uint32_t >(input_x, input_y, input_c_uint32, num_vertices);
             break;
         }

@@ -12,7 +12,7 @@ PointMap::PointMap()
     : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {
 }
 
-PointMap::PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t> input_y, int64_t num_vertices)
+PointMap::PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices) {
 }
 
@@ -40,10 +40,8 @@ PointMap::DataInit() {
     num_vertices_ = x_length / sizeof(uint32_t);
 
     //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t *) x_array->data()->GetValues<uint8_t>(1);
-    auto y_data = (uint32_t *) y_array->data()->GetValues<uint8_t>(1);
-    vertices_x_ = std::shared_ptr<uint32_t>(x_data);
-    vertices_y_ = std::shared_ptr<uint32_t>(y_data);
+    vertices_x_ = (uint32_t *) x_array->data()->GetValues<uint8_t>(1);
+    vertices_y_ = (uint32_t *) y_array->data()->GetValues<uint8_t>(1);
 }
 
 void
@@ -69,8 +67,8 @@ PointMap::Draw() {
     std::vector<int32_t> vertices(num_vertices_ * 2);
 
     for (auto i = 0; i < num_vertices_; i++) {
-        vertices[offset++] = vertices_x_.get()[i];
-        vertices[offset++] = vertices_y_.get()[i];
+        vertices[offset++] = vertices_x_[i];
+        vertices[offset++] = vertices_y_[i];
     }
     glVertexPointer(2, GL_INT, 0, &vertices[0]);
 
@@ -148,11 +146,11 @@ PointMap::Shader() {
     glBindVertexArray(VAO_);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[0]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(uint32_t), vertices_x_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(uint32_t), vertices_x_, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(uint32_t), nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[1]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(uint32_t), vertices_y_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(uint32_t), vertices_y_, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(uint32_t), nullptr);
 
     glEnableVertexAttribArray(0);
