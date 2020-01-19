@@ -39,17 +39,17 @@ void SetCountValue_cpu(float *out,
 
 template<typename T>
 void set_colors_gpu(float *colors,
-                    std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> input_c,
+                    uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* input_c,
                     int64_t num,
                     VegaHeatMap &vega_heat_map);
 
 template<typename T>
 void set_colors_cpu(float *colors,
-                    std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> input_c,
+                    uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* input_c,
                     int64_t num,
                     VegaHeatMap &vega_heat_map) {
     WindowParams window_params = vega_heat_map.window_params();
@@ -59,7 +59,7 @@ void set_colors_cpu(float *colors,
 
     float *pix_count = (float *) malloc(window_size * sizeof(float));
     memset(pix_count, 0, window_size * sizeof(float));
-    SetCountValue_cpu<T>(pix_count, input_x.get(), input_y.get(), input_c.get(), num, width, height);
+    SetCountValue_cpu<T>(pix_count, input_x, input_y, input_c, num, width, height);
 
     double scale = vega_heat_map.map_scale() * 0.4;
     int d = pow(2, scale);
@@ -105,9 +105,9 @@ void set_colors_cpu(float *colors,
 
 template<typename T>
 inline void set_colors(float *colors,
-                       std::shared_ptr<uint32_t> input_x,
-                       std::shared_ptr<uint32_t> input_y,
-                       std::shared_ptr<T> input_c,
+                       uint32_t* input_x,
+                       uint32_t* input_y,
+                       T* input_c,
                        int64_t num,
                        VegaHeatMap &vega_heat_map) {
 #ifndef USE_GPU

@@ -13,9 +13,9 @@ namespace zilliz {
 namespace render {
 
 TEMPLATE_GEN_PREFIX template void set_colors_gpu<T>(float *colors,
-                                                 std::shared_ptr<uint32_t> input_x,
-                                                 std::shared_ptr<uint32_t> input_y,
-                                                 std::shared_ptr<T> input_c,
+                                                 uint32_t* input_x,
+                                                 uint32_t* input_y,
+                                                 T* input_c,
                                                  int64_t num,
                                                  VegaHeatMap &vega_heat_map);
 } //render
