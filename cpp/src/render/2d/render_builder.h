@@ -6,11 +6,11 @@ namespace zilliz {
 namespace render {
 
 std::pair<std::shared_ptr<uint8_t>, int64_t>
-pointmap(std::shared_ptr<uint32_t > arr_x, std::shared_ptr<uint32_t > arr_y, int64_t num_vertices);
+pointmap(uint32_t* arr_x, uint32_t arr_y, int64_t num_vertices);
 
 template<typename T>
 std::pair<std::shared_ptr<uint8_t>, int64_t>
-heatmap(std::shared_ptr<uint32_t > arr_x, std::shared_ptr<uint32_t > arr_y, std::shared_ptr<T> arr_c, int64_t num_vertices);
+heatmap(uint32_t arr_x, uint32_t arr_y, T* arr_c, int64_t num_vertices);
 
 } //namespace render
 } //namespace zilliz

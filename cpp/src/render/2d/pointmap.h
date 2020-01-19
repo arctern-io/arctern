@@ -11,7 +11,7 @@ class PointMap : public General2D {
  public:
     PointMap();
 
-    PointMap(std::shared_ptr<uint32_t> input_x, std::shared_ptr<uint32_t > input_y, int64_t num_vertices);
+    PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
 
     void
     DataInit() final;
@@ -29,10 +29,10 @@ class PointMap : public General2D {
     InputInit() final;
 
  public:
-    std::shared_ptr<uint32_t >
+    uint32_t*
     mutable_vertices_x() { return vertices_x_; }
 
-    std::shared_ptr<uint32_t >
+    uint32_t*
     mutable_vertices_y() { return vertices_y_; }
 
     VegaCircle2d&
@@ -44,8 +44,8 @@ class PointMap : public General2D {
  private:
     unsigned int VAO_;
     unsigned int VBO_[2];
-    std::shared_ptr<uint32_t > vertices_x_;
-    std::shared_ptr<uint32_t > vertices_y_;
+    uint32_t* vertices_x_;
+    uint32_t* vertices_y_;
     size_t num_vertices_;
     VegaCircle2d point_vega_;
 

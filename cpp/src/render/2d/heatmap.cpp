@@ -22,9 +22,9 @@ HeatMap<T>::HeatMap()
 }
 
 template<typename T>
-HeatMap<T>::HeatMap(std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> count,
+HeatMap<T>::HeatMap(uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* count,
                     int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), count_(count), num_vertices_(num_vertices) {
 }
@@ -48,16 +48,15 @@ HeatMap<T>::DataInit() {
     colors_ = (float *) malloc(window_size * 4 * sizeof(float));
     set_colors(colors_, vertices_x_, vertices_y_, count_, num_vertices_, heatmap_vega_);
 
-    uint32_t *input_x = (uint32_t *) malloc(window_size * sizeof(uint32_t));
-    uint32_t *input_y = (uint32_t *) malloc(window_size * sizeof(uint32_t));
+    vertices_x_ = (uint32_t *) malloc(window_size * sizeof(uint32_t));
+    vertices_y_ = (uint32_t *) malloc(window_size * sizeof(uint32_t));
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            input_x[i * width + j] = j;
-            input_y[i * width + j] = height - i - 1;
+            vertices_x_[i * width + j] = j;
+            vertices_y_[i * width + j] = height - i - 1;
         }
     }
-    vertices_x_ = std::shared_ptr<uint32_t>(input_x);
-    vertices_y_ = std::shared_ptr<uint32_t>(input_y);
+
     num_vertices_ = window_size;
 }
 
@@ -83,8 +82,8 @@ void HeatMap<T>::Draw() {
     int offset = 0;
     std::vector<int32_t> vertices(num_vertices_ * 2);
     for (auto i = 0; i < num_vertices_; i++) {
-        vertices[offset++] = vertices_x_.get()[i];
-        vertices[offset++] = vertices_y_.get()[i];
+        vertices[offset++] = vertices_x_[i];
+        vertices[offset++] = vertices_y_[i];
     }
     glColorPointer(4, GL_FLOAT, 0, colors_);
     glVertexPointer(2, GL_INT, 0, &vertices[0]);
@@ -151,9 +150,9 @@ void HeatMap<T>::Shader() {
 
     glBindVertexArray(VAO_);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[0]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_x_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_x_, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[1]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_y_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_y_, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[2]);
     glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 4 * sizeof(float), colors_, GL_STATIC_DRAW);
 
