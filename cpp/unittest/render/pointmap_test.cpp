@@ -5,7 +5,7 @@
 
 using namespace zilliz::render;
 
-TEST(TWOD_TEST, POINTMAP_TEST) {
+TEST(TWOD_TEST, POIN_TEST) {
     PointMap point_map;
 
     auto bit_map = new uint8_t{0xff};
@@ -21,7 +21,7 @@ TEST(TWOD_TEST, POINTMAP_TEST) {
     std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
     buffers1.emplace_back(buffer0);
     buffers1.emplace_back(buffer1);
-    auto array_data1 = arrow::ArrayData::Make(data_type, 5 * sizeof(uint32_t), buffers1);
+    auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
     auto array1 = arrow::MakeArray(array_data1);
 
     auto bit_map2 = new uint8_t{0xff};
@@ -35,7 +35,7 @@ TEST(TWOD_TEST, POINTMAP_TEST) {
     std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
     buffers2.emplace_back(buffer20);
     buffers2.emplace_back(buffer21);
-    auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5 * sizeof(uint32_t), buffers2);
+    auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
     auto array2 = arrow::MakeArray(array_data2);
 
     get_pointmap(array1, array2);

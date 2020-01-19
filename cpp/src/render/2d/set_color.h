@@ -84,7 +84,6 @@ void set_colors_cpu(float *colors,
     }
     ColorGradient color_gradient;
     color_gradient.createDefaultHeatMapGradient();
-//    colors = (float *) malloc(window_size * 4 * sizeof(float));
 
     int64_t c_offset = 0;
     for (auto j = 0; j < window_size; j++) {

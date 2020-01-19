@@ -56,7 +56,6 @@ HeatMapArray_gpu(float *in_count, float *out_count, float *kernel, int64_t kerne
             }
         }
     }
-
 }
 
 __global__ void
@@ -166,6 +165,9 @@ void set_colors_gpu(float *colors,
     cudaFree(dev_kernel);
     cudaFree(dev_count);
     cudaFree(color_count);
+    cudaFree(in_x);
+    cudaFree(in_y);
+    cudaFree(in_c);
 }
 
 } //namespace render
