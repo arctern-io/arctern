@@ -14,6 +14,9 @@
 namespace zilliz {
 namespace render {
 
+General2D::~General2D() {
+    free(buffer_);
+}
 
 void
 General2D::WindowsInit(WindowParams window_params) {
@@ -59,7 +62,7 @@ General2D::Finalize() {
 #endif
 }
 
-std::shared_ptr<uint8_t>
+uint8_t*
 General2D::Output() {
     // export image to memory
     ExportImage();
@@ -76,7 +79,7 @@ General2D::Output() {
         }
     }
 
-    return std::shared_ptr<uint8_t>(output_image_);
+    return output_image_;
 }
 
 void

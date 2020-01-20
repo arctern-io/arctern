@@ -16,10 +16,12 @@ class HeatMap : public General2D {
             T* count,
             int64_t num_vertices);
 
+    ~HeatMap();
+
     void
     DataInit() final;
 
-    std::shared_ptr<uint8_t>
+    uint8_t*
     Render() final;
 
     void

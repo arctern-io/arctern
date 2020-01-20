@@ -164,7 +164,7 @@ PointMap::Shader() {
     glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b, point_format.color.a);
 }
 
-std::shared_ptr<uint8_t>
+uint8_t*
 PointMap::Render() {
 //    InputInit();
     WindowsInit(point_vega_.window_params());
