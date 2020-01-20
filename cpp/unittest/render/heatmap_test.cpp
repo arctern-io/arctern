@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "arrow/render_api.h"
-#include "render/2d/heatmap.h"
+#include "render/2d/heatmap/heatmap.h"
 
 using namespace zilliz::render;
 
