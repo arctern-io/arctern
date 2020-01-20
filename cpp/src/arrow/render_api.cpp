@@ -23,7 +23,7 @@ get_pointmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> 
     auto output_length = output.second;
     auto output_data = output.first;
     auto bit_map = (uint8_t*)malloc(output_length);
-    memset(bit_map, output_length, 0xff);
+    memset(bit_map, 0xff, output_length);
     auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_length);
     auto buffer1 = std::make_shared<arrow::Buffer>(output_data, output_length);
     auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();

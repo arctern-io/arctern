@@ -43,7 +43,9 @@ pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num) {
     VegaCircle2d vega_circle_2d(vega);
     point_map.mutable_point_vega() = vega_circle_2d;
 
-    return std::make_pair(point_map.Render(), point_map.output_image_size());
+    auto render = point_map.Render();
+    auto ret_size = point_map.output_image_size();
+    return std::make_pair(render, ret_size);
 }
 
 template<typename T>
