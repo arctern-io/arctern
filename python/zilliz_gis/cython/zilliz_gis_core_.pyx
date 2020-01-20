@@ -2,7 +2,7 @@
 
 from pyarrow.lib cimport *
 
-cimport zilliz_gis_core_ as zilliz_gis_core_pxd
+cimport zilliz_gis_core__ as zilliz_gis_core_pxd
 
 def make_point(object arr_x, object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.make_point(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y)))
