@@ -71,6 +71,7 @@ if __name__ == "__main__":
 
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
+    gen_curve_z()
     run_curve_z(spark)
 
     spark.stop()
