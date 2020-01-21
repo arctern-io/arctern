@@ -40,7 +40,7 @@ set(gis_src
         )
 
 set(gis_cpp_src
-        gis/cpp/geometry/geometry.cpp
+        gis/cpu/geometry.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -73,6 +73,7 @@ if (CPU_ONLY)
 else ()
     target_link_libraries(GIS
             GL
+            gdal
             EGL
             cudart
             arrow
