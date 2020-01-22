@@ -47,9 +47,9 @@ assert geometries[0] == "POLYGON"
 assert geometries[1] == "POLYGON"
 
 
-geometries = zilliz_gis_core.ST_MakeValid(pyarrow.array(pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 9))"])))
+geometries = zilliz_gis_core.ST_MakeValid(pyarrow.array(pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])))
 
-print(geometries[0])
+geometries[0] == "GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))"
 
 
 geometries = zilliz_gis_core.ST_SimplifyPreserveTopology(pyarrow.array(pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","POLYGON ((1 1,1 2,2 2,2 1,1 1))"])),10000)

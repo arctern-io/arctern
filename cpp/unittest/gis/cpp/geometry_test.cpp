@@ -359,7 +359,8 @@ TEST(geometry_test, test_ST_MakeValid){
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
-
+  
+  std::cout << polygon1.exportToWkt() <<std::endl;
   string_builder.Append(polygon1.exportToWkt());
   string_builder.Finish(&polygons);
   
@@ -421,4 +422,238 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology){
   
   ASSERT_EQ(geometries_arr_str->GetString(0),"POLYGON ((2 1,3 1,2 8,2 1))");
   ASSERT_EQ(geometries_arr_str->GetString(1),"POINT (2 3)");
+}
+
+TEST(geometry_test, ST_Contains_test) {
+std::shared_ptr<arrow::Array> geo_test;
+arrow::StringBuilder builder1;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
+builder1.Append("POINT(2 2)");
+builder1.Append("POINT(200 2)");
+builder1.Finish(&geo_test);
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder2;
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Finish(&geo);
+
+auto res = ST_Contains(geo, geo_test);
+
+arrow::BooleanBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Intersects_test) {
+std::shared_ptr<arrow::Array> geo_test;
+arrow::StringBuilder builder1;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
+builder1.Append("LINESTRING(2 2,10 2)");
+builder1.Append("LINESTRING(9 2,10 2)");
+builder1.Finish(&geo_test);
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder2;
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Finish(&geo);
+
+auto res = ST_Intersects(geo, geo_test);
+
+arrow::BooleanBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Within_test) {
+std::shared_ptr<arrow::Array> geo_test;
+arrow::StringBuilder builder1;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
+builder1.Append("LINESTRING(2 2,3 2)");
+builder1.Append("POINT(10 2)");
+builder1.Finish(&geo_test);
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder2;
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Finish(&geo);
+
+auto res = ST_Within(geo, geo_test);
+
+arrow::BooleanBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Distance_test) {
+std::shared_ptr<arrow::Array> geo_test;
+arrow::StringBuilder builder1;
+builder1.Append("LINESTRING(9 0,9 2)");
+builder1.Append("POINT(10 2)");
+builder1.Finish(&geo_test);
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder2;
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder2.Finish(&geo);
+
+auto res = ST_Distance(geo, geo_test);
+
+arrow::DoubleBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(1.0);
+builder_res.Append(2.0);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Area_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder1.Finish(&geo);
+
+auto res = ST_Area(geo);
+
+arrow::DoubleBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(1.0);
+builder_res.Append(64.0);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Centroid_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
+builder1.Finish(&geo);
+
+auto res = ST_Centroid(geo);
+
+arrow::StringBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append("POINT(0.5 0.5)");
+builder_res.Append("POINT(4.0 4.0)");
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Length_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+builder1.Append("LINESTRING(0 0,0 1)");
+builder1.Append("LINESTRING(1 1,1 4)");
+builder1.Finish(&geo);
+
+auto res = ST_Length(geo);
+
+arrow::DoubleBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(1.0);
+builder_res.Append(3.0);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_ConvexHull_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+//TODO : verify expect_res
+//  builder2.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+//  builder2.Append("LINESTRING(1 1,1 4)");
+builder1.Append("POINT (1.1 101.1)");
+builder1.Finish(&geo);
+
+auto res = ST_ConvexHull(geo);
+
+arrow::StringBuilder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+//  builder2.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+//  builder2.Append("LINESTRING(1 1,1 4)");
+builder_res.Append("POINT (1.1 101.1)");
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+//TODO:geospark ST_NPoints can not work.
+TEST(geometry_test, ST_NPoints_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+//TODO : verify expect_res
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder1.Append("LINESTRING(1 1,1 4)");
+builder1.Append("POINT (1.1 101.1)");
+builder1.Finish(&geo);
+
+auto res = ST_NPoints(geo);
+
+arrow::Int64Builder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder_res.Append(4);
+builder_res.Append(2);
+builder_res.Append(1);
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
+}
+
+TEST(geometry_test, ST_Envelope_test) {
+
+std::shared_ptr<arrow::Array> geo;
+arrow::StringBuilder builder1;
+
+builder1.Append("POLYGON((0 0,1 0,1 1,0 0))");
+builder1.Finish(&geo);
+
+auto res = ST_Envelope(geo);
+
+arrow::Int64Builder builder_res;
+std::shared_ptr<arrow::Array> expect_res;
+builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder_res.Finish(&expect_res);
+
+ASSERT_EQ(res->Equals(expect_res), true);
 }
