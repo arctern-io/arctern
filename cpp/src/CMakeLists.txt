@@ -58,8 +58,8 @@ add_library(
         zgeo SHARED
         ${gis_cpp_src}
 )
-add_dependencies(GIS miniz_ep gdal_ep rapidjson_ep)
-add_dependencies(zgeo miniz_ep gdal_ep rapidjson_ep)
+add_dependencies(GIS miniz_ep)
+add_dependencies(zgeo miniz_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 if (CPU_ONLY)

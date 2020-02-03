@@ -80,8 +80,12 @@ message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 include_directories(${cuda_inc})
 link_directories(${cuda_lib})
 
+message("conda_prefix = " $ENV{CONDA_PREFIX})
+
 include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
+include_directories($ENV{CONDA_PREFIX}/include)
 link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
+link_directories($ENV{CONDA_PREFIX}/lib)
 
 add_subdirectory(src)
 
