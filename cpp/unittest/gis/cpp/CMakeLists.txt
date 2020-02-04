@@ -11,4 +11,5 @@ target_link_libraries(geo_tests
         arrow
         gtest
         pthread
+        gdal
         )

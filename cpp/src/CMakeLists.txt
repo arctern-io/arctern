@@ -41,7 +41,7 @@ set(gis_src
         )
 
 set(gis_cpp_src
-        gis/cpp/geometry/geometry.cpp
+        gis/cpu/geometry.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -76,6 +76,7 @@ else ()
     target_link_libraries(GIS
             GLU
             OSMesa
+	    gdal
             arrow
             pthread
             miniz
@@ -83,6 +84,7 @@ else ()
 endif ()
 
 target_link_libraries(zgeo
+	gdal
         arrow
         )
 
