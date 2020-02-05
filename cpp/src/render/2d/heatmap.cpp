@@ -22,11 +22,18 @@ HeatMap<T>::HeatMap()
 }
 
 template<typename T>
-HeatMap<T>::HeatMap(std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> count,
+HeatMap<T>::HeatMap(uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* count,
                     int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), count_(count), num_vertices_(num_vertices) {
+}
+
+template<typename T>
+HeatMap<T>::~HeatMap() {
+    free(vertices_x_);
+    free(vertices_y_);
+    free(colors_);
 }
 
 template<typename T>
@@ -48,50 +55,48 @@ HeatMap<T>::DataInit() {
     colors_ = (float *) malloc(window_size * 4 * sizeof(float));
     set_colors(colors_, vertices_x_, vertices_y_, count_, num_vertices_, heatmap_vega_);
 
-    uint32_t *input_x = (uint32_t *) malloc(window_size * sizeof(uint32_t));
-    uint32_t *input_y = (uint32_t *) malloc(window_size * sizeof(uint32_t));
+    vertices_x_ = (uint32_t *) malloc(window_size * sizeof(uint32_t));
+    vertices_y_ = (uint32_t *) malloc(window_size * sizeof(uint32_t));
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            input_x[i * width + j] = j;
-            input_y[i * width + j] = height - i - 1;
+            vertices_x_[i * width + j] = j;
+            vertices_y_[i * width + j] = height - i - 1;
         }
     }
-    vertices_x_ = std::shared_ptr<uint32_t>(input_x);
-    vertices_y_ = std::shared_ptr<uint32_t>(input_y);
+
     num_vertices_ = window_size;
 }
 
 template<typename T>
 void HeatMap<T>::Draw() {
-#ifdef CPU_ONLY
-    // TODO: Add cpu render here
-    glEnable(GL_PROGRAM_POINT_SIZE);
-
+//    glEnable(GL_PROGRAM_POINT_SIZE);
     glClear(GL_COLOR_BUFFER_BIT);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_POINT_SMOOTH);
 
+#ifdef USE_GPU
     glDrawArrays(GL_POINTS, 0, num_vertices_);
     glFlush();
 
     glDeleteVertexArrays(1, &VAO_);
     glDeleteBuffers(2, VBO_);
 #else
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1, 1);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_POINT_SMOOTH);
+    int offset = 0;
+    std::vector<int32_t> vertices(num_vertices_ * 2);
+    for (auto i = 0; i < num_vertices_; i++) {
+        vertices[offset++] = vertices_x_[i];
+        vertices[offset++] = vertices_y_[i];
+    }
+    glColorPointer(4, GL_FLOAT, 0, colors_);
+    glVertexPointer(2, GL_INT, 0, &vertices[0]);
 
     glDrawArrays(GL_POINTS, 0, num_vertices_);
     glFlush();
-
-    glDeleteVertexArrays(1, &VAO_);
-    glDeleteBuffers(2, VBO_);
 #endif
 }
 
@@ -152,9 +157,9 @@ void HeatMap<T>::Shader() {
 
     glBindVertexArray(VAO_);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[0]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_x_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_x_, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[1]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_y_.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_y_, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_[2]);
     glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 4 * sizeof(float), colors_, GL_STATIC_DRAW);
 
@@ -184,14 +189,12 @@ void HeatMap<T>::Shader() {
 }
 
 template<typename T>
-std::shared_ptr<uint8_t>
+uint8_t*
 HeatMap<T>::Render() {
 //    InputInit();
     WindowsInit(heatmap_vega_.window_params());
     DataInit();
-#ifndef CPU_ONLY
-    Shader();
-#else
+#ifdef USE_GPU
     Shader();
 #endif
     Draw();

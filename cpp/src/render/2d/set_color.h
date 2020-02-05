@@ -3,7 +3,7 @@
 #include <memory>
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 #include "render/utils/color/color_gradient.h"
-#define CPU_ONLY
+//#define USE_GPU
 
 namespace zilliz {
 namespace render {
@@ -39,17 +39,17 @@ void SetCountValue_cpu(float *out,
 
 template<typename T>
 void set_colors_gpu(float *colors,
-                    std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> input_c,
+                    uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* input_c,
                     int64_t num,
                     VegaHeatMap &vega_heat_map);
 
 template<typename T>
 void set_colors_cpu(float *colors,
-                    std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> input_c,
+                    uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* input_c,
                     int64_t num,
                     VegaHeatMap &vega_heat_map) {
     WindowParams window_params = vega_heat_map.window_params();
@@ -59,7 +59,7 @@ void set_colors_cpu(float *colors,
 
     float *pix_count = (float *) malloc(window_size * sizeof(float));
     memset(pix_count, 0, window_size * sizeof(float));
-    SetCountValue_cpu<T>(pix_count, input_x.get(), input_y.get(), input_c.get(), num, width, height);
+    SetCountValue_cpu<T>(pix_count, input_x, input_y, input_c, num, width, height);
 
     double scale = vega_heat_map.map_scale() * 0.4;
     int d = pow(2, scale);
@@ -84,7 +84,6 @@ void set_colors_cpu(float *colors,
     }
     ColorGradient color_gradient;
     color_gradient.createDefaultHeatMapGradient();
-//    colors = (float *) malloc(window_size * 4 * sizeof(float));
 
     int64_t c_offset = 0;
     for (auto j = 0; j < window_size; j++) {
@@ -105,12 +104,12 @@ void set_colors_cpu(float *colors,
 
 template<typename T>
 inline void set_colors(float *colors,
-                       std::shared_ptr<uint32_t> input_x,
-                       std::shared_ptr<uint32_t> input_y,
-                       std::shared_ptr<T> input_c,
+                       uint32_t* input_x,
+                       uint32_t* input_y,
+                       T* input_c,
                        int64_t num,
                        VegaHeatMap &vega_heat_map) {
-#ifdef CPU_ONLY
+#ifndef USE_GPU
     set_colors_cpu<T>(colors, input_x, input_y, input_c, num, vega_heat_map);
 #else
     set_colors_gpu<T>(colors, input_x, input_y, input_c, num, vega_heat_map);
@@ -120,7 +119,7 @@ inline void set_colors(float *colors,
 } //namespace render
 } //namespace zilliz
 
-#ifndef CPU_ONLY
+#ifdef USE_GPU
 
 #define TEMPLATE_GEN_PREFIX extern
 #define T uint32_t

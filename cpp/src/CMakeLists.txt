@@ -10,10 +10,11 @@ set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
         )
 
-if (CPU_ONLY)
-    set(window_src render/window/window_osmesa/window_cpu_2d.cpp)
+if (USE_GPU)
+    set(window_src render/window/window_egl/window_gpu_2d.cpp
+            render/2d/cuda/heatmap.cu)
 else ()
-    set(window_src render/window/window_egl/window_gpu_2d.cpp)
+    set(window_src render/window/window_osmesa/window_cpu_2d.cpp)
 endif ()
 
 set(util_src
@@ -62,20 +63,20 @@ add_dependencies(GIS miniz_ep)
 add_dependencies(zgeo miniz_ep)
 
 set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
-if (CPU_ONLY)
+if (USE_GPU)
     target_link_libraries(GIS
-            GLU
-            OSMesa
+            GL
+            EGL
+            cudart
             arrow
             pthread
             miniz
             )
 else ()
     target_link_libraries(GIS
-            GL
-            gdal
-            EGL
-            cudart
+            GLU
+            OSMesa
+	    gdal
             arrow
             pthread
             miniz
@@ -83,6 +84,7 @@ else ()
 endif ()
 
 target_link_libraries(zgeo
+	gdal
         arrow
         )
 

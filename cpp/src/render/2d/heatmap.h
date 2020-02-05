@@ -11,15 +11,17 @@ class HeatMap : public General2D {
  public:
     HeatMap();
 
-    HeatMap(std::shared_ptr<uint32_t> input_x,
-            std::shared_ptr<uint32_t> input_y,
-            std::shared_ptr<T> count,
+    HeatMap(uint32_t* input_x,
+            uint32_t* input_y,
+            T* count,
             int64_t num_vertices);
+
+    ~HeatMap();
 
     void
     DataInit() final;
 
-    std::shared_ptr<uint8_t>
+    uint8_t*
     Render() final;
 
     void
@@ -38,9 +40,9 @@ class HeatMap : public General2D {
  private:
     unsigned int VAO_;
     unsigned int VBO_[3];
-    std::shared_ptr<uint32_t> vertices_x_;
-    std::shared_ptr<uint32_t> vertices_y_;
-    std::shared_ptr<T> count_;
+    uint32_t* vertices_x_;
+    uint32_t* vertices_y_;
+    T* count_;
     float *colors_;
     int64_t num_vertices_;
     VegaHeatMap heatmap_vega_;

@@ -1,6 +1,6 @@
 #include <iostream>
 #include "render_api.h"
-#include "render/2d/render_builder.h"
+#include "render/render_builder.h"
 
 namespace zilliz {
 namespace render {
@@ -14,22 +14,18 @@ get_pointmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> 
     assert(x_length == y_length);
     assert(x_type == arrow::Type::UINT32);
     assert(y_type == arrow::Type::UINT32);
-    int64_t num_vertices = x_length / sizeof(uint32_t);
 
-    //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
-    auto y_data = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
-    auto input_x = std::shared_ptr<uint32_t>(x_data);
-    auto input_y = std::shared_ptr<uint32_t>(y_data);
+    auto input_x = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
+    auto input_y = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
 
-    auto output = pointmap(input_x, input_y, num_vertices);
+    auto output = pointmap(input_x, input_y, x_length);
 
     auto output_length = output.second;
     auto output_data = output.first;
     auto bit_map = (uint8_t*)malloc(output_length);
-    memset(bit_map, output_length, 0xff);
+    memset(bit_map, 0xff, output_length);
     auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_length);
-    auto buffer1 = std::make_shared<arrow::Buffer>(output_data.get(), output_length);
+    auto buffer1 = std::make_shared<arrow::Buffer>(output_data, output_length);
     auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
     buffers.emplace_back(buffer0);
     buffers.emplace_back(buffer1);
@@ -52,32 +48,25 @@ get_heatmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> a
     assert(x_length == c_length);
     assert(x_type == arrow::Type::UINT32);
     assert(y_type == arrow::Type::UINT32);
-    int64_t num_vertices = x_length / sizeof(uint32_t);
 
-    //array{ArrayData{vector<Buffer{uint8_t*}>}}
-    auto x_data = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
-    auto y_data = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
-    auto input_x = std::shared_ptr<uint32_t>(x_data);
-    auto input_y = std::shared_ptr<uint32_t>(y_data);
+    auto input_x = (uint32_t *) arr_x->data()->GetValues<uint8_t>(1);
+    auto input_y = (uint32_t *) arr_y->data()->GetValues<uint8_t>(1);
 
-    std::pair<std::shared_ptr<uint8_t >,int64_t> output;
+    std::pair<uint8_t* ,int64_t> output;
     switch(c_type) {
         case arrow::Type::FLOAT : {
-            auto c_data_float = (float *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_float = std::shared_ptr<float>(c_data_float);
-            output = heatmap<float>(input_x, input_y, input_c_float, num_vertices);
+            auto input_c_float = (float *) arr_c->data()->GetValues<uint8_t>(1);
+            output = heatmap<float>(input_x, input_y, input_c_float, x_length);
             break;
         }
         case arrow::Type::DOUBLE : {
-            auto c_data_double = (double *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_double = std::shared_ptr<double>(c_data_double);
-            output = heatmap<double>(input_x, input_y, input_c_double, num_vertices);
+            auto input_c_double = (double *) arr_c->data()->GetValues<uint8_t>(1);
+            output = heatmap<double>(input_x, input_y, input_c_double, x_length);
             break;
         }
         case arrow::Type::UINT32 : {
-            auto c_data_uint32 = (uint32_t *) arr_c->data()->GetValues<uint8_t>(1);
-            auto input_c_uint32 = std::shared_ptr<uint32_t>(c_data_uint32);
-            output = heatmap<uint32_t >(input_x, input_y, input_c_uint32, num_vertices);
+            auto input_c_uint32 = (uint32_t *) arr_c->data()->GetValues<uint8_t>(1);
+            output = heatmap<uint32_t >(input_x, input_y, input_c_uint32, x_length);
             break;
         }
         default:
@@ -88,8 +77,9 @@ get_heatmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> a
     auto output_data = output.first;
     auto bit_map = (uint8_t*)malloc(output_length);
     memset(bit_map, output_length, 0xff);
+
     auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_length);
-    auto buffer1 = std::make_shared<arrow::Buffer>(output_data.get(), output_length);
+    auto buffer1 = std::make_shared<arrow::Buffer>(output_data, output_length);
     auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
     buffers.emplace_back(buffer0);
     buffers.emplace_back(buffer1);

@@ -33,17 +33,17 @@
 
 # To keep compatibility with python bind, we need to link to arrow
 # under python package
-
-set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7)
-
-find_package(PythonInterp)
-if(NOT PYTHONINTERP_FOUND)
-    message("connot find python interpreter")
+#find_package(PythonInterp)
+find_package(Python3 COMPONENTS Interpreter Development)
+if(NOT Python3_Interpreter_FOUND)
+#if(NOT PYTHONINTERP_FOUND)
+    message("cannot find python interpreter")
     exit()
 endif()
 message("PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
+execute_process(COMMAND "${Python3_EXECUTABLE}" "-c"
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     "import pyarrow; print(pyarrow.get_include());"
     RESULT_VARIABLE PYARROW_INCLUDE_SEARCH_SUCCESS
     OUTPUT_VARIABLE PYARROW_INCLUDE_VALUES_OUTPUT
@@ -51,7 +51,8 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
+execute_process(COMMAND "${Python3_EXECUTABLE}" "-c"
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
     "import pyarrow; print(pyarrow.get_library_dirs());"
     RESULT_VARIABLE PYARROW_LIBRARYDIRS_SEARCH_SUCCESS
     OUTPUT_VARIABLE PYARROW_LIBRARYDIRS_VALUES_OUTPUT
@@ -82,8 +83,8 @@ message("arrow library directory is here: ${ARROW_LIB_DIRS}")
 
 # TODO: only copy files directly under lib, not deeper folder;
 # the command below will mv original directory structure to destination
-install(
-    DIRECTORY ${ARROW_LIB_DIRS}/
-    DESTINATION lib
-    FILES_MATCHING PATTERN "lib*.so*"
-)
+# install(
+#     DIRECTORY ${ARROW_LIB_DIRS}/
+#     DESTINATION lib
+#     FILES_MATCHING PATTERN "lib*.so*"
+# )
