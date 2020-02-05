@@ -386,17 +386,6 @@ TEST(geometry_test, test_ST_IsSimple){
   OGRPolygon polygon3;
   polygon3.addRing(&ring3);
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
-
-  auto intersection_geometries = ST_Intersection(left_polygons,right_polygons);
-  auto intersection_geometries_arr = std::static_pointer_cast<arrow::StringArray>(intersection_geometries);
-  
-  ASSERT_EQ(intersection_geometries_arr->GetString(0),"LINESTRING (2 2,2 1)");
-}
-
-TEST(geometry_test, test_ST_PrecisionReduce){
-  OGRPoint point(1.5555555,1.55555555);
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
   
