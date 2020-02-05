@@ -15,7 +15,7 @@ if (USE_GPU)
     add_compile_definitions(USE_GPU)
 endif ()
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.12)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -94,8 +94,12 @@ if (USE_GPU)
     link_directories(${cuda_lib})
 endif ()
 
+#message("conda_prefix = " $ENV{CONDA_PREFIX})
+
 include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
+#include_directories($ENV{CONDA_PREFIX}/include)
 link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
+#link_directories($ENV{CONDA_PREFIX}/lib)
 
 add_subdirectory(src)
 
