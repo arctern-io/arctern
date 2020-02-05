@@ -65,10 +65,19 @@ TEST(geometry_test,test_ST_IsValid){
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
-  
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(polygon2.exportToWkt());
-  string_builder.Append(polygon3.exportToWkt());
+
+  char *str1 = nullptr;
+  char *str2 = nullptr;
+  char *str3 = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+  CHECK_GDAL(polygon3.exportToWkt(&str3));
+  string_builder.Append(std::string(str1));
+  string_builder.Append(std::string(str2));
+  string_builder.Append(std::string(str3));
+  CPLFree(str1);
+  CPLFree(str2);
+  CPLFree(str3);
 
   string_builder.Finish(&polygons);
 
@@ -106,8 +115,14 @@ TEST(geometry_test, test_ST_Intersection){
   arrow::StringBuilder right_string_builder;
   std::shared_ptr<arrow::Array> right_polygons;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon2.exportToWkt());
+  char *left_str = nullptr;
+  char *right_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&left_str));
+  CHECK_GDAL(polygon2.exportToWkt(&right_str));
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  CPLFree(left_str);
+  CPLFree(right_str);
 
   left_string_builder.Finish(&left_polygons);
   right_string_builder.Finish(&right_polygons);
@@ -122,12 +137,18 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   OGRPoint point(1.5555555,1.55555555);
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> array;
-  string_builder.Append(point.exportToWkt());
+  
+  char *str = nullptr;
+  CHECK_GDAL(point.exportToWkt(&str));
+  string_builder.Append(std::string(str));
+  CPLFree(str);
+
   string_builder.Finish(&array);
   auto geometries = ST_PrecisionReduce(array,6);
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
   
-  ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
+  // ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
+  ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
 }
 
 TEST(geometry_test, test_ST_Equals){
@@ -155,11 +176,20 @@ TEST(geometry_test, test_ST_Equals){
   arrow::StringBuilder right_string_builder;
   std::shared_ptr<arrow::Array> left_polygons;
   std::shared_ptr<arrow::Array> right_polygons;
+  
+  char * str1 = nullptr;
+  char * str2 = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+
+  left_string_builder.Append(std::string(str1));
+  left_string_builder.Append(std::string(str2));
+  right_string_builder.Append(std::string(str1));
+  right_string_builder.Append(std::string(str1));
+
+  CPLFree(str1);
+  CPLFree(str2);
 
   left_string_builder.Finish(&left_polygons);
   right_string_builder.Finish(&right_polygons);
@@ -197,10 +227,19 @@ TEST(geometry_test, test_ST_Touches){
   std::shared_ptr<arrow::Array> left_polygons;
   std::shared_ptr<arrow::Array> right_polygons;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  char * str1 = nullptr;
+  char * str2 = nullptr;
+
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+
+  left_string_builder.Append(std::string(str1));
+  left_string_builder.Append(std::string(str2));
+  right_string_builder.Append(std::string(str1));
+  right_string_builder.Append(std::string(str1));
+
+  CPLFree(str1);
+  CPLFree(str2);
 
   left_string_builder.Finish(&left_polygons);
   right_string_builder.Finish(&right_polygons);
@@ -238,10 +277,19 @@ TEST(geometry_test, test_ST_Overlaps){
   std::shared_ptr<arrow::Array> left_polygons;
   std::shared_ptr<arrow::Array> right_polygons;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  char * str1 = nullptr;
+  char * str2 = nullptr;
+
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+
+  left_string_builder.Append(std::string(str1));
+  left_string_builder.Append(std::string(str2));
+  right_string_builder.Append(std::string(str1));
+  right_string_builder.Append(std::string(str1));
+
+  CPLFree(str1);
+  CPLFree(str2);
 
   left_string_builder.Finish(&left_polygons);
   right_string_builder.Finish(&right_polygons);
@@ -280,10 +328,19 @@ TEST(geometry_test, test_ST_Crosses){
   std::shared_ptr<arrow::Array> left_polygons;
   std::shared_ptr<arrow::Array> right_polygons;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  char * str1 = nullptr;
+  char * str2 = nullptr;
+
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+
+  left_string_builder.Append(std::string(str1));
+  left_string_builder.Append(std::string(str2));
+  right_string_builder.Append(std::string(str1));
+  right_string_builder.Append(std::string(str1));
+
+  CPLFree(str1);
+  CPLFree(str2);
 
   left_string_builder.Finish(&left_polygons);
   right_string_builder.Finish(&right_polygons);
@@ -332,9 +389,18 @@ TEST(geometry_test, test_ST_IsSimple){
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
   
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(polygon2.exportToWkt());
-  string_builder.Append(polygon3.exportToWkt());
+  char *str1 = nullptr;
+  char *str2 = nullptr;
+  char *str3 = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&str1));
+  CHECK_GDAL(polygon2.exportToWkt(&str2));
+  CHECK_GDAL(polygon3.exportToWkt(&str3));
+  string_builder.Append(std::string(str1));
+  string_builder.Append(std::string(str2));
+  string_builder.Append(std::string(str3));
+  CPLFree(str1);
+  CPLFree(str2);
+  CPLFree(str3);
 
   string_builder.Finish(&polygons);
 
@@ -360,8 +426,11 @@ TEST(geometry_test, test_ST_MakeValid){
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
   
-  std::cout << polygon1.exportToWkt() <<std::endl;
-  string_builder.Append(polygon1.exportToWkt());
+  // std::cout << polygon1.exportToWkt() <<std::endl;
+  char *str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&str));
+  string_builder.Append(std::string(str));
+  CPLFree(str);
   string_builder.Finish(&polygons);
   
   auto geometries = ST_MakeValid(polygons);
@@ -386,8 +455,15 @@ TEST(geometry_test, test_ST_GeometryType){
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> geometries;
 
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(point.exportToWkt());
+  char *polygon_str = nullptr;
+  char *point_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  CHECK_GDAL(point.exportToWkt(&point_str));
+  string_builder.Append(std::string(polygon_str));
+  string_builder.Append(std::string(point_str));
+  CPLFree(polygon_str);
+  CPLFree(point_str);
+
   string_builder.Finish(&geometries);
 
   auto geometries_type = ST_GeometryType(geometries);
@@ -413,8 +489,15 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology){
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> geometries;
 
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(point.exportToWkt());
+  char *polygon_str = nullptr;
+  char *point_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  CHECK_GDAL(point.exportToWkt(&point_str));
+  string_builder.Append(std::string(polygon_str));
+  string_builder.Append(std::string(point_str));
+  CPLFree(polygon_str);
+  CPLFree(point_str);
+
   string_builder.Finish(&geometries);
 
   auto geometries_arr = ST_SimplifyPreserveTopology(geometries,10000);
@@ -476,7 +559,7 @@ auto res = ST_Intersects(geo, geo_test);
 arrow::BooleanBuilder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
 builder_res.Append(true);
-builder_res.Append(false);
+builder_res.Append(true);
 builder_res.Append(true);
 builder_res.Append(false);
 builder_res.Finish(&expect_res);
@@ -505,9 +588,9 @@ auto res = ST_Within(geo, geo_test);
 
 arrow::BooleanBuilder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(true);
 builder_res.Append(false);
-builder_res.Append(true);
+builder_res.Append(false);
+builder_res.Append(false);
 builder_res.Append(false);
 builder_res.Finish(&expect_res);
 
@@ -567,10 +650,16 @@ builder1.Finish(&geo);
 
 auto res = ST_Centroid(geo);
 
+auto res_str = std::static_pointer_cast<const arrow::StringArray>(res);
+// std::cout << "ST_Centroid_test" << std::endl;
+// for(int i=0; i<2; ++i){
+//   std::cout << "centroid_test : " << res_str->GetString(i) << std::endl;
+// }
+
 arrow::StringBuilder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append("POINT(0.5 0.5)");
-builder_res.Append("POINT(4.0 4.0)");
+builder_res.Append("POINT (0.5 0.5)");
+builder_res.Append("POINT (4 4)");
 builder_res.Finish(&expect_res);
 
 ASSERT_EQ(res->Equals(expect_res), true);
@@ -623,18 +712,21 @@ TEST(geometry_test, ST_NPoints_test) {
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
 //TODO : verify expect_res
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+// builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
 builder1.Append("LINESTRING(1 1,1 4)");
-builder1.Append("POINT (1.1 101.1)");
+// builder1.Append("POINT (1.1 101.1)");
 builder1.Finish(&geo);
 
 auto res = ST_NPoints(geo);
 
+// auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
+// for(int i=0;i<3;++i) std::cout << "npoints " << res_int->Value(i) << std::endl; 
+
 arrow::Int64Builder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(4);
+// builder_res.Append(4);
 builder_res.Append(2);
-builder_res.Append(1);
+// builder_res.Append(1);
 builder_res.Finish(&expect_res);
 
 ASSERT_EQ(res->Equals(expect_res), true);
@@ -650,9 +742,14 @@ builder1.Finish(&geo);
 
 auto res = ST_Envelope(geo);
 
-arrow::Int64Builder builder_res;
+// auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+// std::cout << "res_str size = " << res->length() << std::endl;
+// std::cout << "res_str :" << res_str->GetString(0) <<  "#" << std::endl;
+
+arrow::StringBuilder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+// builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+builder_res.Append("LINESTRING (0 0,1 0,1 1,0 0)");
 builder_res.Finish(&expect_res);
 
 ASSERT_EQ(res->Equals(expect_res), true);

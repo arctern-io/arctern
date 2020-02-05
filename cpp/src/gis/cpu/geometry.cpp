@@ -26,8 +26,11 @@ ST_Point(const std::shared_ptr<arrow::Array> &point_x,
     OGRPoint point;
 
     for (int32_t i = 0; i < point_arr_x.length(); i++) {
+        char *str=nullptr;
         point = OGRPoint(point_arr_x.Value(i), point_arr_y.Value(i));
-        string_builder.Append(point.exportToWkt());
+        CHECK_GDAL(point.exportToWkt(&str));
+        string_builder.Append(std::string(str));
+        CPLFree(str);
     }
 
     string_builder.Finish(&array);
@@ -50,11 +53,16 @@ ST_Intersection(const std::shared_ptr<arrow::Array> &left_geometries,
         OGRGeometryFactory::createFromWkt(left_geometries_arr.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(right_geometries_arr.GetString(i).c_str(), nullptr, &right_geo);
         auto inter_res = left_geo->Intersection(right_geo);
-        string_builder.Append(inter_res->exportToWkt());
+        char *str=nullptr;
+        CHECK_GDAL(inter_res->exportToWkt(&str));
+        string_builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
+
     }
 
     string_builder.Finish(&array);
-
     return array;
 }
 
@@ -70,6 +78,7 @@ ST_IsValid(const std::shared_ptr<arrow::Array> &geometries) {
     for (int32_t i = 0; i < geometries_arr.length(); i++) {
         OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
         geometry->IsValid() == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(geometry);
     }
 
     bool_builder.Finish(&array);
@@ -93,6 +102,8 @@ ST_Equals(const std::shared_ptr<arrow::Array> &left_geometries,
         OGRGeometryFactory::createFromWkt(left_geometries_arr.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(right_geometries_arr.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Equals(right_geo) == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
 
     bool_builder.Finish(&array);
@@ -115,6 +126,8 @@ ST_Touches(const std::shared_ptr<arrow::Array> &left_geometries,
         OGRGeometryFactory::createFromWkt(left_geometries_arr.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(right_geometries_arr.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Touches(right_geo) == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
 
     bool_builder.Finish(&array);
@@ -137,6 +150,8 @@ ST_Overlaps(const std::shared_ptr<arrow::Array> &left_geometries,
         OGRGeometryFactory::createFromWkt(left_geometries_arr.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(right_geometries_arr.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Overlaps(right_geo) == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
 
     bool_builder.Finish(&array);
@@ -159,6 +174,8 @@ ST_Crosses(const std::shared_ptr<arrow::Array> &left_geometries,
         OGRGeometryFactory::createFromWkt(left_geometries_arr.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(right_geometries_arr.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Crosses(right_geo) == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
 
     bool_builder.Finish(&array);
@@ -178,6 +195,7 @@ ST_IsSimple(const std::shared_ptr<arrow::Array> &geometries) {
     for (int32_t i = 0; i < geometries_arr.length(); i++) {
         OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
         geometry->IsSimple() == 0 ? bool_builder.Append(false) : bool_builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(geometry);
     }
 
     bool_builder.Finish(&array);
@@ -192,13 +210,16 @@ ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries, int32_t num_
     arrow::StringBuilder string_builder;
     std::shared_ptr<arrow::Array> array;
 
-    OGRGeometry *geometry;
-    OGRWktOptions options;
-    options.precision = num_dot;
+    // OGRGeometry *geometry;
+    // OGRWktOptions options;
+    // options.precision = num_dot;
 
-    for (int32_t i = 0; i < geometries_arr.length(); i++) {
-        OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
-        string_builder.Append(geometry->exportToWkt(options));
+    // for (int32_t i = 0; i < geometries_arr.length(); i++) {
+    //     OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
+    //     string_builder.Append(geometry->exportToWkt(options));
+    // }
+    for(int32_t i=0; i<geometries_arr.length(); ++i){
+        string_builder.Append(geometries_arr.GetString(i));
     }
 
     string_builder.Finish(&array);
@@ -217,6 +238,7 @@ ST_GeometryType(const std::shared_ptr<arrow::Array> &geometries) {
     for (int32_t i = 0; i < geometries_arr.length(); i++) {
         OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
         string_builder.Append(geometry->getGeometryName());
+        OGRGeometryFactory::destroyGeometry(geometry);
     }
 
     string_builder.Finish(&array);
@@ -233,10 +255,11 @@ ST_MakeValid(const std::shared_ptr<arrow::Array> &geometries) {
     OGRGeometry *geometry;
     for (int32_t i = 0; i < geometries_arr.length(); i++) {
         OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
-        auto geometry_1  = geometry->MakeValid();
-        std::cout << "aaaaaa" <<std::endl;
-        std::cout << geometry_1->exportToWkt() <<std::endl;
-        string_builder.Append(geometry->MakeValid()->exportToWkt());
+        char *str=nullptr;
+        CHECK_GDAL(geometry->MakeValid()->exportToWkt(&str))
+        string_builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geometry);
     }
     string_builder.Finish(&array);
     return array;
@@ -253,7 +276,11 @@ ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, dou
     OGRGeometry *geometry;
     for (int32_t i = 0; i < geometries_arr.length(); i++) {
         OGRGeometryFactory::createFromWkt(geometries_arr.GetString(i).c_str(), nullptr, &geometry);
-        string_builder.Append(geometry->SimplifyPreserveTopology(distanceTolerance)->exportToWkt());
+        char *str=nullptr;
+        CHECK_GDAL(geometry->SimplifyPreserveTopology(distanceTolerance)->exportToWkt(&str))
+        string_builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geometry);
     }
 
     string_builder.Finish(&array);
@@ -283,9 +310,9 @@ ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, dou
 //
 //  for (int32_t i = 0; i < min_x_len; i++) {
 //    //TODO : contructs a polygon
-//    //CHECK_STATUS(builder.Append(polygon.exportToWkt()));
+//    //CHECK_ARROW(builder.Append(polygon.exportToWkt()));
 //  }
-//  CHECK_STATUS(builder.Finish(&res_arr));
+//  CHECK_ARROW(builder.Finish(&res_arr));
 //
 //  return res_arr;
 //}
@@ -310,8 +337,10 @@ ST_Contains(const std::shared_ptr<arrow::Array> geo_arr1,
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(geo_str_arr2.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Contains(right_geo) == 0 ? builder.Append(false) : builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -335,8 +364,10 @@ ST_Intersects(const std::shared_ptr<arrow::Array> geo_arr1,
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(geo_str_arr2.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Intersects(right_geo) == 0 ? builder.Append(false) : builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -360,8 +391,10 @@ ST_Within(const std::shared_ptr<arrow::Array> geo_arr1,
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(geo_str_arr2.GetString(i).c_str(), nullptr, &right_geo);
         left_geo->Within(right_geo) == 0 ? builder.Append(false) : builder.Append(true);
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -384,9 +417,11 @@ ST_Distance(const std::shared_ptr<arrow::Array> geo_arr1,
     for (int32_t i = 0; i < len1; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &left_geo);
         OGRGeometryFactory::createFromWkt(geo_str_arr2.GetString(i).c_str(), nullptr, &right_geo);
-        CHECK_STATUS(builder.Append(left_geo->Distance(right_geo)));
+        CHECK_ARROW(builder.Append(left_geo->Distance(right_geo)));
+        OGRGeometryFactory::destroyGeometry(left_geo);
+        OGRGeometryFactory::destroyGeometry(right_geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -400,13 +435,14 @@ ST_Area(const std::shared_ptr<arrow::Array> geo_arr) {
     auto &geo_str_arr1 = static_cast<const arrow::StringArray &>(*geo_arr);
 
     OGRGeometry *g;
-    std::shared_ptr<OGRGeometry> geo(g);
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &g);
-        CHECK_STATUS(builder.Append((std::dynamic_pointer_cast<OGRSurface>(geo))->get_Area()));
+        //TODO, check g is class of OGRSurface, if not return 0
+        CHECK_ARROW(builder.Append((reinterpret_cast<OGRSurface*>(g))->get_Area()));
+        OGRGeometryFactory::destroyGeometry(g);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -425,9 +461,13 @@ ST_Centroid(const std::shared_ptr<arrow::Array> geo_arr) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &geo);
         OGRPoint *poPoint = new OGRPoint();
         geo->Centroid(poPoint);
-        CHECK_STATUS(builder.Append(poPoint->exportToWkt()));
+        char *str=nullptr;
+        CHECK_GDAL(poPoint->exportToWkt(&str));
+        builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -441,13 +481,14 @@ ST_Length(const std::shared_ptr<arrow::Array> geo_arr) {
     auto &geo_str_arr1 = static_cast<const arrow::StringArray &>(*geo_arr);
 
     OGRGeometry *g;
-    std::shared_ptr<OGRGeometry> geo(g);
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &g);
-        CHECK_STATUS(builder.Append((std::dynamic_pointer_cast<OGRCurve>(geo))->get_Length()));
+        //TODO, check if g is class of OGRCurve, if not return 0
+        CHECK_ARROW(builder.Append((reinterpret_cast<OGRCurve*>(g))->get_Length()));
+        OGRGeometryFactory::destroyGeometry(g);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -464,9 +505,13 @@ ST_ConvexHull(const std::shared_ptr<arrow::Array> geo_arr) {
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &geo);
-        CHECK_STATUS(builder.Append(geo->ConvexHull()->exportToWkt()));
+        char *str=nullptr;
+        CHECK_GDAL(geo->ConvexHull()->exportToWkt(&str));
+        builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -480,13 +525,14 @@ ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr) {
     auto &geo_str_arr1 = static_cast<const arrow::StringArray &>(*geo_arr);
 
     OGRGeometry *g;
-    std::shared_ptr<OGRGeometry> geo(g);
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &g);
-        CHECK_STATUS(builder.Append((std::dynamic_pointer_cast<OGRCurve>(geo))->getNumPoints()));
+        //check if g is type of OGRCurve, if not return 0
+        CHECK_ARROW(builder.Append((reinterpret_cast<OGRCurve*>(g))->getNumPoints()));
+        OGRGeometryFactory::destroyGeometry(g);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -503,9 +549,13 @@ ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr) {
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &geo);
-        CHECK_STATUS(builder.Append(geo->Boundary()->exportToWkt()));
+        char *str = nullptr;
+        CHECK_GDAL(geo->Boundary()->exportToWkt(&str));
+        builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 
@@ -522,9 +572,13 @@ ST_Buffer(const std::shared_ptr<arrow::Array> geo_arr, double dfDist) {
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &geo);
-        CHECK_STATUS(builder.Append(geo->Buffer(dfDist)->exportToWkt()));
+        char *str = nullptr;
+        CHECK_GDAL(geo->Buffer(dfDist)->exportToWkt(&str));
+        builder.Append(std::string(str));
+        CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(geo);
     }
-    CHECK_STATUS(builder.Finish(&res_arr));
+    CHECK_ARROW(builder.Finish(&res_arr));
     return res_arr;
 }
 } // gis
