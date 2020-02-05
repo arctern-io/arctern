@@ -1,0 +1,4 @@
+project(zilliz_gis LANGUAGES cuda)
+set(CMAKE_CUDA_FLAGS "-Wall -Werror -Wextra")
+include_directories(include)
+add_subdirectory(src)
