@@ -124,5 +124,8 @@ ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr);
 std::shared_ptr<arrow::Array>
 ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr);
 
+std::shared_ptr<arrow::Array>
+ST_Buffer(const std::shared_ptr<arrow::Array> geo_arr, double dfDist);
+
 } // gis
 } // zilliz
