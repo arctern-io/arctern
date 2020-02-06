@@ -2,7 +2,7 @@ set(USE_GPU off)
 
 #set(CMAKE_BUILD_TYPE Debug)
 
-#set(BUILD_UNITTEST on)
+set(BUILD_UNITTEST on)
 
 #set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
 
