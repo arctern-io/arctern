@@ -4,13 +4,6 @@ from pyarrow.lib cimport *
 
 cimport zilliz_gis_core__ as zilliz_gis_core_pxd
 
-cdef extern from "gis.h":
-    cdef shared_ptr[CArray] make_point(shared_ptr[CArray], shared_ptr[CArray])
-    cdef shared_ptr[CArray] point_map(shared_ptr[CArray], shared_ptr[CArray])
-
-cdef extern from "gis.h" namespace "zilliz::gis::cpp::gemetry":
-    shared_ptr[CArray] ST_point(shared_ptr[CArray] ptr_x, shared_ptr[CArray] ptr_y)
-
 def point_map(object arr_x,object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
     
@@ -52,3 +45,39 @@ def ST_PrecisionReduce(object geometries,int num_dat):
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
+
+def ST_PolygonFromEnvelope(object min_x,object min_y,object max_x,object max_y):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_PolygonFromEnvelope(pyarrow_unwrap_array(min_x),pyarrow_unwrap_array(min_y),pyarrow_unwrap_array(max_x),pyarrow_unwrap_array(max_y)))
+
+def ST_Contains(object ptr_x,object ptr_y):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Contains(pyarrow_unwrap_array(ptr_x),pyarrow_unwrap_array(ptr_y)))
+
+def ST_Intersects(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Intersects(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
+def ST_Within(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Within(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
+def ST_Distance(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Distance(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
+def ST_Area(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Area(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Centroid(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Centroid(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Length(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Length(pyarrow_unwrap_array(geo_arr)))
+
+def ST_ConvexHull(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
+
+def ST_NPoints(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Envelope(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Envelope(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Buffer(object geo_arr,double dfDist):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
