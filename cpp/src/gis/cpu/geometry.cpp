@@ -289,37 +289,51 @@ ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, dou
 
 
 //ST_PolygonFromEnvelope
-//std::shared_ptr<arrow::Array>
-//ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> min_x,
-//                       const std::shared_ptr<arrow::Array> min_y,
-//                       const std::shared_ptr<arrow::Array> max_x,
-//                       const std::shared_ptr<arrow::Array> max_y) {
-//  auto min_x_len = min_x->length();
-//  auto min_y_len = min_y->length();
-//  auto max_x_len = max_x->length();
-//  auto max_y_len = max_y->length();
-//  assert(min_x_len == min_y_len == max_x_len == max_y_len);
-//
-//  auto &min_x_arr = static_cast<const arrow::DoubleArray &>(*min_x);
-//  auto &min_y_arr = static_cast<const arrow::DoubleArray &>(*min_y);
-//  auto &max_x_arr = static_cast<const arrow::DoubleArray &>(*max_x);
-//  auto &max_y_arr = static_cast<const arrow::DoubleArray &>(*max_y);
-//
-//  std::shared_ptr<arrow::Array> res_arr;
-//  arrow::StringBuilder builder;
-//
-//  for (int32_t i = 0; i < min_x_len; i++) {
-//    //TODO : contructs a polygon
-//    //CHECK_ARROW(builder.Append(polygon.exportToWkt()));
-//  }
-//  CHECK_ARROW(builder.Finish(&res_arr));
-//
-//  return res_arr;
-//}
+std::shared_ptr<arrow::Array>
+ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> &min_x,
+                       const std::shared_ptr<arrow::Array> &min_y,
+                       const std::shared_ptr<arrow::Array> &max_x,
+                       const std::shared_ptr<arrow::Array> &max_y) {
+ auto min_x_len = min_x->length();
+ auto min_y_len = min_y->length();
+ auto max_x_len = max_x->length();
+ auto max_y_len = max_y->length();
+
+ assert(min_x_len == min_y_len);
+ assert(min_x_len == max_x_len);
+ assert(min_x_len == max_y_len);
+
+ auto minx_ptr = std::static_pointer_cast<const arrow::DoubleArray>(min_x);
+ auto miny_ptr = std::static_pointer_cast<const arrow::DoubleArray>(min_y);
+ auto maxx_ptr = std::static_pointer_cast<const arrow::DoubleArray>(max_x);
+ auto maxy_ptr = std::static_pointer_cast<const arrow::DoubleArray>(max_y);
+
+ std::shared_ptr<arrow::Array> res_arr;
+ arrow::StringBuilder builder;
+
+ for (int32_t i = 0; i < min_x_len; i++) {
+     OGRLinearRing ring;
+     ring.addPoint(minx_ptr->Value(i),miny_ptr->Value(i));
+     ring.addPoint(maxx_ptr->Value(i),miny_ptr->Value(i));
+     ring.addPoint(minx_ptr->Value(i),maxy_ptr->Value(i));
+     ring.addPoint(maxx_ptr->Value(i),maxy_ptr->Value(i));
+     ring.addPoint(minx_ptr->Value(i),miny_ptr->Value(i));
+     ring.closeRings();
+     OGRPolygon polygon;
+     polygon.addRing(&ring);
+     char *str = nullptr;
+     CHECK_GDAL(polygon.exportToWkt(&str));
+     CHECK_ARROW(builder.Append(std::string(str)));
+     CPLFree(str);
+ }
+ CHECK_ARROW(builder.Finish(&res_arr));
+
+ return res_arr;
+}
 
 std::shared_ptr<arrow::Array>
-ST_Contains(const std::shared_ptr<arrow::Array> geo_arr1,
-            const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Contains(const std::shared_ptr<arrow::Array> &geo_arr1,
+            const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -345,8 +359,8 @@ ST_Contains(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Intersects(const std::shared_ptr<arrow::Array> geo_arr1,
-              const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Intersects(const std::shared_ptr<arrow::Array> &geo_arr1,
+              const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -372,8 +386,8 @@ ST_Intersects(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Within(const std::shared_ptr<arrow::Array> geo_arr1,
-          const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Within(const std::shared_ptr<arrow::Array> &geo_arr1,
+          const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -399,8 +413,8 @@ ST_Within(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Distance(const std::shared_ptr<arrow::Array> geo_arr1,
-            const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Distance(const std::shared_ptr<arrow::Array> &geo_arr1,
+            const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -426,7 +440,7 @@ ST_Distance(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Area(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Area(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -447,7 +461,7 @@ ST_Area(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Centroid(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Centroid(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -472,7 +486,7 @@ ST_Centroid(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Length(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Length(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -493,7 +507,7 @@ ST_Length(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_ConvexHull(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -516,7 +530,7 @@ ST_ConvexHull(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -537,7 +551,7 @@ ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Envelope(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -560,22 +574,24 @@ ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Buffer(const std::shared_ptr<arrow::Array> geo_arr, double dfDist) {
+ST_Buffer(const std::shared_ptr<arrow::Array> &geo_arr, double dfDist) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
     arrow::StringBuilder builder;
 
     auto &geo_str_arr1 = static_cast<const arrow::StringArray &>(*geo_arr);
-
+    
     OGRGeometry *geo;
 
     for (int32_t i = 0; i < len; i++) {
         OGRGeometryFactory::createFromWkt(geo_str_arr1.GetString(i).c_str(), nullptr, &geo);
+        auto buffer_geo = geo->Buffer(dfDist);
         char *str = nullptr;
-        CHECK_GDAL(geo->Buffer(dfDist)->exportToWkt(&str));
+        CHECK_GDAL(buffer_geo->exportToWkt(&str));
         builder.Append(std::string(str));
         CPLFree(str);
+        OGRGeometryFactory::destroyGeometry(buffer_geo);
         OGRGeometryFactory::destroyGeometry(geo);
     }
     CHECK_ARROW(builder.Finish(&res_arr));
