@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "arrow/api.h"
-#include "arrow/array.h"
+#include <ctime>
+
+#include <arrow/api.h>
+#include <arrow/array.h>
 #include "arrow/gis_api.h"
-#include<ctime>
 
 using namespace zilliz::gis;
 
