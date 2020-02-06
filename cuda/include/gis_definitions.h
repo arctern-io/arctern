@@ -55,7 +55,7 @@ class PointVector : GeometryVectorBase {
 using Point2DVector = PointVector<2>;
 
 template<int dimension_>
-class LineStringVector: 
+class LineStringVector:
 
 
 }    // namespace cpp
