@@ -1,8 +1,12 @@
 #pragma once
 
 #include "render/2d/input.h"
+
+#ifdef USE_GPU
 #include "render/window/window_egl/window_gpu_2d.h"
+#else
 #include "render/window/window_osmesa/window_cpu_2d.h"
+#endif
 
 namespace zilliz {
 namespace render {
