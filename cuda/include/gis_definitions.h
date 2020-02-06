@@ -23,51 +23,12 @@ class GeometryVectorBase {
     // size of individual geometries
     virtual uint64_t size() = 0;
 
-    // test if layout is fixed
+    // test if tag are varible
+    virtual std::optional<Tag> unique_tag() = 0;
+
+    // test if layout length is fixed
     virtual bool is_fixed_layout() = 0;
-
-    // return possible tags
-    virtual std::set<Tag> all_tags() = 0;
 };
-
-class UniqueTagGeometryVector : public GeometryVectorBase {
- public:
-    UniqueTagGeometryVector(Tag tag) : tag_(tag) {}
-    std::set<Tag> all_tags() override { return {tag_}; }
-    Tag tag() { return tag_; }
-
- private:
-    const Tag tag_;
-};
-
-inline constexpr std::optional<int>
-get_tag_length(Tag tag) {
-    // TODO: placeholder, return std::nullopt for tag of variable length;
-    // now only Point1D
-    return sizeof(double);
-}
-
-class FixedLayoutGeometryVector : public UniqueTagGeometryVector {
- public:
-    FixedLayoutGeometryVector(Tag tag) : UniqueTagGeometryVector(tag) {
-        // check if fixed
-        assert(get_tag_length(tag).has_value());
-    }
-};
-
-class VariableLayoutUniqueTagGeometryVector : public UniqueTagGeometryVector {
- public:
-    VariableLayoutUniqueTagGeometryVector(Tag tag): UniqueTagGeometryVector(tag) {
-        // check if fixed
-        assert(!get_tag_length(tag).has_value());
-    }
-};
-
-class VariableTagGeometryVector: public GeometryVectorBase {
-       
-};
-
-
 
 
 inline constexpr Tag
@@ -80,11 +41,21 @@ get_tag_for_points(int dimension) {
     }
 }
 
-template<int dimension>
-class Points : FixedLayoutGeometry {
+template<int dimension_>
+class PointVector : GeometryVectorBase {
  public:
-    std::array<GPUVector<double>, demension> point_arrs;
+    constexpr int dimension = dimension_;
+    constexpr Tag tag = get_tag_for_points(dimension);
+    virtual uint64_t size() { return data[0].size(); }
+
+ private:
+    std::array<GPUVector<double>, dimension> data;
 };
+
+using Point2DVector = PointVector<2>;
+
+template<int dimension_>
+class LineStringVector: 
 
 
 }    // namespace cpp
