@@ -1,4 +1,4 @@
-set(USE_GPU on)
+set(USE_GPU off)
 
 #set(CMAKE_BUILD_TYPE Debug)
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "gis/cpu/geometry.h"
+#include "arrow/gis_api.h"
 #include<ctime>
 
 using namespace zilliz::gis;
