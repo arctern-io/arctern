@@ -16,46 +16,21 @@ enum class Tag {
 namespace zilliz {
 namespace gis {
 namespace cpp {
-class GeometryVectorBase {
+class GeometryVector {
  public:
-    virtual ~GeometryVectorBase() {}
-
-    // size of individual geometries
-    virtual uint64_t size() = 0;
-
-    // test if tag are varible
-    virtual std::optional<Tag> unique_tag() = 0;
-
-    // test if layout length is fixed
-    virtual bool is_fixed_layout() = 0;
-};
-
-
-inline constexpr Tag
-get_tag_for_points(int dimension) {
-    switch (dimension) {
-        case 1:
-            return Tag::Point1D;
-        default:
-            break;
-    }
-}
-
-template<int dimension_>
-class PointVector : GeometryVectorBase {
- public:
-    constexpr int dimension = dimension_;
-    constexpr Tag tag = get_tag_for_points(dimension);
-    virtual uint64_t size() { return data[0].size(); }
-
+    GPUVector<char> encodeToWKB();
  private:
-    std::array<GPUVector<double>, dimension> data;
+    GPUVector<double> data;
+    GPUVector<uint32_t> offsets;
+    GPUVector<Tag> tag;
+    struct RuntimeHint{
+        std::optional<Tag> unique_tag; 
+        std::optional<int> fixed_length;
+    } hints;
+    size_t size;
+    static GeometryVector decodeFromWKB(const std::byte* bin);
 };
 
-using Point2DVector = PointVector<2>;
-
-template<int dimension_>
-class LineStringVector:
 
 
 }    // namespace cpp
