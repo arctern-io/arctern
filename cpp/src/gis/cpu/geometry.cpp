@@ -290,10 +290,10 @@ ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, dou
 
 //ST_PolygonFromEnvelope
 std::shared_ptr<arrow::Array>
-ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> min_x,
-                      const std::shared_ptr<arrow::Array> min_y,
-                      const std::shared_ptr<arrow::Array> max_x,
-                      const std::shared_ptr<arrow::Array> max_y) {
+ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> &min_x,
+                       const std::shared_ptr<arrow::Array> &min_y,
+                       const std::shared_ptr<arrow::Array> &max_x,
+                       const std::shared_ptr<arrow::Array> &max_y) {
  auto min_x_len = min_x->length();
  auto min_y_len = min_y->length();
  auto max_x_len = max_x->length();
@@ -332,8 +332,8 @@ ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> min_x,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Contains(const std::shared_ptr<arrow::Array> geo_arr1,
-            const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Contains(const std::shared_ptr<arrow::Array> &geo_arr1,
+            const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -359,8 +359,8 @@ ST_Contains(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Intersects(const std::shared_ptr<arrow::Array> geo_arr1,
-              const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Intersects(const std::shared_ptr<arrow::Array> &geo_arr1,
+              const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -386,8 +386,8 @@ ST_Intersects(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Within(const std::shared_ptr<arrow::Array> geo_arr1,
-          const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Within(const std::shared_ptr<arrow::Array> &geo_arr1,
+          const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -413,8 +413,8 @@ ST_Within(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Distance(const std::shared_ptr<arrow::Array> geo_arr1,
-            const std::shared_ptr<arrow::Array> geo_arr2) {
+ST_Distance(const std::shared_ptr<arrow::Array> &geo_arr1,
+            const std::shared_ptr<arrow::Array> &geo_arr2) {
     auto len1 = geo_arr1->length();
     auto len2 = geo_arr2->length();
     assert(len1 == len2);
@@ -440,7 +440,7 @@ ST_Distance(const std::shared_ptr<arrow::Array> geo_arr1,
 }
 
 std::shared_ptr<arrow::Array>
-ST_Area(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Area(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -461,7 +461,7 @@ ST_Area(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Centroid(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Centroid(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -486,7 +486,7 @@ ST_Centroid(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Length(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Length(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -507,7 +507,7 @@ ST_Length(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_ConvexHull(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -530,7 +530,7 @@ ST_ConvexHull(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -551,7 +551,7 @@ ST_NPoints(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr) {
+ST_Envelope(const std::shared_ptr<arrow::Array> &geo_arr) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
@@ -574,7 +574,7 @@ ST_Envelope(const std::shared_ptr<arrow::Array> geo_arr) {
 }
 
 std::shared_ptr<arrow::Array>
-ST_Buffer(const std::shared_ptr<arrow::Array> geo_arr, double dfDist) {
+ST_Buffer(const std::shared_ptr<arrow::Array> &geo_arr, double dfDist) {
     auto len = geo_arr->length();
 
     std::shared_ptr<arrow::Array> res_arr;
