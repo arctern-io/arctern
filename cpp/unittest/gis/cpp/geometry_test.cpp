@@ -510,7 +510,7 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology){
   ASSERT_EQ(geometries_arr_str->GetString(1),"POINT (2 3)");
 }
 
-TEST(geometry_test, ST_Contains_test) {
+TEST(geometry_test, test_ST_Contains) {
 std::shared_ptr<arrow::Array> geo_test;
 arrow::StringBuilder builder1;
 builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
@@ -540,7 +540,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Intersects_test) {
+TEST(geometry_test, test_ST_Intersects) {
 std::shared_ptr<arrow::Array> geo_test;
 arrow::StringBuilder builder1;
 builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
@@ -570,7 +570,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Within_test) {
+TEST(geometry_test, test_ST_Within) {
 std::shared_ptr<arrow::Array> geo_test;
 arrow::StringBuilder builder1;
 builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
@@ -600,7 +600,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Distance_test) {
+TEST(geometry_test, test_ST_Distance) {
 std::shared_ptr<arrow::Array> geo_test;
 arrow::StringBuilder builder1;
 builder1.Append("LINESTRING(9 0,9 2)");
@@ -624,7 +624,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Area_test) {
+TEST(geometry_test, test_ST_Area) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -643,7 +643,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Centroid_test) {
+TEST(geometry_test, test_ST_Centroid) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -668,7 +668,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Length_test) {
+TEST(geometry_test, test_ST_Length) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -687,7 +687,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_ConvexHull_test) {
+TEST(geometry_test, test_ST_ConvexHull) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -710,7 +710,7 @@ ASSERT_EQ(res->Equals(expect_res), true);
 }
 
 //TODO:geospark ST_NPoints can not work.
-TEST(geometry_test, ST_NPoints_test) {
+TEST(geometry_test, test_ST_NPoints) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -735,7 +735,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Envelope_test) {
+TEST(geometry_test, test_ST_Envelope) {
 
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
@@ -758,7 +758,7 @@ builder_res.Finish(&expect_res);
 ASSERT_EQ(res->Equals(expect_res), true);
 }
 
-TEST(geometry_test, ST_Buffer_test){
+TEST(geometry_test, test_ST_Buffer){
   std::shared_ptr<arrow::Array> geo;
   arrow::StringBuilder builder1;
   
@@ -774,7 +774,7 @@ TEST(geometry_test, ST_Buffer_test){
 
 }
 
-TEST(geometry_test, ST_PolygonFromEnvelope_test){
+TEST(geometry_test, test_ST_PolygonFromEnvelope){
   arrow::DoubleBuilder x_min;
   arrow::DoubleBuilder x_max;
   arrow::DoubleBuilder y_min;

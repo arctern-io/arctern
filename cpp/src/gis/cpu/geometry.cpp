@@ -249,7 +249,7 @@ ST_GeometryType(const std::shared_ptr<arrow::Array> &geometries) {
 std::shared_ptr<arrow::Array>
 ST_MakeValid(const std::shared_ptr<arrow::Array> &geometries) {
     auto &geometries_arr = static_cast<const arrow::StringArray &>(*geometries);
-    std::cout << geometries_arr.GetString(0) << std::endl;
+    // std::cout << geometries_arr.GetString(0) << std::endl;
     arrow::StringBuilder string_builder;
     std::shared_ptr<arrow::Array> array;
     OGRGeometry *geometry;
