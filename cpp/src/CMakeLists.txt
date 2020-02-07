@@ -41,7 +41,8 @@ set(gis_src
         )
 
 set(gis_cpp_src
-        gis/cpu/geometry.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpu/gdal_impl.cpp
+	#gis/cpu/geometry.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
