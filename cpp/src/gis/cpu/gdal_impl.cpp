@@ -1,6 +1,6 @@
 
-#include "arrow/utils.h"
-#include "gis/cpu/api.h"
+#include "gis/api.h"
+#include "utils/check_status.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,20 +21,20 @@ do {    \
     void *GEO_VAR;    \
     for (int32_t i = 0; i < len; i++) { \
 	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR);   \
-        CHECK_ARROW_STATUS(builder.Append(OPERATION)); \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
+        CHECK_ARROW(builder.Append(OPERATION)); \
         OGR_G_DestroyGeometry(GEO_VAR); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW_STATUS(builder.Finish(&results));   \
+    CHECK_ARROW(builder.Finish(&results));   \
     return results; \
-} while(0);
+} while(0)
 
 
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(\
 FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
 std::shared_ptr<arrow::Array> \
-FUNC_NAME(const std::shared_ptr<arrow::Array> geometries) {   \
+FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION);   \
 }
 
@@ -49,24 +49,24 @@ do {    \
     char *wkt_tmp;    \
     for (int32_t i = 0; i < len; i++) { \
 	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR);   \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
         geo_tmp = OPERATION;	\
-        OGR_G_ExportToWkt(geo_tmp, &wkt_tmp);  \
-        CHECK_ARROW_STATUS(builder.Append(wkt_tmp)); \
+        CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
+        CHECK_ARROW(builder.Append(wkt_tmp)); \
         OGR_G_DestroyGeometry(GEO_VAR); \
         OGR_G_DestroyGeometry(geo_tmp); \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW_STATUS(builder.Finish(&results));   \
+    CHECK_ARROW(builder.Finish(&results));   \
     return results; \
-} while (0);
+} while (0)
 
 
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(\
 FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
 std::shared_ptr<arrow::Array> \
-FUNC_NAME(const std::shared_ptr<arrow::Array> geometries) {   \
+FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION); \
 }
 
@@ -81,22 +81,22 @@ do {    \
     char *wkt_tmp;    \
     for (int32_t i = 0; i < len; i++) { \
 	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR);   \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
         wkt_tmp = OPERATION;	\
-        CHECK_ARROW_STATUS(builder.Append(wkt_tmp)); \
+        CHECK_ARROW(builder.Append(wkt_tmp)); \
         OGR_G_DestroyGeometry(GEO_VAR); \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW_STATUS(builder.Finish(&results));   \
+    CHECK_ARROW(builder.Finish(&results));   \
     return results; \
-} while(0);
+} while(0)
 
 
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(\
 FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
 std::shared_ptr<arrow::Array> \
-FUNC_NAME(const std::shared_ptr<arrow::Array> geometries, SCALAR_PARAM) {   \
+FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries, SCALAR_PARAM) {   \
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION); \
 }
 
@@ -113,16 +113,16 @@ do {    \
     for (int32_t i = 0; i < len; i++) { \
 	auto geo_wkt_1 = (char*)(wkt_geometries_1->GetString(i).c_str());	\
 	auto geo_wkt_2 = (char*)(wkt_geometries_2->GetString(i).c_str());	\
-        OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1);  \
-        OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2);  \
-        CHECK_ARROW_STATUS(builder.Append(OPERATION));  \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1));  \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2));  \
+        CHECK_ARROW(builder.Append(OPERATION));  \
         OGR_G_DestroyGeometry(GEO_VAR_1); \
         OGR_G_DestroyGeometry(GEO_VAR_2); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW_STATUS(builder.Finish(&results));   \
+    CHECK_ARROW(builder.Finish(&results));   \
     return results; \
-} while(0);
+} while(0)
 
 
 #define BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(\
@@ -148,20 +148,20 @@ do {    \
     for (int32_t i = 0; i < len; i++) { \
 	auto geo_wkt_1 = (char*)(wkt_geometries_1->GetString(i).c_str());	\
 	auto geo_wkt_2 = (char*)(wkt_geometries_2->GetString(i).c_str());	\
-        OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1);  \
-        OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2);  \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1));  \
+        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2));  \
         geo_tmp = OPERATION;   \
-        OGR_G_ExportToWkt(geo_tmp, &wkt_tmp);  \
-        CHECK_ARROW_STATUS(builder.Append(wkt_tmp));  \
+        CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
+        CHECK_ARROW(builder.Append(wkt_tmp));  \
         OGR_G_DestroyGeometry(GEO_VAR_1); \
         OGR_G_DestroyGeometry(GEO_VAR_2); \
         OGR_G_DestroyGeometry(geo_tmp); \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW_STATUS(builder.Finish(&results));   \
+    CHECK_ARROW(builder.Finish(&results));   \
     return results; \
-} while(0);
+} while(0)
 
 
 #define BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(\
@@ -177,7 +177,7 @@ FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries_1,    \
 inline char *
 Wrapper_OGR_G_ExportToWkt(void *geo) {
     char *wkt;
-    OGR_G_ExportToWkt(geo, &wkt);
+    CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt));
     return wkt;
 }
 
@@ -207,18 +207,56 @@ ST_Point(const std::shared_ptr<arrow::Array> &x_values,
     auto x_double_values = std::static_pointer_cast<arrow::DoubleArray>(x_values);
     auto y_double_values = std::static_pointer_cast<arrow::DoubleArray>(y_values);
     OGRPoint point;
-    char *wkt;
+    char *wkt = nullptr;
     arrow::StringBuilder builder;
 
     for (int32_t i = 0; i < len; i++) {
         point.setX(x_double_values->Value(i));
         point.setY(y_double_values->Value(i));
-        OGR_G_ExportToWkt(&point, &wkt);
-        CHECK_ARROW_STATUS(builder.Append(wkt));
+        CHECK_GDAL(OGR_G_ExportToWkt(&point, &wkt));
+        CHECK_ARROW(builder.Append(wkt));
         CPLFree(wkt);
     }
     std::shared_ptr<arrow::Array> results;
-    CHECK_ARROW_STATUS(builder.Finish(&results));
+    CHECK_ARROW(builder.Finish(&results));
+    return results;
+}
+
+std::shared_ptr<arrow::Array>
+ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> &min_x_values,
+                       const std::shared_ptr<arrow::Array> &min_y_values,
+                       const std::shared_ptr<arrow::Array> &max_x_values,
+                       const std::shared_ptr<arrow::Array> &max_y_values) {
+
+    assert(min_x_values->length() == max_x_values->length());
+    assert(min_y_values->length() == max_y_values->length());
+    assert(min_x_values->length() == min_y_values->length());
+    auto len = min_x_values->length();
+
+    auto min_x_double_values = std::static_pointer_cast<const arrow::DoubleArray>(min_x_values);
+    auto min_y_double_values = std::static_pointer_cast<const arrow::DoubleArray>(min_y_values);
+    auto max_x_double_values = std::static_pointer_cast<const arrow::DoubleArray>(max_x_values);
+    auto max_y_double_values = std::static_pointer_cast<const arrow::DoubleArray>(max_y_values);
+
+    arrow::StringBuilder builder;
+
+    for (int32_t i = 0; i < len; i++) {
+        OGRLinearRing ring;
+        ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+        ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
+        ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
+        ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
+        ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+        ring.closeRings();
+        OGRPolygon polygon;
+        polygon.addRing(&ring);
+        char *wkt = nullptr;
+        CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
+        CHECK_ARROW(builder.Append(wkt));
+        CPLFree(wkt);
+    }
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
     return results;
 }
 
@@ -247,6 +285,13 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
 
 
 /************************ GEOMETRY PROCESSING ************************/
+
+std::shared_ptr<arrow::Array>
+ST_Buffer(const std::shared_ptr<arrow::Array> &geometries, 
+          double buffer_distance, int n_quadrant_segments) {
+    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
+        arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
+}
 
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,

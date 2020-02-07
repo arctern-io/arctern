@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <ctime>
-
+#include <ogr_geometry.h>
 #include <arrow/api.h>
 #include <arrow/array.h>
+
 #include "arrow/gis_api.h"
+#include "utils/check_status.h"
 
 using namespace zilliz::gis;
 
