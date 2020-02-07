@@ -2,6 +2,7 @@
 #include "gis/api.h"
 #include "utils/check_status.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ogr_api.h>
@@ -20,10 +21,10 @@ do {    \
     RESULT_BUILDER_TYPE builder;   \
     void *GEO_VAR;    \
     for (int32_t i = 0; i < len; i++) { \
-	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
-        CHECK_ARROW(builder.Append(OPERATION)); \
-        OGR_G_DestroyGeometry(GEO_VAR); \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(\
+            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
+        CHECK_ARROW(builder.Append(OPERATION));  \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
     }   \
     std::shared_ptr<arrow::Array> results;  \
     CHECK_ARROW(builder.Finish(&results));   \
@@ -48,13 +49,13 @@ do {    \
     void *GEO_VAR, *geo_tmp;    \
     char *wkt_tmp;    \
     for (int32_t i = 0; i < len; i++) { \
-	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
         geo_tmp = OPERATION;	\
         CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
         CHECK_ARROW(builder.Append(wkt_tmp)); \
-        OGR_G_DestroyGeometry(GEO_VAR); \
-        OGR_G_DestroyGeometry(geo_tmp); \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo_tmp);   \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
@@ -80,11 +81,11 @@ do {    \
     void *GEO_VAR;    \
     char *wkt_tmp;    \
     for (int32_t i = 0; i < len; i++) { \
-	auto geo_wkt = (char*)(wkt_geometries->GetString(i).c_str());	\
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt, nullptr, &GEO_VAR));   \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
         wkt_tmp = OPERATION;	\
         CHECK_ARROW(builder.Append(wkt_tmp)); \
-        OGR_G_DestroyGeometry(GEO_VAR); \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
@@ -111,13 +112,13 @@ do {    \
     RESULT_BUILDER_TYPE builder;  \
     void *GEO_VAR_1, *GEO_VAR_2;   \
     for (int32_t i = 0; i < len; i++) { \
-	auto geo_wkt_1 = (char*)(wkt_geometries_1->GetString(i).c_str());	\
-	auto geo_wkt_2 = (char*)(wkt_geometries_2->GetString(i).c_str());	\
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1));  \
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2));  \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries_1->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_1))); \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries_2->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_2))); \
         CHECK_ARROW(builder.Append(OPERATION));  \
-        OGR_G_DestroyGeometry(GEO_VAR_1); \
-        OGR_G_DestroyGeometry(GEO_VAR_2); \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_1);   \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_2);   \
     }   \
     std::shared_ptr<arrow::Array> results;  \
     CHECK_ARROW(builder.Finish(&results));   \
@@ -146,16 +147,16 @@ do {    \
     void *GEO_VAR_1, *GEO_VAR_2, *geo_tmp;   \
     char *wkt_tmp; \
     for (int32_t i = 0; i < len; i++) { \
-	auto geo_wkt_1 = (char*)(wkt_geometries_1->GetString(i).c_str());	\
-	auto geo_wkt_2 = (char*)(wkt_geometries_2->GetString(i).c_str());	\
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_1, nullptr, &GEO_VAR_1));  \
-        CHECK_GDAL(OGR_G_CreateFromWkt(&geo_wkt_2, nullptr, &GEO_VAR_2));  \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries_1->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_1))); \
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
+            wkt_geometries_2->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_2))); \
         geo_tmp = OPERATION;   \
         CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
         CHECK_ARROW(builder.Append(wkt_tmp));  \
-        OGR_G_DestroyGeometry(GEO_VAR_1); \
-        OGR_G_DestroyGeometry(GEO_VAR_2); \
-        OGR_G_DestroyGeometry(geo_tmp); \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_1);   \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_2);   \
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo_tmp);   \
         CPLFree(wkt_tmp); \
     }   \
     std::shared_ptr<arrow::Array> results;  \
@@ -179,13 +180,6 @@ Wrapper_OGR_G_ExportToWkt(void *geo) {
     char *wkt;
     CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt));
     return wkt;
-}
-
-// TODO: implement Wrapper_OGR_G_GetEnvelope base on OGR_G_GetEnvelope
-inline void *
-Wrapper_OGR_G_GetEnvelope(void *geo) {
-    void *envelope = nullptr;
-    return envelope;
 }
 
 inline void *
@@ -281,7 +275,7 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_Envelope, arrow::StringBuilder, geo,
-    Wrapper_OGR_G_GetEnvelope(geo));
+    OGR_G_Boundary(geo));
 
 
 /************************ GEOMETRY PROCESSING ************************/
