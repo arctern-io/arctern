@@ -27,7 +27,7 @@ fetch(const char*& iter) {
 
 void
 GeometryVector::decodeFromWKB_append(const char* raw_bin) {
-    //
+    // decode a single polygon and append to vector
     const char* stream_iter = raw_bin;
     auto byte_order = fetch<WKB_ByteOrder>(stream_iter);
     assert(byte_order == WKB_ByteOrder::LittleEndian);
@@ -62,6 +62,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
         }
         case WKB_Category::Polygon: {
             int total_points = 0;
+            // most case 1
             auto count_sub_poly = fetch<uint32_t>(stream_iter);
             this->metas.push_back(count_sub_poly);
             for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
