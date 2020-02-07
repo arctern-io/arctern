@@ -1,4 +1,5 @@
-project(zilliz_gis LANGUAGES cuda)
+cmake_minimum_required(VERSION 3.15)
+# project(zilliz_gis LANGUAGES CUDA)
 set(CMAKE_CUDA_FLAGS "-Wall -Werror -Wextra")
 include_directories(include)
 add_subdirectory(src)
