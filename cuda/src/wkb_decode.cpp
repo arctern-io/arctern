@@ -72,8 +72,10 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
             }
             this->meta_offsets.push_back(1 + count_sub_poly);
         }
-        default:
+        default: {
+            assert(false);
             break;
+        }
     }
 }
 
