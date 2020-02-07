@@ -253,7 +253,7 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
                    int32_t precision) {
-    char precision_str[20], old_precision_str[20];
+    char precision_str[32];
     sprintf(precision_str, "%i", precision);
 
     auto old_precision_str = CPLGetConfigOption("OGR_WKT_PRECISION", "");
