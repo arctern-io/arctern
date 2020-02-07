@@ -5,10 +5,7 @@ namespace zilliz {
 namespace gis {
 namespace cpp {
 
-enum class WKB_ByteOrder : uint8_t {
-    BigEndian = 0, 
-    LittleEndian = 1
-};
+enum class WKB_ByteOrder : uint8_t { BigEndian = 0, LittleEndian = 1 };
 
 enum class WKB_Category : uint32_t {
     Invalid = 0,
@@ -18,15 +15,20 @@ enum class WKB_Category : uint32_t {
     MultiPoint = 4,
     MultiLineString = 5,
     MultiPolygon = 6,
-    GeometryCollection = 7, 
-    // TO BE CONTINUE, LAZY NOW
+    GeometryCollection = 7,
+    // TODO: TO BE CONTINUE, LAZY NOW
 };
 
 constexpr uint32_t WKBGroupBase = 1000;
-enum class WKB_Group : uint32_t { None = 0, Z = 1, M = 2, ZM = 3 };
+enum class WKB_Group : uint32_t {
+    None = 0,    // normal 2D
+    Z = 1,       // XYZ
+    M = 2,       // XYM
+    ZM = 3       // XYZM
+};
 
-struct Tag {
-    explicit DEVICE_RUNNABLE Tag(uint32_t data) : data_(data) {}
+struct WKB_Tag {
+    explicit DEVICE_RUNNABLE WKB_Tag(uint32_t data) : data_(data) {}
     DEVICE_RUNNABLE WKB_Category get_category() {
         return static_cast<WKB_Category>(data_ % WKBGroupBase);
     }

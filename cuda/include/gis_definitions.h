@@ -19,7 +19,7 @@ class GeometryVector {
     GPUVector<char> encodeToWKB();
     static GeometryVector decodeFromWKB(const char* bin);
  private:
-    GPUVector<Tag> tags;
+    GPUVector<WKB_Tag> tags;
     GPUVector<uint32_t> metas;
     GPUVector<double> values;
     GPUVector<int> meta_offsets;
