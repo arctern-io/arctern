@@ -254,10 +254,11 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
                    int32_t precision) {
-    char precision_str[32], old_precision_str[32];
+
+    char precision_str[32];
     sprintf(precision_str, "%i", precision);
 
-    strcpy(old_precision_str, CPLGetConfigOption("OGR_WKT_PRECISION", ""));
+    char *old_precision_str = CPLStrdup(CPLGetConfigOption("OGR_WKT_PRECISION", ""));
     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
 
     auto len = geometries->length();
@@ -273,7 +274,9 @@ ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
         CPLFree(wkt_tmp);
     }
+
     CPLSetConfigOption("OGR_WKT_PRECISION", old_precision_str);
+    CPLFree(old_precision_str);
 
     std::shared_ptr<arrow::Array> results;
     CHECK_ARROW(builder.Finish(&results));
