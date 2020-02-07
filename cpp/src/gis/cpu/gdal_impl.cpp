@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
@@ -253,10 +254,10 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
                    int32_t precision) {
-    char precision_str[32];
+    char precision_str[32], old_precision_str[32];
     sprintf(precision_str, "%i", precision);
 
-    auto old_precision_str = CPLGetConfigOption("OGR_WKT_PRECISION", "");
+    strcpy(old_precision_str, CPLGetConfigOption("OGR_WKT_PRECISION", ""));
     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
 
     auto len = geometries->length();
