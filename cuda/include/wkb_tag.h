@@ -28,6 +28,7 @@ enum class WKB_Group : uint32_t {
 };
 
 struct WKB_Tag {
+    WKB_Tag() = default;
     explicit DEVICE_RUNNABLE WKB_Tag(uint32_t data) : data_(data) {}
     DEVICE_RUNNABLE WKB_Category get_category() {
         return static_cast<WKB_Category>(data_ % WKBGroupBase);

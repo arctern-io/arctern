@@ -16,8 +16,10 @@ namespace gis {
 namespace cpp {
 class GeometryVector {
  public:
+    GeometryVector() = default;
     GPUVector<char> encodeToWKB();
     static GeometryVector decodeFromWKB(const char* bin);
+
  private:
     GPUVector<WKB_Tag> tags;
     GPUVector<uint32_t> metas;
