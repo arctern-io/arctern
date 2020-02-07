@@ -30,6 +30,7 @@ GeometryVector::decodeFromWKB(const char* raw_bin) {
     auto byte_order = fetch<WKB_ByteOrder>(stream);
     assert(byte_order == WKB_ByteOrder::LittleEndian);
     auto tag = fetch<WKB_Tag>(stream);
+    
 }
 
 }    // namespace cpp
