@@ -258,7 +258,8 @@ ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
     char precision_str[32];
     sprintf(precision_str, "%i", precision);
 
-    char *old_precision_str = CPLStrdup(CPLGetConfigOption("OGR_WKT_PRECISION", ""));
+    const char *prev_config = CPLGetConfigOption("OGR_WKT_PRECISION", nullptr);
+    char *old_precision_str = prev_config ? CPLStrdup(prev_config) : nullptr;
     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
 
     auto len = geometries->length();
