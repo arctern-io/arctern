@@ -72,36 +72,6 @@ FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
 }
 
 
-#define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(\
-RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
-do {    \
-    auto len = geometries->length();    \
-    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);    \
-    RESULT_BUILDER_TYPE builder;   \
-    void *GEO_VAR;    \
-    char *wkt_tmp;    \
-    for (int32_t i = 0; i < len; i++) { \
-        CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
-            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
-        wkt_tmp = OPERATION;	\
-        CHECK_ARROW(builder.Append(wkt_tmp)); \
-        OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
-        CPLFree(wkt_tmp); \
-    }   \
-    std::shared_ptr<arrow::Array> results;  \
-    CHECK_ARROW(builder.Finish(&results));   \
-    return results; \
-} while(0)
-
-
-#define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(\
-FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
-std::shared_ptr<arrow::Array> \
-FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries, SCALAR_PARAM) {   \
-    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION); \
-}
-
-
 #define BINARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(\
 RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION)   \
 do {    \
@@ -174,13 +144,6 @@ FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries_1,    \
         RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION);  \
 }
 
-
-inline char *
-Wrapper_OGR_G_ExportToWkt(void *geo) {
-    char *wkt;
-    CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt));
-    return wkt;
-}
 
 inline void *
 Wrapper_OGR_G_Centroid(void *geo) {
@@ -290,12 +253,30 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
                    int32_t precision) {
-    char precision_str[20];
+    char precision_str[32];
     sprintf(precision_str, "%i", precision);
-    // TODO: check if the precision config will affect next call
+
+    auto old_precision_str = CPLGetConfigOption("OGR_WKT_PRECISION", "");
     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
-    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(
-        arrow::StringBuilder, geo, Wrapper_OGR_G_ExportToWkt(geo));
+
+    auto len = geometries->length();
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+    arrow::StringBuilder builder;
+    void *geo;
+    char *wkt_tmp;
+    for (int32_t i = 0; i < len; i++) {
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
+        CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
+        CHECK_ARROW(builder.Append(wkt_tmp));
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
+        CPLFree(wkt_tmp);
+    }
+    CPLSetConfigOption("OGR_WKT_PRECISION", old_precision_str);
+
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
+    return results; 
 }
  
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
