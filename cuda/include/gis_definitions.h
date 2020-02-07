@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <set>
 #include <optional>
@@ -22,6 +23,7 @@ class GeometryVector {
     GPUVector<uint32_t> metas;
     GPUVector<double> values;
     GPUVector<int> meta_offsets;
+    GPUVector<int> values_offsets;
     size_t size;
 };
 
