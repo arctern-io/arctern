@@ -33,6 +33,9 @@ struct WKB_Tag {
     DEVICE_RUNNABLE WKB_Category get_category() {
         return static_cast<WKB_Category>(data_ % WKBGroupBase);
     }
+    DEVICE_RUNNABLE WKB_Group get_group() {
+        return static_cast<WKB_Group>(data_ / WKBGroupBase);
+    }
     uint32_t data_;
 };
 
