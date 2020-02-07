@@ -18,14 +18,14 @@ class GeometryVector {
  public:
     GeometryVector() = default;
     GPUVector<char> encodeToWKB();
-    static GeometryVector decodeFromWKB(const char* bin);
+    void decodeFromWKB_append(const char* bin);
 
  private:
     GPUVector<WKB_Tag> tags;
     GPUVector<uint32_t> metas;
     GPUVector<double> values;
     GPUVector<int> meta_offsets;
-    GPUVector<int> values_offsets;
+    GPUVector<int> value_offsets;
     size_t size;
 };
 
