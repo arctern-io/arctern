@@ -33,30 +33,44 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     assert(byte_order == WKB_ByteOrder::LittleEndian);
     auto tag = fetch<WKB_Tag>(stream_iter);
 
-    auto extend_value_from_stream = [&](size_t count) {
-        auto value_base = this->values.size();
+    auto extend_values_from_stream = [&](int dimensions, size_t points) {
+        auto count = dimensions * points;
+        int value_base = this->values.size();
         this->values.resize(this->values.size() + count);
-        fill<double>(count, stream_iter, this->values.data() + value_base);
+        fill<double>(2 * count, stream_iter, this->values.data() + value_base);
     };
 
     // deal with 2D cases for now
     assert(tag.get_group() == WKB_Group::None);
+    auto dimensions = 2;
     this->tags.push_back(tag);
     switch (tag.get_category()) {
         case WKB_Category::Point: {
-            // this->metas nothing
-            this->meta_offsets.push_back(0);
+            // this->metas.do_nothing()
+            this->value_offsets.push_back(dimensions);
+            extend_values_from_stream(dimensions, 1);
 
-            this->value_offsets.push_back(2);
-            extend_value_from_stream(2);
+            this->meta_offsets.push_back(0);
             break;
         }
+        case WKB_Category::LineString: {
+            auto points = fetch<uint32_t>(stream_iter);
+            this->metas.push_back(points);
+            extend_values_from_stream(dimensions, points);
+
+            this->value_offsets.push_back(1);
+        }
         case WKB_Category::Polygon: {
-            auto sub_polygons = fetch<uint32_t>(stream_iter);
-            this->metas.push_back(sub_polygons);
-            for (auto sub_poly = 0; sub_poly < sub_polygons; sub_poly++) {
-                auto edges = ;
+            int total_points = 0;
+            auto count_sub_poly = fetch<uint32_t>(stream_iter);
+            this->metas.push_back(count_sub_poly);
+            for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
+                auto points = fetch<uint32_t>(stream_iter);
+                extend_values_from_stream(dimensions, points);
+                total_points += dimensions;
+                this->metas.push_back(points);
             }
+            this->meta_offsets.push_back(1 + count_sub_poly);
         }
         default:
             break;
