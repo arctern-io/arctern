@@ -16,7 +16,7 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Overlaps(const shared_ptr[CArray] &left_geometries,const shared_ptr[CArray] &right_geometries)
     shared_ptr[CArray] ST_Crosses(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries)
     shared_ptr[CArray] ST_IsSimple(const shared_ptr[CArray] &geometries)
-    shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot)
+#    shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot)
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries)
     shared_ptr[CArray] ST_MakeValid(const shared_ptr[CArray] &geometries)
     shared_ptr[CArray] ST_SimplifyPreserveTopology(const shared_ptr[CArray] &geometries, double distanceTolerance)
@@ -32,3 +32,4 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist)
+    shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist, int n_quadrant_segments)
