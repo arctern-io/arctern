@@ -251,38 +251,38 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
         arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
 }
 
-std::shared_ptr<arrow::Array>
-ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-                   int32_t precision) {
+// std::shared_ptr<arrow::Array>
+// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
+//                    int32_t precision) {
 
-    char precision_str[32];
-    sprintf(precision_str, "%i", precision);
+//     char precision_str[32];
+//     sprintf(precision_str, "%i", precision);
 
-    const char *prev_config = CPLGetConfigOption("OGR_WKT_PRECISION", nullptr);
-    char *old_precision_str = prev_config ? CPLStrdup(prev_config) : nullptr;
-    CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
+//     const char *prev_config = CPLGetConfigOption("OGR_WKT_PRECISION", nullptr);
+//     char *old_precision_str = prev_config ? CPLStrdup(prev_config) : nullptr;
+//     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
 
-    auto len = geometries->length();
-    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
-    arrow::StringBuilder builder;
-    void *geo;
-    char *wkt_tmp;
-    for (int32_t i = 0; i < len; i++) {
-        CHECK_GDAL(OGRGeometryFactory::createFromWkt(
-            wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
-        CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
-        CHECK_ARROW(builder.Append(wkt_tmp));
-        OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
-        CPLFree(wkt_tmp);
-    }
+//     auto len = geometries->length();
+//     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+//     arrow::StringBuilder builder;
+//     void *geo;
+//     char *wkt_tmp;
+//     for (int32_t i = 0; i < len; i++) {
+//         CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+//             wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
+//         CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
+//         CHECK_ARROW(builder.Append(wkt_tmp));
+//         OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
+//         CPLFree(wkt_tmp);
+//     }
 
-    CPLSetConfigOption("OGR_WKT_PRECISION", old_precision_str);
-    CPLFree(old_precision_str);
+//     CPLSetConfigOption("OGR_WKT_PRECISION", old_precision_str);
+//     CPLFree(old_precision_str);
 
-    std::shared_ptr<arrow::Array> results;
-    CHECK_ARROW(builder.Finish(&results));
-    return results; 
-}
+//     std::shared_ptr<arrow::Array> results;
+//     CHECK_ARROW(builder.Finish(&results));
+//     return results; 
+// }
  
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_Intersection, arrow::StringBuilder, geo_1, geo_2,
