@@ -5,9 +5,34 @@
 #include <cstring>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <algorithm>
+#include <numeric>
+
 namespace zilliz {
 namespace gis {
 namespace cpp {
+
+void
+GeometryVector::decodeFromWKB_initialize() {
+    tags_.clear();
+    metas_.clear();
+    values_.clear();
+    meta_offsets_.clear();
+    value_offsets_.clear();
+    size_ = 0;
+    data_state_ = DataState::Appending;
+}
+void
+GeometryVector::decodeFromWKB_finalize(){
+    meta_offsets_.push_back(0);
+    value_offsets_.push_back(0);
+    auto prefix_sum = [](vector<int>& vec) {
+        std::exclusive_scan(vec.begin(), vec.end(), vec.begin(), 0);
+    };
+
+    data_state_ = DataState::PrefixSumOffset_FullData;
+}
+
 
 template<typename T>
 static inline void
@@ -92,7 +117,8 @@ gpu_alloc(size_t size) {
 }
 
 template<typename T>
-void gpu_free(T* ptr) {
+void
+gpu_free(T* ptr) {
     cudaFree(ptr);
 }
 
@@ -116,12 +142,12 @@ gpu_alloc_and_copy(const T* src, size_t size) {
 
 
 GeometryVector::GPUContextHolder
-GeometryVector::create_gpuctx() const{
+GeometryVector::create_gpuctx() const {
     GeometryVector::GPUContextHolder holder;
     static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
                   "here use vector now");
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
-    auto size = tags_.size(); // size_ of elements
+    auto size = tags_.size();    // size_ of elements
     assert(size + 1 == meta_offsets_.size());
     assert(size + 1 == value_offsets_.size());
     assert(meta_offsets_[size] == metas_.size());
@@ -130,8 +156,10 @@ GeometryVector::create_gpuctx() const{
     holder.ctx->tags = gpu_alloc_and_copy(tags_.data(), tags_.size());
     holder.ctx->metas = gpu_alloc_and_copy(metas_.data(), metas_.size());
     holder.ctx->values = gpu_alloc_and_copy(values_.data(), values_.size());
-    holder.ctx->meta_offsets = gpu_alloc_and_copy(meta_offsets_.data(), meta_offsets_.size());
-    holder.ctx->value_offsets = gpu_alloc_and_copy(value_offsets_.data(), value_offsets_.size());
+    holder.ctx->meta_offsets =
+        gpu_alloc_and_copy(meta_offsets_.data(), meta_offsets_.size());
+    holder.ctx->value_offsets =
+        gpu_alloc_and_copy(value_offsets_.data(), value_offsets_.size());
     holder.ctx->size = tags_.size();
     holder.ctx->data_state = data_state_;
     return holder;
@@ -148,7 +176,7 @@ GeometryVector::GPUContextHolder::Deleter::operator()(GPUContext* ptr) {
     gpu_free(ptr->meta_offsets);
     gpu_free(ptr->value_offsets);
     ptr->size = 0;
-    ptr->data_state = DataState::NIL;
+    ptr->data_state = DataState::Invalid;
 }
 
 }    // namespace cpp

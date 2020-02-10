@@ -20,7 +20,7 @@ class GeometryVector {
  private:
  public:
     enum class DataState : uint32_t {
-        NIL,
+        Invalid,
         Appending,
         FlatOffset_EmptyData,
         PrefixSumOffset_EmptyData,
@@ -35,28 +35,33 @@ class GeometryVector {
         int* meta_offsets = nullptr;
         int* value_offsets = nullptr;
         int size = 0;
-        DataState data_state;
+        DataState data_state = DataState::Invalid;
     };
 
  private:
-
  public:
     // just a wrapper of unique_ptr<ctx, dtor>
     class GPUContextHolder {
      public:
         const GPUContext& get() { return *ctx; }
         struct Deleter {
-            void operator()(GPUContext*); // TODO
+            void operator()(GPUContext*);    // TODO
         };
+
      private:
         std::unique_ptr<GPUContext, Deleter> ctx;
-        GPUContextHolder(): ctx(std::unique_ptr<GPUContext, Deleter>()){}
+        GPUContextHolder() : ctx(std::unique_ptr<GPUContext, Deleter>()) {}
         friend class GeometryVector;
     };
-    class GPUContextHolder create_gpuctx() const; // TODO
+    class GPUContextHolder create_gpuctx() const;    // TODO
     GeometryVector() = default;
-    GPUVector<char> encodeToWKB() const; // TODO
+    GPUVector<char> encodeToWKB() const;    // TODO
+
+    void decodeFromWKB_initialize();
     void decodeFromWKB_append(const char* bin);
+    void decodeFromWKB_finalize();
+
+    int size() { return size_; }
 
  private:
     GPUVector<WKB_Tag> tags_;
