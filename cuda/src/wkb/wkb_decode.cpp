@@ -120,7 +120,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
 }
 
 template<typename T>
-inline T*
+T*
 gpu_alloc(size_t size) {
     T* ptr;
     auto err = cudaMalloc(&ptr, size * sizeof(T));
@@ -137,7 +137,7 @@ gpu_free(T* ptr) {
 }
 
 template<typename T>
-inline void
+void
 gpu_memcpy(T* dst, const T* src, size_t size) {
     auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
     if (err != cudaSuccess) {
@@ -147,7 +147,7 @@ gpu_memcpy(T* dst, const T* src, size_t size) {
 
 
 template<typename T>
-inline T*
+T*
 gpu_alloc_and_copy(const T* src, size_t size) {
     auto dst = gpu_alloc<T>(size);
     gpu_memcpy(dst, src, size);
@@ -167,7 +167,6 @@ GeometryVector::create_gpuctx() const {
     assert(size + 1 == value_offsets_.size());
     assert(meta_offsets_[size] == metas_.size());
     assert(value_offsets_[size] == values_.size());
-
     holder.ctx->tags = gpu_alloc_and_copy(tags_.data(), tags_.size());
     holder.ctx->metas = gpu_alloc_and_copy(metas_.data(), metas_.size());
     holder.ctx->values = gpu_alloc_and_copy(values_.data(), values_.size());

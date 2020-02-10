@@ -39,5 +39,6 @@ TEST(FunctorDistance, naive) {
     }
     gvec_left.decodeFromWKB_finalize();
     gvec_right.decodeFromWKB_finalize();
+    gvec_left.create_gpuctx();
     int i = 1 + 1;
 }

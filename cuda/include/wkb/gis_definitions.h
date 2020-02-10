@@ -50,7 +50,7 @@ class GeometryVector {
 
      private:
         std::unique_ptr<GPUContext, Deleter> ctx;
-        GPUContextHolder() : ctx(std::unique_ptr<GPUContext, Deleter>()) {}
+        explicit GPUContextHolder() : ctx(new GPUContext) {}
         friend class GeometryVector;
     };
     class GPUContextHolder create_gpuctx() const;    // TODO
