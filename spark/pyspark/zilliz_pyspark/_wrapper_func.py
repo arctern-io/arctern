@@ -12,22 +12,6 @@ from pyspark.sql.functions import pandas_udf, PandasUDFType
 def toArrow(parameter):
     return  pa.array(parameter)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_Point(x, y):
-    return 1
-#    from zilliz_gis import make_point
-   # x, y = toArrow(x), toArrow(y)
-   # return pd.Series(make_point(x, y))
-
-
-@pandas_udf("long", PandasUDFType.GROUPED_AGG)
-def point_map(x, y):
-    return 1
-    #from zilliz_gis import point_map
-   # x, y = toArrow(x), toArrow(y)
-   # return pd.Series(point_map(x, y))
-
-
 @pandas_udf("string", PandasUDFType.GROUPED_AGG)
 def my_plot(x, y):
     arr_x = pa.array(x, type='uint32')
@@ -38,4 +22,11 @@ def my_plot(x, y):
     curve_z = curve_z.buffers()[1].to_pybytes()
     return curve_z_copy.buffers()[1].hex()
 
+@pandas_udf("string", PandasUDFType.Scalar)
+def ST_Point_UDF(x, y):
+    arr_x = (x, type='double')
+    arr_y = (y, type='double')
+    from zilliz_gis import ST_Point
+    point_arr = ST_Point(arr_x, arr_y)
+    return point_arr.to_pandas()
 

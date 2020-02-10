@@ -2,11 +2,11 @@ from pyspark.sql import SparkSession
 from zilliz_gis.register import register_funcs
 
 
-def example(spark):
-    df = spark.read.json("/opt/spark-3.0.0-preview/python/points.json")
-    df.createOrReplaceTempView("points")
-    spark.sql("select ST_Point(age, age) from points").show()
-
+def run_st_point(spark):
+    points_df = spark.read.json("/tmp/points.json").cache()
+    points_df.createOrReplaceTempView("points")
+    register_funcs(spark)
+    spark.sql("select ST_Point_UDF(x, y) from points").show()
 
 if __name__ == "__main__":
     spark = SparkSession \
@@ -15,6 +15,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-    register_funcs(spark)
-    example(spark)
+
+    run_st_point(spark)
+
     spark.stop()

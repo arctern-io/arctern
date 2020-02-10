@@ -79,5 +79,5 @@ def ST_NPoints(object geo_arr):
 def ST_Envelope(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Envelope(pyarrow_unwrap_array(geo_arr)))
 
-def ST_Buffer(object geo_arr,double dfDist):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
+# def ST_Buffer(object geo_arr,double dfDist):
+#     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
