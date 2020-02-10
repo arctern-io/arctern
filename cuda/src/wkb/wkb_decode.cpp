@@ -23,12 +23,25 @@ GeometryVector::decodeFromWKB_initialize() {
     data_state_ = DataState::Appending;
 }
 void
-GeometryVector::decodeFromWKB_finalize(){
+GeometryVector::decodeFromWKB_finalize() {
+    assert(meta_offsets_.size() == tags_.size());
+    assert(value_offsets_.size() == tags_.size());
+
     meta_offsets_.push_back(0);
     value_offsets_.push_back(0);
+
     auto prefix_sum = [](vector<int>& vec) {
-        std::exclusive_scan(vec.begin(), vec.end(), vec.begin(), 0);
+        // TODO: use exclusive_scan instead
+        int sum = 0;
+        for(auto &x: vec) {
+            auto old_sum = sum;
+            sum += x;
+            x = old_sum;
+        }
     };
+
+    prefix_sum(meta_offsets_);
+    prefix_sum(value_offsets_);
 
     data_state_ = DataState::PrefixSumOffset_FullData;
 }
