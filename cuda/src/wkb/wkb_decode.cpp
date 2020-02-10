@@ -3,7 +3,7 @@
 #include <memory>
 #include <cstdlib>
 #include <cstring>
-#include <cuda.h>
+//#include <cuda.h>
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <numeric>

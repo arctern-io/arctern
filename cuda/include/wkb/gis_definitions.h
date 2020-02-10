@@ -69,8 +69,8 @@ class GeometryVector {
     GPUVector<double> values_;
     GPUVector<int> meta_offsets_;
     GPUVector<int> value_offsets_;
-    int size_;
-    DataState data_state_;
+    int size_ = 0;
+    DataState data_state_ = DataState::Appending;
 };
 
 
