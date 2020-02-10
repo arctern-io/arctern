@@ -80,6 +80,12 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     }
 }
 
+GeometryVector::GPUContextHolder
+GeometryVector::create_gpuctx() {
+    GeometryVector::GPUContextHolder holder;
+    return holder;
+}
+
 }    // namespace cpp
 }    // namespace gis
 }    // namespace zilliz

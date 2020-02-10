@@ -4,7 +4,7 @@
 #include <optional>
 #include <array>
 #include <tuple>
-#include <cudart.h>
+#include <memory>
 #include <cassert>
 using std::vector;
 template<typename T>
@@ -16,36 +16,44 @@ namespace zilliz {
 namespace gis {
 namespace cpp {
 
-
 class GeometryVector {
+ private:
  public:
     struct GPUContext {
-        WKB_Tag* tags;
-        uint32_t* metas;
-        double* values;
-        int* meta_offsets;
-        int* value_offsets;
-        size_t size;
+        enum class State : uint32_t {
+            NIL,
+            FlatOffset_EmptyData,
+            PrefixSumOffset_EmptyData,
+            FlatOffset_FullData,
+            PrefixSumOffset_FullData
+        };
+        WKB_Tag* tags = nullptr;
+        uint32_t* metas = nullptr;
+        double* values = nullptr;
+        int* meta_offsets = nullptr;
+        int* value_offsets = nullptr;
+        size_t size = 0;
+        State state;
     };
-    class GPUContextManager {
+
+ private:
+
+ public:
+    // just a wrapper of unique_ptr<ctx, dtor>
+    class GPUContextHolder {
      public:
-        ~GPUContextManager() = default;
+        const GPUContext& get() { return *ctx; }
+        class Deleter {
+            void operator()(GPUContext*); // TODO
+        };
      private:
-        GPUContextManager() = default;
-        GPUContextManager(const GPUContextManager&) = delete;
-        GPUContextManager(GPUContextManager&&) = default;
-        GPUContextManager& operator=(const GPUContextManager&) = delete;
-        GPUContextManager& operator=(GPUContextManager&&) = default;
-        static void destructor(GPUContext&) {
-        }
-        
-        std::unique_ptr<GPUContext> ctx;
+        std::unique_ptr<GPUContext, Deleter> ctx;
+        GPUContextHolder(): ctx(std::unique_ptr<GPUContext, Deleter>()){}
+        friend class GeometryVector;
     };
-    GPUContextManager move_to_gpu() {
-        
-    }
+    class GPUContextHolder create_gpuctx(); // TODO
     GeometryVector() = default;
-    GPUVector<char> encodeToWKB();
+    GPUVector<char> encodeToWKB(); // TODO
     void decodeFromWKB_append(const char* bin);
 
  private:
