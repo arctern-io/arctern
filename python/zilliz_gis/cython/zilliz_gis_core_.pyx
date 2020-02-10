@@ -40,8 +40,8 @@ def ST_GeometryType(object geometries):
 def ST_MakeValid(object geometries):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_MakeValid(pyarrow_unwrap_array(geometries)))
 
-def ST_PrecisionReduce(object geometries,int num_dat):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
+#def ST_PrecisionReduce(object geometries,int num_dat):
+#    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
@@ -79,5 +79,7 @@ def ST_NPoints(object geo_arr):
 def ST_Envelope(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Envelope(pyarrow_unwrap_array(geo_arr)))
 
-# def ST_Buffer(object geo_arr,double dfDist):
-#     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
+def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
+    if n_quadrant_segments is not None:
+        return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist,n_quadrant_segments))
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
