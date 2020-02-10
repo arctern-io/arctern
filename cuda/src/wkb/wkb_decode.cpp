@@ -3,8 +3,8 @@
 #include <memory>
 #include <cstdlib>
 #include <cstring>
-
-
+#include <cuda.h>
+#include <cuda_runtime.h>
 namespace zilliz {
 namespace gis {
 namespace cpp {
@@ -80,10 +80,47 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     }
 }
 
+template<typename T>
+inline T*
+gpu_alloc(size_t size) {
+    T* ptr;
+    auto err = cudaMalloc(&ptr, size * sizeof(T));
+    if (err != cudaSuccess) {
+        throw std::runtime_error("error with code = " + std::to_string((int)err));
+    }
+    return ptr;
+}
+
+template<typename T>
+inline void
+gpu_memcpy(T* dst, const T* src, size_t size) {
+    auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
+    if (err != cudaSuccess) {
+        throw std::runtime_error("error with code = " + std::to_string((int)err));
+    }
+}
+
+
+template<typename T>
+inline T*
+gpu_alloc_and_copy(const T* src, size_t size) {
+    auto dst = gpu_alloc<T>(size);
+}
+
+
 GeometryVector::GPUContextHolder
 GeometryVector::create_gpuctx() {
     GeometryVector::GPUContextHolder holder;
-    return holder;
+    static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
+                  "here use vector now");
+    holder.ctx->tags = gpu_alloc() return holder;
+}
+
+void
+GeometryVector::GPUContextHolder::Deleter::operator()(GPUContext* ptr) {
+    if (!ptr) {
+        return;
+    }
 }
 
 }    // namespace cpp
