@@ -30,7 +30,7 @@ TEST(FunctorDistance, naive) {
     for (int i = 0; i < num; ++i) {
         double x = i;
         double y = i + 1;
-
+        static_assert(sizeof(x) == 8, "wtf");
         memcpy(data + 5, &x, sizeof(x));
         memcpy(data + 5 + 8, &y, sizeof(y));
 

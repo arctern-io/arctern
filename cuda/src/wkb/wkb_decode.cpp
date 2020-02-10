@@ -77,7 +77,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
         auto count = dimensions * points;
         int value_base = values_.size();
         values_.resize(values_.size() + count);
-        fill<double>(2 * count, stream_iter, values_.data() + value_base);
+        fill<double>(count, stream_iter, values_.data() + value_base);
     };
 
     // deal with 2D cases for now
