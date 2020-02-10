@@ -1,7 +1,6 @@
 
 __all__ = [
-    "ST_Point",
-    "point_map",
+    "ST_Point_UDF",
     "my_plot"
 ]
 
@@ -22,10 +21,10 @@ def my_plot(x, y):
     curve_z = curve_z.buffers()[1].to_pybytes()
     return curve_z_copy.buffers()[1].hex()
 
-@pandas_udf("string", PandasUDFType.Scalar)
+@pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Point_UDF(x, y):
-    arr_x = (x, type='double')
-    arr_y = (y, type='double')
+    arr_x = pa.array(x, type='double')
+    arr_y = pa.array(y, type='double')
     from zilliz_gis import ST_Point
     point_arr = ST_Point(arr_x, arr_y)
     return point_arr.to_pandas()

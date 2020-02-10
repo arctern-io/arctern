@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from zilliz_gis.register import register_funcs
+from zilliz_pyspark import register_funcs
 
 
 def run_st_point(spark):
