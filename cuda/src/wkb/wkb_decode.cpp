@@ -35,43 +35,43 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
 
     auto extend_values_from_stream = [&](int dimensions, size_t points) {
         auto count = dimensions * points;
-        int value_base = this->values.size();
-        this->values.resize(this->values.size() + count);
-        fill<double>(2 * count, stream_iter, this->values.data() + value_base);
+        int value_base = values.size();
+        values.resize(values.size() + count);
+        fill<double>(2 * count, stream_iter, values.data() + value_base);
     };
 
     // deal with 2D cases for now
     assert(tag.get_group() == WKB_Group::None);
     auto dimensions = 2;
-    this->tags.push_back(tag);
+    tags.push_back(tag);
     switch (tag.get_category()) {
         case WKB_Category::Point: {
-            // this->metas.do_nothing()
-            this->value_offsets.push_back(dimensions);
+            // metas.do_nothing()
+            value_offsets.push_back(dimensions);
             extend_values_from_stream(dimensions, 1);
 
-            this->meta_offsets.push_back(0);
+            meta_offsets.push_back(0);
             break;
         }
         case WKB_Category::LineString: {
             auto points = fetch<uint32_t>(stream_iter);
-            this->metas.push_back(points);
+            metas.push_back(points);
             extend_values_from_stream(dimensions, points);
 
-            this->value_offsets.push_back(1);
+            value_offsets.push_back(1);
         }
         case WKB_Category::Polygon: {
             int total_points = 0;
             // most case 1
             auto count_sub_poly = fetch<uint32_t>(stream_iter);
-            this->metas.push_back(count_sub_poly);
+            metas.push_back(count_sub_poly);
             for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
                 auto points = fetch<uint32_t>(stream_iter);
                 extend_values_from_stream(dimensions, points);
                 total_points += dimensions;
-                this->metas.push_back(points);
+                metas.push_back(points);
             }
-            this->meta_offsets.push_back(1 + count_sub_poly);
+            meta_offsets.push_back(1 + count_sub_poly);
         }
         default: {
             assert(false);
@@ -92,6 +92,11 @@ gpu_alloc(size_t size) {
 }
 
 template<typename T>
+void gpu_free(T* ptr) {
+    cudaFree(ptr);
+}
+
+template<typename T>
 inline void
 gpu_memcpy(T* dst, const T* src, size_t size) {
     auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
@@ -105,15 +110,31 @@ template<typename T>
 inline T*
 gpu_alloc_and_copy(const T* src, size_t size) {
     auto dst = gpu_alloc<T>(size);
+    gpu_memcpy(dst, src, size);
+    return dst;
 }
 
 
 GeometryVector::GPUContextHolder
-GeometryVector::create_gpuctx() {
+GeometryVector::create_gpuctx() const{
     GeometryVector::GPUContextHolder holder;
     static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
                   "here use vector now");
-    holder.ctx->tags = gpu_alloc() return holder;
+    assert(data_state == DataState::PrefixSumOffset_FullData);
+    auto size = tags.size(); // size of elements
+    assert(size + 1 == meta_offsets.size());
+    assert(size + 1 == value_offsets.size());
+    assert(meta_offsets[size] == metas.size());
+    assert(value_offsets[size] == values.size());
+
+    holder.ctx->tags = gpu_alloc_and_copy(tags.data(), tags.size());
+    holder.ctx->metas = gpu_alloc_and_copy(metas.data(), metas.size());
+    holder.ctx->values = gpu_alloc_and_copy(values.data(), values.size());
+    holder.ctx->meta_offsets = gpu_alloc_and_copy(meta_offsets.data(), meta_offsets.size());
+    holder.ctx->value_offsets = gpu_alloc_and_copy(value_offsets.data(), value_offsets.size());
+    holder.ctx->size = tags.size();
+    holder.ctx->data_state = data_state;
+    return holder;
 }
 
 void
@@ -121,6 +142,13 @@ GeometryVector::GPUContextHolder::Deleter::operator()(GPUContext* ptr) {
     if (!ptr) {
         return;
     }
+    gpu_free(ptr->tags);
+    gpu_free(ptr->metas);
+    gpu_free(ptr->values);
+    gpu_free(ptr->meta_offsets);
+    gpu_free(ptr->value_offsets);
+    ptr->size = 0;
+    ptr->data_state = DataState::NIL;
 }
 
 }    // namespace cpp

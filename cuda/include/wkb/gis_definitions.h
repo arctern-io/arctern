@@ -19,21 +19,23 @@ namespace cpp {
 class GeometryVector {
  private:
  public:
+    enum class DataState : uint32_t {
+        NIL,
+        Appending,
+        FlatOffset_EmptyData,
+        PrefixSumOffset_EmptyData,
+        FlatOffset_FullData,
+        PrefixSumOffset_FullData
+    };
+
     struct GPUContext {
-        enum class State : uint32_t {
-            NIL,
-            FlatOffset_EmptyData,
-            PrefixSumOffset_EmptyData,
-            FlatOffset_FullData,
-            PrefixSumOffset_FullData
-        };
         WKB_Tag* tags = nullptr;
         uint32_t* metas = nullptr;
         double* values = nullptr;
         int* meta_offsets = nullptr;
         int* value_offsets = nullptr;
-        size_t size = 0;
-        State state;
+        int size = 0;
+        DataState data_state;
     };
 
  private:
@@ -43,7 +45,7 @@ class GeometryVector {
     class GPUContextHolder {
      public:
         const GPUContext& get() { return *ctx; }
-        class Deleter {
+        struct Deleter {
             void operator()(GPUContext*); // TODO
         };
      private:
@@ -51,9 +53,9 @@ class GeometryVector {
         GPUContextHolder(): ctx(std::unique_ptr<GPUContext, Deleter>()){}
         friend class GeometryVector;
     };
-    class GPUContextHolder create_gpuctx(); // TODO
+    class GPUContextHolder create_gpuctx() const; // TODO
     GeometryVector() = default;
-    GPUVector<char> encodeToWKB(); // TODO
+    GPUVector<char> encodeToWKB() const; // TODO
     void decodeFromWKB_append(const char* bin);
 
  private:
@@ -62,7 +64,8 @@ class GeometryVector {
     GPUVector<double> values;
     GPUVector<int> meta_offsets;
     GPUVector<int> value_offsets;
-    size_t size;
+    int size;
+    DataState data_state;
 };
 
 
