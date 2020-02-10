@@ -37,5 +37,7 @@ TEST(FunctorDistance, naive) {
         gvec_left.decodeFromWKB_append((char*)data_left);
         gvec_right.decodeFromWKB_append(data);
     }
+    gvec_left.decodeFromWKB_finalize();
+    gvec_right.decodeFromWKB_finalize();
     int i = 1 + 1;
 }

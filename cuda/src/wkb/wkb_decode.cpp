@@ -19,7 +19,6 @@ GeometryVector::decodeFromWKB_initialize() {
     values_.clear();
     meta_offsets_.clear();
     value_offsets_.clear();
-    size_ = 0;
     data_state_ = DataState::Appending;
 }
 void

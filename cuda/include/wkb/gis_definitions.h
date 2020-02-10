@@ -61,7 +61,7 @@ class GeometryVector {
     void decodeFromWKB_append(const char* bin);
     void decodeFromWKB_finalize();
 
-    int size() { return size_; }
+    int size() { return tags_.size(); }
 
  private:
     GPUVector<WKB_Tag> tags_;
@@ -69,7 +69,6 @@ class GeometryVector {
     GPUVector<double> values_;
     GPUVector<int> meta_offsets_;
     GPUVector<int> value_offsets_;
-    int size_ = 0;
     DataState data_state_ = DataState::Appending;
 };
 
