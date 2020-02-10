@@ -1,6 +1,7 @@
 
 __all__ = [
     "ST_Point_UDF",
+    "ST_Intersection_UDF",
     "my_plot"
 ]
 
@@ -29,3 +30,10 @@ def ST_Point_UDF(x, y):
     point_arr = ST_Point(arr_x, arr_y)
     return point_arr.to_pandas()
 
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_Intersection_UDF(left, right):
+    arr_left = pa.array(left, type='string')
+    arr_right = pa.array(right, type='string')
+    from zilliz_gis import ST_Intersection
+    intersection_arr = ST_Intersection(arr_left, arr_right)
+    return intersection_arr.to_pandas()
