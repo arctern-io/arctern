@@ -1,2 +1,3 @@
-add_executable(dummy dummy.cpp)
-target_link_libraries(dummy gtest gtest_main)
+set(TESTING_SRC dummy.cpp FunctorDistance_tests.cpp)
+add_executable(tester ${TESTING_SRC})
+target_link_libraries(tester gtest gtest_main)
