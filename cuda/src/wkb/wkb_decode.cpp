@@ -35,43 +35,43 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
 
     auto extend_values_from_stream = [&](int dimensions, size_t points) {
         auto count = dimensions * points;
-        int value_base = values.size();
-        values.resize(values.size() + count);
-        fill<double>(2 * count, stream_iter, values.data() + value_base);
+        int value_base = values_.size();
+        values_.resize(values_.size() + count);
+        fill<double>(2 * count, stream_iter, values_.data() + value_base);
     };
 
     // deal with 2D cases for now
     assert(tag.get_group() == WKB_Group::None);
     auto dimensions = 2;
-    tags.push_back(tag);
+    tags_.push_back(tag);
     switch (tag.get_category()) {
         case WKB_Category::Point: {
-            // metas.do_nothing()
-            value_offsets.push_back(dimensions);
+            // metas_.do_nothing()
+            value_offsets_.push_back(dimensions);
             extend_values_from_stream(dimensions, 1);
 
-            meta_offsets.push_back(0);
+            meta_offsets_.push_back(0);
             break;
         }
         case WKB_Category::LineString: {
             auto points = fetch<uint32_t>(stream_iter);
-            metas.push_back(points);
+            metas_.push_back(points);
             extend_values_from_stream(dimensions, points);
 
-            value_offsets.push_back(1);
+            value_offsets_.push_back(1);
         }
         case WKB_Category::Polygon: {
             int total_points = 0;
             // most case 1
             auto count_sub_poly = fetch<uint32_t>(stream_iter);
-            metas.push_back(count_sub_poly);
+            metas_.push_back(count_sub_poly);
             for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
                 auto points = fetch<uint32_t>(stream_iter);
                 extend_values_from_stream(dimensions, points);
                 total_points += dimensions;
-                metas.push_back(points);
+                metas_.push_back(points);
             }
-            meta_offsets.push_back(1 + count_sub_poly);
+            meta_offsets_.push_back(1 + count_sub_poly);
         }
         default: {
             assert(false);
@@ -120,20 +120,20 @@ GeometryVector::create_gpuctx() const{
     GeometryVector::GPUContextHolder holder;
     static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
                   "here use vector now");
-    assert(data_state == DataState::PrefixSumOffset_FullData);
-    auto size = tags.size(); // size of elements
-    assert(size + 1 == meta_offsets.size());
-    assert(size + 1 == value_offsets.size());
-    assert(meta_offsets[size] == metas.size());
-    assert(value_offsets[size] == values.size());
+    assert(data_state_ == DataState::PrefixSumOffset_FullData);
+    auto size = tags_.size(); // size_ of elements
+    assert(size + 1 == meta_offsets_.size());
+    assert(size + 1 == value_offsets_.size());
+    assert(meta_offsets_[size] == metas_.size());
+    assert(value_offsets_[size] == values_.size());
 
-    holder.ctx->tags = gpu_alloc_and_copy(tags.data(), tags.size());
-    holder.ctx->metas = gpu_alloc_and_copy(metas.data(), metas.size());
-    holder.ctx->values = gpu_alloc_and_copy(values.data(), values.size());
-    holder.ctx->meta_offsets = gpu_alloc_and_copy(meta_offsets.data(), meta_offsets.size());
-    holder.ctx->value_offsets = gpu_alloc_and_copy(value_offsets.data(), value_offsets.size());
-    holder.ctx->size = tags.size();
-    holder.ctx->data_state = data_state;
+    holder.ctx->tags = gpu_alloc_and_copy(tags_.data(), tags_.size());
+    holder.ctx->metas = gpu_alloc_and_copy(metas_.data(), metas_.size());
+    holder.ctx->values = gpu_alloc_and_copy(values_.data(), values_.size());
+    holder.ctx->meta_offsets = gpu_alloc_and_copy(meta_offsets_.data(), meta_offsets_.size());
+    holder.ctx->value_offsets = gpu_alloc_and_copy(value_offsets_.data(), value_offsets_.size());
+    holder.ctx->size = tags_.size();
+    holder.ctx->data_state = data_state_;
     return holder;
 }
 

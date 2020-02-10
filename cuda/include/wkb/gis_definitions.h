@@ -59,13 +59,13 @@ class GeometryVector {
     void decodeFromWKB_append(const char* bin);
 
  private:
-    GPUVector<WKB_Tag> tags;
-    GPUVector<uint32_t> metas;
-    GPUVector<double> values;
-    GPUVector<int> meta_offsets;
-    GPUVector<int> value_offsets;
-    int size;
-    DataState data_state;
+    GPUVector<WKB_Tag> tags_;
+    GPUVector<uint32_t> metas_;
+    GPUVector<double> values_;
+    GPUVector<int> meta_offsets_;
+    GPUVector<int> value_offsets_;
+    int size_;
+    DataState data_state_;
 };
 
 
