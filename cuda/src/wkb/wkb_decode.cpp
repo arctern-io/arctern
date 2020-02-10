@@ -24,6 +24,7 @@ GeometryVector::decodeFromWKB_initialize() {
 }
 void
 GeometryVector::decodeFromWKB_finalize() {
+    assert(data_state_ == DataState::Appending);
     assert(meta_offsets_.size() == tags_.size());
     assert(value_offsets_.size() == tags_.size());
 
@@ -66,6 +67,7 @@ fetch(const char*& iter) {
 void
 GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     // decode a single polygon and append to vector
+    assert(data_state_ == DataState::Appending);
     const char* stream_iter = raw_bin;
     auto byte_order = fetch<WKB_ByteOrder>(stream_iter);
     assert(byte_order == WKB_ByteOrder::LittleEndian);
@@ -156,10 +158,11 @@ gpu_alloc_and_copy(const T* src, size_t size) {
 
 GeometryVector::GPUContextHolder
 GeometryVector::create_gpuctx() const {
+    assert(data_state_ == DataState::PrefixSumOffset_FullData);
+
     GeometryVector::GPUContextHolder holder;
     static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
                   "here use vector now");
-    assert(data_state_ == DataState::PrefixSumOffset_FullData);
     auto size = tags_.size();    // size_ of elements
     assert(size + 1 == meta_offsets_.size());
     assert(size + 1 == value_offsets_.size());
