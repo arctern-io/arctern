@@ -10,7 +10,7 @@ using std::vector;
 template<typename T>
 using GPUVector = vector<T>;    // TODO: use gpu vector, now just placeholder
 
-#include "wkb_tag.h"
+#include "wkb/wkb_tag.h"
 
 namespace zilliz {
 namespace gis {
@@ -72,7 +72,7 @@ class GeometryVector {
     void decodeFromWKB_append(const char* bin);
     void decodeFromWKB_finalize();
 
-    int size() { return tags_.size(); }
+    int size() const { return tags_.size(); }
 
  private:
     GPUVector<WKB_Tag> tags_;

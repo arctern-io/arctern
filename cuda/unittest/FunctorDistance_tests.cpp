@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "wkb/gis_definitions.h"
+#include "common/gis_definitions.h"
 
 using namespace zilliz;
 using namespace zilliz::gis;

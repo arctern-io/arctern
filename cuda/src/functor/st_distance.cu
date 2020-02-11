@@ -1,7 +1,7 @@
 //
 // Created by mike on 2/10/20.
 //
-#include "wkb/gis_definitions.h"
+#include "common/gis_definitions.h"
 #include <cuda_runtime.h>
 #include <cuda_device_runtime_api.h>
 #include <cmath>
@@ -27,6 +27,7 @@ void ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
     if(tid < left.size) {
         auto left_tag = left.get_tag(tid);
         auto right_tag = right.get_tag(tid);
+        // handle 2d case only for now
         assert(left_tag.get_group() == WKB_Group::None);
         assert(right_tag.get_group() == WKB_Group::None);
         if(left_tag.get_category() == WKB_Category::Point && right_tag.get_category() == WKB_Category::Point) {
@@ -39,7 +40,10 @@ void ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
 
 void
 ST_distance(const GeometryVector& left, const GeometryVector& right, double* result) {
-
+    assert(left.size() == right.size());
+    auto left_ctx = left.create_gpuctx();
+    auto right_ctx = right.create_gpuctx();
+//    ST_distance_kernel<<<>>>()
 }
 
 }    // namespace cpp
