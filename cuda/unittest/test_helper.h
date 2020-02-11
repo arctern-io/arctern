@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <vector>
 
-std::vector<char> hexstring_to_binary(std::string str) {
+inline std::vector<char> hexstring_to_binary(std::string str) {
     std::vector<char> vec;
     assert(str.size() % 2 == 0);
     for(auto index = 0; index < str.size(); index += 2) {
