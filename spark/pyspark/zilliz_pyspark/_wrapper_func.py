@@ -59,14 +59,14 @@ def ST_Intersection_UDF(left, right):
     rs = ST_Intersection(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_IsValid_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_IsValid
     rs = ST_IsValid(arr_geos)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Equals_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -74,7 +74,7 @@ def ST_Equals_UDF(left, right):
     rs = ST_Equals(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Touches_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -82,7 +82,7 @@ def ST_Touches_UDF(left, right):
     rs = ST_Touches(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Overlaps_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -90,7 +90,7 @@ def ST_Overlaps_UDF(left, right):
     rs = ST_Overlaps(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Crosses_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -98,7 +98,7 @@ def ST_Crosses_UDF(left, right):
     rs = ST_Crosses(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_IsSimple_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_IsSimple
@@ -128,7 +128,17 @@ def ST_SimplifyPreserveTopology_UDF(geos, distance_tolerance):
     rs = ST_SimplifyPreserveTopology(arr_geos, dis_tol)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PolygonFromEnvelope_UDF(min_x, min_y, max_x, max_y):
+    arr_min_x = pa.array(min_x, type='double')
+    arr_min_y = pa.array(min_y, type='double')
+    arr_max_x = pa.array(max_x, type='double')
+    arr_max_y = pa.array(max_y, type='double')
+    from zilliz_gis import ST_PolygonFromEnvelope
+    rs = ST_PolygonFromEnvelope(arr_min_x, arr_min_y, arr_max_x, arr_max_y)
+    return rs.to_pandas()
+
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Contains_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -136,7 +146,7 @@ def ST_Contains_UDF(left, right):
     rs = ST_Contains(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Intersects_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -144,7 +154,7 @@ def ST_Intersects_UDF(left, right):
     rs = ST_Intersects(arr_left, arr_right)
     return rs.to_pandas()
 
-@pandas_udf("bool", PandasUDFType.SCALAR)
+@pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Within_UDF(left, right):
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
@@ -188,7 +198,7 @@ def ST_ConvexHull_UDF(geos):
     rs = ST_ConvexHull(arr_geos)
     return rs.to_pandas()
 
-@pandas_udf("uint32", PandasUDFType.SCALAR)
+@pandas_udf("int", PandasUDFType.SCALAR)
 def ST_NPoints_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_NPoints
