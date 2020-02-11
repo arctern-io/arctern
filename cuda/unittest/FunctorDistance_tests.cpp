@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include "common/gis_definitions.h"
 #include "functor/st_distance.h"
+#include <cmath>
 
 using namespace zilliz;
 using namespace zilliz::gis;
@@ -45,5 +46,8 @@ TEST(FunctorDistance, naive) {
     auto left_ctx = gvec_left.create_gpuctx();
     vector<double> result(5);
     ST_distance(gvec_left, gvec_right, result.data());
-    int i = 1 + 1;
+    for(int i = 0; i < num; ++i) {
+        auto std = sqrt(pow(i - 3, 2)  + pow(i + 1 - 1, 2));
+        ASSERT_DOUBLE_EQ(result[i], std);
+    }
 }
