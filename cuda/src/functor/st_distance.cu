@@ -45,6 +45,7 @@ ST_distance(const GeometryVector& left, const GeometryVector& right, double* res
     auto config = GetKernelExecConfig(left.size());
     ST_distance_kernel<<<config.grid_dim, config.block_dim>>>(
         left_ctx.get(), right_ctx.get(), result);
+
 }
 
 }    // namespace cpp

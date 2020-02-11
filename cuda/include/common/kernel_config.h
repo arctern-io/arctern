@@ -30,6 +30,10 @@ GetKernelExecConfig(int64_t total_threads,
     return KernelExecConfig{grid_dim, block_dim};
 }
 
+inline void check_cuda_last_error() {
+
+}
+
 }    // namespace cpp
 }    // namespace gis
 }    // namespace zilliz
