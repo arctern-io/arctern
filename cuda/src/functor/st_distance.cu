@@ -5,6 +5,7 @@
 #include <cuda_device_runtime_api.h>
 #include <cmath>
 #include "functor/st_distance.h"
+#include "common/gpu_memory.h"
 
 namespace zilliz {
 namespace gis {
@@ -38,14 +39,17 @@ ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
 }
 
 void
-ST_distance(const GeometryVector& left, const GeometryVector& right, double* result) {
+ST_distance(const GeometryVector& left,
+            const GeometryVector& right,
+            double* host_results) {
     assert(left.size() == right.size());
     auto left_ctx = left.create_gpuctx();
     auto right_ctx = right.create_gpuctx();
     auto config = GetKernelExecConfig(left.size());
+    auto dev_result = gpu_make_unique_array<double>(left.size());
     ST_distance_kernel<<<config.grid_dim, config.block_dim>>>(
-        left_ctx.get(), right_ctx.get(), result);
-
+        left_ctx.get(), right_ctx.get(), dev_result.get());
+    gpu_memcpy(host_results, dev_result.get(), left.size());
 }
 
 }    // namespace cpp

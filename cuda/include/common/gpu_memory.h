@@ -3,6 +3,7 @@ namespace zilliz {
 namespace gis {
 namespace cpp {
 
+// must free manually
 template<typename T>
 T*
 gpu_alloc(size_t size) {
@@ -30,6 +31,7 @@ gpu_memcpy(T* dst, const T* src, size_t size) {
 }
 
 
+// must free manually
 template<typename T>
 T*
 gpu_alloc_and_copy(const T* src, size_t size) {
@@ -38,6 +40,27 @@ gpu_alloc_and_copy(const T* src, size_t size) {
     return dst;
 }
 
-}    // namespace gpu
+template<typename T>
+struct GpuFreeWrapper {
+    void operator()(T* ptr) { gpu_free(ptr); }
+};
+
+
+template<typename T>
+std::unique_ptr<T, GpuFreeWrapper<T>>
+gpu_make_unique_array(int size) {
+    return std::unique_ptr<T, GpuFreeWrapper<T>>(gpu_alloc<T>(size));
+}
+
+template<typename T>
+auto
+gpu_make_unique_array_and_copy(const T* src, int size)
+    -> std::unique_ptr<T, GpuFreeWrapper<T>> {
+    auto ptr = std::unique_ptr<T, GpuFreeWrapper<T>>(gpu_alloc<T>(size));
+    gpu_memcpy(ptr.get(), src, size);
+    return ptr;
+}
+
+}    // namespace cpp
 }    // namespace gis
 }    // namespace zilliz
