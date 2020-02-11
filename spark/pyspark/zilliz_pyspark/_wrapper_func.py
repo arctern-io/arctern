@@ -22,7 +22,7 @@ __all__ = [
     "ST_ConvexHull_UDF",
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
-    # "ST_Buffer_UDF",
+    "ST_Buffer_UDF",
     "my_plot" # or point_map
 ]
 
@@ -213,3 +213,10 @@ def ST_Envelope_UDF(geos):
     return rs.to_pandas()
 
 # TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_Buffer_UDF(geos, dfDist):
+    arr_geos = pa.array(geos, type='string')
+    distance = dfDist[0]
+    from zilliz_gis import ST_Buffer
+    rs = ST_Buffer(arr_geos, distance)
+    return rs.to_pandas()
