@@ -11,8 +11,10 @@ using namespace zilliz::gis::cpp;
 
 TEST(FunctorDistance, naive) {
     ASSERT_TRUE(true);
+    // TODO use gdal to convert better good
+    // POINT(3 1), copy from WKB WKT convertor
     uint8_t data_left[] = {0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                      0x08, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f}; // POINT(3 1)
+                      0x08, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f};
     char data[1 + 4 + 16];
     static_assert(sizeof(data_left) == sizeof(data), "wtf");
     int num = 5;
@@ -39,6 +41,7 @@ TEST(FunctorDistance, naive) {
     }
     gvec_left.decodeFromWKB_finalize();
     gvec_right.decodeFromWKB_finalize();
-    gvec_left.create_gpuctx();
+    auto left_ctx = gvec_left.create_gpuctx();
     int i = 1 + 1;
+
 }
