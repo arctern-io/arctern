@@ -13,7 +13,7 @@ set(CUDA_LIB /opt/cuda/lib64)
 include_directories(${CUDA_INCLUDE})
 link_directories(${CUDA_LIB})
 
-set(CMAKE_CUDA_FLAGS "-Wall -Werror -Wextra")
+#set(CMAKE_CUDA_FLAGS "-Wall -Wextra -Werror")
 
 include_directories(include)
 add_subdirectory(src)
