@@ -10,8 +10,6 @@ namespace zilliz {
 namespace gis {
 namespace cpp {
 
-using GeoContext = GeometryVector::GPUContext;
-
 inline DEVICE_RUNNABLE double
 ST_distance_point_point(const GeoContext& left, const GeoContext& right, int index) {
     auto lv = left.get_value_ptr(index);

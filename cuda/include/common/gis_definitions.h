@@ -81,6 +81,7 @@ class GeometryVector {
     DataState data_state_ = DataState::Appending;
 };
 
+using GeoContext = GeometryVector::GPUContext;
 
 }    // namespace cpp
 }    // namespace gis
