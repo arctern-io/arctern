@@ -15,6 +15,7 @@ ST_area_polygon(const GeoContext& ctx, int index) {
     auto value = ctx.get_value_ptr(index);
     assert(meta[0] == 1);
     auto count = (int)meta[1];
+    assert(count == 5);
     double sum_area = 0;
     for (int point_index = 0; point_index < count; ++point_index) {
         auto lv = value + 2 * point_index;
@@ -30,12 +31,13 @@ __global__ void
 ST_area_kernel(GeoContext ctx, double* result) {
     auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     if (tid < ctx.size) {
-        auto left_tag = ctx.get_tag(tid);
+        auto tag = ctx.get_tag(tid);
         // handle 2d case only for now
-        assert(left_tag.get_group() == WKB_Group::None);
-        switch (left_tag.get_category()) {
+        assert(tag.get_group() == WKB_Group::None);
+        switch (tag.get_category()) {
             case WKB_Category::Polygon: {
                 result[tid] = ST_area_polygon(ctx, tid);
+                break;
             }
             default: {
                 assert(false);

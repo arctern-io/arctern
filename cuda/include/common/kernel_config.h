@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 
 namespace zilliz {
 namespace gis {
@@ -16,7 +17,7 @@ inline KernelExecConfig
 GetKernelExecConfig(int64_t total_threads,
                     int64_t block_dim = 256,
                     int64_t max_grid_dim = -1) {
-    int64_t grid_dim = (total_threads + block_dim) / block_dim;
+    int64_t grid_dim = (total_threads + block_dim - 1) / block_dim;
     if (max_grid_dim != -1) {
         grid_dim = std::min(grid_dim, max_grid_dim);
     }
@@ -31,7 +32,10 @@ GetKernelExecConfig(int64_t total_threads,
 }
 
 inline void check_cuda_last_error() {
-
+    auto ec = cudaGetLastError();
+    if(ec != cudaSuccess) {
+        throw std::runtime_error(cudaGetErrorString(ec));
+    }
 }
 
 }    // namespace cpp
