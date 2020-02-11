@@ -54,7 +54,7 @@ if (GIS_BUILD_ARCH STREQUAL "ppc64le")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 if (USE_GPU)
     set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
 endif ()
@@ -94,12 +94,12 @@ if (USE_GPU)
     link_directories(${cuda_lib})
 endif ()
 
-#message("conda_prefix = " $ENV{CONDA_PREFIX})
+message("conda_prefix = " $ENV{CONDA_PREFIX})
 
 include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
-#include_directories($ENV{CONDA_PREFIX}/include)
+include_directories($ENV{CONDA_PREFIX}/include)
 link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
-#link_directories($ENV{CONDA_PREFIX}/lib)
+link_directories($ENV{CONDA_PREFIX}/lib)
 
 add_subdirectory(src)
 
