@@ -802,3 +802,139 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope){
 
   ASSERT_EQ(res_str,expect);
 }
+
+TEST(geometry_test,test_ST_Union_Aggr_01){
+  OGRLinearRing ring1;
+  ring1.addPoint(1, 1);
+  ring1.addPoint(1, 2);
+  ring1.addPoint(2, 2);
+  ring1.addPoint(2, 1);
+  ring1.addPoint(1, 1);
+  ring1.closeRings();
+  OGRPolygon polygon1;
+  polygon1.addRing(&ring1);
+
+  OGRLinearRing ring2;
+  ring2.addPoint(2, 1);
+  ring2.addPoint(3, 1);
+  ring2.addPoint(3, 2);
+  ring2.addPoint(2, 2);
+  ring2.addPoint(2, 1);
+  ring2.closeRings();
+  OGRPolygon polygon2;
+  polygon2.addRing(&ring2);
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  char *polygon_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  CHECK_GDAL(polygon2.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  builder.Finish(&polygons);
+
+  auto result = ST_Union_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+  
+//  std::cout << "Union_Aggr : " << geometries_arr->GetString(0) << std::endl;
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))");
+  
+
+}
+
+
+TEST(geometry_test,test_ST_Union_Aggr_02){
+  OGRLinearRing ring1;
+  ring1.addPoint(0, 0);
+  ring1.addPoint(4, 0);
+  ring1.addPoint(4, 4);
+  ring1.addPoint(0, 4);
+  ring1.addPoint(0, 0);
+  ring1.closeRings();
+  OGRPolygon polygon1;
+  polygon1.addRing(&ring1);
+
+  OGRLinearRing ring2;
+  ring2.addPoint(3, 1);
+  ring2.addPoint(5, 1);
+  ring2.addPoint(5, 2);
+  ring2.addPoint(3, 2);
+  ring2.addPoint(3, 1);
+  ring2.closeRings();
+  OGRPolygon polygon2;
+  polygon2.addRing(&ring2);
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  char *polygon_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  CHECK_GDAL(polygon2.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  builder.Finish(&polygons);
+
+  auto result = ST_Union_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+  
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))");
+  
+
+}
+
+
+TEST(geometry_test,test_ST_Union_Aggr_03){
+  OGRLinearRing ring1;
+  ring1.addPoint(0, 0);
+  ring1.addPoint(4, 0);
+  ring1.addPoint(4, 4);
+  ring1.addPoint(0, 4);
+  ring1.addPoint(0, 0);
+  ring1.closeRings();
+  OGRPolygon polygon1;
+  polygon1.addRing(&ring1);
+
+  OGRLinearRing ring2;
+  ring2.addPoint(5, 1);
+  ring2.addPoint(7, 1);
+  ring2.addPoint(7, 2);
+  ring2.addPoint(5, 2);
+  ring2.addPoint(5, 1);
+  ring2.closeRings();
+  OGRPolygon polygon2;
+  polygon2.addRing(&ring2);
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  char *polygon_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  CHECK_GDAL(polygon2.exportToWkt(&polygon_str));
+  builder.Append(std::string(polygon_str));
+  CPLFree(polygon_str);
+
+  builder.Finish(&polygons);
+
+  auto result = ST_Union_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+  
+
+//  std::cout << "Union_Aggr : " << geometries_arr->GetString(0) << std::endl;
+  ASSERT_EQ(geometries_arr->GetString(0),"MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))");
+
+
+}

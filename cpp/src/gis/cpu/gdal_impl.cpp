@@ -354,5 +354,50 @@ BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     OGR_G_Within(geo_1, geo_2) != 0);
 
 
+/*********************** AGGREGATE FUNCTIONS ***************************/
+
+std::shared_ptr<arrow::Array>
+ST_Union_Aggr(const std::shared_ptr<arrow::Array> &geometries){
+
+    auto len = geometries->length();
+    assert(len > 0);
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+
+    arrow::StringBuilder builder;
+    OGRGeometry  *geo_result, *geo_var, *geo_tmp;
+    char *wkt_result;
+
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+        wkt_geometries->GetString(0).c_str(), nullptr, &geo_result));
+
+    for (int32_t i = 1; i < len; i++) {
+        CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+            wkt_geometries->GetString(i).c_str(), nullptr, &geo_var));
+        geo_tmp = geo_result;
+        geo_result = geo_result->Union(geo_var);
+        OGRGeometryFactory::destroyGeometry(geo_var);
+        OGRGeometryFactory::destroyGeometry(geo_tmp);
+    }
+
+    CHECK_GDAL(OGR_G_ExportToWkt(geo_result, &wkt_result));
+    OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo_result);
+    CHECK_ARROW(builder.Append(wkt_result));
+    CPLFree(wkt_result);
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
+    return results;
+}
+
+
+/*
+std::shared_ptr<arrow::Array>
+ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries){
+
+
+}
+*/
+
+
+
 } // gis
 } // zilliz
