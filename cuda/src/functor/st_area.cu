@@ -15,7 +15,6 @@ ST_area_polygon(const GeoContext& ctx, int index) {
     auto value = ctx.get_value_ptr(index);
     assert(meta[0] == 1);
     auto count = (int)meta[1];
-    assert(count == 5);
     double sum_area = 0;
     for (int point_index = 0; point_index < count; ++point_index) {
         auto lv = value + 2 * point_index;
