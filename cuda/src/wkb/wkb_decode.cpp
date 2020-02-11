@@ -99,6 +99,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
             extend_values_from_stream(dimensions, points);
 
             value_offsets_.push_back(1);
+            break;
         }
         case WKB_Category::Polygon: {
             int total_points = 0;
@@ -112,6 +113,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
                 metas_.push_back(points);
             }
             meta_offsets_.push_back(1 + count_sub_poly);
+            break;
         }
         default: {
             assert(false);

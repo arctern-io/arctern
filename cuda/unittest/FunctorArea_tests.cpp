@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 #include "common/gis_definitions.h"
-#include "functor/st_distance.h"
+#include "functor/st_area.h"
 #include <cmath>
 #include "test_helper.h"
 
@@ -12,42 +12,25 @@ using namespace zilliz;
 using namespace zilliz::gis;
 using namespace zilliz::gis::cpp;
 
-//TEST(FunctorArea, naive) {
-//    ASSERT_TRUE(true);
-//    // TODO use gdal to convert better good
-//    // POINT(3 1), copy from WKB WKT convertor
-//
-//    char data[1 + 4 + 16];
-//    static_assert(sizeof(data_left) == sizeof(data), "wtf");
-//    int num = 5;
-//
-//    uint8_t byte_order = 0x1;
-//    memcpy(data + 0, &byte_order, sizeof(byte_order));
-//    uint32_t point_tag = 1;
-//    memcpy(data + 1, &point_tag, sizeof(point_tag));
-//
-//    GeometryVector gvec_left;
-//    GeometryVector gvec_right;
-//    gvec_left.decodeFromWKB_initialize();
-//    gvec_right.decodeFromWKB_initialize();
-//
-//    for (int i = 0; i < num; ++i) {
-//        double x = i;
-//        double y = i + 1;
-//        static_assert(sizeof(x) == 8, "wtf");
-//        memcpy(data + 5, &x, sizeof(x));
-//        memcpy(data + 5 + 8, &y, sizeof(y));
-//
-//        gvec_left.decodeFromWKB_append((char*)data_left);
-//        gvec_right.decodeFromWKB_append(data);
-//    }
-//    gvec_left.decodeFromWKB_finalize();
-//    gvec_right.decodeFromWKB_finalize();
-//    auto left_ctx = gvec_left.create_gpuctx();
-//    vector<double> result(5);
-//    ST_area(gvec_left, gvec_right, result.data());
-//    for(int i = 0; i < num; ++i) {
-//        auto std = sqrt(pow(i - 3, 2)  + pow(i + 1 - 1, 2));
-//        ASSERT_DOUBLE_EQ(result[i], std);
-//    }
-//}
+TEST(FunctorArea, naive) {
+    ASSERT_TRUE(true);
+    // TODO use gdal to convert better good
+    // https://gis.stackexchange.com/questions/294597/st-area-and-srid-4326
+    // POLYGON((38.31 36.85999999,38.31 36.90999999,38.38 36.90999999,38.38 36.85999999,38.31
+    // 36.85999999))
+    auto raw_data = hexstring_to_binary(
+        "0103000000010000000500000048e17a14ae2743401fcecb7a146e424048e17a14ae274340863432"
+        "e17a744240713d0ad7a3304340863432e17a744240713d0ad7a33043401fcecb7a146e424048e17a"
+        "14ae2743401fcecb7a146e4240");
+
+    GeometryVector gvec;
+    gvec.decodeFromWKB_initialize();
+    gvec.decodeFromWKB_append(raw_data.data());
+    gvec.decodeFromWKB_finalize();
+
+    auto left_ctx = gvec.create_gpuctx();
+    vector<double> result(1);
+    ST_area(gvec, result.data());
+    auto std = 34625394.4708328;
+    ASSERT_DOUBLE_EQ(result[0], std);
+}
