@@ -23,14 +23,19 @@ TEST(FunctorArea, naive) {
         "e17a744240713d0ad7a3304340863432e17a744240713d0ad7a33043401fcecb7a146e424048e17a"
         "14ae2743401fcecb7a146e4240");
 
+    int n = 3;
     GeometryVector gvec;
     gvec.decodeFromWKB_initialize();
-    gvec.decodeFromWKB_append(raw_data.data());
+    for (int i = 0; i < n; ++i) {
+        gvec.decodeFromWKB_append(raw_data.data());
+    }
     gvec.decodeFromWKB_finalize();
 
     auto left_ctx = gvec.create_gpuctx();
-    vector<double> result(1);
+    vector<double> result(n);
     ST_area(gvec, result.data());
-    auto std = 34625394.4708328;
-    ASSERT_DOUBLE_EQ(result[0], std);
+    for (int i = 0; i < n; ++i) {
+        auto std = 34625394.4708328;
+        ASSERT_DOUBLE_EQ(result[i], std);
+    }
 }
