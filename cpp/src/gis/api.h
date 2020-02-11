@@ -120,8 +120,8 @@ std::shared_ptr<arrow::Array>
 ST_Union_Aggr(const std::shared_ptr<arrow::Array> &geometries);
 
 
-//std::shared_ptr<arrow::Array>
-//ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries);
+std::shared_ptr<arrow::Array>
+ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries);
 
 
 } // gis
