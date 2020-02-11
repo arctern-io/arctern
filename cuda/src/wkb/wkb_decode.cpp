@@ -87,32 +87,33 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     switch (tag.get_category()) {
         case WKB_Category::Point: {
             // metas_.do_nothing()
-            value_offsets_.push_back(dimensions);
             extend_values_from_stream(dimensions, 1);
 
             meta_offsets_.push_back(0);
+            value_offsets_.push_back(dimensions);
             break;
         }
         case WKB_Category::LineString: {
             auto points = fetch<uint32_t>(stream_iter);
-            metas_.push_back(points);
             extend_values_from_stream(dimensions, points);
 
+            metas_.push_back(points);
             value_offsets_.push_back(1);
             break;
         }
         case WKB_Category::Polygon: {
-            int total_points = 0;
+            int total_values = 0;
             // most case 1
             auto count_sub_poly = fetch<uint32_t>(stream_iter);
             metas_.push_back(count_sub_poly);
             for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
                 auto points = fetch<uint32_t>(stream_iter);
                 extend_values_from_stream(dimensions, points);
-                total_points += dimensions;
+                total_values += dimensions * points;
                 metas_.push_back(points);
             }
             meta_offsets_.push_back(1 + count_sub_poly);
+            value_offsets_.push_back(total_values);
             break;
         }
         default: {
