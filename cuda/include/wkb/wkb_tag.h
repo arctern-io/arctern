@@ -19,7 +19,7 @@ enum class WkbCategory : uint32_t {
     // TODO: TO BE CONTINUE, LAZY NOW
 };
 
-constexpr uint32_t WKBGroupBase = 1000;
+constexpr uint32_t WkbGroupBase = 1000;
 enum class WkbGroup : uint32_t {
     None = 0,    // normal 2D
     Z = 1,       // XYZ
@@ -31,10 +31,10 @@ struct WkbTag {
     WkbTag() = default;
     explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data_(data) {}
     DEVICE_RUNNABLE WkbCategory get_category() {
-        return static_cast<WkbCategory>(data_ % WKBGroupBase);
+        return static_cast<WkbCategory>(data_ % WkbGroupBase);
     }
     DEVICE_RUNNABLE WkbGroup get_group() {
-        return static_cast<WkbGroup>(data_ / WKBGroupBase);
+        return static_cast<WkbGroup>(data_ / WkbGroupBase);
     }
     uint32_t data_;
 };
