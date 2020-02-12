@@ -108,6 +108,9 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 std::shared_ptr<arrow::Array>
 ST_Union_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
 
+std::shared_ptr<arrow::Array>
+ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
+
 } // gis
 } // zilliz
 

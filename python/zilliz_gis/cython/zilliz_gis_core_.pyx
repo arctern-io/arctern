@@ -86,3 +86,6 @@ def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
 
 def ST_Union_Aggr(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Union_Aggr(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Envelope_Aggr(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Envelope_Aggr(pyarrow_unwrap_array(geo_arr)))
