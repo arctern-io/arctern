@@ -27,11 +27,11 @@ TEST(FunctorArea, naive) {
 
     int n = 3;
     GeometryVector gvec;
-    gvec.decodeFromWKB_initialize();
+    gvec.WkbDecodeInitalize();
     for (int i = 0; i < n; ++i) {
-        gvec.decodeFromWKB_append(raw_data.data());
+        gvec.WkbDecodeAppend(raw_data.data());
     }
-    gvec.decodeFromWKB_finalize();
+    gvec.WkbDecodeFinalize();
 
     auto left_ctx = gvec.create_gpuctx();
     vector<double> result(n);

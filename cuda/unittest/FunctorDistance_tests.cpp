@@ -32,8 +32,8 @@ TEST(FunctorDistance, naive) {
 
     GeometryVector gvec_left;
     GeometryVector gvec_right;
-    gvec_left.decodeFromWKB_initialize();
-    gvec_right.decodeFromWKB_initialize();
+    gvec_left.WkbDecodeInitalize();
+    gvec_right.WkbDecodeInitalize();
 
     for (int i = 0; i < num; ++i) {
         double x = i;
@@ -42,11 +42,11 @@ TEST(FunctorDistance, naive) {
         memcpy(data + 5, &x, sizeof(x));
         memcpy(data + 5 + 8, &y, sizeof(y));
 
-        gvec_left.decodeFromWKB_append(data_left);
-        gvec_right.decodeFromWKB_append(data);
+        gvec_left.WkbDecodeAppend(data_left);
+        gvec_right.WkbDecodeAppend(data);
     }
-    gvec_left.decodeFromWKB_finalize();
-    gvec_right.decodeFromWKB_finalize();
+    gvec_left.WkbDecodeFinalize();
+    gvec_right.WkbDecodeFinalize();
     auto left_ctx = gvec_left.create_gpuctx();
     vector<double> result(5);
     ST_distance(gvec_left, gvec_right, result.data());

@@ -14,13 +14,13 @@ namespace gis {
 namespace cpp {
 
 void
-GeometryVector::decodeFromWKB_initialize() {
-   clear();
+GeometryVector::WkbDecodeInitalize() {
+    Clear();
    data_state_ = DataState::Appending;
 }
 
 void
-GeometryVector::clear() {
+GeometryVector::Clear() {
     tags_.clear();
     metas_.clear();
     values_.clear();
@@ -29,7 +29,7 @@ GeometryVector::clear() {
     data_state_ = DataState::Invalid;
 }
 void
-GeometryVector::decodeFromWKB_finalize() {
+GeometryVector::WkbDecodeFinalize() {
     assert(data_state_ == DataState::Appending);
     assert(meta_offsets_.size() == tags_.size());
     assert(value_offsets_.size() == tags_.size());
@@ -71,7 +71,7 @@ fetch(const char*& iter) {
 }
 
 void
-GeometryVector::decodeFromWKB_append(const char* raw_bin) {
+GeometryVector::WkbDecodeAppend(const char* raw_bin) {
     // decode a single polygon and append to vector
     assert(data_state_ == DataState::Appending);
     const char* stream_iter = raw_bin;
@@ -142,15 +142,15 @@ GeometryVector::create_gpuctx() const {
     assert(size + 1 == value_offsets_.size());
     assert(meta_offsets_[size] == metas_.size());
     assert(value_offsets_[size] == values_.size());
-    holder.ctx->tags = gpu_alloc_and_copy(tags_.data(), tags_.size());
-    holder.ctx->metas = gpu_alloc_and_copy(metas_.data(), metas_.size());
-    holder.ctx->values = gpu_alloc_and_copy(values_.data(), values_.size());
-    holder.ctx->meta_offsets =
-        gpu_alloc_and_copy(meta_offsets_.data(), meta_offsets_.size());
-    holder.ctx->value_offsets =
-        gpu_alloc_and_copy(value_offsets_.data(), value_offsets_.size());
-    holder.ctx->size = tags_.size();
-    holder.ctx->data_state = data_state_;
+    holder.ctx_->tags = GpuAllocAndCopy(tags_.data(), tags_.size());
+    holder.ctx_->metas = GpuAllocAndCopy(metas_.data(), metas_.size());
+    holder.ctx_->values = GpuAllocAndCopy(values_.data(), values_.size());
+    holder.ctx_->meta_offsets =
+        GpuAllocAndCopy(meta_offsets_.data(), meta_offsets_.size());
+    holder.ctx_->value_offsets =
+        GpuAllocAndCopy(value_offsets_.data(), value_offsets_.size());
+    holder.ctx_->size = tags_.size();
+    holder.ctx_->data_state = data_state_;
     return holder;
 }
 
@@ -159,11 +159,11 @@ GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
     if (!ptr) {
         return;
     }
-    gpu_free(ptr->tags);
-    gpu_free(ptr->metas);
-    gpu_free(ptr->values);
-    gpu_free(ptr->meta_offsets);
-    gpu_free(ptr->value_offsets);
+    GpuFree(ptr->tags);
+    GpuFree(ptr->metas);
+    GpuFree(ptr->values);
+    GpuFree(ptr->meta_offsets);
+    GpuFree(ptr->value_offsets);
     ptr->size = 0;
     ptr->data_state = DataState::Invalid;
 }

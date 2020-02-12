@@ -46,10 +46,10 @@ ST_distance(const GeometryVector& left,
     auto left_ctx = left.create_gpuctx();
     auto right_ctx = right.create_gpuctx();
     auto config = GetKernelExecConfig(left.size());
-    auto dev_result = gpu_make_unique_array<double>(left.size());
+    auto dev_result = GpuMakeUniqueArray<double>(left.size());
     ST_distance_kernel<<<config.grid_dim, config.block_dim>>>(
         left_ctx.get(), right_ctx.get(), dev_result.get());
-    gpu_memcpy(host_results, dev_result.get(), left.size());
+    GpuMemcpy(host_results, dev_result.get(), left.size());
 }
 
 }    // namespace cpp

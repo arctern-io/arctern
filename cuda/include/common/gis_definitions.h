@@ -49,27 +49,27 @@ class GeometryVector {
 
  private:
  public:
-    // just a wrapper of unique_ptr<ctx, dtor>
+    // just a wrapper of unique_ptr<ctx_, dtor>
     class GeoContextHolder {
      public:
-        const GeoContext& get() { return *ctx; }
+        const GeoContext& get() { return *ctx_; }
         struct Deleter {
             void operator()(GeoContext*);    // TODO
         };
 
      private:
-        std::unique_ptr<GeoContext, Deleter> ctx;
-        explicit GeoContextHolder() : ctx(new GeoContext) {}
+        std::unique_ptr<GeoContext, Deleter> ctx_;
+        explicit GeoContextHolder() : ctx_(new GeoContext) {}
         friend class GeometryVector;
     };
     class GeoContextHolder create_gpuctx() const;    // TODO
     GeometryVector() = default;
-    GPUVector<char> encodeToWKB() const;    // TODO
+    GPUVector<char> EncodeToWkb() const;    // TODO
 
-    void decodeFromWKB_initialize();
-    void decodeFromWKB_append(const char* bin);
-    void decodeFromWKB_finalize();
-    void clear();
+    void WkbDecodeInitalize();
+    void WkbDecodeAppend(const char* bin);
+    void WkbDecodeFinalize();
+    void Clear();
 
     int size() const { return tags_.size(); }
 

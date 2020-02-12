@@ -6,7 +6,7 @@ namespace cpp {
 // must free manually
 template<typename T>
 T*
-gpu_alloc(size_t size) {
+GpuAlloc(size_t size) {
     T* ptr;
     auto err = cudaMalloc(&ptr, size * sizeof(T));
     if (err != cudaSuccess) {
@@ -17,13 +17,13 @@ gpu_alloc(size_t size) {
 
 template<typename T>
 void
-gpu_free(T* ptr) {
+GpuFree(T* ptr) {
     cudaFree(ptr);
 }
 
 template<typename T>
 void
-gpu_memcpy(T* dst, const T* src, size_t size) {
+GpuMemcpy(T* dst, const T* src, size_t size) {
     auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
     if (err != cudaSuccess) {
         throw std::runtime_error("error with code = " + std::to_string((int)err));
@@ -34,30 +34,30 @@ gpu_memcpy(T* dst, const T* src, size_t size) {
 // must free manually
 template<typename T>
 T*
-gpu_alloc_and_copy(const T* src, size_t size) {
-    auto dst = gpu_alloc<T>(size);
-    gpu_memcpy(dst, src, size);
+GpuAllocAndCopy(const T* src, size_t size) {
+    auto dst = GpuAlloc<T>(size);
+    GpuMemcpy(dst, src, size);
     return dst;
 }
 
 template<typename T>
 struct GpuFreeWrapper {
-    void operator()(T* ptr) { gpu_free(ptr); }
+    void operator()(T* ptr) { GpuFree(ptr); }
 };
 
 
 template<typename T>
 std::unique_ptr<T, GpuFreeWrapper<T>>
-gpu_make_unique_array(int size) {
-    return std::unique_ptr<T, GpuFreeWrapper<T>>(gpu_alloc<T>(size));
+GpuMakeUniqueArray(int size) {
+    return std::unique_ptr<T, GpuFreeWrapper<T>>(GpuAlloc<T>(size));
 }
 
 template<typename T>
 auto
-gpu_make_unique_array_and_copy(const T* src, int size)
+GpuMakeUniqueArrayAndCopy(const T* src, int size)
     -> std::unique_ptr<T, GpuFreeWrapper<T>> {
-    auto ptr = std::unique_ptr<T, GpuFreeWrapper<T>>(gpu_alloc<T>(size));
-    gpu_memcpy(ptr.get(), src, size);
+    auto ptr = std::unique_ptr<T, GpuFreeWrapper<T>>(GpuAlloc<T>(size));
+    GpuMemcpy(ptr.get(), src, size);
     return ptr;
 }
 
