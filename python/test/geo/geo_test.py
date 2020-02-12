@@ -220,3 +220,43 @@ def test_ST_PolygonFromEnvelope():
     rst = zilliz_gis.ST_PolygonFromEnvelope(x_min,y_min,x_max,y_max)
 
     assert rst[0] == "POLYGON ((0 0,1 0,0 1,1 1,0 0))"
+
+
+def test_ST_Union_Aggr():
+
+    p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
+    p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))"
+    data = pandas.Series([p1,p2])
+    rst = zilliz_gis.ST_Union_Aggr(pyarrow.array(data))
+    assert rst[0] == "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))"
+
+
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))"
+    data = pandas.Series([p1,p2])
+    rst = zilliz_gis.ST_Union_Aggr(pyarrow.array(data))
+    assert rst[0] == "POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))"
+
+
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+    data = pandas.Series([p1,p2])
+    rst = zilliz_gis.ST_Union_Aggr(pyarrow.array(data))
+    assert rst[0] == "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))"
+
+    p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
+    p2 = "POINT (2 3)"
+
+    data = pandas.Series([p1,p2])
+    rst = zilliz_gis.ST_Union_Aggr(pyarrow.array(data))
+    assert rst[0] == p1
+
+
+def test_ST_Envelope_Aggr():
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+    data = pandas.Series([p1,p2])
+    rst = zilliz_gis.ST_Envelope_Aggr(pyarrow.array(data))
+    assert rst[0] == "MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))"
+    
+
