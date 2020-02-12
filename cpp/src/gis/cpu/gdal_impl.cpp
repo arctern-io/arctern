@@ -153,6 +153,78 @@ Wrapper_OGR_G_Centroid(void *geo) {
     return centroid;
 }
 
+inline void *
+Wrapper_OGR_G_GetEnvelope(void *geo) {
+  OGRPoint *point = new OGRPoint();
+  if(wkbFlatten(static_cast<OGRPoint *>(geo)->getGeometryType()) == wkbPoint){
+    point->setX(static_cast<OGRPoint *>(geo)->getX());
+    point->setY(static_cast<OGRPoint *>(geo)->getY());
+    return point;
+    //return static_cast<OGRPoint *>(geo); //Segmentation fault
+  }
+  OGREnvelope envelope;
+  OGRLineString *lineEnvelope = new OGRLineString();
+  OGRPolygon *polygonEnvelope = new OGRPolygon();
+  if(wkbFlatten( static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbLineString){
+    OGRLineString* poLS = static_cast<OGRLineString*>(geo);
+    auto len = poLS->getNumPoints();
+    if(len <= 0){
+      //TODO: throw ex
+      return 0;
+    }
+    auto minX = poLS->getX(0);
+    auto minY = poLS->getY(0);
+    auto maxX = minX;
+    auto maxY = minY;
+    for(int i = 1; i < len;i++)
+    {
+      auto cur_x = poLS->getX(i);
+      auto cur_y = poLS->getY(i);
+      cur_x<minX?minX=cur_x:minX=minX;
+      cur_x>maxX?maxX=cur_x:maxX=maxX;
+      cur_y<minY?minY=cur_y:minY=minY;
+      cur_y>maxY?maxY=cur_y:maxY=maxY;
+    }
+    if(minX==maxX || minY==maxY){
+      //result should be LINESTRING
+      lineEnvelope->addPoint(minX,minY);
+      lineEnvelope->addPoint(maxX,maxY);
+      return lineEnvelope;
+    }else{
+      //result should be POLYGON
+      OGRLinearRing *ring = new OGRLinearRing();
+      ring->addPoint(minX, minY);
+      ring->addPoint(minX, maxY);
+      ring->addPoint(maxX, maxY);
+      ring->addPoint(maxX, minY);
+      ring->addPoint(minX, minY);
+      ring->closeRings();
+      polygonEnvelope->addRing(ring);
+      return polygonEnvelope;
+    }
+  }
+  if(wkbFlatten( static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPolygon){
+    OGR_G_GetEnvelope(geo, &envelope);
+    auto minX = envelope.MinX;
+    auto minY = envelope.MinY;
+    auto maxX = envelope.MaxX;
+    auto maxY = envelope.MaxY;
+
+    OGRLinearRing *ring = new OGRLinearRing();
+    ring->addPoint(minX, minY);
+    ring->addPoint(minX, maxY);
+    ring->addPoint(maxX, maxY);
+    ring->addPoint(maxX, minY);
+    ring->addPoint(minX, minY);
+    ring->closeRings();
+    polygonEnvelope->addRing(ring);
+
+    return polygonEnvelope;
+  }else{
+    //TBD: handle other cases,eg.multiPolygon or throw ex
+    return 0;
+  }
+}
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
@@ -238,8 +310,12 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     OGR_G_GetPointCount(geo));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
-    ST_Envelope, arrow::StringBuilder, geo,
+    ST_Boundary, arrow::StringBuilder, geo,
     OGR_G_Boundary(geo));
+
+UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
+    ST_Envelope, arrow::StringBuilder, geo,
+    Wrapper_OGR_G_GetEnvelope(geo));
 
 
 /************************ GEOMETRY PROCESSING ************************/

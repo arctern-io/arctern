@@ -740,7 +740,13 @@ TEST(geometry_test, test_ST_Envelope) {
 std::shared_ptr<arrow::Array> geo;
 arrow::StringBuilder builder1;
 
-builder1.Append("POLYGON((0 0,1 0,1 1,0 0))");
+builder1.Append("POLYGON ((0 0,1 0,1 1,0 0))");
+builder1.Append("POLYGON ((0 0,1 0,2 3,0 1,0 0))");
+builder1.Append("POLYGON ((0 0,2 0,3 3,2 1,0 4,0 0))");
+builder1.Append("POINT (0 1)");
+builder1.Append("LINESTRING(0 0,1 0)");
+builder1.Append("LINESTRING(0 1,2 3)");
+builder1.Append("LINESTRING(0 1,2 3,1 4)");
 builder1.Finish(&geo);
 
 auto res = ST_Envelope(geo);
@@ -751,8 +757,13 @@ auto res = ST_Envelope(geo);
 
 arrow::StringBuilder builder_res;
 std::shared_ptr<arrow::Array> expect_res;
-// builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder_res.Append("LINESTRING (0 0,1 0,1 1,0 0)");
+builder_res.Append("POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+builder_res.Append("POLYGON ((0 0,0 3,2 3,2 0,0 0))");
+builder_res.Append("POLYGON ((0 0,0 4,3 4,3 0,0 0))");
+builder_res.Append("POINT (0 1)");
+builder_res.Append("LINESTRING (0 0,1 0)");
+builder_res.Append("POLYGON ((0 1,0 3,2 3,2 1,0 1))");
+builder_res.Append("POLYGON ((0 1,0 4,2 4,2 1,0 1))");
 builder_res.Finish(&expect_res);
 
 ASSERT_EQ(res->Equals(expect_res), true);
