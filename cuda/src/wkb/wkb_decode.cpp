@@ -142,15 +142,15 @@ GeometryVector::create_gpuctx() const {
     assert(size + 1 == value_offsets_.size());
     assert(meta_offsets_[size] == metas_.size());
     assert(value_offsets_[size] == values_.size());
-    holder.ctx_->tags = GpuAllocAndCopy(tags_.data(), tags_.size());
-    holder.ctx_->metas = GpuAllocAndCopy(metas_.data(), metas_.size());
-    holder.ctx_->values = GpuAllocAndCopy(values_.data(), values_.size());
-    holder.ctx_->meta_offsets =
+    holder->tags = GpuAllocAndCopy(tags_.data(), tags_.size());
+    holder->metas = GpuAllocAndCopy(metas_.data(), metas_.size());
+    holder->values = GpuAllocAndCopy(values_.data(), values_.size());
+    holder->meta_offsets =
         GpuAllocAndCopy(meta_offsets_.data(), meta_offsets_.size());
-    holder.ctx_->value_offsets =
+    holder->value_offsets =
         GpuAllocAndCopy(value_offsets_.data(), value_offsets_.size());
-    holder.ctx_->size = tags_.size();
-    holder.ctx_->data_state = data_state_;
+    holder->size = tags_.size();
+    holder->data_state = data_state_;
     return holder;
 }
 

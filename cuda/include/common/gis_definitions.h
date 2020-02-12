@@ -56,7 +56,9 @@ class GeometryVector {
         struct Deleter {
             void operator()(GeoContext*);    // TODO
         };
-
+        auto operator->() {
+            return ctx_.operator->();
+        }
      private:
         std::unique_ptr<GeoContext, Deleter> ctx_;
         explicit GeoContextHolder() : ctx_(new GeoContext) {}
