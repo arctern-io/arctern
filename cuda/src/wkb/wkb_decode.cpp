@@ -77,7 +77,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     const char* stream_iter = raw_bin;
     auto byte_order = fetch<WkbByteOrder>(stream_iter);
     assert(byte_order == WkbByteOrder::LittleEndian);
-    auto tag = fetch<WKB_Tag>(stream_iter);
+    auto tag = fetch<WkbTag>(stream_iter);
 
     auto extend_values_from_stream = [&](int dimensions, size_t points) {
         auto count = dimensions * points;

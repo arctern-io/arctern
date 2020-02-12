@@ -29,14 +29,14 @@ class GeometryVector {
     };
 
     struct GPUContext {
-        WKB_Tag* tags = nullptr;
+        WkbTag* tags = nullptr;
         uint32_t* metas = nullptr;
         double* values = nullptr;
         int* meta_offsets = nullptr;
         int* value_offsets = nullptr;
         int size = 0;
         DataState data_state = DataState::Invalid;
-        DEVICE_RUNNABLE WKB_Tag get_tag(int index) const { return tags[index]; }
+        DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
         DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
             auto offset = meta_offsets[index];
             return metas + offset;
@@ -74,7 +74,7 @@ class GeometryVector {
     int size() const { return tags_.size(); }
 
  private:
-    GPUVector<WKB_Tag> tags_;
+    GPUVector<WkbTag> tags_;
     GPUVector<uint32_t> metas_;
     GPUVector<double> values_;
     GPUVector<int> meta_offsets_;

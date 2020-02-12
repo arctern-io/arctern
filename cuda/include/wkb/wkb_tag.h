@@ -27,9 +27,9 @@ enum class WkbGroup : uint32_t {
     ZM = 3       // XYZM
 };
 
-struct WKB_Tag {
-    WKB_Tag() = default;
-    explicit DEVICE_RUNNABLE WKB_Tag(uint32_t data) : data_(data) {}
+struct WkbTag {
+    WkbTag() = default;
+    explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data_(data) {}
     DEVICE_RUNNABLE WkbCategory get_category() {
         return static_cast<WkbCategory>(data_ % WKBGroupBase);
     }
