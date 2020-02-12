@@ -3,9 +3,9 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 void ST_point(const double* xs, const double ys, GeometryVector& results);
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz
 

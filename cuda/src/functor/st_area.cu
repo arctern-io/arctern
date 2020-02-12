@@ -7,7 +7,7 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 inline DEVICE_RUNNABLE double
 ST_area_polygon(const GeoContext& ctx, int index) {
@@ -54,6 +54,6 @@ ST_area(const GeometryVector& vec, double* host_results) {
     GpuMemcpy(host_results, dev_result.get(), vec.size());
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

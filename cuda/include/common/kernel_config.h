@@ -6,7 +6,7 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 struct KernelExecConfig {
     int64_t grid_dim;
@@ -38,6 +38,6 @@ inline void check_cuda_last_error() {
     }
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

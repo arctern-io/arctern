@@ -14,7 +14,7 @@ using GpuVector = vector<T>;    // TODO: use gpu vector, now just placeholder
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 class GeometryVector {
  private:
@@ -84,6 +84,6 @@ class GeometryVector {
 
 using GeoContext = GeometryVector::GeoContext;
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

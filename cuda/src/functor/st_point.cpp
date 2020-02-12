@@ -2,7 +2,7 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 // this is a slow implementation, only to reflex the real proess
 enum Action {
@@ -29,6 +29,6 @@ void ST_point(const double* xs, const double ys, size_t size, GeometryVector& re
 
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

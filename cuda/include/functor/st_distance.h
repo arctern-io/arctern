@@ -3,12 +3,12 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 void ST_distance(const GeometryVector& left,
                  const GeometryVector& right,
                  double* host_results);
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

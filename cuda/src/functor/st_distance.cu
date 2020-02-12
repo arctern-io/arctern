@@ -9,7 +9,7 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 inline DEVICE_RUNNABLE double
 ST_distance_point_point(const GeoContext& left, const GeoContext& right, int index) {
@@ -52,6 +52,6 @@ ST_distance(const GeometryVector& left,
     GpuMemcpy(host_results, dev_result.get(), left.size());
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

@@ -11,7 +11,7 @@
 
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 void
 GeometryVector::WkbDecodeInitalize() {
@@ -168,6 +168,6 @@ GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
     ptr->data_state = DataState::Invalid;
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

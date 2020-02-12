@@ -1,7 +1,7 @@
 #pragma once
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 // must free manually
 template<typename T>
@@ -61,6 +61,6 @@ GpuMakeUniqueArrayAndCopy(const T* src, int size)
     return ptr;
 }
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

@@ -10,7 +10,7 @@
 
 using namespace zilliz;
 using namespace zilliz::gis;
-using namespace zilliz::gis::cpp;
+using namespace zilliz::gis::cuda;
 
 TEST(FunctorDistance, naive) {
     ASSERT_TRUE(true);

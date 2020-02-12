@@ -3,7 +3,7 @@
 #include <cstdint>
 namespace zilliz {
 namespace gis {
-namespace cpp {
+namespace cuda {
 
 enum class WkbByteOrder : uint8_t { BigEndian = 0, LittleEndian = 1 };
 
@@ -40,6 +40,6 @@ struct WkbTag {
 };
 
 
-}    // namespace cpp
+}    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz
