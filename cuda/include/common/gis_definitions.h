@@ -69,6 +69,7 @@ class GeometryVector {
     void decodeFromWKB_initialize();
     void decodeFromWKB_append(const char* bin);
     void decodeFromWKB_finalize();
+    void clear();
 
     int size() const { return tags_.size(); }
 

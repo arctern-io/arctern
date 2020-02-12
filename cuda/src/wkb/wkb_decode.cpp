@@ -15,12 +15,18 @@ namespace cpp {
 
 void
 GeometryVector::decodeFromWKB_initialize() {
+   clear();
+   data_state_ = DataState::Appending;
+}
+
+void
+GeometryVector::clear() {
     tags_.clear();
     metas_.clear();
     values_.clear();
     meta_offsets_.clear();
     value_offsets_.clear();
-    data_state_ = DataState::Appending;
+    data_state_ = DataState::Invalid;
 }
 void
 GeometryVector::decodeFromWKB_finalize() {
@@ -34,7 +40,7 @@ GeometryVector::decodeFromWKB_finalize() {
     auto prefix_sum = [](vector<int>& vec) {
         // TODO: use exclusive_scan instead
         int sum = 0;
-        for(auto &x: vec) {
+        for (auto& x : vec) {
             auto old_sum = sum;
             sum += x;
             x = old_sum;
@@ -122,7 +128,6 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
         }
     }
 }
-
 
 
 GeometryVector::GPUContextHolder
