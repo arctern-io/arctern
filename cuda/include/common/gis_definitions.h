@@ -8,7 +8,7 @@
 #include <cassert>
 using std::vector;
 template<typename T>
-using GPUVector = vector<T>;    // TODO: use gpu vector, now just placeholder
+using GpuVector = vector<T>;    // TODO: use gpu vector, now just placeholder
 
 #include "wkb/wkb_tag.h"
 
@@ -62,9 +62,9 @@ class GeometryVector {
         explicit GeoContextHolder() : ctx_(new GeoContext) {}
         friend class GeometryVector;
     };
-    class GeoContextHolder create_gpuctx() const;    // TODO
+    GeoContextHolder create_gpuctx() const;    // TODO
     GeometryVector() = default;
-    GPUVector<char> EncodeToWkb() const;    // TODO
+    GpuVector<char> EncodeToWkb() const;    // TODO
 
     void WkbDecodeInitalize();
     void WkbDecodeAppend(const char* bin);
@@ -74,11 +74,11 @@ class GeometryVector {
     int size() const { return tags_.size(); }
 
  private:
-    GPUVector<WkbTag> tags_;
-    GPUVector<uint32_t> metas_;
-    GPUVector<double> values_;
-    GPUVector<int> meta_offsets_;
-    GPUVector<int> value_offsets_;
+    GpuVector<WkbTag> tags_;
+    GpuVector<uint32_t> metas_;
+    GpuVector<double> values_;
+    GpuVector<int> meta_offsets_;
+    GpuVector<int> value_offsets_;
     DataState data_state_ = DataState::Appending;
 };
 

@@ -135,7 +135,7 @@ GeometryVector::create_gpuctx() const {
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
     GeometryVector::GeoContextHolder holder;
-    static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
+    static_assert(std::is_same<GpuVector<int>, vector<int>>::value,
                   "here use vector now");
     auto size = tags_.size();    // size_ of elements
     assert(size + 1 == meta_offsets_.size());
