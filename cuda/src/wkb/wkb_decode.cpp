@@ -130,11 +130,11 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
 }
 
 
-GeometryVector::GPUContextHolder
+GeometryVector::GeoContextHolder
 GeometryVector::create_gpuctx() const {
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
-    GeometryVector::GPUContextHolder holder;
+    GeometryVector::GeoContextHolder holder;
     static_assert(std::is_same<GPUVector<int>, vector<int>>::value,
                   "here use vector now");
     auto size = tags_.size();    // size_ of elements
@@ -155,7 +155,7 @@ GeometryVector::create_gpuctx() const {
 }
 
 void
-GeometryVector::GPUContextHolder::Deleter::operator()(GPUContext* ptr) {
+GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
     if (!ptr) {
         return;
     }

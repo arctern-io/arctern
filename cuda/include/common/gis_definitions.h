@@ -28,7 +28,7 @@ class GeometryVector {
         PrefixSumOffset_FullData
     };
 
-    struct GPUContext {
+    struct GeoContext {
         WkbTag* tags = nullptr;
         uint32_t* metas = nullptr;
         double* values = nullptr;
@@ -50,19 +50,19 @@ class GeometryVector {
  private:
  public:
     // just a wrapper of unique_ptr<ctx, dtor>
-    class GPUContextHolder {
+    class GeoContextHolder {
      public:
-        const GPUContext& get() { return *ctx; }
+        const GeoContext& get() { return *ctx; }
         struct Deleter {
-            void operator()(GPUContext*);    // TODO
+            void operator()(GeoContext*);    // TODO
         };
 
      private:
-        std::unique_ptr<GPUContext, Deleter> ctx;
-        explicit GPUContextHolder() : ctx(new GPUContext) {}
+        std::unique_ptr<GeoContext, Deleter> ctx;
+        explicit GeoContextHolder() : ctx(new GeoContext) {}
         friend class GeometryVector;
     };
-    class GPUContextHolder create_gpuctx() const;    // TODO
+    class GeoContextHolder create_gpuctx() const;    // TODO
     GeometryVector() = default;
     GPUVector<char> encodeToWKB() const;    // TODO
 
@@ -82,7 +82,7 @@ class GeometryVector {
     DataState data_state_ = DataState::Appending;
 };
 
-using GeoContext = GeometryVector::GPUContext;
+using GeoContext = GeometryVector::GeoContext;
 
 }    // namespace cpp
 }    // namespace gis
