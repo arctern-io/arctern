@@ -75,8 +75,8 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     // decode a single polygon and append to vector
     assert(data_state_ == DataState::Appending);
     const char* stream_iter = raw_bin;
-    auto byte_order = fetch<WKB_ByteOrder>(stream_iter);
-    assert(byte_order == WKB_ByteOrder::LittleEndian);
+    auto byte_order = fetch<WkbByteOrder>(stream_iter);
+    assert(byte_order == WkbByteOrder::LittleEndian);
     auto tag = fetch<WKB_Tag>(stream_iter);
 
     auto extend_values_from_stream = [&](int dimensions, size_t points) {
@@ -87,11 +87,11 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
     };
 
     // deal with 2D cases for now
-    assert(tag.get_group() == WKB_Group::None);
+    assert(tag.get_group() == WkbGroup::None);
     auto dimensions = 2;
     tags_.push_back(tag);
     switch (tag.get_category()) {
-        case WKB_Category::Point: {
+        case WkbCategory::Point: {
             // metas_.do_nothing()
             extend_values_from_stream(dimensions, 1);
 
@@ -99,7 +99,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
             value_offsets_.push_back(dimensions);
             break;
         }
-        case WKB_Category::LineString: {
+        case WkbCategory::LineString: {
             auto points = fetch<uint32_t>(stream_iter);
             extend_values_from_stream(dimensions, points);
 
@@ -107,7 +107,7 @@ GeometryVector::decodeFromWKB_append(const char* raw_bin) {
             value_offsets_.push_back(1);
             break;
         }
-        case WKB_Category::Polygon: {
+        case WkbCategory::Polygon: {
             int total_values = 0;
             // most case 1
             auto count_sub_poly = fetch<uint32_t>(stream_iter);

@@ -5,9 +5,9 @@ namespace zilliz {
 namespace gis {
 namespace cpp {
 
-enum class WKB_ByteOrder : uint8_t { BigEndian = 0, LittleEndian = 1 };
+enum class WkbByteOrder : uint8_t { BigEndian = 0, LittleEndian = 1 };
 
-enum class WKB_Category : uint32_t {
+enum class WkbCategory : uint32_t {
     Invalid = 0,
     Point = 1,
     LineString = 2,
@@ -20,7 +20,7 @@ enum class WKB_Category : uint32_t {
 };
 
 constexpr uint32_t WKBGroupBase = 1000;
-enum class WKB_Group : uint32_t {
+enum class WkbGroup : uint32_t {
     None = 0,    // normal 2D
     Z = 1,       // XYZ
     M = 2,       // XYM
@@ -30,11 +30,11 @@ enum class WKB_Group : uint32_t {
 struct WKB_Tag {
     WKB_Tag() = default;
     explicit DEVICE_RUNNABLE WKB_Tag(uint32_t data) : data_(data) {}
-    DEVICE_RUNNABLE WKB_Category get_category() {
-        return static_cast<WKB_Category>(data_ % WKBGroupBase);
+    DEVICE_RUNNABLE WkbCategory get_category() {
+        return static_cast<WkbCategory>(data_ % WKBGroupBase);
     }
-    DEVICE_RUNNABLE WKB_Group get_group() {
-        return static_cast<WKB_Group>(data_ / WKBGroupBase);
+    DEVICE_RUNNABLE WkbGroup get_group() {
+        return static_cast<WkbGroup>(data_ / WKBGroupBase);
     }
     uint32_t data_;
 };

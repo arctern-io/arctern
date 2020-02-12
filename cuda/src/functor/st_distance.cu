@@ -27,10 +27,10 @@ ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
         auto left_tag = left.get_tag(tid);
         auto right_tag = right.get_tag(tid);
         // handle 2d case only for now
-        assert(left_tag.get_group() == WKB_Group::None);
-        assert(right_tag.get_group() == WKB_Group::None);
-        if (left_tag.get_category() == WKB_Category::Point &&
-            right_tag.get_category() == WKB_Category::Point) {
+        assert(left_tag.get_group() == WkbGroup::None);
+        assert(right_tag.get_group() == WkbGroup::None);
+        if (left_tag.get_category() == WkbCategory::Point &&
+            right_tag.get_category() == WkbCategory::Point) {
             result[tid] = ST_distance_point_point(left, right, tid);
         } else {
             result[tid] = NAN;

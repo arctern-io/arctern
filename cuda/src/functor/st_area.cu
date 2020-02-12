@@ -32,9 +32,9 @@ ST_area_kernel(GeoContext ctx, double* result) {
     if (tid < ctx.size) {
         auto tag = ctx.get_tag(tid);
         // handle 2d case only for now
-        assert(tag.get_group() == WKB_Group::None);
+        assert(tag.get_group() == WkbGroup::None);
         switch (tag.get_category()) {
-            case WKB_Category::Polygon: {
+            case WkbCategory::Polygon: {
                 result[tid] = ST_area_polygon(ctx, tid);
                 break;
             }
