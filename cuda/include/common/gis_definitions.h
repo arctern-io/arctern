@@ -22,9 +22,9 @@ class GeometryVector {
     enum class DataState : uint32_t {
         Invalid,
         Appending,
-        FlatOffset_EmptyData,
+        FlatOffset_EmptyInfo,
+        FlatOffset_FullInfo,
         PrefixSumOffset_EmptyData,
-        FlatOffset_FullData,
         PrefixSumOffset_FullData
     };
 
