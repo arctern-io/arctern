@@ -2,10 +2,15 @@ set(PROJ_SOURCE_URL "https://download.osgeo.org/proj/proj-6.2.1.tar.gz")
 
 set(PROJ_ROOT   ${CMAKE_BINARY_DIR}/proj_ep-prefix/src)
 
+set(PROJ_SHA_HASH
+        "8aa3aebe620f472020c9b515267e95d2e89b9906")
+
 file(MAKE_DIRECTORY     ${PROJ_ROOT}/proj-build)
 ExternalProject_Add(proj_ep
     URL
     ${PROJ_SOURCE_URL}
+    URL_HASH
+    SHA1=${PROJ_SHA_HASH}
     BINARY_DIR
     ${PROJ_ROOT}/proj-build
     CONFIGURE_COMMAND
