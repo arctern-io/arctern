@@ -13,7 +13,7 @@ def gen_gis_core_modules():
         # The Numpy C headers are currently required
         ext.include_dirs.append(np.get_include())
         ext.include_dirs.append(pa.get_include())
-        ext.libraries.extend(['GIS', 'zgeo'] + pa.get_libraries())
+        ext.libraries.extend(['windrose'] + pa.get_libraries())
         ext.library_dirs.extend(pa.get_library_dirs())
 
         if os.name == 'posix':
