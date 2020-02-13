@@ -10,6 +10,7 @@
 
 using namespace zilliz::gis;
 
+
 TEST(geometry_test, make_point_from_double){
 
   arrow::DoubleBuilder builder_x;
@@ -739,4 +740,77 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope){
   std::string expect = "POLYGON ((0 0,1 0,0 1,1 1,0 0))";
 
   ASSERT_EQ(res_str,expect);
+}
+
+TEST(geometry_test,test_ST_Union_Aggr){
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  auto p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+
+  auto result = ST_Union_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))");
+
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))");
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))");
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POINT (2 3)";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+
+
+}
+
+
+TEST(geometry_test,test_ST_Envelop_Aggr){
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  auto p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  auto p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+
+  auto result = ST_Envelope_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))");
+
 }
