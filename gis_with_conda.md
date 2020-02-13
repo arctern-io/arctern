@@ -36,7 +36,7 @@ make install
     Library-dirs= CMAKE_INSTALL_PREFIX/lib
     ```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
-- 运行python目录下的build.sh
+- 运行python目录下的build.sh  
 `./build.sh`
 ## 运行Python包 zilliz_gis的单元测试
 1. 需要保证`LD_LIBRARY_PATH`中加入`CMAKE_INSTALL_PREFIX/lib`这个路径以及`cuda`的`lib`路径
@@ -46,10 +46,46 @@ make install
 
 
 
-# spark udf封装以及单元测试的运行
+# 在spark上运行
 
+## 编译zilliz_pyspark包
 
+```sh
+cd GIS/spark/pyspark
+./build.sh
+```
 
-# 和spark的整体使用
+## 确认是否安装成功  
+在`python`命令行里输入`import zilliz_pyspark`，看是否报错
 
+## 设置链接选项  
 
+修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
+```
+spark.driver.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/zgis_dev/lib:/usr/local/cuda/lib64
+spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/zgis_dev/lib:/usr/local/cuda/lib64
+```
+
+`/home/xxx/gis/GIS/cpp/build/thirdparty/lib`对应你编译cpp部分时，生成的库安装的地方
+
+## 修改环境变量  
+在`~/.bashrc`和`spark-env.sh` 增加如下配置
+```
+export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/zgis_dev/bin/python
+```
+注1 : 如果当前用户默认`SHELL`不是`bash`，则在对应的rc文件中添加环境变量  
+注2 : 设置环境变量后重启`SHELL`，确保当前`PYSPARK_PYTHON`生效
+
+## 检查`pyspark`是否使用`$PYSPARK_PYTHON`指定的python
+```
+./bin/pyspark
+>>> import sys
+>>> print(sys.prefix)
+/home/xxx/miniconda3/envs/gis2
+```
+
+## 运行单元测试
+   
+```
+./bin/spark-submit /home/xxx/gis/GIS/spark/pyspark/example/gis/spark_udf_ex.py
+```
