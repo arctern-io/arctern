@@ -32,11 +32,14 @@ do
              d)
                 CPP_BUILD_DIR=$OPTARG # CPP_BUILD_DIR
                 ;;
+             u)
+                CONDA_ENV=$OPTARG # CONDA_ENV
+                ;;
              g)
                 USE_GPU="ON";
                 ;;
              u)
-                echo "Build and run unittest cases" ;
+                echo "Build unittest cases" ;
                 BUILD_UNITTEST="ON";
                 ;;
              p)
@@ -65,6 +68,10 @@ usage:
         ;;
         esac
 done
+
+if [[ -n ${CONDA_ENV} ]]; then
+    conda activate ${CONDA_ENV}
+fi
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
     mkdir ${CPP_BUILD_DIR}
