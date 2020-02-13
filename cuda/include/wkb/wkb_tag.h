@@ -27,13 +27,17 @@ enum class WkbGroup : uint32_t {
     ZM = 3       // XYZM
 };
 
+
 struct WkbTag {
     WkbTag() = default;
-    explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data_(data) {}
-    DEVICE_RUNNABLE WkbCategory get_category() {
+    constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbGroup group)
+        : data_((uint32_t)category + (uint32_t)group * WkbGroupBase) {}
+
+    constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data_(data) {}
+    constexpr DEVICE_RUNNABLE WkbCategory get_category() {
         return static_cast<WkbCategory>(data_ % WkbGroupBase);
     }
-    DEVICE_RUNNABLE WkbGroup get_group() {
+    constexpr DEVICE_RUNNABLE WkbGroup get_group() {
         return static_cast<WkbGroup>(data_ / WkbGroupBase);
     }
     uint32_t data_;

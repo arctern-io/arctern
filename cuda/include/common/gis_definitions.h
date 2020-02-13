@@ -36,7 +36,10 @@ class GeometryVector {
         int* value_offsets = nullptr;
         int size = 0;
         DataState data_state = DataState::Invalid;
+
         DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
+
+        // const version
         DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
             auto offset = meta_offsets[index];
             return metas + offset;
@@ -44,6 +47,16 @@ class GeometryVector {
         DEVICE_RUNNABLE const double* get_value_ptr(int index) const {
             auto offset = value_offsets[index];
             return values + offset;
+        }
+
+        // nonconst version
+        DEVICE_RUNNABLE uint32_t* get_meta_ptr(int index) {
+            const auto cptr = this;
+            return const_cast<uint32_t*>(cptr->get_meta_ptr(index));
+        }
+        DEVICE_RUNNABLE double* get_value_ptr(int index) {
+            const auto cptr = this;
+            return const_cast<double*>(cptr->get_value_ptr(index));
         }
     };
 
