@@ -23,8 +23,8 @@ __all__ = [
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
     "ST_Buffer_UDF",
-    "ST_Union_Aggr",
-    "ST_Envelope_Aggr",
+    "ST_Union_Aggr_UDF",
+    "ST_Envelope_Aggr_UDF",
     "my_plot" # or point_map
 ]
 
@@ -228,11 +228,11 @@ def ST_Union_Aggr_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_Union_Aggr
     rs = ST_Union_Aggr(arr_geos)
-    return rs[0]
+    return str(rs[0])
 
 @pandas_udf("string", PandasUDFType.GROUPED_AGG)
 def ST_Envelope_Aggr_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_Envelope_Aggr
     rs = ST_Envelope_Aggr(arr_geos)
-    return rs[0]
+    return str(rs[0])

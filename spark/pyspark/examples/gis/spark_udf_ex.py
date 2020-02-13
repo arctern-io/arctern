@@ -299,8 +299,8 @@ def run_st_union_aggr(spark):
 
 def run_st_envelope_aggr(spark):
     test_data = []
-    test_data.extend([('',)])
-    test_data.extend([('',)])
+    test_data.extend([('POLYGON ((0 0,4 0,4 4,0 4,0 0))',)])
+    test_data.extend([('POLYGON ((5 1,7 1,7 2,5 2,5 1))',)])
     envelope_aggr_df = spark.createDataFrame(data=test_data, schema=['geos'])
     envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
