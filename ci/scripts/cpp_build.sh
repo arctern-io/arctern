@@ -19,7 +19,7 @@ USE_GPU="OFF"
 CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 PRIVILEGES="OFF"
 
-while getopts "o:t:d:pgh" arg
+while getopts "o:t:d:guph" arg
 do
         case $arg in
              o)
@@ -55,7 +55,7 @@ parameter:
 -h: help
 
 usage:
-./build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} [-g] [-u] [-h]
+./build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} [-g] [-u] [-p] [-h]
                 "
                 exit 0
                 ;;
