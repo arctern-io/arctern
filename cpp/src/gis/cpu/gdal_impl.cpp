@@ -187,6 +187,8 @@ Wrapper_OGR_G_IsValid(const char *geo_wkt) {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, (OGRGeometry**)(&geo));
     if (err_code == OGRERR_NONE) {
         is_valid = OGR_G_IsValid(geo) != 0;
+    }
+    if (geo) {
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
     }
     return is_valid;
