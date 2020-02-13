@@ -79,6 +79,7 @@ TEST(geometry_test,test_ST_IsValid){
   string_builder.Append(std::string(str1));
   string_builder.Append(std::string(str2));
   string_builder.Append(std::string(str3));
+  string_builder.Append("not a wkt");
   CPLFree(str1);
   CPLFree(str2);
   CPLFree(str3);
@@ -91,6 +92,7 @@ TEST(geometry_test,test_ST_IsValid){
   ASSERT_EQ(vaild_mark_arr->Value(0),true);
   ASSERT_EQ(vaild_mark_arr->Value(1),true);
   ASSERT_EQ(vaild_mark_arr->Value(2),false);
+  ASSERT_EQ(vaild_mark_arr->Value(3),false);
 }
 
 TEST(geometry_test, test_ST_Intersection){
