@@ -48,6 +48,8 @@ make install
 
 # 在spark上运行
 
+注意事项：spark请使用最新的spark-3.0.0-preview2.
+
 ## 编译zilliz_pyspark包
 
 ```sh
