@@ -1,0 +1,66 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent none
+
+    environment {
+        PROJECT_NAME = "gis"
+        PIPELINE_NAME = "gis-ci"
+    }
+
+    options {
+        timestamps()
+    }
+
+    stages {
+        stage ('GIS Build and Test') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu16.04'
+                    }
+
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                stages {
+                    stage("GIS CI") {
+                        stages {
+                            stage('Run build') {
+                                agent {
+                                    kubernetes {
+                                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                        defaultContainer 'jnlp'
+                                        yamlFile "ci/jenkins/pod/gis-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                                    }
+                                }
+
+                                stages {
+                                	stage('Build') {
+                                        steps {
+                                            container("gis-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    echo "GIS ${BINARY_VERSION} version build stage!"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
