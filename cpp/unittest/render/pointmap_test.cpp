@@ -6,7 +6,7 @@
 using namespace zilliz::render;
 
 TEST(TWOD_TEST, POIN_TEST) {
-    PointMap point_map;
+//    PointMap point_map;
 
     auto bit_map = new uint8_t{0xff};
 

@@ -5,7 +5,7 @@
 using namespace zilliz::render;
 
 TEST(TWOD_TEST, HEATMAP_TEST) {
-    HeatMap<uint32_t > heat_map;
+//    HeatMap<uint32_t > heat_map;
 
     auto bit_map = new uint8_t{0xff};
 
