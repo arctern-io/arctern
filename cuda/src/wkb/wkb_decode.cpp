@@ -15,12 +15,12 @@ namespace cuda {
 
 void
 GeometryVector::WkbDecodeInitalize() {
-    Clear();
+    clear();
    data_state_ = DataState::Appending;
 }
 
 void
-GeometryVector::Clear() {
+GeometryVector::clear() {
     tags_.clear();
     metas_.clear();
     values_.clear();
