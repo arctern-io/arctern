@@ -19,7 +19,7 @@ USE_GPU="OFF"
 CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 PRIVILEGES="OFF"
 
-while getopts "o:t:d:guph" arg
+while getopts "o:t:d:e:guph" arg
 do
         case $arg in
              o)
@@ -32,7 +32,7 @@ do
              d)
                 CPP_BUILD_DIR=$OPTARG # CPP_BUILD_DIR
                 ;;
-             u)
+             e)
                 CONDA_ENV=$OPTARG # CONDA_ENV
                 ;;
              g)
@@ -52,13 +52,14 @@ parameter:
 -o: install prefix(default: /var/lib/milvus)
 -t: build type(default: Debug)
 -d: cpp code build directory
+-e: set conda activate environment
 -g: gpu version
 -u: building unit test options(default: OFF)
 -p: install command with elevated privileges
 -h: help
 
 usage:
-./build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} [-g] [-u] [-p] [-h]
+./build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} -e \${CONDA_ENV} [-g] [-u] [-p] [-h]
                 "
                 exit 0
                 ;;
