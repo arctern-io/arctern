@@ -1,5 +1,8 @@
 project(zillizgis LANGUAGES CXX)
 
+option(USE_GPU off)
+option(BUILD_UNITTEST off)
+
 # get build time
 MACRO(GET_CURRENT_TIME CURRENT_TIME)
     execute_process(COMMAND "date" +"%Y-%m-%d %H:%M.%S" OUTPUT_VARIABLE ${CURRENT_TIME})
@@ -34,14 +37,6 @@ if (NOT LAST_COMMIT_ID STREQUAL "")
 else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
-
-if(EXISTS ${PROJECT_SOURCE_DIR}/config.cmake)
-    include(${PROJECT_SOURCE_DIR}/config.cmake)
-else()
-    if(EXISTS ${PROJECT_SOURCE_DIR}/config.cmake)
-        include(${PROJECT_SOURCE_DIR}/config.cmake)
-    endif()
-endif()
 
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
