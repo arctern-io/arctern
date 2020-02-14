@@ -22,10 +22,10 @@ class GeometryVector {
     enum class DataState : uint32_t {
         Invalid,
         Appending,
-        FlatOffset_EmptyInfo,
-        FlatOffset_FullInfo,
-        PrefixSumOffset_EmptyData,
-        PrefixSumOffset_FullData
+        FlatOffset_EmptyInfo,  // for calcullation: info is empty
+        FlatOffset_FullInfo,        // after filling info
+        PrefixSumOffset_EmptyData,  // after scan operation of meta_size/value_size
+        PrefixSumOffset_FullData    // after filling the data
     };
 
     struct GeoContext {
