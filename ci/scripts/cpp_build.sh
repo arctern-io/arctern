@@ -26,13 +26,13 @@ do
                 INSTALL_PREFIX=$OPTARG
                 ;;
              t)
-                BUILD_TYPE=$OPTARG # BUILD_TYPE
+                BUILD_TYPE=$OPTARG # BUILD TYPE
                 ;;
              d)
-                CPP_BUILD_DIR=$OPTARG # CPP_BUILD_DIR
+                CPP_BUILD_DIR=$OPTARG # CPP BUILD DIRCETORY
                 ;;
              e)
-                CONDA_ENV=$OPTARG # CONDA_ENV
+                CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
                 ;;
              g)
                 USE_GPU="ON";

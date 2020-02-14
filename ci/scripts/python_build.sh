@@ -13,21 +13,25 @@ SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../python"
 GIS_LIBRARY_DIRS=""
 
-while getopts "l:h" arg
+while getopts "l:e:h" arg
 do
         case $arg in
              l)
                 GIS_LIBRARY_DIRS=$OPTARG   # GIS LIBRARY DIRS
+                ;;
+             e)
+                CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
                 ;;
              h) # help
                 echo "
 
 parameter:
 -l: GIS library directory
+-e: set conda activate environment
 -h: help
 
 usage:
-./build.sh -o \${GIS_LIBRARY_DIRS} [-h]
+./build.sh -o \${GIS_LIBRARY_DIRS} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
@@ -37,6 +41,11 @@ usage:
         ;;
         esac
 done
+
+if [[ -n ${CONDA_ENV} ]]; then
+    eval "$(conda shell.bash hook)"
+    conda activate ${CONDA_ENV}
+fi
 
 cd ${PYTHON_SRC_DIR}
 
