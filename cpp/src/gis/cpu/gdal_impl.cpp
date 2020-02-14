@@ -156,7 +156,7 @@ Wrapper_OGR_G_Centroid(void *geo) {
 inline void *
 Wrapper_OGR_G_GetEnvelope(void *geo) {
   OGRPoint *pointEnvelope = new OGRPoint();
-  if (wkbFlatten(static_cast<OGRPoint *>(geo)->getGeometryType()) == wkbPoint) {
+  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPoint) {
     pointEnvelope->setX(static_cast<OGRPoint *>(geo)->getX());
     pointEnvelope->setY(static_cast<OGRPoint *>(geo)->getY());
     return pointEnvelope;
