@@ -10,8 +10,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-CPP_DIR="${SCRIPTS_DIR}/../../cpp"
-CPP_BUILD_DIR="${CPP_DIR}/cmake_build"
+CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
+CPP_BUILD_DIR="${CPP_SRC_DIR}/cmake_build"
 BUILD_TYPE="Debug"
 BUILD_UNITTEST="OFF"
 INSTALL_PREFIX="/var/lib/gis"
@@ -25,7 +25,6 @@ do
              o)
                 INSTALL_PREFIX=$OPTARG
                 ;;
-
              t)
                 BUILD_TYPE=$OPTARG # BUILD_TYPE
                 ;;

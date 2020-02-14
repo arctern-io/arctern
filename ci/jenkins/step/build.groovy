@@ -5,5 +5,6 @@ timeout(time: 15, unit: 'MINUTES') {
         } else {
             sh "/bin/bash --login -c './cpp_build.sh -t ${params.BUILD_TYPE} -o ${env.GIS_INSTALL_PREFIX} -e \"zgis_dev\" -u'"
         }
+        sh "/bin/bash --login -c 'source ${env.GIS_INSTALL_PREFIX}/scripts/gis_env.sh && ./python_build.sh -l \${GIS_LIB_DIR}'"
     }
 }
