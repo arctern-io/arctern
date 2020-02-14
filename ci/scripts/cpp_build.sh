@@ -71,7 +71,7 @@ usage:
 done
 
 if [[ -n ${CONDA_ENV} ]]; then
-    conda init bash
+    eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
 fi
 
