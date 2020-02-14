@@ -155,79 +155,79 @@ Wrapper_OGR_G_Centroid(void *geo) {
 
 inline void *
 Wrapper_OGR_G_GetEnvelope(void *geo) {
-  OGRPoint *pointEnvelope = new OGRPoint();
-  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPoint) {
-    pointEnvelope->setX(static_cast<OGRPoint *>(geo)->getX());
-    pointEnvelope->setY(static_cast<OGRPoint *>(geo)->getY());
-    return pointEnvelope;
+  OGRPoint *point_envelope = new OGRPoint();
+  if ( wkbFlatten(OGR_G_GetGeometryType(static_cast<OGRGeometry *>(geo)) ) == wkbPoint) {
+    point_envelope->setX(static_cast<OGRPoint *>(geo)->getX());
+    point_envelope->setY(static_cast<OGRPoint *>(geo)->getY());
+    return point_envelope;
   }
-  delete pointEnvelope;
+  delete point_envelope;
 
-  OGRLineString *lineEnvelope = new OGRLineString();
-  OGRPolygon *polygonEnvelope = new OGRPolygon();
-  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbLineString) {
-    OGRLineString *poLS = static_cast<OGRLineString *>(geo);
-    auto len = poLS->getNumPoints();
+  OGRLineString *line_envelope = new OGRLineString();
+  OGRPolygon *polygon_envelope = new OGRPolygon();
+  if ( wkbFlatten(OGR_G_GetGeometryType(static_cast<OGRGeometry *>(geo)) ) == wkbLineString) {
+    OGRLineString *geo_linestring = static_cast<OGRLineString *>(geo);
+    auto len = geo_linestring->getNumPoints();
     if (len <= 0) {
-      delete polygonEnvelope;
-      delete lineEnvelope;
+      delete polygon_envelope;
+      delete line_envelope;
       return 0;
     }
-    auto minX = poLS->getX(0);
-    auto minY = poLS->getY(0);
-    auto maxX = minX;
-    auto maxY = minY;
+    auto min_x = geo_linestring->getX(0);
+    auto min_y = geo_linestring->getY(0);
+    auto max_x = min_x;
+    auto max_y = min_y;
     for (int i = 1; i < len; i++) {
-      auto curX = poLS->getX(i);
-      auto curY = poLS->getY(i);
-      curX < minX ? minX = curX : minX = minX;
-      curX > maxX ? maxX = curX : maxX = maxX;
-      curY < minY ? minY = curY : minY = minY;
-      curY > maxY ? maxY = curY : maxY = maxY;
+      auto cur_x = geo_linestring->getX(i);
+      auto cur_y = geo_linestring->getY(i);
+      cur_x < min_x ? min_x = cur_x : min_x = min_x;
+      cur_x > max_x ? max_x = cur_x : max_x = max_x;
+      cur_y < min_y ? min_y = cur_y : min_y = min_y;
+      cur_y > max_y ? max_y = cur_y : max_y = max_y;
     }
-    if (minX == maxX || minY == maxY) {
-      lineEnvelope->addPoint(minX, minY);
-      lineEnvelope->addPoint(maxX, maxY);
-      delete polygonEnvelope;
-      return lineEnvelope;
+    if (min_x == max_x || min_y == max_y) {
+      line_envelope->addPoint(min_x, min_y);
+      line_envelope->addPoint(max_x, max_y);
+      delete polygon_envelope;
+      return line_envelope;
     } else {
       OGRLinearRing *ring = new OGRLinearRing();
-      ring->addPoint(minX, minY);
-      ring->addPoint(minX, maxY);
-      ring->addPoint(maxX, maxY);
-      ring->addPoint(maxX, minY);
-      ring->addPoint(minX, minY);
+      ring->addPoint(min_x, min_y);
+      ring->addPoint(min_x, max_y);
+      ring->addPoint(max_x, max_y);
+      ring->addPoint(max_x, min_y);
+      ring->addPoint(min_x, min_y);
       ring->closeRings();
-      polygonEnvelope->addRing(ring);
-      delete lineEnvelope;
-      return polygonEnvelope;
+      polygon_envelope->addRing(ring);
+      delete line_envelope;
+      return polygon_envelope;
     }
   }
-  delete lineEnvelope;
+  delete line_envelope;
   
   OGREnvelope envelope;
-  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPolygon
-      || wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbMultiPolygon) {
+  if ( wkbFlatten( OGR_G_GetGeometryType(static_cast<OGRGeometry *>(geo)) ) == wkbPolygon
+      || wkbFlatten( OGR_G_GetGeometryType(static_cast<OGRGeometry *>(geo)) ) == wkbMultiPolygon) {
     OGR_G_GetEnvelope(geo, &envelope);
-    auto minX = envelope.MinX;
-    auto minY = envelope.MinY;
-    auto maxX = envelope.MaxX;
-    auto maxY = envelope.MaxY;
+    auto min_x = envelope.MinX;
+    auto min_y = envelope.MinY;
+    auto max_x = envelope.MaxX;
+    auto max_y = envelope.MaxY;
 
     OGRLinearRing *ring = new OGRLinearRing();
-    ring->addPoint(minX, minY);
-    ring->addPoint(minX, maxY);
-    ring->addPoint(maxX, maxY);
-    ring->addPoint(maxX, minY);
-    ring->addPoint(minX, minY);
+    ring->addPoint(min_x, min_y);
+    ring->addPoint(min_x, max_y);
+    ring->addPoint(max_x, max_y);
+    ring->addPoint(max_x, min_y);
+    ring->addPoint(min_x, min_y);
     ring->closeRings();
-    polygonEnvelope->addRing(ring);
+    polygon_envelope->addRing(ring);
 
-    return polygonEnvelope;
+    return polygon_envelope;
   }
 
   //TBD: handle other cases,eg.multiPolygon or throw ex
-  delete polygonEnvelope;
+  delete polygon_envelope;
   return 0;
 }
 
