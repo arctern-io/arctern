@@ -194,6 +194,29 @@ Wrapper_OGR_G_IsValid(const char *geo_wkt) {
     return is_valid;
 }
 
+inline OGRGeometry*
+Wrapper_createFromWkt(const char* geo_wkt){
+    OGRGeometry *geo = nullptr;
+    auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt,nullptr,&geo);
+    if(err_code){
+        std::string err_msg = "failed to create geometry from \"" + std::string(geo_wkt) + "\"";
+        throw std::runtime_error(err_msg); 
+    }
+    return geo;
+}
+
+inline char*
+Wrapper_OGR_G_ExportToWkt(OGRGeometry *geo){
+    char *str;
+    auto err_code = OGR_G_ExportToWkt(geo,&str);
+    if(err_code != OGRERR_NONE){
+        std::string err_msg = "failed to export to wkt, error code = " + std::to_string(err_code);
+        throw std::runtime_error(err_msg);
+    }
+    return str;
+}
+
+
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
@@ -347,6 +370,46 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_ConvexHull, arrow::StringBuilder, geo,
     OGR_G_ConvexHull(geo));
+
+std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs){
+    OGRSpatialReference oSrcSRS;
+    oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    if(oSrcSRS.SetFromUserInput(src_rs.c_str())!=OGRERR_NONE){
+        std::string err_msg = "faild to tranform with sourceCRS = " +  src_rs;
+        throw new std::runtime_error(err_msg);
+    }
+
+    OGRSpatialReference oDstS;
+    oDstS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    if(oDstS.SetFromUserInput(dst_rs.c_str())!=OGRERR_NONE){
+        std::string err_msg = "faild to tranform with targetCRS = " +  dst_rs;
+        throw new std::runtime_error(err_msg);
+    }
+
+    void *poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
+    arrow::StringBuilder builder;
+
+    auto len = geos->length();
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
+
+    for (int32_t i = 0; i < len; i++) {
+        auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());        
+        CHECK_GDAL(OGR_G_Transform(geo,(OGRCoordinateTransformation*)poCT))
+        auto wkt = Wrapper_OGR_G_ExportToWkt(geo);
+        CHECK_ARROW(builder.Append(wkt));
+        OGRGeometryFactory::destroyGeometry(geo);
+        CPLFree(wkt);
+    }
+
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
+    OCTDestroyCoordinateTransformation(poCT);
+
+    return results; 
+}
 
 
 /************************ MEASUREMENT FUNCTIONS ************************/
