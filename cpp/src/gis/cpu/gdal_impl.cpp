@@ -155,43 +155,42 @@ Wrapper_OGR_G_Centroid(void *geo) {
 
 inline void *
 Wrapper_OGR_G_GetEnvelope(void *geo) {
-  OGRPoint *point = new OGRPoint();
-  if(wkbFlatten(static_cast<OGRPoint *>(geo)->getGeometryType()) == wkbPoint){
-    point->setX(static_cast<OGRPoint *>(geo)->getX());
-    point->setY(static_cast<OGRPoint *>(geo)->getY());
-    return point;
-    //return static_cast<OGRPoint *>(geo); //Segmentation fault
+  OGRPoint *pointEnvelope = new OGRPoint();
+  if (wkbFlatten(static_cast<OGRPoint *>(geo)->getGeometryType()) == wkbPoint) {
+    pointEnvelope->setX(static_cast<OGRPoint *>(geo)->getX());
+    pointEnvelope->setY(static_cast<OGRPoint *>(geo)->getY());
+    return pointEnvelope;
   }
-  OGREnvelope envelope;
+  delete pointEnvelope;
+
   OGRLineString *lineEnvelope = new OGRLineString();
   OGRPolygon *polygonEnvelope = new OGRPolygon();
-  if(wkbFlatten( static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbLineString){
-    OGRLineString* poLS = static_cast<OGRLineString*>(geo);
+  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbLineString) {
+    OGRLineString *poLS = static_cast<OGRLineString *>(geo);
     auto len = poLS->getNumPoints();
-    if(len <= 0){
-      //TODO: throw ex
+    if (len <= 0) {
+      delete polygonEnvelope;
+      delete lineEnvelope;
       return 0;
     }
     auto minX = poLS->getX(0);
     auto minY = poLS->getY(0);
     auto maxX = minX;
     auto maxY = minY;
-    for(int i = 1; i < len;i++)
-    {
-      auto cur_x = poLS->getX(i);
-      auto cur_y = poLS->getY(i);
-      cur_x<minX?minX=cur_x:minX=minX;
-      cur_x>maxX?maxX=cur_x:maxX=maxX;
-      cur_y<minY?minY=cur_y:minY=minY;
-      cur_y>maxY?maxY=cur_y:maxY=maxY;
+    for (int i = 1; i < len; i++) {
+      auto curX = poLS->getX(i);
+      auto curY = poLS->getY(i);
+      curX < minX ? minX = curX : minX = minX;
+      curX > maxX ? maxX = curX : maxX = maxX;
+      curY < minY ? minY = curY : minY = minY;
+      curY > maxY ? maxY = curY : maxY = maxY;
     }
-    if(minX==maxX || minY==maxY){
-      //result should be LINESTRING
-      lineEnvelope->addPoint(minX,minY);
-      lineEnvelope->addPoint(maxX,maxY);
+    if (minX == maxX || minY == maxY) {
+      lineEnvelope->addPoint(minX, minY);
+      lineEnvelope->addPoint(maxX, maxY);
+      delete polygonEnvelope;
       return lineEnvelope;
-    }else{
-      //result should be POLYGON
+    } else {
       OGRLinearRing *ring = new OGRLinearRing();
       ring->addPoint(minX, minY);
       ring->addPoint(minX, maxY);
@@ -200,10 +199,15 @@ Wrapper_OGR_G_GetEnvelope(void *geo) {
       ring->addPoint(minX, minY);
       ring->closeRings();
       polygonEnvelope->addRing(ring);
+      delete lineEnvelope;
       return polygonEnvelope;
     }
   }
-  if(wkbFlatten( static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPolygon){
+  delete lineEnvelope;
+  
+  OGREnvelope envelope;
+  if (wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbPolygon
+      || wkbFlatten(static_cast<OGRGeometry *>(geo)->getGeometryType()) == wkbMultiPolygon) {
     OGR_G_GetEnvelope(geo, &envelope);
     auto minX = envelope.MinX;
     auto minY = envelope.MinY;
@@ -220,10 +224,11 @@ Wrapper_OGR_G_GetEnvelope(void *geo) {
     polygonEnvelope->addRing(ring);
 
     return polygonEnvelope;
-  }else{
-    //TBD: handle other cases,eg.multiPolygon or throw ex
-    return 0;
   }
+
+  //TBD: handle other cases,eg.multiPolygon or throw ex
+  delete polygonEnvelope;
+  return 0;
 }
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
@@ -294,19 +299,19 @@ ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> &min_x_values,
 /************************* GEOMETRY ACCESSOR **************************/
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_IsValid, arrow::BooleanBuilder, geo, 
+    ST_IsValid, arrow::BooleanBuilder, geo,
     OGR_G_IsValid(geo) != 0);
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_IsSimple, arrow::BooleanBuilder, geo, 
+    ST_IsSimple, arrow::BooleanBuilder, geo,
     OGR_G_IsSimple(geo) != 0);
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_GeometryType, arrow::StringBuilder, geo, 
+    ST_GeometryType, arrow::StringBuilder, geo,
     OGR_G_GetGeometryName(geo));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_NPoints, arrow::Int64Builder, geo, 
+    ST_NPoints, arrow::Int64Builder, geo,
     OGR_G_GetPointCount(geo));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
@@ -321,7 +326,7 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
 /************************ GEOMETRY PROCESSING ************************/
 
 std::shared_ptr<arrow::Array>
-ST_Buffer(const std::shared_ptr<arrow::Array> &geometries, 
+ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
           double buffer_distance, int n_quadrant_segments) {
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
         arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
@@ -359,7 +364,7 @@ ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
 //     CHECK_ARROW(builder.Finish(&results));
 //     return results; 
 // }
- 
+
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_Intersection, arrow::StringBuilder, geo_1, geo_2,
     OGR_G_Intersection(geo_1, geo_2));
@@ -369,12 +374,12 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     OGR_G_MakeValid(geo));
 
 std::shared_ptr<arrow::Array>
-ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, 
+ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries,
                             double distance_tolerance) {
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
         arrow::StringBuilder, geo, OGR_G_SimplifyPreserveTopology(geo, distance_tolerance));
 }
- 
+
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_Centroid, arrow::StringBuilder, geo,
     Wrapper_OGR_G_Centroid(geo));
@@ -387,18 +392,18 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
 /************************ MEASUREMENT FUNCTIONS ************************/
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_Area, arrow::DoubleBuilder, geo, 
+    ST_Area, arrow::DoubleBuilder, geo,
     OGR_G_Area(geo));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_Length, arrow::DoubleBuilder, geo, 
+    ST_Length, arrow::DoubleBuilder, geo,
     OGR_G_Length(geo));
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
     OGR_G_Distance(geo_1, geo_2));
 
- 
+
 /************************ SPATIAL RELATIONSHIP ************************/
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
