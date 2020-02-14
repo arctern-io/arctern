@@ -3,7 +3,6 @@
 #include "gis/gis_definitions.h"
 
 
-
 namespace zilliz::gis::cuda {
 
 GeometryVector::GeoContextHolder
@@ -41,4 +40,19 @@ GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
     ptr->size = 0;
     ptr->data_state = DataState::Invalid;
 }
+GeoWorkspaceConfigHolder
+GeoWorkspaceConfigHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
+    GeoWorkspaceConfigHolder holder;
+    holder->max_buffer_per_meta = max_buffer_per_meta;
+    holder->max_buffer_per_value = max_buffer_per_value;
+    holder->meta_buffer = GpuAlloc<uint32_t>(holder->max_threads * max_buffer_per_meta);
+    holder->value_buffer = GpuAlloc<double>(holder->max_threads * max_buffer_per_value);
+}
+
+void
+GeoWorkspaceConfigHolder::destruct(GeoWorkspaceConfig* config) {
+    GpuFree(config->meta_buffer);
+    GpuFree(config->value_buffer);
+}
+
 }    // namespace zilliz::gis::cuda

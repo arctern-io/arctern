@@ -102,27 +102,33 @@ class GeometryVector {
     DataState data_state_ = DataState::Appending;
 };
 
-//struct GeoWorkspaceConfig {
-//    static constexpr int max_threads = 256 * 128;
-//    int max_buffer_per_meta;     // normally 32
-//    int max_buffer_per_value;    // normally 128
-//    uint32_t* meta_buffer;       // size = max_threads * max_buffer_per_value
-//    double* value_buffer;        // size = max_threads * max_buffer_per_value
-//};
-//class GeoWorkspaceConfigHolder {
-// private:
-//    class Deletor{
-//        void operator()(GeoWorkspaceConfig*);
-//    };
-//    GeoWorkspaceConfigHolder(): config(new GeoWorkspaceConfig);
-// public:
-//    static GeoWorkspaceConfigHolder create() {
-//
-//    }
-//
-// private:
-//    std::unique_ptr<GeoWorkspaceConfig, Deletor> config;
-//};
+struct GeoWorkspaceConfig {
+    static constexpr int max_threads = 256 * 128;
+    int max_buffer_per_meta = 0;     // normally 32
+    int max_buffer_per_value = 0;    // normally 128
+    uint32_t* meta_buffer = nullptr;       // size = max_threads * max_buffer_per_value
+    double* value_buffer = nullptr;        // size = max_threads * max_buffer_per_value
+};
+
+class GeoWorkspaceConfigHolder {
+ private:
+    class Deletor {
+        void operator()(GeoWorkspaceConfig* config) {
+            GeoWorkspaceConfigHolder::destruct(config);
+        }
+    };
+    GeoWorkspaceConfigHolder():config_(new GeoWorkspaceConfig) {}
+    auto operator->() {
+        return config_.operator->();
+    }
+ public:
+    static GeoWorkspaceConfigHolder create(int max_buffer_per_meta,
+                                           int max_buffer_per_value);
+    static void destruct(GeoWorkspaceConfig*);
+
+ private:
+    std::unique_ptr<GeoWorkspaceConfig, Deletor> config_;
+};
 
 using GeoContext = GeometryVector::GeoContext;
 
