@@ -1,4 +1,10 @@
 #pragma once
+#include <cstdint>
+#include <stdexcept>
+#include <memory>
+#include <cuda.h>
+
+#include <cuda_runtime.h>
 namespace zilliz {
 namespace gis {
 namespace cuda {

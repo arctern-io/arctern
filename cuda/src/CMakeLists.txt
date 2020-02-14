@@ -1,5 +1,6 @@
 set(WKB_CUDA_SOURCES
         wkb/wkb_decode.cpp
+        gis/gis_definitions.cpp
         functor/st_distance.cu
         functor/st_area.cu
         functor/st_point.cu)

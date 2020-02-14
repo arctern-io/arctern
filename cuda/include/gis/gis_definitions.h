@@ -22,10 +22,10 @@ class GeometryVector {
     enum class DataState : uint32_t {
         Invalid,
         Appending,
-        FlatOffset_EmptyInfo,  // for calcullation: info is empty
-        FlatOffset_FullInfo,        // after filling info
-        PrefixSumOffset_EmptyData,  // after scan operation of meta_size/value_size
-        PrefixSumOffset_FullData    // after filling the data
+        FlatOffset_EmptyInfo,         // for calcullation: info is empty
+        FlatOffset_FullInfo,          // after filling info
+        PrefixSumOffset_EmptyData,    // after scan operation of meta_size/value_size
+        PrefixSumOffset_FullData      // after filling the data
     };
 
     struct GeoContext {
@@ -69,9 +69,8 @@ class GeometryVector {
         struct Deleter {
             void operator()(GeoContext*);    // TODO
         };
-        auto operator->() {
-            return ctx_.operator->();
-        }
+        auto operator-> () { return ctx_.operator->(); }
+
      private:
         std::unique_ptr<GeoContext, Deleter> ctx_;
         explicit GeoContextHolder() : ctx_(new GeoContext) {}
@@ -86,9 +85,9 @@ class GeometryVector {
     void WkbDecodeFinalize();
 
     void OutputInitialize(int size);
-    GeoContextHolder CreateWriteGeoContext(class WorkspaceConfig& config);
-    static void ScanOn(GeoContext&);
-    void OutputReadFromContext(const GeoContext&);
+    GeoContextHolder OutputCreateGeoContext(class WorkspaceConfig& config);
+    void OutputScanOn(GeoContext&);
+    void OutputFinalizeFrom(const GeoContext&);
 
     void clear();
 
@@ -103,8 +102,27 @@ class GeometryVector {
     DataState data_state_ = DataState::Appending;
 };
 
-struct GeoWorkspaceConfig{
-};
+//struct GeoWorkspaceConfig {
+//    static constexpr int max_threads = 256 * 128;
+//    int max_buffer_per_meta;     // normally 32
+//    int max_buffer_per_value;    // normally 128
+//    uint32_t* meta_buffer;       // size = max_threads * max_buffer_per_value
+//    double* value_buffer;        // size = max_threads * max_buffer_per_value
+//};
+//class GeoWorkspaceConfigHolder {
+// private:
+//    class Deletor{
+//        void operator()(GeoWorkspaceConfig*);
+//    };
+//    GeoWorkspaceConfigHolder(): config(new GeoWorkspaceConfig);
+// public:
+//    static GeoWorkspaceConfigHolder create() {
+//
+//    }
+//
+// private:
+//    std::unique_ptr<GeoWorkspaceConfig, Deletor> config;
+//};
 
 using GeoContext = GeometryVector::GeoContext;
 
