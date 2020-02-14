@@ -71,6 +71,7 @@ usage:
 done
 
 if [[ -n ${CONDA_ENV} ]]; then
+    conda init bash
     conda activate ${CONDA_ENV}
 fi
 
