@@ -22,6 +22,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/include")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/thirdparty/lib")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/scripts")
 
 include(ExternalProject)
 include(ThirdParty)
@@ -113,3 +114,14 @@ install(
     DESTINATION lib
     FILES_MATCHING PATTERN "lib*"
 )
+
+set(GIS_LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/gis.sh.template ${CMAKE_BINARY_DIR}/scripts/gis.sh @ONLY)
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/scripts/
+        DESTINATION scripts
+        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+        GROUP_EXECUTE GROUP_READ
+        WORLD_EXECUTE WORLD_READ
+        FILES_MATCHING PATTERN "*.sh")
