@@ -819,6 +819,7 @@ TEST(geometry_test,test_ST_Transform){
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
 
   std::cout << res_str << std::endl;
+  
 }
 
 TEST(geometry_test,test_ST_Union_Aggr){
