@@ -113,13 +113,13 @@ struct GeoWorkspace {
 class GeoWorkspaceHolder {
  private:
     struct Deletor {
-        void operator()(GeoWorkspace* config) {
-            GeoWorkspaceHolder::destruct(config);
+        void operator()(GeoWorkspace* space) {
+            GeoWorkspaceHolder::destruct(space);
         }
     };
-    GeoWorkspaceHolder():config_(new GeoWorkspace) {}
+    GeoWorkspaceHolder(): space_(new GeoWorkspace) {}
     auto operator->() {
-        return config_.operator->();
+        return space_.operator->();
     }
  public:
     static GeoWorkspaceHolder create(int max_buffer_per_meta,
@@ -127,7 +127,7 @@ class GeoWorkspaceHolder {
     static void destruct(GeoWorkspace*);
 
  private:
-    std::unique_ptr<GeoWorkspace, Deletor> config_;
+    std::unique_ptr<GeoWorkspace, Deletor> space_;
 };
 
 using GeoContext = GeometryVector::GeoContext;

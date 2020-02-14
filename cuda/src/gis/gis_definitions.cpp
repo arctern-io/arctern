@@ -51,9 +51,9 @@ GeoWorkspaceHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
 }
 
 void
-GeoWorkspaceHolder::destruct(GeoWorkspace* config) {
-    GpuFree(config->meta_buffer);
-    GpuFree(config->value_buffer);
+GeoWorkspaceHolder::destruct(GeoWorkspace* space) {
+    GpuFree(space->meta_buffer);
+    GpuFree(space->value_buffer);
 }
 
 }    // namespace zilliz::gis::cuda
