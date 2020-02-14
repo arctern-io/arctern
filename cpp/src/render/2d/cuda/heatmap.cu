@@ -182,34 +182,28 @@ void set_colors_gpu(float *colors,
 #include "render/2d/heatmap/set_color.inl"
 
 #define TEMPLATE_GEN_PREFIX
+
 #define T int32_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T int64_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T uint8_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T uint16_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T uint32_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T uint64_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T float
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T double
 #include "render/2d/heatmap/set_color.inl"
 

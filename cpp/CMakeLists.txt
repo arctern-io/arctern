@@ -1,12 +1,7 @@
 project(zillizgis LANGUAGES CXX)
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/config.cmake)
-    include(${PROJECT_SOURCE_DIR}/config.cmake)
-else()
-    if(EXISTS ${PROJECT_SOURCE_DIR}/config.cmake)
-        include(${PROJECT_SOURCE_DIR}/config.cmake)
-    endif()
-endif()
+option(USE_GPU off)
+option(BUILD_UNITTEST off)
 
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
