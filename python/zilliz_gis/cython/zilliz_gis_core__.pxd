@@ -3,10 +3,6 @@ from pyarrow.lib cimport *
 # from libcpp.string cimport *
 from libcpp.string cimport *
 
-cdef extern from "gis.h":
-    shared_ptr[CArray] point_map(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y)
-    shared_ptr[CArray] make_point(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y);
-
 cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)
