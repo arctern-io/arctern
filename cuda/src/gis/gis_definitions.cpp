@@ -40,6 +40,7 @@ GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
     ptr->size = 0;
     ptr->data_state = DataState::Invalid;
 }
+
 GeoWorkspaceHolder
 GeoWorkspaceHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
     GeoWorkspaceHolder holder;

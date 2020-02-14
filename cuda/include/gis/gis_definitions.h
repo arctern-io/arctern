@@ -16,6 +16,34 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
+struct GeoWorkspace {
+    static constexpr int max_threads = 256 * 128;
+    int max_buffer_per_meta = 0;     // normally 32
+    int max_buffer_per_value = 0;    // normally 128
+    uint32_t* meta_buffer = nullptr;       // size = max_threads * max_buffer_per_value
+    double* value_buffer = nullptr;        // size = max_threads * max_buffer_per_value
+};
+
+class GeoWorkspaceHolder {
+ private:
+    struct Deletor {
+        void operator()(GeoWorkspace* space) {
+            GeoWorkspaceHolder::destruct(space);
+        }
+    };
+    GeoWorkspaceHolder(): space_(new GeoWorkspace) {}
+    auto operator->() {
+        return space_.operator->();
+    }
+ public:
+    static GeoWorkspaceHolder create(int max_buffer_per_meta,
+                                     int max_buffer_per_value);
+    static void destruct(GeoWorkspace*);
+
+ private:
+    std::unique_ptr<GeoWorkspace, Deletor> space_;
+};
+
 class GeometryVector {
  private:
  public:
@@ -85,7 +113,7 @@ class GeometryVector {
     void WkbDecodeFinalize();
 
     void OutputInitialize(int size);
-    GeoContextHolder OutputCreateGeoContext(class Workspace& config);
+    GeoContextHolder OutputCreateGeoContext();
     void OutputScanOn(GeoContext&);
     void OutputFinalizeFrom(const GeoContext&);
 
@@ -102,33 +130,6 @@ class GeometryVector {
     DataState data_state_ = DataState::Appending;
 };
 
-struct GeoWorkspace {
-    static constexpr int max_threads = 256 * 128;
-    int max_buffer_per_meta = 0;     // normally 32
-    int max_buffer_per_value = 0;    // normally 128
-    uint32_t* meta_buffer = nullptr;       // size = max_threads * max_buffer_per_value
-    double* value_buffer = nullptr;        // size = max_threads * max_buffer_per_value
-};
-
-class GeoWorkspaceHolder {
- private:
-    struct Deletor {
-        void operator()(GeoWorkspace* space) {
-            GeoWorkspaceHolder::destruct(space);
-        }
-    };
-    GeoWorkspaceHolder(): space_(new GeoWorkspace) {}
-    auto operator->() {
-        return space_.operator->();
-    }
- public:
-    static GeoWorkspaceHolder create(int max_buffer_per_meta,
-                                           int max_buffer_per_value);
-    static void destruct(GeoWorkspace*);
-
- private:
-    std::unique_ptr<GeoWorkspace, Deletor> space_;
-};
 
 using GeoContext = GeometryVector::GeoContext;
 
