@@ -64,10 +64,10 @@ ST_point_datafill_kernel(const double* xs,
 }
 
 
-void
-ST_point(const double* xs, const double ys, size_t size, GeometryVector& results) {
-
-}
+//GeometryVector
+//ST_point(const double* xs, const double ys, size_t size) {
+//
+//}
 
 }    // namespace cuda
 }    // namespace gis

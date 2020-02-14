@@ -77,13 +77,19 @@ class GeometryVector {
         explicit GeoContextHolder() : ctx_(new GeoContext) {}
         friend class GeometryVector;
     };
-    GeoContextHolder create_gpuctx() const;    // TODO
+    GeoContextHolder CreateReadGeoContext() const;    // TODO
     GeometryVector() = default;
     GpuVector<char> EncodeToWkb() const;    // TODO
 
     void WkbDecodeInitalize();
     void WkbDecodeAppend(const char* bin);
     void WkbDecodeFinalize();
+
+    void OutputInitialize(int size);
+    GeoContextHolder CreateWriteGeoContext(class WorkspaceConfig& config);
+    static void ScanOn(GeoContext&);
+    void OutputReadFromContext(const GeoContext&);
+
     void clear();
 
     int size() const { return tags_.size(); }
@@ -95,6 +101,9 @@ class GeometryVector {
     GpuVector<int> meta_offsets_;
     GpuVector<int> value_offsets_;
     DataState data_state_ = DataState::Appending;
+};
+
+struct GeoWorkspaceConfig{
 };
 
 using GeoContext = GeometryVector::GeoContext;

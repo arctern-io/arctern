@@ -33,7 +33,6 @@ TEST(FunctorArea, naive) {
     }
     gvec.WkbDecodeFinalize();
 
-    auto left_ctx = gvec.create_gpuctx();
     vector<double> result(n);
     ST_area(gvec, result.data());
     for (int i = 0; i < n; ++i) {

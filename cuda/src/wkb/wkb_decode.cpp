@@ -131,7 +131,7 @@ GeometryVector::WkbDecodeAppend(const char* raw_bin) {
 
 
 GeometryVector::GeoContextHolder
-GeometryVector::create_gpuctx() const {
+GeometryVector::CreateReadGeoContext() const {
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
     GeometryVector::GeoContextHolder holder;

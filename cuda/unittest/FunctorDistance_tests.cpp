@@ -47,7 +47,6 @@ TEST(FunctorDistance, naive) {
     }
     gvec_left.WkbDecodeFinalize();
     gvec_right.WkbDecodeFinalize();
-    auto left_ctx = gvec_left.create_gpuctx();
     vector<double> result(5);
     ST_distance(gvec_left, gvec_right, result.data());
     for (int i = 0; i < num; ++i) {

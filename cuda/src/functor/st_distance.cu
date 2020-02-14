@@ -43,8 +43,8 @@ ST_distance(const GeometryVector& left,
             const GeometryVector& right,
             double* host_results) {
     assert(left.size() == right.size());
-    auto left_ctx = left.create_gpuctx();
-    auto right_ctx = right.create_gpuctx();
+    auto left_ctx = left.CreateReadGeoContext();
+    auto right_ctx = right.CreateReadGeoContext();
     auto config = GetKernelExecConfig(left.size());
     auto dev_result = GpuMakeUniqueArray<double>(left.size());
     ST_distance_kernel<<<config.grid_dim, config.block_dim>>>(
