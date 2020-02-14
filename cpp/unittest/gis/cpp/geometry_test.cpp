@@ -806,6 +806,21 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope){
   ASSERT_EQ(res_str,expect);
 }
 
+TEST(geometry_test,test_ST_Transform){
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input_data;
+
+  builder.Append(std::string("POINT (10 10)"));
+  builder.Finish(&input_data);
+  std::string src_rs("EPSG:4326");
+  std::string dst_rs("EPSG:3857");
+
+  auto res = ST_Transform(input_data,src_rs,dst_rs);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
+
+  std::cout << res_str << std::endl;
+}
+
 TEST(geometry_test,test_ST_Union_Aggr){
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> polygons;
