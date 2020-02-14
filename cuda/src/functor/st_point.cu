@@ -28,7 +28,7 @@ ST_point_compute_kernel(const double* xs,
 }
 
 __global__ void
-ST_point_reserve_kernel(const double* xs, const double* ys, GeoContext results) {
+ST_point_reserve_kernel(const double* xs, const double* ys, GeoContext results, GeoWorkspace space) {
     assert(results.data_state == DataState::FlatOffset_EmptyInfo);
     auto init_index = threadIdx.x + blockIdx.x * blockDim.x;
     auto meta_buffer = results.metas + max_buffer_per_meta * init_index;

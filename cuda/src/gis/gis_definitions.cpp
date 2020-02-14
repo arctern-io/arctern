@@ -46,15 +46,15 @@ GeoWorkspaceHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
     GeoWorkspaceHolder holder;
     holder->max_buffer_per_meta = max_buffer_per_meta;
     holder->max_buffer_per_value = max_buffer_per_value;
-    holder->meta_buffer = GpuAlloc<uint32_t>(holder->max_threads * max_buffer_per_meta);
-    holder->value_buffer = GpuAlloc<double>(holder->max_threads * max_buffer_per_value);
+    holder->meta_buffers = GpuAlloc<uint32_t>(holder->max_threads * max_buffer_per_meta);
+    holder->value_buffers = GpuAlloc<double>(holder->max_threads * max_buffer_per_value);
     return holder;
 }
 
 void
 GeoWorkspaceHolder::destruct(GeoWorkspace* ptr) {
-    GpuFree(ptr->meta_buffer);
-    GpuFree(ptr->value_buffer);
+    GpuFree(ptr->meta_buffers);
+    GpuFree(ptr->value_buffers);
     ptr->max_buffer_per_value = 0;
     ptr->max_buffer_per_meta = 0;
 }

@@ -20,8 +20,16 @@ struct GeoWorkspace {
     static constexpr int max_threads = 256 * 128;
     int max_buffer_per_meta = 0;     // normally 32
     int max_buffer_per_value = 0;    // normally 128
-    uint32_t* meta_buffer = nullptr;       // size = max_threads * max_buffer_per_value
-    double* value_buffer = nullptr;        // size = max_threads * max_buffer_per_value
+    uint32_t* meta_buffers = nullptr;       // size = max_threads * max_buffer_per_value
+    double* value_buffers = nullptr;        // size = max_threads * max_buffer_per_value
+    DEVICE_RUNNABLE uint32_t* get_meta_buffer(int index) {
+        assert(index < max_threads);
+        return meta_buffers + index;
+    }
+    DEVICE_RUNNABLE double* get_value_buffer(int index) {
+        assert(index < max_threads);
+        return value_buffers + index;
+    }
 };
 
 class GeoWorkspaceHolder {
