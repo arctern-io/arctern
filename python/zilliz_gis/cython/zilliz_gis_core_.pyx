@@ -67,7 +67,7 @@ def ST_Length(object geo_arr):
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
 
-def ST_Transform(object geo_arr, str src_rs, str dst_rs):
+def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
 
 def ST_NPoints(object geo_arr):
