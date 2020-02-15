@@ -2,7 +2,7 @@
 #define CHECK_GDAL(action)                                                  \
 {                                                                           \
     int check = action;                                                     \
-    if(action){                                                             \
+    if(check){                                                              \
         std::string err_msg = "gdal error code = " + std::to_string(check); \
         throw std::runtime_error(err_msg);                                  \
     }                                                                       \

@@ -371,6 +371,10 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_ConvexHull, arrow::StringBuilder, geo,
     OGR_G_ConvexHull(geo));
 
+
+/*
+ * The detailed EPSG information can be searched on EPSG.io [https://epsg.io/]
+ */
 std::shared_ptr<arrow::Array>
 ST_Transform(const std::shared_ptr<arrow::Array> &geos,
              const std::string &src_rs,
@@ -394,6 +398,7 @@ ST_Transform(const std::shared_ptr<arrow::Array> &geos,
 
     auto len = geos->length();
     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
+
 
     for (int32_t i = 0; i < len; i++) {
         auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());        

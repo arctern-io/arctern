@@ -817,9 +817,15 @@ TEST(geometry_test,test_ST_Transform){
 
   auto res = ST_Transform(input_data,src_rs,dst_rs);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
+  OGRGeometry *res_geo = nullptr;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(),nullptr,&res_geo));
 
-  std::cout << res_str << std::endl;
-  
+  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+
+  ASSERT_DOUBLE_EQ(rst_pointer->getX(),1113194.90793274);
+  ASSERT_DOUBLE_EQ(rst_pointer->getY(),1118889.97485796);
+
+  OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
 TEST(geometry_test,test_ST_Union_Aggr){
