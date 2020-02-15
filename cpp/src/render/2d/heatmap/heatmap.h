@@ -1,7 +1,7 @@
 #pragma once
 
 #include "render/2d/general_2d.h"
-#include "set_color.h"
+#include "render/2d/heatmap/set_color.h"
 
 namespace zilliz {
 namespace render {
