@@ -40,7 +40,7 @@ set(gis_src
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
-    set(LIBRARY_TYPE STATIC)
+    set(LIBRARY_TYPE STATIC ../../python/zilliz_gis/cython/render.h)
 endif (STATIC_LIB_SWITCH)
 
 add_library(

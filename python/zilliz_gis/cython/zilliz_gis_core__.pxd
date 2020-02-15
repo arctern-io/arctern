@@ -4,8 +4,6 @@ from pyarrow.lib cimport *
 from libcpp.string cimport *
 
 cdef extern from "gis.h" namespace "zilliz::gis":
-    shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
-    shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c)
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries)
@@ -33,3 +31,7 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist, int n_quadrant_segments)
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr)
+
+cdef extern from "render.h" namespace "zilliz::render":
+    shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
+    shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c)

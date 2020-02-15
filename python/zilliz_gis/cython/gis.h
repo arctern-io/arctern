@@ -6,13 +6,6 @@
 namespace zilliz {
 namespace gis {
 
-std::shared_ptr<arrow::Array>
-point_map(const std::shared_ptr<arrow::Array> &arr_x, const std::shared_ptr<arrow::Array> &arr_y);
-
-
-std::shared_ptr<arrow::Array>
-heat_map(const std::shared_ptr<arrow::Array> &arr_x, const std::shared_ptr<arrow::Array> &arr_y, const std::shared_ptr<arrow::Array> &arr_c);
-
 
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
