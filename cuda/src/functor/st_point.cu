@@ -12,11 +12,11 @@ struct OutputInfo {
 };
 
 __device__ inline OutputInfo
-ST_point_compute_kernel(const double* xs,
-                        const double* ys,
-                        int index,
-                        GeoContext& results,
-                        bool skip_write = false) {
+ST_point_calc(const double* xs,
+                 const double* ys,
+                 int index,
+                 GeoContext& results,
+                 bool skip_write = false) {
     if (!skip_write) {
         auto value = results.get_value_ptr(index);
         value[0] = xs[index];
@@ -30,7 +30,7 @@ ST_point_reserve_kernel(const double* xs, const double* ys, GeoContext results) 
     assert(results.data_state == DataState::FlatOffset_EmptyInfo);
     auto index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index < results.size) {
-        auto out_info = ST_point_compute_kernel(xs, ys, index, results, true);
+        auto out_info = ST_point_calc(xs, ys, index, results, true);
         results.tags[index] = out_info.tag;
         results.meta_offsets[index] = out_info.meta_size;
         results.value_offsets[index] = out_info.value_size;
@@ -45,25 +45,37 @@ check_info(OutputInfo info, const GeoContext& ctx, int index) {
     assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
-static
-__global__ void
+static __global__ void
 ST_point_datafill_kernel(const double* xs,
                          const double* ys,
-                         int size,
                          GeoContext results) {
     assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
     auto index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index < results.size) {
-        auto out_info = ST_point_compute_kernel(xs, ys, index, results);
+        auto out_info = ST_point_calc(xs, ys, index, results);
         check_info(out_info, results, index);
     }
 }
 
 
-void ST_point(const double* xs, const double ys, int size, GeometryVector& results){
+void
+ST_point(const double* xs, const double* ys, int size, GeometryVector& results) {
     results.OutputInitialize(size);
-    auto ctx_holder = results.OutputCreateGeoContext();
-    ctx_holder.get();
+    auto ctx = results.OutputCreateGeoContext();
+
+    {
+        auto config = GetKernelExecConfig(size);
+        ST_point_reserve_kernel<<<config.grid_dim, config.block_dim>>>(xs, ys, ctx.get());
+        ctx->data_state = DataState::FlatOffset_FullInfo;
+    }
+    results.OutputEvolveWith(ctx.get());
+    {
+        auto config = GetKernelExecConfig(size);
+        ST_point_datafill_kernel<<<config.grid_dim, config.block_dim>>>(
+            xs, ys, ctx.get());
+        ctx->data_state = DataState::FlatOffset_FullInfo;
+    }
+    results.OutputFinalizeWith(ctx.get());
 }
 
 }    // namespace cuda
