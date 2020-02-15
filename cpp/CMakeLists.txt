@@ -38,15 +38,21 @@ else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
 
+set(VERSION "0.1.0")
+
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
     message(STATUS "Building on GPU")
     project(zillizgis LANGUAGES CUDA CXX)
     set(CMAKE_CUDA_STANDARD 14)
     add_compile_definitions(USE_GPU)
+    set(CPU_OR_GPU "GPU")
 else()
+    set(CPU_OR_GPU "CPU")
     message(STATUS "Building on CPU")
 endif ()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h @ONLY)
 
 cmake_minimum_required(VERSION 3.12)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
