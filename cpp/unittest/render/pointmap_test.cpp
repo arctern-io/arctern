@@ -1,12 +1,10 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "arrow/render_api.h"
-#include "render/2d/pointmap.h"
 
 using namespace zilliz::render;
 
 TEST(TWOD_TEST, POIN_TEST) {
-//    PointMap point_map;
 
     auto bit_map = new uint8_t{0xff};
 
@@ -38,7 +36,7 @@ TEST(TWOD_TEST, POIN_TEST) {
     auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
     auto array2 = arrow::MakeArray(array_data2);
 
-    get_pointmap(array1, array2);
+    point_map(array1, array2);
 }
 
 

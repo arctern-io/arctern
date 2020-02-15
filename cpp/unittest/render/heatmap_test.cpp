@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
 #include "arrow/render_api.h"
-#include "render/2d/heatmap/heatmap.h"
 
 using namespace zilliz::render;
 
 TEST(TWOD_TEST, HEATMAP_TEST) {
-//    HeatMap<uint32_t > heat_map;
 
     auto bit_map = new uint8_t{0xff};
 
@@ -51,6 +49,6 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
     auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers3);
     auto array3 = arrow::MakeArray(array_data3);
 
-    get_heatmap(array1, array2, array3);
+    heat_map(array1, array2, array3);
 }
 
