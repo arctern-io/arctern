@@ -90,6 +90,11 @@ std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
+
+std::shared_ptr<arrow::Array>
 ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
