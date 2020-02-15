@@ -2,19 +2,40 @@
 #include <GL/gl.h>
 #include <GLES3/gl3.h>
 
-#include "render/2d/heatmap.h"
+#include "render/2d/heatmap/heatmap.h"
 
 namespace zilliz {
 namespace render {
+
+template
+class HeatMap<int8_t>;
+
+template
+class HeatMap<int16_t>;
+
+template
+class HeatMap<int32_t>;
+
+template
+class HeatMap<int64_t>;
+
+template
+class HeatMap<uint8_t>;
+
+template
+class HeatMap<uint16_t>;
+
+template
+class HeatMap<uint32_t>;
+
+template
+class HeatMap<uint64_t>;
 
 template
 class HeatMap<float>;
 
 template
 class HeatMap<double>;
-
-template
-class HeatMap<uint32_t>;
 
 template<typename T>
 HeatMap<T>::HeatMap()
