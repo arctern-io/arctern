@@ -3,13 +3,19 @@
 pipeline {
     agent none
 
+    options {
+        timestamps()
+    }
+
+    parameters{
+        choice choices: ['Release', 'Debug'], description: 'Build Type', name: 'BUILD_TYPE'
+    }
+
     environment {
         PROJECT_NAME = "gis"
         PIPELINE_NAME = "gis-ci"
-    }
-
-    options {
-        timestamps()
+        GIS_ROOT_PATH="/var/lib"
+        GIS_INSTALL_PREFIX = "${env.GIS_ROOT_PATH}/${env.PROJECT_NAME}"
     }
 
     stages {
@@ -50,7 +56,7 @@ pipeline {
                                         steps {
                                             container("gis-${BINARY_VERSION}-build-env") {
                                                 script {
-                                                    echo "GIS ${BINARY_VERSION} version build stage!"
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
                                                 }
                                             }
                                         }
