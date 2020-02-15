@@ -60,7 +60,11 @@ ST_point_datafill_kernel(const double* xs,
 }
 
 
-//void ST_point(){}
+void ST_point(const double* xs, const double ys, int size, GeometryVector& results){
+    results.OutputInitialize(size);
+    auto ctx_holder = results.OutputCreateGeoContext();
+    ctx_holder.get();
+}
 
 }    // namespace cuda
 }    // namespace gis

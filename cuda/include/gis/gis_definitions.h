@@ -122,8 +122,8 @@ class GeometryVector {
 
     void OutputInitialize(int size);
     GeoContextHolder OutputCreateGeoContext();
-    void OutputScanOn(GeoContext&);
-    void OutputFinalizeFrom(const GeoContext&);
+    void OutputEvolveWith(GeoContext&); // TODO: better name
+    void OutputFinalizeWith(const GeoContext&);
 
     void clear();
 

@@ -1,6 +1,7 @@
 #include <numeric>
 #include "common/gpu_memory.h"
 #include "gis/gis_definitions.h"
+#include <thrust/scan.h>
 
 
 namespace zilliz::gis::cuda {
@@ -57,6 +58,72 @@ GeoWorkspaceHolder::destruct(GeoWorkspace* ptr) {
     GpuFree(ptr->value_buffers);
     ptr->max_buffer_per_value = 0;
     ptr->max_buffer_per_meta = 0;
+}
+
+void
+GeometryVector::OutputInitialize(int size) {
+    tags_.resize(size);
+    meta_offsets_.resize(size + 1);
+    value_offsets_.resize(size + 1);
+    data_state_ = DataState::FlatOffset_EmptyInfo;
+}
+
+auto
+GeometryVector::OutputCreateGeoContext() -> GeoContextHolder {
+    assert(data_state_ == DataState::FlatOffset_EmptyInfo);
+    GeoContextHolder holder;
+    auto size = tags_.size();    // size_ of elements
+    assert(size + 1 == meta_offsets_.size());
+    assert(size + 1 == value_offsets_.size());
+    assert(meta_offsets_[size] == metas_.size());
+    assert(value_offsets_[size] == values_.size());
+    holder->tags = GpuAlloc<WkbTag>(tags_.size());
+    holder->meta_offsets = GpuAlloc<int>(meta_offsets_.size());
+    holder->value_offsets = GpuAlloc<int>(value_offsets_.size());
+    return holder;
+}
+
+// scan operation
+// memory allocation for metas/values
+// copy useful data back to CPU
+void
+GeometryVector::OutputEvolveWith(GeoContext& ctx) {
+    assert(data_state_ == DataState::FlatOffset_EmptyInfo);
+    assert(ctx.data_state == DataState::FlatOffset_FullInfo);
+    assert(tags_.size() == ctx.size);
+    auto size = ctx.size;
+    GpuMemcpy(tags_.data(), ctx.tags, size);
+    auto scan_at = [=](int* gpu_addr, int* cpu_addr) {
+        int zero = 0;
+        GpuMemcpy(gpu_addr + size, &zero, 1);
+        thrust::exclusive_scan(
+            thrust::cuda::par, gpu_addr, gpu_addr + size + 1, gpu_addr);
+        GpuMemcpy(cpu_addr, gpu_addr, size + 1);
+
+        int result;
+        GpuMemcpy(&result, gpu_addr + size, 1);
+        return result;
+    };
+
+    auto meta_size = scan_at(ctx.meta_offsets, meta_offsets_.data());
+    auto value_size = scan_at(ctx.value_offsets, meta_offsets_.data());
+
+    metas_.resize(meta_size);
+    values_.resize(value_size);
+    data_state_ = DataState::PrefixSumOffset_EmptyData;
+
+    ctx.metas = GpuAlloc<uint32_t>(meta_size);
+    ctx.values = GpuAlloc<double>(value_size);
+    ctx.data_state = DataState::PrefixSumOffset_EmptyData;
+}
+
+void
+GeometryVector::OutputFinalizeWith(const GeoContext& ctx) {
+    assert(ctx.data_state == DataState::PrefixSumOffset_FullData);
+    assert(data_state_ == DataState::PrefixSumOffset_EmptyData);
+    GpuMemcpy(metas_.data(), ctx.metas, metas_.max_size());
+    GpuMemcpy(values_.data(), ctx.values, values_.max_size());
+    data_state_ = DataState::PrefixSumOffset_FullData;
 }
 
 }    // namespace zilliz::gis::cuda
