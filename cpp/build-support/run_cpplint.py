@@ -40,6 +40,7 @@ _filters = '''
 -build/c++11
 -runtime/references
 -build/include_order
+-legal/copyright
 '''.split()
 
 
@@ -84,7 +85,7 @@ if __name__ == "__main__":
     cmd = [
         arguments.cpplint_binary,
         '--verbose=2',
-        '--linelength=120',
+        '--linelength=90',
         '--filter=' + ','.join(_filters)
     ]
     if (arguments.cpplint_binary.endswith('.py') and
