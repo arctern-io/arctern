@@ -36,6 +36,7 @@ cpp_build.sh具体参数设置可运行下面命令:
 
 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
 ```
+source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
 ./ci/scripts/run_unittest.sh -i ${CMAKE_INSTALL_PREFIX}
 ```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
