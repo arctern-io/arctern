@@ -806,6 +806,28 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope){
   ASSERT_EQ(res_str,expect);
 }
 
+TEST(geometry_test,test_ST_Transform){
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input_data;
+
+  builder.Append(std::string("POINT (10 10)"));
+  builder.Finish(&input_data);
+  std::string src_rs("EPSG:4326");
+  std::string dst_rs("EPSG:3857");
+
+  auto res = ST_Transform(input_data,src_rs,dst_rs);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
+  OGRGeometry *res_geo = nullptr;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(),nullptr,&res_geo));
+
+  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+
+  ASSERT_DOUBLE_EQ(rst_pointer->getX(),1113194.90793274);
+  ASSERT_DOUBLE_EQ(rst_pointer->getY(),1118889.97485796);
+
+  OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
 TEST(geometry_test,test_ST_Union_Aggr){
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> polygons;
