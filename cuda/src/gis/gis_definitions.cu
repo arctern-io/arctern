@@ -79,9 +79,13 @@ GeometryVector::OutputCreateGeoContext() -> GeoContextHolder {
     assert(size + 1 == value_offsets_.size());
     assert(meta_offsets_[size] == metas_.size());
     assert(value_offsets_[size] == values_.size());
+    holder->size = size;
     holder->tags = GpuAlloc<WkbTag>(tags_.size());
     holder->meta_offsets = GpuAlloc<int>(meta_offsets_.size());
     holder->value_offsets = GpuAlloc<int>(value_offsets_.size());
+    holder->data_state = data_state_;
+    assert(holder->metas == nullptr);
+    assert(holder->values == nullptr);
     return holder;
 }
 
