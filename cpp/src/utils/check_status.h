@@ -1,11 +1,11 @@
 
-#define CHECK_GDAL(action)                                                  \
-{                                                                           \
-    int check = action;                                                     \
-    if(check){                                                              \
-        std::string err_msg = "gdal error code = " + std::to_string(check); \
-        throw std::runtime_error(err_msg);                                  \
-    }                                                                       \
+#define CHECK_GDAL(action)                                                          \
+{                                                                                   \
+    auto check = action;                                                            \
+    if(!!check){                                                                    \
+        std::string err_msg = "gdal error code = " + std::to_string((int)check);    \
+        throw std::runtime_error(err_msg);                                          \
+    }                                                                               \
 }
 
 #define CHECK_ARROW(action)                                                 \
