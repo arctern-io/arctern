@@ -16,7 +16,8 @@ GpuAlloc(size_t size) {
     T* ptr;
     auto err = cudaMalloc(&ptr, size * sizeof(T));
     if (err != cudaSuccess) {
-        throw std::runtime_error("error with code = " + std::to_string((int)err));
+        throw std::runtime_error("error with code = " + std::to_string((int)err) + "<<" +
+                                 cudaGetErrorString(err));
     }
     return ptr;
 }
@@ -32,7 +33,8 @@ void
 GpuMemcpy(T* dst, const T* src, size_t size) {
     auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
     if (err != cudaSuccess) {
-        throw std::runtime_error("error with code = " + std::to_string((int)err));
+        throw std::runtime_error("error with code = " + std::to_string((int)err) + "<<" +
+                                 cudaGetErrorString(err));
     }
 }
 

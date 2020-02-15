@@ -127,8 +127,8 @@ void
 GeometryVector::OutputFinalizeWith(const GeoContext& ctx) {
     assert(ctx.data_state == DataState::PrefixSumOffset_FullData);
     assert(data_state_ == DataState::PrefixSumOffset_EmptyData);
-    GpuMemcpy(metas_.data(), ctx.metas, metas_.max_size());
-    GpuMemcpy(values_.data(), ctx.values, values_.max_size());
+    GpuMemcpy(metas_.data(), ctx.metas, metas_.size());
+    GpuMemcpy(values_.data(), ctx.values, values_.size());
     data_state_ = DataState::PrefixSumOffset_FullData;
 }
 }    // namespace cuda
