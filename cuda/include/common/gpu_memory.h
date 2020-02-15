@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <cassert>
 #include <stdexcept>
 #include <memory>
 #include <cuda.h>
@@ -30,7 +31,11 @@ GpuFree(T* ptr) {
 
 template<typename T>
 void
-GpuMemcpy(T* dst, const T* src, size_t size) {
+GpuMemcpy(T* dst, const T* src, int size) {
+    if (size == 0) {
+        return;
+    }
+    assert(size > 0);
     auto err = cudaMemcpy(dst, src, sizeof(T) * size, cudaMemcpyDefault);
     if (err != cudaSuccess) {
         throw std::runtime_error("error with code = " + std::to_string((int)err) + "<<" +
@@ -42,7 +47,7 @@ GpuMemcpy(T* dst, const T* src, size_t size) {
 // must free manually
 template<typename T>
 T*
-GpuAllocAndCopy(const T* src, size_t size) {
+GpuAllocAndCopy(const T* src, int size) {
     auto dst = GpuAlloc<T>(size);
     GpuMemcpy(dst, src, size);
     return dst;
