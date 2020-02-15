@@ -44,6 +44,9 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
+    if [[ -n ${CONDA_PREFIX} ]]; then
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
+    fi
 fi
 
 GIS_UNITTEST_DIR=${GIS_PATH}/unittest
@@ -52,8 +55,6 @@ if [[ ! -d ${GIS_UNITTEST_DIR} ]]; then
     echo "\"${GIS_UNITTEST_DIR}\" directory does not exist !"
     exit 1
 fi
-
-env
 
 for test in `ls ${GIS_UNITTEST_DIR}`; do
     echo "run $test unittest"
