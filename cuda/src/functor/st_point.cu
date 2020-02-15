@@ -62,7 +62,6 @@ void
 ST_point(const double* xs, const double* ys, int size, GeometryVector& results) {
     results.OutputInitialize(size);
     auto ctx = results.OutputCreateGeoContext();
-
     {
         auto config = GetKernelExecConfig(size);
         ST_point_reserve_kernel<<<config.grid_dim, config.block_dim>>>(xs, ys, ctx.get());
@@ -73,7 +72,7 @@ ST_point(const double* xs, const double* ys, int size, GeometryVector& results) 
         auto config = GetKernelExecConfig(size);
         ST_point_datafill_kernel<<<config.grid_dim, config.block_dim>>>(
             xs, ys, ctx.get());
-        ctx->data_state = DataState::FlatOffset_FullInfo;
+        ctx->data_state = DataState::PrefixSumOffset_FullData;
     }
     results.OutputFinalizeWith(ctx.get());
 }
