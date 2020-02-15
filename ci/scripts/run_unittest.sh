@@ -53,6 +53,8 @@ if [[ ! -d ${GIS_UNITTEST_DIR} ]]; then
     exit 1
 fi
 
+env
+
 for test in `ls ${GIS_UNITTEST_DIR}`; do
     echo "run $test unittest"
     ${GIS_UNITTEST_DIR}/${test}
