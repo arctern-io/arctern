@@ -782,9 +782,7 @@ TEST(geometry_test, test_ST_Buffer){
   OGRGeometryFactory::createFromWkt(buffer_polygon.c_str(), nullptr, (OGRGeometry**)(&rst_polygon));
   OGRGeometryFactory::createFromWkt(input_polygon.c_str(), nullptr, (OGRGeometry**)(&input_mid_polygon));
   OGRGeometry *expect_polygon = input_mid_polygon->Buffer(1.2);
-
   //ASSERT_TRUE(OGR_G_Equals(expect_polygon, rst_polygon));
-
   char *output_polygon;
   expect_polygon->exportToWkt(&output_polygon);
   ASSERT_EQ(output_polygon, buffer_polygon);
