@@ -30,7 +30,7 @@ parameter:
 -h: help
 
 usage:
-./build.sh -i \${GIS_PATH} -e \${CONDA_ENV} [-h]
+./run_unittest.sh -i \${GIS_PATH} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
