@@ -106,16 +106,14 @@ GeometryVector::OutputEvolveWith(GeoContext& ctx) {
             thrust::cuda::par, gpu_addr, gpu_addr + size + 1, gpu_addr);
         GpuMemcpy(cpu_addr, gpu_addr, size + 1);
 
-        int result;
-        GpuMemcpy(&result, gpu_addr + size, 1);
-        return result;
+        return cpu_addr[size];
     };
 
     auto meta_size = scan_at(ctx.meta_offsets, meta_offsets_.data());
 
 
 
-    
+
     auto value_size = scan_at(ctx.value_offsets, value_offsets_.data());
 
     metas_.resize(meta_size);
@@ -131,6 +129,7 @@ void
 GeometryVector::OutputFinalizeWith(const GeoContext& ctx) {
     assert(ctx.data_state == DataState::PrefixSumOffset_FullData);
     assert(data_state_ == DataState::PrefixSumOffset_EmptyData);
+    assert(tags_.size() == ctx.size);
     GpuMemcpy(metas_.data(), ctx.metas, metas_.size());
     GpuMemcpy(values_.data(), ctx.values, values_.size());
     data_state_ = DataState::PrefixSumOffset_FullData;
