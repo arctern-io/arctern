@@ -177,7 +177,6 @@ void set_colors_gpu(float *colors,
 #define T int8_t
 #include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T int16_t
 #include "render/2d/heatmap/set_color.inl"
 

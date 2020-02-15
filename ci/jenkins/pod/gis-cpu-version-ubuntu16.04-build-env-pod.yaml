@@ -9,6 +9,7 @@ spec:
   containers:
   - name: gis-cpu-build-env
     image: registry.zilliz.com/gis/gis-cpu-build-env:v0.1.0-ubuntu16.04
+    imagePullPolicy: Always
     command:
     - cat
     tty: true
