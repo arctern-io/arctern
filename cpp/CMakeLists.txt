@@ -13,14 +13,14 @@ string(REGEX REPLACE "\n" "" BUILD_TIME ${BUILD_TIME})
 message(STATUS "Building time ${BUILD_TIME}")
 
 # get branch name
-MACRO(GET_GIT_BRANCH_NAME GIT_BRANCH_NAME)
-    execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | sed 's/.*, //' | sed 's/)*//g'"
-            OUTPUT_VARIABLE ${GIT_BRANCH_NAME})
-ENDMACRO(GET_GIT_BRANCH_NAME)
+# MACRO(GET_GIT_BRANCH_NAME GIT_BRANCH_NAME)
+#     execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | sed 's/.*, //' | sed 's/)*//g'"
+#             OUTPUT_VARIABLE ${GIT_BRANCH_NAME})
+# ENDMACRO(GET_GIT_BRANCH_NAME)
 
-GET_GIT_BRANCH_NAME(GIT_BRANCH_NAME)
-string(REGEX REPLACE "\n" "" GIT_BRANCH_NAME ${GIT_BRANCH_NAME})
-message(STATUS "Building branch ${GIT_BRANCH_NAME}")
+# GET_GIT_BRANCH_NAME(GIT_BRANCH_NAME)
+# string(REGEX REPLACE "\n" "" GIT_BRANCH_NAME ${GIT_BRANCH_NAME})
+# message(STATUS "Building branch ${GIT_BRANCH_NAME}")
 
 # get last commit id
 MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
@@ -38,15 +38,21 @@ else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
 
+set(LIB_VERSION "0.1.0")
+
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
     message(STATUS "Building on GPU")
     project(zillizgis LANGUAGES CUDA CXX)
     set(CMAKE_CUDA_STANDARD 14)
     add_compile_definitions(USE_GPU)
+    set(CPU_OR_GPU "GPU")
 else()
+    set(CPU_OR_GPU "CPU")
     message(STATUS "Building on CPU")
 endif ()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h @ONLY)
 
 cmake_minimum_required(VERSION 3.12)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
@@ -141,6 +147,104 @@ if (BUILD_UNITTEST)
     add_subdirectory(unittest)
 endif (BUILD_UNITTEST)
 unset(BUILD_UNITTEST CACHE)
+
+find_package(Python COMPONENTS Interpreter Development)
+find_package(ClangTools)
+set(BUILD_SUPPORT_DIR "${CMAKE_SOURCE_DIR}/build-support")
+
+#
+# "make lint" target
+#
+if (NOT GIS_VERBOSE_LINT)
+    set(GIS_LINT_QUIET "--quiet")
+endif ()
+
+if (NOT LINT_EXCLUSIONS_FILE)
+    # source files matching a glob from a line in this file
+    # will be excluded from linting (cpplint, clang-tidy, clang-format)
+    set(LINT_EXCLUSIONS_FILE ${BUILD_SUPPORT_DIR}/lint_exclusions.txt)
+endif ()
+
+find_program(CPPLINT_BIN NAMES cpplint cpplint.py HINTS ${BUILD_SUPPORT_DIR})
+message(STATUS "Found cpplint executable at ${CPPLINT_BIN}")
+
+#
+# "make lint" targets
+#
+add_custom_target(lint
+        ${PYTHON_EXECUTABLE}
+        ${BUILD_SUPPORT_DIR}/run_cpplint.py
+        --cpplint_binary
+        ${CPPLINT_BIN}
+        --exclude_globs
+        ${LINT_EXCLUSIONS_FILE}
+        --source_dir
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${GIS_LINT_QUIET})
+
+#
+# "make clang-format" and "make check-clang-format" targets
+#
+if (${CLANG_FORMAT_FOUND})
+    # runs clang format and updates files in place.
+    add_custom_target(clang-format
+            ${PYTHON_EXECUTABLE}
+            ${BUILD_SUPPORT_DIR}/run_clang_format.py
+            --clang_format_binary
+            ${CLANG_FORMAT_BIN}
+            --exclude_globs
+            ${LINT_EXCLUSIONS_FILE}
+            --source_dir
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            --fix
+            ${GIS_LINT_QUIET})
+
+    # runs clang format and exits with a non-zero exit code if any files need to be reformatted
+    add_custom_target(check-clang-format
+            ${PYTHON_EXECUTABLE}
+            ${BUILD_SUPPORT_DIR}/run_clang_format.py
+            --clang_format_binary
+            ${CLANG_FORMAT_BIN}
+            --exclude_globs
+            ${LINT_EXCLUSIONS_FILE}
+            --source_dir
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            ${GIS_LINT_QUIET})
+endif ()
+
+#
+# "make clang-tidy" and "make check-clang-tidy" targets
+#
+if (${CLANG_TIDY_FOUND})
+    # runs clang-tidy and attempts to fix any warning automatically
+    add_custom_target(clang-tidy
+            ${PYTHON_EXECUTABLE}
+            ${BUILD_SUPPORT_DIR}/run_clang_tidy.py
+            --clang_tidy_binary
+            ${CLANG_TIDY_BIN}
+            --exclude_globs
+            ${LINT_EXCLUSIONS_FILE}
+            --compile_commands
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            --source_dir
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            --fix
+            ${GIS_LINT_QUIET})
+
+    # runs clang-tidy and exits with a non-zero exit code if any errors are found.
+    add_custom_target(check-clang-tidy
+            ${PYTHON_EXECUTABLE}
+            ${BUILD_SUPPORT_DIR}/run_clang_tidy.py
+            --clang_tidy_binary
+            ${CLANG_TIDY_BIN}
+            --exclude_globs
+            ${LINT_EXCLUSIONS_FILE}
+            --compile_commands
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            --source_dir
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            ${GIS_LINT_QUIET})
+endif ()
 
 install(
     DIRECTORY ${CMAKE_BINARY_DIR}/thirdparty/lib/
