@@ -1,6 +1,7 @@
 
 #include "gis/api.h"
 #include "utils/check_status.h"
+#include "common/version.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -436,8 +437,14 @@ ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries){
     return ST_Envelope(ST_Union_Aggr(geometries));
 }
 
-
-
+std::shared_ptr<std::string>
+GIS_Version() {
+    const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
+        "build tyoe : " + CMAKE_BUILD_TYPE + "/" + CPU_OR_GPU + "\n" +
+        "build time : " + BUILD_TIME + "\n" +
+        "commit id : " + LAST_COMMIT_ID + "\n";
+    return std::make_shared<std::string>(info);
+}
 
 } // gis
 } // zilliz
