@@ -13,14 +13,14 @@ string(REGEX REPLACE "\n" "" BUILD_TIME ${BUILD_TIME})
 message(STATUS "Building time ${BUILD_TIME}")
 
 # get branch name
-MACRO(GET_GIT_BRANCH_NAME GIT_BRANCH_NAME)
-    execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | sed 's/.*, //' | sed 's/)*//g'"
-            OUTPUT_VARIABLE ${GIT_BRANCH_NAME})
-ENDMACRO(GET_GIT_BRANCH_NAME)
+# MACRO(GET_GIT_BRANCH_NAME GIT_BRANCH_NAME)
+#     execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | sed 's/.*, //' | sed 's/)*//g'"
+#             OUTPUT_VARIABLE ${GIT_BRANCH_NAME})
+# ENDMACRO(GET_GIT_BRANCH_NAME)
 
-GET_GIT_BRANCH_NAME(GIT_BRANCH_NAME)
-string(REGEX REPLACE "\n" "" GIT_BRANCH_NAME ${GIT_BRANCH_NAME})
-message(STATUS "Building branch ${GIT_BRANCH_NAME}")
+# GET_GIT_BRANCH_NAME(GIT_BRANCH_NAME)
+# string(REGEX REPLACE "\n" "" GIT_BRANCH_NAME ${GIT_BRANCH_NAME})
+# message(STATUS "Building branch ${GIT_BRANCH_NAME}")
 
 # get last commit id
 MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
@@ -38,7 +38,7 @@ else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
 
-set(VERSION "0.1.0")
+set(LIB_VERSION "0.1.0")
 
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
