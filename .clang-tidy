@@ -18,7 +18,7 @@
 Checks: 'clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,modernize-*,-modernize-use-trailing-return-type'
 # produce HeaderFilterRegex from cpp/build-support/lint_exclusions.txt with:
 # echo -n '^('; sed -e 's/*/\.*/g' cpp/build-support/lint_exclusions.txt | tr '\n' '|'; echo ')$'
-HeaderFilterRegex: '^(.*codegen.*|.*_generated.*|)$'
+HeaderFilterRegex: '^(.*cpp/src.*|.*cpp/unittest.*|)$'
 AnalyzeTemporaryDtors: true
 CheckOptions:
   - key:             google-readability-braces-around-statements.ShortStatementLines
