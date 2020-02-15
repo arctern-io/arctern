@@ -4,7 +4,9 @@
 #include <thrust/scan.h>
 
 
-namespace zilliz::gis::cuda {
+namespace zilliz {
+namespace gis {
+namespace cuda {
 
 GeometryVector::GeoContextHolder
 GeometryVector::CreateReadGeoContext() const {
@@ -125,5 +127,6 @@ GeometryVector::OutputFinalizeWith(const GeoContext& ctx) {
     GpuMemcpy(values_.data(), ctx.values, values_.max_size());
     data_state_ = DataState::PrefixSumOffset_FullData;
 }
-
-}    // namespace zilliz::gis::cuda
+}    // namespace cuda
+}    // namespace gis
+}    // namespace zilliz
