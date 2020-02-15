@@ -124,5 +124,9 @@ std::shared_ptr<arrow::Array>
 ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries);
 
 
+std::shared_ptr<std::string>
+GIS_Version();
+
+
 } // gis
 } // zilliz
