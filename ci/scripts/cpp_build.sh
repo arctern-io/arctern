@@ -48,7 +48,7 @@ do
                 echo "
 
 parameter:
--o: install prefix(default: /var/lib/milvus)
+-o: install prefix(default: /var/lib/gis)
 -t: build type(default: Debug)
 -d: cpp code build directory
 -e: set conda activate environment
