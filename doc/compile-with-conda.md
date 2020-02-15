@@ -35,7 +35,11 @@ cpp_build.sh具体参数设置可运行下面命令:
 ```
 
 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
-`./cpp/cmake_build/unittest/gis/cpp/geo_tests`  
+```
+./ci/scripts/run_unittest.sh -i ${CMAKE_INSTALL_PREFIX}
+```
+其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
+
 运行完之后无错误输出就证明cpp编译和单元测试全部成功了。
 
 # python封装以及单元测试的运行

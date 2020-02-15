@@ -10,14 +10,13 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../python"
-GIS_LIBRARY_DIRS=""
+GIS_PATH="/var/lib/gis"
 
-while getopts "l:e:h" arg
+while getopts "i:e:h" arg
 do
         case $arg in
-             l)
-                GIS_LIBRARY_DIRS=$OPTARG   # GIS LIBRARY DIRS
+             i)
+                GIS_PATH=$OPTARG   # GIS PATH
                 ;;
              e)
                 CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
@@ -26,12 +25,12 @@ do
                 echo "
 
 parameter:
--l: GIS library directory
+-i: GIS path
 -e: set conda activate environment
 -h: help
 
 usage:
-./python_build.sh -l \${GIS_LIBRARY_DIRS} -e \${CONDA_ENV} [-h]
+./build.sh -i \${GIS_PATH} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
@@ -47,17 +46,18 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-cd ${PYTHON_SRC_DIR}
+GIS_UNITTEST_DIR=${GIS_PATH}/unittest
 
-if [[ -d ${PYTHON_SRC_DIR}/build ]]; then
-    rm -rf ${PYTHON_SRC_DIR}/build
+if [[ ! -d ${GIS_UNITTEST_DIR} ]]; then
+    echo "\"${GIS_UNITTEST_DIR}\" directory does not exist !"
+    exit 1
 fi
 
-if [[ -d ${PYTHON_SRC_DIR}/dist ]]; then
-    rm -rf ${PYTHON_SRC_DIR}/dist
-fi
-
-rm -rf zilliz_gis.egg*
-
-python setup.py build build_ext --library-dirs=${GIS_LIBRARY_DIRS}
-python setup.py install
+for test in `ls ${GIS_UNITTEST_DIR}`; do
+    echo "run $test unittest"
+    ${GIS_UNITTEST_DIR}/${test}
+    if [ $? -ne 0 ]; then
+        echo "${GIS_UNITTEST_DIR}/${test} run failed !"
+        exit 1
+    fi
+done
