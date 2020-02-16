@@ -1,6 +1,6 @@
 #pragma once
 #include "render/2d/pointmap.h"
-#include "render/2d/heatmap.h"
+#include "render/2d/heatmap/heatmap.h"
 
 namespace zilliz {
 namespace render {
