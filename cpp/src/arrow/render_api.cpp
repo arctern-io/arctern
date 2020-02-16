@@ -24,7 +24,7 @@ out_pic(std::pair<uint8_t* ,int64_t> output) {
 }
 
 std::shared_ptr<arrow::Array>
-point_map(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> arr_y) {
+point_map(const std::shared_ptr<arrow::Array> &arr_x, const std::shared_ptr<arrow::Array> &arr_y) {
     auto x_length = arr_x->length();
     auto y_length = arr_y->length();
     auto x_type = arr_x->type_id();
@@ -40,7 +40,7 @@ point_map(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> arr
 }
 
 std::shared_ptr<arrow::Array>
-heat_map(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> arr_y, std::shared_ptr<arrow::Array> arr_c) {
+heat_map(const std::shared_ptr<arrow::Array> &arr_x, const std::shared_ptr<arrow::Array> &arr_y, const std::shared_ptr<arrow::Array> &arr_c) {
     auto x_length = arr_x->length();
     auto y_length = arr_y->length();
     auto c_length = arr_c->length();
