@@ -3,10 +3,6 @@ from pyarrow.lib cimport *
 # from libcpp.string cimport *
 from libcpp.string cimport *
 
-cdef extern from "gis.h":
-    shared_ptr[CArray] point_map(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y)
-    shared_ptr[CArray] make_point(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y);
-
 cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)
@@ -29,6 +25,7 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Centroid(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Length(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_ConvexHull(const shared_ptr[CArray] &geo_arr)
+    shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs)
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist)

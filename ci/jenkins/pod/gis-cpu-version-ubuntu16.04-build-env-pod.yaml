@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gis-cpu-build-env
+  labels:
+    app: gis
+    componet: cpu-build-env
+spec:
+  containers:
+  - name: gis-cpu-build-env
+    image: registry.zilliz.com/gis/gis-cpu-build-env:v0.1.0-ubuntu16.04
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    resources:
+      limits:
+        memory: "12Gi"
+        cpu: "6.0"
+      requests:
+        memory: "8Gi"
+        cpu: "4.0"

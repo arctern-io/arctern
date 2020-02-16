@@ -1,6 +1,7 @@
 
 #include "gis/api.h"
 #include "utils/check_status.h"
+#include "common/version.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -15,7 +16,7 @@ namespace gis {
 
 
 #define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(\
-RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
+RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT)   \
 do {    \
     auto len = geometries->length();    \
     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);    \
@@ -24,7 +25,7 @@ do {    \
     for (int32_t i = 0; i < len; i++) { \
         CHECK_GDAL(OGRGeometryFactory::createFromWkt(\
             wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
-        CHECK_ARROW(builder.Append(OPERATION));  \
+        CHECK_ARROW(builder.Append(APPEND_RESULT));  \
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
     }   \
     std::shared_ptr<arrow::Array> results;  \
@@ -34,15 +35,15 @@ do {    \
 
 
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(\
-FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
+FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT)   \
 std::shared_ptr<arrow::Array> \
 FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
-    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION);   \
+    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT);   \
 }
 
 
 #define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(\
-RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
+RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT)   \
 do {    \
     auto len = geometries->length();    \
     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);    \
@@ -52,7 +53,7 @@ do {    \
     for (int32_t i = 0; i < len; i++) { \
         CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
             wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR))); \
-        geo_tmp = OPERATION;	\
+        geo_tmp = APPEND_RESULT;	\
         CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
         CHECK_ARROW(builder.Append(wkt_tmp)); \
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);   \
@@ -66,15 +67,15 @@ do {    \
 
 
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(\
-FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, OPERATION)   \
+FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT)   \
 std::shared_ptr<arrow::Array> \
 FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
-    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(RESULT_BUILDER_TYPE, GEO_VAR, OPERATION); \
+    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT); \
 }
 
 
 #define BINARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(\
-RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION)   \
+RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT)   \
 do {    \
     assert(geometries_1->length() == geometries_2->length());   \
     auto len = geometries_1->length();  \
@@ -87,7 +88,7 @@ do {    \
             wkt_geometries_1->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_1))); \
         CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
             wkt_geometries_2->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_2))); \
-        CHECK_ARROW(builder.Append(OPERATION));  \
+        CHECK_ARROW(builder.Append(APPEND_RESULT));  \
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_1);   \
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_2);   \
     }   \
@@ -97,18 +98,44 @@ do {    \
 } while(0)
 
 
+#define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(\
+RESULT_BUILDER_TYPE, GEO_WKT_VAR, APPEND_RESULT)   \
+do {    \
+    auto len = geometries->length();    \
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);    \
+    RESULT_BUILDER_TYPE builder;   \
+    const char *GEO_WKT_VAR;    \
+    for (int32_t i = 0; i < len; i++) { \
+        auto geo_wkt_str = wkt_geometries->GetString(i);    \
+        GEO_WKT_VAR = geo_wkt_str.c_str(); \
+        CHECK_ARROW(builder.Append(APPEND_RESULT));  \
+    }   \
+    std::shared_ptr<arrow::Array> results;  \
+    CHECK_ARROW(builder.Finish(&results));   \
+    return results; \
+} while(0)
+
+
+#define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(\
+FUNC_NAME, RESULT_BUILDER_TYPE, GEO_WKT_VAR, APPEND_RESULT)   \
+std::shared_ptr<arrow::Array> \
+FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries) {   \
+    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T3(RESULT_BUILDER_TYPE, GEO_WKT_VAR, APPEND_RESULT);   \
+}
+
+
 #define BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(\
-FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION)   \
+FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT)   \
 std::shared_ptr<arrow::Array>   \
 FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries_1,    \
           const std::shared_ptr<arrow::Array> &geometries_2) {  \
     BINARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1( \
-        RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION);   \
+        RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT);   \
 }
 
 
 #define BINARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(\
-RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION)   \
+RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT)   \
 do {    \
     assert(geometries_1->length() == geometries_2->length());   \
     auto len = geometries_1->length();  \
@@ -122,7 +149,7 @@ do {    \
             wkt_geometries_1->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_1))); \
         CHECK_GDAL(OGRGeometryFactory::createFromWkt(   \
             wkt_geometries_2->GetString(i).c_str(), nullptr, (OGRGeometry**)(&GEO_VAR_2))); \
-        geo_tmp = OPERATION;   \
+        geo_tmp = APPEND_RESULT;   \
         CHECK_GDAL(OGR_G_ExportToWkt(geo_tmp, &wkt_tmp));  \
         CHECK_ARROW(builder.Append(wkt_tmp));  \
         OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR_1);   \
@@ -137,12 +164,12 @@ do {    \
 
 
 #define BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(\
-FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION)   \
+FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT)   \
 std::shared_ptr<arrow::Array> \
 FUNC_NAME(const std::shared_ptr<arrow::Array> &geometries_1,    \
           const std::shared_ptr<arrow::Array> &geometries_2) {  \
     BINARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2( \
-        RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, OPERATION);  \
+        RESULT_BUILDER_TYPE, GEO_VAR_1, GEO_VAR_2, APPEND_RESULT);  \
 }
 
 
@@ -152,6 +179,44 @@ Wrapper_OGR_G_Centroid(void *geo) {
     OGR_G_Centroid(geo, centroid);
     return centroid;
 }
+
+
+inline bool
+Wrapper_OGR_G_IsValid(const char *geo_wkt) {
+    void *geo = nullptr;
+    bool is_valid = false;
+    auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, (OGRGeometry**)(&geo));
+    if (err_code == OGRERR_NONE) {
+        is_valid = OGR_G_IsValid(geo) != 0;
+    }
+    if (geo) {
+        OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
+    }
+    return is_valid;
+}
+
+inline OGRGeometry*
+Wrapper_createFromWkt(const char* geo_wkt){
+    OGRGeometry *geo = nullptr;
+    auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt,nullptr,&geo);
+    if(err_code){
+        std::string err_msg = "failed to create geometry from \"" + std::string(geo_wkt) + "\"";
+        throw std::runtime_error(err_msg); 
+    }
+    return geo;
+}
+
+inline char*
+Wrapper_OGR_G_ExportToWkt(OGRGeometry *geo){
+    char *str;
+    auto err_code = OGR_G_ExportToWkt(geo,&str);
+    if(err_code != OGRERR_NONE){
+        std::string err_msg = "failed to export to wkt, error code = " + std::to_string(err_code);
+        throw std::runtime_error(err_msg);
+    }
+    return str;
+}
+
 
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
@@ -221,9 +286,9 @@ ST_PolygonFromEnvelope(const std::shared_ptr<arrow::Array> &min_x_values,
 
 /************************* GEOMETRY ACCESSOR **************************/
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
-    ST_IsValid, arrow::BooleanBuilder, geo, 
-    OGR_G_IsValid(geo) != 0);
+UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(
+    ST_IsValid, arrow::BooleanBuilder, geo_wkt, 
+    Wrapper_OGR_G_IsValid(geo_wkt));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     ST_IsSimple, arrow::BooleanBuilder, geo, 
@@ -306,6 +371,51 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
     ST_ConvexHull, arrow::StringBuilder, geo,
     OGR_G_ConvexHull(geo));
+
+
+/*
+ * The detailed EPSG information can be searched on EPSG.io [https://epsg.io/]
+ */
+std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs){
+    OGRSpatialReference oSrcSRS;
+    oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    if(oSrcSRS.SetFromUserInput(src_rs.c_str())!=OGRERR_NONE){
+        std::string err_msg = "faild to tranform with sourceCRS = " +  src_rs;
+        throw new std::runtime_error(err_msg);
+    }
+
+    OGRSpatialReference oDstS;
+    oDstS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    if(oDstS.SetFromUserInput(dst_rs.c_str())!=OGRERR_NONE){
+        std::string err_msg = "faild to tranform with targetCRS = " +  dst_rs;
+        throw new std::runtime_error(err_msg);
+    }
+
+    void *poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
+    arrow::StringBuilder builder;
+
+    auto len = geos->length();
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
+
+
+    for (int32_t i = 0; i < len; i++) {
+        auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());        
+        CHECK_GDAL(OGR_G_Transform(geo,(OGRCoordinateTransformation*)poCT))
+        auto wkt = Wrapper_OGR_G_ExportToWkt(geo);
+        CHECK_ARROW(builder.Append(wkt));
+        OGRGeometryFactory::destroyGeometry(geo);
+        CPLFree(wkt);
+    }
+
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
+    OCTDestroyCoordinateTransformation(poCT);
+
+    return results; 
+}
 
 
 /************************ MEASUREMENT FUNCTIONS ************************/
@@ -395,8 +505,14 @@ ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries){
     return ST_Envelope(ST_Union_Aggr(geometries));
 }
 
-
-
+std::shared_ptr<std::string>
+GIS_Version() {
+    const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
+        "build tyoe : " + CMAKE_BUILD_TYPE + "/" + CPU_OR_GPU + "\n" +
+        "build time : " + BUILD_TIME + "\n" +
+        "commit id : " + LAST_COMMIT_ID + "\n";
+    return std::make_shared<std::string>(info);
+}
 
 } // gis
 } // zilliz

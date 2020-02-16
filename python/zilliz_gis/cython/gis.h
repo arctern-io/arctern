@@ -3,12 +3,6 @@
 
 #include "arrow/api.h"
 
-std::shared_ptr<arrow::Array>
-point_map(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
-std::shared_ptr<arrow::Array>
-make_point(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
 namespace zilliz {
 namespace gis {
 
@@ -94,6 +88,11 @@ ST_Length(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
+
+std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
 
 std::shared_ptr<arrow::Array>
 ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr);

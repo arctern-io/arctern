@@ -4,12 +4,6 @@ from pyarrow.lib cimport *
 
 cimport zilliz_gis_core__ as zilliz_gis_core_pxd
 
-def point_map(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
-    
-def make_point(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.make_point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
-
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
 
@@ -72,6 +66,9 @@ def ST_Length(object geo_arr):
 
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
 
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))

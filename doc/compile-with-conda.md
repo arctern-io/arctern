@@ -16,30 +16,50 @@ conda环境的安装有很多教程，详见`https://www.jianshu.com/p/edaa744ea
 # cpp代码编译以及单元测试的运行
 此部分所有工作均在conda中的zgis_dev环境中运行：
 首先切换到工程中的GIS目录然后运行下面的命令：
+
+CPU Version
 ```
-mkdir build
-cd build
-cmake ../cpp -DCMAKE_INSTALL_PREFIX=$PWD/thirdparty -DBUILD_UNITTEST=ON
-make
-make install
+cd ci/scripts
+./cpp_build.sh -t Release -o ${CMAKE_INSTALL_PREFIX} -u
 ```
+
+GPU Version
+```
+cd ci/scripts
+./cpp_build.sh -t Release -o ${CMAKE_INSTALL_PREFIX} -g -u
+```
+
+cpp_build.sh具体参数设置可运行下面命令:
+```
+./cpp_build.sh -h
+```
+
 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
-`./unittest/gis/cpp/geo_tests`  
+`./cpp/cmake_build/unittest/gis/cpp/geo_tests`  
 运行完之后无错误输出就证明cpp编译和单元测试全部成功了。
 
 # python封装以及单元测试的运行
 上一步编译测试成功后
 ## Python包 zilliz_gis的编译和安装
-- 修改 setup.cfg
-    ```
-    [build_ext]  
-    Library-dirs= CMAKE_INSTALL_PREFIX/lib
-    ```
+- 加载GIS环境
+```
+source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
+```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
-- 运行python目录下的build.sh  
-`./build.sh`
+- 运行ci/scripts目录下的python_build.sh  
+`./python_build.sh -l $GIS_LIB_DIR`
+
+python_build.sh具体参数设置可运行下面命令:
+```
+./python_build.sh -h
+```
+
 ## 运行Python包 zilliz_gis的单元测试
 1. 需要保证`LD_LIBRARY_PATH`中加入`CMAKE_INSTALL_PREFIX/lib`这个路径以及`cuda`的`lib`路径
+```
+source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
+```
+
 2. 到`GIS/python/test/geo`目录运行：
 `py.test`
 看到单元测试正确输出就代表结果正确！
@@ -47,6 +67,8 @@ make install
 
 
 # 在spark上运行
+
+注意事项：spark请使用最新的spark-3.0.0-preview2.
 
 ## 编译zilliz_pyspark包
 
