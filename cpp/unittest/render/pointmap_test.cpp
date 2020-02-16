@@ -36,7 +36,43 @@ TEST(TWOD_TEST, POIN_TEST) {
     auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
     auto array2 = arrow::MakeArray(array_data2);
 
-    point_map(array1, array2);
+    const std::string vega = "{\n"
+                                                    "  \"width\": 300,\n"
+                                                    "  \"height\": 200,\n"
+                                                    "  \"description\": \"circle_2d\",\n"
+                                                    "  \"data\": [\n"
+                                                    "    {\n"
+                                                    "      \"name\": \"data\",\n"
+                                                    "      \"url\": \"data/data.csv\"\n"
+                                                    "    }\n"
+                                                    "  ],\n"
+                                                    "  \"scales\": [\n"
+                                                    "    {\n"
+                                                    "      \"name\": \"x\",\n"
+                                                    "      \"type\": \"linear\",\n"
+                                                    "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+                                                    "    },\n"
+                                                    "    {\n"
+                                                    "      \"name\": \"y\",\n"
+                                                    "      \"type\": \"linear\",\n"
+                                                    "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+                                                    "    }\n"
+                                                    "  ],\n"
+                                                    "  \"marks\": [\n"
+                                                    "    {\n"
+                                                    "      \"encode\": {\n"
+                                                    "        \"enter\": {\n"
+                                                    "          \"shape\": {\"value\": \"circle\"},\n"
+                                                    "          \"stroke\": {\"value\": \"#ff0000\"},\n"
+                                                    "          \"strokeWidth\": {\"value\": 30},\n"
+                                                    "          \"opacity\": {\"value\": 0.5}\n"
+                                                    "        }\n"
+                                                    "      }\n"
+                                                    "    }\n"
+                                                    "  ]\n"
+                                                    "}";
+
+    point_map(array1, array2, vega);
 }
 
 
