@@ -302,10 +302,13 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     ST_NPoints, arrow::Int64Builder, geo, 
     OGR_G_GetPointCount(geo));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(
-    ST_Envelope, arrow::StringBuilder, geo,
-    OGR_G_Boundary(geo));
 
+std::shared_ptr<arrow::Array>
+ST_Envelope(const std::shared_ptr<arrow::Array> &geometries) {
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+    auto len = geometries->length();
+    
+}
 
 /************************ GEOMETRY PROCESSING ************************/
 
