@@ -740,3 +740,98 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope){
 
   ASSERT_EQ(res_str,expect);
 }
+
+TEST(geometry_test,test_ST_Transform){
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input_data;
+
+  builder.Append(std::string("POINT (10 10)"));
+  builder.Finish(&input_data);
+  std::string src_rs("EPSG:4326");
+  std::string dst_rs("EPSG:3857");
+
+  auto res = ST_Transform(input_data,src_rs,dst_rs);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
+  OGRGeometry *res_geo = nullptr;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(),nullptr,&res_geo));
+
+  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+
+  ASSERT_DOUBLE_EQ(rst_pointer->getX(),1113194.90793274);
+  ASSERT_DOUBLE_EQ(rst_pointer->getY(),1118889.97485796);
+
+  OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
+TEST(geometry_test,test_ST_Union_Aggr){
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  auto p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+
+  auto result = ST_Union_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))");
+
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))");
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))");
+
+  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  p2 = "POINT (2 3)";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+  result = ST_Union_Aggr(polygons);
+  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+
+
+}
+
+
+TEST(geometry_test,test_ST_Envelop_Aggr){
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+
+  auto p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
+  auto p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))";
+  builder.Reset();
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&polygons);
+
+  auto result = ST_Envelope_Aggr(polygons);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(geometries_arr->GetString(0),"MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))");
+
+}

@@ -29,6 +29,7 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Centroid(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Length(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_ConvexHull(const shared_ptr[CArray] &geo_arr)
+    shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs)
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist)
