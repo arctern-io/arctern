@@ -217,6 +217,12 @@ Wrapper_OGR_G_ExportToWkt(OGRGeometry *geo){
     return str;
 }
 
+inline std::string
+Wrapper_OGR_G_GetGeometryName(void* geo){
+   auto ogr_geometry_name = OGR_G_GetGeometryName(geo);
+   std::string adjust_geometry_name = "ST_" + (std::string) ogr_geometry_name;
+   return adjust_geometry_name;
+}
 
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
@@ -296,7 +302,7 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     ST_GeometryType, arrow::StringBuilder, geo, 
-    OGR_G_GetGeometryName(geo));
+    Wrapper_OGR_G_GetGeometryName(geo));
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(
     ST_NPoints, arrow::Int64Builder, geo, 
