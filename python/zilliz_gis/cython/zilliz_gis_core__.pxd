@@ -1,7 +1,11 @@
 from pyarrow.lib cimport *
-
-# from libcpp.string cimport *
 from libcpp.string cimport *
+
+
+cdef extern from "render.h" namespace "zilliz::render":
+    shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const string &conf)
+    shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c,const string &conf)
+
 
 cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)

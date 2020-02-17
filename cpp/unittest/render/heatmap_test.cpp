@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
 #include "arrow/render_api.h"
-#include "render/2d/heatmap/heatmap.h"
 
 using namespace zilliz::render;
 
 TEST(TWOD_TEST, HEATMAP_TEST) {
-//    HeatMap<uint32_t > heat_map;
 
     auto bit_map = new uint8_t{0xff};
 
@@ -51,6 +49,39 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
     auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers3);
     auto array3 = arrow::MakeArray(array_data3);
 
-    get_heatmap(array1, array2, array3);
+    const std::string vega = "{\n"
+                   "  \"width\": 300,\n"
+                   "  \"height\": 200,\n"
+                   "  \"description\": \"circle_2d\",\n"
+                   "  \"data\": [\n"
+                   "    {\n"
+                   "      \"name\": \"data\",\n"
+                   "      \"url\": \"data/data.csv\"\n"
+                   "    }\n"
+                   "  ],\n"
+                   "  \"scales\": [\n"
+                   "    {\n"
+                   "      \"name\": \"x\",\n"
+                   "      \"type\": \"linear\",\n"
+                   "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+                   "    },\n"
+                   "    {\n"
+                   "      \"name\": \"y\",\n"
+                   "      \"type\": \"linear\",\n"
+                   "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+                   "    }\n"
+                   "  ],\n"
+                   "  \"marks\": [\n"
+                   "    {\n"
+                   "      \"encode\": {\n"
+                   "        \"enter\": {\n"
+                   "          \"map_scale\": {\"value\": 10}\n"
+                   "        }\n"
+                   "      }\n"
+                   "    }\n"
+                   "  ]\n"
+                   "}";
+
+    heat_map(array1, array2, array3, vega);
 }
 

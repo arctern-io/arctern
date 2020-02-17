@@ -13,3 +13,5 @@ target_link_libraries(geo_tests
         pthread
         gdal
         )
+
+install(TARGETS geo_tests DESTINATION unittest)
