@@ -28,7 +28,9 @@ heatmap(uint32_t* arr_x,
     VegaHeatMap vega_heat_map(conf);
     heat_map.mutable_heatmap_vega() = vega_heat_map;
 
-    return std::make_pair(heat_map.Render(), heat_map.output_image_size());
+    auto render = heat_map.Render();
+    auto ret_size = heat_map.output_image_size();
+    return std::make_pair(render, ret_size);
 }
 }
 }
