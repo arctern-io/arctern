@@ -72,7 +72,9 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
-    . /opt/conda/etc/profile.d/conda.sh
+    if [[ -n ${CONDA_PREFIX} ]]; then
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
+    fi
 fi
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
