@@ -16,6 +16,7 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
+// Not used yet, comment later
 struct GeoWorkspace {
     static constexpr int max_threads = 256 * 128;
     int max_buffer_per_meta = 0;         // normally 32
@@ -32,6 +33,7 @@ struct GeoWorkspace {
     }
 };
 
+// Not used yet, comment later
 class GeoWorkspaceHolder {
  private:
     struct Deletor {
@@ -48,9 +50,17 @@ class GeoWorkspaceHolder {
     std::unique_ptr<GeoWorkspace, Deletor> space_;
 };
 
+// Container of the variant geometries
 class GeometryVector {
  private:
  public:
+    // Appending is used when decoding WWkb
+    // Flat vs PrefixSum are explained below (at data_state_ declaration)
+    // Info includes tags, meta_offsets, value_offsets,
+    //      which is calcuated at the first pass
+    // Data includes metas, values,
+    //      which is calcuated at the second pass
+    //      when FlatOffset, Data is always empty.
     enum class DataState : uint32_t {
         Invalid,
         Appending,
@@ -60,6 +70,10 @@ class GeometryVector {
         PrefixSumOffset_FullData      // after filling the data
     };
 
+    // Geometry context,
+    // raw pointers holding device memory for calculation
+    // use struct to simplify data transfer in CUDA
+    // fields are explained below (at class variable members declarations)
     struct GeoContext {
         WkbTag* tags = nullptr;
         uint32_t* metas = nullptr;
@@ -71,7 +85,8 @@ class GeometryVector {
 
         DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
 
-        // const version
+        // const pointer to start location to the index-th element
+        // should be used when offsets are valid
         DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
             auto offset = meta_offsets[index];
             return metas + offset;
@@ -81,7 +96,8 @@ class GeometryVector {
             return values + offset;
         }
 
-        // nonconst version
+        // nonconst pointer to start location of the index-th element
+        // should be used when offsets are valid
         DEVICE_RUNNABLE uint32_t* get_meta_ptr(int index) {
             auto offset = meta_offsets[index];
             return metas + offset;
@@ -102,13 +118,14 @@ class GeometryVector {
         struct Deleter {
             void operator()(GeoContext*);    // TODO
         };
-        auto operator-> () { return ctx_.operator->(); }
+        GeoContext* operator->() { return ctx_.operator->(); }
 
      private:
         std::unique_ptr<GeoContext, Deleter> ctx_;
         explicit GeoContextHolder() : ctx_(new GeoContext) {}
         friend class GeometryVector;
     };
+
     GeoContextHolder CreateReadGeoContext() const;    // TODO
     GeometryVector() = default;
     GpuVector<char> EncodeToWkb() const;    // TODO
@@ -117,8 +134,14 @@ class GeometryVector {
     void WkbDecodeAppend(const char* bin);
     void WkbDecodeFinalize();
 
+    // STEP 1: Initialize vector with size of elements
     void OutputInitialize(int size);
+    // STEP 2: Create gpu geometry context according to the vector for cuda,
+    // where tags and offsets fields are uninitailized
     GeoContextHolder OutputCreateGeoContext();
+    // STEP 3: Fill tags and offsets using CUDA Kernels
+    // STEP 4: when tags and offsets are
+    // when
     void OutputEvolveWith(GeoContext&);    // TODO: better name
     void OutputFinalizeWith(const GeoContext&);
 
@@ -127,12 +150,21 @@ class GeometryVector {
     int size() const { return tags_.size(); }
 
  private:
+    // Currently, GpuVector contains host memory only
+    // next goal should make it switchable between host and device memory.
     GpuVector<WkbTag> tags_;
+    // Not including tags_, for faster access of WkbTags
     GpuVector<uint32_t> metas_;
     GpuVector<double> values_;
+    // These two offsets fields contains
+    //   FlatOffset => size of each element
+    //   PrefixSumOffset => start location of each element
     GpuVector<int> meta_offsets_;
     GpuVector<int> value_offsets_;
-    DataState data_state_ = DataState::Appending;
+    // This is the current state of above data containers and it companion GeoContext.
+    // can only be used at assert statement for quick failure.
+    // shouldn't be used to drive the state machine(e.g. switch statement)
+    DataState data_state_ = DataState::Invalid;
 };
 
 
