@@ -9,8 +9,9 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
+namespace {
 inline DEVICE_RUNNABLE double
-ST_area_polygon(const GeoContext& ctx, int index) {
+PolygonArea(const GeoContext& ctx, int index) {
     auto meta = ctx.get_meta_ptr(index);
     auto value = ctx.get_value_ptr(index);
     assert(meta[0] == 1);
@@ -27,7 +28,7 @@ ST_area_polygon(const GeoContext& ctx, int index) {
 
 
 __global__ void
-ST_area_kernel(GeoContext ctx, double* result) {
+ST_AreaKernel(GeoContext ctx, double* result) {
     auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     if (tid < ctx.size) {
         auto tag = ctx.get_tag(tid);
@@ -35,7 +36,7 @@ ST_area_kernel(GeoContext ctx, double* result) {
         assert(tag.get_group() == WkbGroup::None);
         switch (tag.get_category()) {
             case WkbCategory::Polygon: {
-                result[tid] = ST_area_polygon(ctx, tid);
+                result[tid] = PolygonArea(ctx, tid);
                 break;
             }
             default: {
@@ -44,13 +45,14 @@ ST_area_kernel(GeoContext ctx, double* result) {
         }
     }
 }
+}    // namespace
 
 void
 ST_Area(const GeometryVector& vec, double* host_results) {
     auto ctx = vec.CreateReadGeoContext();
     auto config = GetKernelExecConfig(vec.size());
     auto dev_result = GpuMakeUniqueArray<double>(vec.size());
-    ST_area_kernel<<<config.grid_dim, config.block_dim>>>(ctx.get(), dev_result.get());
+    ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(ctx.get(), dev_result.get());
     GpuMemcpy(host_results, dev_result.get(), vec.size());
 }
 
