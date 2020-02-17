@@ -514,5 +514,6 @@ GIS_Version() {
     return std::make_shared<std::string>(info);
 }
 
+
 } // gis
 } // zilliz
