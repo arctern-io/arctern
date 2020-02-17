@@ -69,6 +69,11 @@ ST_Centroid(const std::shared_ptr<arrow::Array> &geometries);
 std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geometries);
 
+std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
+
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 

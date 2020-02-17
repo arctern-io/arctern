@@ -1,4 +1,4 @@
-#include "render/2d/set_color.h"
+#include "render/2d/heatmap/set_color.h"
 #ifndef TEMPLATE_GEN_PREFIX
 // dummy, to make IDE happy
 #define TEMPLATE_GEN_PREFIX extern
@@ -22,4 +22,4 @@ TEMPLATE_GEN_PREFIX template void set_colors_gpu<T>(float *colors,
 } // namespace zilliz
 
 #undef T
-#undef TEMPLATE_GEN_PREFIX
+//#undef TEMPLATE_GEN_PREFIX
