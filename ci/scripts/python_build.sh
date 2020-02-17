@@ -45,7 +45,7 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
-    source /etc/profile.d/conda.sh
+    . /opt/conda/etc/profile.d/conda.sh
 fi
 
 cd ${PYTHON_SRC_DIR}
