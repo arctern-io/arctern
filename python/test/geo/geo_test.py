@@ -189,6 +189,17 @@ def test_ST_ConvexHull():
 
     assert rst[0] == "POINT (1.1 101.1)"
 
+def test_ST_Transform():
+    data = ["POINT (10 10)"]
+    array = pyarrow.array(pandas.Series(data))
+    rst = zilliz_gis.ST_Transform(array,b"EPSG:4326",b"EPSG:3857")
+
+    from osgeo import ogr
+    wkt = rst[0]
+    rst_point = ogr.CreateGeometryFromWkt(str(wkt))
+    assert abs(rst_point.GetX() - 1113194.90793274 < 0.01)
+    assert abs(rst_point.GetY() - 1118889.97485796 < 0.01)
+
 def test_ST_NPoints():
     data = ["LINESTRING(1 1,1 4)"]
     array = pyarrow.array(pandas.Series(data))

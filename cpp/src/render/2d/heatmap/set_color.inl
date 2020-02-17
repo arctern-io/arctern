@@ -22,4 +22,4 @@ TEMPLATE_GEN_PREFIX template void set_colors_gpu<T>(float *colors,
 } // namespace zilliz
 
 #undef T
-#undef TEMPLATE_GEN_PREFIX
+//#undef TEMPLATE_GEN_PREFIX
