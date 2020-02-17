@@ -4,7 +4,7 @@
 namespace zilliz {
 namespace gis {
 namespace cuda {
-void ST_point(const double* xs, const double* ys, int size, GeometryVector& results);
+void ST_Point(const double* xs, const double* ys, int size, GeometryVector& results);
 }    // namespace cuda
 }    // namespace gis
 }    // namespace zilliz

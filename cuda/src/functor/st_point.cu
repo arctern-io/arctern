@@ -58,7 +58,7 @@ ST_point_datafill_kernel(const double* xs, const double* ys, GeoContext results)
 
 
 void
-ST_point(const double* cpu_xs, const double* cpu_ys, int size, GeometryVector& results) {
+ST_Point(const double* cpu_xs, const double* cpu_ys, int size, GeometryVector& results) {
     results.OutputInitialize(size);
     auto xs = GpuMakeUniqueArrayAndCopy(cpu_xs, size);
     auto ys = GpuMakeUniqueArrayAndCopy(cpu_ys, size);

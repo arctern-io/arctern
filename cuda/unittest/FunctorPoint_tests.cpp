@@ -18,14 +18,14 @@ TEST(FunctorPoint, naive) {
     vector<double> ys{0, 1, 2, 3, 4};
     GeometryVector left_points;
     GeometryVector right_points;
-    ST_point(xs.data(), ys.data(), xs.size(), left_points);
+    ST_Point(xs.data(), ys.data(), xs.size(), left_points);
     for(auto &x: xs) {
         x = -x;
     }
     for(auto &y: ys) {
         y = -y;
     }
-    ST_point(xs.data(), ys.data(), xs.size(), right_points);
+    ST_Point(xs.data(), ys.data(), xs.size(), right_points);
     vector<double> distance(xs.size());
     ST_Distance(left_points, right_points, distance.data());
     for(int i = 0; i < xs.size(); ++i) {

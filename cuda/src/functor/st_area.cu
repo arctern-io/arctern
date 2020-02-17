@@ -46,7 +46,7 @@ ST_area_kernel(GeoContext ctx, double* result) {
 }
 
 void
-ST_area(const GeometryVector& vec, double* host_results) {
+ST_Area(const GeometryVector& vec, double* host_results) {
     auto ctx = vec.CreateReadGeoContext();
     auto config = GetKernelExecConfig(vec.size());
     auto dev_result = GpuMakeUniqueArray<double>(vec.size());

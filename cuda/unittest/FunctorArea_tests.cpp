@@ -34,7 +34,7 @@ TEST(FunctorArea, naive) {
     gvec.WkbDecodeFinalize();
 
     vector<double> result(n);
-    ST_area(gvec, result.data());
+    ST_Area(gvec, result.data());
     for (int i = 0; i < n; ++i) {
         auto std = 1;
         ASSERT_DOUBLE_EQ(result[i], std);
