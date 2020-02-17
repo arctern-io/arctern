@@ -1,0 +1,72 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent none
+
+    options {
+        timestamps()
+    }
+
+    parameters{
+        choice choices: ['Release', 'Debug'], description: 'Build Type', name: 'BUILD_TYPE'
+    }
+
+    environment {
+        PROJECT_NAME = "gis"
+        PIPELINE_NAME = "gis-ci"
+        GIS_ROOT_PATH="/var/lib"
+        GIS_INSTALL_PREFIX = "${env.GIS_ROOT_PATH}/${env.PROJECT_NAME}"
+    }
+
+    stages {
+        stage ('GIS Build and Test') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu16.04'
+                    }
+
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                stages {
+                    stage("GIS CI") {
+                        stages {
+                            stage('Run build') {
+                                agent {
+                                    kubernetes {
+                                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                        defaultContainer 'jnlp'
+                                        yamlFile "ci/jenkins/pod/gis-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                                    }
+                                }
+
+                                stages {
+                                	stage('Build') {
+                                        steps {
+                                            container("gis-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

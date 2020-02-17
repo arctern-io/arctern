@@ -4,10 +4,10 @@ set(geo_test_src
 
 add_executable(geo_tests ${geo_test_src})
 
-add_dependencies(geo_tests googletest_ep)
+#add_dependencies(geo_tests googletest_ep)
 
 target_link_libraries(geo_tests
-        zgeo
+        windrose
         arrow
         gtest
         pthread

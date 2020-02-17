@@ -7,7 +7,7 @@
 #include "device_launch_parameters.h"
 
 #include "render/utils/color/color_gradient.h"
-#include "render/2d/set_color.h"
+#include "render/2d/heatmap/set_color.h"
 
 namespace zilliz {
 namespace render {
@@ -56,7 +56,6 @@ HeatMapArray_gpu(float *in_count, float *out_count, float *kernel, int64_t kerne
             }
         }
     }
-
 }
 
 __global__ void
@@ -85,9 +84,9 @@ MeanKernel_gpu(float *img_in, float *img_out, int64_t r, int64_t img_w, int64_t 
 
 template<typename T>
 void set_colors_gpu(float *colors,
-                    std::shared_ptr<uint32_t> input_x,
-                    std::shared_ptr<uint32_t> input_y,
-                    std::shared_ptr<T> input_c,
+                    uint32_t* input_x,
+                    uint32_t* input_y,
+                    T* input_c,
                     int64_t num,
                     VegaHeatMap &vega_heat_map) {
     WindowParams window_params = vega_heat_map.window_params();
@@ -103,9 +102,9 @@ void set_colors_gpu(float *colors,
     cudaMalloc((void **) &in_y, num * sizeof(uint32_t));
     cudaMalloc((void **) &in_c, num * sizeof(T));
     cudaMemset(pix_count, 0, window_size * sizeof(float));
-    cudaMemcpy(in_x, input_x.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
-    cudaMemcpy(in_y, input_y.get(), num * sizeof(uint32_t), cudaMemcpyHostToDevice);
-    cudaMemcpy(in_c, input_c.get(), num * sizeof(T), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_x, input_x, num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_y, input_y, num * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(in_c, input_c, num * sizeof(T), cudaMemcpyHostToDevice);
     SetCountValue_gpu<T> << < 256, 1024 >>
         > (pix_count, in_x, in_y, in_c, num, width, height);
 
@@ -166,19 +165,46 @@ void set_colors_gpu(float *colors,
     cudaFree(dev_kernel);
     cudaFree(dev_count);
     cudaFree(color_count);
+    cudaFree(in_x);
+    cudaFree(in_y);
+    cudaFree(in_c);
 }
 
 } //namespace render
 } //namespace
 
 #define TEMPLATE_GEN_PREFIX
+#define T int8_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+#define T int16_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+
+#define T int32_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T int64_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T uint8_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T uint16_t
+#include "render/2d/heatmap/set_color.inl"
+
 #define T uint32_t
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
+#define T uint64_t
+#include "render/2d/heatmap/set_color.inl"
+
 #define T float
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T double
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
+
+

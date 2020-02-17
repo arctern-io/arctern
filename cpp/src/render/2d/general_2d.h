@@ -1,18 +1,24 @@
 #pragma once
 
 #include "render/2d/input.h"
+
+#ifdef USE_GPU
 #include "render/window/window_egl/window_gpu_2d.h"
+#else
 #include "render/window/window_osmesa/window_cpu_2d.h"
+#endif
 
 namespace zilliz {
 namespace render {
 
 class General2D {
  public:
+    ~General2D();
+
     virtual void
     DataInit() = 0;
 
-    virtual std::shared_ptr<uint8_t >
+    virtual uint8_t*
     Render() = 0;
 
     virtual void
@@ -32,7 +38,7 @@ class General2D {
     void
     Finalize();
 
-    std::shared_ptr<uint8_t >
+    uint8_t*
     Output();
 
     void
@@ -64,7 +70,7 @@ class General2D {
     unsigned char *output_image_;
     int output_image_size_;
 
-#ifdef CPU_ONLY
+#ifndef USE_GPU
  public:
     void
     set_window(WindowCPU2DPtr window) { window_ = window; }
