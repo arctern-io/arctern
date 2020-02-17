@@ -48,7 +48,7 @@ TEST(FunctorDistance, naive) {
     gvec_left.WkbDecodeFinalize();
     gvec_right.WkbDecodeFinalize();
     vector<double> result(5);
-    ST_distance(gvec_left, gvec_right, result.data());
+    ST_Distance(gvec_left, gvec_right, result.data());
     for (int i = 0; i < num; ++i) {
         auto std = sqrt(pow(i - 3, 2) + pow(i + 1 - 1, 2));
         ASSERT_DOUBLE_EQ(result[i], std);

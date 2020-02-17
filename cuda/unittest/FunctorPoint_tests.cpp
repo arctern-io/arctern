@@ -27,7 +27,7 @@ TEST(FunctorPoint, naive) {
     }
     ST_point(xs.data(), ys.data(), xs.size(), right_points);
     vector<double> distance(xs.size());
-    ST_distance(left_points, right_points, distance.data());
+    ST_Distance(left_points, right_points, distance.data());
     for(int i = 0; i < xs.size(); ++i) {
         auto std = (xs[i] * xs[i] + ys[i] * ys[i]) * 4;
         auto res = distance[i] * distance[i];

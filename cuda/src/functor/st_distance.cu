@@ -10,9 +10,9 @@
 namespace zilliz {
 namespace gis {
 namespace cuda {
-
+namespace {
 inline DEVICE_RUNNABLE double
-ST_distance_point_point(const GeoContext& left, const GeoContext& right, int index) {
+Point2PointDistance(const GeoContext& left, const GeoContext& right, int index) {
     auto lv = left.get_value_ptr(index);
     auto rv = right.get_value_ptr(index);
     auto dx = (lv[0] - rv[0]);
@@ -21,7 +21,7 @@ ST_distance_point_point(const GeoContext& left, const GeoContext& right, int ind
 }
 
 __global__ void
-ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
+ST_DistanceKernel(GeoContext left, GeoContext right, double* result) {
     auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     if (tid < left.size) {
         auto left_tag = left.get_tag(tid);
@@ -31,15 +31,16 @@ ST_distance_kernel(GeoContext left, GeoContext right, double* result) {
         assert(right_tag.get_group() == WkbGroup::None);
         if (left_tag.get_category() == WkbCategory::Point &&
             right_tag.get_category() == WkbCategory::Point) {
-            result[tid] = ST_distance_point_point(left, right, tid);
+            result[tid] = Point2PointDistance(left, right, tid);
         } else {
             result[tid] = NAN;
         }
     }
 }
+}
 
 void
-ST_distance(const GeometryVector& left,
+ST_Distance(const GeometryVector& left,
             const GeometryVector& right,
             double* host_results) {
     assert(left.size() == right.size());
@@ -47,7 +48,7 @@ ST_distance(const GeometryVector& left,
     auto right_ctx = right.CreateReadGeoContext();
     auto config = GetKernelExecConfig(left.size());
     auto dev_result = GpuMakeUniqueArray<double>(left.size());
-    ST_distance_kernel<<<config.grid_dim, config.block_dim>>>(
+    ST_DistanceKernel<<<config.grid_dim, config.block_dim>>>(
         left_ctx.get(), right_ctx.get(), dev_result.get());
     GpuMemcpy(host_results, dev_result.get(), left.size());
 }
