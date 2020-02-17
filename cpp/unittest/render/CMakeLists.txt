@@ -4,3 +4,6 @@ target_link_libraries(pointmap_tests ${unittest_libs} gdal)
 set(heatmap_test_src ${unittest_srcs} heatmap_test.cpp)
 add_executable(heatmap_tests ${heatmap_test_src})
 target_link_libraries(heatmap_tests ${unittest_libs} gdal)
+
+install(TARGETS pointmap_tests DESTINATION unittest)
+install(TARGETS heatmap_tests DESTINATION unittest)
