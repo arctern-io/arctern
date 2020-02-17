@@ -72,7 +72,7 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
-    source ~/.bashrc
+    source /etc/profile.d/conda.sh
 fi
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
