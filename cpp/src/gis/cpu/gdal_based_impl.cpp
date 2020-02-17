@@ -319,24 +319,26 @@ ST_Envelope(const std::shared_ptr<arrow::Array> &geometries) {
                  wkt = Wrapper_OGR_G_ExportToWkt(&point);
             }else{ //line
                 OGRLineString line;
-                line.AddPoint(env.MinX,env.MinY);
-                line.AddPoint(env.MinX,env.MaxY);
+                line.addPoint(env.MinX,env.MinY);
+                line.addPoint(env.MinX,env.MaxY);
                 wkt = Wrapper_OGR_G_ExportToWkt(&line);
             }
         }else{
             if(env.MinY == env.MaxY){ //horizontal line
                 OGRLineString line;
-                line.AddPoint(env.MinX,env.MinY);
-                line.AddPoint(env.MaxX,env.MinY);
+                line.addPoint(env.MinX,env.MinY);
+                line.addPoint(env.MaxX,env.MinY);
                 wkt = Wrapper_OGR_G_ExportToWkt(&line);
             }else{ //polygon
+                OGRLinearRing ring;
+                ring.addPoint(env.MinX,env.MinY);
+                ring.addPoint(env.MaxX,env.MinY);
+                ring.addPoint(env.MaxX,env.MaxY);
+                ring.addPoint(env.MinX,env.MaxY);
+                ring.addPoint(env.MinX,env.MinY);
                 OGRPolygon polygon;
-                polygon.AddPoint(env.MinX,env.MinY);
-                polygon.AddPoint(env.MaxX,env.MinY);
-                polygon.AddPoint(env.MaxX,env.MaxY);
-                polygon.AddPoint(env.MinX,env.MaxY);
-                polygon.AddPoint(env.MinX,env.MinY);
-                wkt = Wrapper_OGR_G_ExportToWkt(&line);
+                polygon.addRing(&ring);
+                wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
             }
         }
         CHECK_ARROW(builder.Append(wkt));
