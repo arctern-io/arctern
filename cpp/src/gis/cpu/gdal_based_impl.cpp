@@ -307,7 +307,45 @@ std::shared_ptr<arrow::Array>
 ST_Envelope(const std::shared_ptr<arrow::Array> &geometries) {
     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
     auto len = geometries->length();
-    
+    arrow::StringBuilder builder;
+    OGREnvelope env;
+    for(int i=0;i < len; ++i){
+        auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
+        OGR_G_GetEnvelope(geo,&env);
+        char* wkt = nullptr;
+        if(env.MinX == env.MaxX){ // vertical line or Point
+            if(env.MinY == env.MaxY){ //point
+                 OGRPoint point(env.MinX, env.MinY);
+                 wkt = Wrapper_OGR_G_ExportToWkt(&point);
+            }else{ //line
+                OGRLineString line;
+                line.AddPoint(env.MinX,env.MinY);
+                line.AddPoint(env.MinX,env.MaxY);
+                wkt = Wrapper_OGR_G_ExportToWkt(&line);
+            }
+        }else{
+            if(env.MinY == env.MaxY){ //horizontal line
+                OGRLineString line;
+                line.AddPoint(env.MinX,env.MinY);
+                line.AddPoint(env.MaxX,env.MinY);
+                wkt = Wrapper_OGR_G_ExportToWkt(&line);
+            }else{ //polygon
+                OGRPolygon polygon;
+                polygon.AddPoint(env.MinX,env.MinY);
+                polygon.AddPoint(env.MaxX,env.MinY);
+                polygon.AddPoint(env.MaxX,env.MaxY);
+                polygon.AddPoint(env.MinX,env.MaxY);
+                polygon.AddPoint(env.MinX,env.MinY);
+                wkt = Wrapper_OGR_G_ExportToWkt(&line);
+            }
+        }
+        CHECK_ARROW(builder.Append(wkt));
+        OGRGeometryFactory::destroyGeometry(geo);
+        CPLFree(wkt);
+    }
+    std::shared_ptr<arrow::Array> results;
+    CHECK_ARROW(builder.Finish(&results));
+    return results;
 }
 
 /************************ GEOMETRY PROCESSING ************************/
