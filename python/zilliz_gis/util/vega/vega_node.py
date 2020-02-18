@@ -1,4 +1,5 @@
 from typing import List
+import abc
 
 """
 Top-Level Vega Specification Property: Width
@@ -45,7 +46,7 @@ oneOf(enum('icon_2d', 'circle_2d', 'multi_color_circles_2d', 'weighted_color_cir
 """
 class Description:
     render_type = {"icon_2d", "circle_2d", "multi_color_circles_2d", "weighted_color_circles_2d",
-                   "building_weighted_2d", "heatmap_2d", "get_building_shape"}
+                   "building_weighted_2d", "heat_map_2d", "get_building_shape"}
 
     def __init__(self, desc: str):
         if desc not in self.render_type:
@@ -119,55 +120,17 @@ class Scales:
 """
 Top-Level Vega Specification Property: Marks
 """
-class Marks:
-    class Encode:
-        class Value:
-            def __init__(self, v: int or float or str):
-                self.v = v
-
-            def to_dict(self):
-                dic = {
-                    "value": self.v
-                }
-                return dic
-
-        def __init__(self, shape: Value, stroke: Value, strokeWidth: Value, opacity: Value):
-            if not (type(shape.v) == str and type(strokeWidth.v) == int and
-                    type(stroke.v) == str and type(opacity.v) == float):
-                # TODO error log here
-                print("illegal")
-                assert 0
-            self._shape = shape
-            self._stroke = stroke
-            self._strokeWidth = strokeWidth
-            self._opacity = opacity
-
-        def to_dict(self):
-            dic = {
-                "enter": {
-                    "shape": self._shape.to_dict(),
-                    "stroke": self._stroke.to_dict(),
-                    "strokeWidth": self._strokeWidth.to_dict(),
-                    "opacity": self._opacity.to_dict()
-                }
-            }
-            return dic
-
-    def __init__(self, encode: Encode):
-        self.encode = encode
-
+class RootMarks:
+    @abc.abstractmethod
     def to_dict(self):
-        dic = [{
-            "encode": self.encode.to_dict()
-        }]
-        return dic
+        pass
 
 """
 Vega Root
 """
 class Root:
     def __init__(self, width: Width, height: Height, description: Description,
-                 data: Data, scales: Scales, marks: Marks):
+                 data: Data, scales: Scales, marks: RootMarks):
         self._width = width
         self._height = height
         self._description = description
