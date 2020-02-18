@@ -12,7 +12,7 @@ namespace gis {
 namespace cuda {
 namespace {
 inline DEVICE_RUNNABLE double
-Point2PointDistance(const GeoContext& left, const GeoContext& right, int index) {
+Point2PointDistance(const GpuContext& left, const GpuContext& right, int index) {
     auto lv = left.get_value_ptr(index);
     auto rv = right.get_value_ptr(index);
     auto dx = (lv[0] - rv[0]);
@@ -21,7 +21,7 @@ Point2PointDistance(const GeoContext& left, const GeoContext& right, int index) 
 }
 
 __global__ void
-ST_DistanceKernel(GeoContext left, GeoContext right, double* result) {
+ST_DistanceKernel(GpuContext left, GpuContext right, double* result) {
     auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     if (tid < left.size) {
         auto left_tag = left.get_tag(tid);
@@ -44,8 +44,8 @@ ST_Distance(const GeometryVector& left,
             const GeometryVector& right,
             double* host_results) {
     assert(left.size() == right.size());
-    auto left_ctx = left.CreateReadGeoContext();
-    auto right_ctx = right.CreateReadGeoContext();
+    auto left_ctx = left.CreateReadGpuContext();
+    auto right_ctx = right.CreateReadGpuContext();
     auto dev_result = GpuMakeUniqueArray<double>(left.size());
     {
         auto config = GetKernelExecConfig(left.size());

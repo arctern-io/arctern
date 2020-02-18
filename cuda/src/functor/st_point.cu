@@ -18,7 +18,7 @@ __device__ inline OutputInfo
 GetInfoAndDataPerElement(const double* xs,
                          const double* ys,
                          int index,
-                         GeoContext& results,
+                         GpuContext& results,
                          bool skip_write = false) {
     if (!skip_write) {
         auto value = results.get_value_ptr(index);
@@ -29,7 +29,7 @@ GetInfoAndDataPerElement(const double* xs,
 }
 
 __global__ void
-FillInfoKernel(const double* xs, const double* ys, GeoContext results) {
+FillInfoKernel(const double* xs, const double* ys, GpuContext results) {
     assert(results.data_state == DataState::FlatOffset_EmptyInfo);
     auto index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index < results.size) {
@@ -42,14 +42,14 @@ FillInfoKernel(const double* xs, const double* ys, GeoContext results) {
 
 
 DEVICE_RUNNABLE inline void
-AssertInfo(OutputInfo info, const GeoContext& ctx, int index) {
+AssertInfo(OutputInfo info, const GpuContext& ctx, int index) {
     assert(info.tag.data_ == ctx.get_tag(index).data_);
     assert(info.meta_size == ctx.meta_offsets[index + 1] - ctx.meta_offsets[index]);
     assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
 static __global__ void
-FillDataKernel(const double* xs, const double* ys, GeoContext results) {
+FillDataKernel(const double* xs, const double* ys, GpuContext results) {
     assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
     auto index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index < results.size) {
@@ -64,7 +64,7 @@ ST_Point(const double* cpu_xs, const double* cpu_ys, int size, GeometryVector& r
     results.OutputInitialize(size);
     auto xs = GpuMakeUniqueArrayAndCopy(cpu_xs, size);
     auto ys = GpuMakeUniqueArrayAndCopy(cpu_ys, size);
-    auto ctx_holder = results.OutputCreateGeoContext();
+    auto ctx_holder = results.OutputCreateGpuContext();
     {
         auto config = GetKernelExecConfig(size);
         FillInfoKernel<<<config.grid_dim, config.block_dim>>>(

@@ -11,7 +11,7 @@ namespace cuda {
 
 namespace {
 inline DEVICE_RUNNABLE double
-PolygonArea(const GeoContext& ctx, int index) {
+PolygonArea(const GpuContext& ctx, int index) {
     auto meta = ctx.get_meta_ptr(index);
     auto value = ctx.get_value_ptr(index);
     assert(meta[0] == 1);
@@ -28,7 +28,7 @@ PolygonArea(const GeoContext& ctx, int index) {
 
 
 __global__ void
-ST_AreaKernel(GeoContext ctx, double* result) {
+ST_AreaKernel(GpuContext ctx, double* result) {
     auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     if (tid < ctx.size) {
         auto tag = ctx.get_tag(tid);
@@ -49,7 +49,7 @@ ST_AreaKernel(GeoContext ctx, double* result) {
 
 void
 ST_Area(const GeometryVector& vec, double* host_results) {
-    auto ctx = vec.CreateReadGeoContext();
+    auto ctx = vec.CreateReadGpuContext();
     auto config = GetKernelExecConfig(vec.size());
     auto dev_result = GpuMakeUniqueArray<double>(vec.size());
     ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(*ctx, dev_result.get());

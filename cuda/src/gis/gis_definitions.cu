@@ -8,11 +8,11 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-GeometryVector::GeoContextHolder
-GeometryVector::CreateReadGeoContext() const {
+GeometryVector::GpuContextHolder
+GeometryVector::CreateReadGpuContext() const {
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
-    GeometryVector::GeoContextHolder holder(new GeoContext);
+    GeometryVector::GpuContextHolder holder(new GpuContext);
     static_assert(std::is_same<GpuVector<int>, vector<int>>::value,
                   "here use vector now");
     auto size = tags_.size();    // size_ of elements
@@ -31,7 +31,7 @@ GeometryVector::CreateReadGeoContext() const {
 }
 
 void
-GeometryVector::GeoContextDeleter(GeoContext* ptr) {
+GeometryVector::GpuContextDeleter(GpuContext* ptr) {
     if (!ptr) {
         return;
     }
@@ -71,9 +71,9 @@ GeometryVector::OutputInitialize(int size) {
 }
 
 auto
-GeometryVector::OutputCreateGeoContext() -> GeoContextHolder {
+GeometryVector::OutputCreateGpuContext() -> GpuContextHolder {
     assert(data_state_ == DataState::FlatOffset_EmptyInfo);
-    GeoContextHolder holder(new GeoContext);
+    GpuContextHolder holder(new GpuContext);
     auto size = tags_.size();    // size_ of elements
     assert(size + 1 == meta_offsets_.size());
     assert(size + 1 == value_offsets_.size());
@@ -93,7 +93,7 @@ GeometryVector::OutputCreateGeoContext() -> GeoContextHolder {
 // memory allocation for metas/values
 // copy useful data back to CPU
 void
-GeometryVector::OutputEvolveWith(GeoContext& ctx) {
+GeometryVector::OutputEvolveWith(GpuContext& ctx) {
     assert(data_state_ == DataState::FlatOffset_EmptyInfo);
     assert(ctx.data_state == DataState::FlatOffset_FullInfo);
     assert(tags_.size() == ctx.size);
@@ -122,7 +122,7 @@ GeometryVector::OutputEvolveWith(GeoContext& ctx) {
 }
 
 void
-GeometryVector::OutputFinalizeWith(const GeoContext& ctx) {
+GeometryVector::OutputFinalizeWith(const GpuContext& ctx) {
     assert(ctx.data_state == DataState::PrefixSumOffset_FullData);
     assert(data_state_ == DataState::PrefixSumOffset_EmptyData);
     assert(tags_.size() == ctx.size);

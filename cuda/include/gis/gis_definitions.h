@@ -75,7 +75,7 @@ class GeometryVector {
     // raw pointers holding device memory for calculation
     // use struct to simplify data transfer in CUDA
     // fields are explained below (at class variable members declarations)
-    struct GeoContext {
+    struct GpuContext {
         WkbTag* tags = nullptr;
         uint32_t* metas = nullptr;
         double* values = nullptr;
@@ -112,24 +112,24 @@ class GeometryVector {
  private:
  public:
     // just a wrapper of unique_ptr<ctx_, dtor>
-//    class GeoContextHolder {
+//    class GpuContextHolder {
 //     public:
-//        const GeoContext& get() const { return *ctx_; }
-//        GeoContext& get() { return *ctx_; }
+//        const GpuContext& get() const { return *ctx_; }
+//        GpuContext& get() { return *ctx_; }
 //        struct Deleter {
-//            void operator()(GeoContext*);    // TODO
+//            void operator()(GpuContext*);    // TODO
 //        };
-//        GeoContext* operator->() { return ctx_.operator->(); }
+//        GpuContext* operator->() { return ctx_.operator->(); }
 //
 //     private:
-//        std::unique_ptr<GeoContext, Deleter> ctx_;
-//        explicit GeoContextHolder() : ctx_(new GeoContext) {}
+//        std::unique_ptr<GpuContext, Deleter> ctx_;
+//        explicit GpuContextHolder() : ctx_(new GpuContext) {}
 //        friend class GeometryVector;
 //    };
-    static void GeoContextDeleter(GeoContext*);
-    using GeoContextHolder = std::unique_ptr<GeoContext, DeleterWrapper<GeoContext, GeoContextDeleter>>;
+    static void GpuContextDeleter(GpuContext*);
+    using GpuContextHolder = std::unique_ptr<GpuContext, DeleterWrapper<GpuContext, GpuContextDeleter>>;
 
-    GeoContextHolder CreateReadGeoContext() const;    // TODO
+    GpuContextHolder CreateReadGpuContext() const;    // TODO
     GeometryVector() = default;
     GpuVector<char> EncodeToWkb() const;    // TODO
 
@@ -142,14 +142,14 @@ class GeometryVector {
     void OutputInitialize(int size);
     // STEP 2: Create gpu geometry context according to the vector for cuda,
     // where tags and offsets fields are uninitailized
-    GeoContextHolder OutputCreateGeoContext();
+    GpuContextHolder OutputCreateGpuContext();
     // STEP 3: Fill tags and offsets using CUDA Kernels
 
     // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
     // then copy info(tags and scanned offsets) back to GeometryVector 
-    void OutputEvolveWith(GeoContext&);
+    void OutputEvolveWith(GpuContext&);
     // STEP5: Copy data(metas and values) back to GeometryVector
-    void OutputFinalizeWith(const GeoContext&);
+    void OutputFinalizeWith(const GpuContext&);
 
     void clear();
 
@@ -171,14 +171,14 @@ class GeometryVector {
     //   PrefixSumOffset => start location of each element
     GpuVector<int> meta_offsets_;
     GpuVector<int> value_offsets_;
-    // This is the current state of above data containers and it companion GeoContext.
+    // This is the current state of above data containers and it companion GpuContext.
     // can only be used at assert statement for quick failure.
     // shouldn't be used to drive the state machine(e.g. switch statement)
     DataState data_state_ = DataState::Invalid;
 };
 
 
-using GeoContext = GeometryVector::GeoContext;
+using GpuContext = GeometryVector::GpuContext;
 
 }    // namespace cuda
 }    // namespace gis
