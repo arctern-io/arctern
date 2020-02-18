@@ -9,6 +9,87 @@
 #include "utils/check_status.h"
 
 using namespace zilliz::gis;
+#define common_test_cases \
+  auto p1 = "POINT (0 1)";\
+\
+  auto p2 = "LINESTRING (0 0, 0 1)";\
+  auto p3 = "LINESTRING (0 0, 1 0)";\
+  auto p4 = "LINESTRING (0 0, 1 1)";\
+  auto p5 = "LINESTRING (0 0, 0 1, 1 1)";\
+  auto p6 = "LINESTRING (0 0, 1 0, 1 1)";\
+  auto p7 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";\
+  \
+  auto p8 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";\
+  auto p9 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";\
+  auto p10 = "POLYGON ((0 0, 1 0, 1 1, 0 0))";\
+  auto p11 = "POLYGON ((0 0, 0 1, 1 1, 0 0))";\
+  \
+  auto p12 = "MULTIPOINT (0 0, 1 0, 1 2)";\
+  auto p13 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";\
+  \
+  auto p14 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1) )";\
+  auto p15 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1) )";\
+  auto p16 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";\
+  \
+  auto p17 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )";\
+  auto p18 = "MULTIPOLYGON ( ((0 0, 1 1, 1 0,0 0)) )";\
+  \
+  auto p19 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";\
+  auto p20 = "MULTIPOLYGON ( ((0 0, 4 0, 4 1, 0 1, 0 0)), ((0 0, 0 4, 4 4, 4 0, 0 0)) )";\
+  auto p21 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)), ((0 0, 0 4, 4 4, 4 0, 0 0)) )";\
+  auto p22 = "MULTIPOLYGON ( ((0 0, 4 0, 4 4, 0 4, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";\
+  auto p23 = "MULTIPOLYGON ( ((0 0, 0 1, 4 1, 4 0, 0 0)), ((0 0, 4 0, 4 4, 0 4, 0 0)) )";\
+  auto p24 = "MULTIPOLYGON ( ((0 0, 0 1, 1 1, 1 0, 0 0)), ((0 0, 4 0, 4 4, 0 4, 0 0)) )";\
+  \
+  auto p25 = "MULTIPOLYGON ( ((0 0, 4 0, 4 4, 0 4, 0 0)), ((0 0, 1 0, 1 1, 0 1, 0 0)) )";\
+  auto p26 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)), ((0 0, 4 0, 4 4, 0 4, 0 0)) )";\
+  auto p27 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 1 1, 1 0, 0 0)) )";\
+  auto p28 = "MULTIPOLYGON ( ((0 0, 0 1, 1 1, 1 0, 0 0)), ((0 0, 0 4, 4 4, 4 0, 0 0)) )";\
+  \
+  auto p29 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 0)), ((0 0, 1 4, 1 0, 0 0)) )";\
+  auto p30 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 0 0)), ((0 0, 1 -8, 1 1, 0 1, 0 0)) )";\
+  auto p31 = "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)) )";\
+  auto p32 = "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)),((0 0, 0 -2, -3 4, 0 2, 0 0)) )";\
+  auto p33 = "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)),((0 0, 0 -2, 3 4, 0 2, 0 0)) )";\
+
+
+#define construct_common_test_cases_array\
+	  arrow::StringBuilder builder;\
+  std::shared_ptr<arrow::Array> input;\
+  builder.Append(std::string(p1  ));\
+  builder.Append(std::string(p2 ));\
+  builder.Append(std::string(p3 ));\
+  builder.Append(std::string(p4 ));\
+  builder.Append(std::string(p5 ));\
+  builder.Append(std::string(p6 ));\
+  builder.Append(std::string(p7 ));\
+  builder.Append(std::string(p8 ));\
+  builder.Append(std::string(p9 ));\
+  builder.Append(std::string(p10 ));\
+  builder.Append(std::string(p11 ));\
+  builder.Append(std::string(p12 ));\
+  builder.Append(std::string(p13 ));\
+  builder.Append(std::string(p14 ));\
+  builder.Append(std::string(p15 ));\
+  builder.Append(std::string(p16 ));\
+  builder.Append(std::string(p17 ));\
+  builder.Append(std::string(p18 ));\
+  builder.Append(std::string(p19 ));\
+  builder.Append(std::string(p20 ));\
+  builder.Append(std::string(p21 ));\
+  builder.Append(std::string(p22 ));\
+  builder.Append(std::string(p23 ));\
+  builder.Append(std::string(p24 ));\
+  builder.Append(std::string(p25 ));\
+  builder.Append(std::string(p26 ));\
+  builder.Append(std::string(p27 ));\
+  builder.Append(std::string(p28 ));\
+  builder.Append(std::string(p29 ));\
+  builder.Append(std::string(p30 ));\
+  builder.Append(std::string(p31));\
+  builder.Append(std::string(p32));\
+  builder.Append(std::string(p33));\
+  builder.Finish(&input);
 
 TEST(geometry_test, make_point_from_double){
 
@@ -137,26 +218,46 @@ build_linestrings(){
 
 TEST(geometry_test,test_ST_IsValid){
 
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_IsValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
-  // ASSERT_EQ(vaild_mark_arr1->Value(0),true);
-  // ASSERT_EQ(vaild_mark_arr1->Value(1),true);
-  // ASSERT_EQ(vaild_mark_arr1->Value(2),false);
-
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_IsValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
-  // ASSERT_EQ(vaild_mark_arr2->Value(0),true);
-  // ASSERT_EQ(vaild_mark_arr2->Value(1),true);
-  // ASSERT_EQ(vaild_mark_arr2->Value(2),false);
-
-  std::shared_ptr<arrow::Array> line = build_linestrings();
-  auto vaild_mark3 = ST_IsValid(line);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
-  // ASSERT_EQ(vaild_mark_arr3->Value(0),true);
-  // ASSERT_EQ(vaild_mark_arr3->Value(1),true);
-  // ASSERT_EQ(vaild_mark_arr3->Value(2),false);
+  common_test_cases
+  construct_common_test_cases_array
+  auto res = ST_IsValid(input);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+  for(int i=0;i<res_bool->length();i++){
+   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
+  }
+   ASSERT_EQ(res_bool->Value(0),true);
+   ASSERT_EQ(res_bool->Value(1),true);
+   ASSERT_EQ(res_bool->Value(2),true);
+   ASSERT_EQ(res_bool->Value(3),true);
+   ASSERT_EQ(res_bool->Value(4),true);
+   ASSERT_EQ(res_bool->Value(5),true);
+   ASSERT_EQ(res_bool->Value(6),true);
+   ASSERT_EQ(res_bool->Value(7),true);
+   ASSERT_EQ(res_bool->Value(8),true);
+   ASSERT_EQ(res_bool->Value(9),true);
+   ASSERT_EQ(res_bool->Value(10),true);
+   ASSERT_EQ(res_bool->Value(11),true);
+   ASSERT_EQ(res_bool->Value(12),true);
+   ASSERT_EQ(res_bool->Value(13),true);
+   ASSERT_EQ(res_bool->Value(14),true);
+   ASSERT_EQ(res_bool->Value(15),true);
+   ASSERT_EQ(res_bool->Value(16),true);
+   ASSERT_EQ(res_bool->Value(17),true);
+   ASSERT_EQ(res_bool->Value(18),false);
+   ASSERT_EQ(res_bool->Value(19),false);
+   ASSERT_EQ(res_bool->Value(20),false);
+   ASSERT_EQ(res_bool->Value(21),false);
+   ASSERT_EQ(res_bool->Value(22),false);
+   ASSERT_EQ(res_bool->Value(23),false);
+   ASSERT_EQ(res_bool->Value(24),false);
+   ASSERT_EQ(res_bool->Value(25),false);
+   ASSERT_EQ(res_bool->Value(26),false);
+   ASSERT_EQ(res_bool->Value(27),false);
+   ASSERT_EQ(res_bool->Value(28),false);
+   ASSERT_EQ(res_bool->Value(29),false);
+   ASSERT_EQ(res_bool->Value(30),false);
+   ASSERT_EQ(res_bool->Value(31),false);
+   ASSERT_EQ(res_bool->Value(32),false);
 }
 
 TEST(geometry_test, test_ST_Intersection){
