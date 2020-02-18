@@ -61,6 +61,15 @@ pipeline {
                                             }
                                         }
                                     }
+                                    stage('Unit Test') {
+                                        steps {
+                                            container("gis-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

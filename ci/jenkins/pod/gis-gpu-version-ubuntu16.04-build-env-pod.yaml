@@ -9,6 +9,7 @@ spec:
   containers:
   - name: gis-gpu-build-env
     image: registry.zilliz.com/gis/gis-gpu-build-env:v0.1.0-ubuntu16.04
+    imagePullPolicy: Always
     command:
     - cat
     tty: true
