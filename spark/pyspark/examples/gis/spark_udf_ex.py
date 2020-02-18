@@ -248,13 +248,25 @@ def run_st_npoints(spark):
 
 def run_st_envelope(spark):
     test_data = []
-    test_data.extend([('LINESTRING(77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)',)])
-    test_data.extend([('LINESTRING(77.29 29.07 1,77.42 29.26 0,77.27 29.31 -1,77.29 29.07 3)',)])
+    test_data.extend([('point (10 10)',)])
+    test_data.extend([('linestring (0 0 , 0 10)',)])
+    test_data.extend([('linestring (0 0 , 10 0)',)])
+    test_data.extend([('linestring (0 0 , 10 10)',)])
+    test_data.extend([('polygon ((0 0, 10 0, 10 10, 0 10, 0 0))',)])
+    test_data.extend([('multipoint (0 0, 10 0, 5 5)',)])
+    test_data.extend([('multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))',)])
+    test_data.extend([('multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))',)])
     envelope_df = spark.createDataFrame(data = test_data, schema = ['geos']).cache()
     envelope_df.createOrReplaceTempView("envelope")
     rs = spark.sql("select ST_Envelope_UDF(geos) from envelope").collect()
-    assert(rs[0][0] == 'MULTIPOINT EMPTY')
-    assert(rs[1][0] == 'MULTIPOINT EMPTY')
+    assert(rs[0][0] == 'POINT (10 10)')
+    assert(rs[1][0] == 'LINESTRING (0 0,0 10)')
+    assert(rs[2][0] == 'LINESTRING (0 0,10 0)')
+    assert(rs[3][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))')
+    assert(rs[4][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))')
+    assert(rs[5][0] == 'POLYGON ((0 0,10 0,10 5,0 5,0 0))')
+    assert(rs[6][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))')
+    assert(rs[7][0] == 'POLYGON ((0 0,20 0,20 20,0 20,0 0))')
 
 def run_st_buffer(spark):
     test_data = []
@@ -304,7 +316,7 @@ def run_st_envelope_aggr(spark):
     envelope_aggr_df = spark.createDataFrame(data=test_data, schema=['geos'])
     envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
-    assert(rs[0][0] == 'MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))')
+    assert(rs[0][0] == 'POLYGON ((0 0,7 0,7 4,0 4,0 0))')
 
 def run_st_transform(spark):
     test_data = []
