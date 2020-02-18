@@ -49,10 +49,10 @@ ST_AreaKernel(GpuContext ctx, double* result) {
 
 void
 ST_Area(const GeometryVector& vec, double* host_results) {
-    auto ctx = vec.CreateReadGpuContext();
+    auto ctx_holder = vec.CreateReadGpuContext();
     auto config = GetKernelExecConfig(vec.size());
     auto dev_result = GpuMakeUniqueArray<double>(vec.size());
-    ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(*ctx, dev_result.get());
+    ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(*ctx_holder, dev_result.get());
     GpuMemcpy(host_results, dev_result.get(), vec.size());
 }
 

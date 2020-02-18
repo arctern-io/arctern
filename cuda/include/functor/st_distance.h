@@ -5,8 +5,8 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-void ST_Distance(const GeometryVector& left,
-                 const GeometryVector& right,
+void ST_Distance(const GeometryVector& left_vec,
+                 const GeometryVector& right_vec,
                  double* host_results);
 
 }    // namespace cuda

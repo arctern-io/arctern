@@ -40,19 +40,19 @@ ST_DistanceKernel(GpuContext left, GpuContext right, double* result) {
 }    // namespace
 
 void
-ST_Distance(const GeometryVector& left,
-            const GeometryVector& right,
+ST_Distance(const GeometryVector& left_vec,
+            const GeometryVector& right_vec,
             double* host_results) {
-    assert(left.size() == right.size());
-    auto left_ctx = left.CreateReadGpuContext();
-    auto right_ctx = right.CreateReadGpuContext();
-    auto dev_result = GpuMakeUniqueArray<double>(left.size());
+    assert(left_vec.size() == right_vec.size());
+    auto left_ctx_holder = left_vec.CreateReadGpuContext();
+    auto right_ctx_holder = right_vec.CreateReadGpuContext();
+    auto dev_result = GpuMakeUniqueArray<double>(left_vec.size());
     {
-        auto config = GetKernelExecConfig(left.size());
+        auto config = GetKernelExecConfig(left_vec.size());
         ST_DistanceKernel<<<config.grid_dim, config.block_dim>>>(
-            *left_ctx, *right_ctx, dev_result.get());
+            *left_ctx_holder, *right_ctx_holder, dev_result.get());
     }
-    GpuMemcpy(host_results, dev_result.get(), left.size());
+    GpuMemcpy(host_results, dev_result.get(), left_vec.size());
 }
 
 }    // namespace cuda
