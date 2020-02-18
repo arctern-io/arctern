@@ -35,6 +35,7 @@ ST_AreaKernel(GpuContext ctx, double* result) {
         // handle 2d case only for now
         assert(tag.get_group() == WkbGroup::None);
         switch (tag.get_category()) {
+            // handle polygon case only
             case WkbCategory::Polygon: {
                 result[tid] = PolygonArea(ctx, tid);
                 break;

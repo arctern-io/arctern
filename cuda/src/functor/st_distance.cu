@@ -29,6 +29,7 @@ ST_DistanceKernel(GpuContext left, GpuContext right, double* result) {
         // handle 2d case only for now
         assert(left_tag.get_group() == WkbGroup::None);
         assert(right_tag.get_group() == WkbGroup::None);
+        // handle point to point case only
         if (left_tag.get_category() == WkbCategory::Point &&
             right_tag.get_category() == WkbCategory::Point) {
             result[tid] = Point2PointDistance(left, right, tid);
