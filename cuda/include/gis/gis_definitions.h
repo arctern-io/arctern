@@ -11,6 +11,7 @@ template<typename T>
 using GpuVector = vector<T>;    // TODO: use gpu vector, now just placeholder
 
 #include "wkb/wkb_tag.h"
+#include "common/function_wrapper.h"
 
 namespace zilliz {
 namespace gis {
@@ -111,20 +112,22 @@ class GeometryVector {
  private:
  public:
     // just a wrapper of unique_ptr<ctx_, dtor>
-    class GeoContextHolder {
-     public:
-        const GeoContext& get() const { return *ctx_; }
-        GeoContext& get() { return *ctx_; }
-        struct Deleter {
-            void operator()(GeoContext*);    // TODO
-        };
-        GeoContext* operator->() { return ctx_.operator->(); }
-
-     private:
-        std::unique_ptr<GeoContext, Deleter> ctx_;
-        explicit GeoContextHolder() : ctx_(new GeoContext) {}
-        friend class GeometryVector;
-    };
+//    class GeoContextHolder {
+//     public:
+//        const GeoContext& get() const { return *ctx_; }
+//        GeoContext& get() { return *ctx_; }
+//        struct Deleter {
+//            void operator()(GeoContext*);    // TODO
+//        };
+//        GeoContext* operator->() { return ctx_.operator->(); }
+//
+//     private:
+//        std::unique_ptr<GeoContext, Deleter> ctx_;
+//        explicit GeoContextHolder() : ctx_(new GeoContext) {}
+//        friend class GeometryVector;
+//    };
+    static void GeoContextDeleter(GeoContext*);
+    using GeoContextHolder = std::unique_ptr<GeoContext, DeleterWrapper<GeoContext, GeoContextDeleter>>;
 
     GeoContextHolder CreateReadGeoContext() const;    // TODO
     GeometryVector() = default;

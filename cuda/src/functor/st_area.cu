@@ -52,7 +52,7 @@ ST_Area(const GeometryVector& vec, double* host_results) {
     auto ctx = vec.CreateReadGeoContext();
     auto config = GetKernelExecConfig(vec.size());
     auto dev_result = GpuMakeUniqueArray<double>(vec.size());
-    ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(ctx.get(), dev_result.get());
+    ST_AreaKernel<<<config.grid_dim, config.block_dim>>>(*ctx, dev_result.get());
     GpuMemcpy(host_results, dev_result.get(), vec.size());
 }
 

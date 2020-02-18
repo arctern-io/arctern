@@ -64,21 +64,21 @@ ST_Point(const double* cpu_xs, const double* cpu_ys, int size, GeometryVector& r
     results.OutputInitialize(size);
     auto xs = GpuMakeUniqueArrayAndCopy(cpu_xs, size);
     auto ys = GpuMakeUniqueArrayAndCopy(cpu_ys, size);
-    auto ctx = results.OutputCreateGeoContext();
+    auto ctx_holder = results.OutputCreateGeoContext();
     {
         auto config = GetKernelExecConfig(size);
         FillInfoKernel<<<config.grid_dim, config.block_dim>>>(
-            xs.get(), ys.get(), ctx.get());
-        ctx->data_state = DataState::FlatOffset_FullInfo;
+            xs.get(), ys.get(), *ctx_holder);
+        ctx_holder->data_state = DataState::FlatOffset_FullInfo;
     }
-    results.OutputEvolveWith(ctx.get());
+    results.OutputEvolveWith(*ctx_holder);
     {
         auto config = GetKernelExecConfig(size, 1);
         FillDataKernel<<<config.grid_dim, config.block_dim>>>(
-            xs.get(), ys.get(), ctx.get());
-        ctx->data_state = DataState::PrefixSumOffset_FullData;
+            xs.get(), ys.get(), *ctx_holder);
+        ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
     }
-    results.OutputFinalizeWith(ctx.get());
+    results.OutputFinalizeWith(*ctx_holder);
 }
 
 }    // namespace cuda

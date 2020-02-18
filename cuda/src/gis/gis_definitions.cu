@@ -12,7 +12,7 @@ GeometryVector::GeoContextHolder
 GeometryVector::CreateReadGeoContext() const {
     assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
-    GeometryVector::GeoContextHolder holder;
+    GeometryVector::GeoContextHolder holder(new GeoContext);
     static_assert(std::is_same<GpuVector<int>, vector<int>>::value,
                   "here use vector now");
     auto size = tags_.size();    // size_ of elements
@@ -31,7 +31,7 @@ GeometryVector::CreateReadGeoContext() const {
 }
 
 void
-GeometryVector::GeoContextHolder::Deleter::operator()(GeoContext* ptr) {
+GeometryVector::GeoContextDeleter(GeoContext* ptr) {
     if (!ptr) {
         return;
     }
@@ -73,7 +73,7 @@ GeometryVector::OutputInitialize(int size) {
 auto
 GeometryVector::OutputCreateGeoContext() -> GeoContextHolder {
     assert(data_state_ == DataState::FlatOffset_EmptyInfo);
-    GeoContextHolder holder;
+    GeoContextHolder holder(new GeoContext);
     auto size = tags_.size();    // size_ of elements
     assert(size + 1 == meta_offsets_.size());
     assert(size + 1 == value_offsets_.size());

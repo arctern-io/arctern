@@ -5,11 +5,11 @@ namespace gis {
 namespace cuda {
 
 // create a class deleter from normal function
-template<auto& Fn>
+template<class T, void (*fn)(T*)>
 struct DeleterWrapper {
     template<class Ptr>
     void operator()(Ptr ptr) const {
-        Fn(ptr);
+        fn(ptr);
     }
 };
 

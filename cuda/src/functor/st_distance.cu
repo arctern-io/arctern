@@ -50,7 +50,7 @@ ST_Distance(const GeometryVector& left,
     {
         auto config = GetKernelExecConfig(left.size());
         ST_DistanceKernel<<<config.grid_dim, config.block_dim>>>(
-            left_ctx.get(), right_ctx.get(), dev_result.get());
+            *left_ctx, *right_ctx, dev_result.get());
     }
     GpuMemcpy(host_results, dev_result.get(), left.size());
 }
