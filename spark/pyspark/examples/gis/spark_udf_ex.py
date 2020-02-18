@@ -91,8 +91,8 @@ def run_st_geometry_type(spark):
     geometry_type_df = spark.createDataFrame(data = test_data, schema = ['geos']).cache()
     geometry_type_df.createOrReplaceTempView("geometry_type")
     rs = spark.sql("select ST_GeometryType_UDF(geos) from geometry_type").collect()
-    assert(rs[0][0] == 'LINESTRING')
-    assert(rs[1][0] == 'POINT')
+    assert(rs[0][0] == 'ST_LINESTRING')
+    assert(rs[1][0] == 'ST_POINT')
 
 def run_st_make_valid(spark):
     test_data = []
