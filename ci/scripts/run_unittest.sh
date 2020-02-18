@@ -44,9 +44,6 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
-    if [[ -n ${CONDA_PREFIX} ]]; then
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
-    fi
 fi
 
 GIS_UNITTEST_DIR=${GIS_PATH}/unittest
