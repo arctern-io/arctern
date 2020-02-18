@@ -54,7 +54,7 @@ class GeoWorkspaceHolder {
 class GeometryVector {
  private:
  public:
-    // Appending is used when decoding WWkb
+    // Appending is used when decoding Wkb
     // Flat vs PrefixSum are explained below (at data_state_ declaration)
     // Info includes tags, meta_offsets, value_offsets,
     //      which is calcuated at the first pass
