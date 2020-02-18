@@ -778,36 +778,48 @@ TEST(geometry_test, test_ST_NPoints) {
 }
 
 TEST(geometry_test, test_ST_Envelope) {
-  auto p1 = "point (10 10)";
-  auto p2 = "linestring (0 0 , 0 10)";
-  auto p3 = "linestring (0 0 , 10 0)";
-  auto p4 = "linestring (0 0 , 10 10)";
-  auto p5 = "polygon ((0 0, 10 0, 10 10, 0 10, 0 0))";
-  auto p6 = "multipoint (0 0, 10 0, 5 5)";
-  auto p7 = "multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))";
-  auto p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))";
-  arrow::StringBuilder builder;
-  std::shared_ptr<arrow::Array> polygons;
-  builder.Append(std::string(p1));
-  builder.Append(std::string(p2));
-  builder.Append(std::string(p3));
-  builder.Append(std::string(p4));
-  builder.Append(std::string(p5));
-  builder.Append(std::string(p6));
-  builder.Append(std::string(p7));
-  builder.Append(std::string(p8));
-  builder.Finish(&polygons);
+   common_test_cases
+   construct_common_test_cases_array
 
-  auto result = ST_Envelope(polygons);
+  auto result = ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
-  ASSERT_EQ(result_str->GetString(0),"POINT (10 10)");
-  ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 10)");
-  ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,10 0)");
-  ASSERT_EQ(result_str->GetString(3),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
-  ASSERT_EQ(result_str->GetString(4),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
-  ASSERT_EQ(result_str->GetString(5),"POLYGON ((0 0,10 0,10 5,0 5,0 0))");
-  ASSERT_EQ(result_str->GetString(6),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
-  ASSERT_EQ(result_str->GetString(7),"POLYGON ((0 0,20 0,20 20,0 20,0 0))");
+
+  for(int i=0;i<result_str->length();i++){
+   std::cout<<result_str->GetString(i)<<"#"<<i<<std::endl;
+  }
+   ASSERT_EQ(result_str->GetString(0),"POINT (0 1)");
+   ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 1)");
+   ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,1 0)");
+   ASSERT_EQ(result_str->GetString(3),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(4),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(5),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(6),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(7),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(8),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(9),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(10),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(11),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(12),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(13),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(14),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(15),"POLYGON ((-4 -3,-4 100,9 100,9 -3,-4 -3))");
+   ASSERT_EQ(result_str->GetString(16),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(17),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(18),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(19),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(20),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(21),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(22),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(23),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   ASSERT_EQ(result_str->GetString(24),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   ASSERT_EQ(result_str->GetString(25),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   ASSERT_EQ(result_str->GetString(26),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   ASSERT_EQ(result_str->GetString(27),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(28),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+   //ASSERT_EQ(result_str->GetString(29),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+   ASSERT_EQ(result_str->GetString(30),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
+   //ASSERT_EQ(result_str->GetString(31),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
+   ASSERT_EQ(result_str->GetString(32),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
 
 }
 
@@ -934,7 +946,7 @@ TEST(geometry_test,test_ST_Union_Aggr){
 }
 
 
-TEST(geometry_test,test_ST_Envelop_Aggr){
+TEST(geometry_test,test_ST_Envelope_Aggr){
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> polygons;
