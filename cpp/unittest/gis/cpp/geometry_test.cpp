@@ -465,9 +465,9 @@ TEST(geometry_test, test_ST_GeometryType){
   auto geometries_type = ST_GeometryType(geometries);
   auto geometries_type_arr = std::static_pointer_cast<arrow::StringArray>(geometries_type);
   
-  ASSERT_EQ(geometries_type_arr->GetString(0),"POLYGON");
-  ASSERT_EQ(geometries_type_arr->GetString(1),"POINT");
-  ASSERT_EQ(geometries_type_arr->GetString(2),"LINESTRING");
+  ASSERT_EQ(geometries_type_arr->GetString(0),"ST_POLYGON");
+  ASSERT_EQ(geometries_type_arr->GetString(1),"ST_POINT");
+  ASSERT_EQ(geometries_type_arr->GetString(2),"ST_LINESTRING");
 }
 
 TEST(geometry_test, test_ST_SimplifyPreserveTopology){
