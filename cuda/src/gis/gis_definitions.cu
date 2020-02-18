@@ -110,10 +110,6 @@ GeometryVector::OutputEvolveWith(GeoContext& ctx) {
     };
 
     auto meta_size = scan_at(ctx.meta_offsets, meta_offsets_.data());
-
-
-
-
     auto value_size = scan_at(ctx.value_offsets, value_offsets_.data());
 
     metas_.resize(meta_size);
