@@ -306,6 +306,15 @@ def run_st_envelope_aggr(spark):
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
     assert(rs[0][0] == 'MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))')
 
+def run_st_transform(spark):
+    test_data = []
+    test_data.extend([('POINT (10 10)',)])
+    buffer_df = spark.createDataFrame(data = test_data, schema = ['geos']).cache()
+    buffer_df.createOrReplaceTempView("buffer")
+    rs = spark.sql("select ST_Transform_UDF(geos, 'epsg:4326', 'epsg:3857') from buffer").collect()
+    assert(rs[0][0] == 'POINT (1113194.90793274 1118889.97485796)')
+
+
 if __name__ == "__main__":
     spark = SparkSession \
         .builder \
@@ -341,5 +350,6 @@ if __name__ == "__main__":
     run_st_buffer(spark)
     run_st_union_aggr(spark)
     run_st_envelope_aggr(spark)
+    run_st_transform(spark)
 
     spark.stop()

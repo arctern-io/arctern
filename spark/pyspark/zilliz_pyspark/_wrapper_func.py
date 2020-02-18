@@ -25,6 +25,7 @@ __all__ = [
     "ST_Buffer_UDF",
     "ST_Union_Aggr_UDF",
     "ST_Envelope_Aggr_UDF",
+    "ST_Transform_UDF",
     "my_plot" # or point_map
 ]
 
@@ -236,3 +237,12 @@ def ST_Envelope_Aggr_UDF(geos):
     from zilliz_gis import ST_Envelope_Aggr
     rs = ST_Envelope_Aggr(arr_geos)
     return str(rs[0])
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_Transform_UDF(geos, src_rs, dst_rs):
+    arr_geos = pa.array(geos, type='string')
+    from zilliz_gis import ST_Transform
+    src_rs1 = bytes(src_rs[0], encoding = "utf8")
+    dst_rs1 = bytes(dst_rs[0], encoding = "utf8")
+    rs = ST_Transform(arr_geos, src_rs1, dst_rs1)
+    return rs.to_pandas()
