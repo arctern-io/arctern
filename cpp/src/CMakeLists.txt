@@ -57,6 +57,7 @@ if (USE_GPU)
             GL
             EGL
             cudart
+            gdal
             arrow
             pthread
             miniz
@@ -65,7 +66,7 @@ else ()
     target_link_libraries(windrose
             GLU
             OSMesa
-	        gdal
+	    gdal
             arrow
             pthread
             miniz

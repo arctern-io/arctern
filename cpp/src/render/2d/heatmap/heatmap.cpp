@@ -1,6 +1,9 @@
 #include <iostream>
+
+#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
-#include <GLES3/gl3.h>
+#include <GL/glext.h>
+//#include <GLES3/gl3.h>
 
 #include "render/2d/heatmap/heatmap.h"
 

@@ -465,9 +465,9 @@ TEST(geometry_test, test_ST_GeometryType){
   auto geometries_type = ST_GeometryType(geometries);
   auto geometries_type_arr = std::static_pointer_cast<arrow::StringArray>(geometries_type);
   
-  ASSERT_EQ(geometries_type_arr->GetString(0),"POLYGON");
-  ASSERT_EQ(geometries_type_arr->GetString(1),"POINT");
-  ASSERT_EQ(geometries_type_arr->GetString(2),"LINESTRING");
+  ASSERT_EQ(geometries_type_arr->GetString(0),"ST_POLYGON");
+  ASSERT_EQ(geometries_type_arr->GetString(1),"ST_POINT");
+  ASSERT_EQ(geometries_type_arr->GetString(2),"ST_LINESTRING");
 }
 
 TEST(geometry_test, test_ST_SimplifyPreserveTopology){
@@ -677,21 +677,37 @@ TEST(geometry_test, test_ST_NPoints) {
 }
 
 TEST(geometry_test, test_ST_Envelope) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  auto p1 = "point (10 10)";
+  auto p2 = "linestring (0 0 , 0 10)";
+  auto p3 = "linestring (0 0 , 10 0)";
+  auto p4 = "linestring (0 0 , 10 10)";
+  auto p5 = "polygon ((0 0, 10 0, 10 10, 0 10, 0 0))";
+  auto p6 = "multipoint (0 0, 10 0, 5 5)";
+  auto p7 = "multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))";
+  auto p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))";
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> polygons;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  builder.Append(std::string(p8));
+  builder.Finish(&polygons);
 
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  auto result = ST_Envelope(polygons);
+  auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
+  ASSERT_EQ(result_str->GetString(0),"POINT (10 10)");
+  ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 10)");
+  ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,10 0)");
+  ASSERT_EQ(result_str->GetString(3),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
+  ASSERT_EQ(result_str->GetString(4),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
+  ASSERT_EQ(result_str->GetString(5),"POLYGON ((0 0,10 0,10 5,0 5,0 0))");
+  ASSERT_EQ(result_str->GetString(6),"POLYGON ((0 0,10 0,10 10,0 10,0 0))");
+  ASSERT_EQ(result_str->GetString(7),"POLYGON ((0 0,20 0,20 20,0 20,0 0))");
 
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
-  
-  auto res1 = ST_Envelope(points);
-  auto res2 = ST_Envelope(polygons);
-  auto res3 = ST_Envelope(lines);
 }
 
 TEST(geometry_test, test_ST_Buffer){
@@ -832,6 +848,6 @@ TEST(geometry_test,test_ST_Envelop_Aggr){
   auto result = ST_Envelope_Aggr(polygons);
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
-  ASSERT_EQ(geometries_arr->GetString(0),"MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))");
+  ASSERT_EQ(geometries_arr->GetString(0),"POLYGON ((0 0,7 0,7 4,0 4,0 0))");
 
 }
