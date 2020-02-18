@@ -34,22 +34,22 @@ struct GeoWorkspace {
     }
 };
 
-// Not used yet, comment later
-class GeoWorkspaceHolder {
- private:
-    struct Deletor {
-        void operator()(GeoWorkspace* space) { GeoWorkspaceHolder::destruct(space); }
-    };
-    GeoWorkspaceHolder() : space_(new GeoWorkspace) {}
-    auto operator-> () { return space_.operator->(); }
-
- public:
-    static GeoWorkspaceHolder create(int max_buffer_per_meta, int max_buffer_per_value);
-    static void destruct(GeoWorkspace*);
-
- private:
-    std::unique_ptr<GeoWorkspace, Deletor> space_;
-};
+//// Not used yet, comment later
+//class GeoWorkspaceHolder {
+// private:
+//    struct Deletor {
+//        void operator()(GeoWorkspace* space) { GeoWorkspaceHolder::destruct(space); }
+//    };
+//    GeoWorkspaceHolder() : space_(new GeoWorkspace) {}
+//    auto operator-> () { return space_.operator->(); }
+//
+// public:
+//    static GeoWorkspaceHolder create(int max_buffer_per_meta, int max_buffer_per_value);
+//    static void destruct(GeoWorkspace*);
+//
+// private:
+//    std::unique_ptr<GeoWorkspace, Deletor> space_;
+//};
 
 // Container of the variant geometries
 class GeometryVector {

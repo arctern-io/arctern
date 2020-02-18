@@ -44,23 +44,23 @@ GeometryVector::GpuContextDeleter(GpuContext* ptr) {
     ptr->data_state = DataState::Invalid;
 }
 
-GeoWorkspaceHolder
-GeoWorkspaceHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
-    GeoWorkspaceHolder holder;
-    holder->max_buffer_per_meta = max_buffer_per_meta;
-    holder->max_buffer_per_value = max_buffer_per_value;
-    holder->meta_buffers = GpuAlloc<uint32_t>(holder->max_threads * max_buffer_per_meta);
-    holder->value_buffers = GpuAlloc<double>(holder->max_threads * max_buffer_per_value);
-    return holder;
-}
-
-void
-GeoWorkspaceHolder::destruct(GeoWorkspace* ptr) {
-    GpuFree(ptr->meta_buffers);
-    GpuFree(ptr->value_buffers);
-    ptr->max_buffer_per_value = 0;
-    ptr->max_buffer_per_meta = 0;
-}
+//GeoWorkspaceHolder
+//GeoWorkspaceHolder::create(int max_buffer_per_meta, int max_buffer_per_value) {
+//    GeoWorkspaceHolder holder(new ...);
+//    holder->max_buffer_per_meta = max_buffer_per_meta;
+//    holder->max_buffer_per_value = max_buffer_per_value;
+//    holder->meta_buffers = GpuAlloc<uint32_t>(holder->max_threads * max_buffer_per_meta);
+//    holder->value_buffers = GpuAlloc<double>(holder->max_threads * max_buffer_per_value);
+//    return holder;
+//}
+//
+//void
+//GeoWorkspaceHolder::destruct(GeoWorkspace* ptr) {
+//    GpuFree(ptr->meta_buffers);
+//    GpuFree(ptr->value_buffers);
+//    ptr->max_buffer_per_value = 0;
+//    ptr->max_buffer_per_meta = 0;
+//}
 
 void
 GeometryVector::OutputInitialize(int size) {
@@ -95,25 +95,27 @@ GeometryVector::OutputEvolveWith(GpuContext& gpu_ctx) {
     assert(gpu_ctx.data_state == DataState::FlatOffset_FullInfo);
     assert(tags_.size() == gpu_ctx.size);
     auto size = gpu_ctx.size;
+
     // copy tags to gpu_ctx
     GpuMemcpy(tags_.data(), gpu_ctx.tags, size);
-    auto scan_at = [=](int* gpu_addr, int* cpu_addr) {
+
+    // exclusive scan offsets[0, n+1) in gpu_ctx, and copy to cpu
+    // return offsets[n] as total size
+    auto scan_at = [size](int* gpu_addr, int* cpu_addr) {
         int zero = 0;
         GpuMemcpy(gpu_addr + size, &zero, 1);
         thrust::exclusive_scan(
             thrust::cuda::par, gpu_addr, gpu_addr + size + 1, gpu_addr);
         GpuMemcpy(cpu_addr, gpu_addr, size + 1);
-
         return cpu_addr[size];
     };
-
     auto meta_size = scan_at(gpu_ctx.meta_offsets, meta_offsets_.data());
     auto value_size = scan_at(gpu_ctx.value_offsets, value_offsets_.data());
 
+    // alloc space for data(metas and values), for cpu and gpu.
     metas_.resize(meta_size);
     values_.resize(value_size);
     data_state_ = DataState::PrefixSumOffset_EmptyData;
-
     gpu_ctx.metas = GpuAlloc<uint32_t>(meta_size);
     gpu_ctx.values = GpuAlloc<double>(value_size);
     gpu_ctx.data_state = DataState::PrefixSumOffset_EmptyData;
