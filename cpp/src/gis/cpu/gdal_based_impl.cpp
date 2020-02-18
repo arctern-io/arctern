@@ -332,9 +332,9 @@ ST_Envelope(const std::shared_ptr<arrow::Array> &geometries) {
             }else{ //polygon
                 OGRLinearRing ring;
                 ring.addPoint(env.MinX,env.MinY);
-                ring.addPoint(env.MaxX,env.MinY);
-                ring.addPoint(env.MaxX,env.MaxY);
                 ring.addPoint(env.MinX,env.MaxY);
+                ring.addPoint(env.MaxX,env.MaxY);
+                ring.addPoint(env.MaxX,env.MinY);
                 ring.addPoint(env.MinX,env.MinY);
                 OGRPolygon polygon;
                 polygon.addRing(&ring);
