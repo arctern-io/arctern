@@ -35,6 +35,5 @@ fi
 cd "$(git rev-parse --show-toplevel)/python"
 
 pytest
--x \
 # --ignore "examples/example_test.py" \
 # --ignore-glob "examples/*" \
