@@ -1,7 +1,11 @@
 #include <map>
-#include <GL/gl.h>
-#include <GLES3/gl3.h>
 #include <iostream>
+
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
+//#include <GLES3/gl3.h>
+
 #include "pointmap.h"
 
 

@@ -65,8 +65,8 @@ def test_ST_IsSimple():
 def test_ST_GeometryType():
     data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = zilliz_gis.ST_GeometryType(pyarrow.array(data))
-    assert rst[0] == "POLYGON"
-    assert rst[1] == "POLYGON"
+    assert rst[0] == "ST_POLYGON"
+    assert rst[1] == "ST_POLYGON"
 
 def test_ST_MakeValid():
     data = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
@@ -208,11 +208,26 @@ def test_ST_NPoints():
     assert rst[0] == 2
 
 def test_ST_Envelope():
-    data = ["POLYGON((0 0,1 0,1 1,0 0))"]
+    p1 = "point (10 10)"
+    p2 = "linestring (0 0 , 0 10)"
+    p3 = "linestring (0 0 , 10 0)"
+    p4 = "linestring (0 0 , 10 10)"
+    p5 = "polygon ((0 0, 10 0, 10 10, 0 10, 0 0))"
+    p6 = "multipoint (0 0, 10 0, 5 5)"
+    p7 = "multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))"
+    p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))"
+    data = [p1,p2,p3,p4,p5,p6,p7,p8]
     array = pyarrow.array(pandas.Series(data))
     rst = zilliz_gis.ST_Envelope(array)
 
-    assert rst[0] == "LINESTRING (0 0,1 0,1 1,0 0)"
+    assert rst[0] == "POINT (10 10)"
+    assert rst[1] == "LINESTRING (0 0,0 10)"
+    assert rst[2] == "LINESTRING (0 0,10 0)"
+    assert rst[3] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
+    assert rst[4] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
+    assert rst[5] == "POLYGON ((0 0,10 0,10 5,0 5,0 0))"
+    assert rst[6] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
+    assert rst[7] == "POLYGON ((0 0,20 0,20 20,0 20,0 0))"
 
 def test_ST_Buffer():
     data = ["POLYGON((0 0,1 0,1 1,0 0))"]
@@ -268,6 +283,6 @@ def test_ST_Envelope_Aggr():
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = pandas.Series([p1,p2])
     rst = zilliz_gis.ST_Envelope_Aggr(pyarrow.array(data))
-    assert rst[0] == "MULTILINESTRING ((0 0,4 0,4 4,0 4,0 0),(5 1,7 1,7 2,5 2,5 1))"
+    assert rst[0] == "POLYGON ((0 0,7 0,7 4,0 4,0 0))"
     
 
