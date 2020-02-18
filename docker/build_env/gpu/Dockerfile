@@ -1,4 +1,4 @@
-FROM nvidia/cudagl:10.0-devel-ubuntu16.04
+FROM nvidia/cudagl:10.0-devel-ubuntu18.04
 
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility,graphics
 
