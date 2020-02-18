@@ -141,9 +141,11 @@ class GeometryVector {
     // where tags and offsets fields are uninitailized
     GeoContextHolder OutputCreateGeoContext();
     // STEP 3: Fill tags and offsets using CUDA Kernels
-    // STEP 4: when tags and offsets are
-    // when
-    void OutputEvolveWith(GeoContext&);    // TODO: better name
+
+    // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
+    // then copy info(tags and scanned offsets) back to GeometryVector 
+    void OutputEvolveWith(GeoContext&);
+    // STEP5: Copy data(metas and values) back to GeometryVector
     void OutputFinalizeWith(const GeoContext&);
 
     void clear();
