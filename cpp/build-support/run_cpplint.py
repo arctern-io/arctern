@@ -40,7 +40,6 @@ _filters = '''
 -build/c++11
 -runtime/references
 -build/include_order
--legal/copyright
 '''.split()
 
 
