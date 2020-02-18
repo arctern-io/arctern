@@ -37,7 +37,7 @@ ST_DistanceKernel(GeoContext left, GeoContext right, double* result) {
         }
     }
 }
-}
+}    // namespace
 
 void
 ST_Distance(const GeometryVector& left,
@@ -46,10 +46,12 @@ ST_Distance(const GeometryVector& left,
     assert(left.size() == right.size());
     auto left_ctx = left.CreateReadGeoContext();
     auto right_ctx = right.CreateReadGeoContext();
-    auto config = GetKernelExecConfig(left.size());
     auto dev_result = GpuMakeUniqueArray<double>(left.size());
-    ST_DistanceKernel<<<config.grid_dim, config.block_dim>>>(
-        left_ctx.get(), right_ctx.get(), dev_result.get());
+    {
+        auto config = GetKernelExecConfig(left.size());
+        ST_DistanceKernel<<<config.grid_dim, config.block_dim>>>(
+            left_ctx.get(), right_ctx.get(), dev_result.get());
+    }
     GpuMemcpy(host_results, dev_result.get(), left.size());
 }
 

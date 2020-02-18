@@ -131,6 +131,7 @@ class GeometryVector {
     GpuVector<char> EncodeToWkb() const;    // TODO
 
     void WkbDecodeInitalize();
+    // append single element
     void WkbDecodeAppend(const char* bin);
     void WkbDecodeFinalize();
 
@@ -147,7 +148,11 @@ class GeometryVector {
 
     void clear();
 
-    int size() const { return tags_.size(); }
+    int size() const {
+        auto tmp = tags_.size();
+        assert(tmp <= std::numeric_limits<int>::max());
+        return static_cast<int>(tmp);
+    }
 
  private:
     // Currently, GpuVector contains host memory only
