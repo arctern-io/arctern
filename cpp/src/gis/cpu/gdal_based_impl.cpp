@@ -220,7 +220,7 @@ Wrapper_OGR_G_ExportToWkt(OGRGeometry *geo){
 inline std::string
 Wrapper_OGR_G_GetGeometryName(void* geo){
    auto ogr_geometry_name = OGR_G_GetGeometryName(geo);
-   std::string adjust_geometry_name = "ST_" + (std::string) ogr_geometry_name;
+   std::string adjust_geometry_name = "ST_" + std::string (ogr_geometry_name);
    return adjust_geometry_name;
 }
 
