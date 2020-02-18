@@ -29,7 +29,7 @@ TEST(geometry_test, make_point_from_double){
   auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
 
   ASSERT_EQ(point_arr_str->length(),2);
-  ASSERT_EQ(point_arr_str->GetString(0),"POINT (0 0)");
+  ASSERT_EQ(point_arr_str->GetString(0),"POINT (0 0");
   ASSERT_EQ(point_arr_str->GetString(1),"POINT (1 1)");
 }
 
