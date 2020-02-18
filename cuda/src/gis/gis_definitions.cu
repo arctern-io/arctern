@@ -89,16 +89,14 @@ GeometryVector::OutputCreateGpuContext() -> GpuContextHolder {
     return holder;
 }
 
-// scan operation
-// memory allocation for metas/values
-// copy useful data back to CPU
 void
-GeometryVector::OutputEvolveWith(GpuContext& ctx) {
+GeometryVector::OutputEvolveWith(GpuContext& gpu_ctx) {
     assert(data_state_ == DataState::FlatOffset_EmptyInfo);
-    assert(ctx.data_state == DataState::FlatOffset_FullInfo);
-    assert(tags_.size() == ctx.size);
-    auto size = ctx.size;
-    GpuMemcpy(tags_.data(), ctx.tags, size);
+    assert(gpu_ctx.data_state == DataState::FlatOffset_FullInfo);
+    assert(tags_.size() == gpu_ctx.size);
+    auto size = gpu_ctx.size;
+    // copy tags to gpu_ctx
+    GpuMemcpy(tags_.data(), gpu_ctx.tags, size);
     auto scan_at = [=](int* gpu_addr, int* cpu_addr) {
         int zero = 0;
         GpuMemcpy(gpu_addr + size, &zero, 1);
@@ -109,25 +107,25 @@ GeometryVector::OutputEvolveWith(GpuContext& ctx) {
         return cpu_addr[size];
     };
 
-    auto meta_size = scan_at(ctx.meta_offsets, meta_offsets_.data());
-    auto value_size = scan_at(ctx.value_offsets, value_offsets_.data());
+    auto meta_size = scan_at(gpu_ctx.meta_offsets, meta_offsets_.data());
+    auto value_size = scan_at(gpu_ctx.value_offsets, value_offsets_.data());
 
     metas_.resize(meta_size);
     values_.resize(value_size);
     data_state_ = DataState::PrefixSumOffset_EmptyData;
 
-    ctx.metas = GpuAlloc<uint32_t>(meta_size);
-    ctx.values = GpuAlloc<double>(value_size);
-    ctx.data_state = DataState::PrefixSumOffset_EmptyData;
+    gpu_ctx.metas = GpuAlloc<uint32_t>(meta_size);
+    gpu_ctx.values = GpuAlloc<double>(value_size);
+    gpu_ctx.data_state = DataState::PrefixSumOffset_EmptyData;
 }
 
 void
-GeometryVector::OutputFinalizeWith(const GpuContext& ctx) {
-    assert(ctx.data_state == DataState::PrefixSumOffset_FullData);
+GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
+    assert(gpu_ctx.data_state == DataState::PrefixSumOffset_FullData);
     assert(data_state_ == DataState::PrefixSumOffset_EmptyData);
-    assert(tags_.size() == ctx.size);
-    GpuMemcpy(metas_.data(), ctx.metas, metas_.size());
-    GpuMemcpy(values_.data(), ctx.values, values_.size());
+    assert(tags_.size() == gpu_ctx.size);
+    GpuMemcpy(metas_.data(), gpu_ctx.metas, metas_.size());
+    GpuMemcpy(values_.data(), gpu_ctx.values, values_.size());
     data_state_ = DataState::PrefixSumOffset_FullData;
 }
 }    // namespace cuda
