@@ -13,5 +13,7 @@ link_directories(${CUDA_LIB})
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wconversion -pedantic")
 
 include_directories(include)
+include_directories(src)
+
 add_subdirectory(src)
 add_subdirectory(unittest)
