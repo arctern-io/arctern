@@ -4,8 +4,8 @@
 #include <cuda_runtime.h>
 #include <cuda_device_runtime_api.h>
 #include <cmath>
-#include "functor/st_distance.h"
-#include "common/gpu_memory.h"
+#include "gis/cuda/functor/st_distance.h"
+#include "gis/cuda/common/gpu_memory.h"
 
 namespace zilliz {
 namespace gis {

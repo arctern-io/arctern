@@ -2,8 +2,8 @@
 // Created by mike on 2/10/20.
 //
 
-#include "functor/st_area.h"
-#include "common/gpu_memory.h"
+#include "gis/cuda/functor/st_area.h"
+#include "gis/cuda/common/gpu_memory.h"
 
 namespace zilliz {
 namespace gis {

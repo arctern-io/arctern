@@ -3,10 +3,10 @@
 //
 
 #include <gtest/gtest.h>
-#include "common/gis_definitions.h"
-#include "functor/st_point.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/functor/st_distance.h"
 #include <cmath>
-#include <functor/st_distance.h>
 #include "test_helper.h"
 
 using namespace zilliz;

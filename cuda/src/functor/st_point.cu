@@ -1,5 +1,5 @@
-#include "functor/st_point.h"
-#include "common/gpu_memory.h"
+#include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/common/gpu_memory.h"
 
 namespace zilliz {
 namespace gis {

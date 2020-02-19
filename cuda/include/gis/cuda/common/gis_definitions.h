@@ -10,8 +10,8 @@ using std::vector;
 template<typename T>
 using GpuVector = vector<T>;    // TODO: use gpu vector, now just placeholder
 
-#include "wkb/wkb_tag.h"
-#include "function_wrapper.h"
+#include "gis/cuda/wkb/wkb_tag.h"
+#include "gis/cuda/common/function_wrapper.h"
 
 namespace zilliz {
 namespace gis {

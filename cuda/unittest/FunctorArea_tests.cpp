@@ -3,8 +3,8 @@
 //
 
 #include <gtest/gtest.h>
-#include "common/gis_definitions.h"
-#include "functor/st_area.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/functor/st_area.h"
 #include <cmath>
 #include "test_helper.h"
 

@@ -1,6 +1,6 @@
 #include <numeric>
-#include "common/gpu_memory.h"
-#include "common/gis_definitions.h"
+#include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/common/gis_definitions.h"
 #include <thrust/scan.h>
 
 
