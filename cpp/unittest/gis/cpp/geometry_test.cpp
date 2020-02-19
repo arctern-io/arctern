@@ -222,42 +222,40 @@ TEST(geometry_test,test_ST_IsValid){
   construct_common_test_cases_array
   auto res = ST_IsValid(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-//  for(int i=0;i<res_bool->length();i++){
-//   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-//  }
-   ASSERT_EQ(res_bool->Value(0),true);
-   ASSERT_EQ(res_bool->Value(1),true);
-   ASSERT_EQ(res_bool->Value(2),true);
-   ASSERT_EQ(res_bool->Value(3),true);
-   ASSERT_EQ(res_bool->Value(4),true);
-   ASSERT_EQ(res_bool->Value(5),true);
-   ASSERT_EQ(res_bool->Value(6),true);
-   ASSERT_EQ(res_bool->Value(7),true);
-   ASSERT_EQ(res_bool->Value(8),true);
-   ASSERT_EQ(res_bool->Value(9),true);
-   ASSERT_EQ(res_bool->Value(10),true);
-   ASSERT_EQ(res_bool->Value(11),true);
-   ASSERT_EQ(res_bool->Value(12),true);
-   ASSERT_EQ(res_bool->Value(13),true);
-   ASSERT_EQ(res_bool->Value(14),true);
-   ASSERT_EQ(res_bool->Value(15),true);
-   ASSERT_EQ(res_bool->Value(16),true);
-   ASSERT_EQ(res_bool->Value(17),true);
-   ASSERT_EQ(res_bool->Value(18),false);
-   ASSERT_EQ(res_bool->Value(19),false);
-   ASSERT_EQ(res_bool->Value(20),false);
-   ASSERT_EQ(res_bool->Value(21),false);
-   ASSERT_EQ(res_bool->Value(22),false);
-   ASSERT_EQ(res_bool->Value(23),false);
-   ASSERT_EQ(res_bool->Value(24),false);
-   ASSERT_EQ(res_bool->Value(25),false);
-   ASSERT_EQ(res_bool->Value(26),false);
-   ASSERT_EQ(res_bool->Value(27),false);
-   ASSERT_EQ(res_bool->Value(28),false);
-   ASSERT_EQ(res_bool->Value(29),false);
-   ASSERT_EQ(res_bool->Value(30),false);
-   ASSERT_EQ(res_bool->Value(31),false);
-   ASSERT_EQ(res_bool->Value(32),false);
+   
+  ASSERT_EQ(res_bool->Value(0),true);
+  ASSERT_EQ(res_bool->Value(1),true);
+  ASSERT_EQ(res_bool->Value(2),true);
+  ASSERT_EQ(res_bool->Value(3),true);
+  ASSERT_EQ(res_bool->Value(4),true);
+  ASSERT_EQ(res_bool->Value(5),true);
+  ASSERT_EQ(res_bool->Value(6),true);
+  ASSERT_EQ(res_bool->Value(7),true);
+  ASSERT_EQ(res_bool->Value(8),true);
+  ASSERT_EQ(res_bool->Value(9),true);
+  ASSERT_EQ(res_bool->Value(10),true);
+  ASSERT_EQ(res_bool->Value(11),true);
+  ASSERT_EQ(res_bool->Value(12),true);
+  ASSERT_EQ(res_bool->Value(13),true);
+  ASSERT_EQ(res_bool->Value(14),true);
+  ASSERT_EQ(res_bool->Value(15),true);
+  ASSERT_EQ(res_bool->Value(16),true);
+  ASSERT_EQ(res_bool->Value(17),true);
+  ASSERT_EQ(res_bool->Value(18),false);
+  ASSERT_EQ(res_bool->Value(19),false);
+  ASSERT_EQ(res_bool->Value(20),false);
+  ASSERT_EQ(res_bool->Value(21),false);
+  ASSERT_EQ(res_bool->Value(22),false);
+  ASSERT_EQ(res_bool->Value(23),false);
+  ASSERT_EQ(res_bool->Value(24),false);
+  ASSERT_EQ(res_bool->Value(25),false);
+  ASSERT_EQ(res_bool->Value(26),false);
+  ASSERT_EQ(res_bool->Value(27),false);
+  ASSERT_EQ(res_bool->Value(28),false);
+  ASSERT_EQ(res_bool->Value(29),false);
+  ASSERT_EQ(res_bool->Value(30),false);
+  ASSERT_EQ(res_bool->Value(31),false);
+  ASSERT_EQ(res_bool->Value(32),false);
 }
 
 TEST(geometry_test, test_ST_Intersection){
@@ -506,42 +504,40 @@ TEST(geometry_test, test_ST_IsSimple){
   construct_common_test_cases_array
   auto res = ST_IsSimple(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-//  for(int i=0;i<res_bool->length();i++){
-//   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-//  }
-   ASSERT_EQ(res_bool->Value(0),true);
-   ASSERT_EQ(res_bool->Value(1),true);
-   ASSERT_EQ(res_bool->Value(2),true);
-   ASSERT_EQ(res_bool->Value(3),true);
-   ASSERT_EQ(res_bool->Value(4),true);
-   ASSERT_EQ(res_bool->Value(5),true);
-   ASSERT_EQ(res_bool->Value(6),true);
-   ASSERT_EQ(res_bool->Value(7),true);
-   ASSERT_EQ(res_bool->Value(8),true);
-   ASSERT_EQ(res_bool->Value(9),true);
-   ASSERT_EQ(res_bool->Value(10),true);
-   ASSERT_EQ(res_bool->Value(11),true);
-   ASSERT_EQ(res_bool->Value(12),false);
-   ASSERT_EQ(res_bool->Value(13),true);
-   ASSERT_EQ(res_bool->Value(14),true);
-   ASSERT_EQ(res_bool->Value(15),true);
-   ASSERT_EQ(res_bool->Value(16),true);
-   ASSERT_EQ(res_bool->Value(17),true);
-   ASSERT_EQ(res_bool->Value(18),true);
-   ASSERT_EQ(res_bool->Value(19),true);
-   ASSERT_EQ(res_bool->Value(20),true);
-   ASSERT_EQ(res_bool->Value(21),true);
-   ASSERT_EQ(res_bool->Value(22),true);
-   ASSERT_EQ(res_bool->Value(23),true);
-   ASSERT_EQ(res_bool->Value(24),true);
-   ASSERT_EQ(res_bool->Value(25),true);
-   ASSERT_EQ(res_bool->Value(26),true);
-   ASSERT_EQ(res_bool->Value(27),true);
-   ASSERT_EQ(res_bool->Value(28),true);
-   ASSERT_EQ(res_bool->Value(29),true);
-   ASSERT_EQ(res_bool->Value(30),true);
-   ASSERT_EQ(res_bool->Value(31),true);
-   ASSERT_EQ(res_bool->Value(32),true);
+  
+  ASSERT_EQ(res_bool->Value(0),true);
+  ASSERT_EQ(res_bool->Value(1),true);
+  ASSERT_EQ(res_bool->Value(2),true);
+  ASSERT_EQ(res_bool->Value(3),true);
+  ASSERT_EQ(res_bool->Value(4),true);
+  ASSERT_EQ(res_bool->Value(5),true);
+  ASSERT_EQ(res_bool->Value(6),true);
+  ASSERT_EQ(res_bool->Value(7),true);
+  ASSERT_EQ(res_bool->Value(8),true);
+  ASSERT_EQ(res_bool->Value(9),true);
+  ASSERT_EQ(res_bool->Value(10),true);
+  ASSERT_EQ(res_bool->Value(11),true);
+  ASSERT_EQ(res_bool->Value(12),false);
+  ASSERT_EQ(res_bool->Value(13),true);
+  ASSERT_EQ(res_bool->Value(14),true);
+  ASSERT_EQ(res_bool->Value(15),true);
+  ASSERT_EQ(res_bool->Value(16),true);
+  ASSERT_EQ(res_bool->Value(17),true);
+  ASSERT_EQ(res_bool->Value(18),true);
+  ASSERT_EQ(res_bool->Value(19),true);
+  ASSERT_EQ(res_bool->Value(20),true);
+  ASSERT_EQ(res_bool->Value(21),true);
+  ASSERT_EQ(res_bool->Value(22),true);
+  ASSERT_EQ(res_bool->Value(23),true);
+  ASSERT_EQ(res_bool->Value(24),true);
+  ASSERT_EQ(res_bool->Value(25),true);
+  ASSERT_EQ(res_bool->Value(26),true);
+  ASSERT_EQ(res_bool->Value(27),true);
+  ASSERT_EQ(res_bool->Value(28),true);
+  ASSERT_EQ(res_bool->Value(29),true);
+  ASSERT_EQ(res_bool->Value(30),true);
+  ASSERT_EQ(res_bool->Value(31),true);
+  ASSERT_EQ(res_bool->Value(32),true);
 }
 
 TEST(geometry_test, test_ST_MakeValid){
@@ -813,42 +809,39 @@ TEST(geometry_test, test_ST_Envelope) {
   auto result = ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
-//  for(int i=0;i<result_str->length();i++){
-//   std::cout<<result_str->GetString(i)<<"#"<<i<<std::endl;
-//  }
-   ASSERT_EQ(result_str->GetString(0),"POINT (0 1)");
-   ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 1)");
-   ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,1 0)");
-   ASSERT_EQ(result_str->GetString(3),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(4),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(5),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(6),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(7),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(8),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(9),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(10),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(11),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(12),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(13),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(14),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(15),"POLYGON ((-4 -3,-4 100,9 100,9 -3,-4 -3))");
-   ASSERT_EQ(result_str->GetString(16),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(17),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(18),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(19),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(20),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(21),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(22),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(23),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   ASSERT_EQ(result_str->GetString(24),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   ASSERT_EQ(result_str->GetString(25),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   ASSERT_EQ(result_str->GetString(26),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   ASSERT_EQ(result_str->GetString(27),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(28),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-   //ASSERT_EQ(result_str->GetString(29),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-   ASSERT_EQ(result_str->GetString(30),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
-   //ASSERT_EQ(result_str->GetString(31),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
-   ASSERT_EQ(result_str->GetString(32),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
+  ASSERT_EQ(result_str->GetString(0),"POINT (0 1)");
+  ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 1)");
+  ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,1 0)");
+  ASSERT_EQ(result_str->GetString(3),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(4),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(5),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(6),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(7),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(8),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(9),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(10),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(11),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(12),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(13),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(14),"POLYGON ((0 0,0 2,1 2,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(15),"POLYGON ((-4 -3,-4 100,9 100,9 -3,-4 -3))");
+  ASSERT_EQ(result_str->GetString(16),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(17),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(18),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(19),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(20),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(21),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(22),"POLYGON ((0 0,0 1,4 1,4 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(23),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(result_str->GetString(24),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(result_str->GetString(25),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(result_str->GetString(26),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(result_str->GetString(27),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(28),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  //ASSERT_EQ(result_str->GetString(29),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(result_str->GetString(30),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
+  //ASSERT_EQ(result_str->GetString(31),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
+  ASSERT_EQ(result_str->GetString(32),"POLYGON ((0 -8,0 4,4 4,4 -8,0 -8))");
 
 }
 
