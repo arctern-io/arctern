@@ -732,15 +732,15 @@ TEST(geometry_test, test_ST_Area) {
   auto res = ST_Area(input);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
    
-  ASSERT_EQ(res_double->Value(0),0);
-  ASSERT_EQ(res_double->Value(1),0);
-  //ASSERT_EQ(res_double->Value(2),0);
-  ASSERT_EQ(res_double->Value(3),1);
-  ASSERT_EQ(res_double->Value(4),0);
-  ASSERT_EQ(res_double->Value(5),0);
-  ASSERT_EQ(res_double->Value(6),2);
-  ASSERT_EQ(res_double->Value(7),20);
-  //ASSERT_EQ(res_double->Value(8),1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(0),0);
+  EXPECT_DOUBLE_EQ(res_double->Value(1),0);
+  //EXPECT_DOUBLE_EQ(res_double->Value(2),0);
+  EXPECT_DOUBLE_EQ(res_double->Value(3),1);
+  EXPECT_DOUBLE_EQ(res_double->Value(4),0);
+  EXPECT_DOUBLE_EQ(res_double->Value(5),0);
+  EXPECT_DOUBLE_EQ(res_double->Value(6),2);
+  EXPECT_DOUBLE_EQ(res_double->Value(7),20);
+  //EXPECT_DOUBLE_EQ(res_double->Value(8),1.5);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
@@ -778,25 +778,48 @@ TEST(geometry_test, test_ST_Centroid) {
   ASSERT_EQ(res_str->GetString(5),"POINT (2.6444665557806 41.5285902625069)");
   ASSERT_EQ(res_str->GetString(6),"POINT (0.666666666666667 1.33333333333333)");
   ASSERT_EQ(res_str->GetString(7),"POINT (2.0 1.7)");
-  //ASSERT_EQ(res_str->GetString(8),"POINT (0.6 1.13333333333333)");//geospark:POINT (0.7777777777777778 1.6666666666666667)
+  //ASSERT_EQ(res_str->GetString(8),"POINT (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
 }
 
 TEST(geometry_test, test_ST_Length) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
-
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
-
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  auto p1 =  "POINT (0 1)";
+  auto p2 =  "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 =  "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 =  "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+   
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1 ));
+  builder.Append(std::string(p2 ));
+  builder.Append(std::string(p3 ));
+  builder.Append(std::string(p4 ));
+  builder.Append(std::string(p5 ));
+  builder.Append(std::string(p6 ));
+  builder.Append(std::string(p7 ));
+  builder.Append(std::string(p8 ));
+  builder.Append(std::string(p9 ));
+  builder.Finish(&input); 
   
-  auto res1 = ST_Length(points);
-  auto res2 = ST_Length(polygons);
-  auto res3 = ST_Length(lines);
+  auto res = ST_Length(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+  
+  for(int i=0;i<res_double->length();i++){
+   std::cout<<res_double->Value(i)<<"#"<<i<<std::endl;
+  } 
+  EXPECT_DOUBLE_EQ(res_double->Value(0),0.0);
+  EXPECT_DOUBLE_EQ(res_double->Value(1),2.0);
+  EXPECT_DOUBLE_EQ(res_double->Value(2),3.414213562373095);
+//  EXPECT_DOUBLE_EQ(res_double->Value(3),4.0); //0
+  EXPECT_DOUBLE_EQ(res_double->Value(4),0);
+  EXPECT_DOUBLE_EQ(res_double->Value(5),121.74489533575682);
+//  EXPECT_DOUBLE_EQ(res_double->Value(6),9.123105625617661); //0
+//  EXPECT_DOUBLE_EQ(res_double->Value(7),26.0); //0
+//  EXPECT_DOUBLE_EQ(res_double->Value(8),12.537319187990757); //0
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
