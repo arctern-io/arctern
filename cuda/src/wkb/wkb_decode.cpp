@@ -15,7 +15,7 @@ namespace cuda {
 void
 GeometryVector::WkbDecodeInitalize() {
     clear();
-   data_state_ = DataState::Appending;
+    data_state_ = DataState::Appending;
 }
 
 void
@@ -127,8 +127,6 @@ GeometryVector::WkbDecodeAppend(const char* raw_bin) {
         }
     }
 }
-
-
 
 
 }    // namespace cuda
