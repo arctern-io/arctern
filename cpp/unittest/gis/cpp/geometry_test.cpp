@@ -706,21 +706,44 @@ TEST(geometry_test, test_ST_Distance) {
 }
 
 TEST(geometry_test, test_ST_Area) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
-
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
-
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  auto p1 =  "POINT (0 1)";
+  auto p2 =  "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 =  "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 =  "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+   
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1 ));
+  builder.Append(std::string(p2 ));
+  builder.Append(std::string(p3 ));
+  builder.Append(std::string(p4 ));
+  builder.Append(std::string(p5 ));
+  builder.Append(std::string(p6 ));
+  builder.Append(std::string(p7 ));
+  builder.Append(std::string(p8 ));
+  builder.Append(std::string(p9 ));
+  builder.Finish(&input); 
   
-  auto res1 = ST_Area(points);
-  auto res2 = ST_Area(polygons);
-  auto res3 = ST_Area(lines);
+  auto res = ST_Area(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+   
+  for(int i=0;i<res_double->length();i++){
+	  std::cout<<res_double->Value(i)<<"#"<<i<<std::endl;
+  }
+  ASSERT_EQ(res_double->Value(0),0);
+  ASSERT_EQ(res_double->Value(1),0);
+  //ASSERT_EQ(res_double->Value(2),0);
+  ASSERT_EQ(res_double->Value(3),1);
+  ASSERT_EQ(res_double->Value(4),0);
+  ASSERT_EQ(res_double->Value(5),0);
+  ASSERT_EQ(res_double->Value(6),2);
+  ASSERT_EQ(res_double->Value(7),20);
+  //ASSERT_EQ(res_double->Value(8),1.5);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
