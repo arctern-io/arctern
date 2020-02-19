@@ -1,5 +1,5 @@
 #pragma once
-#include "common/gis_definitions.h"
+#include "gis/cuda/common/gis_definitions.h"
 
 namespace zilliz {
 namespace gis {
