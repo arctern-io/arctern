@@ -297,31 +297,31 @@ def run_st_union_aggr(spark):
     union_aggr_df1 = spark.createDataFrame(data=test_data1, schema=['geos']).cache()
     union_aggr_df1.createOrReplaceTempView("union_aggr1")
     rs = spark.sql("select ST_Union_Aggr_UDF(geos) from union_aggr1").collect()
-    assert(rs[0][0] == 'POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))')
+    assert rs[0][0] == 'POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))'
 
     test_data2 = []
     test_data2.extend([('POLYGON ((0 0,4 0,4 4,0 4,0 0))',)])
     test_data2.extend([('POLYGON ((3 1,5 1,5 2,3 2,3 1))',)])
-    union_aggr_df2 = spark.createDataFrame(data = test_data2, schema = ['geos']).cache()
+    union_aggr_df2 = spark.createDataFrame(data=test_data2, schema=['geos']).cache()
     union_aggr_df2.createOrReplaceTempView("union_aggr2")
     rs = spark.sql("select ST_Union_Aggr_UDF(geos) from union_aggr2").collect()
-    assert(rs[0][0] == 'POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))')
+    assert rs[0][0] == 'POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))'
 
     test_data3 = []
     test_data3.extend([('POLYGON ((0 0,4 0,4 4,0 4,0 0))',)])
     test_data3.extend([('POLYGON ((5 1,7 1,7 2,5 2,5 1))',)])
-    union_aggr_df3 = spark.createDataFrame(data = test_data3, schema = ['geos']).cache()
+    union_aggr_df3 = spark.createDataFrame(data=test_data3, schema=['geos']).cache()
     union_aggr_df3.createOrReplaceTempView("union_aggr3")
     rs = spark.sql("select ST_Union_Aggr_UDF(geos) from union_aggr3").collect()
-    assert(rs[0][0] == 'MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))')
+    assert rs[0][0] == 'MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))'
 
     test_data4 = []
     test_data4.extend([('POLYGON ((0 0,0 4,4 4,4 0,0 0))',)])
     test_data4.extend([('POINT (2 3)',)])
-    union_aggr_df4 = spark.createDataFrame(data = test_data4, schema = ['geos']).cache()
+    union_aggr_df4 = spark.createDataFrame(data=test_data4, schema=['geos']).cache()
     union_aggr_df4.createOrReplaceTempView("union_aggr4")
     rs = spark.sql("select ST_Union_Aggr_UDF(geos) from union_aggr4").collect()
-    assert(rs[0][0] == 'POLYGON ((0 0,0 4,4 4,4 0,0 0))')
+    assert rs[0][0] == 'POLYGON ((0 0,0 4,4 4,4 0,0 0))'
 
 def run_st_envelope_aggr(spark):
     test_data = []
@@ -330,15 +330,15 @@ def run_st_envelope_aggr(spark):
     envelope_aggr_df = spark.createDataFrame(data=test_data, schema=['geos'])
     envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
-    assert(rs[0][0] == 'POLYGON ((0 0,7 0,7 4,0 4,0 0))')
+    assert rs[0][0] == 'POLYGON ((0 0,7 0,7 4,0 4,0 0))'
 
 def run_st_transform(spark):
     test_data = []
     test_data.extend([('POINT (10 10)',)])
-    buffer_df = spark.createDataFrame(data = test_data, schema = ['geos']).cache()
+    buffer_df = spark.createDataFrame(data=test_data, schema=['geos']).cache()
     buffer_df.createOrReplaceTempView("buffer")
     rs = spark.sql("select ST_Transform_UDF(geos, 'epsg:4326', 'epsg:3857') from buffer").collect()
-    assert(rs[0][0] == 'POINT (1113194.90793274 1118889.97485796)')
+    assert rs[0][0] == 'POINT (1113194.90793274 1118889.97485796)'
 
 
 if __name__ == "__main__":
