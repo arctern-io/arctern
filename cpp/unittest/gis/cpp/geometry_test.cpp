@@ -231,7 +231,9 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 }
 
 TEST(geometry_test, test_ST_IsValid) {
-  common_test_cases construct_common_test_cases_array 
+  common_test_cases 
+  construct_common_test_cases_array 
+  
   auto res = zilliz::gis::ST_IsValid(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
@@ -514,7 +516,9 @@ TEST(geometry_test, test_ST_Crosses) {
 }
 
 TEST(geometry_test, test_ST_IsSimple) {
-  common_test_cases construct_common_test_cases_array 
+  common_test_cases 
+  construct_common_test_cases_array 
+  
   auto res = zilliz::gis::ST_IsSimple(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
