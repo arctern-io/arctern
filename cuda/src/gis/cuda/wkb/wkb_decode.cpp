@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 #include "gis/cuda/common/gis_definitions.h"
-#include "gis/cuda/wkb/wkb_tag.h"
+#include "wkb_tag.h"
 
 namespace zilliz {
 namespace gis {

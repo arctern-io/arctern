@@ -1,5 +1,5 @@
 #pragma once
-#include <gis/cuda/common/common.h>
+#include "gis/cuda/common/common.h"
 
 #include <cstdint>
 namespace zilliz {
