@@ -555,45 +555,39 @@ TEST(geometry_test, test_ST_MakeValid){
 }
 
 TEST(geometry_test, test_ST_GeometryType){
-  OGRLinearRing ring1;
-  ring1.addPoint(2, 1);
-  ring1.addPoint(3, 1);
-  ring1.addPoint(3, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 8);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRPoint point(2,3);
-  OGRLineString line;
-  line.addPoint(10,20);
-  line.addPoint(20,30);
-
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> geometries;
-
-  char *polygon_str = nullptr;
-  char *point_str = nullptr;
-  char *line_str = nullptr;
-  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
-  CHECK_GDAL(point.exportToWkt(&point_str));
-  CHECK_GDAL(line.exportToWkt(&line_str));
-  string_builder.Append(std::string(polygon_str));
-  string_builder.Append(std::string(point_str));
-  string_builder.Append(std::string(line_str));
-  CPLFree(polygon_str);
-  CPLFree(point_str);
-  CPLFree(line_str);
-
-  string_builder.Finish(&geometries);
-
-  auto geometries_type = ST_GeometryType(geometries);
-  auto geometries_type_arr = std::static_pointer_cast<arrow::StringArray>(geometries_type);
+  auto p1 =  "POINT (0 1)";
+  auto p2 =  "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 =  "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 =  "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 1, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+    
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1  ));
+  builder.Append(std::string(p2 ));
+  builder.Append(std::string(p3 ));
+  builder.Append(std::string(p4 ));
+  builder.Append(std::string(p5 ));
+  builder.Append(std::string(p6 ));
+  builder.Append(std::string(p7 ));
+  builder.Append(std::string(p8 ));
+  builder.Finish(&input); 
   
-  ASSERT_EQ(geometries_type_arr->GetString(0),"POLYGON");
-  ASSERT_EQ(geometries_type_arr->GetString(1),"POINT");
-  ASSERT_EQ(geometries_type_arr->GetString(2),"LINESTRING");
+  auto res = ST_GeometryType(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  
+  ASSERT_EQ(res_str->GetString(0),"POINT");
+  ASSERT_EQ(res_str->GetString(1),"LINESTRING");
+  ASSERT_EQ(res_str->GetString(2),"LINESTRING");
+  ASSERT_EQ(res_str->GetString(3),"POLYGON");
+  ASSERT_EQ(res_str->GetString(4),"MULTIPOINT");
+  ASSERT_EQ(res_str->GetString(5),"MULTILINESTRING");
+  ASSERT_EQ(res_str->GetString(6),"MULTIPOLYGON");
+  ASSERT_EQ(res_str->GetString(7),"MULTIPOLYGON");
+  
 }
 
 TEST(geometry_test, test_ST_SimplifyPreserveTopology){
