@@ -65,8 +65,8 @@ def test_ST_IsSimple():
 def test_ST_GeometryType():
     data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = zilliz_gis.ST_GeometryType(pyarrow.array(data))
-    assert rst[0] == "POLYGON"
-    assert rst[1] == "POLYGON"
+    assert rst[0] == "ST_POLYGON"
+    assert rst[1] == "ST_POLYGON"
 
 def test_ST_MakeValid():
     data = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])

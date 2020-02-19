@@ -16,19 +16,17 @@
 #pragma once
 
 #include "render/2d/general_2d.h"
-#include "render/2d/heatmap/set_color.h"
+#include "render/2d/input.h"
+#include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
 
 namespace zilliz {
 namespace render {
 
-template <typename T>
-class HeatMap : public General2D {
+class PointMap : public General2D {
  public:
-  HeatMap();
+  PointMap();
 
-  HeatMap(uint32_t* input_x, uint32_t* input_y, T* count, int64_t num_vertices);
-
-  ~HeatMap();
+  PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
 
   void DataInit() final;
 
@@ -41,17 +39,21 @@ class HeatMap : public General2D {
   void InputInit() final;
 
  public:
-  VegaHeatMap& mutable_heatmap_vega() { return heatmap_vega_; }
+  uint32_t* mutable_vertices_x() { return vertices_x_; }
+
+  uint32_t* mutable_vertices_y() { return vertices_y_; }
+
+  VegaCircle2d& mutable_point_vega() { return point_vega_; }
+
+  const size_t num_vertices() const { return num_vertices_; }
 
  private:
   unsigned int VAO_;
-  unsigned int VBO_[3];
+  unsigned int VBO_[2];
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
-  T* count_;
-  float* colors_;
-  int64_t num_vertices_;
-  VegaHeatMap heatmap_vega_;
+  size_t num_vertices_;
+  VegaCircle2d point_vega_;
 };
 
 }  // namespace render
