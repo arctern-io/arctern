@@ -24,8 +24,6 @@
 #include "arrow/gis_api.h"
 #include "utils/check_status.h"
 
-using namespace zilliz::gis;
-
 #define common_test_cases                                                              \
   auto p1 = "POINT (0 1)";                                                             \
                                                                                        \
@@ -233,7 +231,8 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 }
 
 TEST(geometry_test, test_ST_IsValid) {
-  common_test_cases construct_common_test_cases_array auto res = ST_IsValid(input);
+  common_test_cases construct_common_test_cases_array 
+  auto res = zilliz::gis::ST_IsValid(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -515,7 +514,8 @@ TEST(geometry_test, test_ST_Crosses) {
 }
 
 TEST(geometry_test, test_ST_IsSimple) {
-  common_test_cases construct_common_test_cases_array auto res = ST_IsSimple(input);
+  common_test_cases construct_common_test_cases_array 
+  auto res = zilliz::gis::ST_IsSimple(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -589,7 +589,7 @@ TEST(geometry_test, test_ST_GeometryType) {
   builder.Append(std::string(p8));
   builder.Finish(&input);
 
-  auto res = ST_GeometryType(input);
+  auto res = zilliz::gis::ST_GeometryType(input);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "ST_POINT");
@@ -711,9 +711,9 @@ TEST(geometry_test, test_ST_Distance) {
   auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Distance(points, polygons);
-  auto res2 = ST_Distance(polygons, lines);
-  auto res3 = ST_Distance(points, lines);
+  auto res1 = zilliz::gis::ST_Distance(points, polygons);
+  auto res2 = zilliz::gis::ST_Distance(polygons, lines);
+  auto res3 = zilliz::gis::ST_Distance(points, lines);
 }
 
 TEST(geometry_test, test_ST_Area) {
@@ -740,7 +740,7 @@ TEST(geometry_test, test_ST_Area) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = ST_Area(input);
+  auto res = zilliz::gis::ST_Area(input);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
@@ -778,7 +778,7 @@ TEST(geometry_test, test_ST_Centroid) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = ST_Centroid(input);
+  auto res = zilliz::gis::ST_Centroid(input);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -820,7 +820,7 @@ TEST(geometry_test, test_ST_Length) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = ST_Length(input);
+  auto res = zilliz::gis::ST_Length(input);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0.0);
@@ -858,7 +858,7 @@ TEST(geometry_test, test_ST_ConvexHull) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = ST_ConvexHull(input);
+  auto res = zilliz::gis::ST_ConvexHull(input);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -895,9 +895,10 @@ TEST(geometry_test, test_ST_NPoints) {
 }
 
 TEST(geometry_test, test_ST_Envelope) {
-  common_test_cases construct_common_test_cases_array
+  common_test_cases 
+  construct_common_test_cases_array
 
-      auto result = zilliz::gis::ST_Envelope(input);
+  auto result = zilliz::gis::ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(result_str->GetString(0), "POINT (0 1)");
