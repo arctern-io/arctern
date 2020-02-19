@@ -808,9 +808,6 @@ TEST(geometry_test, test_ST_Length) {
   auto res = ST_Length(input);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
   
-  for(int i=0;i<res_double->length();i++){
-   std::cout<<res_double->Value(i)<<"#"<<i<<std::endl;
-  } 
   EXPECT_DOUBLE_EQ(res_double->Value(0),0.0);
   EXPECT_DOUBLE_EQ(res_double->Value(1),2.0);
   EXPECT_DOUBLE_EQ(res_double->Value(2),3.414213562373095);
@@ -823,21 +820,41 @@ TEST(geometry_test, test_ST_Length) {
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
-
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
-
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  auto p1 =  "POINT (0 1)";
+  auto p2 =  "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 =  "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 =  "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+   
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1 ));
+  builder.Append(std::string(p2 ));
+  builder.Append(std::string(p3 ));
+  builder.Append(std::string(p4 ));
+  builder.Append(std::string(p5 ));
+  builder.Append(std::string(p6 ));
+  builder.Append(std::string(p7 ));
+  builder.Append(std::string(p8 ));
+  builder.Append(std::string(p9 ));
+  builder.Finish(&input); 
   
-  auto res1 = ST_ConvexHull(points);
-  auto res2 = ST_ConvexHull(polygons);
-  auto res3 = ST_ConvexHull(lines);
+  auto res = ST_ConvexHull(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+   
+  ASSERT_EQ(res_str->GetString(0),"POINT (0 1)");
+  ASSERT_EQ(res_str->GetString(1),"POLYGON ((0 0,0 1,1 1,0 0))");
+  ASSERT_EQ(res_str->GetString(2),"POLYGON ((0 0,1 1,1 0,0 0))");//geospark:POINT (0.6464466094067263 0.3535533905932737)
+  ASSERT_EQ(res_str->GetString(3),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(4),"POLYGON ((0 0,1 2,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(5),"POLYGON ((9 -3,0 0,-1 2,-4 100,9 -3))");
+  ASSERT_EQ(res_str->GetString(6),"POLYGON ((0 0,1 4,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(7),"POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(res_str->GetString(8),"POLYGON ((0 0,0 1,1 4,1 0,0 0))");//POINT (0.6 1.13333333333333)
 }
 
 //TODO:geospark ST_NPoints can not work.
