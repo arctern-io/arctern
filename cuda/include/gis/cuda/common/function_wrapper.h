@@ -5,14 +5,14 @@ namespace gis {
 namespace cuda {
 
 // create a class deleter from normal function
-template<class T, void (*fn)(T*)>
+template <class T, void (*fn)(T*)>
 struct DeleterWrapper {
-    template<class Ptr>
-    void operator()(Ptr ptr) const {
-        fn(ptr);
-    }
+  template <class Ptr>
+  void operator()(Ptr ptr) const {
+    fn(ptr);
+  }
 };
 
-}    // namespace cuda
-}    // namespace gis
-}    // namespace zilliz
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

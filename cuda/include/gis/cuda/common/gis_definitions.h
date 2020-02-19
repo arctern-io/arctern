@@ -1,24 +1,24 @@
 #pragma once
-#include <vector>
-#include <set>
-#include <optional>
 #include <array>
-#include <tuple>
-#include <memory>
 #include <cassert>
+#include <memory>
+#include <optional>
+#include <set>
+#include <tuple>
+#include <vector>
 using std::vector;
-template<typename T>
-using GpuVector = vector<T>;    // TODO: use gpu vector, now just placeholder
+template <typename T>
+using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
 
-#include "gis/cuda/wkb/wkb_tag.h"
 #include "gis/cuda/common/function_wrapper.h"
+#include "gis/cuda/wkb/wkb_tag.h"
 
 namespace zilliz {
 namespace gis {
 namespace cuda {
 
 //// Not used yet, comment later
-//struct GeoWorkspace {
+// struct GeoWorkspace {
 //    static constexpr int max_threads = 256 * 128;
 //    int max_buffer_per_meta = 0;         // normally 32
 //    int max_buffer_per_value = 0;        // normally 128
@@ -55,124 +55,123 @@ namespace cuda {
 class GeometryVector {
  private:
  public:
-    // Appending is used when decoding Wkb
-    // Flat vs PrefixSum are state of meta_offsets/value_offsets
-    //      FlatOffset => offsets[0, n) constains size of each element
-    //      PrefixSumOffset => offsets[0, n+1) constains start location of each element
-    // Info includes tags, meta_offsets, value_offsets,
-    //      which is calcuated at the first pass
-    // Data includes metas, values,
-    //      which is calcuated at the second pass
-    //      when FlatOffset, Data is always empty.
-    enum class DataState : uint32_t {
-        Invalid,
-        Appending,
-        FlatOffset_EmptyInfo,
-        FlatOffset_FullInfo,
-        PrefixSumOffset_EmptyData,
-        PrefixSumOffset_FullData
-    };
+  // Appending is used when decoding Wkb
+  // Flat vs PrefixSum are state of meta_offsets/value_offsets
+  //      FlatOffset => offsets[0, n) constains size of each element
+  //      PrefixSumOffset => offsets[0, n+1) constains start location of each element
+  // Info includes tags, meta_offsets, value_offsets,
+  //      which is calcuated at the first pass
+  // Data includes metas, values,
+  //      which is calcuated at the second pass
+  //      when FlatOffset, Data is always empty.
+  enum class DataState : uint32_t {
+    Invalid,
+    Appending,
+    FlatOffset_EmptyInfo,
+    FlatOffset_FullInfo,
+    PrefixSumOffset_EmptyData,
+    PrefixSumOffset_FullData
+  };
 
-    // Geometry context,
-    // raw pointers holding device memory for calculation
-    // use struct to simplify data transfer in CUDA
-    // fields are explained below (at class variable members declarations)
-    struct GpuContext {
-        WkbTag* tags = nullptr;
-        uint32_t* metas = nullptr;
-        double* values = nullptr;
-        int* meta_offsets = nullptr;
-        int* value_offsets = nullptr;
-        int size = 0;
-        DataState data_state = DataState::Invalid;
+  // Geometry context,
+  // raw pointers holding device memory for calculation
+  // use struct to simplify data transfer in CUDA
+  // fields are explained below (at class variable members declarations)
+  struct GpuContext {
+    WkbTag* tags = nullptr;
+    uint32_t* metas = nullptr;
+    double* values = nullptr;
+    int* meta_offsets = nullptr;
+    int* value_offsets = nullptr;
+    int size = 0;
+    DataState data_state = DataState::Invalid;
 
-        DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
+    DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
 
-        // const pointer to start location to the index-th element
-        // should be used when offsets are valid
-        DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
-            auto offset = meta_offsets[index];
-            return metas + offset;
-        }
-        DEVICE_RUNNABLE const double* get_value_ptr(int index) const {
-            auto offset = value_offsets[index];
-            return values + offset;
-        }
+    // const pointer to start location to the index-th element
+    // should be used when offsets are valid
+    DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
+      auto offset = meta_offsets[index];
+      return metas + offset;
+    }
+    DEVICE_RUNNABLE const double* get_value_ptr(int index) const {
+      auto offset = value_offsets[index];
+      return values + offset;
+    }
 
-        // nonconst pointer to start location of the index-th element
-        // should be used when offsets are valid
-        DEVICE_RUNNABLE uint32_t* get_meta_ptr(int index) {
-            auto offset = meta_offsets[index];
-            return metas + offset;
-        }
-        DEVICE_RUNNABLE double* get_value_ptr(int index) {
-            auto offset = value_offsets[index];
-            return values + offset;
-        }
-    };
+    // nonconst pointer to start location of the index-th element
+    // should be used when offsets are valid
+    DEVICE_RUNNABLE uint32_t* get_meta_ptr(int index) {
+      auto offset = meta_offsets[index];
+      return metas + offset;
+    }
+    DEVICE_RUNNABLE double* get_value_ptr(int index) {
+      auto offset = value_offsets[index];
+      return values + offset;
+    }
+  };
 
  private:
  public:
-    static void GpuContextDeleter(GpuContext*);
-    using GpuContextHolder =
-        std::unique_ptr<GpuContext, DeleterWrapper<GpuContext, GpuContextDeleter>>;
+  static void GpuContextDeleter(GpuContext*);
+  using GpuContextHolder =
+      std::unique_ptr<GpuContext, DeleterWrapper<GpuContext, GpuContextDeleter>>;
 
-    GpuContextHolder CreateReadGpuContext() const;    // TODO
-    GeometryVector() = default;
-    GpuVector<char> EncodeToWkb() const;    // TODO
+  GpuContextHolder CreateReadGpuContext() const;  // TODO
+  GeometryVector() = default;
+  GpuVector<char> EncodeToWkb() const;  // TODO
 
-    void WkbDecodeInitalize();
-    // append single element
-    void WkbDecodeAppend(const char* bin);
-    void WkbDecodeFinalize();
+  void WkbDecodeInitalize();
+  // append single element
+  void WkbDecodeAppend(const char* bin);
+  void WkbDecodeFinalize();
 
-    // STEP 1: Initialize vector with size of elements
-    void OutputInitialize(int size);
-    // STEP 2: Create gpu context according to the vector for cuda
-    // where tags and offsets fields are uninitailized
-    GpuContextHolder OutputCreateGpuContext();
-    // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
-    // where offsets[0, n) is filled with size of each element
+  // STEP 1: Initialize vector with size of elements
+  void OutputInitialize(int size);
+  // STEP 2: Create gpu context according to the vector for cuda
+  // where tags and offsets fields are uninitailized
+  GpuContextHolder OutputCreateGpuContext();
+  // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
+  // where offsets[0, n) is filled with size of each element
 
-    // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
-    // then copy info(tags and scanned offsets) back to GeometryVector
-    // and alloc cpu & gpu memory for next steps
-    void OutputEvolveWith(GpuContext&);
-    // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
+  // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
+  // then copy info(tags and scanned offsets) back to GeometryVector
+  // and alloc cpu & gpu memory for next steps
+  void OutputEvolveWith(GpuContext&);
+  // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
 
-    // STEP 6: Copy data(metas and values) back to GeometryVector
-    void OutputFinalizeWith(const GpuContext&);
-    // NOTE: see functor/st_point.cu for a detailed example
+  // STEP 6: Copy data(metas and values) back to GeometryVector
+  void OutputFinalizeWith(const GpuContext&);
+  // NOTE: see functor/st_point.cu for a detailed example
 
-    void clear();
+  void clear();
 
-    int size() const {
-        auto tmp = tags_.size();
-        assert(tmp <= std::numeric_limits<int>::max());
-        return static_cast<int>(tmp);
-    }
+  int size() const {
+    auto tmp = tags_.size();
+    assert(tmp <= std::numeric_limits<int>::max());
+    return static_cast<int>(tmp);
+  }
 
  private:
-    // Currently, GpuVector contains host memory only
-    // next goal should make it switchable between host and device memory.
-    GpuVector<WkbTag> tags_;
-    // Not including tags_, for faster access of WkbTags
-    GpuVector<uint32_t> metas_;
-    GpuVector<double> values_;
-    // These two offsets fields contains
-    //      FlatOffset => offsets[0, n) constains size of each element
-    //      PrefixSumOffset => offsets[0, n+1) constains start location of each element
-    GpuVector<int> meta_offsets_;
-    GpuVector<int> value_offsets_;
-    // This is the current state of above data containers and it companion GpuContext.
-    // can only be used at assert statement for quick failure.
-    // shouldn't be used to drive the state machine(e.g. switch statement)
-    DataState data_state_ = DataState::Invalid;
+  // Currently, GpuVector contains host memory only
+  // next goal should make it switchable between host and device memory.
+  GpuVector<WkbTag> tags_;
+  // Not including tags_, for faster access of WkbTags
+  GpuVector<uint32_t> metas_;
+  GpuVector<double> values_;
+  // These two offsets fields contains
+  //      FlatOffset => offsets[0, n) constains size of each element
+  //      PrefixSumOffset => offsets[0, n+1) constains start location of each element
+  GpuVector<int> meta_offsets_;
+  GpuVector<int> value_offsets_;
+  // This is the current state of above data containers and it companion GpuContext.
+  // can only be used at assert statement for quick failure.
+  // shouldn't be used to drive the state machine(e.g. switch statement)
+  DataState data_state_ = DataState::Invalid;
 };
-
 
 using GpuContext = GeometryVector::GpuContext;
 
-}    // namespace cuda
-}    // namespace gis
-}    // namespace zilliz
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

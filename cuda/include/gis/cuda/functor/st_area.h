@@ -7,6 +7,6 @@ namespace cuda {
 
 void ST_Area(const GeometryVector& vec, double* host_results);
 
-}    // namespace cuda
-}    // namespace gis
-}    // namespace zilliz
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz
