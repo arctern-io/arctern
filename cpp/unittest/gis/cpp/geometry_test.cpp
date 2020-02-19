@@ -24,7 +24,6 @@
 #include "arrow/gis_api.h"
 #include "utils/check_status.h"
 
-using namespace zilliz::gis;
 
 TEST(geometry_test, make_point_from_double) {
   arrow::DoubleBuilder builder_x;
@@ -40,7 +39,7 @@ TEST(geometry_test, make_point_from_double) {
   builder_x.Finish(&ptr_x);
   builder_y.Finish(&ptr_y);
 
-  auto point_arr = ST_Point(ptr_x, ptr_y);
+  auto point_arr = zilliz::gis::ST_Point(ptr_x, ptr_y);
   auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
 
   ASSERT_EQ(point_arr_str->length(), 2);
@@ -139,21 +138,21 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 
 TEST(geometry_test, test_ST_IsValid) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_IsValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_IsValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
   // ASSERT_EQ(vaild_mark_arr1->Value(0),true);
   // ASSERT_EQ(vaild_mark_arr1->Value(1),true);
   // ASSERT_EQ(vaild_mark_arr1->Value(2),false);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_IsValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_IsValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
   // ASSERT_EQ(vaild_mark_arr2->Value(0),true);
   // ASSERT_EQ(vaild_mark_arr2->Value(1),true);
   // ASSERT_EQ(vaild_mark_arr2->Value(2),false);
 
   std::shared_ptr<arrow::Array> line = build_linestrings();
-  auto vaild_mark3 = ST_IsValid(line);
+  auto vaild_mark3 = zilliz::gis::ST_IsValid(line);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
   // ASSERT_EQ(vaild_mark_arr3->Value(0),true);
   // ASSERT_EQ(vaild_mark_arr3->Value(1),true);
@@ -174,7 +173,7 @@ TEST(geometry_test, test_ST_Intersection) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection1 = ST_Intersection(left_geometry, right_geometry);
+  auto intersection1 = zilliz::gis::ST_Intersection(left_geometry, right_geometry);
   // auto intersection_polygons_arr =
   // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
   // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
@@ -188,7 +187,7 @@ TEST(geometry_test, test_ST_Intersection) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection2 = ST_Intersection(left_geometry, right_geometry);
+  auto intersection2 = zilliz::gis::ST_Intersection(left_geometry, right_geometry);
 
   left_string_builder.Reset();
   right_string_builder.Reset();
@@ -199,7 +198,7 @@ TEST(geometry_test, test_ST_Intersection) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection3 = ST_Intersection(left_geometry, right_geometry);
+  auto intersection3 = zilliz::gis::ST_Intersection(left_geometry, right_geometry);
 
   CPLFree(left_str);
   CPLFree(right_str);
@@ -216,7 +215,7 @@ TEST(geometry_test, test_ST_Intersection) {
 //   CPLFree(str);
 
 //   string_builder.Finish(&array);
-//   auto geometries = ST_PrecisionReduce(array,6);
+//   auto geometries = zilliz::gis::ST_PrecisionReduce(array,6);
 //   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
 //   // ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
@@ -237,7 +236,7 @@ TEST(geometry_test, test_ST_Equals) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection1 = ST_Equals(left_geometry, right_geometry);
+  auto intersection1 = zilliz::gis::ST_Equals(left_geometry, right_geometry);
   // auto intersection_polygons_arr =
   // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
   // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
@@ -251,7 +250,7 @@ TEST(geometry_test, test_ST_Equals) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection2 = ST_Equals(left_geometry, right_geometry);
+  auto intersection2 = zilliz::gis::ST_Equals(left_geometry, right_geometry);
 
   left_string_builder.Reset();
   right_string_builder.Reset();
@@ -262,7 +261,7 @@ TEST(geometry_test, test_ST_Equals) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection3 = ST_Equals(left_geometry, right_geometry);
+  auto intersection3 = zilliz::gis::ST_Equals(left_geometry, right_geometry);
 
   CPLFree(left_str);
   CPLFree(right_str);
@@ -282,7 +281,7 @@ TEST(geometry_test, test_ST_Touches) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection1 = ST_Touches(left_geometry, right_geometry);
+  auto intersection1 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
   // auto intersection_polygons_arr =
   // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
   // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
@@ -296,7 +295,7 @@ TEST(geometry_test, test_ST_Touches) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection2 = ST_Touches(left_geometry, right_geometry);
+  auto intersection2 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
 
   left_string_builder.Reset();
   right_string_builder.Reset();
@@ -307,7 +306,7 @@ TEST(geometry_test, test_ST_Touches) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection3 = ST_Touches(left_geometry, right_geometry);
+  auto intersection3 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
 
   CPLFree(left_str);
   CPLFree(right_str);
@@ -327,7 +326,7 @@ TEST(geometry_test, test_ST_Overlaps) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection1 = ST_Overlaps(left_geometry, right_geometry);
+  auto intersection1 = zilliz::gis::ST_Overlaps(left_geometry, right_geometry);
   // auto intersection_polygons_arr =
   // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
   // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
@@ -341,7 +340,7 @@ TEST(geometry_test, test_ST_Overlaps) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection2 = ST_Overlaps(left_geometry, right_geometry);
+  auto intersection2 = zilliz::gis::ST_Overlaps(left_geometry, right_geometry);
 
   left_string_builder.Reset();
   right_string_builder.Reset();
@@ -352,7 +351,7 @@ TEST(geometry_test, test_ST_Overlaps) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection3 = ST_Overlaps(left_geometry, right_geometry);
+  auto intersection3 = zilliz::gis::ST_Overlaps(left_geometry, right_geometry);
 
   CPLFree(left_str);
   CPLFree(right_str);
@@ -372,7 +371,7 @@ TEST(geometry_test, test_ST_Crosses) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection1 = ST_Crosses(left_geometry, right_geometry);
+  auto intersection1 = zilliz::gis::ST_Crosses(left_geometry, right_geometry);
   // auto intersection_polygons_arr =
   // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
   // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
@@ -386,7 +385,7 @@ TEST(geometry_test, test_ST_Crosses) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection2 = ST_Crosses(left_geometry, right_geometry);
+  auto intersection2 = zilliz::gis::ST_Crosses(left_geometry, right_geometry);
 
   left_string_builder.Reset();
   right_string_builder.Reset();
@@ -397,7 +396,7 @@ TEST(geometry_test, test_ST_Crosses) {
   right_string_builder.Append(std::string(right_str));
   left_string_builder.Finish(&left_geometry);
   right_string_builder.Finish(&right_geometry);
-  auto intersection3 = ST_Crosses(left_geometry, right_geometry);
+  auto intersection3 = zilliz::gis::ST_Crosses(left_geometry, right_geometry);
 
   CPLFree(left_str);
   CPLFree(right_str);
@@ -405,29 +404,29 @@ TEST(geometry_test, test_ST_Crosses) {
 
 TEST(geometry_test, test_ST_IsSimple) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_IsSimple(points);
+  auto vaild_mark1 = zilliz::gis::ST_IsSimple(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_IsSimple(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_IsSimple(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> line = build_linestrings();
-  auto vaild_mark3 = ST_IsSimple(line);
+  auto vaild_mark3 = zilliz::gis::ST_IsSimple(line);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 }
 
 TEST(geometry_test, test_ST_MakeValid) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> line = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(line);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(line);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 }
 
@@ -465,7 +464,7 @@ TEST(geometry_test, test_ST_GeometryType) {
 
   string_builder.Finish(&geometries);
 
-  auto geometries_type = ST_GeometryType(geometries);
+  auto geometries_type = zilliz::gis::ST_GeometryType(geometries);
   auto geometries_type_arr =
       std::static_pointer_cast<arrow::StringArray>(geometries_type);
 
@@ -508,7 +507,7 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
 
   string_builder.Finish(&geometries);
 
-  auto geometries_arr = ST_SimplifyPreserveTopology(geometries, 10000);
+  auto geometries_arr = zilliz::gis::ST_SimplifyPreserveTopology(geometries, 10000);
   auto geometries_arr_str = std::static_pointer_cast<arrow::StringArray>(geometries_arr);
 
   ASSERT_EQ(geometries_arr_str->GetString(0), "POLYGON ((2 1,3 1,2 8,2 1))");
@@ -518,165 +517,165 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
 
 TEST(geometry_test, test_ST_Contains) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Contains(points, polygons);
-  auto res2 = ST_Contains(polygons, lines);
-  auto res3 = ST_Contains(points, lines);
+  auto res1 = zilliz::gis::ST_Contains(points, polygons);
+  auto res2 = zilliz::gis::ST_Contains(polygons, lines);
+  auto res3 = zilliz::gis::ST_Contains(points, lines);
 }
 
 TEST(geometry_test, test_ST_Intersects) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Intersects(points, polygons);
-  auto res2 = ST_Intersects(polygons, lines);
-  auto res3 = ST_Intersects(points, lines);
+  auto res1 = zilliz::gis::ST_Intersects(points, polygons);
+  auto res2 = zilliz::gis::ST_Intersects(polygons, lines);
+  auto res3 = zilliz::gis::ST_Intersects(points, lines);
 }
 
 TEST(geometry_test, test_ST_Within) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Within(points, polygons);
-  auto res2 = ST_Within(polygons, lines);
-  auto res3 = ST_Within(points, lines);
+  auto res1 = zilliz::gis::ST_Within(points, polygons);
+  auto res2 = zilliz::gis::ST_Within(polygons, lines);
+  auto res3 = zilliz::gis::ST_Within(points, lines);
 }
 
 TEST(geometry_test, test_ST_Distance) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Distance(points, polygons);
-  auto res2 = ST_Distance(polygons, lines);
-  auto res3 = ST_Distance(points, lines);
+  auto res1 = zilliz::gis::ST_Distance(points, polygons);
+  auto res2 = zilliz::gis::ST_Distance(polygons, lines);
+  auto res3 = zilliz::gis::ST_Distance(points, lines);
 }
 
 TEST(geometry_test, test_ST_Area) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Area(points);
-  auto res2 = ST_Area(polygons);
-  auto res3 = ST_Area(lines);
+  auto res1 = zilliz::gis::ST_Area(points);
+  auto res2 = zilliz::gis::ST_Area(polygons);
+  auto res3 = zilliz::gis::ST_Area(lines);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Centroid(points);
-  auto res2 = ST_Centroid(polygons);
-  auto res3 = ST_Centroid(lines);
+  auto res1 = zilliz::gis::ST_Centroid(points);
+  auto res2 = zilliz::gis::ST_Centroid(polygons);
+  auto res3 = zilliz::gis::ST_Centroid(lines);
 }
 
 TEST(geometry_test, test_ST_Length) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Length(points);
-  auto res2 = ST_Length(polygons);
-  auto res3 = ST_Length(lines);
+  auto res1 = zilliz::gis::ST_Length(points);
+  auto res2 = zilliz::gis::ST_Length(polygons);
+  auto res3 = zilliz::gis::ST_Length(lines);
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_ConvexHull(points);
-  auto res2 = ST_ConvexHull(polygons);
-  auto res3 = ST_ConvexHull(lines);
+  auto res1 = zilliz::gis::ST_ConvexHull(points);
+  auto res2 = zilliz::gis::ST_ConvexHull(polygons);
+  auto res3 = zilliz::gis::ST_ConvexHull(lines);
 }
 
-// TODO:geospark ST_NPoints can not work.
+// TODO: geospark zilliz::gis::ST_NPoints can not work.
 TEST(geometry_test, test_ST_NPoints) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_NPoints(points);
-  auto res2 = ST_NPoints(polygons);
-  auto res3 = ST_NPoints(lines);
+  auto res1 = zilliz::gis::ST_NPoints(points);
+  auto res2 = zilliz::gis::ST_NPoints(polygons);
+  auto res3 = zilliz::gis::ST_NPoints(lines);
 }
 
 TEST(geometry_test, test_ST_Envelope) {
@@ -702,7 +701,7 @@ TEST(geometry_test, test_ST_Envelope) {
   builder.Append(std::string(p8));
   builder.Finish(&polygons);
 
-  auto result = ST_Envelope(polygons);
+  auto result = zilliz::gis::ST_Envelope(polygons);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
   ASSERT_EQ(result_str->GetString(0), "POINT (10 10)");
   ASSERT_EQ(result_str->GetString(1), "LINESTRING (0 0,0 10)");
@@ -716,20 +715,20 @@ TEST(geometry_test, test_ST_Envelope) {
 
 TEST(geometry_test, test_ST_Buffer) {
   std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
   auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
   std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
   auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
   std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
   auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 
-  auto res1 = ST_Buffer(points, 1.2);
-  auto res2 = ST_Buffer(polygons, 1.2);
-  auto res3 = ST_Buffer(lines, 1.2);
+  auto res1 = zilliz::gis::ST_Buffer(points, 1.2);
+  auto res2 = zilliz::gis::ST_Buffer(polygons, 1.2);
+  auto res3 = zilliz::gis::ST_Buffer(lines, 1.2);
 }
 
 TEST(geometry_test, test_ST_PolygonFromEnvelope) {
@@ -753,7 +752,7 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min.Finish(&y_min_ptr);
   y_max.Finish(&y_max_ptr);
 
-  auto res = ST_PolygonFromEnvelope(x_min_ptr, y_min_ptr, x_max_ptr, y_max_ptr);
+  auto res = zilliz::gis::ST_PolygonFromEnvelope(x_min_ptr, y_min_ptr, x_max_ptr, y_max_ptr);
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
   std::string expect = "POLYGON ((0 0,1 0,0 1,1 1,0 0))";
@@ -770,7 +769,7 @@ TEST(geometry_test, test_ST_Transform) {
   std::string src_rs("EPSG:4326");
   std::string dst_rs("EPSG:3857");
 
-  auto res = ST_Transform(input_data, src_rs, dst_rs);
+  auto res = zilliz::gis::ST_Transform(input_data, src_rs, dst_rs);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(), nullptr, &res_geo));
@@ -794,7 +793,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   builder.Append(std::string(p2));
   builder.Finish(&polygons);
 
-  auto result = ST_Union_Aggr(polygons);
+  auto result = zilliz::gis::ST_Union_Aggr(polygons);
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))");
@@ -805,7 +804,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   builder.Append(std::string(p1));
   builder.Append(std::string(p2));
   builder.Finish(&polygons);
-  result = ST_Union_Aggr(polygons);
+  result = zilliz::gis::ST_Union_Aggr(polygons);
   geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(geometries_arr->GetString(0),
@@ -817,7 +816,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   builder.Append(std::string(p1));
   builder.Append(std::string(p2));
   builder.Finish(&polygons);
-  result = ST_Union_Aggr(polygons);
+  result = zilliz::gis::ST_Union_Aggr(polygons);
   geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(geometries_arr->GetString(0),
@@ -829,7 +828,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   builder.Append(std::string(p1));
   builder.Append(std::string(p2));
   builder.Finish(&polygons);
-  result = ST_Union_Aggr(polygons);
+  result = zilliz::gis::ST_Union_Aggr(polygons);
   geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
@@ -846,7 +845,7 @@ TEST(geometry_test, test_ST_Envelop_Aggr) {
   builder.Append(std::string(p2));
   builder.Finish(&polygons);
 
-  auto result = ST_Envelope_Aggr(polygons);
+  auto result = zilliz::gis::ST_Envelope_Aggr(polygons);
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,7 0,7 4,0 4,0 0))");
