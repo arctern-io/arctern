@@ -1,9 +1,9 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/scatter_plot/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
-        render/2d/heatmap/heatmap.cpp
-        render/2d/heatmap/set_color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/heatmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/set_color.cpp
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
