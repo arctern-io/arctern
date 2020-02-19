@@ -222,9 +222,9 @@ TEST(geometry_test,test_ST_IsValid){
   construct_common_test_cases_array
   auto res = ST_IsValid(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-//  for(int i=0;i<res_bool->length();i++){
-//   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-//  }
+  for(int i=0;i<res_bool->length();i++){
+   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
+  }
    ASSERT_EQ(res_bool->Value(0),true);
    ASSERT_EQ(res_bool->Value(1),true);
    ASSERT_EQ(res_bool->Value(2),true);
@@ -502,46 +502,17 @@ TEST(geometry_test, test_ST_Crosses){
 
 
 TEST(geometry_test, test_ST_IsSimple){
-  common_test_cases
-  construct_common_test_cases_array
-  auto res = ST_IsSimple(input);
-  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-//  for(int i=0;i<res_bool->length();i++){
-//   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-//  }
-   ASSERT_EQ(res_bool->Value(0),true);
-   ASSERT_EQ(res_bool->Value(1),true);
-   ASSERT_EQ(res_bool->Value(2),true);
-   ASSERT_EQ(res_bool->Value(3),true);
-   ASSERT_EQ(res_bool->Value(4),true);
-   ASSERT_EQ(res_bool->Value(5),true);
-   ASSERT_EQ(res_bool->Value(6),true);
-   ASSERT_EQ(res_bool->Value(7),true);
-   ASSERT_EQ(res_bool->Value(8),true);
-   ASSERT_EQ(res_bool->Value(9),true);
-   ASSERT_EQ(res_bool->Value(10),true);
-   ASSERT_EQ(res_bool->Value(11),true);
-   ASSERT_EQ(res_bool->Value(12),false);
-   ASSERT_EQ(res_bool->Value(13),true);
-   ASSERT_EQ(res_bool->Value(14),true);
-   ASSERT_EQ(res_bool->Value(15),true);
-   ASSERT_EQ(res_bool->Value(16),true);
-   ASSERT_EQ(res_bool->Value(17),true);
-   ASSERT_EQ(res_bool->Value(18),true);
-   ASSERT_EQ(res_bool->Value(19),true);
-   ASSERT_EQ(res_bool->Value(20),true);
-   ASSERT_EQ(res_bool->Value(21),true);
-   ASSERT_EQ(res_bool->Value(22),true);
-   ASSERT_EQ(res_bool->Value(23),true);
-   ASSERT_EQ(res_bool->Value(24),true);
-   ASSERT_EQ(res_bool->Value(25),true);
-   ASSERT_EQ(res_bool->Value(26),true);
-   ASSERT_EQ(res_bool->Value(27),true);
-   ASSERT_EQ(res_bool->Value(28),true);
-   ASSERT_EQ(res_bool->Value(29),true);
-   ASSERT_EQ(res_bool->Value(30),true);
-   ASSERT_EQ(res_bool->Value(31),true);
-   ASSERT_EQ(res_bool->Value(32),true);
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_IsSimple(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_IsSimple(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+
+  std::shared_ptr<arrow::Array> line = build_linestrings();
+  auto vaild_mark3 = ST_IsSimple(line);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 }
 
 TEST(geometry_test, test_ST_MakeValid){
@@ -813,9 +784,9 @@ TEST(geometry_test, test_ST_Envelope) {
   auto result = ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
-//  for(int i=0;i<result_str->length();i++){
-//   std::cout<<result_str->GetString(i)<<"#"<<i<<std::endl;
-//  }
+  for(int i=0;i<result_str->length();i++){
+   std::cout<<result_str->GetString(i)<<"#"<<i<<std::endl;
+  }
    ASSERT_EQ(result_str->GetString(0),"POINT (0 1)");
    ASSERT_EQ(result_str->GetString(1),"LINESTRING (0 0,0 1)");
    ASSERT_EQ(result_str->GetString(2),"LINESTRING (0 0,1 0)");
