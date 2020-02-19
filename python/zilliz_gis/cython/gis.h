@@ -6,6 +6,7 @@
 namespace zilliz {
 namespace gis {
 
+
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
 
