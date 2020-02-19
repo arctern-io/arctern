@@ -17,6 +17,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <stdint.h>
 
 #include "arrow/api.h"
@@ -31,7 +32,7 @@ namespace gis {
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
 std::shared_ptr<arrow::Array>
-ST_Point(const std::shared_ptr<arrow::Array> &x_values, 
+ST_Point(const std::shared_ptr<arrow::Array> &x_values,
          const std::shared_ptr<arrow::Array> &y_values);
 
 std::shared_ptr<arrow::Array>
@@ -61,11 +62,11 @@ ST_Envelope(const std::shared_ptr<arrow::Array> &geometries);
 /**************************** GEOMETRY PROCESSING ****************************/
 
 std::shared_ptr<arrow::Array>
-ST_Buffer(const std::shared_ptr<arrow::Array> &geometries, 
+ST_Buffer(const std::shared_ptr<arrow::Array> &geometries,
           double buffer_distance, int n_quadrant_segments = 30);
 
 // std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries, 
+// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
 //                    int32_t precision);
 
 std::shared_ptr<arrow::Array>
@@ -76,7 +77,7 @@ std::shared_ptr<arrow::Array>
 ST_MakeValid(const std::shared_ptr<arrow::Array> &geometries);
 
 std::shared_ptr<arrow::Array>
-ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries, 
+ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array> &geometries,
                             double distance_tolerance);
 
 std::shared_ptr<arrow::Array>
@@ -107,11 +108,11 @@ ST_Length(const std::shared_ptr<arrow::Array> &geometries);
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
 std::shared_ptr<arrow::Array>
-ST_Equals(const std::shared_ptr<arrow::Array> &geometries_1, 
+ST_Equals(const std::shared_ptr<arrow::Array> &geometries_1,
           const std::shared_ptr<arrow::Array> &geometries_2);
 
 std::shared_ptr<arrow::Array>
-ST_Touches(const std::shared_ptr<arrow::Array> &geometries_1, 
+ST_Touches(const std::shared_ptr<arrow::Array> &geometries_1,
            const std::shared_ptr<arrow::Array> &geometries_2);
 
 std::shared_ptr<arrow::Array>
@@ -119,7 +120,7 @@ ST_Overlaps(const std::shared_ptr<arrow::Array> &geometries_1,
             const std::shared_ptr<arrow::Array> &geometries_2);
 
 std::shared_ptr<arrow::Array>
-ST_Crosses(const std::shared_ptr<arrow::Array> &geometries_1, 
+ST_Crosses(const std::shared_ptr<arrow::Array> &geometries_1,
            const std::shared_ptr<arrow::Array> &geometries_2);
 
 std::shared_ptr<arrow::Array>
@@ -149,5 +150,6 @@ std::shared_ptr<std::string>
 GIS_Version();
 
 
-} // gis
-} // zilliz
+} // namespace gis
+} // namespace zilliz
+
