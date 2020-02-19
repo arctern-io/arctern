@@ -1,7 +1,53 @@
-from python.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
-from python.util.vega.scatter_plot.vega_node import *
+from zilliz_gis.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
+from zilliz_gis.util.vega.vega_node import *
 
 import json
+
+"""
+Top-Level Vega Specification Property: Marks
+"""
+class Marks(RootMarks):
+    class Encode:
+        class Value:
+            def __init__(self, v: int or float or str):
+                self.v = v
+
+            def to_dict(self):
+                dic = {
+                    "value": self.v
+                }
+                return dic
+
+        def __init__(self, shape: Value, stroke: Value, strokeWidth: Value, opacity: Value):
+            if not (type(shape.v) == str and type(strokeWidth.v) == int and
+                    type(stroke.v) == str and type(opacity.v) == float):
+                # TODO error log here
+                print("illegal")
+                assert 0
+            self._shape = shape
+            self._stroke = stroke
+            self._strokeWidth = strokeWidth
+            self._opacity = opacity
+
+        def to_dict(self):
+            dic = {
+                "enter": {
+                    "shape": self._shape.to_dict(),
+                    "stroke": self._stroke.to_dict(),
+                    "strokeWidth": self._strokeWidth.to_dict(),
+                    "opacity": self._opacity.to_dict()
+                }
+            }
+            return dic
+
+    def __init__(self, encode: Encode):
+        self.encode = encode
+
+    def to_dict(self):
+        dic = [{
+            "encode": self.encode.to_dict()
+        }]
+        return dic
 
 class VegaCircle2d(VegaScatterPlot):
     def __init__(self, width: int, height: int, mark_size: int, mark_color: str, opacity: float):

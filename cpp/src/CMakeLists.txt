@@ -2,9 +2,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/set_color.cpp
-#        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
+        render/2d/heatmap/heatmap.cpp
+        render/2d/heatmap/set_color.cpp
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
@@ -36,45 +35,35 @@ set(render_src
         )
 
 set(gis_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/make_point.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/point_map.cpp
-        )
-
-set(gis_cpp_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpu/gdal_impl.cpp
-	#gis/cpu/geometry.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpu/gdal_based_impl.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
 endif (STATIC_LIB_SWITCH)
+
 add_library(
-    GIS ${LIBRARY_TYPE}
+    windrose ${LIBRARY_TYPE}
     ${render_src}
     ${gis_src}
-    ${gis_cpp_src}
 )
 
-add_library(
-        zgeo SHARED
-        ${gis_cpp_src}
-)
-add_dependencies(GIS miniz_ep gdal_ep rapidjson_ep)
-add_dependencies(zgeo miniz_ep gdal_ep rapidjson_ep)
+add_dependencies(windrose miniz_ep stb_ep)
 
-set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
+set_property(TARGET windrose PROPERTY CUDA_STANDARD 11)
 if (USE_GPU)
-    target_link_libraries(GIS
+    target_link_libraries(windrose
             GL
             EGL
             cudart
+            gdal
             arrow
             pthread
             miniz
             )
 else ()
-    target_link_libraries(GIS
+    target_link_libraries(windrose
             GLU
             OSMesa
 	    gdal
@@ -84,13 +73,7 @@ else ()
             )
 endif ()
 
-target_link_libraries(zgeo
-	gdal
-        arrow
-        )
 
-install(TARGETS GIS
+install(TARGETS windrose
         DESTINATION lib)
 
-install(TARGETS zgeo
-        DESTINATION lib)

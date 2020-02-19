@@ -6,12 +6,15 @@ namespace zilliz {
 namespace render {
 
 std::shared_ptr<arrow::Array>
-get_pointmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> arr_y);
+point_map(const std::shared_ptr<arrow::Array> &arr_x,
+          const std::shared_ptr<arrow::Array> &arr_y,
+          const std::string &conf);
 
 std::shared_ptr<arrow::Array>
-get_heatmap(std::shared_ptr<arrow::Array> arr_x, std::shared_ptr<arrow::Array> arr_y, std::shared_ptr<arrow::Array> arr_c);
+heat_map(const std::shared_ptr<arrow::Array> &arr_x,
+         const std::shared_ptr<arrow::Array> &arr_y,
+         const std::shared_ptr<arrow::Array> &arr_c,
+         const std::string &conf);
 
-//std::shared_ptr<arrow::Array>
-//get_pointmap(std::shared_ptr<arrow::Array> arr_x);
 }
 }

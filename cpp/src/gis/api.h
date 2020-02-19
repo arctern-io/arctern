@@ -69,6 +69,11 @@ ST_Centroid(const std::shared_ptr<arrow::Array> &geometries);
 std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geometries);
 
+std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
+
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
@@ -112,6 +117,20 @@ ST_Intersects(const std::shared_ptr<arrow::Array> &geometries_1,
 std::shared_ptr<arrow::Array>
 ST_Within(const std::shared_ptr<arrow::Array> &geometries_1,
           const std::shared_ptr<arrow::Array> &geometries_2);
+
+
+/*************************** AGGREGATE FUNCTIONS ***************************/
+
+std::shared_ptr<arrow::Array>
+ST_Union_Aggr(const std::shared_ptr<arrow::Array> &geometries);
+
+
+std::shared_ptr<arrow::Array>
+ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geometries);
+
+
+std::shared_ptr<std::string>
+GIS_Version();
 
 
 } // gis

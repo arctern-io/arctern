@@ -3,14 +3,9 @@
 
 #include "arrow/api.h"
 
-std::shared_ptr<arrow::Array>
-point_map(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
-std::shared_ptr<arrow::Array>
-make_point(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
 namespace zilliz {
 namespace gis {
+
 
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
@@ -96,6 +91,11 @@ std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
+
+std::shared_ptr<arrow::Array>
 ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
@@ -104,6 +104,12 @@ ST_Envelope(const std::shared_ptr<arrow::Array> &geo_arr);
 std::shared_ptr<arrow::Array>
 ST_Buffer(const std::shared_ptr<arrow::Array> &geometries, 
           double buffer_distance, int n_quadrant_segments = 30);
+
+std::shared_ptr<arrow::Array>
+ST_Union_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
+
+std::shared_ptr<arrow::Array>
+ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
 
 } // gis
 } // zilliz
