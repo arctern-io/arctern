@@ -70,8 +70,8 @@ auto p32 = "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)),
 auto p33 = "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)),((0 0, 0 -2, 3 4, 0 2, 0 0)) )";\
 
 
-#define construct_common_test_cases_array\
-arrow::StringBuilder builder;\
+#define construct_common_test_cases_array \
+ arrow::StringBuilder builder;\
 std::shared_ptr<arrow::Array> input;\
 builder.Append(std::string(p1  ));\
 builder.Append(std::string(p2 ));\
@@ -233,7 +233,6 @@ build_linestrings(){
   return line_strings;
 }
 
-<<<<<<< HEAD
 TEST(geometry_test,test_ST_IsValid){
 
   common_test_cases
@@ -903,7 +902,7 @@ TEST(geometry_test, test_ST_Envelope) {
    common_test_cases
    construct_common_test_cases_array
 
-  auto result = zilliz::gis::ST_Envelope(polygons);
+  auto result = zilliz::gis::ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(result_str->GetString(0),"POINT (0 1)");
