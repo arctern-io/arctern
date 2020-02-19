@@ -491,7 +491,8 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(ST_Area, arrow::DoubleBuilder, geo, OGR_G_Area(geo));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(ST_Length, arrow::DoubleBuilder, geo, OGR_G_Length(geo));
+UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(ST_Length, arrow::DoubleBuilder, geo,
+                                    OGR_G_Length(geo));
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
                                   OGR_G_Distance(geo_1, geo_2));
