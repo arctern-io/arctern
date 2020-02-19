@@ -46,11 +46,42 @@ namespace gis {
     return results;                                                                      \
   } while (0)
 
+#define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1_J1(RESULT_BUILDER_TYPE, GEO_VAR,           \
+                                                 APPEND_RESULT)                          \
+  do {                                                                                   \
+    auto len = geometries->length();                                                     \
+    auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);      \
+    RESULT_BUILDER_TYPE builder;                                                         \
+    void* GEO_VAR;                                                                       \
+    for (int32_t i = 0; i < len; i++) {                                                  \
+      CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(), \
+                                                   nullptr, (OGRGeometry**)(&GEO_VAR))); \
+      OGRwkbGeometryType eType =                                                         \
+          wkbFlatten(((OGRGeometry*)(GEO_VAR))->getGeometryType());                      \
+      if (OGR_GT_IsSubClassOf(eType, wkbMultiSurface) ||                                 \
+          eType == wkbGeometryCollection) {                                              \
+        CHECK_ARROW(builder.Append(APPEND_RESULT));                                      \
+      }                                                                                  \
+      OGRGeometryFactory::destroyGeometry((OGRGeometry*)GEO_VAR);                        \
+    }                                                                                    \
+    std::shared_ptr<arrow::Array> results;                                               \
+    CHECK_ARROW(builder.Finish(&results));                                               \
+    return results;                                                                      \
+  } while (0)
+
 #define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR,       \
                                          APPEND_RESULT)                                 \
   std::shared_ptr<arrow::Array> FUNC_NAME(                                              \
       const std::shared_ptr<arrow::Array>& geometries) {                                \
     UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(RESULT_BUILDER_TYPE, GEO_VAR, APPEND_RESULT); \
+  }
+
+#define UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(FUNC_NAME, RESULT_BUILDER_TYPE, GEO_VAR, \
+                                            APPEND_RESULT)                           \
+  std::shared_ptr<arrow::Array> FUNC_NAME(                                           \
+      const std::shared_ptr<arrow::Array>& geometries) {                             \
+    UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1_J1(RESULT_BUILDER_TYPE, GEO_VAR,           \
+                                             APPEND_RESULT);                         \
   }
 
 #define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(RESULT_BUILDER_TYPE, GEO_VAR,              \
@@ -458,9 +489,9 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 /************************ MEASUREMENT FUNCTIONS ************************/
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Area, arrow::DoubleBuilder, geo, OGR_G_Area(geo));
+UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(ST_Area, arrow::DoubleBuilder, geo, OGR_G_Area(geo));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Length, arrow::DoubleBuilder, geo, OGR_G_Length(geo));
+UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1_J1(ST_Length, arrow::DoubleBuilder, geo, OGR_G_Length(geo));
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
                                   OGR_G_Distance(geo_1, geo_2));
