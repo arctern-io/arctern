@@ -80,7 +80,7 @@ GeometryVector::WkbDecodeAppend(const char* raw_bin) {
 
     auto extend_values_from_stream = [&](int dimensions, size_t points) {
         auto count = dimensions * points;
-        int value_base = values_.size();
+        int value_base = static_cast<int>(values_.size());
         values_.resize(values_.size() + count);
         fill<double>(count, stream_iter, values_.data() + value_base);
     };
@@ -109,7 +109,7 @@ GeometryVector::WkbDecodeAppend(const char* raw_bin) {
         case WkbCategory::Polygon: {
             int total_values = 0;
             // most case 1
-            auto count_sub_poly = fetch<uint32_t>(stream_iter);
+            auto count_sub_poly = fetch<int>(stream_iter);
             metas_.push_back(count_sub_poly);
             for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
                 auto points = fetch<uint32_t>(stream_iter);
