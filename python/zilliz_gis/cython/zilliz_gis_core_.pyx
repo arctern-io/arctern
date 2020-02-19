@@ -4,11 +4,11 @@ from pyarrow.lib cimport *
 
 cimport zilliz_gis_core__ as zilliz_gis_core_pxd
 
-def point_map(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
-    
-def make_point(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.make_point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
+def point_map(arr_x, arr_y, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+
+def heat_map(arr_x, arr_y, arr_c, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.heat_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(arr_c), conf))
 
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
@@ -73,6 +73,9 @@ def ST_Length(object geo_arr):
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
 
+def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
+
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))
 
@@ -83,3 +86,9 @@ def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
     if n_quadrant_segments is not None:
         return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist,n_quadrant_segments))
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
+
+def ST_Union_Aggr(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Union_Aggr(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Envelope_Aggr(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Envelope_Aggr(pyarrow_unwrap_array(geo_arr)))
