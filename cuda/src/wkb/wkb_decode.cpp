@@ -1,5 +1,5 @@
 #include "wkb/wkb_tag.h"
-#include "gis/gis_definitions.h"
+#include "common/gis_definitions.h"
 #include <memory>
 #include <cstdlib>
 #include <cstring>

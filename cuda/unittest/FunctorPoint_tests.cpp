@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "gis/gis_definitions.h"
+#include "common/gis_definitions.h"
 #include "functor/st_point.h"
 #include <cmath>
 #include <functor/st_distance.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gis/gis_definitions.h"
+#include "common/gis_definitions.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
