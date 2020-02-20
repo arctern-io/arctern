@@ -81,42 +81,42 @@
       "MULTIPOLYGON ( ((0 0, 1 -8, 1 1, 0 1, 0 0)), ((0 0, 4 4, 0 4, 0 0)),((0 0, 0 "  \
       "-2, 3 4, 0 2, 0 0)) )";
 
-#define CONSTRUCT_COMMON_TEST_CASES \
-  arrow::StringBuilder builder;           \
-  std::shared_ptr<arrow::Array> input;    \
-  builder.Append(std::string(p1));        \
-  builder.Append(std::string(p2));        \
-  builder.Append(std::string(p3));        \
-  builder.Append(std::string(p4));        \
-  builder.Append(std::string(p5));        \
-  builder.Append(std::string(p6));        \
-  builder.Append(std::string(p7));        \
-  builder.Append(std::string(p8));        \
-  builder.Append(std::string(p9));        \
-  builder.Append(std::string(p10));       \
-  builder.Append(std::string(p11));       \
-  builder.Append(std::string(p12));       \
-  builder.Append(std::string(p13));       \
-  builder.Append(std::string(p14));       \
-  builder.Append(std::string(p15));       \
-  builder.Append(std::string(p16));       \
-  builder.Append(std::string(p17));       \
-  builder.Append(std::string(p18));       \
-  builder.Append(std::string(p19));       \
-  builder.Append(std::string(p20));       \
-  builder.Append(std::string(p21));       \
-  builder.Append(std::string(p22));       \
-  builder.Append(std::string(p23));       \
-  builder.Append(std::string(p24));       \
-  builder.Append(std::string(p25));       \
-  builder.Append(std::string(p26));       \
-  builder.Append(std::string(p27));       \
-  builder.Append(std::string(p28));       \
-  builder.Append(std::string(p29));       \
-  builder.Append(std::string(p30));       \
-  builder.Append(std::string(p31));       \
-  builder.Append(std::string(p32));       \
-  builder.Append(std::string(p33));       \
+#define CONSTRUCT_COMMON_TEST_CASES    \
+  arrow::StringBuilder builder;        \
+  std::shared_ptr<arrow::Array> input; \
+  builder.Append(std::string(p1));     \
+  builder.Append(std::string(p2));     \
+  builder.Append(std::string(p3));     \
+  builder.Append(std::string(p4));     \
+  builder.Append(std::string(p5));     \
+  builder.Append(std::string(p6));     \
+  builder.Append(std::string(p7));     \
+  builder.Append(std::string(p8));     \
+  builder.Append(std::string(p9));     \
+  builder.Append(std::string(p10));    \
+  builder.Append(std::string(p11));    \
+  builder.Append(std::string(p12));    \
+  builder.Append(std::string(p13));    \
+  builder.Append(std::string(p14));    \
+  builder.Append(std::string(p15));    \
+  builder.Append(std::string(p16));    \
+  builder.Append(std::string(p17));    \
+  builder.Append(std::string(p18));    \
+  builder.Append(std::string(p19));    \
+  builder.Append(std::string(p20));    \
+  builder.Append(std::string(p21));    \
+  builder.Append(std::string(p22));    \
+  builder.Append(std::string(p23));    \
+  builder.Append(std::string(p24));    \
+  builder.Append(std::string(p25));    \
+  builder.Append(std::string(p26));    \
+  builder.Append(std::string(p27));    \
+  builder.Append(std::string(p28));    \
+  builder.Append(std::string(p29));    \
+  builder.Append(std::string(p30));    \
+  builder.Append(std::string(p31));    \
+  builder.Append(std::string(p32));    \
+  builder.Append(std::string(p33));    \
   builder.Finish(&input);
 
 TEST(geometry_test, make_point_from_double) {
@@ -301,15 +301,15 @@ TEST(geometry_test, test_ST_Intersection) {
   builder1.Append(std::string(l7));
   builder1.Append(std::string(l8));
   builder1.Append(std::string(l9));
-  //builder1.Append(std::string(l10));
-  //builder1.Append(std::string(l11));
-  //builder1.Append(std::string(l12));
-  //builder1.Append(std::string(l13));
-  //builder1.Append(std::string(l14));
-  //builder1.Append(std::string(l15));
-  //builder1.Append(std::string(l16));
+  // builder1.Append(std::string(l10));
+  // builder1.Append(std::string(l11));
+  // builder1.Append(std::string(l12));
+  // builder1.Append(std::string(l13));
+  // builder1.Append(std::string(l14));
+  // builder1.Append(std::string(l15));
+  // builder1.Append(std::string(l16));
   builder1.Finish(&input1);
-  
+
   auto r1 = "POINT (0 1)";
   auto r2 = "POINT (3 1)";
   auto r3 = "MULTIPOINT (0 1, 1 0, 1 2, 1 2)";
@@ -338,16 +338,16 @@ TEST(geometry_test, test_ST_Intersection) {
   builder2.Append(std::string(r7));
   builder2.Append(std::string(r8));
   builder2.Append(std::string(r9));
-  //builder2.Append(std::string(r10));
-  //builder2.Append(std::string(r11));
-  //builder2.Append(std::string(r12));
-  //builder2.Append(std::string(r13));
-  //builder2.Append(std::string(r14));
-  //builder2.Append(std::string(r15));
-  //builder2.Append(std::string(r16));
-  builder2.Finish(&input2);  
-  
-  auto res = zilliz::gis::ST_Intersection(input1,input2);
+  // builder2.Append(std::string(r10));
+  // builder2.Append(std::string(r11));
+  // builder2.Append(std::string(r12));
+  // builder2.Append(std::string(r13));
+  // builder2.Append(std::string(r14));
+  // builder2.Append(std::string(r15));
+  // builder2.Append(std::string(r16));
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Intersection(input1, input2);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -1095,7 +1095,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
 }
 
-TEST(geometry_test, test_ST_Envelope_Aggr) { 
+TEST(geometry_test, test_ST_Envelope_Aggr) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
   auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
@@ -1103,8 +1103,8 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
   auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
-  //auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  //auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  // auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0))
+  // )"; auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -1115,8 +1115,8 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
   builder.Append(std::string(p5));
   builder.Append(std::string(p6));
   builder.Append(std::string(p7));
-  //builder.Append(std::string(p8));
-  //builder.Append(std::string(p9));
+  // builder.Append(std::string(p8));
+  // builder.Append(std::string(p9));
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_Envelope_Aggr(input);
