@@ -27,7 +27,7 @@
 #include "gis/cuda/functor/st_area.h"
 #include "test_helper.h"
 
-namespace zilliz::gis::cuda{
+namespace zilliz::gis::cuda {
 TEST(FunctorArea, naive) {
   ASSERT_TRUE(true);
   // TODO use gdal to convert better good
@@ -55,4 +55,4 @@ TEST(FunctorArea, naive) {
     ASSERT_DOUBLE_EQ(result[i], std);
   }
 }
-}
+}  // namespace zilliz::gis::cuda

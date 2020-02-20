@@ -27,10 +27,7 @@
 #include "gis/cuda/functor/st_distance.h"
 #include "test_helper.h"
 
-using namespace zilliz;
-using namespace zilliz::gis;
-using namespace zilliz::gis::cuda;
-
+namespace zilliz::gis::cuda {
 TEST(FunctorDistance, naive) {
   ASSERT_TRUE(true);
   // TODO use gdal to convert better good
@@ -73,3 +70,4 @@ TEST(FunctorDistance, naive) {
     ASSERT_DOUBLE_EQ(result[i], std);
   }
 }
+}  // namespace zilliz::gis::cuda

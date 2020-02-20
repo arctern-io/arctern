@@ -48,16 +48,16 @@ enum class WkbGroup : uint32_t {
 struct WkbTag {
   WkbTag() = default;
   constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbGroup group)
-      : data_((uint32_t)category + (uint32_t)group * WkbGroupBase) {}
+      : data((uint32_t)category + (uint32_t)group * WkbGroupBase) {}
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data_(data) {}
+  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
   constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data_ % WkbGroupBase);
+    return static_cast<WkbCategory>(data % WkbGroupBase);
   }
   constexpr DEVICE_RUNNABLE WkbGroup get_group() {
-    return static_cast<WkbGroup>(data_ / WkbGroupBase);
+    return static_cast<WkbGroup>(data / WkbGroupBase);
   }
-  uint32_t data_;
+  uint32_t data;
 };
 
 }  // namespace cuda
