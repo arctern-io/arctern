@@ -1059,4 +1059,32 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
 }
 
-TEST(geometry_test, test_ST_Envelope_Aggr) { ASSERT_EQ(1, 1); }
+TEST(geometry_test, test_ST_Envelope_Aggr) { 
+  auto p1 = "POINT (0 1)";
+  auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  //auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  //auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  //builder.Append(std::string(p8));
+  //builder.Append(std::string(p9));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_Envelope_Aggr(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((-2 -3,-2 4,3 4,3 -3,-2 -3))");
+}
