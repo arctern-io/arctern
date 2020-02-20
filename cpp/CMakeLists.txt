@@ -44,7 +44,6 @@ set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
     message(STATUS "Building on GPU")
     enable_language(CUDA)
-    find_package(CUDA) # for cudart
     set(CMAKE_CUDA_STANDARD 14)
     add_compile_definitions(USE_GPU)
     set(CPU_OR_GPU "GPU")
