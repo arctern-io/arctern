@@ -1,4 +1,4 @@
-set(gis_cuda_test_srcs dummy.cpp
+set(gis_cuda_test_srcs dummy_tests.cpp
         functor_distance_tests.cpp
         functor_area_tests.cpp
         functor_point_tests.cpp
