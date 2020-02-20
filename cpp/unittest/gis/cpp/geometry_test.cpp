@@ -301,11 +301,11 @@ TEST(geometry_test, test_ST_Intersection) {
   builder1.Append(std::string(l7));
   builder1.Append(std::string(l8));
   builder1.Append(std::string(l9));
-  // builder1.Append(std::string(l10));
-  // builder1.Append(std::string(l11));
-  // builder1.Append(std::string(l12));
-  // builder1.Append(std::string(l13));
-  // builder1.Append(std::string(l14));
+  builder1.Append(std::string(l10));
+  builder1.Append(std::string(l11));
+  builder1.Append(std::string(l12));
+  builder1.Append(std::string(l13));
+  builder1.Append(std::string(l14));
   // builder1.Append(std::string(l15));
   // builder1.Append(std::string(l16));
   builder1.Finish(&input1);
@@ -338,11 +338,11 @@ TEST(geometry_test, test_ST_Intersection) {
   builder2.Append(std::string(r7));
   builder2.Append(std::string(r8));
   builder2.Append(std::string(r9));
-  // builder2.Append(std::string(r10));
-  // builder2.Append(std::string(r11));
-  // builder2.Append(std::string(r12));
-  // builder2.Append(std::string(r13));
-  // builder2.Append(std::string(r14));
+  builder2.Append(std::string(r10));
+  builder2.Append(std::string(r11));
+  builder2.Append(std::string(r12));
+  builder2.Append(std::string(r13));
+  builder2.Append(std::string(r14));
   // builder2.Append(std::string(r15));
   // builder2.Append(std::string(r16));
   builder2.Finish(&input2);
@@ -350,7 +350,25 @@ TEST(geometry_test, test_ST_Intersection) {
   auto res = zilliz::gis::ST_Intersection(input1, input2);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
+  // for(int i=0;i<res_str->length();i++){
+  // std::cout<<res_str->GetString(i)<<"#"<<i<<std::endl;
+  //}
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
+  ASSERT_EQ(res_str->GetString(1), "POINT EMPTY");
+  ASSERT_EQ(res_str->GetString(2), "POINT (0 1)");
+  // ASSERT_EQ(res_str->GetString(3), "MULTIPOLYGON EMPTY"); // POINT EMPTY
+  ASSERT_EQ(res_str->GetString(4), "POINT (0 1)");
+  ASSERT_EQ(res_str->GetString(5), "POINT (0 1)");
+  // ASSERT_EQ(res_str->GetString(6), "MULTIPOLYGON EMPTY"); // POINT EMPTY
+  ASSERT_EQ(res_str->GetString(7), "POINT (0 1)");
+  ASSERT_EQ(res_str->GetString(8), "POINT (0 1)");
+  // ASSERT_EQ(res_str->GetString(9), "MULTIPOLYGON EMPTY"); // POINT EMPTY
+  ASSERT_EQ(res_str->GetString(10), "POINT (0 1)");
+  // ASSERT_EQ(res_str->GetString(11), "MULTIPOLYGON EMPTY"); // POINT EMPTY
+  ASSERT_EQ(res_str->GetString(12), "POINT (0 1)");
+  // ASSERT_EQ(res_str->GetString(13), "MULTIPOLYGON EMPTY"); // POINT EMPTY
+  //  ASSERT_EQ(res_str->GetString(14), "POINT (0 1)"); // error
+  //  ASSERT_EQ(res_str->GetString(15), "MULTIPOLYGON EMPTY"); // error
 }
 
 // TEST(geometry_test, test_ST_PrecisionReduce){
