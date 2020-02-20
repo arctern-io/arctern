@@ -583,11 +583,11 @@ TEST(geometry_test, test_ST_Overlaps) {
   auto l11 = "LINESTRING (0 0, 0 1)";
   auto l12 = "LINESTRING (0 0, 0 1)";
 
-  auto l13 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
-  auto l14 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
-  auto l15 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
-  auto l16 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
-  auto l17 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
+  auto l13 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))";
+  auto l14 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))";
+  auto l15 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))";
+  auto l16 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))";
+  auto l17 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))";
 
   auto l18 = "MULTIPOINT (0 1, 1 2, 3 3)";
   auto l19 = "LINESTRING ( 0 0.6,0 1, 1 2,3 4)";
