@@ -10,3 +10,4 @@ target_link_libraries(choroplethmap_tests ${unittest_libs} gdal)
 
 install(TARGETS pointmap_tests DESTINATION unittest)
 install(TARGETS heatmap_tests DESTINATION unittest)
+install(TARGETS choroplethmap_tests DESTINATION unittest)
