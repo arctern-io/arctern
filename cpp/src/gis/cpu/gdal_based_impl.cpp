@@ -470,6 +470,8 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
     if (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
         OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection) {
       CHECK_ARROW(builder.Append(OGR_G_Area(geo)));
+    } else {
+      CHECK_ARROW(builder.Append(0));
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
@@ -490,7 +492,10 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
     if (OGR_GT_IsCurve(eType) || OGR_GT_IsSubClassOf(eType, wkbMultiSurface) ||
         eType == wkbGeometryCollection) {
       CHECK_ARROW(builder.Append(OGR_G_Length(geo)));
+    } else {
+      CHECK_ARROW(builder.Append(0));
     }
+
     OGRGeometryFactory::destroyGeometry(geo);
   }
   std::shared_ptr<arrow::Array> results;
