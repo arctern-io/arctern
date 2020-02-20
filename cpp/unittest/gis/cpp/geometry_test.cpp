@@ -371,23 +371,28 @@ TEST(geometry_test, test_ST_Intersection) {
   // ASSERT_EQ(res_str->GetString(15), "MULTIPOLYGON EMPTY"); // error
 }
 
-// TEST(geometry_test, test_ST_PrecisionReduce){
-//   OGRPoint point(1.5555555,1.55555555);
-//   arrow::StringBuilder string_builder;
-//   std::shared_ptr<arrow::Array> array;
+TEST(geometry_test, test_ST_PrecisionReduce){
+  
+  arrow::StringBuilder string_builder;
+  string_builder.Append("POINT (1.555555555 1.5555555555)");
+  string_builder.Append("POLYGON ((100.33333 20.456,120 30,130 40,100 20))");
+  string_builder.Append("LINESTRING (100.345 89.666,89.03 78)");
+  string_builder.Append("MULTIPOINT (120 90,89 90.009)");
+  string_builder.Append("MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0),(11 11.78987,20 11,20 20,20 11,11 11)))");
+  string_builder.Append("MULTILINESTRING ((12.666 15.23,89.45 98.67),(12.555 78.777,90.789 67.3))");
+  std::shared_ptr<arrow::Array> array;
 
-//   char *str = nullptr;
-//   CHECK_GDAL(point.exportToWkt(&str));
-//   string_builder.Append(std::string(str));
-//   CPLFree(str);
+  string_builder.Finish(&array);
+  auto geometries = zilliz::gis::ST_PrecisionReduce(array,2);
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
-//   string_builder.Finish(&array);
-//   auto geometries = zilliz::gis::ST_PrecisionReduce(array,6);
-//   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
-
-//   // ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
-//   ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
-// }
+  ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.56 1.56)");
+  ASSERT_EQ(geometries_arr->GetString(1),"POLYGON ((100.33 20.46,120 30,130 40,100 20))");
+  ASSERT_EQ(geometries_arr->GetString(2),"LINESTRING (100.35 89.67,89.03 78)");
+  ASSERT_EQ(geometries_arr->GetString(3),"MULTIPOINT (120 90,89 90.01)");
+  ASSERT_EQ(geometries_arr->GetString(4),"MULTIPOLYGON (((0 0.56,10 0,10 10,0 10,0 0),(11 11.79,20 11,20 20,20 11,11 11)))");
+  ASSERT_EQ(geometries_arr->GetString(5),"MULTILINESTRING ((12.67 15.23,89.45 98.67),(12.56 78.78,90.79 67.3))");
+}
 
 TEST(geometry_test, test_ST_Equals) {
   auto l1 = "POINT (0 1)";
