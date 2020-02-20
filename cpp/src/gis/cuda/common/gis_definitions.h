@@ -18,6 +18,7 @@
 #pragma once
 #include <array>
 #include <cassert>
+#include <limits>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -69,7 +70,6 @@ namespace cuda {
 
 // Container of the variant geometries
 class GeometryVector {
- private:
  public:
   // Appending is used when decoding Wkb
   // Flat vs PrefixSum are state of meta_offsets/value_offsets
@@ -127,7 +127,6 @@ class GeometryVector {
     }
   };
 
- private:
  public:
   static void GpuContextDeleter(GpuContext*);
   using GpuContextHolder =

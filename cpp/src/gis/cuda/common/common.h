@@ -28,4 +28,4 @@
 
 #include <cmath>
 
-#include "kernel_config.h"
+#include "gis/cuda/common/kernel_config.h"
