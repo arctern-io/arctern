@@ -51,7 +51,7 @@ add_library(
 
 add_dependencies(windrose miniz_ep stb_ep)
 
-set_property(TARGET windrose PROPERTY CUDA_STANDARD 11)
+set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
     target_link_libraries(windrose
             GL
@@ -66,7 +66,7 @@ else ()
     target_link_libraries(windrose
             GLU
             OSMesa
-	    gdal
+	        gdal
             arrow
             pthread
             miniz
