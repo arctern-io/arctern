@@ -1,2 +1,4 @@
 add_subdirectory(cpp)
-add_subdirectory(cuda)
+if(USE_GPU)
+    add_subdirectory(cuda)
+endif()
