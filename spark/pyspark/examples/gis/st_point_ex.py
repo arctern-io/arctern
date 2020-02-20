@@ -23,13 +23,13 @@ def run_st_point(spark):
     spark.sql("select ST_Point_UDF(x, y) from points").show()
 
 if __name__ == "__main__":
-    spark = SparkSession \
+    spark_session = SparkSession \
         .builder \
         .appName("Python Arrow-in-Spark example") \
         .getOrCreate()
 
-    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+    spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    run_st_point(spark)
+    run_st_point(spark_session)
 
-    spark.stop()
+    spark_session.stop()
