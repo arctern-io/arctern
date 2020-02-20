@@ -8,6 +8,7 @@ message("CMAKE_CUDA_FLAGS=${CMAKE_CUDA_FLAGS}")
 
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
+
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wconversion -pedantic")
 
 include_directories(include)
