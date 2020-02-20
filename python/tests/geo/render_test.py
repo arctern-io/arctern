@@ -17,6 +17,7 @@ import zilliz_gis
 
 from zilliz_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from zilliz_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from zilliz_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 
 def _savePNG(data, png_name):
     try:
@@ -79,3 +80,28 @@ def test_heat_map():
     heat_map = heat_map.buffers()[1].to_pybytes()
 
     _savePNG(heat_map, "/tmp/test_heat_map.png")
+
+def test_choropleth_map():
+    wkt_data = []
+    count_data = []
+
+    wkt_data.append("POLYGON (("
+                    "-73.98128 40.754771, "
+                    "-73.980185 40.754771, "
+                    "-73.980185 40.755587, "
+                    "-73.98128 40.755587, "
+                    "-73.98128 40.754771))")
+    count_data.append(5.0)
+
+    arr_wkt = pyarrow.array(wkt_data, type='string')
+    arr_count = pyarrow.array(count_data, type='double')
+
+    vega_choropleth_map = VegaChoroplethMap(1900, 1410,
+                                            [-73.984092, 40.753893, -73.977588, 40.756342],
+                                            "blue_to_red", [2.5, 5], 1.0)
+    vega_json = vega_choropleth_map.build()
+
+    choropleth_map = zilliz_gis.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map = choropleth_map.buffers()[1].to_pybytes()
+
+    _savePNG(choropleth_map, "/tmp/test_choropleth_map.png")

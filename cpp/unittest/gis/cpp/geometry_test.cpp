@@ -452,6 +452,7 @@ TEST(geometry_test, test_ST_Equals) {
   auto res_str = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   for (int i = 0; i < res_str->length(); i++) {
+    // TODO: add log here
     std::cout << res_str->Value(i) << "#" << i << std::endl;
   }
   ASSERT_EQ(res_str->Value(0), true);

@@ -38,6 +38,7 @@ void ColorParser::ParseHEX() {
     color_.g = std::stoul(match[2].str(), nullptr, 16);
     color_.b = std::stoul(match[3].str(), nullptr, 16);
   } else {
+    // TODO: add log here
     std::cout << css_color_string_ << " is an invalid rgb color\n";
     return;
   }

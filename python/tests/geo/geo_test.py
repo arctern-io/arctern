@@ -295,5 +295,3 @@ def test_ST_Envelope_Aggr():
     data = pandas.Series([p1, p2])
     rst = zilliz_gis.ST_Envelope_Aggr(pyarrow.array(data))
     assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"
-    
-
