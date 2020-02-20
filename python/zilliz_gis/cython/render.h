@@ -35,9 +35,13 @@ heat_map(const std::shared_ptr<arrow::Array> &arr_x,
          const std::shared_ptr<arrow::Array> &arr_c,
          const std::string &conf);
 
+std::shared_ptr<arrow::Array>
+choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkt,
+               const std::shared_ptr<arrow::Array>& arr_count,
+               const std::string& conf);
+
 
 } // render
 } // zilliz
 
 #endif
-

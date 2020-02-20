@@ -16,44 +16,45 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include "render/2d/general_2d.h"
+#include "render/utils/vega/vega_choropleth_map/vega_choropleth_map.h"
 
 namespace zilliz {
 namespace render {
 
-struct Color {
-  float r;
-  float g;
-  float b;
-  float a;
-};
-
-enum class ColorStyle : int {
-  kUnknown,
-  kBlueToRed,
-  kSkyBlueToWhite,
-  kPurpleToYellow,
-  kRedTransParency,
-  kBlueTransParency,
-  kBlueGreenYellow,
-  kWhiteToBlue,
-  kBlueWhiteRed,
-  kGreenYellowRed
-};
-
-class ColorParser {
+template <typename T>
+class ChoroplethMap : public General2D {
  public:
-  explicit ColorParser(const std::string& css_color_string);
+  ChoroplethMap();
 
-  const Color& color() const { return color_; }
+  ChoroplethMap(std::vector<std::string> choropleth_wkt, T* count, int64_t num_vertices);
+
+  uint8_t* Render() final;
+
+  void Draw() final;
+
+  void DataInit() final{};
+
+  void InputInit() final{};
+
+  VegaChoroplethMap& mutable_choroplethmap_vega() { return choropleth_vega_; }
 
  private:
-  void ParseHEX();
+  void Transform();
 
-  // TODO: add ParseRGBA(), ParseHSL(), ParseHSV(), ParseHWB(), ParseCMYK()
+  void SetColor();
 
  private:
-  Color color_;
-  std::string css_color_string_;
+  std::vector<std::string> choropleth_wkt_;
+  T* count_;
+  int64_t num_buildings_;
+  VegaChoroplethMap choropleth_vega_;
+
+  std::vector<std::vector<int>> buildings_x_;
+  std::vector<std::vector<int>> buildings_y_;
+  std::vector<float> colors_;
 };
 
 }  // namespace render

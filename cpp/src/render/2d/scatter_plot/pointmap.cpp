@@ -128,6 +128,7 @@ void PointMap::Shader() {
   glCompileShader(vertex_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (!success) {
+    // TODO: add log here
     std::cout << "vertex shader compile failed.";
   }
 
@@ -136,6 +137,7 @@ void PointMap::Shader() {
   glCompileShader(fragment_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (!success) {
+    // TODO: add log here
     std::cout << "fragment shader compile failed.";
   }
 
@@ -145,6 +147,7 @@ void PointMap::Shader() {
   glLinkProgram(shader_program);
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
   if (!success) {
+    // TODO: add log here
     std::cout << "shader program link failed.";
   }
 
