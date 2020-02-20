@@ -449,68 +449,123 @@ TEST(geometry_test, test_ST_Equals) {
   builder2.Finish(&input2);
 
   auto res = zilliz::gis::ST_Equals(input1, input2);
-  auto res_str = std::static_pointer_cast<arrow::BooleanArray>(res);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  for (int i = 0; i < res_str->length(); i++) {
-    std::cout << res_str->Value(i) << "#" << i << std::endl;
-  }
-  ASSERT_EQ(res_str->Value(0), true);
-  ASSERT_EQ(res_str->Value(1), false);
-  ASSERT_EQ(res_str->Value(2), false);
-  // ASSERT_EQ(res_str->Value(3), true); // false
-  ASSERT_EQ(res_str->Value(4), false);
-  // ASSERT_EQ(res_str->Value(5), true); // false
-  ASSERT_EQ(res_str->Value(6), false);
-  // ASSERT_EQ(res_str->Value(7), true); // false
-  ASSERT_EQ(res_str->Value(8), false);
-  // ASSERT_EQ(res_str->Value(9), true); // false
-  ASSERT_EQ(res_str->Value(10), false);
-  // ASSERT_EQ(res_str->Value(11), true); // false
+  // for (int i = 0; i < res_bool->length(); i++) {
+  //  std::cout << res_bool->Value(i) << "#" << i << std::endl;
+  // }
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), false);
+  ASSERT_EQ(res_bool->Value(2), false);
+  // ASSERT_EQ(res_bool->Value(3), true); // false
+  ASSERT_EQ(res_bool->Value(4), false);
+  // ASSERT_EQ(res_bool->Value(5), true); // false
+  ASSERT_EQ(res_bool->Value(6), false);
+  // ASSERT_EQ(res_bool->Value(7), true); // false
+  ASSERT_EQ(res_bool->Value(8), false);
+  // ASSERT_EQ(res_bool->Value(9), true); // false
+  ASSERT_EQ(res_bool->Value(10), false);
+  // ASSERT_EQ(res_bool->Value(11), true); // false
 }
 
 TEST(geometry_test, test_ST_Touches) {
-  arrow::StringBuilder left_string_builder;
-  std::shared_ptr<arrow::Array> left_geometry;
-  arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> right_geometry;
-  char* left_str = nullptr;
-  char* right_str = nullptr;
+  auto l1 = "POINT (0 1)";
+  auto l2 = "POINT (0 1)";
+  auto l3 = "POINT (0 1)";
+  auto l4 = "POINT (0 1)";
+  auto l5 = "POINT (0 1)";
+  auto l6 = "POINT (0 1)";
+  auto l7 = "POINT (0 1)";
+  auto l8 = "POINT (0 1)";
+  auto l9 = "POINT (0 1)";
+  auto l10 = "POINT (0 1)";
+  auto l11 = "POINT (0 1)";
+  auto l12 = "POINT (0 1)";
+  auto l13 = "POINT (0 1)";
+  auto l14 = "POINT (0 1)";
+  auto l15 = "POINT (0 1)";
+  auto l16 = "POINT (0 1)";
 
-  left_str = build_point(25, 25);
-  right_str = build_polygon(20, 20);
-  left_string_builder.Append(std::string(left_str));
-  right_string_builder.Append(std::string(right_str));
-  left_string_builder.Finish(&left_geometry);
-  right_string_builder.Finish(&right_geometry);
-  auto intersection1 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
-  // auto intersection_polygons_arr =
-  // std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
-  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
+  arrow::StringBuilder builder1;
+  std::shared_ptr<arrow::Array> input1;
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+  builder1.Append(std::string(l3));
+  builder1.Append(std::string(l4));
+  builder1.Append(std::string(l5));
+  builder1.Append(std::string(l6));
+  builder1.Append(std::string(l7));
+  builder1.Append(std::string(l8));
+  builder1.Append(std::string(l9));
+  builder1.Append(std::string(l10));
+  builder1.Append(std::string(l11));
+  builder1.Append(std::string(l12));
+  builder1.Append(std::string(l13));
+  builder1.Append(std::string(l14));
+  builder1.Append(std::string(l15));
+  builder1.Append(std::string(l16));
+  builder1.Finish(&input1);
 
-  left_string_builder.Reset();
-  right_string_builder.Reset();
+  auto r1 = "POINT (0 1)";
+  auto r2 = "POINT (3 1)";
+  auto r3 = "MULTIPOINT (0 1, 1 0, 1 2, 1 2)";
+  auto r4 = "MULTIPOINT (0 1, 0 1)";
+  auto r5 = "LINESTRING (0 0, 0 1, 1 1)";
+  auto r6 = "LINESTRING (0 1, 0 1, 0 1)";
+  auto r7 = "LINESTRING (0 0, 0 1, 0 1, 0 1, 0 0)";
+  auto r8 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
+  auto r9 = "POLYGON ((0 1, 0 1, 0 1, 0 1, 0 1))";
+  auto r10 = "POLYGON ((0 0, 1 0, 1 1, 0 0.5, 0 0))";
+  auto r11 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 0 2, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto r12 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 0 1, 0 1) )";
+  auto r13 = "MULTIPOLYGON ( ((0 0, 1 1, 0 2,0 0)) )";
+  auto r14 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
+  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r16 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)), ((0 1, 0 1, 0 1,0 1)) )";
 
-  left_str = build_polygon(20, 20);
-  right_str = build_linestring(25, 25);
-  left_string_builder.Append(std::string(left_str));
-  right_string_builder.Append(std::string(right_str));
-  left_string_builder.Finish(&left_geometry);
-  right_string_builder.Finish(&right_geometry);
-  auto intersection2 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
+  arrow::StringBuilder builder2;
+  std::shared_ptr<arrow::Array> input2;
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+  builder2.Append(std::string(r3));
+  builder2.Append(std::string(r4));
+  builder2.Append(std::string(r5));
+  builder2.Append(std::string(r6));
+  builder2.Append(std::string(r7));
+  builder2.Append(std::string(r8));
+  builder2.Append(std::string(r9));
+  builder2.Append(std::string(r10));
+  builder2.Append(std::string(r11));
+  builder2.Append(std::string(r12));
+  builder2.Append(std::string(r13));
+  builder2.Append(std::string(r14));
+  builder2.Append(std::string(r15));
+  builder2.Append(std::string(r16));
+  builder2.Finish(&input2);
 
-  left_string_builder.Reset();
-  right_string_builder.Reset();
+  auto res = zilliz::gis::ST_Touches(input1, input2);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  left_str = build_point(20, 20);
-  right_str = build_linestring(25, 25);
-  left_string_builder.Append(std::string(left_str));
-  right_string_builder.Append(std::string(right_str));
-  left_string_builder.Finish(&left_geometry);
-  right_string_builder.Finish(&right_geometry);
-  auto intersection3 = zilliz::gis::ST_Touches(left_geometry, right_geometry);
-
-  CPLFree(left_str);
-  CPLFree(right_str);
+   for(int i=0;i<res_bool->length();i++){
+   std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
+   }
+   
+   // ASSERT_EQ(res_bool->Value(0 ), true);
+   ASSERT_EQ(res_bool->Value(1 ), false);
+   ASSERT_EQ(res_bool->Value(2 ), false);
+   // ASSERT_EQ(res_bool->Value(3 ), true);
+   ASSERT_EQ(res_bool->Value(4 ), false);
+   // ASSERT_EQ(res_bool->Value(5 ), true);
+   ASSERT_EQ(res_bool->Value(6 ), false);
+   ASSERT_EQ(res_bool->Value(7 ), true);
+   ASSERT_EQ(res_bool->Value(8 ), true);
+   ASSERT_EQ(res_bool->Value(9 ), false);
+   ASSERT_EQ(res_bool->Value(10), false);
+   // ASSERT_EQ(res_bool->Value(11), true);
+   // ASSERT_EQ(res_bool->Value(12), false);
+   ASSERT_EQ(res_bool->Value(13), true);
+   // ASSERT_EQ(res_bool->Value(14), false);
+   // ASSERT_EQ(res_bool->Value(15), true);
 }
 
 TEST(geometry_test, test_ST_Overlaps) {
