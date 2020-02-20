@@ -458,9 +458,50 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 /************************ MEASUREMENT FUNCTIONS ************************/
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Area, arrow::DoubleBuilder, geo, OGR_G_Area(geo));
+std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
+  auto len = geometries->length();
+  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  arrow::DoubleBuilder builder;
+  OGRGeometry* geo;
+  for (int32_t i = 0; i < len; i++) {
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
+                                                 nullptr, (OGRGeometry**)(&geo)));
+    OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
+    if (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
+        OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection) {
+      CHECK_ARROW(builder.Append(OGR_G_Area(geo)));
+    } else {
+      CHECK_ARROW(builder.Append(0));
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Length, arrow::DoubleBuilder, geo, OGR_G_Length(geo));
+std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
+  auto len = geometries->length();
+  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  arrow::DoubleBuilder builder;
+  OGRGeometry* geo;
+  for (int32_t i = 0; i < len; i++) {
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
+                                                 nullptr, (OGRGeometry**)(&geo)));
+    OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
+    if (OGR_GT_IsCurve(eType) || OGR_GT_IsSubClassOf(eType, wkbMultiSurface) ||
+        eType == wkbGeometryCollection) {
+      CHECK_ARROW(builder.Append(OGR_G_Length(geo)));
+    } else {
+      CHECK_ARROW(builder.Append(0));
+    }
+
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
                                   OGR_G_Distance(geo_1, geo_2));
