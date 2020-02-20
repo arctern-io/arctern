@@ -32,7 +32,7 @@ class PointMap : public General2D {
 
   uint8_t* Render() final;
 
-  void Shader() final;
+  void Shader();
 
   void Draw() final;
 

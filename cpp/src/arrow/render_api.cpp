@@ -132,5 +132,27 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
   return nullptr;
 }
 
+std::shared_ptr<arrow::Array> choropleth_map(
+    const std::shared_ptr<arrow::Array>& arr_wkt,
+    const std::shared_ptr<arrow::Array>& arr_color, const std::string& conf) {
+  auto arr_wkt_length = arr_wkt->length();
+  auto arr_color_length = arr_color->length();
+  auto wkt_type = arr_wkt->type_id();
+  auto color_type = arr_color->type_id();
+
+  assert(arr_wkt_length == arr_color_length);
+  assert(wkt_type == arrow::Type::STRING);
+  assert(color_type == arrow::Type::UINT32);
+
+  auto string_array = std::static_pointer_cast<arrow::StringArray>(arr_wkt);
+  std::vector<std::string> input_wkt(arr_wkt_length);
+  for (int i = 0; i < arr_wkt_length; i++) {
+    input_wkt[i] = string_array->GetString(i);
+  }
+  auto input_color = (uint32_t*)arr_color->data()->GetValues<uint8_t>(1);
+
+  return out_pic(choroplethmap(input_wkt, input_color, arr_wkt_length, conf));
+}
+
 }  // namespace render
 }  // namespace zilliz
