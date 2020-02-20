@@ -749,13 +749,13 @@ TEST(geometry_test, test_ST_Area) {
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
-  // EXPECT_DOUBLE_EQ(res_double->Value(2),0);
+//  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(3), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
-  // EXPECT_DOUBLE_EQ(res_double->Value(8),1.5);
+// EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
@@ -796,7 +796,7 @@ TEST(geometry_test, test_ST_Centroid) {
   ASSERT_EQ(res_str->GetString(5), "POINT (2.6444665557806 41.5285902625069)");
   ASSERT_EQ(res_str->GetString(6), "POINT (0.666666666666667 1.33333333333333)");
   ASSERT_EQ(res_str->GetString(7), "POINT (2.0 1.7)");
-  // ASSERT_EQ(res_str->GetString(8),"POINT
+  // ASSERT_EQ(res_str->GetString(8),"POINT 
   // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
 }
 
@@ -867,16 +867,13 @@ TEST(geometry_test, test_ST_ConvexHull) {
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
   ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 0,0 1,1 1,0 0))");
-  ASSERT_EQ(res_str->GetString(2),
-            "POLYGON ((0 0,1 1,1 0,0 0))");  // geospark:POINT (0.6464466094067263
-                                             // 0.3535533905932737)
+  ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,1 1,1 0,0 0))"); 
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(4), "POLYGON ((0 0,1 2,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(5), "POLYGON ((9 -3,0 0,-1 2,-4 100,9 -3))");
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
-  ASSERT_EQ(res_str->GetString(8),
-            "POLYGON ((0 0,0 1,1 4,1 0,0 0))");  // POINT (0.6 1.13333333333333)
+  ASSERT_EQ(res_str->GetString(8), "POLYGON ((0 0,0 1,1 4,1 0,0 0))");
 }
 
 // TODO : geospark ST_NPoints can not work.
