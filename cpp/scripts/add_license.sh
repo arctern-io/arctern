@@ -1,6 +1,6 @@
 FOLDER=$1
 if [[ -z ${FOLDER} ]]; then
-    echo fuck
+    echo usage $0 [folder_to_add_license]
     exit
 else
     echo good
