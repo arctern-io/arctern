@@ -276,11 +276,11 @@ def run_st_envelope(spark):
     assert rs[0][0] == 'POINT (10 10)'
     assert rs[1][0] == 'LINESTRING (0 0,0 10)'
     assert rs[2][0] == 'LINESTRING (0 0,10 0)'
-    assert rs[3][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[4][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[5][0] == 'POLYGON ((0 0,10 0,10 5,0 5,0 0))'
-    assert rs[6][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[7][0] == 'POLYGON ((0 0,20 0,20 20,0 20,0 0))'
+    assert rs[3][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[4][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[5][0] == 'POLYGON ((0 0,0 5,10 5,10 0,0 0))'
+    assert rs[6][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[7][0] == 'POLYGON ((0 0,0 20,20 20,20 0,0 0))'
 
 def run_st_buffer(spark):
     test_data = []
@@ -330,7 +330,7 @@ def run_st_envelope_aggr(spark):
     envelope_aggr_df = spark.createDataFrame(data=test_data, schema=['geos'])
     envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
-    assert rs[0][0] == 'POLYGON ((0 0,7 0,7 4,0 4,0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 4,7 4,7 0,0 0))'
 
 def run_st_transform(spark):
     test_data = []
@@ -342,40 +342,40 @@ def run_st_transform(spark):
 
 
 if __name__ == "__main__":
-    spark = SparkSession \
+    spark_session = SparkSession \
         .builder \
         .appName("Python Arrow-in-Spark example") \
         .getOrCreate()
 
-    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+    spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    register_funcs(spark)
+    register_funcs(spark_session)
 
-    run_st_point(spark)
-    run_st_intersection(spark)
-    run_st_isvalid(spark)
-    run_st_equals(spark)
-    run_st_touches(spark)
-    run_st_overlaps(spark)
-    run_st_crosses(spark)
-    run_st_issimple(spark)
-    run_st_geometry_type(spark)
-    run_st_make_valid(spark)
-    run_st_simplify_preserve_topology(spark)
-    run_st_polygon_from_envelope(spark)
-    run_st_contains(spark)
-    run_st_intersects(spark)
-    run_st_within(spark)
-    run_st_distance(spark)
-    run_st_area(spark)
-    run_st_centroid(spark)
-    run_st_length(spark)
-    run_st_convexhull(spark)
-    run_st_npoints(spark)
-    run_st_envelope(spark)
-    run_st_buffer(spark)
-    run_st_union_aggr(spark)
-    run_st_envelope_aggr(spark)
-    run_st_transform(spark)
+    run_st_point(spark_session)
+    run_st_intersection(spark_session)
+    run_st_isvalid(spark_session)
+    run_st_equals(spark_session)
+    run_st_touches(spark_session)
+    run_st_overlaps(spark_session)
+    run_st_crosses(spark_session)
+    run_st_issimple(spark_session)
+    run_st_geometry_type(spark_session)
+    run_st_make_valid(spark_session)
+    run_st_simplify_preserve_topology(spark_session)
+    run_st_polygon_from_envelope(spark_session)
+    run_st_contains(spark_session)
+    run_st_intersects(spark_session)
+    run_st_within(spark_session)
+    run_st_distance(spark_session)
+    run_st_area(spark_session)
+    run_st_centroid(spark_session)
+    run_st_length(spark_session)
+    run_st_convexhull(spark_session)
+    run_st_npoints(spark_session)
+    run_st_envelope(spark_session)
+    run_st_buffer(spark_session)
+    run_st_union_aggr(spark_session)
+    run_st_envelope_aggr(spark_session)
+    run_st_transform(spark_session)
 
-    spark.stop()
+    spark_session.stop()

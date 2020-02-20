@@ -234,11 +234,11 @@ def test_ST_Envelope():
     assert rst[0] == "POINT (10 10)"
     assert rst[1] == "LINESTRING (0 0,0 10)"
     assert rst[2] == "LINESTRING (0 0,10 0)"
-    assert rst[3] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
-    assert rst[4] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
-    assert rst[5] == "POLYGON ((0 0,10 0,10 5,0 5,0 0))"
-    assert rst[6] == "POLYGON ((0 0,10 0,10 10,0 10,0 0))"
-    assert rst[7] == "POLYGON ((0 0,20 0,20 20,0 20,0 0))"
+    assert rst[3] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
+    assert rst[4] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
+    assert rst[5] == "POLYGON ((0 0,0 5,10 5,10 0,0 0))"
+    assert rst[6] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
+    assert rst[7] == "POLYGON ((0 0,0 20,20 20,20 0,0 0))"
 
 def test_ST_Buffer():
     data = ["POLYGON((0 0,1 0,1 1,0 0))"]
@@ -294,4 +294,6 @@ def test_ST_Envelope_Aggr():
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = pandas.Series([p1, p2])
     rst = zilliz_gis.ST_Envelope_Aggr(pyarrow.array(data))
-    assert rst[0] == "POLYGON ((0 0,7 0,7 4,0 4,0 0))"
+    assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"
+    
+

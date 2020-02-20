@@ -28,13 +28,13 @@ def run_curve_z(spark):
 
 
 if __name__ == "__main__":
-    spark = SparkSession \
+    spark_session = SparkSession \
         .builder \
         .appName("Python TestPointmap") \
         .getOrCreate()
 
-    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+    spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    run_curve_z(spark)
+    run_curve_z(spark_session)
 
-    spark.stop()
+    spark_session.stop()
