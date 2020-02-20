@@ -402,8 +402,6 @@ TEST(geometry_test, test_ST_Equals) {
   auto l10 = "POINT (0 1)";
   auto l11 = "POINT (0 1)";
   auto l12 = "POINT (0 1)";
-  
-  
 
   arrow::StringBuilder builder1;
   std::shared_ptr<arrow::Array> input1;
@@ -453,16 +451,16 @@ TEST(geometry_test, test_ST_Equals) {
   auto res = zilliz::gis::ST_Equals(input1, input2);
   auto res_str = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-   for(int i=0;i<res_str->length();i++){
-   std::cout<<res_str->Value(i)<<"#"<<i<<std::endl;
-   }
+  for (int i = 0; i < res_str->length(); i++) {
+    std::cout << res_str->Value(i) << "#" << i << std::endl;
+  }
   ASSERT_EQ(res_str->Value(0), true);
   ASSERT_EQ(res_str->Value(1), false);
   ASSERT_EQ(res_str->Value(2), false);
   // ASSERT_EQ(res_str->Value(3), true); // false
   ASSERT_EQ(res_str->Value(4), false);
   // ASSERT_EQ(res_str->Value(5), true); // false
-  ASSERT_EQ(res_str->Value(6), false); 
+  ASSERT_EQ(res_str->Value(6), false);
   // ASSERT_EQ(res_str->Value(7), true); // false
   ASSERT_EQ(res_str->Value(8), false);
   // ASSERT_EQ(res_str->Value(9), true); // false

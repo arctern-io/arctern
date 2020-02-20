@@ -276,11 +276,11 @@ def run_st_envelope(spark):
     assert rs[0][0] == 'POINT (10 10)'
     assert rs[1][0] == 'LINESTRING (0 0,0 10)'
     assert rs[2][0] == 'LINESTRING (0 0,10 0)'
-    assert rs[3][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[4][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[5][0] == 'POLYGON ((0 0,10 0,10 5,0 5,0 0))'
-    assert rs[6][0] == 'POLYGON ((0 0,10 0,10 10,0 10,0 0))'
-    assert rs[7][0] == 'POLYGON ((0 0,20 0,20 20,0 20,0 0))'
+    assert rs[3][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[4][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[5][0] == 'POLYGON ((0 0,0 5,10 5,10 0,0 0))'
+    assert rs[6][0] == 'POLYGON ((0 0,0 10,10 10,10 0,0 0))'
+    assert rs[7][0] == 'POLYGON ((0 0,0 20,20 20,20 0,0 0))'
 
 def run_st_buffer(spark):
     test_data = []
@@ -330,7 +330,7 @@ def run_st_envelope_aggr(spark):
     envelope_aggr_df = spark.createDataFrame(data=test_data, schema=['geos'])
     envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
     rs = spark.sql("select ST_Envelope_Aggr_UDF(geos) from envelope_aggr").collect()
-    assert rs[0][0] == 'POLYGON ((0 0,7 0,7 4,0 4,0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 4,7 4,7 0,0 0))'
 
 def run_st_transform(spark):
     test_data = []
