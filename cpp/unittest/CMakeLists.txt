@@ -9,4 +9,4 @@ set(unittest_libs
         )
 
 add_subdirectory(render)
-add_subdirectory(gis/cpp)
+add_subdirectory(gis)
