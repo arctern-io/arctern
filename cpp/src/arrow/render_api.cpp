@@ -127,6 +127,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
       return out_pic(heatmap<double>(input_x, input_y, input_c_double, x_length, conf));
     }
     default:
+      // TODO: add log here
       std::cout << "type error!";
   }
   return nullptr;
@@ -201,6 +202,7 @@ std::shared_ptr<arrow::Array> choropleth_map(
           choroplethmap<double>(input_wkt, input_c_double, arr_wkt_length, conf));
     }
     default:
+      // TODO: add log here
       std::cout << "type error!";
   }
   return nullptr;
