@@ -63,8 +63,10 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaChoroplethMap():
-    def __init__(self, width: int, height: int, bounding_box: list, color_style: str, ruler: list, opacity: float):
+class VegaChoroplethMap:
+    def __init__(self, width: int, height: int,
+                 bounding_box: list, color_style: str,
+                 ruler: list, opacity: float):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box

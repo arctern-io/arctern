@@ -24,6 +24,9 @@ def point_map(arr_x, arr_y, conf):
 def heat_map(arr_x, arr_y, arr_c, conf):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.heat_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(arr_c), conf))
 
+def choropleth_map(arr_wkt, arr_count, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
+
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
 

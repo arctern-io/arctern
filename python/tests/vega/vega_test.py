@@ -38,7 +38,9 @@ def test_vega_heat_map():
     assert vega_dict["marks"][0]["encode"]["enter"]["map_scale"]["value"] == 10.0
 
 def test_vega_choropleth_map():
-    vega_choropleth_map = VegaChoroplethMap(1900, 1410, [-73.984092,40.753893,-73.977588,40.756342], "blue_to_red", [2.5, 5], 1.0)
+    vega_choropleth_map = VegaChoroplethMap(1900, 1410,
+                                            [-73.984092, 40.753893, -73.977588, 40.756342],
+                                            "blue_to_red", [2.5, 5], 1.0)
     vega_json = vega_choropleth_map.build()
     vega_dict = json.loads(vega_json)
     assert vega_dict["width"] == 1900
