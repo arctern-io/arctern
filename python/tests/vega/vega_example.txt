@@ -67,3 +67,35 @@
     }
   ]
 }
+
+
+{
+  "width": 1900,
+  "height": 1410,
+  "description": "choropleth_map",
+  "data": [
+    {
+      "name": "nyc_taxi",
+      "url": "data/nyc_taxi_0_5m.csv"
+    }
+  ],
+  "scales": [
+    {
+      "name": "building",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "c0"}
+    }
+  ],
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "bounding_box": {"value": [-73.984092,40.753893,-73.977588,40.756342]},
+          "color_style": {"value": "blue_to_red"},
+          "ruler": {"value": [2.5, 5]},
+          "opacity": {"value": 1.0}
+        }
+      }
+    }
+  ]
+}

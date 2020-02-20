@@ -71,6 +71,7 @@ uint8_t* General2D::Output() {
 
   auto write_image = true;
   if (write_image) {
+    // TODO: add log here
     std::cout << "******************" << output_image_size_ << "******************"
               << std::endl;
     FILE* f = fopen("/tmp/offscreen.png", "wb");
