@@ -549,23 +549,23 @@ TEST(geometry_test, test_ST_Touches) {
   // for(int i=0;i<res_bool->length();i++){
   // std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
   // }
-
-  // ASSERT_EQ(res_bool->Value(0 ), true);
-  ASSERT_EQ(res_bool->Value(1), false);
-  ASSERT_EQ(res_bool->Value(2), false);
-  // ASSERT_EQ(res_bool->Value(3 ), true);
-  ASSERT_EQ(res_bool->Value(4), false);
-  // ASSERT_EQ(res_bool->Value(5 ), true);
-  ASSERT_EQ(res_bool->Value(6), false);
-  ASSERT_EQ(res_bool->Value(7), true);
-  ASSERT_EQ(res_bool->Value(8), true);
-  ASSERT_EQ(res_bool->Value(9), false);
-  ASSERT_EQ(res_bool->Value(10), false);
-  // ASSERT_EQ(res_bool->Value(11), true);
-  // ASSERT_EQ(res_bool->Value(12), false);
-  ASSERT_EQ(res_bool->Value(13), true);
-  // ASSERT_EQ(res_bool->Value(14), false);
-  // ASSERT_EQ(res_bool->Value(15), true);
+   
+   // ASSERT_EQ(res_bool->Value(0 ), true);
+   ASSERT_EQ(res_bool->Value(1 ), false);
+   ASSERT_EQ(res_bool->Value(2 ), false);
+   // ASSERT_EQ(res_bool->Value(3 ), true);
+   ASSERT_EQ(res_bool->Value(4 ), false);
+   // ASSERT_EQ(res_bool->Value(5 ), true);
+   ASSERT_EQ(res_bool->Value(6 ), false);
+   ASSERT_EQ(res_bool->Value(7 ), true);
+   ASSERT_EQ(res_bool->Value(8 ), true);
+   ASSERT_EQ(res_bool->Value(9 ), false);
+   ASSERT_EQ(res_bool->Value(10), false);
+   // ASSERT_EQ(res_bool->Value(11), true);
+   // ASSERT_EQ(res_bool->Value(12), false);
+   ASSERT_EQ(res_bool->Value(13), true);
+   // ASSERT_EQ(res_bool->Value(14), false);
+   // ASSERT_EQ(res_bool->Value(15), true);
 }
 
 TEST(geometry_test, test_ST_Overlaps) {
@@ -575,20 +575,20 @@ TEST(geometry_test, test_ST_Overlaps) {
   auto l4 = "POINT (0 1)";
   auto l5 = "POINT (0 1)";
   auto l6 = "POINT (0 1)";
-
+  
   auto l7 = "LINESTRING (0 0, 0 1)";
   auto l8 = "LINESTRING (0 0, 0 1)";
   auto l9 = "LINESTRING (0 0, 0 1)";
   auto l10 = "LINESTRING (0 0, 0 1)";
   auto l11 = "LINESTRING (0 0, 0 1)";
   auto l12 = "LINESTRING (0 0, 0 1)";
-
+  
   auto l13 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
   auto l14 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
   auto l15 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
   auto l16 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
   auto l17 = "POLYGON (0 0,0 1,1 1,1 0,0 0)";
-
+  
   auto l18 = "MULTIPOINT (0 1, 1 2, 3 3)";
   auto l19 = "LINESTRING ( 0 0.6,0 1, 1 2,3 4)";
   auto l20 = "LINESTRING ( 0 0.8,0 1, 1 2,3 4)";
@@ -629,30 +629,26 @@ TEST(geometry_test, test_ST_Overlaps) {
   auto r4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
   auto r5 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 0 1, 0 1) )";
   auto r6 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)), ((0 1, 0 1, 0 1,0 1)) )";
-
+  
   auto r7 = "MULTIPOINT (0 1, 0 1)";
   auto r8 = "LINESTRING (0 1, 0 1, 0 1)";
   auto r9 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
   auto r10 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 0 1, 0 1) )";
   auto r11 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)), ((0 1, 0 1, 0 1,0 1)) )";
-
+  
   auto r12 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
   auto r13 = "MULTIPOLYGON ( ((0 0, 0 2, 2 3,2 0,0 0)) )";
   auto r14 = "MULTIPOLYGON ( ((0.5 0.5, 0.5 0.7, 0.7 0.7, 0.7 0.5, 0.5 0.5)) )";
   auto r15 = "POLYGON ((0.5 0.5, 0.5 1.7, 0.6 1.7, 0.4 0.5, 0.5 0.5))";
   auto r16 = "MULTIPOLYGON ( ((0 2, 0 3, 3 3, 3 2, 0 2)), ((0 0, 1 0, 1 1, 0 1, 0 0)) )";
-  auto r17 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)), ((0 2, 0 3, 3 3, 3 2, 0 2)) )";
-
+  auto r17 = "MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)), ((0 2, 0 3, 3 3, 3 2, 0 2)) )";  
+  
   auto r18 = "MULTIPOINT (0 1, 1 2, 3 4)";
   auto r19 = "LINESTRING (0 0.7, 0 1, 1 2)";
   auto r20 = "LINESTRING (0 0.7, 0 1, 1 2)";
   auto r21 = "LINESTRING (0 0.7, 0 1, 1 2)";
-  auto r22 =
-      "MULTIPOLYGON ( ((0 2, 0 3, 3 3, 3 2, 0 2)), ((0.5 0.5, 6 0.5, 1 1, 0 1, 0.5 0.5)) "
-      ")";
-  auto r23 =
-      "MULTIPOLYGON ( ((0 2, 0 3, 3 3, 3 2, 0 2)), ((0.5 0.5, 6 0.5, 1 2, 0 1, 0.5 0.5)) "
-      ")";
+  auto r22 = "MULTIPOLYGON ( ((0 2, 0 3, 3 3, 3 2, 0 2)), ((0.5 0.5, 6 0.5, 1 1, 0 1, 0.5 0.5)) )";
+  auto r23 = "MULTIPOLYGON ( ((0 2, 0 3, 3 3, 3 2, 0 2)), ((0.5 0.5, 6 0.5, 1 2, 0 1, 0.5 0.5)) )";  
 
   arrow::StringBuilder builder2;
   std::shared_ptr<arrow::Array> input2;
@@ -684,33 +680,33 @@ TEST(geometry_test, test_ST_Overlaps) {
   auto res = zilliz::gis::ST_Overlaps(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // for(int i=0;i<res_bool->length();i++){
-  // std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-  // }
-
-  ASSERT_EQ(res_bool->Value(0), false);
-  ASSERT_EQ(res_bool->Value(1), false);
-  ASSERT_EQ(res_bool->Value(2), false);
-  ASSERT_EQ(res_bool->Value(3), false);
-  ASSERT_EQ(res_bool->Value(4), false);
-  ASSERT_EQ(res_bool->Value(5), false);
-  ASSERT_EQ(res_bool->Value(6), false);
-  ASSERT_EQ(res_bool->Value(7), false);
-  ASSERT_EQ(res_bool->Value(8), false);
-  ASSERT_EQ(res_bool->Value(9), false);
-  ASSERT_EQ(res_bool->Value(10), false);
-  ASSERT_EQ(res_bool->Value(11), false);
-  // ASSERT_EQ(res_bool->Value(12), false); // true
-  // ASSERT_EQ(res_bool->Value(13), false); // gis error
-  // ASSERT_EQ(res_bool->Value(14), true);  // gis error
-  // ASSERT_EQ(res_bool->Value(15), false); // gis error
-  // ASSERT_EQ(res_bool->Value(16), false); // gis error
-  // ASSERT_EQ(res_bool->Value(17), true);  // gis error
-  ASSERT_EQ(res_bool->Value(13), false);
-  ASSERT_EQ(res_bool->Value(14), true);
-  ASSERT_EQ(res_bool->Value(15), true);
-  ASSERT_EQ(res_bool->Value(16), true);
-  ASSERT_EQ(res_bool->Value(17), true);  // geospark error
+   // for(int i=0;i<res_bool->length();i++){
+   // std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
+   // }
+   
+   ASSERT_EQ(res_bool->Value(0 ), false);
+   ASSERT_EQ(res_bool->Value(1 ), false);
+   ASSERT_EQ(res_bool->Value(2 ), false);
+   ASSERT_EQ(res_bool->Value(3 ), false);
+   ASSERT_EQ(res_bool->Value(4 ), false);
+   ASSERT_EQ(res_bool->Value(5 ), false);
+   ASSERT_EQ(res_bool->Value(6 ), false);
+   ASSERT_EQ(res_bool->Value(7 ), false);
+   ASSERT_EQ(res_bool->Value(8 ), false);
+   ASSERT_EQ(res_bool->Value(9 ), false);
+   ASSERT_EQ(res_bool->Value(10), false);
+   ASSERT_EQ(res_bool->Value(11), false);
+   // ASSERT_EQ(res_bool->Value(12), false); // true
+   // ASSERT_EQ(res_bool->Value(13), false); // gis error
+   // ASSERT_EQ(res_bool->Value(14), true);  // gis error
+   // ASSERT_EQ(res_bool->Value(15), false); // gis error
+   // ASSERT_EQ(res_bool->Value(16), false); // gis error
+   // ASSERT_EQ(res_bool->Value(17), true);  // gis error
+   ASSERT_EQ(res_bool->Value(13), false);
+   ASSERT_EQ(res_bool->Value(14), true); 
+   ASSERT_EQ(res_bool->Value(15), true);
+   ASSERT_EQ(res_bool->Value(16), true); 
+   ASSERT_EQ(res_bool->Value(17), true); //geospark error
 }
 
 TEST(geometry_test, test_ST_Crosses) {
@@ -755,7 +751,7 @@ TEST(geometry_test, test_ST_Crosses) {
   auto r10 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
   auto r11 = "POLYGON ((0.5 0, 0 2, 1 1, 1 0, 0.5 0))";
   auto r12 = "POLYGON ((-0.5 0, 0 2, 1 1, 1 0, -0.5 0))";
-
+  
   arrow::StringBuilder builder2;
   std::shared_ptr<arrow::Array> input2;
   builder2.Append(std::string(r1));
@@ -775,18 +771,18 @@ TEST(geometry_test, test_ST_Crosses) {
   auto res = zilliz::gis::ST_Crosses(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  ASSERT_EQ(res_bool->Value(0), true);
-  ASSERT_EQ(res_bool->Value(1), false);
-  ASSERT_EQ(res_bool->Value(2), true);
-  ASSERT_EQ(res_bool->Value(3), false);
-  ASSERT_EQ(res_bool->Value(4), false);
-  ASSERT_EQ(res_bool->Value(5), false);
-  ASSERT_EQ(res_bool->Value(6), false);
-  ASSERT_EQ(res_bool->Value(7), false);
-  ASSERT_EQ(res_bool->Value(8), true);
-  ASSERT_EQ(res_bool->Value(9), false);
-  ASSERT_EQ(res_bool->Value(10), false);
-  ASSERT_EQ(res_bool->Value(11), true);
+   ASSERT_EQ(res_bool->Value(0 ), true);
+   ASSERT_EQ(res_bool->Value(1 ), false);
+   ASSERT_EQ(res_bool->Value(2 ), true);
+   ASSERT_EQ(res_bool->Value(3 ), false);
+   ASSERT_EQ(res_bool->Value(4 ), false);
+   ASSERT_EQ(res_bool->Value(5 ), false);
+   ASSERT_EQ(res_bool->Value(6 ), false);
+   ASSERT_EQ(res_bool->Value(7 ), false);
+   ASSERT_EQ(res_bool->Value(8 ), true);
+   ASSERT_EQ(res_bool->Value(9 ), false);
+   ASSERT_EQ(res_bool->Value(10), false);
+   ASSERT_EQ(res_bool->Value(11), true);
 }
 
 TEST(geometry_test, test_ST_IsSimple) {
