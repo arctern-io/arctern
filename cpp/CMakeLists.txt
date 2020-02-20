@@ -95,9 +95,6 @@ endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
-if (USE_GPU)
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
-endif ()
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     message(STATUS "Building Release version")
@@ -114,6 +111,11 @@ message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 set(LIB_GIS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LIB_GIS_SRC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+include_directories(${LIB_GIS_INCLUDE})
+include_directories(${LIB_GIS_SRC_INCLUDE})
+include_directories(${PROJECT_BINARY_DIR})
+message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+
 if (USE_GPU)
     set(cuda_inc /usr/local/cuda/include)
     if (DEFINED APPLE)
@@ -121,17 +123,9 @@ if (USE_GPU)
     elseif (DEFINED UNIX)
         set(cuda_lib /usr/local/cuda/lib64)
     endif ()
-endif ()
-
-
-include_directories(${LIB_GIS_INCLUDE})
-include_directories(${LIB_GIS_SRC_INCLUDE})
-include_directories(${PROJECT_BINARY_DIR})
-message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
-
-if (USE_GPU)
     include_directories(${cuda_inc})
     link_directories(${cuda_lib})
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
 endif ()
 
 message(STATUS "conda_prefix = " $ENV{CONDA_PREFIX})
