@@ -50,6 +50,12 @@ add_library(
 )
 
 add_dependencies(windrose miniz_ep stb_ep)
+target_link_libraries(windrose
+	        gdal
+            arrow
+            pthread
+            miniz
+)
 
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
@@ -57,19 +63,11 @@ if (USE_GPU)
             GL
             EGL
             cudart
-            gdal
-            arrow
-            pthread
-            miniz
             )
 else ()
     target_link_libraries(windrose
             GLU
             OSMesa
-	        gdal
-            arrow
-            pthread
-            miniz
             )
 endif ()
 
