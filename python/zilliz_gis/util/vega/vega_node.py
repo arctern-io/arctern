@@ -1,10 +1,24 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from typing import List
 import abc
 
-"""
-Top-Level Vega Specification Property: Width
-"""
 class Width:
+    """
+        Top-Level Vega Specification Property: Width
+    """
     def __init__(self, width: int):
         if width <= 0:
             # TODO error log here
@@ -20,10 +34,11 @@ class Width:
     def width(self, width):
         self._width = width
 
-"""
-Top-Level Vega Specification Property: Height
-"""
 class Height:
+    """
+        Top-Level Vega Specification Property: Height
+    """
+
     def __init__(self, height: int):
         if height <= 0:
             # TODO error log here
@@ -39,12 +54,13 @@ class Height:
     def height(self, height):
         self._height = height
 
-"""
-Top-Level Vega Specification Property: Description
-oneOf(enum('icon_2d', 'circle_2d', 'multi_color_circles_2d', 'weighted_color_circles_2d', 
-    'building_weighted_2d', 'heatmap_2d', 'get_building_shape'))
-"""
 class Description:
+
+    """
+        Top-Level Vega Specification Property: Description
+        oneOf(enum('icon_2d', 'circle_2d', 'multi_color_circles_2d', 'weighted_color_circles_2d',
+    '   building_weighted_2d', 'heatmap_2d', 'get_building_shape'))
+    """
     render_type = {"icon_2d", "circle_2d", "multi_color_circles_2d", "weighted_color_circles_2d",
                    "building_weighted_2d", "heat_map_2d", "get_building_shape"}
 
@@ -63,10 +79,10 @@ class Description:
     def description(self, description):
         self._description = description
 
-"""
-Top-Level Vega Specification Property: Data
-"""
 class Data:
+    """
+        Top-Level Vega Specification Property: Data
+    """
     def __init__(self, name: str, url: str):
         self._name = name
         self._url = url
@@ -78,10 +94,11 @@ class Data:
         }]
         return dic
 
-"""
-Top-Level Vega Specification Property: Scales
-"""
 class Scales:
+
+    """
+        Top-Level Vega Specification Property: Scales
+    """
     class Scale:
         class Domain:
             def __init__(self, data: str, field: str):
@@ -95,9 +112,9 @@ class Scales:
                 }
                 return dic
 
-        def __init__(self, name: str, type: str, domain: Domain):
+        def __init__(self, name: str, scale_type: str, domain: Domain):
             self._name = name
-            self._type = type
+            self._type = scale_type
             self._domain = domain
 
         def to_dict(self):
@@ -117,18 +134,18 @@ class Scales:
             dic.append(s.to_dict())
         return dic
 
-"""
-Top-Level Vega Specification Property: Marks
-"""
 class RootMarks:
+    """
+        Top-Level Vega Specification Property: Marks
+    """
     @abc.abstractmethod
     def to_dict(self):
         pass
 
-"""
-Vega Root
-"""
 class Root:
+    """
+        Vega Root
+    """
     def __init__(self, width: Width, height: Height, description: Description,
                  data: Data, scales: Scales, marks: RootMarks):
         self._width = width
