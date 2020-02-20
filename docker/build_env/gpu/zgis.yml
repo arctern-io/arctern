@@ -1,12 +1,10 @@
 name: zgis_dev
-channels:
-  - conda-forge
 dependencies:
-- python
-- gdal=3.0.4
-- pyarrow
-- gtest
-- rapidjson
-- Cython
-- pytest
-- pylint
+- conda-forge::gdal=3.0.4
+- conda-forge::pyarrow
+- conda-forge::gtest
+- conda-forge::rapidjson
+- conda-forge::Cython
+- conda-forge::pytest
+- conda-forge::pylint
+- cctbx::mesa

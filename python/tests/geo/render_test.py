@@ -1,0 +1,107 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import pyarrow
+import zilliz_gis
+
+from zilliz_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
+from zilliz_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from zilliz_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+
+def _savePNG(data, png_name):
+    try:
+        imageData = data
+    except BaseException as e:
+        print(e)
+    # save result png as fixed png
+    else:
+        with open(png_name, "wb") as tmp_file:
+            tmp_file.write(imageData)
+
+def test_point_map():
+    x_data = []
+    y_data = []
+
+    # y = 150
+    for i in range(100, 200):
+        x_data.append(i)
+        y_data.append(150)
+
+    # y = x - 50
+    for i in range(100, 200):
+        x_data.append(i)
+        y_data.append(i - 50)
+
+    # y = 50
+    for i in range(100, 200):
+        x_data.append(i)
+        y_data.append(50)
+
+    arr_x = pyarrow.array(x_data, type='uint32')
+    arr_y = pyarrow.array(y_data, type='uint32')
+
+    vega_circle2d = VegaCircle2d(300, 200, 30, "#ff0000", 0.5)
+    vega_json = vega_circle2d.build()
+
+    curve_z = zilliz_gis.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    curve_z = curve_z.buffers()[1].to_pybytes()
+
+    _savePNG(curve_z, "/tmp/curve_z.png")
+
+def test_heat_map():
+    x_data = []
+    y_data = []
+    c_data = []
+
+    for i in range(0, 5):
+        x_data.append(i + 50)
+        y_data.append(i + 50)
+        c_data.append(i + 50)
+
+    arr_x = pyarrow.array(x_data, type='uint32')
+    arr_y = pyarrow.array(y_data, type='uint32')
+    arr_c = pyarrow.array(y_data, type='uint32')
+
+    vega_heat_map = VegaHeatMap(300, 200, 10.0)
+    vega_json = vega_heat_map.build()
+
+    heat_map = zilliz_gis.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+    heat_map = heat_map.buffers()[1].to_pybytes()
+
+    _savePNG(heat_map, "/tmp/test_heat_map.png")
+
+def test_choropleth_map():
+    wkt_data = []
+    count_data = []
+
+    wkt_data.append("POLYGON (("
+                    "-73.98128 40.754771, "
+                    "-73.980185 40.754771, "
+                    "-73.980185 40.755587, "
+                    "-73.98128 40.755587, "
+                    "-73.98128 40.754771))")
+    count_data.append(5.0)
+
+    arr_wkt = pyarrow.array(wkt_data, type='string')
+    arr_count = pyarrow.array(count_data, type='double')
+
+    vega_choropleth_map = VegaChoroplethMap(1900, 1410,
+                                            [-73.984092, 40.753893, -73.977588, 40.756342],
+                                            "blue_to_red", [2.5, 5], 1.0)
+    vega_json = vega_choropleth_map.build()
+
+    choropleth_map = zilliz_gis.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map = choropleth_map.buffers()[1].to_pybytes()
+
+    _savePNG(choropleth_map, "/tmp/test_choropleth_map.png")
