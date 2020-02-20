@@ -21,7 +21,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_distance.h"
-#include "unittest/gis/cpp/test_helper.h"
+#include "test_utils/transforms.h"
 
 namespace zilliz::gis::cuda {
 TEST(FunctorDistance, naive) {

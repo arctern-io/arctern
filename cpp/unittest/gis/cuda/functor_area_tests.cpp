@@ -25,7 +25,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_area.h"
-#include "unittest/gis/cuda/test_helper.h"
+#include "test_utils/transforms.h"
 
 namespace zilliz::gis::cuda {
 TEST(FunctorArea, naive) {
