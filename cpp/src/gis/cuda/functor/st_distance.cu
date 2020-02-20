@@ -1,7 +1,6 @@
 //
 // Created by mike on 2/10/20.
 //
-#include <cuda_device_runtime_api.h>
 #include <cuda_runtime.h>
 
 #include <cmath>
