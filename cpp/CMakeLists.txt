@@ -48,6 +48,8 @@ if (USE_GPU)
     set(CMAKE_CUDA_STANDARD 14)
     add_compile_definitions(USE_GPU)
     set(CPU_OR_GPU "GPU")
+    include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
 else()
     set(CPU_OR_GPU "CPU")
     message(STATUS "Building on CPU")
@@ -117,10 +119,7 @@ include_directories(${LIB_GIS_SRC_INCLUDE})
 include_directories(${PROJECT_BINARY_DIR})
 message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
-if (USE_GPU)
-    include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -std=c++11 -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
-endif ()
+
 
 message(STATUS "conda_prefix = " $ENV{CONDA_PREFIX})
 

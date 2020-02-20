@@ -57,8 +57,10 @@ target_link_libraries(windrose
             miniz
 )
 
+
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
+    add_subdirectory(gis/cuda)
     target_link_libraries(windrose
             GL
             EGL
