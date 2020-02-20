@@ -15,17 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//
-// Created by mike on 2/10/20.
-//
-
 #include <gtest/gtest.h>
 
 #include <cmath>
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_distance.h"
-#include "test_helper.h"
+#include "unittest/gis/cpp/test_helper.h"
 
 namespace zilliz::gis::cuda {
 TEST(FunctorDistance, naive) {
