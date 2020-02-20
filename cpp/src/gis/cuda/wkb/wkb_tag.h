@@ -1,7 +1,7 @@
 #pragma once
-#include "gis/cuda/common/common.h"
-
 #include <cstdint>
+
+#include "gis/cuda/common/common.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
