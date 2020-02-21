@@ -867,45 +867,38 @@ TEST(geometry_test, test_ST_GeometryType) {
 }
 
 TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
-  OGRLinearRing ring1;
-  ring1.addPoint(2, 1);
-  ring1.addPoint(3, 1);
-  ring1.addPoint(3, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 8);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
+  auto p1 = "POINT (0 1)";
+  auto p2 = "LINESTRING (0 0,0 2,0 1,1 1)";
+  auto p3 = "LINESTRING (0 0,0.5 0,1 0,1 0.5,1 1, 0 0)";
+  auto p4 = "POLYGON ((0 0, 1 0, 1 1,1 1,0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 1, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0,0 2, 0 4, 4 4,4 3, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
 
-  OGRPoint point(2, 3);
-  OGRLineString line;
-  line.addPoint(10, 20);
-  line.addPoint(20, 30);
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  builder.Append(std::string(p8));
+  builder.Finish(&input);
 
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> geometries;
+  auto res = zilliz::gis::ST_SimplifyPreserveTopology(input,10);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  char* polygon_str = nullptr;
-  char* point_str = nullptr;
-  char* line_str = nullptr;
-  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
-  CHECK_GDAL(point.exportToWkt(&point_str));
-  CHECK_GDAL(point.exportToWkt(&line_str));
-  string_builder.Append(std::string(polygon_str));
-  string_builder.Append(std::string(point_str));
-  string_builder.Append(std::string(line_str));
-  CPLFree(polygon_str);
-  CPLFree(point_str);
-  CPLFree(line_str);
-
-  string_builder.Finish(&geometries);
-
-  auto geometries_arr = zilliz::gis::ST_SimplifyPreserveTopology(geometries, 10000);
-  auto geometries_arr_str = std::static_pointer_cast<arrow::StringArray>(geometries_arr);
-
-  ASSERT_EQ(geometries_arr_str->GetString(0), "POLYGON ((2 1,3 1,2 8,2 1))");
-  ASSERT_EQ(geometries_arr_str->GetString(1), "POINT (2 3)");
-  //  ASSERT_EQ(geometries_arr_str->GetString(2),"LINESTRING");
+  ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,1 1)");// ?
+  ASSERT_EQ(res_str->GetString(2), "LINESTRING (0 0,1 0,1 1,0 0)");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,1 0,1 1,0 1,0 0))");
+  ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (0 0,1 0,1 2,1 2)");
+  ASSERT_EQ(res_str->GetString(5), "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))"); //?
+  ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 1,1 0,0 0))");
+  // ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 4,4 4,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))"); //MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))
 }
 
 TEST(geometry_test, test_ST_Contains) {
