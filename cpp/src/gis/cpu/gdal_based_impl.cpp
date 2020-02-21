@@ -489,7 +489,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
                                                  nullptr, (OGRGeometry**)(&geo)));
     OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
-    if (OGR_GT_IsCurve(eType) || OGR_GT_IsSubClassOf(eType, wkbMultiSurface) ||
+    if (OGR_GT_IsCurve(eType) || OGR_GT_IsSubClassOf(eType, wkbMultiCurve) ||
         eType == wkbGeometryCollection) {
       CHECK_ARROW(builder.Append(OGR_G_Length(geo)));
     } else {
