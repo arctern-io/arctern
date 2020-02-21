@@ -1574,21 +1574,44 @@ TEST(geometry_test, test_ST_Envelope) {
 }
 
 TEST(geometry_test, test_ST_Buffer) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  auto p1 = "POINT (0 1)";
+  auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
 
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  builder.Append(std::string(p8));
+  builder.Append(std::string(p9));
+  builder.Finish(&input);
 
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
-
-  auto res1 = zilliz::gis::ST_Buffer(points, 1.2);
-  auto res2 = zilliz::gis::ST_Buffer(polygons, 1.2);
-  auto res3 = zilliz::gis::ST_Buffer(lines, 1.2);
+  auto res = zilliz::gis::ST_Buffer(input,0);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  
+  for(int i=0;i<res_str->length();i++){
+    std::cout<<res_str->GetString(i)<<"#"<<i<<std::endl;
+  }
+  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))"); 
+  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))"); 
+  ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))"); 
+  // ASSERT_EQ(res_str->GetString(8), "POLYGON ((0.2 0.8, 1 4, 1 0, 0.2 0.8))"); //POLYGON ((0 0,0 1,0.2 0.8,1 4,1 0,0 0))
 }
 
 TEST(geometry_test, test_ST_PolygonFromEnvelope) {
