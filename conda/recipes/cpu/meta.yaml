@@ -10,14 +10,14 @@ build:
 
 requirements:
   build:
-    - gdal == 3.0.4
+    - gdal ==3.0.4
     - pyarrow
     - gtest
     - rapidjson
     - Cython
     - pytest
   run:
-    - gdal == 3.0.4
+    - gdal ==3.0.4
     - pyarrow
     - rapidjson
     - Cython
