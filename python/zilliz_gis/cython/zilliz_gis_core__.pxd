@@ -1,11 +1,26 @@
-from pyarrow.lib cimport *
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# from libcpp.string cimport *
+from pyarrow.lib cimport *
 from libcpp.string cimport *
 
-cdef extern from "gis.h":
-    shared_ptr[CArray] point_map(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y)
-    shared_ptr[CArray] make_point(shared_ptr[CArray] arr_x,shared_ptr[CArray] arr_y);
+
+cdef extern from "render.h" namespace "zilliz::render":
+    shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const string &conf)
+    shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c,const string &conf)
+    shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &ptr_wkt,const shared_ptr[CArray] &ptr_count,const string &conf)
+
 
 cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
@@ -29,6 +44,7 @@ cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Centroid(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Length(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_ConvexHull(const shared_ptr[CArray] &geo_arr)
+    shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs)
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr)
     shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist)

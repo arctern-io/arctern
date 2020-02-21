@@ -1,22 +1,32 @@
+/*
+ * Copyright (C) 2019-2020 Zilliz. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #pragma once
 
-#include "zcommon/log/log.h"
-
+#include <memory>
+#include <ostream>
+#include <string>
 
 namespace zilliz {
-namespace render {
-namespace engine {
+namespace GIS {
 
-#define RENDER_ENGINE_DOMAIN_NAME "RENDER_ENGINE"
+enum class LogLevel : int { DEBUG = -1, INFO = 0, WARNNING = 1, ERROR = 2, FATAL = 3 };
 
-#define RENDER_ENGINE_LOG_TRACE _ZILLIZ_LOG_TRACE(RENDER_ENGINE_DOMAIN_NAME)
+#define GIS_LOG_INTERNAL(level) ::zilliz::GIS::GisLog(__FILE__, __LINE__, level)
+#define GIS_LOG(level) GIS_LOG_INTERNAL(::zilliz::GIS::LogLevel::##level)
 
-#define RENDER_ENGINE_LOG_DEBUG _ZILLIZ_LOG_DEBUG(RENDER_ENGINE_DOMAIN_NAME)
-#define RENDER_ENGINE_LOG_INFO _ZILLIZ_LOG_INFO(RENDER_ENGINE_DOMAIN_NAME)
-#define RENDER_ENGINE_LOG_WARNING _ZILLIZ_LOG_WARNING(RENDER_ENGINE_DOMAIN_NAME)
-#define RENDER_ENGINE_LOG_ERROR _ZILLIZ_LOG_ERROR(RENDER_ENGINE_DOMAIN_NAME)
-#define RENDER_ENGINE_LOG_FATAL _ZILLIZ_LOG_FATAL(RENDER_ENGINE_DOMAIN_NAME)
-
-} // namespace engine
-} // namespace render
-} // namespace zilliz
+}  // namespace GIS
+}  // namespace zilliz

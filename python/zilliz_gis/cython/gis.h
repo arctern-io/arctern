@@ -1,16 +1,27 @@
+/*
+ * Copyright (C) 2019-2020 Zilliz. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #ifndef GIS_H
 #define GIS_H
 
 #include "arrow/api.h"
 
-std::shared_ptr<arrow::Array>
-point_map(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
-std::shared_ptr<arrow::Array>
-make_point(std::shared_ptr<arrow::Array> arr_x,std::shared_ptr<arrow::Array> arr_y);
-
 namespace zilliz {
 namespace gis {
+
 
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
@@ -96,6 +107,11 @@ std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
+ST_Transform(const std::shared_ptr<arrow::Array> &geos,
+             const std::string &src_rs,
+             const std::string &dst_rs);
+
+std::shared_ptr<arrow::Array>
 ST_NPoints(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
@@ -115,3 +131,4 @@ ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
 } // zilliz
 
 #endif
+

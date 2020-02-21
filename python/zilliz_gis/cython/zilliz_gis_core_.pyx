@@ -1,14 +1,31 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # distutils: language = c++
 
 from pyarrow.lib cimport *
 
 cimport zilliz_gis_core__ as zilliz_gis_core_pxd
 
-def point_map(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
-    
-def make_point(object arr_x,object arr_y):
-    return pyarrow_wrap_array(zilliz_gis_core_pxd.make_point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
+def point_map(arr_x, arr_y, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+
+def heat_map(arr_x, arr_y, arr_c, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.heat_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(arr_c), conf))
+
+def choropleth_map(arr_wkt, arr_count, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
 
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
@@ -72,6 +89,9 @@ def ST_Length(object geo_arr):
 
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
 
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))

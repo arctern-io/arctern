@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2019-2020 Zilliz. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -7,7 +22,7 @@
 #include "device_launch_parameters.h"
 
 #include "render/utils/color/color_gradient.h"
-#include "render/2d/set_color.h"
+#include "render/2d/heatmap/set_color.h"
 
 namespace zilliz {
 namespace render {
@@ -174,13 +189,37 @@ void set_colors_gpu(float *colors,
 } //namespace
 
 #define TEMPLATE_GEN_PREFIX
+#define T int8_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+#define T int16_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define TEMPLATE_GEN_PREFIX
+
+#define T int32_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T int64_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T uint8_t
+#include "render/2d/heatmap/set_color.inl"
+
+#define T uint16_t
+#include "render/2d/heatmap/set_color.inl"
+
 #define T uint32_t
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
+#define T uint64_t
+#include "render/2d/heatmap/set_color.inl"
+
 #define T float
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
 
-#define TEMPLATE_GEN_PREFIX
 #define T double
-#include "render/2d/set_color.inl"
+#include "render/2d/heatmap/set_color.inl"
+
+
