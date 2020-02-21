@@ -540,7 +540,6 @@ TEST(geometry_test, test_ST_Touches) {
   auto res = zilliz::gis::ST_Touches(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-
   // ASSERT_EQ(res_bool->Value(0 ), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
@@ -674,7 +673,6 @@ TEST(geometry_test, test_ST_Overlaps) {
 
   auto res = zilliz::gis::ST_Overlaps(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-
 
   ASSERT_EQ(res_bool->Value(0), false);
   ASSERT_EQ(res_bool->Value(1), false);
@@ -1083,7 +1081,7 @@ TEST(geometry_test, test_ST_Within) {
   auto l21 = "MULTIPOINT (1 2, 4 0)";
   auto l22 = "MULTIPOINT (1 8, 4 0)";
   auto l23 = "MULTIPOINT (4 8)";
-  
+
   arrow::StringBuilder builder1;
   std::shared_ptr<arrow::Array> input1;
   builder1.Append(std::string(l1));
@@ -1136,7 +1134,7 @@ TEST(geometry_test, test_ST_Within) {
   auto r23 = "POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))";
   arrow::StringBuilder builder2;
   std::shared_ptr<arrow::Array> input2;
-  
+
   builder2.Append(std::string(r1));
   builder2.Append(std::string(r2));
   builder2.Append(std::string(r3));
@@ -1198,7 +1196,7 @@ TEST(geometry_test, test_ST_Distance) {
   auto l5 = "POINT (0 0)";
   auto l6 = "POINT (0 0)";
   auto l7 = "POINT (0 0)";
-  
+
   auto l8 = "LINESTRING (0 0, 1 1)";
   auto l9 = "LINESTRING (0 0, 1 1)";
   auto l10 = "LINESTRING (0 0, 1 1)";
@@ -1208,13 +1206,13 @@ TEST(geometry_test, test_ST_Distance) {
   auto l14 = "LINESTRING (0 0, 1 1)";
 
   auto l15 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
-  auto l16 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  auto l17 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  auto l18 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  auto l19 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  auto l20 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  auto l21 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
-  
+  auto l16 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l17 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l18 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l19 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l20 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l21 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+
   arrow::StringBuilder builder1;
   std::shared_ptr<arrow::Array> input1;
   builder1.Append(std::string(l1));
@@ -1246,23 +1244,26 @@ TEST(geometry_test, test_ST_Distance) {
   auto r4 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
   auto r5 = "MULTIPOINT (0 1, 2 0, 1 2)";
   auto r6 = "MULTILINESTRING ( (0 3, 1 2), (0 1, 1 0, 1 1))";
-  auto r7 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
-  
-  auto r8  = "POINT (1 1)";
-  auto r9  = "LINESTRING (0 2, 2 0)";
+  auto r7 =
+      "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
+
+  auto r8 = "POINT (1 1)";
+  auto r9 = "LINESTRING (0 2, 2 0)";
   auto r10 = "POLYGON ((1 0, 3 0, 3 3, 1 3, 1 0))";
   auto r11 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
   auto r12 = "MULTIPOINT (0 1, 2 0, 1 2)";
   auto r13 = "MULTILINESTRING ( (0 3, 1 2), (0 2, 1 0, 1 1))";
-  auto r14 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
-    
-  auto r15  = "POINT (1 1)";
-  auto r16  = "LINESTRING (0 2, 2 0)";
+  auto r14 =
+      "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
+
+  auto r15 = "POINT (1 1)";
+  auto r16 = "LINESTRING (0 2, 2 0)";
   auto r17 = "POLYGON ((1 0, 3 0, 3 3, 1 3, 1 0))";
   auto r18 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
   auto r19 = "MULTIPOINT (0 1, 2 0, 1 2)";
   auto r20 = "MULTILINESTRING ( (0 3, 1 2), (0 2, 1 0, 1 1))";
-  auto r21 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
+  auto r21 =
+      "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
 
   arrow::StringBuilder builder2;
   std::shared_ptr<arrow::Array> input2;
@@ -1297,13 +1298,13 @@ TEST(geometry_test, test_ST_Distance) {
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(3), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 1);
-  EXPECT_DOUBLE_EQ(res_double->Value(5), sqrt(2)/2);
+  EXPECT_DOUBLE_EQ(res_double->Value(5), sqrt(2) / 2);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(8), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(10), 0);
-  EXPECT_DOUBLE_EQ(res_double->Value(11), sqrt(2)/2);
+  EXPECT_DOUBLE_EQ(res_double->Value(11), sqrt(2) / 2);
   EXPECT_DOUBLE_EQ(res_double->Value(12), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(13), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(14), 0);
@@ -1498,16 +1499,16 @@ TEST(geometry_test, test_ST_NPoints) {
 
   auto res = zilliz::gis::ST_NPoints(input);
   auto res_int = std::static_pointer_cast<arrow::UInt32Array>(res);
-  
+
   ASSERT_EQ(res_int->Value(0), 1);
-  ASSERT_EQ(res_int->Value(1), 0); //?
-  ASSERT_EQ(res_int->Value(2), 3); 
-  ASSERT_EQ(res_int->Value(3), 0); //?
-  ASSERT_EQ(res_int->Value(4), 4); //3?
-  ASSERT_EQ(res_int->Value(5), 0); //?
-  ASSERT_EQ(res_int->Value(6), 0); //?
-  ASSERT_EQ(res_int->Value(7), 0); //?
-  ASSERT_EQ(res_int->Value(8), 0); //?
+  ASSERT_EQ(res_int->Value(1), 0);  //?
+  ASSERT_EQ(res_int->Value(2), 3);
+  ASSERT_EQ(res_int->Value(3), 0);  //?
+  ASSERT_EQ(res_int->Value(4), 4);  // 3?
+  ASSERT_EQ(res_int->Value(5), 0);  //?
+  ASSERT_EQ(res_int->Value(6), 0);  //?
+  ASSERT_EQ(res_int->Value(7), 0);  //?
+  ASSERT_EQ(res_int->Value(8), 0);  //?
 }
 
 TEST(geometry_test, test_ST_Envelope) {
@@ -1576,48 +1577,52 @@ TEST(geometry_test, test_ST_Buffer) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = zilliz::gis::ST_Buffer(input,0);
+  auto res = zilliz::gis::ST_Buffer(input, 0);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
-  
-  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))"); 
-  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))"); 
-  ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))"); 
-  // ASSERT_EQ(res_str->GetString(8), "POLYGON ((0.2 0.8, 1 4, 1 0, 0.2 0.8))"); //POLYGON ((0 0,0 1,0.2 0.8,1 4,1 0,0 0))
+
+  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))");
+  // ASSERT_EQ(res_str->GetString(8), "POLYGON ((0.2 0.8, 1 4, 1 0, 0.2 0.8))"); //POLYGON
+  // ((0 0,0 1,0.2 0.8,1 4,1 0,0 0))
 }
 
 TEST(geometry_test, test_ST_PolygonFromEnvelope) {
-  arrow::DoubleBuilder x_min;
-  arrow::DoubleBuilder x_max;
-  arrow::DoubleBuilder y_min;
-  arrow::DoubleBuilder y_max;
+  arrow::DoubleBuilder x_min_builder;
+  arrow::DoubleBuilder x_max_builder;
+  arrow::DoubleBuilder y_min_builder;
+  arrow::DoubleBuilder y_max_builder;
 
-  x_min.Append(0);
-  x_max.Append(1);
-  y_min.Append(0);
-  y_max.Append(1);
+  x_min_builder.Append(0);
+  x_max_builder.Append(1);
+  y_min_builder.Append(2);
+  y_max_builder.Append(3);
+  x_min_builder.Append(0);
+  x_max_builder.Append(11);
+  y_min_builder.Append(22);
+  y_max_builder.Append(33);
 
-  std::shared_ptr<arrow::Array> x_min_ptr;
-  std::shared_ptr<arrow::Array> x_max_ptr;
-  std::shared_ptr<arrow::Array> y_min_ptr;
-  std::shared_ptr<arrow::Array> y_max_ptr;
+  std::shared_ptr<arrow::Array> x_min;
+  std::shared_ptr<arrow::Array> x_max;
+  std::shared_ptr<arrow::Array> y_min;
+  std::shared_ptr<arrow::Array> y_max;
 
-  x_min.Finish(&x_min_ptr);
-  x_max.Finish(&x_max_ptr);
-  y_min.Finish(&y_min_ptr);
-  y_max.Finish(&y_max_ptr);
+  x_min_builder.Finish(&x_min);
+  x_max_builder.Finish(&x_max);
+  y_min_builder.Finish(&y_min);
+  y_max_builder.Finish(&y_max);
 
-  auto res =
-      zilliz::gis::ST_PolygonFromEnvelope(x_min_ptr, y_min_ptr, x_max_ptr, y_max_ptr);
+  auto res = zilliz::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max);
 
-  auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
-  std::string expect = "POLYGON ((0 0,1 0,0 1,1 1,0 0))";
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str, expect);
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,1 2,0 3,1 3,0 2))");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,11 22,0 33,11 33,0 22))");
 }
 
 TEST(geometry_test, test_ST_Transform) {
@@ -1669,7 +1674,10 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   auto res = zilliz::gis::ST_Union_Aggr(input);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0), "GEOMETRYCOLLECTION (LINESTRING (-1 2,0.714285714285714 2.85714285714286),LINESTRING (1 3,3 4,1 -3,-2 1),POLYGON ((0 0,0 1,0.25 1.0,0.714285714285714 2.85714285714286,1 4,1 3,1 2,1 1,1 0,0 0)))");
+  ASSERT_EQ(res_str->GetString(0),
+            "GEOMETRYCOLLECTION (LINESTRING (-1 2,0.714285714285714 "
+            "2.85714285714286),LINESTRING (1 3,3 4,1 -3,-2 1),POLYGON ((0 0,0 1,0.25 "
+            "1.0,0.714285714285714 2.85714285714286,1 4,1 3,1 2,1 1,1 0,0 0)))");
 }
 
 TEST(geometry_test, test_ST_Envelope_Aggr) {

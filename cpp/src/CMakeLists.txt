@@ -49,7 +49,7 @@ add_library(
     ${gis_src}
 )
 
-#add_dependencies(windrose miniz_ep stb_ep)
+add_dependencies(windrose miniz_ep stb_ep)
 
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 11)
 if (USE_GPU)
