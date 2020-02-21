@@ -818,17 +818,38 @@ TEST(geometry_test, test_ST_IsSimple) {
 }
 
 TEST(geometry_test, test_ST_MakeValid) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  auto p1 = "POINT (1 2)";
+  auto p2 = "LINESTRING (0 0,0 1,2 0,3 1)";
+  auto p3 = "POLYGON ((0 0,0 1,1 2,0 0))";
+  auto p4 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto p5 = "MULTIPOINT (1 0,2 3)";
+  auto p6 = "MULTILINESTRING ((0 0,0 1,1 1),(0 2,1 3,4 -1))";
 
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Finish(&input);
 
-  std::shared_ptr<arrow::Array> line = build_linestrings();
-  auto vaild_mark3 = zilliz::gis::ST_MakeValid(line);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  auto res = zilliz::gis::ST_MakeValid(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  for (int i = 0; i < res_str->length(); i++) {
+    std::cout << res_str->GetString(i) << "#" << i << std::endl;
+  }
+
+  ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,0 1,2 0,3 1)");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 2,0 0))");
+  ASSERT_EQ(res_str->GetString(3),
+            "GEOMETRYCOLLECTION (POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0)),LINESTRING (4 "
+            "1,0 1))");
+  ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (1 0,2 3)");
+  ASSERT_EQ(res_str->GetString(5), "MULTILINESTRING ((0 0,0 1,1 1),(0 2,1 3,4 -1))");
 }
 
 TEST(geometry_test, test_ST_GeometryType) {
@@ -874,7 +895,8 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
   auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 1, 1 0,0 0)) )";
-  auto p8 = "MULTIPOLYGON ( ((0 0,0 2, 0 4, 4 4,4 3, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto p8 =
+      "MULTIPOLYGON ( ((0 0,0 2, 0 4, 4 4,4 3, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -888,17 +910,20 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
   builder.Append(std::string(p8));
   builder.Finish(&input);
 
-  auto res = zilliz::gis::ST_SimplifyPreserveTopology(input,10);
+  auto res = zilliz::gis::ST_SimplifyPreserveTopology(input, 10);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
-  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,1 1)");// ?
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,1 1)");  // ?
   ASSERT_EQ(res_str->GetString(2), "LINESTRING (0 0,1 0,1 1,0 0)");
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,1 0,1 1,0 1,0 0))");
   ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (0 0,1 0,1 2,1 2)");
-  ASSERT_EQ(res_str->GetString(5), "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))"); //?
+  ASSERT_EQ(res_str->GetString(5),
+            "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))");  //?
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 1,1 0,0 0))");
-  // ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 4,4 4,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))"); //MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))
+  // ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 4,4 4,4 0,0 0)),((0 0,4 0,4
+  // 1,0 1,0 0)))"); //MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0
+  // 0)))
 }
 
 TEST(geometry_test, test_ST_Contains) {
