@@ -1028,9 +1028,9 @@ TEST(geometry_test, test_ST_Contains) {
   auto res = zilliz::gis::ST_Contains(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  for (int i = 0; i < res_bool->length(); i++) {
-    std::cout << res_bool->Value(i) << "#" << i << std::endl;
-  }
+//  for (int i = 0; i < res_bool->length(); i++) {
+//    std::cout << res_bool->Value(i) << "#" << i << std::endl;
+//  }
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
@@ -1180,9 +1180,9 @@ TEST(geometry_test, test_ST_Within) {
   auto res = zilliz::gis::ST_Within(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  for (int i = 0; i < res_bool->length(); i++) {
-    std::cout << res_bool->Value(i) << "#" << i << std::endl;
-  }
+//  for (int i = 0; i < res_bool->length(); i++) {
+//    std::cout << res_bool->Value(i) << "#" << i << std::endl;
+//  }
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
@@ -1209,21 +1209,131 @@ TEST(geometry_test, test_ST_Within) {
 }
 
 TEST(geometry_test, test_ST_Distance) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  auto l1 = "POINT (0 0)";
+  auto l2 = "POINT (0 0)";
+  auto l3 = "POINT (0 0)";
+  auto l4 = "POINT (0 0)";
+  auto l5 = "POINT (0 0)";
+  auto l6 = "POINT (0 0)";
+  auto l7 = "POINT (0 0)";
+  
+  auto l8 = "LINESTRING (0 0, 1 1)";
+  auto l9 = "LINESTRING (0 0, 1 1)";
+  auto l10 = "LINESTRING (0 0, 1 1)";
+  auto l11 = "LINESTRING (0 0, 1 1)";
+  auto l12 = "LINESTRING (0 0, 1 1)";
+  auto l13 = "LINESTRING (0 0, 1 1)";
+  auto l14 = "LINESTRING (0 0, 1 1)";
 
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  auto l15 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))";
+  auto l16 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  auto l17 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  auto l18 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  auto l19 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  auto l20 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  auto l21 = "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"; 
+  
+  arrow::StringBuilder builder1;
+  std::shared_ptr<arrow::Array> input1;
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+  builder1.Append(std::string(l3));
+  builder1.Append(std::string(l4));
+  builder1.Append(std::string(l5));
+  builder1.Append(std::string(l6));
+  builder1.Append(std::string(l7));
+  builder1.Append(std::string(l8));
+  builder1.Append(std::string(l9));
+  builder1.Append(std::string(l10));
+  builder1.Append(std::string(l11));
+  builder1.Append(std::string(l12));
+  builder1.Append(std::string(l13));
+  builder1.Append(std::string(l14));
+  builder1.Append(std::string(l15));
+  builder1.Append(std::string(l16));
+  builder1.Append(std::string(l17));
+  builder1.Append(std::string(l18));
+  builder1.Append(std::string(l19));
+  builder1.Append(std::string(l20));
+  builder1.Append(std::string(l21));
+  builder1.Finish(&input1);
 
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  auto r1 = "POINT (1 1)";
+  auto r2 = "LINESTRING (0 2, 2 0)";
+  auto r3 = "POLYGON ((1 0, 3 0, 3 3, 1 3, 1 0))";
+  auto r4 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
+  auto r5 = "MULTIPOINT (0 1, 2 0, 1 2)";
+  auto r6 = "MULTILINESTRING ( (0 3, 1 2), (0 1, 1 0, 1 1))";
+  auto r7 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
+  
+  auto r8  = "POINT (1 1)";
+  auto r9  = "LINESTRING (0 2, 2 0)";
+  auto r10 = "POLYGON ((1 0, 3 0, 3 3, 1 3, 1 0))";
+  auto r11 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
+  auto r12 = "MULTIPOINT (0 1, 2 0, 1 2)";
+  auto r13 = "MULTILINESTRING ( (0 3, 1 2), (0 2, 1 0, 1 1))";
+  auto r14 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
+    
+  auto r15  = "POINT (1 1)";
+  auto r16  = "LINESTRING (0 2, 2 0)";
+  auto r17 = "POLYGON ((1 0, 3 0, 3 3, 1 3, 1 0))";
+  auto r18 = "POLYGON ((-1 -1, 3 0, 3 3, 1 3, -1 -1))";
+  auto r19 = "MULTIPOINT (0 1, 2 0, 1 2)";
+  auto r20 = "MULTILINESTRING ( (0 3, 1 2), (0 2, 1 0, 1 1))";
+  auto r21 = "MULTIPOLYGON ( ((1 0, 3 0, 3 3, 1 3, 1 0)), ((-1 -1, 3 0, 3 3, 1 3, -1 -1)) )";
 
-  auto res1 = zilliz::gis::ST_Distance(points, polygons);
-  auto res2 = zilliz::gis::ST_Distance(polygons, lines);
-  auto res3 = zilliz::gis::ST_Distance(points, lines);
+  arrow::StringBuilder builder2;
+  std::shared_ptr<arrow::Array> input2;
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+  builder2.Append(std::string(r3));
+  builder2.Append(std::string(r4));
+  builder2.Append(std::string(r5));
+  builder2.Append(std::string(r6));
+  builder2.Append(std::string(r7));
+  builder2.Append(std::string(r8));
+  builder2.Append(std::string(r9));
+  builder2.Append(std::string(r10));
+  builder2.Append(std::string(r11));
+  builder2.Append(std::string(r12));
+  builder2.Append(std::string(r13));
+  builder2.Append(std::string(r14));
+  builder2.Append(std::string(r15));
+  builder2.Append(std::string(r16));
+  builder2.Append(std::string(r17));
+  builder2.Append(std::string(r18));
+  builder2.Append(std::string(r19));
+  builder2.Append(std::string(r20));
+  builder2.Append(std::string(r21));
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Distance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  for (int i = 0; i < res_double->length(); i++) {
+    std::cout << res_double->Value(i) << "#" << i << std::endl;
+  }
+  EXPECT_DOUBLE_EQ(res_double->Value(0), sqrt(2));
+  EXPECT_DOUBLE_EQ(res_double->Value(1), sqrt(2));
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(3), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(4), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(5), sqrt(2)/2);
+  EXPECT_DOUBLE_EQ(res_double->Value(6), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(7), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(8), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(10), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(11), sqrt(2)/2);
+  EXPECT_DOUBLE_EQ(res_double->Value(12), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(13), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(14), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(15), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(16), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(17), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(18), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(19), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(20), 0);
 }
 
 TEST(geometry_test, test_ST_Area) {
