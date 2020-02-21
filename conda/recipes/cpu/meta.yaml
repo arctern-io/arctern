@@ -10,6 +10,7 @@ build:
 
 requirements:
   build:
+    - python
     - gdal ==3.0.4
     - pyarrow
     - gtest
@@ -17,6 +18,7 @@ requirements:
     - Cython
     - pytest
   run:
+    - python
     - gdal ==3.0.4
     - pyarrow
     - rapidjson
