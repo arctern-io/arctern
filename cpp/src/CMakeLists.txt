@@ -1,6 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/scatter_plot/pointmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/choropleth_map/choropleth_map.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/set_color.cpp
@@ -18,6 +19,7 @@ endif ()
 
 set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_heatmap/vega_heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color.cpp
@@ -50,26 +52,26 @@ add_library(
 )
 
 add_dependencies(windrose miniz_ep stb_ep)
+target_link_libraries(windrose
+	        gdal
+            arrow
+            pthread
+            miniz
+)
 
-set_property(TARGET windrose PROPERTY CUDA_STANDARD 11)
+
+set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
+    add_subdirectory(gis/cuda)
     target_link_libraries(windrose
             GL
             EGL
             cudart
-            gdal
-            arrow
-            pthread
-            miniz
             )
 else ()
     target_link_libraries(windrose
             GLU
             OSMesa
-	    gdal
-            arrow
-            pthread
-            miniz
             )
 endif ()
 

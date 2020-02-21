@@ -37,7 +37,7 @@ class VegaCircle2d : public VegaScatterPlot {
   void Parse(const std::string& json) final;
 
  private:
-  VegaScatterPlot::CircleParams circle_params_;
+  CircleParams circle_params_;
 };
 
 }  // namespace render
