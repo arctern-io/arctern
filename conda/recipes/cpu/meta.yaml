@@ -25,7 +25,8 @@ requirements:
 
 test:
   commands:
-    - python -c "import cudf"
+    - python -c "import zilliz_gis"
+    - python -c "import zilliz_pyspark"
 
 about:
   home: http://www.github.com/zilliztech/GIS
