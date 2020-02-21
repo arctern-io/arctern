@@ -4,7 +4,7 @@ if [ -d cpp/build ];then
 fi
 mkdir cpp/build
 pushd cpp/build
-cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBUILD_UNITTEST=ON  -DCMAKE_BUILD_TYPE=Release -DUSE_GPU=OFF
+cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBUILD_UNITTEST=OFF  -DCMAKE_BUILD_TYPE=Release -DUSE_GPU=OFF
 make install
 popd
 
