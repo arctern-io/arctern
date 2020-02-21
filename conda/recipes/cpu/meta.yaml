@@ -12,8 +12,7 @@ requirements:
   build:
     - python ==3.8
     - gdal ==3.0.4
-    - arrow-cpp ==0.16.0
-    - pyarrow ==0.16.0
+    - pyarrow ==0.15.1
     - gtest
     - rapidjson ==1.1.0
     - Cython ==0.29.15
@@ -21,8 +20,7 @@ requirements:
   run:
     - python ===3.8
     - gdal ==3.0.4
-    - pyarrow ===0.16.0
-    - arrow-cpp ==0.16.0
+    - pyarrow ===0.15.1
     - rapidjson ==1.1.0
     - Cython ==0.29.15
 
