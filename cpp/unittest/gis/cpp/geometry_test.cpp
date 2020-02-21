@@ -1310,9 +1310,6 @@ TEST(geometry_test, test_ST_Distance) {
   auto res = zilliz::gis::ST_Distance(input1, input2);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-  for (int i = 0; i < res_double->length(); i++) {
-    std::cout << res_double->Value(i) << "#" << i << std::endl;
-  }
   EXPECT_DOUBLE_EQ(res_double->Value(0), sqrt(2));
   EXPECT_DOUBLE_EQ(res_double->Value(1), sqrt(2));
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
@@ -1494,21 +1491,44 @@ TEST(geometry_test, test_ST_ConvexHull) {
 
 // TODO : geospark ST_NPoints can not work.
 TEST(geometry_test, test_ST_NPoints) {
-  std::shared_ptr<arrow::Array> points = build_points();
-  auto vaild_mark1 = zilliz::gis::ST_MakeValid(points);
-  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  auto p1 = "POINT (0 1)";
+  auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
 
-  std::shared_ptr<arrow::Array> polygons = build_polygons();
-  auto vaild_mark2 = zilliz::gis::ST_MakeValid(polygons);
-  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  builder.Append(std::string(p8));
+  builder.Append(std::string(p9));
+  builder.Finish(&input);
 
-  std::shared_ptr<arrow::Array> lines = build_linestrings();
-  auto vaild_mark3 = zilliz::gis::ST_MakeValid(lines);
-  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
-
-  auto res1 = zilliz::gis::ST_NPoints(points);
-  auto res2 = zilliz::gis::ST_NPoints(polygons);
-  auto res3 = zilliz::gis::ST_NPoints(lines);
+  auto res = zilliz::gis::ST_NPoints(input);
+  auto res_int = std::static_pointer_cast<arrow::UInt32Array>(res);
+  
+  for(int i=0;i<res_int->length();i++){
+    std::cout<<res_int->Value(i)<<"#"<<i<<std::endl;
+  }
+  ASSERT_EQ(res_int->Value(0), 1);
+  ASSERT_EQ(res_int->Value(1), 0); //?
+  ASSERT_EQ(res_int->Value(2), 3); 
+  ASSERT_EQ(res_int->Value(3), 0); //?
+  ASSERT_EQ(res_int->Value(4), 4); //3?
+  ASSERT_EQ(res_int->Value(5), 0); //?
+  ASSERT_EQ(res_int->Value(6), 0); //?
+  ASSERT_EQ(res_int->Value(7), 0); //?
+  ASSERT_EQ(res_int->Value(8), 0); //?
 }
 
 TEST(geometry_test, test_ST_Envelope) {
