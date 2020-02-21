@@ -350,9 +350,6 @@ TEST(geometry_test, test_ST_Intersection) {
   auto res = zilliz::gis::ST_Intersection(input1, input2);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  // for(int i=0;i<res_str->length();i++){
-  // std::cout<<res_str->GetString(i)<<"#"<<i<<std::endl;
-  // }
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
   ASSERT_EQ(res_str->GetString(1), "POINT EMPTY");
   ASSERT_EQ(res_str->GetString(2), "POINT (0 1)");
@@ -451,9 +448,6 @@ TEST(geometry_test, test_ST_Equals) {
   auto res = zilliz::gis::ST_Equals(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // for (int i = 0; i < res_bool->length(); i++) {
-  //  std::cout << res_bool->Value(i) << "#" << i << std::endl;
-  // }
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
@@ -546,9 +540,6 @@ TEST(geometry_test, test_ST_Touches) {
   auto res = zilliz::gis::ST_Touches(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // for(int i=0;i<res_bool->length();i++){
-  // std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-  // }
 
   // ASSERT_EQ(res_bool->Value(0 ), true);
   ASSERT_EQ(res_bool->Value(1), false);
@@ -684,9 +675,6 @@ TEST(geometry_test, test_ST_Overlaps) {
   auto res = zilliz::gis::ST_Overlaps(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // for(int i=0;i<res_bool->length();i++){
-  // std::cout<<res_bool->Value(i)<<"#"<<i<<std::endl;
-  // }
 
   ASSERT_EQ(res_bool->Value(0), false);
   ASSERT_EQ(res_bool->Value(1), false);
@@ -1028,9 +1016,6 @@ TEST(geometry_test, test_ST_Contains) {
   auto res = zilliz::gis::ST_Contains(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-//  for (int i = 0; i < res_bool->length(); i++) {
-//    std::cout << res_bool->Value(i) << "#" << i << std::endl;
-//  }
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
@@ -1180,9 +1165,6 @@ TEST(geometry_test, test_ST_Within) {
   auto res = zilliz::gis::ST_Within(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-//  for (int i = 0; i < res_bool->length(); i++) {
-//    std::cout << res_bool->Value(i) << "#" << i << std::endl;
-//  }
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
@@ -1517,9 +1499,6 @@ TEST(geometry_test, test_ST_NPoints) {
   auto res = zilliz::gis::ST_NPoints(input);
   auto res_int = std::static_pointer_cast<arrow::UInt32Array>(res);
   
-  for(int i=0;i<res_int->length();i++){
-    std::cout<<res_int->Value(i)<<"#"<<i<<std::endl;
-  }
   ASSERT_EQ(res_int->Value(0), 1);
   ASSERT_EQ(res_int->Value(1), 0); //?
   ASSERT_EQ(res_int->Value(2), 3); 
@@ -1600,9 +1579,6 @@ TEST(geometry_test, test_ST_Buffer) {
   auto res = zilliz::gis::ST_Buffer(input,0);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   
-  for(int i=0;i<res_str->length();i++){
-    std::cout<<res_str->GetString(i)<<"#"<<i<<std::endl;
-  }
   ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
   ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
   ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY"); //geospark :MULTIPOLYGON EMPTY
@@ -1667,55 +1643,33 @@ TEST(geometry_test, test_ST_Transform) {
 }
 
 TEST(geometry_test, test_ST_Union_Aggr) {
+  auto p1 = "POINT (0 1)";
+  auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
+  auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+  auto p4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+  auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
+  auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+  auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)))";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+
   arrow::StringBuilder builder;
-  std::shared_ptr<arrow::Array> polygons;
-
-  auto p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
-  auto p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))";
-  builder.Reset();
+  std::shared_ptr<arrow::Array> input;
   builder.Append(std::string(p1));
   builder.Append(std::string(p2));
-  builder.Finish(&polygons);
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  // builder.Append(std::string(p8));
+  // builder.Append(std::string(p9));
+  builder.Finish(&input);
 
-  auto result = zilliz::gis::ST_Union_Aggr(polygons);
-  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
+  auto res = zilliz::gis::ST_Union_Aggr(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))");
-
-  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
-  p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))";
-  builder.Reset();
-  builder.Append(std::string(p1));
-  builder.Append(std::string(p2));
-  builder.Finish(&polygons);
-  result = zilliz::gis::ST_Union_Aggr(polygons);
-  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
-
-  ASSERT_EQ(geometries_arr->GetString(0),
-            "POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))");
-
-  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
-  p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))";
-  builder.Reset();
-  builder.Append(std::string(p1));
-  builder.Append(std::string(p2));
-  builder.Finish(&polygons);
-  result = zilliz::gis::ST_Union_Aggr(polygons);
-  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
-
-  ASSERT_EQ(geometries_arr->GetString(0),
-            "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))");
-
-  p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))";
-  p2 = "POINT (2 3)";
-  builder.Reset();
-  builder.Append(std::string(p1));
-  builder.Append(std::string(p2));
-  builder.Finish(&polygons);
-  result = zilliz::gis::ST_Union_Aggr(polygons);
-  geometries_arr = std::static_pointer_cast<arrow::StringArray>(result);
-
-  ASSERT_EQ(geometries_arr->GetString(0), "POLYGON ((0 0,0 4,4 4,4 0,0 0))");
+  ASSERT_EQ(res_str->GetString(0), "GEOMETRYCOLLECTION (LINESTRING (-1 2,0.714285714285714 2.85714285714286),LINESTRING (1 3,3 4,1 -3,-2 1),POLYGON ((0 0,0 1,0.25 1.0,0.714285714285714 2.85714285714286,1 4,1 3,1 2,1 1,1 0,0 0)))");
 }
 
 TEST(geometry_test, test_ST_Envelope_Aggr) {
