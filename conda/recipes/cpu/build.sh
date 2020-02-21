@@ -1,7 +1,8 @@
 #!/bin/bash
-if [ ! -d cpp/build ];then
-    mkdir cpp/build
+if [ -d cpp/build ];then
+    rm -rf cpp/build
 fi
+mkdir cpp/build
 pushd cpp/build
 cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBUILD_UNITTEST=ON  -DCMAKE_BUILD_TYPE=Release -DUSE_GPU=OFF
 make install
