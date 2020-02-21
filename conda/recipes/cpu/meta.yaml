@@ -10,25 +10,24 @@ build:
 
 requirements:
   build:
-    - python
+    - python ==3.8
     - gdal ==3.0.4
-    - pyarrow
+    - pyarrow ==0.16.0
     - gtest
-    - rapidjson
-    - Cython
+    - rapidjson ==1.1.0
+    - Cython ==0.29.15
     - pytest
   run:
-    - python
+    - python ===3.8
     - gdal ==3.0.4
-    - pyarrow
-    - rapidjson
-    - Cython
-    - pytest
+    - pyarrow ===0.16.0
+    - rapidjson ==1.1.0
+    - Cython ==0.29.15
 
-test:
-  commands:
-    - python -c "import zilliz_gis"
-    - python -c "import zilliz_pyspark"
+# test:
+#   commands:
+#     - python -c "import zilliz_gis"
+#     - python -c "import zilliz_pyspark"
 
 about:
   home: http://www.github.com/zilliztech/GIS
