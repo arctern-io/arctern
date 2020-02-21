@@ -1,0 +1,35 @@
+package:
+  name: arctern
+  version: 0.1.0
+
+source:
+  path: ../../..
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - gdal == 3.0.4
+    - pyarrow
+    - gtest
+    - rapidjson
+    - Cython
+    - pytest
+  run:
+    - gdal == 3.0.4
+    - pyarrow
+    - rapidjson
+    - Cython
+    - pytest
+
+test:
+  commands:
+    - python -c "import cudf"
+
+about:
+  home: http://www.github.com/zilliztech/GIS
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary:  arctern core library
