@@ -96,12 +96,12 @@ spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home
 `/home/xxx/gis/GIS/cpp/build/thirdparty/lib`对应你编译cpp部分时，生成的库安装的地方
 
 ## 修改环境变量  
-在`~/.bashrc`和`spark-env.sh` 增加如下配置
+在`spark-env.sh` 增加如下配置
 ```
 export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/zgis_dev/bin/python
+export GDAL_DATA=/home/xxx/miniconda3/envs/zgis_dev/share/gdal
+export PROJ_LIB=/home/xxx/miniconda3/envs/zgis_dev/share/proj
 ```
-注1 : 如果当前用户默认`SHELL`不是`bash`，则在对应的rc文件中添加环境变量  
-注2 : 设置环境变量后重启`SHELL`，确保当前`PYSPARK_PYTHON`生效
 
 ## 检查`pyspark`是否使用`$PYSPARK_PYTHON`指定的python
 ```
