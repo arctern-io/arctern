@@ -1,6 +1,6 @@
 timeout(time: 15, unit: 'MINUTES') {
     dir ("ci/scripts") {
-        sh "/bin/bash --login -c './run_pylint.sh'"
+        sh "./run_pylint.sh"
         if ("${BINARY_VERSION}" == "gpu") {
             sh "/bin/bash --login -c './cpp_build.sh -t ${params.BUILD_TYPE} -o ${env.ARCTERN_INSTALL_PREFIX} -e \"zgis_dev\" -l -g -u'"
         } else {
