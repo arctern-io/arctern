@@ -106,6 +106,12 @@ $ docker-compose version
 
 ### 启动分布式集群
 
+前台执行
+```shell
+$ sudo docker-compose up
+```
+
+后台执行
 ```shell
 $ sudo docker-compose up -d
 ```
