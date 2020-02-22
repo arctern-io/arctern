@@ -37,9 +37,11 @@ apt install openjdk-8-jre
 Apache Spark : https://spark.apache.org/downloads.html
 
 ### 配置spark的python路径
-在文件`conf/spark-env.sh `添加一下内容
+在文件`conf/spark-env.sh `添加以下内容，其中`/opt/conda`由`Miniconda`具体安装位置决定
 ```bash
 export PYSPARK_PYTHON=/opt/conda/envs/arctern_dev/bin/python
+export GDAL_DATA=/opt/conda/envs/arctern_dev/share/gdal
+export PROJ_LIB=/opt/conda/envs/arctern_dev/share/proj
 ```
 
 ### 检查pyspark是否使用$PYSPARK_PYTHON指定的python
