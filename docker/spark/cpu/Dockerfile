@@ -21,14 +21,14 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate zgis_dev" >> ~/.bashrc
 
-COPY gis /var/lib/gis
+COPY arctern /var/lib/arctern
 COPY python /tmp/python
 
-RUN source /var/lib/gis/scripts/gis_env.sh && \
+RUN source /var/lib/arctern/scripts/arctern_env.sh && \
     . /opt/conda/etc/profile.d/conda.sh && \
     conda activate zgis_dev && \
     cd /tmp/python && \
-    python setup.py build build_ext --library-dirs="$GIS_LIB_DIR" && \
+    python setup.py build build_ext --library-dirs="$ARCTERN_LIB_DIR" && \
     python setup.py install && \
     rm -rf /tmp/python
     
