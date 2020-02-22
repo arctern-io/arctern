@@ -18,6 +18,6 @@
 
 #cmakedefine LIB_VERSION "@LIB_VERSION@"
 #cmakedefine CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
-#cmakedefine BUILD_TIME "@BUILD_TIME@"
+#cmakedefine BUILD_TIME @BUILD_TIME@
 #cmakedefine LAST_COMMIT_ID "@LAST_COMMIT_ID@"
 #cmakedefine CPU_OR_GPU "@CPU_OR_GPU@"
