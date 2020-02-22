@@ -1,16 +1,31 @@
+/*
+ * Copyright (C) 2019-2020 Zilliz. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #pragma once
 
-#include "zcommon/error/error.h"
-#include "render/engine/common/log.h"
-#include "zlibrary/error/error.h"
+#include <string>
 
+#include "render/engine/common/log.h"
+#include "zcommon/error/error.h"
+#include "zlibrary/error/error.h"
 
 #define RENDER_ENGINE_DOMAIN "RENDER ENGINE"
 
 namespace zilliz {
 namespace render {
 namespace engine {
-
 
 using ErrorCode = zilliz::common::ErrorCode;
 
@@ -20,10 +35,8 @@ using zilliz::lib::CudaException;
 constexpr ErrorCode ERROR_CODE_BASE = 0x45000;
 constexpr ErrorCode ERROR_CODE_END = 0x46000;
 
-
-constexpr ErrorCode
-ToGlobalErrorCode(const ErrorCode error_code) {
-    return zilliz::lib::ToGlobalErrorCode(error_code, ERROR_CODE_BASE);
+constexpr ErrorCode ToGlobalErrorCode(const ErrorCode error_code) {
+  return zilliz::lib::ToGlobalErrorCode(error_code, ERROR_CODE_BASE);
 }
 
 constexpr ErrorCode UNKNOWN_PLAN_TYPE = ToGlobalErrorCode(0x001);
@@ -42,22 +55,19 @@ constexpr ErrorCode CAST_FAILED = ToGlobalErrorCode(0x00d);
 constexpr ErrorCode FILE_PATH_NOT_FOUND = ToGlobalErrorCode(0x00e);
 constexpr ErrorCode UNINITIALIZED = ToGlobalErrorCode(0x00f);
 
-
 class RenderEngineException : public zilliz::common::Exception {
  public:
-    explicit
-    RenderEngineException(ErrorCode error_code,
-                          const std::string &message = nullptr)
-        : Exception(error_code, RENDER_ENGINE_DOMAIN, message) {}
+  explicit RenderEngineException(ErrorCode error_code,
+                                 const std::string& message = nullptr)
+      : Exception(error_code, RENDER_ENGINE_DOMAIN, message) {}
 };
 
+}  // namespace engine
+}  // namespace render
+}  // namespace zilliz
 
-} // namespace engine
-} // namespace render
-} // namespace zilliz
-
-#define THROW_RENDER_ENGINE_ERROR(err_code, err_msg)                  \
-    do {                                                       \
-        RENDER_ENGINE_LOG_ERROR << err_msg;                           \
-        throw RenderEngineException(err_code, err_msg);              \
-    } while(false);
+#define THROW_RENDER_ENGINE_ERROR(err_code, err_msg) \
+  do {                                               \
+    RENDER_ENGINE_LOG_ERROR << err_msg;              \
+    throw RenderEngineException(err_code, err_msg);  \
+  } while (false);
