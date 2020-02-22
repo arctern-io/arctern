@@ -18,4 +18,3 @@ find . -name \*.py \
 | sed 's/./\\&/g' \
 | xargs "${PYLINT}" -j 4 -ry --msg-template='{path}:{line}:{column}: {msg_id}: {msg} ({symbol})' --ignore="" \
 "$@"
-
