@@ -93,3 +93,15 @@ $ docker-compose version
 
 检查docker-compose.yml中image是否填写的是当前您要使用的docker images。
 检查master和worker的环境变量设置，[具体设置](https://spark.apache.org/docs/latest/spark-standalone.html)
+
+### 启动分布式集群
+
+```shell
+$ sudo docker-compose up -d
+```
+
+### 关闭分布式集群
+
+```
+$ sudo docker-compose down
+```
