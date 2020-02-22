@@ -127,6 +127,82 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
       return out_pic(heatmap<double>(input_x, input_y, input_c_double, x_length, conf));
     }
     default:
+      // TODO: add log here
+      std::cout << "type error!";
+  }
+  return nullptr;
+}
+
+std::shared_ptr<arrow::Array> choropleth_map(
+    const std::shared_ptr<arrow::Array>& arr_wkt,
+    const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf) {
+  auto arr_wkt_length = arr_wkt->length();
+  auto arr_color_length = arr_count->length();
+  auto wkt_type = arr_wkt->type_id();
+  auto color_type = arr_count->type_id();
+
+  assert(arr_wkt_length == arr_color_length);
+  assert(wkt_type == arrow::Type::STRING);
+
+  auto string_array = std::static_pointer_cast<arrow::StringArray>(arr_wkt);
+  std::vector<std::string> input_wkt(arr_wkt_length);
+  for (int i = 0; i < arr_wkt_length; i++) {
+    input_wkt[i] = string_array->GetString(i);
+  }
+
+  switch (color_type) {
+    case arrow::Type::INT8: {
+      auto input_c_int8 = (int8_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<int8_t>(input_wkt, input_c_int8, arr_wkt_length, conf));
+    }
+    case arrow::Type::INT16: {
+      auto input_c_int16 = (int16_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<int16_t>(input_wkt, input_c_int16, arr_wkt_length, conf));
+    }
+    case arrow::Type::INT32: {
+      auto input_c_int32 = (int32_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<int32_t>(input_wkt, input_c_int32, arr_wkt_length, conf));
+    }
+    case arrow::Type::INT64: {
+      auto input_c_int64 = (int64_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<int64_t>(input_wkt, input_c_int64, arr_wkt_length, conf));
+    }
+    case arrow::Type::UINT8: {
+      auto input_c_uint8 = (uint8_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<uint8_t>(input_wkt, input_c_uint8, arr_wkt_length, conf));
+    }
+    case arrow::Type::UINT16: {
+      auto input_c_uint16 = (uint16_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<uint16_t>(input_wkt, input_c_uint16, arr_wkt_length, conf));
+    }
+    case arrow::Type::UINT32: {
+      auto input_c_uint32 = (uint32_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<uint32_t>(input_wkt, input_c_uint32, arr_wkt_length, conf));
+    }
+    case arrow::Type::UINT64: {
+      auto input_c_uint64 = (uint64_t*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<uint64_t>(input_wkt, input_c_uint64, arr_wkt_length, conf));
+    }
+    case arrow::Type::FLOAT: {
+      auto input_c_float = (float*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<float>(input_wkt, input_c_float, arr_wkt_length, conf));
+    }
+    case arrow::Type::DOUBLE: {
+      auto input_c_double = (double*)arr_count->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          choroplethmap<double>(input_wkt, input_c_double, arr_wkt_length, conf));
+    }
+    default:
+      // TODO: add log here
       std::cout << "type error!";
   }
   return nullptr;

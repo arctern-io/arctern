@@ -35,8 +35,6 @@ class General2D {
 
   virtual uint8_t* Render() = 0;
 
-  virtual void Shader() = 0;
-
   virtual void Draw() = 0;
 
   virtual void InputInit() = 0;
