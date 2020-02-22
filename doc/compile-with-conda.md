@@ -36,7 +36,7 @@ cpp_build.sh具体参数设置可运行下面命令:
 
 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
 ```
-source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
+source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 ./ci/scripts/run_unittest.sh -i ${CMAKE_INSTALL_PREFIX}
 ```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
@@ -48,11 +48,11 @@ source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
 ## Python包 zilliz_gis的编译和安装
 - 加载GIS环境
 ```
-source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
+source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 ```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
 - 运行ci/scripts目录下的python_build.sh  
-`./python_build.sh -l $GIS_LIB_DIR`
+`./python_build.sh -l $ARCTERN_LIB_DIR`
 
 python_build.sh具体参数设置可运行下面命令:
 ```
@@ -62,7 +62,7 @@ python_build.sh具体参数设置可运行下面命令:
 ## 运行Python包 zilliz_gis的单元测试
 1. 需要保证`LD_LIBRARY_PATH`中加入`CMAKE_INSTALL_PREFIX/lib`这个路径以及`cuda`的`lib`路径
 ```
-source ${CMAKE_INSTALL_PREFIX}/scripts/gis_env.sh
+source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 ```
 
 2. 到`GIS/python/test/geo`目录运行：

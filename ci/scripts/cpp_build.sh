@@ -14,7 +14,7 @@ CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
 CPP_BUILD_DIR="${CPP_SRC_DIR}/cmake_build"
 BUILD_TYPE="Debug"
 BUILD_UNITTEST="OFF"
-INSTALL_PREFIX="/var/lib/gis"
+INSTALL_PREFIX="/var/lib/arctern"
 USE_GPU="OFF"
 CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 PRIVILEGES="OFF"
@@ -48,7 +48,7 @@ do
                 echo "
 
 parameter:
--o: install prefix(default: /var/lib/gis)
+-o: install prefix(default: /var/lib/arctern)
 -t: build type(default: Debug)
 -d: cpp code build directory
 -e: set conda activate environment
