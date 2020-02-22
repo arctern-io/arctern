@@ -43,9 +43,9 @@ $ sudo docker pull arctern:arctern-spark:latest
 
 ```shell
 $ cd docker/spark/cpu/
-$ ln -s <Arctern 编译安装路径> ./arctern
-$ ln -s ../../../python .
-$ ln -s ../../../spark/pyspark .
+$ cp -R  <Arctern 编译安装路径> ./arctern
+$ cp -R ../../../python .
+$ cp -R ../../../spark/pyspark .
 $ sudo docker build -t <image name>:<tag> .
 ```
 
