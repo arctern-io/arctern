@@ -85,7 +85,7 @@ NVIDIA Docker: 2.0.3
 ```
 重新加载docker
 
-```
+```shell
 $ sudo systemctl daemon-reload
 $ sudo systemctl restart docker
 ```
@@ -118,6 +118,6 @@ $ sudo docker-compose up -d
 
 ### 关闭分布式集群
 
-```
+```shell
 $ sudo docker-compose down
 ```
