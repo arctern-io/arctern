@@ -41,8 +41,18 @@ $ sudo docker pull arctern:arctern-spark:latest
 ```
 或者自行构建docker images
 
+纯CPU 版本
 ```shell
 $ cd docker/spark/cpu/
+$ cp -R  <Arctern 编译安装路径> ./arctern
+$ cp -R ../../../python .
+$ cp -R ../../../spark/pyspark .
+$ sudo docker build -t <image name>:<tag> .
+```
+
+全功能版本
+```shell
+$ cd docker/spark/gpu/
 $ cp -R  <Arctern 编译安装路径> ./arctern
 $ cp -R ../../../python .
 $ cp -R ../../../spark/pyspark .
