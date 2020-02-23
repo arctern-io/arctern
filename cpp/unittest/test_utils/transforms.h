@@ -44,18 +44,16 @@ inline std::vector<char> hexstring_to_binary(std::string str) {
   return vec;
 }
 
-inline std::vector<uint8_t> wkt_to_wkb(const char* geo_wkt) {
+inline std::vector<char> wkt_to_wkb(const char* geo_wkt) {
   OGRGeometry* geo = nullptr;
-  bool is_valid = false;
   {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
     assert(err_code == OGRERR_NONE);
   }
   auto sz = geo->WkbSize();
-  std::vector<uint8_t> result(sz);
+  std::vector<char> result(sz);
   {
-
-    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, result.data());
+    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)result.data());
     assert(err_code == OGRERR_NONE);
   }
   OGRGeometryFactory::destroyGeometry(geo);
