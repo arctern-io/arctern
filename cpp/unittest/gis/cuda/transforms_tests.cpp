@@ -16,4 +16,13 @@
 // under the License.
 
 #include <gtest/gtest.h>
-TEST(Dummy, Dummy) { ASSERT_TRUE(true); }
+
+#include "test_utils/transforms.h"
+TEST(Transform, Naive) {
+  auto std_data = hexstring_to_binary(
+      "01030000000100000004000000000000000000084000000000000008400000000000000840000000"
+      "00000010400000000000001040000000000000104000000000000010400000000000000840");
+  auto output_data = wkt_to_wkb("Polygon((0 0, 0 1, 1 1, 1 0))");
+
+  ASSERT_TRUE(true);
+}
