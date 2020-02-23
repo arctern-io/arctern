@@ -6,6 +6,6 @@ set(gis_cuda_test_srcs transforms_tests.cpp
         )
 add_executable(gis_cuda_tests ${gis_cuda_test_srcs})
 
-target_link_libraries(gis_cuda_tests wkb_cuda gtest)
+target_link_libraries(gis_cuda_tests wkb_cuda gtest gdal)
 
 install(TARGETS gis_cuda_tests DESTINATION unittest)
