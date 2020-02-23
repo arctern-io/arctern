@@ -23,7 +23,7 @@
 #include <cmath>
 
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/functor/common.h"
+#include "gis/cuda/common/common.h"
 #include "gis/cuda/functor/st_within.h"
 
 namespace zilliz {
@@ -102,7 +102,7 @@ __global__ void ST_WithinKernel(GpuContext left, GpuContext right, bool* result)
 }
 }  // namespace
 
- void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
+void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results) {
   assert(left_vec.size() == right_vec.size());
   auto left_ctx_holder = left_vec.CreateReadGpuContext();
