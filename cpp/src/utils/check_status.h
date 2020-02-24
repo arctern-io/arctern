@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <string>
+
 #define CHECK_GDAL(action)                                                     \
   {                                                                            \
     auto check = action;                                                       \
