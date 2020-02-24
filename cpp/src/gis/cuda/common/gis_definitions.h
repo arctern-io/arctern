@@ -190,6 +190,7 @@ class GeometryVector {
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
 }
+bool test_cuda_abi(const std::string& str);
 
 using GpuContext = GeometryVector::GpuContext;
 

@@ -31,14 +31,14 @@ TEST(FunctorWithin, naive) {
   using std::string;
   using std::vector;
   vector<string> left_raw = {
-      "POINT(0, 0)", "POINT(0, 1.5)", "POINT(0, -1.5)", "POINT(0, 2.5)", "POINT(0, -2.5)",
+      "POINT(0,0)", "POINT(0,1.5)", "POINT(0,-1.5)", "POINT(0,2.5)", "POINT(0,-2.5)",
   };
   vector<string> right_raw = {
-      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2),(0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2),(0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2),(0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2),(0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2),(0 1, -1 -1, 1 -1))",
   };
   vector<uint8_t> std_results = {false, true, true, false, false};
   vector<uint8_t> results(left_raw.size());
@@ -54,7 +54,6 @@ TEST(FunctorWithin, naive) {
   for(auto i = 0; i < left_raw.size(); ++i) {
     ASSERT_EQ(results[i], std_results[i]);
   }
-
 }
 }  // namespace cuda
 }  // namespace gis

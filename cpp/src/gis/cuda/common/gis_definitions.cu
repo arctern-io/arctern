@@ -145,10 +145,10 @@ void GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
 // only for testing
 // create Geometry from WktArray
 namespace GeometryVectorFactory {
-GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec) {
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   GeometryVector geo;
   geo.WkbDecodeInitalize();
-  for (const auto& str : wkt_vec) {
+  for (auto str : wkt_vec) {
     auto wkb = Wkt2Wkb(str);
     geo.WkbDecodeAppend(wkb.data());
   }
@@ -156,6 +156,11 @@ GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec) {
   return geo;
 }
 }  // namespace GeometryVectorFactory
+
+bool test_cuda_abi(const std::string& str) {
+  auto diff = strcmp(str.c_str(), "hello,world");
+  return diff == 0;
+}
 
 }  // namespace cuda
 }  // namespace gis

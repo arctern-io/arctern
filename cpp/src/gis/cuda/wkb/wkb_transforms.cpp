@@ -2,6 +2,7 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <cstring>
 
 #include <cassert>
 #include <string>
