@@ -104,10 +104,11 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, i
   return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
 
-__global__ void FillInfoKernel(const GpuContext& input, GpuContext results) {
+__global__ void FillInfoKernel(const GpuContext input, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
-  if (index < results.size) {
+  assert(input.size == results.size);
+  if (index < input.size) {
     auto out_info = GetInfoAndDataPerElement(input, index, results, true);
     printf("%d", index);
     results.tags[index] = out_info.tag;

@@ -35,7 +35,7 @@ TEST(FunctorEnvelope, naive) {
                         "POLYGON((0 0, 1 0, 1 1, 1 0, 0 0))",
                         "LINESTRING(3 4, 6 8, 7 2)"};
   vector<double> std_results = {
-      2 * 4,
+      4 * 4,
       1,
       (7 - 3) * (8 - 2),
   };
