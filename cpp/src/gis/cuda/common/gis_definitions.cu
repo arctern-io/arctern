@@ -149,7 +149,7 @@ GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec) {
   GeometryVector geo;
   geo.WkbDecodeInitalize();
   for (const auto& str : wkt_vec) {
-    auto wkb = Wkt2Wkb(str.c_str());
+    auto wkb = Wkt2Wkb(str);
     geo.WkbDecodeAppend(wkb.data());
   }
   geo.WkbDecodeFinalize();

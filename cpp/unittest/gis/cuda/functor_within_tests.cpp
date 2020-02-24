@@ -15,46 +15,47 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//
-// Created by mike on 2/10/20.
-//
-
 #include <gtest/gtest.h>
 
 #include <cmath>
 
-#include "gis/cuda/common/gis_definitions.h"
-#include "gis/cuda/functor/st_distance.h"
-#include "gis/cuda/functor/st_point.h"
-#include "test_utils/transforms.h"
 #include "gdal.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/functor/st_within.h"
+#include "test_utils/transforms.h"
 
-namespace zilliz::gis::cuda {
+namespace zilliz {
+namespace gis {
+namespace cuda {
 TEST(FunctorWithin, naive) {
-  using std::vector;
   using std::string;
+  using std::vector;
   vector<string> left_raw = {
-    "Point(0, 0)",
-    "Point(0, 1.5)",
-    "Point(0, -1.5)",
-    "Point(0, 2.5)",
-    "Point(0, -2.5)",
+      "POINT(0, 0)", "POINT(0, 1.5)", "POINT(0, -1.5)", "POINT(0, 2.5)", "POINT(0, -2.5)",
   };
   vector<string> right_raw = {
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
-      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "POLYGON((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
   };
-  ASSERT_EQ(left_raw.size(), right_raw.size());
-  GeometryVector left_vec;
-  GeometryVector right_vec;
-  left_vec.WkbDecodeInitalize();
-  right_vec.WkbDecodeInitalize();
-  for(auto i = 0; i < (int)left_raw.size(); ++i) {
+  vector<uint8_t> std_results = {false, true, true, false, false};
+  vector<uint8_t> results(left_raw.size());
 
+  ASSERT_EQ(left_raw.size(), right_raw.size());
+  ASSERT_EQ(results.size(), std_results.size());
+
+  auto left_geo = GeometryVectorFactory::CreateFromWkts(left_raw);
+  auto right_geo = GeometryVectorFactory::CreateFromWkts(right_raw);
+
+  cuda::ST_Within(left_geo, right_geo, (bool*)results.data());
+
+  for(auto i = 0; i < left_raw.size(); ++i) {
+    ASSERT_EQ(results[i], std_results[i]);
   }
+
 }
-}  // namespace zilliz::gis::cuda
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz
