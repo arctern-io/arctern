@@ -33,7 +33,7 @@ TEST(FunctorEnvelope, naive) {
   using std::vector;
   vector<string> raw = {"POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
                         "POLYGON((0 0, 1 0, 1 1, 1 0, 0 0))",
-                        "LINGSTRING(3 4, 6 8, 7 2)"};
+                        "LINESTRING(3 4, 6 8, 7 2)"};
   vector<double> std_results = {
       2 * 4,
       1,
