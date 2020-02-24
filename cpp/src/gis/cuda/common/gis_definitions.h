@@ -126,6 +126,23 @@ class GeometryVector {
       auto offset = value_offsets[index];
       return values + offset;
     }
+    struct ConstIter {
+      const uint32_t* metas;
+      const double* values;
+    };
+    struct Iter {
+      uint32_t* metas;
+      double* values;
+      operator ConstIter() const { return ConstIter{metas, values}; }
+    };
+
+    DEVICE_RUNNABLE Iter get_iter(int index) {
+      return Iter{get_meta_ptr(index), get_value_ptr(index)};
+    }
+
+    DEVICE_RUNNABLE ConstIter get_iter(int index) const {
+      return ConstIter{get_meta_ptr(index), get_value_ptr(index)};
+    }
   };
 
  public:
