@@ -31,24 +31,30 @@
 
 namespace zilliz::gis::cuda {
 TEST(FunctorWithin, naive) {
-  vector<double> xs{1, 2, 3, 4, 5};
-  vector<double> ys{0, 1, 2, 3, 4};
-  GeometryVector left_points;
-  GeometryVector right_points;
-  ST_Point(xs.data(), ys.data(), (int)xs.size(), left_points);
-  for (auto& x : xs) {
-    x = -x;
-  }
-  for (auto& y : ys) {
-    y = -y;
-  }
-  ST_Point(xs.data(), ys.data(), (int)xs.size(), right_points);
-  vector<double> distance(xs.size());
-  ST_Distance(left_points, right_points, distance.data());
-  for (size_t i = 0; i < xs.size(); ++i) {
-    auto std = (xs[i] * xs[i] + ys[i] * ys[i]) * 4;
-    auto res = distance[i] * distance[i];
-    ASSERT_DOUBLE_EQ(res, std);
+  using std::vector;
+  using std::string;
+  vector<string> left_raw = {
+    "Point(0, 0)",
+    "Point(0, 1.5)",
+    "Point(0, -1.5)",
+    "Point(0, 2.5)",
+    "Point(0, -2.5)",
+  };
+  vector<string> right_raw = {
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+      "Polygon((0 2, -2 -2, 2 -2), (0 1, -1 -1, 1 -1))",
+  };
+  ASSERT_EQ(left_raw.size(), right_raw.size());
+  GeometryVector left_vec;
+  GeometryVector right_vec;
+  left_vec.WkbDecodeInitalize();
+  right_vec.WkbDecodeInitalize();
+  for(auto i = 0; i < (int)left_raw.size(); ++i) {
+
   }
 }
 }  // namespace zilliz::gis::cuda

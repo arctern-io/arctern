@@ -21,6 +21,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string>
 #include <tuple>
 #include <vector>
 using std::vector;
@@ -167,6 +168,7 @@ class GeometryVector {
     return static_cast<int>(tmp);
   }
 
+ public:
  private:
   // Currently, GpuVector contains host memory only
   // next goal should make it switchable between host and device memory.
@@ -184,6 +186,10 @@ class GeometryVector {
   // shouldn't be used to drive the state machine(e.g. switch statement)
   DataState data_state_ = DataState::Invalid;
 };
+
+namespace GeometryVectorFactory {
+GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
+}
 
 using GpuContext = GeometryVector::GpuContext;
 

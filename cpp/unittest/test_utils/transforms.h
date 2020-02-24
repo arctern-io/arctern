@@ -17,8 +17,7 @@
 
 #pragma once
 #include <assert.h>
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +29,7 @@
 #include "common/version.h"
 #include "gis/api.h"
 #include "utils/check_status.h"
+#include "gis/cuda/common/gis_definitions.h"
 
 inline std::vector<char> hexstring_to_binary(std::string str) {
   std::vector<char> vec;
@@ -42,20 +42,4 @@ inline std::vector<char> hexstring_to_binary(std::string str) {
     vec.push_back((char)data);
   }
   return vec;
-}
-
-inline std::vector<char> wkt_to_wkb(const char* geo_wkt) {
-  OGRGeometry* geo = nullptr;
-  {
-    auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
-    assert(err_code == OGRERR_NONE);
-  }
-  auto sz = geo->WkbSize();
-  std::vector<char> result(sz);
-  {
-    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)result.data());
-    assert(err_code == OGRERR_NONE);
-  }
-  OGRGeometryFactory::destroyGeometry(geo);
-  return result;
 }
