@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "wkb_transforms.h"
+#include "gis/cuda/wkb/wkb_transforms.h"
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>

@@ -19,7 +19,6 @@
 
 #include <cmath>
 
-#include "gdal.h"
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_within.h"
 #include "test_utils/transforms.h"

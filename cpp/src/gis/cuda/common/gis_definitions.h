@@ -185,7 +185,6 @@ class GeometryVector {
     return static_cast<int>(tmp);
   }
 
- public:
  private:
   // Currently, GpuVector contains host memory only
   // next goal should make it switchable between host and device memory.
