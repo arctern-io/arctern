@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+#include <thrust/functional.h>
+
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_point.h"
 
@@ -31,22 +33,82 @@ struct OutputInfo {
   int value_size;
 };
 
-__device__ inline OutputInfo GetInfoAndDataPerElement(const double* xs, const double* ys,
-                                                      int index, GpuContext& results,
-                                                      bool skip_write = false) {
-  if (!skip_write) {
-    auto value = results.get_value_ptr(index);
-    value[0] = xs[index];
-    value[1] = ys[index];
+constexpr double inf = std::numeric_limits<double>::max();
+struct MinMax {
+  double min;
+  double max;
+  DEVICE_RUNNABLE void update(double x) {
+    if (x < min) {
+      min = x;
+    }
+    if (x > max) {
+      max = x;
+    }
   }
-  return OutputInfo{WkbTag(WkbCategory::Point, WkbGroup::None), 0, 2};
+  // etol is error tolerance defined by implementation
+  DEVICE_RUNNABLE void adjust_by_error(double etol) {
+    if(min > max){
+      min = max = 0xcccc;
+    }
+    if(max == min) {
+      max += etol;
+      min -= etol;
+    }
+  }
+};
+
+__device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, int index,
+                                                      GpuContext& results,
+                                                      bool skip_write = false) {
+  assert(input.get_tag(index).get_group() == WkbGroup::None);
+  if (!skip_write) {
+    auto values_beg = input.get_value_ptr(index);
+    auto values_end = input.get_value_ptr(index + 1);
+    // generate bound from all values
+    // instead of switching by tags
+    MinMax final_x{+inf, -inf};
+    MinMax final_y{+inf, -inf};
+
+    for (auto iter = values_beg; iter < values_end; iter += 2) {
+      final_x.update(iter[0]);
+      final_y.update(iter[1]);
+    }
+    double etol = 1e-8;
+    final_x.adjust_by_error(etol);
+    final_y.adjust_by_error(etol);
+
+    // fill meta
+    auto meta_output = results.get_meta_ptr(index);
+    meta_output[0] = 1;
+    meta_output[1] = 1;
+
+    // fill value
+    auto value_output = results.get_value_ptr(index);
+    value_output[0 * 2 + 0] = final_x.min;
+    value_output[0 * 2 + 1] = final_y.min;
+
+    value_output[1 * 2 + 0] = final_x.max;
+    value_output[1 * 2 + 1] = final_y.min;
+
+    value_output[2 * 2 + 0] = final_x.max;
+    value_output[2 * 2 + 1] = final_y.max;
+
+    value_output[3 * 2 + 0] = final_x.min;
+    value_output[3 * 2 + 1] = final_y.max;
+
+    value_output[4 * 2 + 0] = final_x.min;
+    value_output[4 * 2 + 1] = final_y.min;
+  }
+
+  auto result_tag = WkbTag(WkbCategory::Polygon, WkbGroup::None);
+  return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
 
-__global__ void FillInfoKernel(const double* xs, const double* ys, GpuContext results) {
+__global__ void FillInfoKernel(const GpuContext& input, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
-    auto out_info = GetInfoAndDataPerElement(xs, ys, index, results, true);
+    auto out_info = GetInfoAndDataPerElement(input, index, results, true);
     results.tags[index] = out_info.tag;
     results.meta_offsets[index] = out_info.meta_size;
     results.value_offsets[index] = out_info.value_size;
@@ -60,19 +122,17 @@ DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
-static __global__ void FillDataKernel(const GpuContext input,
-                                      GpuContext results) {
+static __global__ void FillDataKernel(const GpuContext input, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
-    auto out_info = GetInfoAndDataPerElement(xs, ys, index, results);
+    auto out_info = GetInfoAndDataPerElement(input, index, results);
     AssertInfo(out_info, results, index);
   }
 }
 }  // namespace
 
-void ST_Envelope(const GeometryVector& input_vec,
-                 GeometryVector& results){
+void ST_Envelope(const GeometryVector& input_vec, GeometryVector& results) {
   // copy xs, ys to gpu
   auto input_holder = input_vec.CreateReadGpuContext();
   auto size = input_vec.size();
@@ -87,8 +147,7 @@ void ST_Envelope(const GeometryVector& input_vec,
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(*input_holder,
-                                                          *results_holder);
+    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(*input_holder, *results_holder);
     results_holder->data_state = DataState::FlatOffset_FullInfo;
   }
 
@@ -100,8 +159,7 @@ void ST_Envelope(const GeometryVector& input_vec,
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(*input_holder,
-                                                          *results_holder);
+    FillDataKernel<<<config.grid_dim, config.block_dim>>>(*input_holder, *results_holder);
     results_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector
