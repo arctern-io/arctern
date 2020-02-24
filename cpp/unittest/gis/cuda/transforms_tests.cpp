@@ -26,7 +26,6 @@ namespace gis {
 namespace cuda {
 
 TEST(Transform, TestABI) {
-//  ASSERT_EQ(test_abi(), std::string("hello,world"));
   using std::string;
   string str("hello,world");
   ASSERT_TRUE(test_cuda_abi(str));

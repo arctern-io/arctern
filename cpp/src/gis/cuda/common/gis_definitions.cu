@@ -149,7 +149,6 @@ GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   GeometryVector geo;
   geo.WkbDecodeInitalize();
   for (auto str : wkt_vec) {
-    std::cout << str << std::endl;
     auto wkb = Wkt2Wkb(str);
     geo.WkbDecodeAppend(wkb.data());
   }
@@ -158,6 +157,7 @@ GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
 }
 }  // namespace GeometryVectorFactory
 
+// only for testing
 bool test_cuda_abi(const std::string& str) {
   auto diff = strcmp(str.c_str(), "hello,world");
   return diff == 0;
