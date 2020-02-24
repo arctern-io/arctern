@@ -17,15 +17,25 @@
 
 #include <gtest/gtest.h>
 
+#include "gis/cuda/wkb/wkb_transforms.h"
 #include "test_utils/transforms.h"
+
+namespace zilliz {
+namespace gis {
+namespace cuda {
+
 TEST(Transform, Naive) {
   auto std_data = hexstring_to_binary(
       "01030000000100000004000000000000000000084000000000000008400000000000000840000000"
       "00000010400000000000001040000000000000104000000000000010400000000000000840");
   auto output_data = Wkt2Wkb("POLYGON((3 3,3 4,4 4,4 3))");
   ASSERT_TRUE(std_data.size() == output_data.size());
-  for(int i = 0; i < std_data.size(); ++i) {
+  for (int i = 0; i < std_data.size(); ++i) {
     EXPECT_EQ(std_data[i], output_data[i]) << "at " << i;
   }
   ASSERT_TRUE(true);
 }
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz
+

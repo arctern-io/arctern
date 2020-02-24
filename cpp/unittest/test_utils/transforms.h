@@ -31,7 +31,7 @@
 #include "utils/check_status.h"
 #include "gis/cuda/common/gis_definitions.h"
 
-inline std::vector<char> hexstring_to_binary(std::string str) {
+inline std::vector<char> hexstring_to_binary(const std::string& str) {
   std::vector<char> vec;
   assert(str.size() % 2 == 0);
   for (size_t index = 0; index < str.size(); index += 2) {
