@@ -55,7 +55,7 @@ __global__ void ST_AreaKernel(GpuContext ctx, double* result) {
         break;
       }
       default: {
-        assert(false);
+        result[tid] = 0;
       }
     }
   }
