@@ -1,6 +1,6 @@
 #pragma once
-#include <vector>
 #include <string>
+#include <vector>
 namespace zilliz {
 namespace gis {
 namespace cuda {
