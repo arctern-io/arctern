@@ -16,6 +16,7 @@
 // under the License.
 
 #include <gtest/gtest.h>
+
 #include <string>
 
 #include "gis/cuda/wkb/wkb_transforms.h"

@@ -51,7 +51,7 @@ TEST(FunctorWithin, naive) {
 
   cuda::ST_Within(left_geo, right_geo, (bool*)results.data());
 
-  for(auto i = 0; i < left_raw.size(); ++i) {
+  for (auto i = 0; i < left_raw.size(); ++i) {
     EXPECT_EQ(results[i], std_results[i]) << "at case " << i << std::endl;
   }
 }

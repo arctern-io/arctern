@@ -17,7 +17,6 @@
 
 #pragma once
 #include <assert.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,8 +27,8 @@
 
 #include "common/version.h"
 #include "gis/api.h"
-#include "utils/check_status.h"
 #include "gis/cuda/common/gis_definitions.h"
+#include "utils/check_status.h"
 
 inline std::vector<char> hexstring_to_binary(const std::string& str) {
   std::vector<char> vec;

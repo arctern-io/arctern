@@ -43,7 +43,7 @@ TEST(FunctorLength, naive) {
 
   cuda::ST_Length(geo, results.data());
 
-  for(auto i = 0; i < raw.size(); ++i) {
+  for (auto i = 0; i < raw.size(); ++i) {
     EXPECT_FLOAT_EQ(results[i], std_results[i]) << "at case " << i << std::endl;
   }
 }
