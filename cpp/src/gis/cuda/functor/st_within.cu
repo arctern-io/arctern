@@ -19,11 +19,12 @@
 // Created by mike on 2/10/20.
 //
 #include <cuda_runtime.h>
+#include <thrust/pair.h>
 
 #include <cmath>
 
-#include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/common/common.h"
+#include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_within.h"
 
 namespace zilliz {
@@ -42,16 +43,26 @@ inline DEVICE_RUNNABLE double GetY(const double* polygon, int index) {
   return polygon[2 * index + 1];
 }
 
-inline DEVICE_RUNNABLE bool PointInPolygonImpl(double pnt_x, double pnt_y,
-                                               const double* polygon, int size) {
+struct Point {
+  double x;
+  double y;
+};
+
+struct Iter {
+  const uint32_t* metas;
+  const double* values;
+};
+
+inline DEVICE_RUNNABLE bool PointInSimplePolygonHelper(Point point, const double* polygon,
+                                                       int size) {
   int winding_num = 0;
-  double dx2 = GetX(polygon, size - 1) - pnt_x;
-  double dy2 = GetY(polygon, size - 1) - pnt_y;
+  double dx2 = GetX(polygon, size - 1) - point.x;
+  double dy2 = GetY(polygon, size - 1) - point.y;
   for (int index = 0; index < size; ++index) {
     auto dx1 = dx2;
     auto dy1 = dy2;
-    dx2 = GetX(polygon, index) - pnt_x;
-    dy2 = GetY(polygon, index) - pnt_y;
+    dx2 = GetX(polygon, index) - point.x;
+    dy2 = GetY(polygon, index) - point.y;
     bool ref = dy1 < 0;
     if (ref != (dy2 < 0)) {
       if (isLeft(dx1, dy1, dx2, dy2) < 0 != ref) {
@@ -62,18 +73,14 @@ inline DEVICE_RUNNABLE bool PointInPolygonImpl(double pnt_x, double pnt_y,
   return winding_num != 0;
 }
 
-inline DEVICE_RUNNABLE bool PointInPolygon(const GpuContext& point,
-                                           const GpuContext& polygon, int index) {
-  auto pv = point.get_value_ptr(index);
-  auto polygon_metas = polygon.get_meta_ptr(index);
-  auto polygon_values = polygon.get_value_ptr(index);
-  int shape_size = (int)polygon_metas[0];
-  // offsets of value for polygons
-  int offsets = 0;
+inline DEVICE_RUNNABLE bool PointInPolygonImpl(Point point, Iter& polygon_iter) {
+  int shape_size = (int)*polygon_iter.metas++;
   bool final = false;
+  // offsets of value for polygons
   for (int shape_index = 0; shape_index < shape_size; shape_index++) {
-    int vertex_size = (int)polygon_metas[1 + shape_index];
-    auto is_in = PointInPolygonImpl(pv[0], pv[1], polygon_values + offsets, vertex_size);
+    int vertex_size = (int)*polygon_iter.metas++;
+    auto is_in = PointInSimplePolygonHelper(point, polygon_iter.values, vertex_size);
+    polygon_iter.values += vertex_size * 2;
     if (shape_index == 0) {
       final = is_in;
     } else {
@@ -81,6 +88,26 @@ inline DEVICE_RUNNABLE bool PointInPolygon(const GpuContext& point,
     }
   }
   return final;
+}
+
+// inline DEVICE_RUNNABLE bool PointInMultiPolygon(Point point, Iter& iter) {
+//  int poly_size = (int)metas[0];
+//  bool final = false;
+//  int meta_offsets = 0;
+//  for(int index = 0; index < poly_size; ++index) {
+//    int polygon_size = metas[1 + offsets];
+//  }
+//  return final;
+//}
+
+inline DEVICE_RUNNABLE bool PointInPolygon(const GpuContext& point,
+                                           const GpuContext& polygon, int index) {
+  auto pv = point.get_value_ptr(index);
+  auto iter = Iter{polygon.get_meta_ptr(index), polygon.get_value_ptr(index)};
+  auto result = PointInPolygonImpl(Point{pv[0], pv[1]}, iter);
+  assert(iter.metas == polygon.get_meta_ptr(index + 1));
+  assert(iter.values == polygon.get_value_ptr(index + 1));
+  return result;
 }
 
 __global__ void ST_WithinKernel(GpuContext left, GpuContext right, bool* result) {
