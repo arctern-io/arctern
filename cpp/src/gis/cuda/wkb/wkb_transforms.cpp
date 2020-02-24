@@ -2,16 +2,17 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <cstring>
 
 #include <cassert>
 #include <string>
+#include <iostream>
 #include <vector>
 namespace zilliz {
 namespace gis {
 namespace cuda {
 
 std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
+  std::cout << geo_wkt << std::endl;
   OGRGeometry* geo = nullptr;
   {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt.c_str(), nullptr, &geo);
