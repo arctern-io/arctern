@@ -10,13 +10,13 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-GIS_PATH="/var/lib/gis"
+ARCTERN_PATH="/var/lib/arctern"
 
 while getopts "i:e:h" arg
 do
         case $arg in
              i)
-                GIS_PATH=$OPTARG   # GIS PATH
+                ARCTERN_PATH=$OPTARG   # ARCTERN PATH
                 ;;
              e)
                 CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
@@ -25,12 +25,12 @@ do
                 echo "
 
 parameter:
--i: GIS path
+-i: Arctern path
 -e: set conda activate environment
 -h: help
 
 usage:
-./run_unittest.sh -i \${GIS_PATH} -e \${CONDA_ENV} [-h]
+./run_unittest.sh -i \${ARCTERN_PATH} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
@@ -49,18 +49,18 @@ if [[ -n ${CONDA_ENV} ]]; then
     fi
 fi
 
-GIS_UNITTEST_DIR=${GIS_PATH}/unittest
+ARCTERN_UNITTEST_DIR=${ARCTERN_PATH}/unittest
 
-if [[ ! -d ${GIS_UNITTEST_DIR} ]]; then
-    echo "\"${GIS_UNITTEST_DIR}\" directory does not exist !"
+if [[ ! -d ${ARCTERN_UNITTEST_DIR} ]]; then
+    echo "\"${ARCTERN_UNITTEST_DIR}\" directory does not exist !"
     exit 1
 fi
 
-for test in `ls ${GIS_UNITTEST_DIR}`; do
+for test in `ls ${ARCTERN_UNITTEST_DIR}`; do
     echo "run $test unittest"
-    ${GIS_UNITTEST_DIR}/${test}
+    ${ARCTERN_UNITTEST_DIR}/${test}
     if [ $? -ne 0 ]; then
-        echo "${GIS_UNITTEST_DIR}/${test} run failed !"
+        echo "${ARCTERN_UNITTEST_DIR}/${test} run failed !"
         exit 1
     fi
 done
