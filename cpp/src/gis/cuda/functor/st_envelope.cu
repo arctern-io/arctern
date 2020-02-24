@@ -80,7 +80,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, i
     // fill meta
     auto meta_output = results.get_meta_ptr(index);
     meta_output[0] = 1;
-    meta_output[1] = 1;
+    meta_output[1] = 5;
 
     // fill value
     auto value_output = results.get_value_ptr(index);
