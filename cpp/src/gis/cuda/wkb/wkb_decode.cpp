@@ -115,7 +115,7 @@ void GeometryVector::WkbDecodeAppend(const char* raw_bin) {
       extend_values_from_stream(dimensions, points);
 
       metas_.push_back(points);
-      value_offsets_.push_back(1);
+      meta_offsets_.push_back(1);
       break;
     }
     case WkbCategory::Polygon: {
