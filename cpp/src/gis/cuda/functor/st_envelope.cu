@@ -109,6 +109,7 @@ __global__ void FillInfoKernel(const GpuContext& input, GpuContext results) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
     auto out_info = GetInfoAndDataPerElement(input, index, results, true);
+    printf("%d", index);
     results.tags[index] = out_info.tag;
     results.meta_offsets[index] = out_info.meta_size;
     results.value_offsets[index] = out_info.value_size;
