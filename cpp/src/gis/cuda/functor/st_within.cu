@@ -32,7 +32,7 @@ namespace gis {
 namespace cuda {
 namespace {
 
-inline DEVICE_RUNNABLE double isLeft(double x1, double y1, double x2, double y2) {
+inline DEVICE_RUNNABLE double IsLeft(double x1, double y1, double x2, double y2) {
   return x1 * y2 - x2 * y1;
 }
 
@@ -65,7 +65,7 @@ inline DEVICE_RUNNABLE bool PointInSimplePolygonHelper(Point point, const double
     dy2 = GetY(polygon, index) - point.y;
     bool ref = dy1 < 0;
     if (ref != (dy2 < 0)) {
-      if (isLeft(dx1, dy1, dx2, dy2) < 0 != ref) {
+      if (IsLeft(dx1, dy1, dx2, dy2) < 0 != ref) {
         winding_num += ref ? 1 : -1;
       }
     }
