@@ -17,8 +17,10 @@
 
 #include <thrust/functional.h>
 
+#include <limits>
+
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/functor/st_envelope.h"
 
 namespace zilliz {
 namespace gis {
@@ -47,10 +49,10 @@ struct MinMax {
   }
   // etol is error tolerance defined by implementation
   DEVICE_RUNNABLE void adjust_by_error(double etol) {
-    if(min > max){
+    if (min > max) {
       min = max = 0xcccc;
     }
-    if(max == min) {
+    if (max == min) {
       max += etol;
       min -= etol;
     }
