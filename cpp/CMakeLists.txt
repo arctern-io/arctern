@@ -241,9 +241,7 @@ install(
     FILES_MATCHING PATTERN "lib*"
 )
 
-set(GIS_LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/gis_env.sh.template ${CMAKE_BINARY_DIR}/scripts/gis_env.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/arctern_env.sh.template ${CMAKE_BINARY_DIR}/scripts/arctern_env.sh @ONLY)
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/scripts/
         DESTINATION scripts

@@ -11,13 +11,13 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../python"
-GIS_LIBRARY_DIRS=""
+ARCTERN_LIBRARY_DIRS=""
 
 while getopts "l:e:h" arg
 do
         case $arg in
              l)
-                GIS_LIBRARY_DIRS=$OPTARG   # GIS LIBRARY DIRS
+                ARCTERN_LIBRARY_DIRS=$OPTARG   # ARCTERN LIBRARY DIRS
                 ;;
              e)
                 CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
@@ -26,12 +26,12 @@ do
                 echo "
 
 parameter:
--l: GIS library directory
+-l: Arctern library directory
 -e: set conda activate environment
 -h: help
 
 usage:
-./python_build.sh -l \${GIS_LIBRARY_DIRS} -e \${CONDA_ENV} [-h]
+./python_build.sh -l \${ARCTERN_LIBRARY_DIRS} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
@@ -59,5 +59,5 @@ fi
 
 rm -rf zilliz_gis.egg*
 
-python setup.py build build_ext --library-dirs=${GIS_LIBRARY_DIRS}
+python setup.py build build_ext --library-dirs=${ARCTERN_LIBRARY_DIRS}
 python setup.py install

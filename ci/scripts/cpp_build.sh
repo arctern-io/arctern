@@ -14,12 +14,14 @@ CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
 CPP_BUILD_DIR="${CPP_SRC_DIR}/cmake_build"
 BUILD_TYPE="Debug"
 BUILD_UNITTEST="OFF"
-INSTALL_PREFIX="/var/lib/gis"
+INSTALL_PREFIX="/var/lib/arctern"
+RUN_LINT="OFF";
+COMPILE_BUILD="ON"
 USE_GPU="OFF"
 CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 PRIVILEGES="OFF"
 
-while getopts "o:t:d:e:guph" arg
+while getopts "o:t:d:e:lnguph" arg
 do
         case $arg in
              o)
@@ -33,6 +35,12 @@ do
                 ;;
              e)
                 CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
+                ;;
+             l)
+                RUN_LINT="ON";
+                ;;
+             n)
+                COMPILE_BUILD="OFF";
                 ;;
              g)
                 USE_GPU="ON";
@@ -48,17 +56,19 @@ do
                 echo "
 
 parameter:
--o: install prefix(default: /var/lib/gis)
+-o: install prefix(default: /var/lib/arctern)
 -t: build type(default: Debug)
 -d: cpp code build directory
 -e: set conda activate environment
+-l: run cpplint & check clang-format
+-n: no execute make and make install
 -g: gpu version
 -u: building unit test options(default: OFF)
 -p: install command with elevated privileges
 -h: help
 
 usage:
-./cpp_build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} -e \${CONDA_ENV} [-g] [-u] [-p] [-h]
+./cpp_build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} -e \${CONDA_ENV} [-l] [-n] [-g] [-u] [-p] [-h]
                 "
                 exit 0
                 ;;
@@ -91,11 +101,19 @@ ${CPP_SRC_DIR}
 echo ${CMAKE_CMD}
 ${CMAKE_CMD}
 
-# compile and build
-make -j8 || exit 1
-
-if [[ ${PRIVILEGES} == "ON" ]];then
-    sudo make install || exit 1
-else
-    make install || exit 1
+if [[ ${RUN_LINT} == "ON" ]];then
+    make lint || exit 1
+    make check-clang-format || exit 1
 fi
+
+if [[ ${COMPILE_BUILD} == "ON" ]];then
+    # compile and build
+    make -j8 || exit 1
+
+    if [[ ${PRIVILEGES} == "ON" ]];then
+        sudo make install || exit 1
+    else
+        make install || exit 1
+    fi
+fi
+

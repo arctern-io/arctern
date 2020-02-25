@@ -15,17 +15,16 @@
  */
 #include <iostream>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <gdal_utils.h>
 #include <ogrsf_frmts.h>
 
-#include "render/utils/color/color_gradient.h"
-
 #include "render/2d/choropleth_map/choropleth_map.h"
+#include "render/utils/color/color_gradient.h"
 
 namespace zilliz {
 namespace render {
