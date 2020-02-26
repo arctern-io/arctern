@@ -173,4 +173,5 @@ void set_colors_gpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
 }  // namespace zilliz
 
 #define TEMPLATE_GEN_PREFIX
+
 #include "render/2d/heatmap/set_color.inl"
