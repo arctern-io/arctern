@@ -16,8 +16,8 @@
 
 #include <map>
 #include <set>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "gis/gdal/type_scan.h"
 #include "gis/wkb_types.h"
