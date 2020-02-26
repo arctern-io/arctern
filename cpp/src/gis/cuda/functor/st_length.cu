@@ -57,9 +57,7 @@ __global__ void ST_LengthKernel(const GpuContext ctx, double* results) {
         assert(iter.values == ctx.get_value_ptr(index + 1));
         break;
       }
-      default: {
-        result = 0;
-      }
+      default: { result = 0; }
     }
     results[index] = result;
   }

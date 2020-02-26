@@ -54,9 +54,7 @@ __global__ void ST_AreaKernel(GpuContext ctx, double* result) {
         result[tid] = PolygonArea(ctx, tid);
         break;
       }
-      default: {
-        result[tid] = 0;
-      }
+      default: { result[tid] = 0; }
     }
   }
 }
