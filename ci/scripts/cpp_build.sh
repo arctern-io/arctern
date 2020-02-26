@@ -11,71 +11,83 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
-CPP_BUILD_DIR="${CPP_SRC_DIR}/cmake_build"
-BUILD_TYPE="Debug"
+CPP_BUILD_DIR="${CPP_SRC_DIR}/build"
+
+HELP="$0 [clean] [-h]
+    clean                     Remove all existing build artifacts and configuration (start over)
+    -o INSTALL_PREFIX or --install_prefix INSTALL_PREFIX
+                              Install directory used by install.
+    -t BUILD_TYPE or --build_type BUILD_TYPE
+                              Build type(default: Release)
+    -e CONDA_ENV or --conda_env CONDA_ENV
+                              Setting conda activate environment
+    -j [N] or --jobs [N]      Allow N jobs at once; infinite jobs with no arg.
+    -l                        Run cpplint & check clang-format
+    -n                        No make and make install step
+    -g                        Building for the architecture of the GPU in the system
+    -u or --tests             Build unittest case
+    -p or --privileges        Install command with elevated privileges
+    -v or --verbose           A level above ‘basic’; includes messages about which makefiles were parsed, prerequisites that did not need to be rebuilt
+    -h or --help              Print help information
+
+Usage:
+  $0 [flags] [Arguments]
+
+Use \"$0  --help\" for more information about a given command.
+"
+
+# Set defaults for vars modified by flags to this script
+CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+VERBOSE=""
+BUILD_TYPE="Release"
 BUILD_UNITTEST="OFF"
-INSTALL_PREFIX="/var/lib/arctern"
-RUN_LINT="OFF";
 COMPILE_BUILD="ON"
 USE_GPU="OFF"
-CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+RUN_LINT="OFF"
 PRIVILEGES="OFF"
 
-while getopts "o:t:d:e:lnguph" arg
-do
-        case $arg in
-             o)
-                INSTALL_PREFIX=$OPTARG
-                ;;
-             t)
-                BUILD_TYPE=$OPTARG # BUILD TYPE
-                ;;
-             d)
-                CPP_BUILD_DIR=$OPTARG # CPP BUILD DIRCETORY
-                ;;
-             e)
-                CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
-                ;;
-             l)
-                RUN_LINT="ON";
-                ;;
-             n)
-                COMPILE_BUILD="OFF";
-                ;;
-             g)
-                USE_GPU="ON";
-                ;;
-             u)
-                echo "Build unittest cases" ;
-                BUILD_UNITTEST="ON";
-                ;;
-             p)
-                PRIVILEGES="ON" # ELEVATED PRIVILEGES
-                ;;
-             h) # help
-                echo "
+# Set defaults for vars that may not have been defined externally
+#  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
+#         CONDA_PREFIX, but there is no fallback from there!
+INSTALL_PREFIX=${INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
+PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
 
-parameter:
--o: install prefix(default: /var/lib/arctern)
--t: build type(default: Debug)
--d: cpp code build directory
--e: set conda activate environment
--l: run cpplint & check clang-format
--n: no execute make and make install
--g: gpu version
--u: building unit test options(default: OFF)
--p: install command with elevated privileges
--h: help
+ARGS=`getopt -o "o::t::e::j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
 
-usage:
-./cpp_build.sh -o \${INSTALL_PREFIX} -t \${BUILD_TYPE} -d \${CPP_BUILD_DIR} -e \${CONDA_ENV} [-l] [-n] [-g] [-u] [-p] [-h]
-                "
-                exit 0
-                ;;
-             ?)
-                echo "ERROR! unknown argument"
-        exit 1
-        ;;
+while true ; do
+        case "$1" in
+                -o|--install_prefix)
+                        # o has an optional argument. As we are in quoted mode,
+                        # an empty parameter will be generated if its optional
+                        # argument is not found.
+                        case "$2" in
+                                "") echo "Option install_prefix, no argument"; exit 1 ;;
+                                *)  INSTALL_PREFIX=$2 ; shift 2 ;;
+                        esac ;;
+                -t|--build_type)
+                        case "$2" in
+                                "") echo "Option build_type, no argument"; exit 1 ;;
+                                *)  BUILD_TYPE=$2 ; shift 2 ;;
+                        esac ;;
+                -e|--conda_env)
+                        case "$2" in
+                                "") echo "Option conda_env, no argument"; exit 1 ;;
+                                *)  CONDA_ENV=$2 ; shift 2 ;;
+                        esac ;;
+                -j|--jobs)
+                        case "$2" in
+                                "") PARALLEL_LEVEL=""; shift 2 ;;
+                                *)  PARALLEL_LEVEL=$2 ; shift 2 ;;
+                        esac ;;
+                -g) echo "Building for the architecture of the GPU in the system..." ; USE_GPU="ON" ; shift ;;
+                -u|--tests) echo "Build unittest cases" ; BUILD_UNITTEST="ON" ; shift ;;
+                -n) echo "No build and install step" ; COMPILE_BUILD="OFF" ; shift ;;
+                -l) RUN_LINT="ON" ; shift ;;
+                -p|--privileges) PRIVILEGES="ON" ; shift ;;
+                -v|--verbose) VERBOSE="1" ; shift ;;
+                -h|--help) echo -e "${HELP}" ; exit 0 ;;
+                --) shift ; break ;;
+                *) echo "Internal error!" ; exit 1 ;;
         esac
 done
 
@@ -88,7 +100,7 @@ if [[ ! -d ${CPP_BUILD_DIR} ]]; then
     mkdir ${CPP_BUILD_DIR}
 fi
 
-cd ${CPP_BUILD_DIR}
+pushd ${CPP_BUILD_DIR}
 
 CMAKE_CMD="cmake \
 -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
@@ -108,7 +120,7 @@ fi
 
 if [[ ${COMPILE_BUILD} == "ON" ]];then
     # compile and build
-    make -j8 || exit 1
+    make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} || exit 1
 
     if [[ ${PRIVILEGES} == "ON" ]];then
         sudo make install || exit 1
@@ -117,3 +129,4 @@ if [[ ${COMPILE_BUILD} == "ON" ]];then
     fi
 fi
 
+popd
