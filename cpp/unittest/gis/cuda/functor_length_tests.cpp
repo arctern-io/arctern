@@ -16,4 +16,36 @@
 // under the License.
 
 #include <gtest/gtest.h>
-TEST(Dummy, Dummy) { ASSERT_TRUE(true); }
+
+#include <cmath>
+
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/functor/st_length.h"
+#include "test_utils/transforms.h"
+
+namespace zilliz {
+namespace gis {
+namespace cuda {
+TEST(FunctorLength, naive) {
+  using std::string;
+  using std::vector;
+  vector<string> raw = {
+      "LINESTRING(0 0, 0 1, 1 0, 1 1)",
+  };
+  vector<double> std_results = {
+      1 + sqrt(2) + 1,
+  };
+  vector<double> results(raw.size());
+  ASSERT_EQ(std_results.size(), results.size());
+
+  auto geo = GeometryVectorFactory::CreateFromWkts(raw);
+
+  cuda::ST_Length(geo, results.data());
+
+  for (auto i = 0; i < raw.size(); ++i) {
+    EXPECT_FLOAT_EQ(results[i], std_results[i]) << "at case " << i << std::endl;
+  }
+}
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

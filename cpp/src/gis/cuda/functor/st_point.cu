@@ -99,7 +99,7 @@ void ST_Point(const double* cpu_xs, const double* cpu_ys, int size,
 
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
-    auto config = GetKernelExecConfig(size, 1);
+    auto config = GetKernelExecConfig(size);
     FillDataKernel<<<config.grid_dim, config.block_dim>>>(xs.get(), ys.get(),
                                                           *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;

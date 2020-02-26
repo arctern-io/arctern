@@ -56,7 +56,7 @@ add_library(
 add_dependencies(windrose miniz_ep stb_ep)
 target_link_libraries(windrose
 	        gdal
-            arrow
+        arrow
             pthread
             miniz
 )
