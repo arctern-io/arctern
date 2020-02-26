@@ -17,10 +17,11 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <utility>
 
-#include "utils/check_status.h"
-#include "gis/wkb_types.h"
 #include "gis/gdal/type_scan.h"
+#include "gis/wkb_types.h"
+#include "utils/check_status.h"
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
@@ -35,14 +36,14 @@ TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geomet
 std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   auto len = geometries_->length();
 
-    if (types().empty() && grouped_types().empty()) {
-      // organize return
-      auto ret = std::make_shared<GeometryTypeMasks>();
-      ret->is_unique_type = true;
-      ret->is_unique_grouped_types = false;
-      ret->unique_type = WkbTypes::kUnknown;
-      return ret;
-    }
+  if (types().empty() && grouped_types().empty()) {
+    // organize return
+    auto ret = std::make_shared<GeometryTypeMasks>();
+    ret->is_unique_type = true;
+    ret->is_unique_grouped_types = false;
+    ret->unique_type = WkbTypes::kUnknown;
+    return ret;
+  }
 
   // we redirect WkbTypes::kUnknown to idx=0
   std::vector<int> type_to_idx(int(WkbTypes::kMaxTypeNumber), 0);
@@ -60,6 +61,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     num_scan_classes++;
   }
 
+  std::vector<int> mask_counts(num_scan_classes, 0);
   std::vector<std::vector<bool>> type_masks(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
     type_masks[i].resize(len, false);
@@ -78,6 +80,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     OGRGeometryFactory::destroyGeometry(geo);
     auto idx = type_to_idx[type];
     type_masks[idx][i] = true;
+    mask_counts[idx]++;
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }
@@ -94,6 +97,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     if (type_masks[num_scan_classes].front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = WkbTypes::kUnknown;
+      ret->type_mask_counts[WkbTypes::kUnknown] = len;
       return ret;
     }
     num_scan_classes++;
@@ -101,6 +105,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       if (type_masks[num_scan_classes].front() == true) {
         ret->is_unique_type = true;
         ret->unique_type = type;
+        ret->type_mask_counts[type] = len;
         return ret;
       }
       num_scan_classes++;
@@ -109,6 +114,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       if (type_masks[num_scan_classes].front() == true) {
         ret->is_unique_grouped_types = true;
         ret->unique_grouped_types = grouped_type;
+        ret->grouped_type_mask_counts[grouped_type] = len;
         return ret;
       }
     }
@@ -117,11 +123,15 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     num_scan_classes = 0;
     ret->type_masks[WkbTypes::kUnknown] = std::move(type_masks[num_scan_classes++]);
     for (auto& type : types()) {
-      ret->type_masks[type] = std::move(type_masks[num_scan_classes++]);
+      ret->type_masks[type] = std::move(type_masks[num_scan_classes]);
+      ret->type_mask_counts[type] = mask_counts[num_scan_classes];
+      num_scan_classes++;
     }
 
     for (auto& grouped_type : grouped_types()) {
-      ret->grouped_type_masks[grouped_type] = std::move(type_masks[num_scan_classes++]);
+      ret->grouped_type_masks[grouped_type] = std::move(type_masks[num_scan_classes]);
+      ret->grouped_type_mask_counts[grouped_type] = mask_counts[num_scan_classes];
+      num_scan_classes++;
     }
   }
   return ret;

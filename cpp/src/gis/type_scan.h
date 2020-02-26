@@ -19,6 +19,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <memory>
 
 #include "gis/wkb_types.h"
 

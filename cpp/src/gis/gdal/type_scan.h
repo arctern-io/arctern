@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <memory>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <memory>
 
 #include "arrow/api.h"
 #include "arrow/array.h"
@@ -31,7 +31,7 @@ namespace gdal {
 
 class TypeScannerForWkt : public GeometryTypeScanner {
  public:
-  TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries);
+  explicit TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries);
 
   std::shared_ptr<GeometryTypeMasks> Scan() final;
 

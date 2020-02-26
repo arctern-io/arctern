@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "common/version.h"
-#include "utils/check_status.h"
-#include "gis/api.h"
 #include "gis/gdal/gis_functions.h"
+#include "common/version.h"
+#include "gis/api.h"
+#include "utils/check_status.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -77,8 +77,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 /**************************** GEOMETRY PROCESSING ****************************/
 
 std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
-                                        double buffer_distance,
-                                        int n_quadrant_segments) {
+                                        double buffer_distance, int n_quadrant_segments) {
   return gdal::ST_Buffer(geometries, buffer_distance, n_quadrant_segments);
 }
 
