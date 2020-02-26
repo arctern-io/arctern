@@ -25,8 +25,7 @@
 
 namespace zilliz {
 namespace gis {
-
-// TODO: add description for each api
+namespace gdal {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
@@ -132,7 +131,6 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries);
 
-std::shared_ptr<std::string> GIS_Version();
-
+}  // namespace gdal
 }  // namespace gis
 }  // namespace zilliz
