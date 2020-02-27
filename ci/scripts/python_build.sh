@@ -17,9 +17,9 @@ Usage:
   $0 [flags] [Arguments]
 
     clean                     Remove all existing build artifacts and configuration (start over)
-    -i INSTALL_PREFIX or --install_prefix INSTALL_PREFIX
+    -i=[INSTALL_PREFIX] or --install_prefix=[INSTALL_PREFIX]
                               Install directory used by install.
-    -e CONDA_ENV or --conda_env CONDA_ENV
+    -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
                               Setting conda activate environment
     -h or --help              Print help information
 

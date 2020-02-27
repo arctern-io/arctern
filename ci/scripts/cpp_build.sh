@@ -18,11 +18,11 @@ Usage:
   $0 [flags] [Arguments]
 
     clean                     Remove all existing build artifacts and configuration (start over)
-    -o INSTALL_PREFIX or --install_prefix INSTALL_PREFIX
+    -o [INSTALL_PREFIX] or --install_prefix=[INSTALL_PREFIX]
                               Install directory used by install.
-    -t BUILD_TYPE or --build_type BUILD_TYPE
+    -t [BUILD_TYPE] or --build_type=[BUILD_TYPE]
                               Build type(default: Release)
-    -e CONDA_ENV or --conda_env CONDA_ENV
+    -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
                               Setting conda activate environment
     -j[N] or --jobs=[N]       Allow N jobs at once; infinite jobs with no arg.
     -l                        Run cpplint & check clang-format
