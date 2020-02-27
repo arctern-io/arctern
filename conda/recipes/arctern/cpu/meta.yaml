@@ -1,0 +1,47 @@
+# Usage:
+#   conda build . -c defaults -c conda-forge
+
+{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
+{% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
+{% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+package:
+  name: arctern
+  version: {{ version }}
+
+source:
+  path: ../../../..
+
+# ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
+build:
+  number: {{ git_revision_count }}
+  string: {{ git_revision_count }}
+
+requirements:
+  build:
+    - python ===3.7.6
+    - cmake>=3.14
+    - Cython ==0.29.15
+    - setuptools
+    - gdal ==3.0.4
+    - pyarrow ==0.16.0
+    - gtest
+    - rapidjson ==1.1.0
+    - pytest
+  run:
+    - python ===3.7.6
+    - gdal ==3.0.4
+    - pyarrow ===0.16.0
+    - rapidjson ==1.1.0
+    - Cython ==0.29.15
+
+test:
+  commands:
+    - python -c "import zilliz_gis"
+    - python -c "import zilliz_pyspark"
+
+about:
+  home: http://www.github.com/zilliztech/GIS
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary:  arctern core library

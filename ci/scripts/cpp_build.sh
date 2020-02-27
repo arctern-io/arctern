@@ -47,11 +47,6 @@ USE_GPU="OFF"
 RUN_LINT="OFF"
 PRIVILEGES="OFF"
 CLEANUP="OFF"
-
-# Set defaults for vars that may not have been defined externally
-#  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
-#         CONDA_PREFIX, but there is no fallback from there!
-INSTALL_PREFIX=${INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
 PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
 
 ARGS=`getopt -o "o::t::e::j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
@@ -95,17 +90,22 @@ while true ; do
         esac
 done
 
+if [[ -n ${CONDA_ENV} ]]; then
+    eval "$(conda shell.bash hook)"
+    conda activate ${CONDA_ENV}
+fi
+
+# Set defaults for vars that may not have been defined externally
+#  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
+#         CONDA_PREFIX, but there is no fallback from there!
+INSTALL_PREFIX=${INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
+
 if [[ ${CLEANUP} == "ON" ]];then
     if [ -d ${CPP_BUILD_DIR} ]; then
         find ${CPP_BUILD_DIR} -mindepth 1 -delete
         rmdir ${CPP_BUILD_DIR} || true
     fi
     exit 0
-fi
-
-if [[ -n ${CONDA_ENV} ]]; then
-    eval "$(conda shell.bash hook)"
-    conda activate ${CONDA_ENV}
 fi
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
