@@ -32,6 +32,8 @@ CLEANUP="OFF"
 
 ARGS=`getopt -o "i::e::h" -l "install_prefix::,conda_env::,help" -n "$0" -- "$@"`
 
+eval set -- "${ARGS}"
+
 while true ; do
         case "$1" in
                 # If clean given, run it prior to any other steps

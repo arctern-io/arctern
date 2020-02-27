@@ -51,6 +51,8 @@ PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
 
 ARGS=`getopt -o "o::t::e::j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
 
+eval set -- "${ARGS}"
+
 while true ; do
         case "$1" in
                 # If clean given, run it prior to any other steps
