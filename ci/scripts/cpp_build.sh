@@ -11,7 +11,7 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
-CPP_BUILD_DIR="${CPP_SRC_DIR}/build"
+CPP_BUILD_DIR="${CPP_SRC_DIR}/cmake_build"
 
 HELP="
 Usage:
