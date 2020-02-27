@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+#include "gis/gdal/gis_functions.h"
 #include "common/version.h"
-#include "gis/api.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
@@ -27,6 +27,7 @@
 
 namespace zilliz {
 namespace gis {
+namespace gdal {
 
 #define UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T1(RESULT_BUILDER_TYPE, GEO_VAR,              \
                                               APPEND_RESULT)                             \
@@ -415,7 +416,7 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_ConvexHull, arrow::StringBuilder, geo,
                                  OGR_G_ConvexHull(geo));
 
 /*
- * The detailed EPSG information can be searched on EPSG.io [https://epsg.io/]
+ * The detailed EPSG information can be found at EPSG.io [https://epsg.io/]
  */
 std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& geos,
                                            const std::string& src_rs,
@@ -567,13 +568,6 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   return ST_Envelope(ST_Union_Aggr(geometries));
 }
 
-std::shared_ptr<std::string> GIS_Version() {
-  const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
-                           "build tyoe : " + CMAKE_BUILD_TYPE + "/" + CPU_OR_GPU + "\n" +
-                           "build time : " + BUILD_TIME + "\n" +
-                           "commit id : " + LAST_COMMIT_ID + "\n";
-  return std::make_shared<std::string>(info);
-}
-
+}  // namespace gdal
 }  // namespace gis
 }  // namespace zilliz

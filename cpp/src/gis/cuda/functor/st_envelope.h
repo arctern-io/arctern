@@ -16,29 +16,12 @@
 // under the License.
 
 #pragma once
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include <cstdlib>
-#include <string>
-#include <vector>
-
-#include "common/version.h"
-#include "gis/api.h"
 #include "gis/cuda/common/gis_definitions.h"
-#include "utils/check_status.h"
-
-inline std::vector<char> hexstring_to_binary(const std::string& str) {
-  std::vector<char> vec;
-  assert(str.size() % 2 == 0);
-  for (size_t index = 0; index < str.size(); index += 2) {
-    auto byte_str = str.substr(index, 2);
-    char* tmp;
-    auto data = strtoul(byte_str.c_str(), &tmp, 16);
-    assert(*tmp == 0);
-    vec.push_back((char)data);
-  }
-  return vec;
-}
+namespace zilliz {
+namespace gis {
+namespace cuda {
+void ST_Envelope(const GeometryVector& geo_vector, GeometryVector& results);
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

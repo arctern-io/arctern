@@ -1,7 +1,10 @@
-set(gis_cuda_test_srcs dummy_tests.cpp
+set(gis_cuda_test_srcs transforms_tests.cpp
         functor_distance_tests.cpp
         functor_area_tests.cpp
         functor_point_tests.cpp
+        functor_within_tests.cpp
+        functor_length_tests.cpp
+        functor_envelope_tests.cpp
         ${unittest_srcs}
         )
 add_executable(gis_cuda_tests ${gis_cuda_test_srcs})

@@ -95,6 +95,7 @@ void GeometryVector::WkbDecodeAppend(const char* raw_bin) {
     int value_base = static_cast<int>(values_.size());
     values_.resize(values_.size() + count);
     fill<double>(count, stream_iter, values_.data() + value_base);
+    return count;
   };
 
   // deal with 2D cases for now
@@ -112,10 +113,12 @@ void GeometryVector::WkbDecodeAppend(const char* raw_bin) {
     }
     case WkbCategory::LineString: {
       auto points = fetch<uint32_t>(stream_iter);
-      extend_values_from_stream(dimensions, points);
 
       metas_.push_back(points);
-      value_offsets_.push_back(1);
+      auto value_count = extend_values_from_stream(dimensions, points);
+
+      meta_offsets_.push_back(1);
+      value_offsets_.push_back(value_count);
       break;
     }
     case WkbCategory::Polygon: {
@@ -125,8 +128,8 @@ void GeometryVector::WkbDecodeAppend(const char* raw_bin) {
       metas_.push_back(count_sub_poly);
       for (auto sub_poly = 0; sub_poly < count_sub_poly; sub_poly++) {
         auto points = fetch<uint32_t>(stream_iter);
-        extend_values_from_stream(dimensions, points);
-        total_values += dimensions * points;
+        auto value_count = extend_values_from_stream(dimensions, points);
+        total_values += value_count;
         metas_.push_back(points);
       }
       meta_offsets_.push_back(1 + count_sub_poly);
