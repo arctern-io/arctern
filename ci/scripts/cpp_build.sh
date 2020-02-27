@@ -13,7 +13,10 @@ SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 CPP_SRC_DIR="${SCRIPTS_DIR}/../../cpp"
 CPP_BUILD_DIR="${CPP_SRC_DIR}/build"
 
-HELP="$0 [clean] [-h]
+HELP="
+Usage:
+  $0 [flags] [Arguments]
+
     clean                     Remove all existing build artifacts and configuration (start over)
     -o INSTALL_PREFIX or --install_prefix INSTALL_PREFIX
                               Install directory used by install.
@@ -30,8 +33,6 @@ HELP="$0 [clean] [-h]
     -v or --verbose           A level above ‘basic’; includes messages about which makefiles were parsed, prerequisites that did not need to be rebuilt
     -h or --help              Print help information
 
-Usage:
-  $0 [flags] [Arguments]
 
 Use \"$0  --help\" for more information about a given command.
 "
@@ -45,6 +46,7 @@ COMPILE_BUILD="ON"
 USE_GPU="OFF"
 RUN_LINT="OFF"
 PRIVILEGES="OFF"
+CLEANUP="OFF"
 
 # Set defaults for vars that may not have been defined externally
 #  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
@@ -56,6 +58,8 @@ ARGS=`getopt -o "o::t::e::j::lngupvh" -l "install_prefix::,build_type::,conda_en
 
 while true ; do
         case "$1" in
+                # If clean given, run it prior to any other steps
+                clean) CLEANUP="ON"; shift ; break ;;
                 -o|--install_prefix)
                         # o has an optional argument. As we are in quoted mode,
                         # an empty parameter will be generated if its optional
@@ -90,6 +94,14 @@ while true ; do
                 *) echo "Internal error!" ; exit 1 ;;
         esac
 done
+
+if [[ ${CLEANUP} == "ON" ]];then
+    if [ -d ${CPP_BUILD_DIR} ]; then
+        find ${CPP_BUILD_DIR} -mindepth 1 -delete
+        rmdir ${CPP_BUILD_DIR} || true
+    fi
+    exit 0
+fi
 
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
