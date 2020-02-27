@@ -36,8 +36,6 @@ eval set -- "${ARGS}"
 
 while true ; do
         case "$1" in
-                # If clean given, run it prior to any other steps
-                clean) CLEANUP="ON"; shift ; break ;;
                 -i|--install_prefix)
                         # o has an optional argument. As we are in quoted mode,
                         # an empty parameter will be generated if its optional
