@@ -24,7 +24,7 @@ Usage:
                               Build type(default: Release)
     -e CONDA_ENV or --conda_env CONDA_ENV
                               Setting conda activate environment
-    -j [N] or --jobs [N]      Allow N jobs at once; infinite jobs with no arg.
+    -j[N] or --jobs=[N]       Allow N jobs at once; infinite jobs with no arg.
     -l                        Run cpplint & check clang-format
     -n                        No make and make install step
     -g                        Building for the architecture of the GPU in the system
@@ -49,7 +49,7 @@ PRIVILEGES="OFF"
 CLEANUP="OFF"
 PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
 
-ARGS=`getopt -o "o::t::e::j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "o:t:e:j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 

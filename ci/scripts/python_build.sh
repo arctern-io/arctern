@@ -30,7 +30,7 @@ Use \"$0  --help\" for more information about a given command.
 # Set defaults for vars modified by flags to this script
 CLEANUP="OFF"
 
-ARGS=`getopt -o "i::e::h" -l "install_prefix::,conda_env::,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "i:e:h" -l "install_prefix::,conda_env::,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 
