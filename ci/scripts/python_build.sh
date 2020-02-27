@@ -61,6 +61,19 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
+for arg do
+if [[ $arg == "clean" ]];then
+    if [[ -d ${PYTHON_SRC_DIR}/build ]]; then
+        rm -rf ${PYTHON_SRC_DIR}/build
+    fi
+    if [[ -d ${PYTHON_SRC_DIR}/dist ]]; then
+        rm -rf ${PYTHON_SRC_DIR}/dist
+    fi
+    rm -rf *.egg*
+    exit 0
+fi
+done
+
 # Set defaults for vars that may not have been defined externally
 #  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
 #         CONDA_PREFIX, but there is no fallback from there!

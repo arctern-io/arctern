@@ -95,18 +95,20 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-# Set defaults for vars that may not have been defined externally
-#  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
-#         CONDA_PREFIX, but there is no fallback from there!
-INSTALL_PREFIX=${INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
-
-if [[ ${CLEANUP} == "ON" ]];then
+for arg do
+if [[ $arg == "clean" ]];then
     if [ -d ${CPP_BUILD_DIR} ]; then
         find ${CPP_BUILD_DIR} -mindepth 1 -delete
         rmdir ${CPP_BUILD_DIR} || true
     fi
     exit 0
 fi
+done
+
+# Set defaults for vars that may not have been defined externally
+#  FIXME: if INSTALL_PREFIX is not set, check PREFIX, then check
+#         CONDA_PREFIX, but there is no fallback from there!
+INSTALL_PREFIX=${INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
     mkdir ${CPP_BUILD_DIR}
