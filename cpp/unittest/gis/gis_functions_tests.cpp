@@ -2605,6 +2605,16 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Append(22);
   y_max_builder.Append(33);
 
+  x_min_builder.Append(1);
+  x_max_builder.Append(0);
+  y_min_builder.Append(22);
+  y_max_builder.Append(33);
+
+  x_min_builder.Append(0);
+  x_max_builder.Append(1);
+  y_min_builder.Append(55);
+  y_max_builder.Append(33);
+
   std::shared_ptr<arrow::Array> x_min;
   std::shared_ptr<arrow::Array> x_max;
   std::shared_ptr<arrow::Array> y_min;
@@ -2619,8 +2629,10 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,1 2,0 3,1 3,0 2))");
-  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,11 22,0 33,11 33,0 22))");
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
 }
 
 TEST(geometry_test, test_ST_Transform) {

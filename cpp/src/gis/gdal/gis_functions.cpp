@@ -277,19 +277,24 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
   arrow::StringBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
-    OGRLinearRing ring;
-    ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
-    ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
-    ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.closeRings();
-    OGRPolygon polygon;
-    polygon.addRing(&ring);
-    char* wkt = nullptr;
-    CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
-    CHECK_ARROW(builder.Append(wkt));
-    CPLFree(wkt);
+    if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
+        (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
+      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+    } else {
+      OGRLinearRing ring;
+      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
+      ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
+      ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.closeRings();
+      OGRPolygon polygon;
+      polygon.addRing(&ring);
+      char* wkt = nullptr;
+      CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
+      CHECK_ARROW(builder.Append(wkt));
+      CPLFree(wkt);
+    }
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
