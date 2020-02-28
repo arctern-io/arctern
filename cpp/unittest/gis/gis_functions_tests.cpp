@@ -2506,7 +2506,6 @@ TEST(geometry_test,test_ST_Envelope_Empty){
   ASSERT_EQ(result_str->GetString(4), p4);
   ASSERT_EQ(result_str->GetString(5), p5);
   ASSERT_EQ(result_str->GetString(6), p6);
-
 }
 
 TEST(geometry_test, test_ST_Envelope) {
