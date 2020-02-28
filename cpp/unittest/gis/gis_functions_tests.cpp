@@ -2619,8 +2619,8 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,1 2,0 3,1 3,0 2))");
-  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,11 22,0 33,11 33,0 22))");
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
 }
 
 TEST(geometry_test, test_ST_Transform) {

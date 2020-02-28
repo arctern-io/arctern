@@ -283,9 +283,9 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
     } else {
       OGRLinearRing ring;
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-      ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
       ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
       ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
+      ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
       ring.closeRings();
       OGRPolygon polygon;
