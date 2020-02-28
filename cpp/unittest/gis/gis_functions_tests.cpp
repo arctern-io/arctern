@@ -2475,7 +2475,7 @@ TEST(geometry_test, test_ST_NPoints) {
   ASSERT_EQ(res_int->Value(8), 0);  //?
 }
 
-TEST(geometry_test,test_ST_Envelope_Empty){
+TEST(geometry_test, test_ST_Envelope_Empty) {
   auto p0 = "POLYGON EMPTY";
   auto p1 = "LINESTRING EMPTY";
   auto p2 = "POINT EMPTY";
