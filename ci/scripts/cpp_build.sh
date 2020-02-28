@@ -97,6 +97,7 @@ fi
 
 for arg do
 if [[ $arg == "clean" ]];then
+    echo "Remove all existing build artifacts and configuration..."
     if [ -d ${CPP_BUILD_DIR} ]; then
         find ${CPP_BUILD_DIR} -mindepth 1 -delete
         rmdir ${CPP_BUILD_DIR} || true

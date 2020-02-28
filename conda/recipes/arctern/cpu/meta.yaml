@@ -19,20 +19,15 @@ build:
 requirements:
   build:
     - python ===3.7.6
-    - cmake>=3.14
     - Cython ==0.29.15
     - setuptools
-    - gdal ==3.0.4
+    - libarctern {{ version }}
     - pyarrow ==0.16.0
-    - gtest
-    - rapidjson ==1.1.0
-    - pytest
+
   run:
     - python ===3.7.6
-    - gdal ==3.0.4
-    - pyarrow ===0.16.0
-    - rapidjson ==1.1.0
-    - Cython ==0.29.15
+    - libarctern {{ version }}
+    - pyarrow ==0.16.0
 
 test:
   commands:
@@ -43,4 +38,4 @@ about:
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
-  summary:  arctern core library
+  summary:  Python library for Arctern
