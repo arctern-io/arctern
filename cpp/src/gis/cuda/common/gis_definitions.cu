@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+#include <gis/cuda/wkb/wkb_transforms.h>
 #include <thrust/scan.h>
 
 #include <numeric>
@@ -140,6 +141,28 @@ void GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
   GpuMemcpy(values_.data(), gpu_ctx.values, values_.size());
   data_state_ = DataState::PrefixSumOffset_FullData;
 }
+
+// only for testing
+// create Geometry from WktArray
+namespace GeometryVectorFactory {
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
+  GeometryVector geo;
+  geo.WkbDecodeInitalize();
+  for (auto str : wkt_vec) {
+    auto wkb = Wkt2Wkb(str);
+    geo.WkbDecodeAppend(wkb.data());
+  }
+  geo.WkbDecodeFinalize();
+  return geo;
+}
+}  // namespace GeometryVectorFactory
+
+// only for testing
+bool test_cuda_abi(const std::string& str) {
+  auto diff = strcmp(str.c_str(), "hello,world");
+  return diff == 0;
+}
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz

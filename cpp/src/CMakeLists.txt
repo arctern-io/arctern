@@ -37,7 +37,9 @@ set(render_src
         )
 
 set(gis_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpu/gdal_based_impl.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -54,7 +56,7 @@ add_library(
 add_dependencies(windrose miniz_ep stb_ep)
 target_link_libraries(windrose
 	        gdal
-            arrow
+        arrow
             pthread
             miniz
 )

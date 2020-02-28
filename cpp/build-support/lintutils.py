@@ -65,8 +65,16 @@ def run_parallel(cmds, **kwargs):
 
 _source_extensions = '''
 .h
+.c
 .cc
+.h++
+.c++
+.hpp
+.hxx
+.cxx
 .cpp
+.cuh
+.cu
 '''.split()
 
 

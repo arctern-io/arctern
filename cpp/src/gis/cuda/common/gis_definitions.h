@@ -21,6 +21,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string>
 #include <tuple>
 #include <vector>
 using std::vector;
@@ -125,6 +126,23 @@ class GeometryVector {
       auto offset = value_offsets[index];
       return values + offset;
     }
+    struct ConstIter {
+      const uint32_t* metas;
+      const double* values;
+    };
+    struct Iter {
+      uint32_t* metas;
+      double* values;
+      operator ConstIter() const { return ConstIter{metas, values}; }
+    };
+
+    DEVICE_RUNNABLE Iter get_iter(int index) {
+      return Iter{get_meta_ptr(index), get_value_ptr(index)};
+    }
+
+    DEVICE_RUNNABLE ConstIter get_iter(int index) const {
+      return ConstIter{get_meta_ptr(index), get_value_ptr(index)};
+    }
   };
 
  public:
@@ -184,6 +202,11 @@ class GeometryVector {
   // shouldn't be used to drive the state machine(e.g. switch statement)
   DataState data_state_ = DataState::Invalid;
 };
+
+namespace GeometryVectorFactory {
+GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
+}
+bool test_cuda_abi(const std::string& str);
 
 using GpuContext = GeometryVector::GpuContext;
 
