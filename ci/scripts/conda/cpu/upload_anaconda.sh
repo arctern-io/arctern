@@ -4,9 +4,6 @@
 
 set -e
 
-export LIBARCTERN_FILE=`conda build conda/recipes/libarctern/cpu -c conda-forge -c defaults --output`
-export ARCTERN_FILE=`conda build conda/recipes/arctern/cpu -c conda-forge -c defaults --output`
-export ARCTERN_SPARK_FILE=`conda build conda/recipes/arctern-spark/cpu -c conda-forge -c defaults --output`
 
 SOURCE_BRANCH=master
 
@@ -22,6 +19,7 @@ if [ -z "$MY_UPLOAD_KEY" ]; then
 fi
 
 if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
+    export LIBARCTERN_FILE=`conda build conda/recipes/libarctern/cpu -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
@@ -32,6 +30,7 @@ if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
 fi
 
 if [ "$UPLOAD_ARCTERN" == "1" ]; then
+    export ARCTERN_FILE=`conda build conda/recipes/arctern/cpu -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
@@ -42,6 +41,7 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
 fi
 
 if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
+    export ARCTERN_SPARK_FILE=`conda build conda/recipes/arctern-spark/cpu -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
