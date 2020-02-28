@@ -2306,7 +2306,7 @@ TEST(geometry_test, test_ST_Area) {
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
-  //  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(3), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
