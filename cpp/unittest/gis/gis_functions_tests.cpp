@@ -2475,9 +2475,44 @@ TEST(geometry_test, test_ST_NPoints) {
   ASSERT_EQ(res_int->Value(8), 0);  //?
 }
 
+TEST(geometry_test,test_ST_Envelope_Empty){
+  auto p0 = "POLYGON EMPTY";
+  auto p1 = "LINESTRING EMPTY";
+  auto p2 = "POINT EMPTY";
+  auto p3 = "MULTIPOLYGON EMPTY";
+  auto p4 = "MULTILINESTRING EMPTY";
+  auto p5 = "MULTIPOINT EMPTY";
+  auto p6 = "GEOMETRYCOLLECTION EMPTY";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Finish(&input);
+
+  auto result = zilliz::gis::ST_Envelope(input);
+  auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(result_str->GetString(0), p0);
+  ASSERT_EQ(result_str->GetString(1), p1);
+  ASSERT_EQ(result_str->GetString(2), p2);
+  ASSERT_EQ(result_str->GetString(3), p3);
+  ASSERT_EQ(result_str->GetString(4), p4);
+  ASSERT_EQ(result_str->GetString(5), p5);
+  ASSERT_EQ(result_str->GetString(6), p6);
+
+}
+
 TEST(geometry_test, test_ST_Envelope) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
+
 
   auto result = zilliz::gis::ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
