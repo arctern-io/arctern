@@ -318,39 +318,43 @@ std::shared_ptr<arrow::Array> ST_Envelope(
   OGREnvelope env;
   for (int i = 0; i < len; ++i) {
     auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
-    OGR_G_GetEnvelope(geo, &env);
-    char* wkt = nullptr;
-    if (env.MinX == env.MaxX) {    // vertical line or Point
-      if (env.MinY == env.MaxY) {  // point
-        OGRPoint point(env.MinX, env.MinY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&point);
-      } else {  // line
-        OGRLineString line;
-        line.addPoint(env.MinX, env.MinY);
-        line.addPoint(env.MinX, env.MaxY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&line);
-      }
+    if (geo->IsEmpty()) {
+      CHECK_ARROW(builder.Append(wkt_geometries->GetString(i)));
     } else {
-      if (env.MinY == env.MaxY) {  // horizontal line
-        OGRLineString line;
-        line.addPoint(env.MinX, env.MinY);
-        line.addPoint(env.MaxX, env.MinY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&line);
-      } else {  // polygon
-        OGRLinearRing ring;
-        ring.addPoint(env.MinX, env.MinY);
-        ring.addPoint(env.MinX, env.MaxY);
-        ring.addPoint(env.MaxX, env.MaxY);
-        ring.addPoint(env.MaxX, env.MinY);
-        ring.addPoint(env.MinX, env.MinY);
-        OGRPolygon polygon;
-        polygon.addRing(&ring);
-        wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+      OGR_G_GetEnvelope(geo, &env);
+      char* wkt = nullptr;
+      if (env.MinX == env.MaxX) {    // vertical line or Point
+        if (env.MinY == env.MaxY) {  // point
+          OGRPoint point(env.MinX, env.MinY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&point);
+        } else {  // line
+          OGRLineString line;
+          line.addPoint(env.MinX, env.MinY);
+          line.addPoint(env.MinX, env.MaxY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+        }
+      } else {
+        if (env.MinY == env.MaxY) {  // horizontal line
+          OGRLineString line;
+          line.addPoint(env.MinX, env.MinY);
+          line.addPoint(env.MaxX, env.MinY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+        } else {  // polygon
+          OGRLinearRing ring;
+          ring.addPoint(env.MinX, env.MinY);
+          ring.addPoint(env.MinX, env.MaxY);
+          ring.addPoint(env.MaxX, env.MaxY);
+          ring.addPoint(env.MaxX, env.MinY);
+          ring.addPoint(env.MinX, env.MinY);
+          OGRPolygon polygon;
+          polygon.addRing(&ring);
+          wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+        }
       }
+      CHECK_ARROW(builder.Append(wkt));
+      OGRGeometryFactory::destroyGeometry(geo);
+      CPLFree(wkt);
     }
-    CHECK_ARROW(builder.Append(wkt));
-    OGRGeometryFactory::destroyGeometry(geo);
-    CPLFree(wkt);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
