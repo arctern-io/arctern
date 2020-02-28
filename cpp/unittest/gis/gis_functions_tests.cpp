@@ -2287,6 +2287,7 @@ TEST(geometry_test, test_ST_Area) {
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
   auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p10 = "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2299,6 +2300,7 @@ TEST(geometry_test, test_ST_Area) {
   builder.Append(std::string(p7));
   builder.Append(std::string(p8));
   builder.Append(std::string(p9));
+  builder.Append(std::string(p10));
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_Area(input);
@@ -2313,6 +2315,8 @@ TEST(geometry_test, test_ST_Area) {
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
   // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
+
 }
 
 TEST(geometry_test, test_ST_Centroid) {
