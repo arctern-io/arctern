@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits>
 
 namespace zilliz {
 namespace gis {
@@ -565,7 +566,40 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries) {
-  return ST_Envelope(ST_Union_Aggr(geometries));
+  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto len = geometries->length();
+  double inf = std::numeric_limits<double>::infinity();
+  double xmin = inf;
+  double xmax = -inf;
+  double ymin = inf;
+  double ymax = -inf;
+
+  OGREnvelope env;
+  for (int i = 0; i < len; ++i){
+    auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
+    OGR_G_GetEnvelope(geo, &env);
+    if(env.MinX < xmin) xmin = env.MinX;
+    if(env.MaxX > xmax) xmax = env.MaxX;
+    if(env.MinY < ymin) ymin = env.MinY;
+    if(env.MaxY > ymax) ymax = env.MaxY;
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  OGRLinearRing ring;
+  ring.addPoint(xmin,ymin);
+  ring.addPoint(xmin,ymax);
+  ring.addPoint(xmax,ymax);
+  ring.addPoint(xmax,ymin);
+  ring.addPoint(xmin,ymin);
+  OGRPolygon polygon;
+  polygon.addRing(&ring);
+  char* wkt = nullptr;
+  wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+  arrow::StringBuilder builder;
+  CHECK_ARROW(builder.Append(wkt));
+  CPLFree(wkt);
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
 }
 
 }  // namespace gdal
