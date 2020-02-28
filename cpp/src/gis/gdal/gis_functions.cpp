@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits>
 
 namespace zilliz {
 namespace gis {
@@ -276,19 +277,24 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
   arrow::StringBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
-    OGRLinearRing ring;
-    ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
-    ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
-    ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-    ring.closeRings();
-    OGRPolygon polygon;
-    polygon.addRing(&ring);
-    char* wkt = nullptr;
-    CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
-    CHECK_ARROW(builder.Append(wkt));
-    CPLFree(wkt);
+    if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
+        (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
+      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+    } else {
+      OGRLinearRing ring;
+      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
+      ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
+      ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
+      ring.closeRings();
+      OGRPolygon polygon;
+      polygon.addRing(&ring);
+      char* wkt = nullptr;
+      CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
+      CHECK_ARROW(builder.Append(wkt));
+      CPLFree(wkt);
+    }
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -317,39 +323,43 @@ std::shared_ptr<arrow::Array> ST_Envelope(
   OGREnvelope env;
   for (int i = 0; i < len; ++i) {
     auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
-    OGR_G_GetEnvelope(geo, &env);
-    char* wkt = nullptr;
-    if (env.MinX == env.MaxX) {    // vertical line or Point
-      if (env.MinY == env.MaxY) {  // point
-        OGRPoint point(env.MinX, env.MinY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&point);
-      } else {  // line
-        OGRLineString line;
-        line.addPoint(env.MinX, env.MinY);
-        line.addPoint(env.MinX, env.MaxY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&line);
-      }
+    if (geo->IsEmpty()) {
+      CHECK_ARROW(builder.Append(wkt_geometries->GetString(i)));
     } else {
-      if (env.MinY == env.MaxY) {  // horizontal line
-        OGRLineString line;
-        line.addPoint(env.MinX, env.MinY);
-        line.addPoint(env.MaxX, env.MinY);
-        wkt = Wrapper_OGR_G_ExportToWkt(&line);
-      } else {  // polygon
-        OGRLinearRing ring;
-        ring.addPoint(env.MinX, env.MinY);
-        ring.addPoint(env.MinX, env.MaxY);
-        ring.addPoint(env.MaxX, env.MaxY);
-        ring.addPoint(env.MaxX, env.MinY);
-        ring.addPoint(env.MinX, env.MinY);
-        OGRPolygon polygon;
-        polygon.addRing(&ring);
-        wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+      OGR_G_GetEnvelope(geo, &env);
+      char* wkt = nullptr;
+      if (env.MinX == env.MaxX) {    // vertical line or Point
+        if (env.MinY == env.MaxY) {  // point
+          OGRPoint point(env.MinX, env.MinY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&point);
+        } else {  // line
+          OGRLineString line;
+          line.addPoint(env.MinX, env.MinY);
+          line.addPoint(env.MinX, env.MaxY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+        }
+      } else {
+        if (env.MinY == env.MaxY) {  // horizontal line
+          OGRLineString line;
+          line.addPoint(env.MinX, env.MinY);
+          line.addPoint(env.MaxX, env.MinY);
+          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+        } else {  // polygon
+          OGRLinearRing ring;
+          ring.addPoint(env.MinX, env.MinY);
+          ring.addPoint(env.MinX, env.MaxY);
+          ring.addPoint(env.MaxX, env.MaxY);
+          ring.addPoint(env.MaxX, env.MinY);
+          ring.addPoint(env.MinX, env.MinY);
+          OGRPolygon polygon;
+          polygon.addRing(&ring);
+          wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+        }
       }
+      CHECK_ARROW(builder.Append(wkt));
+      OGRGeometryFactory::destroyGeometry(geo);
+      CPLFree(wkt);
     }
-    CHECK_ARROW(builder.Append(wkt));
-    OGRGeometryFactory::destroyGeometry(geo);
-    CPLFree(wkt);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -468,8 +478,9 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
                                                  nullptr, (OGRGeometry**)(&geo)));
     OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
-    if (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
-        OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection) {
+    if ((eType != wkbLineString) &&
+        (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
+         OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection)) {
       CHECK_ARROW(builder.Append(OGR_G_Area(geo)));
     } else {
       CHECK_ARROW(builder.Append(0));
@@ -565,7 +576,40 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries) {
-  return ST_Envelope(ST_Union_Aggr(geometries));
+  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto len = geometries->length();
+  double inf = std::numeric_limits<double>::infinity();
+  double xmin = inf;
+  double xmax = -inf;
+  double ymin = inf;
+  double ymax = -inf;
+
+  OGREnvelope env;
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
+    OGR_G_GetEnvelope(geo, &env);
+    if (env.MinX < xmin) xmin = env.MinX;
+    if (env.MaxX > xmax) xmax = env.MaxX;
+    if (env.MinY < ymin) ymin = env.MinY;
+    if (env.MaxY > ymax) ymax = env.MaxY;
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  OGRLinearRing ring;
+  ring.addPoint(xmin, ymin);
+  ring.addPoint(xmin, ymax);
+  ring.addPoint(xmax, ymax);
+  ring.addPoint(xmax, ymin);
+  ring.addPoint(xmin, ymin);
+  OGRPolygon polygon;
+  polygon.addRing(&ring);
+  char* wkt = nullptr;
+  wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+  arrow::StringBuilder builder;
+  CHECK_ARROW(builder.Append(wkt));
+  CPLFree(wkt);
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
 }
 
 }  // namespace gdal

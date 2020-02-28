@@ -2287,6 +2287,7 @@ TEST(geometry_test, test_ST_Area) {
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
   auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p10 = "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2299,6 +2300,7 @@ TEST(geometry_test, test_ST_Area) {
   builder.Append(std::string(p7));
   builder.Append(std::string(p8));
   builder.Append(std::string(p9));
+  builder.Append(std::string(p10));
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_Area(input);
@@ -2306,13 +2308,14 @@ TEST(geometry_test, test_ST_Area) {
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
-  //  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(3), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
   // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
@@ -2472,9 +2475,43 @@ TEST(geometry_test, test_ST_NPoints) {
   ASSERT_EQ(res_int->Value(8), 0);  //?
 }
 
+TEST(geometry_test, test_ST_Envelope_Empty) {
+  auto p0 = "POLYGON EMPTY";
+  auto p1 = "LINESTRING EMPTY";
+  auto p2 = "POINT EMPTY";
+  auto p3 = "MULTIPOLYGON EMPTY";
+  auto p4 = "MULTILINESTRING EMPTY";
+  auto p5 = "MULTIPOINT EMPTY";
+  auto p6 = "GEOMETRYCOLLECTION EMPTY";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Finish(&input);
+
+  auto result = zilliz::gis::ST_Envelope(input);
+  auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(result_str->GetString(0), p0);
+  ASSERT_EQ(result_str->GetString(1), p1);
+  ASSERT_EQ(result_str->GetString(2), p2);
+  ASSERT_EQ(result_str->GetString(3), p3);
+  ASSERT_EQ(result_str->GetString(4), p4);
+  ASSERT_EQ(result_str->GetString(5), p5);
+  ASSERT_EQ(result_str->GetString(6), p6);
+}
+
 TEST(geometry_test, test_ST_Envelope) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
+
 
   auto result = zilliz::gis::ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
@@ -2568,6 +2605,16 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Append(22);
   y_max_builder.Append(33);
 
+  x_min_builder.Append(1);
+  x_max_builder.Append(0);
+  y_min_builder.Append(22);
+  y_max_builder.Append(33);
+
+  x_min_builder.Append(0);
+  x_max_builder.Append(1);
+  y_min_builder.Append(55);
+  y_max_builder.Append(33);
+
   std::shared_ptr<arrow::Array> x_min;
   std::shared_ptr<arrow::Array> x_max;
   std::shared_ptr<arrow::Array> y_min;
@@ -2582,8 +2629,10 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,1 2,0 3,1 3,0 2))");
-  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,11 22,0 33,11 33,0 22))");
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
 }
 
 TEST(geometry_test, test_ST_Transform) {
