@@ -469,8 +469,9 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
                                                  nullptr, (OGRGeometry**)(&geo)));
     OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
-    if (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
-        OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection) {
+    if ((eType != wkbLineString) &&
+        (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
+         OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection)) {
       CHECK_ARROW(builder.Append(OGR_G_Area(geo)));
     } else {
       CHECK_ARROW(builder.Append(0));
