@@ -575,21 +575,21 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   double ymax = -inf;
 
   OGREnvelope env;
-  for (int i = 0; i < len; ++i){
+  for (int i = 0; i < len; ++i) {
     auto geo = Wrapper_createFromWkt(wkt_geometries->GetString(i).c_str());
     OGR_G_GetEnvelope(geo, &env);
-    if(env.MinX < xmin) xmin = env.MinX;
-    if(env.MaxX > xmax) xmax = env.MaxX;
-    if(env.MinY < ymin) ymin = env.MinY;
-    if(env.MaxY > ymax) ymax = env.MaxY;
+    if (env.MinX < xmin) xmin = env.MinX;
+    if (env.MaxX > xmax) xmax = env.MaxX;
+    if (env.MinY < ymin) ymin = env.MinY;
+    if (env.MaxY > ymax) ymax = env.MaxY;
     OGRGeometryFactory::destroyGeometry(geo);
   }
   OGRLinearRing ring;
-  ring.addPoint(xmin,ymin);
-  ring.addPoint(xmin,ymax);
-  ring.addPoint(xmax,ymax);
-  ring.addPoint(xmax,ymin);
-  ring.addPoint(xmin,ymin);
+  ring.addPoint(xmin, ymin);
+  ring.addPoint(xmin, ymax);
+  ring.addPoint(xmax, ymax);
+  ring.addPoint(xmax, ymin);
+  ring.addPoint(xmin, ymin);
   OGRPolygon polygon;
   polygon.addRing(&ring);
   char* wkt = nullptr;
