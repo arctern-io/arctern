@@ -42,7 +42,7 @@ logger "Get env..."
 env
 
 logger "Activate conda env..."
-conda activate zgis_dev
+source activate zgis_dev
 
 logger "Check versions..."
 python --version
