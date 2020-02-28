@@ -2316,7 +2316,6 @@ TEST(geometry_test, test_ST_Area) {
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
   // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
   EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
-
 }
 
 TEST(geometry_test, test_ST_Centroid) {
