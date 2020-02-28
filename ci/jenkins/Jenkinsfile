@@ -14,8 +14,8 @@ pipeline {
     environment {
         PROJECT_NAME = "arctern"
         PIPELINE_NAME = "arctern-ci"
-        ARCTERN_ROOT_PATH="/var/lib"
-        ARCTERN_INSTALL_PREFIX = "${env.ARCTERN_ROOT_PATH}/${env.PROJECT_NAME}"
+        // ARCTERN_ROOT_PATH="/var/lib"
+        // ARCTERN_INSTALL_PREFIX = "${env.ARCTERN_ROOT_PATH}/${env.PROJECT_NAME}"
     }
 
     stages {
