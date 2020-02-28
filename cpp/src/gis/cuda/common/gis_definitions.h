@@ -17,6 +17,7 @@
 
 #pragma once
 #include <array>
+#include <arrow/api.h>
 #include <cassert>
 #include <limits>
 #include <memory>
@@ -185,6 +186,9 @@ class GeometryVector {
     return static_cast<int>(tmp);
   }
 
+  // arrow-related
+  std::shared_ptr<arrow::Array> ExportToArrowWkb();
+
  private:
   // TODO(dog): Use Arrow Format internally
   // Currently, GpuVector contains host memory only
@@ -206,6 +210,7 @@ class GeometryVector {
 
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
+GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array>);
 }
 bool test_cuda_abi(const std::string& str);
 

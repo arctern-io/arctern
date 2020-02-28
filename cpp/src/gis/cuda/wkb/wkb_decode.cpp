@@ -143,6 +143,7 @@ void GeometryVector::WkbDecodeAppend(const char* raw_bin) {
   }
 }
 
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz
