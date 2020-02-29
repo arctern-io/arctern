@@ -22,6 +22,9 @@ export PARALLEL_LEVEL=4
 
 # Set versions of packages needed to be grabbed
 
+
+# Set home to the job's workspace
+export HOME=$PROJECT_ROOT_PATH
 # Switch to project root; also root of repo checkout
 cd $PROJECT_ROOT_PATH
 
