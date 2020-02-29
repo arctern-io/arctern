@@ -58,16 +58,16 @@ conda config --set ssl_verify False
 ################################################################################
 
 logger "Build conda pkg for libarctern..."
-source ci/scripts/conda/cpu/libarctern/build_libarctern.sh
+source ci/scripts/conda/gpu/libarctern/build_libarctern.sh
 
 logger "Build conda pkg for arctern..."
-source ci/scripts/conda/cpu/arctern/build_arctern.sh
+source ci/scripts/conda/gpu/arctern/build_arctern.sh
 
 logger "Build conda pkg for arctern-spark..."
-source ci/scripts/conda/cpu/arctern-spark/build_arctern-spark.sh
+source ci/scripts/conda/gpu/arctern-spark/build_arctern-spark.sh
 
 ################################################################################
 # UPLOAD - Conda packages
 ################################################################################
 
-source ci/scripts/conda/cpu/upload_anaconda.sh
+source ci/scripts/conda/gpu/upload_anaconda.sh
