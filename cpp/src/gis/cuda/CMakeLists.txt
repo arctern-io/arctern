@@ -7,6 +7,7 @@ set(WKB_CUDA_SOURCES
         functor/st_length.cu
         functor/st_area.cu
         functor/st_envelope.cu
-        functor/st_point.cu wkb/wkb_arrow.cpp)
+        functor/st_point.cu
+        wkb/wkb_arrow.cu)
 add_library(wkb_cuda ${WKB_CUDA_SOURCES})
 target_link_libraries(wkb_cuda cudart gdal)

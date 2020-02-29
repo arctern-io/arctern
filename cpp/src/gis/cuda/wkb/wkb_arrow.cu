@@ -1,9 +1,10 @@
+#include "gis/cuda/wkb/wkb_arrow.h"
+
 #include "gis/cuda/common/gis_definitions.h"
+
 namespace zilliz {
 namespace gis {
 namespace cuda {
-
-
 
 std::shared_ptr<arrow::Array> GeometryVector::ExportToArrowWkb() {
   // TODO(dog)
@@ -19,17 +20,100 @@ struct OutputInfo {
   int value_size;
 };
 
-__device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, int index,
+struct Iter {
+  uint32_t* metas;
+  double* values;
+};
+
+struct WkbDecoder {
+  const char* wkb_iter;
+  uint32_t* metas;
+  double* values;
+  bool skip_write;
+
+ public:
+  template <typename T>
+  __device__ T fetch() {
+    T tmp;
+    int len = sizeof(T);
+    memcpy(&tmp, wkb_iter, len);
+    wkb_iter += len;
+    return tmp;
+  }
+
+  __device__ void extend_values(int demensions, int points) {
+    auto count = demensions * points;
+    auto bytes = count * sizeof(double);
+    if (!skip_write) {
+      memcpy(&values, wkb_iter, bytes);
+    }
+    wkb_iter += bytes;
+    values += count;
+  }
+
+  __device__ int extend_size_meta() {
+    auto size = fetch<int>();
+    if (!skip_write) {
+      *metas = size;
+    }
+    metas += 1;
+    return size;
+  }
+
+ public:
+  __device__ void DecodePoint(int demensions) { extend_values(demensions, 1); }
+
+  __device__ void DecodeLineString(int demensions) {
+    auto size = extend_size_meta();
+    extend_values(demensions, size);
+  }
+
+  __device__ void DecodePolygon(int demensions) {
+    auto polys = extend_size_meta();
+    for (int i = 0; i < polys; ++i) {
+      auto size = extend_size_meta();
+      extend_values(demensions, size);
+    }
+  }
+};
+
+__device__ inline OutputInfo GetInfoAndDataPerElement(const ArrowContext& ctx, int index,
                                                       GpuContext& results,
                                                       bool skip_write = false) {
-  if (!skip_write) {
+  auto wkb_iter = ctx.get_wkb_ptr(index);
+  auto metas = results.get_meta_ptr(index);
+  auto values = results.get_value_ptr(index);
 
+  WkbDecoder decoder{wkb_iter, metas, values, skip_write};
+
+  auto byte_order = decoder.fetch<WkbByteOrder>();
+  assert(byte_order == WkbByteOrder::LittleEndian);
+  auto tag = decoder.fetch<WkbTag>();
+  assert(tag.get_group() == WkbGroup::None);
+  constexpr auto demensions = 2;
+  switch (tag.get_category()) {
+    case WkbCategory::Point: {
+      decoder.DecodePoint(demensions);
+      break;
+    }
+    case WkbCategory::LineString: {
+      decoder.DecodeLineString(demensions);
+      break;
+    }
+    case WkbCategory::Polygon: {
+      decoder.DecodePolygon(demensions);
+      break;
+    }
+    default: {
+      break;
+    }
   }
+
   auto result_tag = WkbTag(WkbCategory::Polygon, WkbGroup::None);
   return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
 
-__global__ void FillInfoKernel(const GpuContext input, GpuContext results) {
+__global__ void FillInfoKernel(const ArrowContext input, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   assert(input.size == results.size);
@@ -49,7 +133,7 @@ DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
-static __global__ void FillDataKernel(const GpuContext input, GpuContext results) {
+static __global__ void FillDataKernel(const ArrowContext input, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
@@ -57,11 +141,10 @@ static __global__ void FillDataKernel(const GpuContext input, GpuContext results
     AssertInfo(out_info, results, index);
   }
 }
-}
-
+}  // namespace
 
 namespace GeometryVectorFactory {
-GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb) {
+GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb, ArrowContext arrow_ctx) {
   GeometryVector results;
   int size = wkb->length();
   // TODO(dog): add hanlder for nulls
@@ -77,8 +160,8 @@ GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb) {
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(xs.get(), ys.get(),
-        *ctx_holder);
+    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx,
+                                                          *ctx_holder);
     ctx_holder->data_state = DataState::FlatOffset_FullInfo;
   }
 
@@ -90,13 +173,12 @@ GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb) {
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(xs.get(), ys.get(),
-        *ctx_holder);
+    FillDataKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx,
+                                                          *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector
   results.OutputFinalizeWith(*ctx_holder);
-
   return results;
 }
 

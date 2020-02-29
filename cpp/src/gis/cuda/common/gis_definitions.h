@@ -16,8 +16,17 @@
 // under the License.
 
 #pragma once
+// #include <arrow/api.h>
+// #include <arrow/array.h>
+namespace arrow{
+  class Array{
+    public:
+    int length() {return 0;}
+    int null_count() {return 0;}
+  };
+}
+
 #include <array>
-#include <arrow/api.h>
 #include <cassert>
 #include <limits>
 #include <memory>
@@ -211,7 +220,7 @@ class GeometryVector {
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
 GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array>);
-}
+}  // namespace GeometryVectorFactory
 bool test_cuda_abi(const std::string& str);
 
 using GpuContext = GeometryVector::GpuContext;
