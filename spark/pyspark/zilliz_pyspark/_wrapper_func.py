@@ -40,6 +40,11 @@ __all__ = [
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
     "ST_GeomFromGeoJSON_UDF",
+    "ST_PointFromText_UDF",
+    "ST_PolygonFromText_UDF",
+    "ST_LineStringFromText_UDF",
+    "ST_GeomFromText_UDF",
+    "ST_GeomFromWKT_UDF",
     "my_plot" # or point_map
 ]
 
@@ -58,6 +63,26 @@ def my_plot(x, y):
     curve_z_copy = curve_z
     curve_z = curve_z.buffers()[1].to_pybytes()
     return curve_z_copy.buffers()[1].hex()
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PointFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PolygonFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_LineStringFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromWKT_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromText_UDF(geo):
+    return geo
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Point_UDF(x, y):
