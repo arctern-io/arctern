@@ -26,14 +26,8 @@ export PARALLEL_LEVEL=4
 cd $PROJECT_ROOT_PATH
 
 # Get latest tag and number of commits since tag
-GIT_DESCRIBE_TAG=`git describe --abbrev=0 --tags`
-if [ -n ${GIT_DESCRIBE_TAG} ];then
-    export GIT_DESCRIBE_TAG=$GIT_DESCRIBE_TAG
-fi
-GIT_DESCRIBE_NUMBER=`git rev-list ${GIT_DESCRIBE_TAG}..HEAD --count`
-if [ -n ${GIT_DESCRIBE_NUMBER} ];then
-    export GIT_DESCRIBE_NUMBER=$GIT_DESCRIBE_NUMBER
-fi
+# export GIT_DESCRIBE_TAG=`git describe --abbrev=0 --tags`
+# export GIT_DESCRIBE_NUMBER=`git rev-list ${GIT_DESCRIBE_TAG}..HEAD --count`
 
 # If nightly build, append current YYMMDD to version
 if [[ "$BUILD_MODE" = "nightly" ]] ; then
