@@ -30,9 +30,9 @@ def run_st_point(spark):
 
 def run_st_geomfromgeojson(spark):
     test_data = []
-    test_data.extend([("{\"type\":\"Point\",\"coordinates\":[1,2]}")])
-    test_data.extend([("{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}")])
-    test_data.extend([("{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}")])
+    test_data.extend([("{\"type\":\"Point\",\"coordinates\":[1,2]}",)])
+    test_data.extend([("{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}",)])
+    test_data.extend([("{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",)])
     json_df = spark.createDataFrame(data=test_data,schema=["json"]).cache()
     json_df.createOrReplaceTempView("json")
     rs = spark.sql("select ST_GeomFromGeoJSON_UDF(json) from json").collect()

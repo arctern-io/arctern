@@ -97,7 +97,7 @@ def ST_GeomFromGeoJSON_UDF(json):
     geo = pa.array(json,type='string')
     from zilliz_gis import ST_GeomFromGeoJSON
     rs = ST_GeomFromGeoJSON(geo)
-    return ps.to_pandas()
+    return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Intersection_UDF(left, right):
