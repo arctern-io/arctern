@@ -8,7 +8,7 @@ set -e
 SOURCE_BRANCH=master
 
 # Restrict uploads to master branch
-if [ ${GIT_BRANCH} != ${SOURCE_BRANCH} ]; then
+if [ "${GIT_BRANCH}" != "${SOURCE_BRANCH}" ]; then
     echo "Skipping upload"
     return 0
 fi
