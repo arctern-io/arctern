@@ -39,6 +39,7 @@ __all__ = [
     "ST_Union_Aggr_UDF",
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
+    "ST_GeomFromGeoJSON_UDF",
     "my_plot" # or point_map
 ]
 
@@ -65,6 +66,13 @@ def ST_Point_UDF(x, y):
     from zilliz_gis import ST_Point
     rs = ST_Point(arr_x, arr_y)
     return rs.to_pandas()
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromGeoJSON_UDF(json):
+    geo = pa.array(json,type='string')
+    from zilliz_gis import ST_GeomFromGeoJSON
+    rs = ST_GeomFromGeoJSON(geo)
+    return ps.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Intersection_UDF(left, right):

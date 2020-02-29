@@ -24,6 +24,7 @@ cdef extern from "render.h" namespace "zilliz::render":
 
 cdef extern from "gis.h" namespace "zilliz::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
+    shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries)
     shared_ptr[CArray] ST_Equals(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries)
