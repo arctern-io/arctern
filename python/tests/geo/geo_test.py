@@ -104,7 +104,7 @@ def test_ST_GeomFromGeoJSON():
     j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
     j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
     j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
-    data = pandas.Series([j0,j1,j2])
+    data = pandas.Series([j0, j1, j2])
     str_ptr = zilliz_gis.ST_GeomFromGeoJSON(pyarrow.array(data))
     assert str_ptr[0] == "POINT (1 2)"
     assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
