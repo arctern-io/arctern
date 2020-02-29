@@ -36,9 +36,9 @@ def run_st_geomfromgeojson(spark):
     json_df = spark.createDataFrame(data=test_data,schema=["json"]).cache()
     json_df.createOrReplaceTempView("json")
     rs = spark.sql("select ST_GeomFromGeoJSON_UDF(json) from json").collect()
-    assert rs[0][0] = 'POINT (1 2)'
-    assert rs[1][0] = 'LINESTRING (1 2,4 5,7 8)'
-    assert rs[2][0] = 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
+    assert rs[0][0] == 'POINT (1 2)'
+    assert rs[1][0] == 'LINESTRING (1 2,4 5,7 8)'
+    assert rs[2][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
 def run_st_intersection(spark):
     test_data = []
