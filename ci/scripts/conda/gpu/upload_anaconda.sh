@@ -20,7 +20,9 @@ fi
 
 if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
     export LIBARCTERN_FILE=`conda build conda/recipes/libarctern/gpu -c conda-forge -c defaults -c nvidia --output`
-    LABEL_OPTION="--label cuda${CUDA_VERSION}"
+    SPLIT_VERSION=(${CUDA_VERSION//./ })
+    MINOR_VERSION=${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}
+    LABEL_OPTION="--label cuda${MINOR_VERSION}"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
     test -e ${LIBARCTERN_FILE}
