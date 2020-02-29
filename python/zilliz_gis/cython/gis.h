@@ -26,6 +26,8 @@ namespace gis {
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
 
+std::shared_ptr<arrow::Array> 
+ST_GeomFromGeoJSON(const std::shared_ptr<arrow::Array>& json);
 
 std::shared_ptr<arrow::Array>
 ST_Intersection(const std::shared_ptr<arrow::Array> &left_geometries,
