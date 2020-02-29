@@ -9,7 +9,7 @@ package:
   version: {{ version }}
 
 source:
-  path: ../../../..
+  path: ../../..
 
 # ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
 build:
