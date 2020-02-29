@@ -48,7 +48,7 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
 }
 
 std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
-    const std::shared_ptr<arrow::Array>& json){
+    const std::shared_ptr<arrow::Array>& json) {
   return gdal::ST_GeomFromGeoJSON(json);
 }
 
