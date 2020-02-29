@@ -16,15 +16,7 @@
 // under the License.
 
 #pragma once
-// #include <arrow/api.h>
-// #include <arrow/array.h>
-namespace arrow{
-  class Array{
-    public:
-    int length() {return 0;}
-    int null_count() {return 0;}
-  };
-}
+#include <arrow/array.h>
 
 #include <array>
 #include <cassert>
@@ -44,6 +36,13 @@ using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
 namespace zilliz {
 namespace gis {
 namespace cuda {
+//namespace arrow {
+//class Array {
+// public:
+//  int length() { return 0; }
+//  int null_count() { return 0; }
+//};
+//}  // namespace arrow
 
 //// Not used yet, comment later
 // struct GeoWorkspace {
