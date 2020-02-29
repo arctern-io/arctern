@@ -2657,7 +2657,7 @@ TEST(geometry_test, test_ST_Transform) {
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
-TEST(geometry_test, test_ST_GeomFromGeoJSON){
+TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
   auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
   auto j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}";
@@ -2671,9 +2671,9 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON){
 
   auto res = zilliz::gis::ST_GeomFromGeoJSON(input);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
-  ASSERT_EQ(res_str->GetString(0),"POINT (1 2)");
-  ASSERT_EQ(res_str->GetString(1),"LINESTRING (1 2,4 5,7 8)");
-  ASSERT_EQ(res_str->GetString(2),"POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
 }
 
 TEST(geometry_test, test_ST_Union_Aggr) {
