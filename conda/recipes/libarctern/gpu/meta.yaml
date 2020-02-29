@@ -1,9 +1,11 @@
 # Usage:
-#   conda build . -c defaults -c conda-forge
+#   conda build . -c defaults -c conda-forge -c nvidia
 
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
 {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+{% set cuda_version='.'.join(environ.get('CUDA_VERSION', '10.0').split('.')[:2]) %}
+
 package:
   name: libarctern
   version: {{ version }}
@@ -14,7 +16,7 @@ source:
 # ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
 build:
   number: {{ git_revision_count }}
-  string: {{ git_revision_count }}
+  string: cuda{{ cuda_version }}_{{ git_revision_count }}
   script_env:
     - CC
     - CXX
@@ -25,6 +27,9 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.16.0
     - rapidjson ==1.1.0
+
+  host:
+    - cudatoolkit {{ cuda_version }}.*
 
   run:
     - gdal ==3.0.4
