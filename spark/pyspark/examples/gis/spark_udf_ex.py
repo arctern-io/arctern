@@ -143,8 +143,8 @@ def run_st_polygon_from_envelope(spark):
     polygon_from_envelope_df = spark.createDataFrame(data=test_data, schema=['min_x', 'min_y', 'max_x', 'max_y']).cache()
     polygon_from_envelope_df.createOrReplaceTempView('polygon_from_envelope')
     rs = spark.sql("select ST_PolygonFromEnvelope_UDF(min_x, min_y, max_x, max_y) from polygon_from_envelope").collect()
-    assert rs[0][0] == 'POLYGON ((1 3,5 3,1 7,5 7,1 3))'
-    assert rs[1][0] == 'POLYGON ((2 4,6 4,2 8,6 8,2 4))'
+    assert rs[0][0] == 'POLYGON ((1 3,1 7,5 7,5 3,1 3))'
+    assert rs[1][0] == 'POLYGON ((2 4,2 8,6 8,6 4,2 4))'
 
 def run_st_contains(spark):
     test_data = []

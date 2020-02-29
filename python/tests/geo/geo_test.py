@@ -256,7 +256,7 @@ def test_ST_PolygonFromEnvelope():
 
     rst = zilliz_gis.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max)
 
-    assert rst[0] == "POLYGON ((0 0,1 0,0 1,1 1,0 0))"
+    assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
 
 def test_ST_Union_Aggr():
