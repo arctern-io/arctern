@@ -20,8 +20,8 @@
 #include <limits>
 
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/functor/st_envelope.h"
 #include "gis/cuda/functor/geometry_output.h"
+#include "gis/cuda/functor/st_envelope.h"
 
 namespace zilliz {
 namespace gis {
@@ -108,7 +108,7 @@ void ST_Envelope(const GeometryVector& input_vec, GeometryVector& results) {
   auto size = input_vec.size();
   {
     auto input = *input_holder;
-    auto functor = [=] __device__ (int index, GpuContext& results, bool skip_write) {
+    auto functor = [=] __device__(int index, GpuContext& results, bool skip_write) {
       return GetInfoAndDataPerElement(input, index, results, skip_write);
     };
     GeometryOutput(functor, size, results);

@@ -29,18 +29,6 @@ namespace cuda {
 namespace {
 using DataState = GeometryVector::DataState;
 
-//__device__ inline OutputInfo GetInfoAndDataPerElement(const double* xs, const double*
-// ys,
-//                                                      int index, GpuContext& results,
-//                                                      bool skip_write = false) {
-//  if (!skip_write) {
-//    auto value = results.get_value_ptr(index);
-//    value[0] = xs[index];
-//    value[1] = ys[index];
-//  }
-//  return OutputInfo{WkbTag(WkbCategory::Point, WkbGroup::None), 0, 2};
-//}
-
 template <typename Functor>
 __global__ void FillInfoKernel(Functor functor, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
@@ -72,7 +60,8 @@ static __global__ void FillDataKernel(Functor functor, GpuContext results) {
 }  // namespace
 
 // Functor should be equivalent to
-// [=](int index, GpuContext& results, bool skip_write) => OutputInfo
+//    [=](int index, GpuContext& results, bool skip_write) => OutputInfo
+// See "gis/cuda/functor/st_point.cu" for example
 template <typename Functor>
 void GeometryOutput(Functor functor, int size, GeometryVector& results) {
   // STEP 1: Initialize vector with size of elements
