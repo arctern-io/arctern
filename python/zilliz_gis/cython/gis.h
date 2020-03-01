@@ -105,6 +105,10 @@ ST_Centroid(const std::shared_ptr<arrow::Array> &geo_arr);
 std::shared_ptr<arrow::Array>
 ST_Length(const std::shared_ptr<arrow::Array> &geo_arr);
 
+std::shared_ptr<arrow::Array> 
+ST_HausdorffDistance(const std::shared_ptr<arrow::Array>& geo1, 
+                     const std::shared_ptr<arrow::Array>& geo2);
+
 std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
 
