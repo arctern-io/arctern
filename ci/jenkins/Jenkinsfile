@@ -99,13 +99,26 @@ pipeline {
                                 yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
                             }
                         }
+
                         stages {
                             stage('Prebuild') {
-                                "/bin/bash --login -c 'conda install --yes --quiet conda-build anaconda-client -c conda-forge'"
+                                steps {
+                                    container("arctern-${BINARY_VERSION}-build-env") {
+                                        script {
+                                            "/bin/bash --login -c 'conda install --yes --quiet conda-build anaconda-client -c conda-forge'"
+                                        }
+                                    }
+                                }
                             }
 
                             stage('Build and Upload') {
-                                load "${env.WORKSPACE}/ci/jenkins/step/condaBuild.groovy"
+                                steps {
+                                    container("arctern-${BINARY_VERSION}-build-env") {
+                                        script {
+                                            load "${env.WORKSPACE}/ci/jenkins/step/condaBuild.groovy"
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
