@@ -47,7 +47,7 @@ test:
     # conda tools
 
 about:
-  home: http://www.github.com/zilliztech/GIS
+  home: http://www.github.com/zilliztech/arctern
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE

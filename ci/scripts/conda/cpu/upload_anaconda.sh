@@ -4,8 +4,7 @@
 
 set -e
 
-
-SOURCE_BRANCH=conda
+SOURCE_BRANCH=${SOURCE_BRANCH:=conda}
 
 # Restrict uploads to master branch
 if [ "${GIT_BRANCH}" != "${SOURCE_BRANCH}" ]; then
