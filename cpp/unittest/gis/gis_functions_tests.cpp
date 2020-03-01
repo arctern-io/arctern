@@ -2277,6 +2277,20 @@ TEST(geometry_test, test_ST_Distance) {
   EXPECT_DOUBLE_EQ(res_double->Value(20), 0);
 }
 
+TEST(geometry_test, test_ST_HausdorffDistance){
+  auto p1 = "POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))";
+  auto p2 = "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))";
+  arrow::StringBuilder builder1,builder2;
+  builder1.Append(std::string(p1));
+  builder2.Append(std::string(p2));
+  std::shared_ptr<arrow::Array> input1,input2;
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+  auto res = zilliz::gis::ST_HausdorffDistance(input1,input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+  EXPECT_DOUBLE_EQ(res_double->Value(0), 1);
+}
+
 TEST(geometry_test, test_ST_Area) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
