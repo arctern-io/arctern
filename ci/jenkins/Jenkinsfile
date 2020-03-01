@@ -19,7 +19,7 @@ pipeline {
     }
 
     stages {
-        stage ('Arctern Build and Test') {
+        stage ('Arctern CI') {
             matrix {
                 agent none
                 axes {
@@ -40,7 +40,7 @@ pipeline {
                 }
 
                 stages {
-                    stage("Arctern CI") {
+                    stage("Arctern Build and Test") {
                         stages {
                             stage('Run build') {
                                 agent {
@@ -52,7 +52,7 @@ pipeline {
                                 }
 
                                 stages {
-                                	stage('Build') {
+                                    stage('Build') {
                                         steps {
                                             container("arctern-${BINARY_VERSION}-build-env") {
                                                 script {
@@ -71,6 +71,41 @@ pipeline {
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage ('Arctern Conda') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                stages {
+                    stage("Conda Build and Upload") {
+                        environment {
+                            CONDA_USERNAME = "arctern-dev"
+                        }
+                        agent {
+                            kubernetes {
+                                label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                defaultContainer 'jnlp'
+                                yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                            }
+                        }
+                        stages {
+                            stage('Prebuild') {
+                                "/bin/bash --login -c 'conda install --yes --quiet conda-build anaconda-client -c conda-forge'"
+                            }
+
+                            stage('Build and Upload') {
+                                load "${env.WORKSPACE}/ci/jenkins/step/condaBuild.groovy"
                             }
                         }
                     }

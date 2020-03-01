@@ -16,8 +16,9 @@ COPY docker/build_env/cpu/zgis.yml /tmp/zgis.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
+    conda update --all -y && \
     conda env create -f /tmp/zgis.yml && \
-    conda clean --all && \
+    conda clean --all -y && \
     rm /tmp/zgis.yml && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
