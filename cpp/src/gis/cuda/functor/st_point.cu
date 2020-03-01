@@ -42,11 +42,10 @@ void ST_Point(const double* cpu_xs, const double* cpu_ys, int size,
   auto xs = GpuMakeUniqueArrayAndCopy(cpu_xs, size);
   auto ys = GpuMakeUniqueArrayAndCopy(cpu_ys, size);
   {
-    const double* xs_ = xs.get();
-    const double* ys_ = ys.get();
-    auto functor = [=] __device__(int index, GpuContext& results, bool skip_write) {
+    auto functor = [xs_ = xs.get(), ys_ = ys.get()] __device__(
+                       int index, GpuContext& results, bool skip_write) {
       return GetInfoAndDataPerElement(xs_, ys_, index, results, skip_write);
-    }; // NOLINT
+    };  // NOLINT
     GeometryOutput(functor, size, results);
   }
 }

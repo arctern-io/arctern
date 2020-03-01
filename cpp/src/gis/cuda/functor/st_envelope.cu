@@ -106,13 +106,11 @@ void ST_Envelope(const GeometryVector& input_vec, GeometryVector& results) {
   // copy xs, ys to gpu
   auto input_holder = input_vec.CreateReadGpuContext();
   auto size = input_vec.size();
-  {
-    auto input = *input_holder;
-    auto functor = [=] __device__(int index, GpuContext& results, bool skip_write) {
-      return GetInfoAndDataPerElement(input, index, results, skip_write);
-    };
-    GeometryOutput(functor, size, results);
-  }
+  auto functor = [input = *input_holder] __device__(int index, GpuContext& results,
+                                                    bool skip_write) {
+    return GetInfoAndDataPerElement(input, index, results, skip_write);
+  };  // NOLINT
+  GeometryOutput(functor, size, results);
 }
 
 }  // namespace cuda
