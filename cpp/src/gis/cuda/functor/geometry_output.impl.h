@@ -54,6 +54,8 @@ static __global__ void FillDataKernel(Functor functor, GpuContext results) {
 }
 }  // namespace
 
+// Functor should be equivalent to
+// [=](int index, GpuContext& results, bool skip_write) => OutputInfo
 template <typename Functor>
 void GeometryOutput(Functor functor, int size, GeometryVector& results) {
   // STEP 1: Initialize vector with size of elements
