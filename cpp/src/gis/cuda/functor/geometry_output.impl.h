@@ -26,7 +26,8 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-namespace {
+namespace internal {
+namespace geometry_output {
 using DataState = GeometryVector::DataState;
 
 template <typename Functor>
@@ -57,13 +58,16 @@ static __global__ void FillDataKernel(Functor functor, GpuContext results) {
     AssertInfo(out_info, results, index);
   }
 }
-}  // namespace
+}  // namespace geometry_output
+}  // namespace internal
 
 // Functor should be equivalent to
 //    [=](int index, GpuContext& results, bool skip_write) => OutputInfo
 // See "gis/cuda/functor/st_point.cu" for example
 template <typename Functor>
 void GeometryOutput(Functor functor, int size, GeometryVector& results) {
+  namespace geo = internal::geometry_output;
+  using geo::DataState;
   // STEP 1: Initialize vector with size of elements
   results.OutputInitialize(size);
   // STEP 2: Create gpu context according to the vector for cuda
@@ -73,7 +77,7 @@ void GeometryOutput(Functor functor, int size, GeometryVector& results) {
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
+    geo::FillInfoKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
     ctx_holder->data_state = DataState::FlatOffset_FullInfo;
   }
   // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
@@ -84,7 +88,7 @@ void GeometryOutput(Functor functor, int size, GeometryVector& results) {
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
+    geo::FillDataKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector

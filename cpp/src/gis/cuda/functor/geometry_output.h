@@ -29,8 +29,8 @@ struct OutputInfo {
 // Functor should be equivalent to
 //    [=](int index, GpuContext& results, bool skip_write) => OutputInfo
 // See "gis/cuda/functor/st_point.cu" for example
-extern template <typename Functor>
-void GeometryOutput(Functor functor, int size, GeometryVector& results);
+template <typename Functor>
+extern void GeometryOutput(Functor functor, int size, GeometryVector& results);
 
 }  // namespace cuda
 }  // namespace gis

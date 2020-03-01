@@ -46,7 +46,7 @@ void ST_Point(const double* cpu_xs, const double* cpu_ys, int size,
     const double* ys_ = ys.get();
     auto functor = [=] __device__(int index, GpuContext& results, bool skip_write) {
       return GetInfoAndDataPerElement(xs_, ys_, index, results, skip_write);
-    };
+    }; // NOLINT
     GeometryOutput(functor, size, results);
   }
 }
