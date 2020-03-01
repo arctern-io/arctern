@@ -24,7 +24,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate bash" >> ~/.bashrc
 
-COPY docker-entrypoint.sh /opt/docker-entrypoint.sh
+COPY docker/build_env/gpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
 ENTRYPOINT [ "/opt/docker-entrypoint.sh" ]
