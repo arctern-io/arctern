@@ -111,7 +111,7 @@ pipeline {
                                 steps {
                                     container("arctern-${BINARY_VERSION}-build-env") {
                                         script {
-                                            "/bin/bash --login -c 'conda install --yes --quiet conda-build anaconda-client -c conda-forge'"
+                                            "/bin/bash --login -c 'eval \$(conda shell.bash hook) && conda install --yes --quiet conda-build anaconda-client -c conda-forge'"
                                         }
                                     }
                                 }
