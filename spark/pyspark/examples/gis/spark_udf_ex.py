@@ -42,10 +42,10 @@ def run_st_geomfromgeojson(spark):
 
 def run_st_pointfromtext(spark):
     test_data = []
-    test_data.extend([('POINT (30 10)')])
+    test_data.extend([('POINT (30 10)',)])
     data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
-    rs = spark.sql("select ST_PointFromText_UDF(json) from json").collect()
+    rs = spark.sql("select ST_PointFromText_UDF(data) from data").collect()
     assert rs[0][0] == 'POINT (30 10)'
     
 def run_st_intersection(spark):
@@ -398,5 +398,6 @@ if __name__ == "__main__":
     run_st_envelope_aggr(spark_session)
     run_st_transform(spark_session)
     run_st_geomfromgeojson(spark_session)
+    run_st_pointfromtext(spark_session)
 
     spark_session.stop()
