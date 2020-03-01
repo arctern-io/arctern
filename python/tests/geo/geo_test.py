@@ -209,8 +209,8 @@ def test_ST_HausdorffDistance():
     data2 = ["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"]
     array1 = pyarrow.array(pandas.Series(data1))
     array2 = pyarrow.array(pandas.Series(data2))
-    rst = zilliz_gis.ST_HausdorffDistance(array1,array2)
-    
+    rst = zilliz_gis.ST_HausdorffDistance(array1, array2)
+
     assert rst[0] == 1
     assert rst[1] == 1
 
