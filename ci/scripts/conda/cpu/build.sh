@@ -45,6 +45,7 @@ logger "Get env..."
 env
 
 logger "Activate conda env..."
+eval "$(conda shell.bash hook)"
 conda activate zgis_dev
 
 logger "Check versions..."
