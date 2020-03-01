@@ -44,6 +44,7 @@ env
 logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
 conda activate zgis_dev
+conda install --yes --quiet conda-build anaconda-client -c conda-forge
 
 logger "Check versions..."
 python --version
