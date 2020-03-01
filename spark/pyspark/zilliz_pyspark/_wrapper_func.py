@@ -32,7 +32,7 @@ __all__ = [
     "ST_Area_UDF",
     "ST_Centroid_UDF",
     "ST_Length_UDF",
-    "ST_HausdorffDistance",
+    "ST_HausdorffDistance_UDF",
     "ST_ConvexHull_UDF",
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
