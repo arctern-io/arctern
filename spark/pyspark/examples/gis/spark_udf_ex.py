@@ -47,6 +47,38 @@ def run_st_pointfromtext(spark):
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_PointFromText_UDF(data) from data").collect()
     assert rs[0][0] == 'POINT (30 10)'
+
+def run_st_polygonfromtext(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_PolygonFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+
+def run_st_linestringfromtext(spark):
+    test_data = []
+    test_data.extend([('LINESTRING (0 0, 0 1, 1 1, 1 0)',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_LineStringFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'LINESTRING (0 0, 0 1, 1 1, 1 0)'
+
+def run_st_geomfromwkt(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_GeomFromWKT_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+
+def run_st_geomfromtext(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_GeomFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
     
 def run_st_intersection(spark):
     test_data = []
@@ -399,5 +431,9 @@ if __name__ == "__main__":
     run_st_transform(spark_session)
     run_st_geomfromgeojson(spark_session)
     run_st_pointfromtext(spark_session)
+    run_st_polygonfromtext(spark_session)
+    run_st_linestringfromtext(spark_session)
+    run_st_geomfromwkt(spark_session)
+    run_st_geomfromtext(spark_session)
 
     spark_session.stop()
