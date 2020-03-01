@@ -96,6 +96,10 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries);
 
+std::shared_ptr<arrow::Array> ST_HausdorffDistance(
+    const std::shared_ptr<arrow::Array>& geo1,
+    const std::shared_ptr<arrow::Array>& geo2);
+
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
 std::shared_ptr<arrow::Array> ST_Equals(
