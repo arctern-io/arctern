@@ -29,7 +29,7 @@ __global__ void FillInfoKernel(Functor functor, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
-    auto out_info = functor(index, results, true);
+    OutputInfo out_info = functor(index, results, true);
     results.tags[index] = out_info.tag;
     results.meta_offsets[index] = out_info.meta_size;
     results.value_offsets[index] = out_info.value_size;
@@ -48,7 +48,7 @@ static __global__ void FillDataKernel(Functor functor, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
-    auto out_info = functor(index, results, false);
+    OutputInfo out_info = functor(index, results, false);
     AssertInfo(out_info, results, index);
   }
 }
