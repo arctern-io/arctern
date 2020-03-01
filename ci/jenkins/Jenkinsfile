@@ -27,12 +27,10 @@ pipeline {
                         name 'OS_NAME'
                         values 'ubuntu18.04'
                     }
-
                     axis {
                         name 'CPU_ARCH'
                         values 'amd64'
                     }
-
                     axis {
                         name 'BINARY_VERSION'
                         values 'gpu', 'cpu'
@@ -81,6 +79,14 @@ pipeline {
             matrix {
                 agent none
                 axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu18.04'
+                    }
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
                     axis {
                         name 'BINARY_VERSION'
                         values 'gpu', 'cpu'
