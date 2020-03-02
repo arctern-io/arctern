@@ -1,5 +1,6 @@
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/wkb/conversions.h"
+#include "gis/cuda/functor/geometry_output.h"
 
 namespace zilliz {
 namespace gis {
@@ -7,12 +8,6 @@ namespace cuda {
 
 namespace {
 using DataState = GeometryVector::DataState;
-
-struct OutputInfo {
-  WkbTag tag;
-  int meta_size;
-  int value_size;
-};
 
 struct Iter {
   uint32_t* metas;
@@ -71,7 +66,7 @@ struct WkbDecoder {
   }
 };
 
-__device__ inline OutputInfo GetInfoAndDataPerElement(const ArrowContext& ctx, int index,
+__device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& ctx, int index,
                                                       GpuContext& results,
                                                       bool skip_write = false) {
   auto wkb_iter = ctx.get_wkb_ptr(index);
@@ -107,7 +102,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ArrowContext& ctx, i
   return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
 
-__global__ void FillInfoKernel(const ArrowContext input, GpuContext results) {
+__global__ void FillInfoKernel(const WkbArrowContext input, GpuContext results) {
   assert(results.data_state == DataState::FlatOffset_EmptyInfo);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   assert(input.size == results.size);
@@ -127,7 +122,7 @@ DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
-__global__ void FillDataKernel(const ArrowContext input, GpuContext results) {
+__global__ void FillDataKernel(const WkbArrowContext input, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
@@ -137,12 +132,12 @@ __global__ void FillDataKernel(const ArrowContext input, GpuContext results) {
 }
 }  // namespace
 
-namespace GeometryVectorFactory {
-GeometryVector CreateFromArrowWkb(ArrowContext arrow_ctx) {
+namespace GeometryVectorFactoryImpl {
+GeometryVector CreateFromArrowWkbContextImpl(WkbArrowContext input) {
   GeometryVector results;
-  int size = arrow_ctx.size;
+  int size = input.size;
   // TODO(dog): add hanlder for nulls
-  assert(arrow_ctx.null_counts() == 0);
+  assert(input.null_counts() == 0);
 
   // STEP 1: Initialize vector with size of elements
   results.OutputInitialize(size);
@@ -154,7 +149,7 @@ GeometryVector CreateFromArrowWkb(ArrowContext arrow_ctx) {
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx, *ctx_holder);
+    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(input, *ctx_holder);
     ctx_holder->data_state = DataState::FlatOffset_FullInfo;
   }
 
@@ -166,7 +161,7 @@ GeometryVector CreateFromArrowWkb(ArrowContext arrow_ctx) {
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx, *ctx_holder);
+    FillDataKernel<<<config.grid_dim, config.block_dim>>>(input, *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector

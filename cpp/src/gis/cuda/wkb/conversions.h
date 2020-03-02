@@ -5,7 +5,7 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-struct ArrowContext {
+struct WkbArrowContext {
   char* data;
   uint32_t* offsets;
   int size;
@@ -15,6 +15,7 @@ struct ArrowContext {
   DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const { return data + index; }
   DEVICE_RUNNABLE int null_counts() { return 0 * size; }
 };
+
 
 }  // namespace cuda
 }  // namespace gis
