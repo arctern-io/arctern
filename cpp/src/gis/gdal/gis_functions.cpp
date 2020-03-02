@@ -16,6 +16,7 @@
 
 #include "gis/gdal/gis_functions.h"
 #include "common/version.h"
+#include "gis/gdal/arctern_geos.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
@@ -531,6 +532,36 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
 
     OGRGeometryFactory::destroyGeometry(geo);
   }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
+std::shared_ptr<arrow::Array> ST_HausdorffDistance(
+    const std::shared_ptr<arrow::Array>& geo1,
+    const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::DoubleBuilder builder;
+  auto geos_ctx = OGRGeometry::createGEOSContext();
+  for (int32_t i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
+    auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
+    auto geos1 = ogr1->exportToGEOS(geos_ctx);
+    auto geos2 = ogr2->exportToGEOS(geos_ctx);
+    double dist;
+    int geos_err = GEOSHausdorffDistance_r(geos_ctx, geos1, geos2, &dist);
+    if (geos_err == 0) {  // geos error
+      dist = -1;
+    }
+    GEOSGeom_destroy_r(geos_ctx, geos1);
+    GEOSGeom_destroy_r(geos_ctx, geos2);
+    CHECK_ARROW(builder.Append(dist));
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  OGRGeometry::freeGEOSContext(geos_ctx);
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

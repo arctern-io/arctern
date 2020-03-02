@@ -90,6 +90,9 @@ def ST_Centroid(object geo_arr):
 def ST_Length(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Length(pyarrow_unwrap_array(geo_arr)))
 
+def ST_HausdorffDistance(object geo1, object geo2):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_HausdorffDistance(pyarrow_unwrap_array(geo1),pyarrow_unwrap_array(geo2)))
+
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
 

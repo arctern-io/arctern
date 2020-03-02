@@ -292,6 +292,16 @@ def run_st_length(spark):
     assert rs[0][0] == 122.63074400009504
     assert rs[1][0] == 0.30901547439030225
 
+def run_st_hausdorffdistance(spark):
+    test_data = []
+    test_data.extend([("POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))",)])
+    test_data.extend([("POINT(0 0)", "POINT(0 1)",)])
+    hausdorff_df = spark.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
+    hausdorff_df.createOrReplaceTempView("hausdorff")
+    rs = spark.sql("select ST_HausdorffDistance_UDF(geo1,geo2) from hausdorff").collect()
+    assert rs[0][0] == 1
+    assert rs[1][0] == 1
+
 def run_st_convexhull(spark):
     test_data = []
     test_data.extend([('GEOMETRYCOLLECTION(POINT(1 1),POINT(0 0))',)])
@@ -422,6 +432,7 @@ if __name__ == "__main__":
     run_st_area(spark_session)
     run_st_centroid(spark_session)
     run_st_length(spark_session)
+    run_st_hausdorffdistance(spark_session)
     run_st_convexhull(spark_session)
     run_st_npoints(spark_session)
     run_st_envelope(spark_session)
