@@ -2181,6 +2181,37 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(22), false);
 }
 
+TEST(geometry_test, test_ST_Distance_Empty) {
+  auto l0 = "";
+  auto l1 = "POINT EMPTY";
+  auto l2 = "POINT(0 0)";
+
+  auto r0 = "POINT (0 1)";
+  auto r1 = "POINT (0 1)";
+  auto r2 = "POINT (0 1)";
+
+  arrow::StringBuilder builder1, builder2;
+  builder1.Append(std::string(l0));
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+
+  builder2.Append(std::string(r0));
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Distance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_EQ(res_double->IsNull(0),true);
+  ASSERT_EQ(res_double->IsNull(1), true);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
+}
+
 TEST(geometry_test, test_ST_Distance) {
   auto l1 = "POINT (0 0)";
   auto l2 = "POINT (0 0)";
