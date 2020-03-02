@@ -107,8 +107,8 @@ def run_st_equals(spark):
     equals_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     equals_df.createOrReplaceTempView("equals")
     rs = spark.sql("select ST_Equals_UDF(left, right) from equals").collect()
-    assert not rs[0][0]
-    assert not rs[1][0]
+    assert rs[0][0]
+    assert rs[1][0]
 
 def run_st_touches(spark):
     test_data = []
