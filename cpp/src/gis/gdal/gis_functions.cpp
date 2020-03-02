@@ -593,10 +593,11 @@ std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& g
       builder.AppendNull();
     } else {
       double dist = OGR_G_Distance(ogr1, ogr2);
-      if (dist < 0)
+      if (dist < 0) {
         builder.AppendNull();
-      else
+      } else {
         builder.Append(dist);
+      }
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
     OGRGeometryFactory::destroyGeometry(ogr2);
