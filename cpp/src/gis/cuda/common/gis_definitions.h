@@ -16,8 +16,6 @@
 // under the License.
 
 #pragma once
-#include <arrow/array.h>
-
 #include <array>
 #include <cassert>
 #include <limits>
@@ -26,6 +24,8 @@
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include "gis/cuda/mock/arrow/api.h"
 using std::vector;
 template <typename T>
 using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
@@ -36,8 +36,8 @@ using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
 namespace zilliz {
 namespace gis {
 namespace cuda {
-//namespace arrow {
-//class Array {
+// namespace arrow {
+// class Array {
 // public:
 //  int length() { return 0; }
 //  int null_count() { return 0; }
