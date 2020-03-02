@@ -301,6 +301,27 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
   return results;
 }
 
+std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+    const std::shared_ptr<arrow::Array>& json) {
+  auto json_geo = std::static_pointer_cast<arrow::StringArray>(json);
+  int len = json_geo->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(json_geo->GetString(i).c_str());
+    if (geo != nullptr) {
+      char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
+      CHECK_ARROW(builder.Append(wkt));
+      CPLFree(wkt);
+      OGRGeometryFactory::destroyGeometry(geo);
+    } else {
+      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+    }
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
 /************************* GEOMETRY ACCESSOR **************************/
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(ST_IsValid, arrow::BooleanBuilder, geo_wkt,
