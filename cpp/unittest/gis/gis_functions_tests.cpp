@@ -2277,6 +2277,31 @@ TEST(geometry_test, test_ST_Distance) {
   EXPECT_DOUBLE_EQ(res_double->Value(20), 0);
 }
 
+TEST(geometry_test, test_ST_HausdorffDistance) {
+  auto p11 = "POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))";
+  auto p12 = "POINT(0 0)";
+
+  auto p21 = "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))";
+  auto p22 = "POINT(0 1)";
+
+  arrow::StringBuilder builder1, builder2;
+  builder1.Append(std::string(p11));
+  builder1.Append(std::string(p12));
+
+  builder2.Append(std::string(p21));
+  builder2.Append(std::string(p22));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_HausdorffDistance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  EXPECT_DOUBLE_EQ(res_double->Value(0), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(1), 1);
+}
+
 TEST(geometry_test, test_ST_Area) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
@@ -2655,6 +2680,25 @@ TEST(geometry_test, test_ST_Transform) {
   ASSERT_DOUBLE_EQ(rst_pointer->getY(), 1118889.97485796);
 
   OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
+TEST(geometry_test, test_ST_GeomFromGeoJSON) {
+  auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
+  auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
+  auto j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(j0));
+  builder.Append(std::string(j1));
+  builder.Append(std::string(j2));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_GeomFromGeoJSON(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
 }
 
 TEST(geometry_test, test_ST_Union_Aggr) {

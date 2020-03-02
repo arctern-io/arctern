@@ -38,6 +38,9 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
     const std::shared_ptr<arrow::Array>& max_x_values,
     const std::shared_ptr<arrow::Array>& max_y_values);
 
+std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+    const std::shared_ptr<arrow::Array>& json);
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);
@@ -92,6 +95,9 @@ std::shared_ptr<arrow::Array> ST_Distance(
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries);
+
+std::shared_ptr<arrow::Array> ST_HausdorffDistance(
+    const std::shared_ptr<arrow::Array>& geo1, const std::shared_ptr<arrow::Array>& geo2);
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
 

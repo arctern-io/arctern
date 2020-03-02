@@ -26,6 +26,8 @@ namespace gis {
 std::shared_ptr<arrow::Array>
 ST_Point(const std::shared_ptr<arrow::Array> &point_x, const std::shared_ptr<arrow::Array> &point_y);
 
+std::shared_ptr<arrow::Array> 
+ST_GeomFromGeoJSON(const std::shared_ptr<arrow::Array>& json);
 
 std::shared_ptr<arrow::Array>
 ST_Intersection(const std::shared_ptr<arrow::Array> &left_geometries,
@@ -102,6 +104,10 @@ ST_Centroid(const std::shared_ptr<arrow::Array> &geo_arr);
 
 std::shared_ptr<arrow::Array>
 ST_Length(const std::shared_ptr<arrow::Array> &geo_arr);
+
+std::shared_ptr<arrow::Array> 
+ST_HausdorffDistance(const std::shared_ptr<arrow::Array>& geo1, 
+                     const std::shared_ptr<arrow::Array>& geo2);
 
 std::shared_ptr<arrow::Array>
 ST_ConvexHull(const std::shared_ptr<arrow::Array> &geo_arr);
