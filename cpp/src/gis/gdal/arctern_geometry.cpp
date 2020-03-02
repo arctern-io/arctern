@@ -20,22 +20,100 @@ namespace zilliz {
 namespace gis {
 namespace gdal {
 
-void NPointsVisitor::visit(const OGRPoint*) {}
-void NPointsVisitor::visit(const OGRLineString*) {}
-void NPointsVisitor::visit(const OGRLinearRing*) {}
-void NPointsVisitor::visit(const OGRPolygon*) {}
-void NPointsVisitor::visit(const OGRMultiPoint*) {}
-void NPointsVisitor::visit(const OGRMultiLineString*) {}
-void NPointsVisitor::visit(const OGRMultiPolygon*) {}
-void NPointsVisitor::visit(const OGRGeometryCollection*) {}
-void NPointsVisitor::visit(const OGRCircularString*) {}
-void NPointsVisitor::visit(const OGRCompoundCurve*) {}
-void NPointsVisitor::visit(const OGRCurvePolygon*) {}
-void NPointsVisitor::visit(const OGRMultiCurve*) {}
-void NPointsVisitor::visit(const OGRMultiSurface*) {}
-void NPointsVisitor::visit(const OGRTriangle*) {}
-void NPointsVisitor::visit(const OGRPolyhedralSurface*) {}
-void NPointsVisitor::visit(const OGRTriangulatedSurface*) {}
+void NPointsVisitor::visit(const OGRPoint* geo) {
+  if (geo->IsEmpty()) return;
+  npoints_++;
+}
+
+void NPointsVisitor::visit(const OGRLineString* geo) {
+  if (geo->IsEmpty()) return;
+  npoints_ += geo->getNumPoints();
+}
+
+void NPointsVisitor::visit(const OGRLinearRing* geo) {
+  if (geo->IsEmpty()) return;
+  npoints_ += geo->getNumPoints();
+}
+
+void NPointsVisitor::visit(const OGRPolygon* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+
+void NPointsVisitor::visit(const OGRMultiPoint* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+
+void NPointsVisitor::visit(const OGRMultiLineString* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+
+void NPointsVisitor::visit(const OGRMultiPolygon* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+
+void NPointsVisitor::visit(const OGRGeometryCollection* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+
+void NPointsVisitor::visit(const OGRCircularString* geo) {
+  if (geo->IsEmpty()) return;
+  npoints_ += geo->getNumPoints();
+}
+void NPointsVisitor::visit(const OGRCompoundCurve* geo) {
+  if (geo->IsEmpty()) return;
+  npoints_ += geo->getNumPoints();
+}
+void NPointsVisitor::visit(const OGRCurvePolygon* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+void NPointsVisitor::visit(const OGRMultiCurve* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+void NPointsVisitor::visit(const OGRMultiSurface* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+void NPointsVisitor::visit(const OGRTriangle* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+void NPointsVisitor::visit(const OGRPolyhedralSurface* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
+void NPointsVisitor::visit(const OGRTriangulatedSurface* geo) {
+  if (geo->IsEmpty()) return;
+  for (auto it = geo->begin(); it != geo->end(); ++it) {
+    (*it)->accept(this);
+  }
+}
 
 }  // namespace gdal
 }  // namespace gis

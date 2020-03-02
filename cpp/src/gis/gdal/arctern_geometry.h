@@ -44,6 +44,7 @@ class NPointsVisitor : public IOGRConstGeometryVisitor {
   void visit(const OGRTriangulatedSurface*);
 
   const int64_t npoints() const { return npoints_; }
+  void reset() { npoints_ = 0; }
 
  private:
   int64_t npoints_ = 0;

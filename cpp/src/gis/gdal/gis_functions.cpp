@@ -16,6 +16,7 @@
 
 #include "gis/gdal/gis_functions.h"
 #include "common/version.h"
+#include "gis/gdal/arctern_geometry.h"
 #include "gis/gdal/arctern_geos.h"
 #include "utils/check_status.h"
 
@@ -344,8 +345,26 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_IsSimple, arrow::BooleanBuilder, geo,
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_GeometryType, arrow::StringBuilder, geo,
                                  Wrapper_OGR_G_GetGeometryName(geo));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_NPoints, arrow::Int64Builder, geo,
-                                 OGR_G_GetPointCount(geo));
+std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo) {
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto len = geo->length();
+  arrow::Int64Builder builder;
+  auto npoints = new NPointsVisitor;
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkt(wkt, i);
+    if (geo == nullptr) {
+      builder.AppendNull();
+    } else {
+      npoints->reset();
+      geo->accept(npoints);
+      builder.Append(npoints->npoints());
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
