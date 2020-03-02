@@ -2207,7 +2207,7 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   auto res = zilliz::gis::ST_Distance(input1, input2);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-  ASSERT_EQ(res_double->IsNull(0),true);
+  ASSERT_EQ(res_double->IsNull(0), true);
   ASSERT_EQ(res_double->IsNull(1), true);
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
 }
