@@ -15,8 +15,8 @@
  */
 
 #include "gis/gdal/gis_functions.h"
-#include "gis/gdal/arctern_geos.h"
 #include "common/version.h"
+#include "gis/gdal/arctern_geos.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
@@ -551,7 +551,8 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
     auto geos1 = ogr1->exportToGEOS(geos_ctx);
     auto geos2 = ogr2->exportToGEOS(geos_ctx);
     double dist;
-    int geos_err = GEOSHausdorffDistance_r(geos_ctx, (GEOSGeometry*)geos1, (GEOSGeometry*)geos2, &dist);
+    int geos_err = GEOSHausdorffDistance_r(geos_ctx, (GEOSGeometry*)geos1,
+                                           (GEOSGeometry*)geos2, &dist);
     if (geos_err == 0) {  // geos error
       dist = -1;
     }
