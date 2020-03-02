@@ -15,11 +15,11 @@
  */
 
 #include "gis/gdal/gis_functions.h"
+#include "gis/gdal/arctern_geos.h"
 #include "common/version.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
-#include <geos_c.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 #include <stdio.h>
