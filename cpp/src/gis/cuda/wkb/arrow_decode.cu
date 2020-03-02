@@ -1,15 +1,9 @@
-#include "gis/cuda/wkb/wkb_arrow.h"
-
 #include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/wkb/conversions.h"
 
 namespace zilliz {
 namespace gis {
 namespace cuda {
-
-std::shared_ptr<arrow::Array> GeometryVector::ExportToArrowWkb() {
-  // TODO(dog)
-  return nullptr;
-}
 
 namespace {
 using DataState = GeometryVector::DataState;
@@ -133,7 +127,7 @@ DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
-static __global__ void FillDataKernel(const ArrowContext input, GpuContext results) {
+__global__ void FillDataKernel(const ArrowContext input, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
@@ -144,11 +138,11 @@ static __global__ void FillDataKernel(const ArrowContext input, GpuContext resul
 }  // namespace
 
 namespace GeometryVectorFactory {
-GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb, ArrowContext arrow_ctx) {
+GeometryVector CreateFromArrowWkb(ArrowContext arrow_ctx) {
   GeometryVector results;
-  int size = wkb->length();
+  int size = arrow_ctx.size;
   // TODO(dog): add hanlder for nulls
-  assert(wkb->null_count() == 0);
+  assert(arrow_ctx.null_counts() == 0);
 
   // STEP 1: Initialize vector with size of elements
   results.OutputInitialize(size);
@@ -160,8 +154,7 @@ GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb, ArrowContex
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx,
-                                                          *ctx_holder);
+    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx, *ctx_holder);
     ctx_holder->data_state = DataState::FlatOffset_FullInfo;
   }
 
@@ -173,8 +166,7 @@ GeometryVector CreateFromArrowWkb(std::shared_ptr<arrow::Array> wkb, ArrowContex
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx,
-                                                          *ctx_holder);
+    FillDataKernel<<<config.grid_dim, config.block_dim>>>(arrow_ctx, *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector
