@@ -643,7 +643,6 @@ TEST(geometry_test, test_ST_Equals2) {
   builder2.Append(std::string(r0));
   builder2.Append(std::string(r1));
   builder2.Append(std::string(r2));
-  
 
   std::shared_ptr<arrow::Array> input1, input2;
 
