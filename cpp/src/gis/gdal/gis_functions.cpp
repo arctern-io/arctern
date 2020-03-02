@@ -589,7 +589,7 @@ std::shared_ptr<arrow::Array> ST_Equals(
   auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
   auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
   arrow::BooleanBuilder builder;
-  for(int32_t i = 0； i < len; ++i) {
+  for(int32_t i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
     auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
     if(ogr1->Within(ogr2) && ogr2->Within(ogr1)){
