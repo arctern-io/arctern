@@ -100,6 +100,16 @@ def test_ST_Point():
     assert string_ptr[0] == "POINT (1.3 3.8)"
     assert string_ptr[1] == "POINT (2.5 4.9)"
 
+def test_ST_GeomFromGeoJSON():
+    j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
+    j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
+    j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
+    data = pandas.Series([j0, j1, j2])
+    str_ptr = zilliz_gis.ST_GeomFromGeoJSON(pyarrow.array(data))
+    assert str_ptr[0] == "POINT (1 2)"
+    assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
+    assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+
 def test_ST_Contains():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
     p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
@@ -256,7 +266,7 @@ def test_ST_PolygonFromEnvelope():
 
     rst = zilliz_gis.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max)
 
-    assert rst[0] == "POLYGON ((0 0,1 0,0 1,1 1,0 0))"
+    assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
 
 def test_ST_Union_Aggr():
