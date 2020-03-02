@@ -32,7 +32,6 @@ __all__ = [
     "ST_Area_UDF",
     "ST_Centroid_UDF",
     "ST_Length_UDF",
-    "ST_HausdorffDistance_UDF",
     "ST_ConvexHull_UDF",
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
@@ -40,20 +39,42 @@ __all__ = [
     "ST_Union_Aggr_UDF",
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
-    "ST_GeomFromGeoJSON_UDF",
-    "ST_PointFromText_UDF",
-    "ST_PolygonFromText_UDF",
-    "ST_LineStringFromText_UDF",
-    "ST_GeomFromText_UDF",
-    "ST_GeomFromWKT_UDF",
+    "render_agg_UDF",
+    "heat_map_UDF",
     "my_plot" # or point_map
 ]
 
 import pyarrow as pa
 from pyspark.sql.functions import pandas_udf, PandasUDFType
+from pyspark.sql.types import *
 
 def toArrow(parameter):
     return  pa.array(parameter)
+
+schema = StructType([StructField('x', IntegerType(), True),
+			StructField('x', IntegerType(), True),
+			StructField('x', IntegerType(), True)])
+@pandas_udf(schema, PandasUDFType.MAP_ITER)
+def render_agg_UDF(batch_iter):
+    for pdf in batch_iter:
+        res = pdf.groupby(['x','y'])
+        res = res['c'].agg(['c']).reset_index()
+        yield res
+
+vega = ''
+schema = StructType([StructField('buffer', StringType(), True)])
+@pandas_udf(schema, PandasUDFType.MAP_ITER)
+def heat_map_UDF(batch_iter, conf = vega):
+    for pdf in batch_iter:
+        arrs = pdf.groupby(['x','y'])['c'].agg(['c']).reset_index()
+        arr_x = pa.array(x, type='uint32')
+        arr_y = pa.array(y, type='uint32')
+        arr_c = pa.array(c, type='uint32')
+        from zilliz_gis import heat_map
+        res = heat_map(arr_x, arr_y, arr_c, vega)
+        buffer = res.buffers()[1].hex()
+        buf_df = pd.DataFrame([(buffer,)],["buffer"])
+        yield buf_df
 
 @pandas_udf("string", PandasUDFType.GROUPED_AGG)
 def my_plot(x, y):
@@ -66,38 +87,11 @@ def my_plot(x, y):
     return curve_z_copy.buffers()[1].hex()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
-def ST_PointFromText_UDF(geo):
-    return geo
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_PolygonFromText_UDF(geo):
-    return geo
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_LineStringFromText_UDF(geo):
-    return geo
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_GeomFromWKT_UDF(geo):
-    return geo
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_GeomFromText_UDF(geo):
-    return geo
-
-@pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Point_UDF(x, y):
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
     from zilliz_gis import ST_Point
     rs = ST_Point(arr_x, arr_y)
-    return rs.to_pandas()
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def ST_GeomFromGeoJSON_UDF(json):
-    geo = pa.array(json,type='string')
-    from zilliz_gis import ST_GeomFromGeoJSON
-    rs = ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
@@ -238,14 +232,6 @@ def ST_Length_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_Length
     rs = ST_Length(arr_geos)
-    return rs.to_pandas()
-
-@pandas_udf("double", PandasUDFType.SCALAR)
-def ST_HausdorffDistance_UDF(geo1, geo2):
-    arr1 = pa.array(geo1, type='string')
-    arr2 = pa.array(geo2, type='string')
-    from zilliz_gis import ST_HausdorffDistance
-    rs = ST_HausdorffDistance(arr1, arr2)
     return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
