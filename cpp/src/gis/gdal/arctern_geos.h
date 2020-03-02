@@ -27,9 +27,6 @@ using std::size_t;
 extern "C" {
 #endif
 
-typedef struct GEOSContextHandle_HS* GEOSContextHandle_t;
-class GEOSGeometry;
-
 /************************************************************************
  *
  *  Misc functions
@@ -37,8 +34,8 @@ class GEOSGeometry;
  ***********************************************************************/
 
 /* Return 0 on exception, 1 otherwise */
-extern int GEOSHausdorffDistance_r(GEOSContextHandle_t handle, const GEOSGeometry* g1,
-                                   const GEOSGeometry* g2, double* dist);
+extern int GEOSHausdorffDistance_r(void* handle, const void* g1, const void* g2,
+                                   double* dist);
 
 /************************************************************************
  *
@@ -46,7 +43,7 @@ extern int GEOSHausdorffDistance_r(GEOSContextHandle_t handle, const GEOSGeometr
  *
  ***********************************************************************/
 
-extern void GEOSGeom_destroy_r(GEOSContextHandle_t handle, GEOSGeometry* g);
+extern void GEOSGeom_destroy_r(void* handle, void* g);
 
 #ifdef __cplusplus
 }  // extern "C"
