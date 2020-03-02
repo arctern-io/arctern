@@ -574,27 +574,26 @@ BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_
 
 /*************************************************
  * https://postgis.net/docs/ST_Equals.html
- * Returns TRUE if the given Geometries are "spatially equal". 
- * Use this for a 'better' answer than '='. 
- * Note by spatially equal we mean ST_Within(A,B) = true and ST_Within(B,A) = true and 
- * also mean ordering of points can be different but represent the same geometry structure. 
- * To verify the order of points is consistent, 
- * use ST_OrderingEquals (it must be noted ST_OrderingEquals is a little more stringent than 
- * simply verifying order of points are the same).
+ * Returns TRUE if the given Geometries are "spatially equal".
+ * Use this for a 'better' answer than '='.
+ * Note by spatially equal we mean ST_Within(A,B) = true and ST_Within(B,A) = true and
+ * also mean ordering of points can be different but represent the same geometry
+ * structure. To verify the order of points is consistent, use ST_OrderingEquals (it must
+ * be noted ST_OrderingEquals is a little more stringent than simply verifying order of
+ * points are the same).
  * ***********************************************/
-std::shared_ptr<arrow::Array> ST_Equals(
-    const std::shared_ptr<arrow::Array>& geo1,
-    const std::shared_ptr<arrow::Array>& geo2) {
+std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
+                                        const std::shared_ptr<arrow::Array>& geo2) {
   auto len = geo1->length();
   auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
   auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
   arrow::BooleanBuilder builder;
-  for(int32_t i = 0; i < len; ++i) {
+  for (int32_t i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
     auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
-    if(ogr1->Within(ogr2) && ogr2->Within(ogr1)){
+    if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
-    }else{
+    } else {
       builder.Append(false);
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
