@@ -20,6 +20,7 @@
 #include <limits>
 
 #include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
 
 namespace zilliz {
@@ -28,12 +29,6 @@ namespace cuda {
 
 namespace {
 using DataState = GeometryVector::DataState;
-
-struct OutputInfo {
-  WkbTag tag;
-  int meta_size;
-  int value_size;
-};
 
 constexpr double inf = std::numeric_limits<double>::max();
 struct MinMax {
@@ -61,7 +56,7 @@ struct MinMax {
 
 __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, int index,
                                                       GpuContext& results,
-                                                      bool skip_write = false) {
+                                                      bool skip_write) {
   assert(input.get_tag(index).get_group() == WkbGroup::None);
   if (!skip_write) {
     auto values_beg = input.get_value_ptr(index);
@@ -105,69 +100,17 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, i
   auto result_tag = WkbTag(WkbCategory::Polygon, WkbGroup::None);
   return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
-
-__global__ void FillInfoKernel(const GpuContext input, GpuContext results) {
-  assert(results.data_state == DataState::FlatOffset_EmptyInfo);
-  auto index = threadIdx.x + blockIdx.x * blockDim.x;
-  assert(input.size == results.size);
-  if (index < input.size) {
-    auto out_info = GetInfoAndDataPerElement(input, index, results, true);
-    printf("%d", index);
-    results.tags[index] = out_info.tag;
-    results.meta_offsets[index] = out_info.meta_size;
-    results.value_offsets[index] = out_info.value_size;
-  }
-}
-
-DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
-                                       int index) {
-  assert(info.tag.data == ctx.get_tag(index).data);
-  assert(info.meta_size == ctx.meta_offsets[index + 1] - ctx.meta_offsets[index]);
-  assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
-}
-
-static __global__ void FillDataKernel(const GpuContext input, GpuContext results) {
-  assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
-  auto index = threadIdx.x + blockIdx.x * blockDim.x;
-  if (index < results.size) {
-    auto out_info = GetInfoAndDataPerElement(input, index, results);
-    AssertInfo(out_info, results, index);
-  }
-}
 }  // namespace
 
 void ST_Envelope(const GeometryVector& input_vec, GeometryVector& results) {
   // copy xs, ys to gpu
   auto input_holder = input_vec.CreateReadGpuContext();
   auto size = input_vec.size();
-
-  // STEP 1: Initialize vector with size of elements
-  results.OutputInitialize(size);
-
-  // STEP 2: Create gpu context according to the vector for cuda
-  // where tags and offsets fields are uninitailized
-  auto results_holder = results.OutputCreateGpuContext();
-  {
-    // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
-    // where offsets[0, n) is filled with size of each element
-    auto config = GetKernelExecConfig(size);
-    FillInfoKernel<<<config.grid_dim, config.block_dim>>>(*input_holder, *results_holder);
-    results_holder->data_state = DataState::FlatOffset_FullInfo;
-  }
-
-  // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
-  // then copy info(tags and scanned offsets) back to GeometryVector
-  // and alloc cpu & gpu memory for next steps
-  results.OutputEvolveWith(*results_holder);
-
-  {
-    // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
-    auto config = GetKernelExecConfig(size);
-    FillDataKernel<<<config.grid_dim, config.block_dim>>>(*input_holder, *results_holder);
-    results_holder->data_state = DataState::PrefixSumOffset_FullData;
-  }
-  // STEP 6: Copy data(metas and values) back to GeometryVector
-  results.OutputFinalizeWith(*results_holder);
+  auto functor = [input = *input_holder] __device__(int index, GpuContext& results,
+                                                    bool skip_write) {
+    return GetInfoAndDataPerElement(input, index, results, skip_write);
+  };  // NOLINT
+  GeometryOutput(functor, size, results);
 }
 
 }  // namespace cuda
