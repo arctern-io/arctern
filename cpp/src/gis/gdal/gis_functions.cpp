@@ -204,6 +204,16 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   return is_valid;
 }
 
+inline OGRGeometry* Wrapper_createFromWkt(
+    const std::shared_ptr<arrow::StringArray>& array, int idx) {
+  if (array->IsNull(idx)) return nullptr;
+  OGRGeometry* geo = nullptr;
+  auto err_code =
+      OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
+  if (err_code) return nullptr;
+  return geo;
+}
+
 inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
   OGRGeometry* geo = nullptr;
   auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
@@ -567,8 +577,34 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   return results;
 }
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
-                                  OGR_G_Distance(geo_1, geo_2));
+std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
+                                          const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::DoubleBuilder builder;
+
+  for (int i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.AppendNull();
+    } else if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      double dist = OGR_G_Distance(ogr1, ogr2);
+      if (dist < 0)
+        builder.AppendNull();
+      else
+        builder.Append(dist);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 /************************ SPATIAL RELATIONSHIP ************************/
 
