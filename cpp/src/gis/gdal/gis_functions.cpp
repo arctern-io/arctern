@@ -204,6 +204,16 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   return is_valid;
 }
 
+inline OGRGeometry* Wrapper_createFromWkt(
+    const std::shared_ptr<arrow::StringArray>& array, int idx) {
+  if (array->IsNull(idx)) return nullptr;
+  OGRGeometry* geo = nullptr;
+  auto err_code =
+      OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
+  if (err_code) return nullptr;
+  return geo;
+}
+
 inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
   OGRGeometry* geo = nullptr;
   auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
@@ -567,13 +577,69 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   return results;
 }
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
-                                  OGR_G_Distance(geo_1, geo_2));
+std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
+                                          const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::DoubleBuilder builder;
+
+  for (int i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.AppendNull();
+    } else if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      double dist = OGR_G_Distance(ogr1, ogr2);
+      if (dist < 0) {
+        builder.AppendNull();
+      } else {
+        builder.Append(dist);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 /************************ SPATIAL RELATIONSHIP ************************/
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Equals, arrow::BooleanBuilder, geo_1, geo_2,
-                                  OGR_G_Equals(geo_1, geo_2) != 0);
+/*************************************************
+ * https://postgis.net/docs/ST_Equals.html
+ * Returns TRUE if the given Geometries are "spatially equal".
+ * Use this for a 'better' answer than '='.
+ * Note by spatially equal we mean ST_Within(A,B) = true and ST_Within(B,A) = true and
+ * also mean ordering of points can be different but represent the same geometry
+ * structure. To verify the order of points is consistent, use ST_OrderingEquals (it must
+ * be noted ST_OrderingEquals is a little more stringent than simply verifying order of
+ * points are the same).
+ * ***********************************************/
+std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
+                                        const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::BooleanBuilder builder;
+  for (int32_t i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
+    auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
+    if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
+      builder.Append(true);
+    } else {
+      builder.Append(false);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Touches, arrow::BooleanBuilder, geo_1, geo_2,
                                   OGR_G_Touches(geo_1, geo_2) != 0);

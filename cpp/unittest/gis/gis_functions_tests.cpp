@@ -625,6 +625,38 @@ TEST(geometry_test, test_ST_Intersection) {
 //   ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
 // }
 
+TEST(geometry_test, test_ST_Equals2) {
+  auto l0 = "LINESTRING (0 0, 10 10)";
+  auto l1 = "LINESTRING (10 10, 0 0)";
+  auto l2 = "LINESTRING(0 0, 1 1)";
+
+  auto r0 = "LINESTRING (0 0, 5 5, 10 10)";
+  auto r1 = "LINESTRING (0 0, 5 5, 10 10)";
+  auto r2 = "LINESTRING(1 1, 0 0)";
+
+  arrow::StringBuilder builder1, builder2;
+
+  builder1.Append(std::string(l0));
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+
+  builder2.Append(std::string(r0));
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Equals(input1, input2);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+}
+
 TEST(geometry_test, test_ST_Equals) {
   auto l1 = "POINT (0 1)";
   auto l2 = "POINT (0 1)";
@@ -820,29 +852,29 @@ TEST(geometry_test, test_ST_Equals) {
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
-  // ASSERT_EQ(res_bool->Value(3), true); // false
+  ASSERT_EQ(res_bool->Value(3), true);
   ASSERT_EQ(res_bool->Value(4), false);
-  // ASSERT_EQ(res_bool->Value(5), true); // false
+  ASSERT_EQ(res_bool->Value(5), true);
   ASSERT_EQ(res_bool->Value(6), false);
-  // ASSERT_EQ(res_bool->Value(7), true); // false
+  ASSERT_EQ(res_bool->Value(7), false);
   ASSERT_EQ(res_bool->Value(8), false);
-  // ASSERT_EQ(res_bool->Value(9), true); // false
+  ASSERT_EQ(res_bool->Value(9), true);
   ASSERT_EQ(res_bool->Value(10), false);
-  // ASSERT_EQ(res_bool->Value(11), true); // false
+  ASSERT_EQ(res_bool->Value(11), false);
   ASSERT_EQ(res_bool->Value(12), false);
   ASSERT_EQ(res_bool->Value(13), false);
   ASSERT_EQ(res_bool->Value(14), true);
   ASSERT_EQ(res_bool->Value(15), false);
   ASSERT_EQ(res_bool->Value(16), false);
   ASSERT_EQ(res_bool->Value(17), false);
-  ASSERT_EQ(res_bool->Value(18), false);
-  ASSERT_EQ(res_bool->Value(19), false);
+  ASSERT_EQ(res_bool->Value(18), true);
+  ASSERT_EQ(res_bool->Value(19), true);
   ASSERT_EQ(res_bool->Value(20), false);
   ASSERT_EQ(res_bool->Value(21), false);
   ASSERT_EQ(res_bool->Value(22), false);
   ASSERT_EQ(res_bool->Value(23), false);
   ASSERT_EQ(res_bool->Value(24), true);
-  ASSERT_EQ(res_bool->Value(25), false);
+  ASSERT_EQ(res_bool->Value(25), true);
   ASSERT_EQ(res_bool->Value(26), false);
   ASSERT_EQ(res_bool->Value(27), false);
   ASSERT_EQ(res_bool->Value(28), false);
@@ -854,7 +886,7 @@ TEST(geometry_test, test_ST_Equals) {
   ASSERT_EQ(res_bool->Value(34), false);
   ASSERT_EQ(res_bool->Value(35), false);
   ASSERT_EQ(res_bool->Value(36), true);
-  ASSERT_EQ(res_bool->Value(37), false);
+  ASSERT_EQ(res_bool->Value(37), true);
   ASSERT_EQ(res_bool->Value(38), false);
   ASSERT_EQ(res_bool->Value(39), false);
   ASSERT_EQ(res_bool->Value(40), false);
@@ -2147,6 +2179,37 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(20), true);
   ASSERT_EQ(res_bool->Value(21), false);
   ASSERT_EQ(res_bool->Value(22), false);
+}
+
+TEST(geometry_test, test_ST_Distance_Empty) {
+  auto l0 = "";
+  auto l1 = "POINT EMPTY";
+  auto l2 = "POINT(0 0)";
+
+  auto r0 = "POINT (0 1)";
+  auto r1 = "POINT (0 1)";
+  auto r2 = "POINT (0 1)";
+
+  arrow::StringBuilder builder1, builder2;
+  builder1.Append(std::string(l0));
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+
+  builder2.Append(std::string(r0));
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Distance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_EQ(res_double->IsNull(0), true);
+  ASSERT_EQ(res_double->IsNull(1), true);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
 }
 
 TEST(geometry_test, test_ST_Distance) {
