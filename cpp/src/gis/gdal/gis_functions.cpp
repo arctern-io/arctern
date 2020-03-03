@@ -361,6 +361,7 @@ std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& ge
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
+  delete npoints;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
