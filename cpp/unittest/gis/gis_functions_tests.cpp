@@ -2633,7 +2633,6 @@ TEST(geometry_test, test_ST_Envelope) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
 
-
   auto result = zilliz::gis::ST_Envelope(input);
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
@@ -2795,6 +2794,32 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
   ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+}
+
+TEST(geometry_test, test_ST_Union_Aggr2) {
+  auto p0 = "MULTIPOINT (1 1,3 4)";
+  auto p1 = "LINESTRING (1 1,1 2,2 3)";
+  auto p2 = "MULTILINESTRING ((1 1,1 2),(2 4,1 9,1 8))";
+  auto p3 = "MULTILINESTRING ((1 1,3 4))";
+  auto p4 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto p5 = "MULTIPOLYGON ( ((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,3 4,-2 3,0 0)) )";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_Union_Aggr(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0),
+            "GEOMETRYCOLLECTION (LINESTRING (2 4,1 9,1 8),POLYGON ((2.0 1.5,2 1,1.8 "
+            "1.0,1 -1,0 0,-2 3,3 4,2.0 1.5)))");
 }
 
 TEST(geometry_test, test_ST_Union_Aggr) {
