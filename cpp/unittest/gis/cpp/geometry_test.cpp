@@ -1,373 +1,431 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "arrow/api.h"
-#include "arrow/array.h"
-#include "gis/cpu/geometry.h"
-#include<ctime>
+#include <ctime>
+#include <ogr_geometry.h>
+#include <arrow/api.h>
+#include <arrow/array.h>
+
+#include "arrow/gis_api.h"
+#include "utils/check_status.h"
 
 using namespace zilliz::gis;
 
 TEST(geometry_test, make_point_from_double){
 
   arrow::DoubleBuilder builder_x;
-    arrow::DoubleBuilder builder_y;
-    std::shared_ptr<arrow::Array> ptr_x;
-    std::shared_ptr<arrow::Array> ptr_y;
+  arrow::DoubleBuilder builder_y;
+  std::shared_ptr<arrow::Array> ptr_x;
+  std::shared_ptr<arrow::Array> ptr_y;
 
-    for (int i = 0; i < 2; i++) {
-        builder_x.Append(i);
-        builder_y.Append(i);
-    }
+  for (int i = 0; i < 2; i++) {
+    builder_x.Append(i);
+    builder_y.Append(i);
+  }
 
-    builder_x.Finish(&ptr_x);
-    builder_y.Finish(&ptr_y);
+  builder_x.Finish(&ptr_x);
+  builder_y.Finish(&ptr_y);
 
-    auto point_arr = ST_Point(ptr_x,ptr_y);
-    auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
+  auto point_arr = ST_Point(ptr_x,ptr_y);
+  auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
 
-    ASSERT_EQ(point_arr_str->length(),2);
-    ASSERT_EQ(point_arr_str->GetString(0),"POINT (0 0)");
-    ASSERT_EQ(point_arr_str->GetString(1),"POINT (1 1)");
+  ASSERT_EQ(point_arr_str->length(),2);
+  ASSERT_EQ(point_arr_str->GetString(0),"POINT (0 0)");
+  ASSERT_EQ(point_arr_str->GetString(1),"POINT (1 1)");
 }
 
 
-TEST(geometry_test,test_ST_IsValid){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
+char*
+build_point(double x, double y){
 
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
+  OGRPoint point(x,y);
+  char *point_str = nullptr;
+  CHECK_GDAL(point.exportToWkt(&point_str));
+  return point_str;
+}
 
+char*
+build_polygon(double x, double y){
 
-  OGRLinearRing ring3;
-  ring3.addPoint(2, 1);
-  ring3.addPoint(3, 1);
-  ring3.addPoint(3, 2);
-  ring3.addPoint(2, 2);
-  ring3.addPoint(2, 8);
-  ring3.closeRings();
-  OGRPolygon polygon3;
-  polygon3.addRing(&ring3);
+  OGRLinearRing ring;
+  ring.addPoint(x, y);
+  ring.addPoint(x, y+10);
+  ring.addPoint(x+10, y+10);
+  ring.addPoint(x+10, y);
+  ring.addPoint(x, y);
+  ring.closeRings();
+  OGRPolygon polygon;
+  polygon.addRing(&ring);
+
+  char *polygon_str = nullptr;
+  CHECK_GDAL(polygon.exportToWkt(&polygon_str));
+  return polygon_str;
+}
+
+char*
+build_linestring(double x, double y){
+
+  OGRLineString line;
+  line.addPoint(x, y);
+  line.addPoint(x, y+20);
+
+  char *line_str = nullptr;
+  CHECK_GDAL(line.exportToWkt(&line_str));
+  return line_str;
+}
+
+std::shared_ptr<arrow::Array> 
+build_points(){
+
+  arrow::StringBuilder string_builder;
+  std::shared_ptr<arrow::Array> points;
+
+  char *point_str1 = build_point(10,20);
+  char *point_str2 = build_point(20,30);
+  char *point_str3 = build_point(30,40);
+
+  string_builder.Append(std::string(point_str1));
+  string_builder.Append(std::string(point_str2));
+  string_builder.Append(std::string(point_str3));
+
+  CPLFree(point_str1);
+  CPLFree(point_str2);
+  CPLFree(point_str3);
+
+  string_builder.Finish(&points);
+  return points;
+}
+
+std::shared_ptr<arrow::Array> 
+build_polygons(){
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> polygons;
-  
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(polygon2.exportToWkt());
-  string_builder.Append(polygon3.exportToWkt());
+
+  char *str1 = build_polygon(10,20);
+  char *str2 = build_polygon(30,40);
+  char *str3 = build_polygon(50,60);
+  string_builder.Append(std::string(str1));
+  string_builder.Append(std::string(str2));
+  string_builder.Append(std::string(str3));
+  CPLFree(str1);
+  CPLFree(str2);
+  CPLFree(str3);
 
   string_builder.Finish(&polygons);
+  return polygons;
+}
 
-  auto vaild_mark = ST_IsValid(polygons);
-  auto vaild_mark_arr = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
+std::shared_ptr<arrow::Array> 
+build_linestrings(){
 
-  ASSERT_EQ(vaild_mark_arr->Value(0),true);
-  ASSERT_EQ(vaild_mark_arr->Value(1),true);
-  ASSERT_EQ(vaild_mark_arr->Value(2),false);
+  arrow::StringBuilder string_builder;
+  std::shared_ptr<arrow::Array> line_strings;
+
+  char *str1 = build_linestring(10,20);
+  char *str2 = build_linestring(30,40);
+  char *str3 = build_linestring(50,60);
+  string_builder.Append(std::string(str1));
+  string_builder.Append(std::string(str2));
+  string_builder.Append(std::string(str3));
+  CPLFree(str1);
+  CPLFree(str2);
+  CPLFree(str3);
+
+  string_builder.Finish(&line_strings);
+  return line_strings;
+}
+
+TEST(geometry_test,test_ST_IsValid){
+
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_IsValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
+  // ASSERT_EQ(vaild_mark_arr1->Value(0),true);
+  // ASSERT_EQ(vaild_mark_arr1->Value(1),true);
+  // ASSERT_EQ(vaild_mark_arr1->Value(2),false);
+
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_IsValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+  // ASSERT_EQ(vaild_mark_arr2->Value(0),true);
+  // ASSERT_EQ(vaild_mark_arr2->Value(1),true);
+  // ASSERT_EQ(vaild_mark_arr2->Value(2),false);
+
+  std::shared_ptr<arrow::Array> line = build_linestrings();
+  auto vaild_mark3 = ST_IsValid(line);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  // ASSERT_EQ(vaild_mark_arr3->Value(0),true);
+  // ASSERT_EQ(vaild_mark_arr3->Value(1),true);
+  // ASSERT_EQ(vaild_mark_arr3->Value(2),false);
 }
 
 TEST(geometry_test, test_ST_Intersection){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
 
   arrow::StringBuilder left_string_builder;
-  std::shared_ptr<arrow::Array> left_polygons;
+  std::shared_ptr<arrow::Array> left_geometry;
   arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> right_polygons;
+  std::shared_ptr<arrow::Array> right_geometry;
+  char *left_str = nullptr;
+  char *right_str = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon2.exportToWkt());
+  left_str = build_point(25,25);
+  right_str = build_polygon(20,20);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection1 = ST_Intersection(left_geometry,right_geometry);
+  // auto intersection_polygons_arr = std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
+  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
 
-  auto intersection_geometries = ST_Intersection(left_polygons,right_polygons);
-  auto intersection_geometries_arr = std::static_pointer_cast<arrow::StringArray>(intersection_geometries);
+  left_str = build_polygon(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection2 = ST_Intersection(left_geometry,right_geometry);
+
+  left_string_builder.Reset();
+  right_string_builder.Reset();
+
+  left_str = build_point(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection3 = ST_Intersection(left_geometry,right_geometry);
   
-  ASSERT_EQ(intersection_geometries_arr->GetString(0),"LINESTRING (2 2,2 1)");
+  CPLFree(left_str);
+  CPLFree(right_str);
 }
 
-TEST(geometry_test, test_ST_PrecisionReduce){
-  OGRPoint point(1.5555555,1.55555555);
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> array;
-  string_builder.Append(point.exportToWkt());
-  string_builder.Finish(&array);
-  auto geometries = ST_PrecisionReduce(array,6);
-  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
+// TEST(geometry_test, test_ST_PrecisionReduce){
+//   OGRPoint point(1.5555555,1.55555555);
+//   arrow::StringBuilder string_builder;
+//   std::shared_ptr<arrow::Array> array;
   
-  ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
-}
+//   char *str = nullptr;
+//   CHECK_GDAL(point.exportToWkt(&str));
+//   string_builder.Append(std::string(str));
+//   CPLFree(str);
+
+//   string_builder.Finish(&array);
+//   auto geometries = ST_PrecisionReduce(array,6);
+//   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
+  
+//   // ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
+//   ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
+// }
 
 TEST(geometry_test, test_ST_Equals){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
-
   arrow::StringBuilder left_string_builder;
+  std::shared_ptr<arrow::Array> left_geometry;
   arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> left_polygons;
-  std::shared_ptr<arrow::Array> right_polygons;
+  std::shared_ptr<arrow::Array> right_geometry;
+  char *left_str = nullptr;
+  char *right_str = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  left_str = build_point(25,25);
+  right_str = build_polygon(20,20);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection1 = ST_Equals(left_geometry,right_geometry);
+  // auto intersection_polygons_arr = std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
+  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
 
-  auto vaild_mark = ST_Equals(left_polygons,right_polygons);
-  auto vaild_mark_str = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
+  left_str = build_polygon(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection2 = ST_Equals(left_geometry,right_geometry);
 
-  ASSERT_EQ(vaild_mark_str->Value(0),true);
-  ASSERT_EQ(vaild_mark_str->Value(1),false);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
+
+  left_str = build_point(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection3 = ST_Equals(left_geometry,right_geometry);
+  
+  CPLFree(left_str);
+  CPLFree(right_str);
 }
 
 TEST(geometry_test, test_ST_Touches){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
-
   arrow::StringBuilder left_string_builder;
+  std::shared_ptr<arrow::Array> left_geometry;
   arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> left_polygons;
-  std::shared_ptr<arrow::Array> right_polygons;
+  std::shared_ptr<arrow::Array> right_geometry;
+  char *left_str = nullptr;
+  char *right_str = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  left_str = build_point(25,25);
+  right_str = build_polygon(20,20);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection1 = ST_Touches(left_geometry,right_geometry);
+  // auto intersection_polygons_arr = std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
+  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
 
-  auto vaild_mark = ST_Touches(left_polygons,right_polygons);
-  auto vaild_mark_str = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
-   
-  ASSERT_EQ(vaild_mark_str->Value(0),false);
-  ASSERT_EQ(vaild_mark_str->Value(1),true);
+  left_str = build_polygon(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection2 = ST_Touches(left_geometry,right_geometry);
+
+  left_string_builder.Reset();
+  right_string_builder.Reset();
+
+  left_str = build_point(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection3 = ST_Touches(left_geometry,right_geometry);
+  
+  CPLFree(left_str);
+  CPLFree(right_str);
 }
 
 TEST(geometry_test, test_ST_Overlaps){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
-
   arrow::StringBuilder left_string_builder;
+  std::shared_ptr<arrow::Array> left_geometry;
   arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> left_polygons;
-  std::shared_ptr<arrow::Array> right_polygons;
+  std::shared_ptr<arrow::Array> right_geometry;
+  char *left_str = nullptr;
+  char *right_str = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  left_str = build_point(25,25);
+  right_str = build_polygon(20,20);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection1 = ST_Overlaps(left_geometry,right_geometry);
+  // auto intersection_polygons_arr = std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
+  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
 
-  auto vaild_mark = ST_Overlaps(left_polygons,right_polygons);
-  auto vaild_mark_str = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
-   
-  ASSERT_EQ(vaild_mark_str->Value(0),false);
-  ASSERT_EQ(vaild_mark_str->Value(1),false);
+  left_str = build_polygon(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection2 = ST_Overlaps(left_geometry,right_geometry);
+
+  left_string_builder.Reset();
+  right_string_builder.Reset();
+
+  left_str = build_point(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection3 = ST_Overlaps(left_geometry,right_geometry);
+  
+  CPLFree(left_str);
+  CPLFree(right_str);
 }
 
 
 TEST(geometry_test, test_ST_Crosses){
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
-
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
-
   arrow::StringBuilder left_string_builder;
+  std::shared_ptr<arrow::Array> left_geometry;
   arrow::StringBuilder right_string_builder;
-  std::shared_ptr<arrow::Array> left_polygons;
-  std::shared_ptr<arrow::Array> right_polygons;
+  std::shared_ptr<arrow::Array> right_geometry;
+  char *left_str = nullptr;
+  char *right_str = nullptr;
 
-  left_string_builder.Append(polygon1.exportToWkt());
-  left_string_builder.Append(polygon2.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
-  right_string_builder.Append(polygon1.exportToWkt());
+  left_str = build_point(25,25);
+  right_str = build_polygon(20,20);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection1 = ST_Crosses(left_geometry,right_geometry);
+  // auto intersection_polygons_arr = std::static_pointer_cast<arrow::StringArray>(intersection_polygons);
+  // ASSERT_EQ(intersection_polygons_arr->GetString(0),"LINESTRING (20 30, 20 20)");
 
-  left_string_builder.Finish(&left_polygons);
-  right_string_builder.Finish(&right_polygons);
+  left_string_builder.Reset();
+  right_string_builder.Reset();
 
-  auto vaild_mark = ST_Crosses(left_polygons,right_polygons);
-  auto vaild_mark_str = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
-   
-  ASSERT_EQ(vaild_mark_str->Value(0),false);
-  ASSERT_EQ(vaild_mark_str->Value(1),false);
+  left_str = build_polygon(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection2 = ST_Crosses(left_geometry,right_geometry);
+
+  left_string_builder.Reset();
+  right_string_builder.Reset();
+
+  left_str = build_point(20,20);
+  right_str = build_linestring(25,25);
+  left_string_builder.Append(std::string(left_str));
+  right_string_builder.Append(std::string(right_str));
+  left_string_builder.Finish(&left_geometry);
+  right_string_builder.Finish(&right_geometry);
+  auto intersection3 = ST_Crosses(left_geometry,right_geometry);
+  
+  CPLFree(left_str);
+  CPLFree(right_str);
 }
 
 
 TEST(geometry_test, test_ST_IsSimple){
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_IsSimple(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-  OGRLinearRing ring1;
-  ring1.addPoint(1, 1);
-  ring1.addPoint(1, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 1);
-  ring1.addPoint(1, 1);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_IsSimple(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-  OGRLinearRing ring2;
-  ring2.addPoint(2, 1);
-  ring2.addPoint(3, 1);
-  ring2.addPoint(3, 2);
-  ring2.addPoint(2, 2);
-  ring2.addPoint(2, 1);
-  ring2.closeRings();
-  OGRPolygon polygon2;
-  polygon2.addRing(&ring2);
-
-
-  OGRLinearRing ring3;
-  ring3.addPoint(2, 1);
-  ring3.addPoint(3, 1);
-  ring3.addPoint(3, 2);
-  ring3.addPoint(2, 2);
-  ring3.addPoint(2, 8);
-  ring3.closeRings();
-  OGRPolygon polygon3;
-  polygon3.addRing(&ring3);
-
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> polygons;
-  
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(polygon2.exportToWkt());
-  string_builder.Append(polygon3.exportToWkt());
-
-  string_builder.Finish(&polygons);
-
-  auto vaild_mark = ST_IsSimple(polygons);
-  auto vaild_mark_arr = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark);
-
-  ASSERT_EQ(vaild_mark_arr->Value(0),true);
-  ASSERT_EQ(vaild_mark_arr->Value(1),true);
-  ASSERT_EQ(vaild_mark_arr->Value(2),false);
+  std::shared_ptr<arrow::Array> line = build_linestrings();
+  auto vaild_mark3 = ST_IsSimple(line);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 }
 
 TEST(geometry_test, test_ST_MakeValid){
-  OGRLinearRing ring1;
-  ring1.addPoint(2, 1);
-  ring1.addPoint(3, 1);
-  ring1.addPoint(3, 2);
-  ring1.addPoint(2, 2);
-  ring1.addPoint(2, 8);
-  ring1.closeRings();
-  OGRPolygon polygon1;
-  polygon1.addRing(&ring1);
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> polygons;
-  
-  std::cout << polygon1.exportToWkt() <<std::endl;
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Finish(&polygons);
-  
-  auto geometries = ST_MakeValid(polygons);
-  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
-  
-  ASSERT_EQ(geometries_arr->GetString(0),"GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))");
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
+
+  std::shared_ptr<arrow::Array> line = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(line);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
 }
 
 TEST(geometry_test, test_ST_GeometryType){
@@ -382,12 +440,26 @@ TEST(geometry_test, test_ST_GeometryType){
   polygon1.addRing(&ring1);
 
   OGRPoint point(2,3);
+  OGRLineString line;
+  line.addPoint(10,20);
+  line.addPoint(20,30);
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> geometries;
 
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(point.exportToWkt());
+  char *polygon_str = nullptr;
+  char *point_str = nullptr;
+  char *line_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  CHECK_GDAL(point.exportToWkt(&point_str));
+  CHECK_GDAL(line.exportToWkt(&line_str));
+  string_builder.Append(std::string(polygon_str));
+  string_builder.Append(std::string(point_str));
+  string_builder.Append(std::string(line_str));
+  CPLFree(polygon_str);
+  CPLFree(point_str);
+  CPLFree(line_str);
+
   string_builder.Finish(&geometries);
 
   auto geometries_type = ST_GeometryType(geometries);
@@ -395,6 +467,7 @@ TEST(geometry_test, test_ST_GeometryType){
   
   ASSERT_EQ(geometries_type_arr->GetString(0),"POLYGON");
   ASSERT_EQ(geometries_type_arr->GetString(1),"POINT");
+  ASSERT_EQ(geometries_type_arr->GetString(2),"LINESTRING");
 }
 
 TEST(geometry_test, test_ST_SimplifyPreserveTopology){
@@ -409,12 +482,26 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology){
   polygon1.addRing(&ring1);
 
   OGRPoint point(2,3);
+  OGRLineString line;
+  line.addPoint(10,20);
+  line.addPoint(20,30);
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> geometries;
 
-  string_builder.Append(polygon1.exportToWkt());
-  string_builder.Append(point.exportToWkt());
+  char *polygon_str = nullptr;
+  char *point_str = nullptr;
+  char *line_str = nullptr;
+  CHECK_GDAL(polygon1.exportToWkt(&polygon_str));
+  CHECK_GDAL(point.exportToWkt(&point_str));
+  CHECK_GDAL(point.exportToWkt(&line_str));
+  string_builder.Append(std::string(polygon_str));
+  string_builder.Append(std::string(point_str));
+  string_builder.Append(std::string(line_str));
+  CPLFree(polygon_str);
+  CPLFree(point_str);
+  CPLFree(line_str);
+
   string_builder.Finish(&geometries);
 
   auto geometries_arr = ST_SimplifyPreserveTopology(geometries,10000);
@@ -422,238 +509,234 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology){
   
   ASSERT_EQ(geometries_arr_str->GetString(0),"POLYGON ((2 1,3 1,2 8,2 1))");
   ASSERT_EQ(geometries_arr_str->GetString(1),"POINT (2 3)");
+//  ASSERT_EQ(geometries_arr_str->GetString(2),"LINESTRING");
+
 }
 
-TEST(geometry_test, ST_Contains_test) {
-std::shared_ptr<arrow::Array> geo_test;
-arrow::StringBuilder builder1;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
-builder1.Append("POINT(2 2)");
-builder1.Append("POINT(200 2)");
-builder1.Finish(&geo_test);
+TEST(geometry_test, test_ST_Contains) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder2;
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Contains(geo, geo_test);
-
-arrow::BooleanBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Contains(points, polygons);
+  auto res2 = ST_Contains(polygons, lines);
+  auto res3 = ST_Contains(points, lines);
 }
 
-TEST(geometry_test, ST_Intersects_test) {
-std::shared_ptr<arrow::Array> geo_test;
-arrow::StringBuilder builder1;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
-builder1.Append("LINESTRING(2 2,10 2)");
-builder1.Append("LINESTRING(9 2,10 2)");
-builder1.Finish(&geo_test);
+TEST(geometry_test, test_ST_Intersects) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder2;
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Intersects(geo, geo_test);
-
-arrow::BooleanBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Intersects(points, polygons);
+  auto res2 = ST_Intersects(polygons, lines);
+  auto res3 = ST_Intersects(points, lines);
 }
 
-TEST(geometry_test, ST_Within_test) {
-std::shared_ptr<arrow::Array> geo_test;
-arrow::StringBuilder builder1;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("POLYGON((8 0,9 0,9 1,8 1,8 0))");
-builder1.Append("LINESTRING(2 2,3 2)");
-builder1.Append("POINT(10 2)");
-builder1.Finish(&geo_test);
+TEST(geometry_test, test_ST_Within) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder2;
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Within(geo, geo_test);
-
-arrow::BooleanBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Append(true);
-builder_res.Append(false);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Within(points, polygons);
+  auto res2 = ST_Within(polygons, lines);
+  auto res3 = ST_Within(points, lines);
 }
 
-TEST(geometry_test, ST_Distance_test) {
-std::shared_ptr<arrow::Array> geo_test;
-arrow::StringBuilder builder1;
-builder1.Append("LINESTRING(9 0,9 2)");
-builder1.Append("POINT(10 2)");
-builder1.Finish(&geo_test);
+TEST(geometry_test, test_ST_Distance) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder2;
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder2.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Distance(geo, geo_test);
-
-arrow::DoubleBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(1.0);
-builder_res.Append(2.0);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Distance(points, polygons);
+  auto res2 = ST_Distance(polygons, lines);
+  auto res3 = ST_Distance(points, lines);
 }
 
-TEST(geometry_test, ST_Area_test) {
+TEST(geometry_test, test_ST_Area) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Area(geo);
-
-arrow::DoubleBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(1.0);
-builder_res.Append(64.0);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Area(points);
+  auto res2 = ST_Area(polygons);
+  auto res3 = ST_Area(lines);
 }
 
-TEST(geometry_test, ST_Centroid_test) {
+TEST(geometry_test, test_ST_Centroid) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("POLYGON((0 0,0 8,8 8,8 0,0 0))");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Centroid(geo);
-
-arrow::StringBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append("POINT(0.5 0.5)");
-builder_res.Append("POINT(4.0 4.0)");
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Centroid(points);
+  auto res2 = ST_Centroid(polygons);
+  auto res3 = ST_Centroid(lines);
 }
 
-TEST(geometry_test, ST_Length_test) {
+TEST(geometry_test, test_ST_Length) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
-builder1.Append("LINESTRING(0 0,0 1)");
-builder1.Append("LINESTRING(1 1,1 4)");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_Length(geo);
-
-arrow::DoubleBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(1.0);
-builder_res.Append(3.0);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Length(points);
+  auto res2 = ST_Length(polygons);
+  auto res3 = ST_Length(lines);
 }
 
-TEST(geometry_test, ST_ConvexHull_test) {
+TEST(geometry_test, test_ST_ConvexHull) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
-//TODO : verify expect_res
-//  builder2.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-//  builder2.Append("LINESTRING(1 1,1 4)");
-builder1.Append("POINT (1.1 101.1)");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_ConvexHull(geo);
-
-arrow::StringBuilder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-//  builder2.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-//  builder2.Append("LINESTRING(1 1,1 4)");
-builder_res.Append("POINT (1.1 101.1)");
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_ConvexHull(points);
+  auto res2 = ST_ConvexHull(polygons);
+  auto res3 = ST_ConvexHull(lines);
 }
 
 //TODO:geospark ST_NPoints can not work.
-TEST(geometry_test, ST_NPoints_test) {
+TEST(geometry_test, test_ST_NPoints) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
-//TODO : verify expect_res
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder1.Append("LINESTRING(1 1,1 4)");
-builder1.Append("POINT (1.1 101.1)");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-auto res = ST_NPoints(geo);
-
-arrow::Int64Builder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder_res.Append(4);
-builder_res.Append(2);
-builder_res.Append(1);
-builder_res.Finish(&expect_res);
-
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_NPoints(points);
+  auto res2 = ST_NPoints(polygons);
+  auto res3 = ST_NPoints(lines);
 }
 
-TEST(geometry_test, ST_Envelope_test) {
+TEST(geometry_test, test_ST_Envelope) {
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-std::shared_ptr<arrow::Array> geo;
-arrow::StringBuilder builder1;
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-builder1.Append("POLYGON((0 0,1 0,1 1,0 0))");
-builder1.Finish(&geo);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Envelope(points);
+  auto res2 = ST_Envelope(polygons);
+  auto res3 = ST_Envelope(lines);
+}
 
-auto res = ST_Envelope(geo);
+TEST(geometry_test, test_ST_Buffer){
+  std::shared_ptr<arrow::Array> points = build_points();
+  auto vaild_mark1 = ST_MakeValid(points);
+  auto vaild_mark_arr1 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark1);
 
-arrow::Int64Builder builder_res;
-std::shared_ptr<arrow::Array> expect_res;
-builder1.Append("POLYGON((0 0,1 0,1 1,0 1,0 0))");
-builder_res.Finish(&expect_res);
+  std::shared_ptr<arrow::Array> polygons = build_polygons();
+  auto vaild_mark2 = ST_MakeValid(polygons);
+  auto vaild_mark_arr2 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark2);
 
-ASSERT_EQ(res->Equals(expect_res), true);
+  std::shared_ptr<arrow::Array> lines = build_linestrings();
+  auto vaild_mark3 = ST_MakeValid(lines);
+  auto vaild_mark_arr3 = std::static_pointer_cast<arrow::BooleanArray>(vaild_mark3);
+  
+  auto res1 = ST_Buffer(points,1.2);
+  auto res2 = ST_Buffer(polygons,1.2);
+  auto res3 = ST_Buffer(lines,1.2);
+}
+
+TEST(geometry_test, test_ST_PolygonFromEnvelope){
+  arrow::DoubleBuilder x_min;
+  arrow::DoubleBuilder x_max;
+  arrow::DoubleBuilder y_min;
+  arrow::DoubleBuilder y_max;
+
+  x_min.Append(0);
+  x_max.Append(1);
+  y_min.Append(0);
+  y_max.Append(1);
+
+  std::shared_ptr<arrow::Array> x_min_ptr;
+  std::shared_ptr<arrow::Array> x_max_ptr;
+  std::shared_ptr<arrow::Array> y_min_ptr;
+  std::shared_ptr<arrow::Array> y_max_ptr;
+
+  x_min.Finish(&x_min_ptr);
+  x_max.Finish(&x_max_ptr);
+  y_min.Finish(&y_min_ptr);
+  y_max.Finish(&y_max_ptr);
+
+  auto res = ST_PolygonFromEnvelope(x_min_ptr, y_min_ptr, x_max_ptr,y_max_ptr);
+
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
+  std::string expect = "POLYGON ((0 0,1 0,0 1,1 1,0 0))";
+
+  ASSERT_EQ(res_str,expect);
 }
