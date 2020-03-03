@@ -27,7 +27,6 @@ namespace gis {
 namespace cuda {
 
 namespace internal {
-namespace geometry_output {
 using DataState = GeometryVector::DataState;
 
 template <typename Functor>
@@ -42,15 +41,14 @@ __global__ void FillInfoKernel(Functor functor, GpuContext results) {
   }
 }
 
-DEVICE_RUNNABLE inline void AssertInfo(OutputInfo info, const GpuContext& ctx,
-                                       int index) {
+__device__ inline void AssertInfo(OutputInfo info, const GpuContext& ctx, int index) {
   assert(info.tag.data == ctx.get_tag(index).data);
   assert(info.meta_size == ctx.meta_offsets[index + 1] - ctx.meta_offsets[index]);
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);
 }
 
 template <typename Functor>
-static __global__ void FillDataKernel(Functor functor, GpuContext results) {
+__global__ void FillDataKernel(Functor functor, GpuContext results) {
   assert(results.data_state == DataState::PrefixSumOffset_EmptyData);
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < results.size) {
@@ -58,16 +56,14 @@ static __global__ void FillDataKernel(Functor functor, GpuContext results) {
     AssertInfo(out_info, results, index);
   }
 }
-}  // namespace geometry_output
 }  // namespace internal
 
 // Functor should be equivalent to
-//    [=](int index, GpuContext& results, bool skip_write) => OutputInfo
+//    [=] __device__ (int index, GpuContext& results, bool skip_write) => OutputInfo
 // See "gis/cuda/functor/st_point.cu" for example
 template <typename Functor>
 void GeometryOutput(Functor functor, int size, GeometryVector& results) {
-  namespace geo = internal::geometry_output;
-  using geo::DataState;
+  using internal::DataState;
   // STEP 1: Initialize vector with size of elements
   results.OutputInitialize(size);
   // STEP 2: Create gpu context according to the vector for cuda
@@ -77,7 +73,7 @@ void GeometryOutput(Functor functor, int size, GeometryVector& results) {
     // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
     // where offsets[0, n) is filled with size of each element
     auto config = GetKernelExecConfig(size);
-    geo::FillInfoKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
+    internal::FillInfoKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
     ctx_holder->data_state = DataState::FlatOffset_FullInfo;
   }
   // STEP 4: Exclusive scan offsets[0, n+1), where offsets[n] = 0
@@ -88,7 +84,7 @@ void GeometryOutput(Functor functor, int size, GeometryVector& results) {
   {
     // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
     auto config = GetKernelExecConfig(size);
-    geo::FillDataKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
+    internal::FillDataKernel<<<config.grid_dim, config.block_dim>>>(functor, *ctx_holder);
     ctx_holder->data_state = DataState::PrefixSumOffset_FullData;
   }
   // STEP 6: Copy data(metas and values) back to GeometryVector
