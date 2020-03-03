@@ -22,26 +22,10 @@ namespace zilliz {
 namespace gis {
 namespace gdal {
 
-class NPointsVisitor : public IOGRConstGeometryVisitor {
+class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
-
   void visit(const OGRPoint*);
-  void visit(const OGRLineString*);
-  void visit(const OGRLinearRing*);
-  void visit(const OGRPolygon*);
-  void visit(const OGRMultiPoint*);
-  void visit(const OGRMultiLineString*);
-  void visit(const OGRMultiPolygon*);
-  void visit(const OGRGeometryCollection*);
-  void visit(const OGRCircularString*);
-  void visit(const OGRCompoundCurve*);
-  void visit(const OGRCurvePolygon*);
-  void visit(const OGRMultiCurve*);
-  void visit(const OGRMultiSurface*);
-  void visit(const OGRTriangle*);
-  void visit(const OGRPolyhedralSurface*);
-  void visit(const OGRTriangulatedSurface*);
 
   const int64_t npoints() const { return npoints_; }
   void reset() { npoints_ = 0; }
