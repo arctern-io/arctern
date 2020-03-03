@@ -1,0 +1,81 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent none
+
+    options {
+        timestamps()
+    }
+
+    parameters{
+        choice choices: ['Release', 'Debug'], description: 'Build Type', name: 'BUILD_TYPE'
+    }
+
+    environment {
+        PROJECT_NAME = "arctern"
+        PIPELINE_NAME = "arctern-ci"
+        ARCTERN_ROOT_PATH="/var/lib"
+        ARCTERN_INSTALL_PREFIX = "${env.ARCTERN_ROOT_PATH}/${env.PROJECT_NAME}"
+    }
+
+    stages {
+        stage ('Arctern Build and Test') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu18.04'
+                    }
+
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                stages {
+                    stage("Arctern CI") {
+                        stages {
+                            stage('Run build') {
+                                agent {
+                                    kubernetes {
+                                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                        defaultContainer 'jnlp'
+                                        yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                                    }
+                                }
+
+                                stages {
+                                	stage('Build') {
+                                        steps {
+                                            container("arctern-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
+                                    stage('Unit Test') {
+                                        steps {
+                                            container("arctern-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

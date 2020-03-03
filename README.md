@@ -68,4 +68,4 @@ LATERAL VIEW ST_MakeValid(polygon, false) geometryValid AS polygon
 
 ST_SimplifyPreserveTopology
 ST_AsText
-ST_GeometryType
+ST_GeometryType 
