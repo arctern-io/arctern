@@ -5,18 +5,10 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-struct WkbArrowContext {
-  char* data;
-  uint32_t* offsets;
-  int size;
-
- public:
-  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return data + index; }
-  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const { return data + index; }
-  DEVICE_RUNNABLE int null_counts() { return 0 * size; }
-};
-
+GeometryVector CreateGeometryVecorFromWkb(std::shared_ptr<arrow::Array> arrow_wkb);
+std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector&);
 
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz
+#include "conversions.impl.h"
