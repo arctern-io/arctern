@@ -2524,6 +2524,39 @@ TEST(geometry_test, test_ST_ConvexHull) {
   ASSERT_EQ(res_str->GetString(8), "POLYGON ((0 0,0 1,1 4,1 0,0 0))");
 }
 
+TEST(geometry_test, test_ST_NPoints2) {
+  auto p0 = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+  auto p1 = "POLYGON ((1 2, 3 4, 5 6, 1 2))";
+  auto p2 = "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))";
+  auto p3 = "MULTIPOINT(0 0, 7 7)";
+  auto p4 = "GEOMETRYCOLLECTION(POINT(1 1), LINESTRING( 1 1 , 2 2, 3 3))";
+  auto p5 = "POINT EMPTY";
+  auto p6 = "";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_NPoints(input);
+  auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
+
+  ASSERT_EQ(res_int->Value(0), 5);
+  ASSERT_EQ(res_int->Value(1), 4);
+  ASSERT_EQ(res_int->Value(2), 5);
+  ASSERT_EQ(res_int->Value(3), 2);
+  ASSERT_EQ(res_int->Value(4), 4);
+  ASSERT_EQ(res_int->Value(5), 0);
+  ASSERT_EQ(res_int->IsNull(6),true);
+}
+
 // TODO : geospark ST_NPoints can not work.
 TEST(geometry_test, test_ST_NPoints) {
   auto p1 = "POINT (0 1)";
