@@ -2550,7 +2550,7 @@ TEST(geometry_test, test_ST_NPoints) {
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_NPoints(input);
-  auto res_int = std::static_pointer_cast<arrow::UInt32Array>(res);
+  auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
 
   ASSERT_EQ(res_int->Value(0), 1);
   ASSERT_EQ(res_int->Value(1), 3);  //?
