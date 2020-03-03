@@ -135,12 +135,14 @@ fi
 
 if [[ ${COMPILE_BUILD} == "ON" ]];then
     # compile and build
-    make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} || exit 1
+    # make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} || exit 1
 
     if [[ ${PRIVILEGES} == "ON" ]];then
-        sudo make install || exit 1
+        sudo make -j${PARALLEL_LEVEL} install || exit 1
+        # sudo make install || exit 1
     else
-        make install || exit 1
+        make -j${PARALLEL_LEVEL} install || exit 1
+        # make install || exit 1
     fi
 fi
 
