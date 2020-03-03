@@ -16,8 +16,8 @@
 
 #include "gis/gdal/gis_functions.h"
 #include "common/version.h"
-#include "gis/gdal/geometry_visitor.h"
 #include "gis/gdal/arctern_geos.h"
+#include "gis/gdal/geometry_visitor.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
