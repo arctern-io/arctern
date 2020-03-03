@@ -16,9 +16,10 @@ services:
     shm_size: &shm-size 2G
     volumes: &conda-volumes
       - .:/arctern:delegated
-    command: &build-conda-command
-      ["source /arctern/ci/scripts/conda/cpu/prebuild.sh &&
-        /arctern/ci/scripts/conda/cpu/build.sh"]
+    command: &build-conda-command >
+      /bin/bash -c "
+        source /arctern/ci/scripts/conda/cpu/prebuild.sh &&
+        /arctern/ci/scripts/conda/cpu/build.sh"
 
   conda-cudagl-build:
     # Usage:
