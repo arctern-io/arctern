@@ -8,17 +8,22 @@ namespace cuda {
 
 namespace internal {
 struct WkbArrowContext {
-  char* data;
+  char* values;
   int* offsets;
   int size;
 
  public:
-  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return data + index; }
-  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const { return data + index; }
+  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return values + index; }
+  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const { return values + index; }
   DEVICE_RUNNABLE inline int null_counts() const { return 0 * size; }
 };
 
-GeometryVector CreateGeometryVectorFromWkbImpl(WkbArrowContext input);
+GeometryVector CreateGeometryVectorFromWkbImpl(const WkbArrowContext& input);
+
+// return size of total data length in bytes
+int ExportWkbFillOffsets(const GeometryVector& vec, WkbArrowContext& output);
+
+void ExportWkbFillValues(const GeometryVector& vec, WkbArrowContext& output);
 
 }  // namespace internal
 

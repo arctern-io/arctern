@@ -2,6 +2,8 @@ set(WKB_CUDA_SOURCES
         wkb/wkb_decode.cpp
         wkb/wkb_transforms.cpp
         wkb/arrow_decode.cu
+        wkb/arrow_decode.cpp
+        wkb/arrow_encode.cpp
         common/gis_definitions.cu
         functor/st_distance.cu
         functor/st_within.cu

@@ -64,6 +64,7 @@ struct WkbDecoder {
   }
 };
 
+using internal::WkbArrowContext;
 __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& input,
                                                       int index, GpuContext& results,
                                                       bool skip_write) {
@@ -102,12 +103,13 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 }  // namespace
 
 namespace internal {
-GeometryVector CreateGeometryVectorFromWkbImpl(WkbArrowContext input) {
+GeometryVector CreateGeometryVectorFromWkbImpl(const WkbArrowContext& input) {
   GeometryVector results;
   int size = input.size;
   // TODO(dog): add hanlder for nulls
   assert(input.null_counts() == 0);
-  auto functor = [input](int index, GpuContext& results, bool skip_write) -> OutputInfo {
+  auto functor = [input] __device__(int index, GpuContext& results,
+                                    bool skip_write) -> OutputInfo {
     return GetInfoAndDataPerElement(input, index, results, skip_write);
   };
   GeometryOutput(functor, size, results);

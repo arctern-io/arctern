@@ -8,4 +8,5 @@ class Table;
 
 #ifndef __CUDACC__
 #include <arrow/api.h>
+#include <arrow/array.h>
 #endif
