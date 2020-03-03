@@ -2554,7 +2554,7 @@ TEST(geometry_test, test_ST_NPoints2) {
   ASSERT_EQ(res_int->Value(3), 2);
   ASSERT_EQ(res_int->Value(4), 4);
   ASSERT_EQ(res_int->Value(5), 0);
-  ASSERT_EQ(res_int->IsNull(6),true);
+  ASSERT_EQ(res_int->IsNull(6), true);
 }
 
 // TODO : geospark ST_NPoints can not work.
