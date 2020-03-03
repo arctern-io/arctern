@@ -2553,14 +2553,14 @@ TEST(geometry_test, test_ST_NPoints) {
   auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
 
   ASSERT_EQ(res_int->Value(0), 1);
-  ASSERT_EQ(res_int->Value(1), 3);  //?
+  ASSERT_EQ(res_int->Value(1), 3);
   ASSERT_EQ(res_int->Value(2), 4);
-  ASSERT_EQ(res_int->Value(3), 5);  //?
-  ASSERT_EQ(res_int->Value(4), 4);  // 3?
-  ASSERT_EQ(res_int->Value(5), 9);  //?
-  ASSERT_EQ(res_int->Value(6), 4);  //?
-  ASSERT_EQ(res_int->Value(7), 10);  //?
-  ASSERT_EQ(res_int->Value(8), 8);  //?
+  ASSERT_EQ(res_int->Value(3), 5);
+  ASSERT_EQ(res_int->Value(4), 4);
+  ASSERT_EQ(res_int->Value(5), 9);
+  ASSERT_EQ(res_int->Value(6), 4);
+  ASSERT_EQ(res_int->Value(7), 10);
+  ASSERT_EQ(res_int->Value(8), 8);
 }
 
 TEST(geometry_test, test_ST_Envelope_Empty) {
