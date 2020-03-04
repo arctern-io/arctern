@@ -58,8 +58,7 @@ struct WkbDecoder {
   __device__ void DecodePolygon(int demensions) {
     auto polys = WkbToMeta<int>();
     for (int i = 0; i < polys; ++i) {
-      auto size = WkbToMeta<int>();
-      WkbToValues(demensions, size);
+      DecodeLineString(demensions);
     }
   }
 };
