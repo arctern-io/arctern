@@ -25,25 +25,9 @@ RUN mkdir -p /opt/spark && \
     wget -qO- "http://mirror.bit.edu.cn/apache/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz" | tar --strip-components=1 -xz -C /opt/spark && \
     chown -R root:root /opt/spark
 
-COPY arctern /var/lib/arctern
-COPY python /tmp/python
+COPY arctern /tmp/arctern
 
-RUN source /var/lib/arctern/scripts/arctern_env.sh && \
-    . /opt/conda/etc/profile.d/conda.sh && \
-    conda activate zgis_dev && \
-    cd /tmp/python && \
-    python setup.py build build_ext --library-dirs="$ARCTERN_LIB_DIR" && \
-    python setup.py install && \
-    rm -rf /tmp/python
-
-COPY pyspark /tmp/pyspark
-
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda activate zgis_dev && \
-    cd /tmp/pyspark && \
-    python setup.py build && \
-    python setup.py install && \
-    rm -rf /tmp/pyspark
+RUN /tmp/arctern/install_arctern_spark.sh
 
 COPY prebuildfs /
 COPY rootfs /
