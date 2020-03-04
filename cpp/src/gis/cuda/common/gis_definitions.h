@@ -220,6 +220,9 @@ GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
 bool test_cuda_abi(const std::string& str);
 
 using GpuContext = GeometryVector::GpuContext;
+namespace internal {
+void ExclusiveScan(int* offsets, int size);
+}  // namespace internal
 
 }  // namespace cuda
 }  // namespace gis

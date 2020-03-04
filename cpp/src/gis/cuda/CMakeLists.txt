@@ -5,6 +5,7 @@ set(WKB_CUDA_SOURCES
         wkb/arrow_decode.cpp
         wkb/arrow_encode.cu
         wkb/arrow_encode.cpp
+        common/gis_definitions.cpp
         common/gis_definitions.cu
         functor/st_distance.cu
         functor/st_within.cu
