@@ -165,6 +165,7 @@ $ test -e ${CONDA_FILE}
 $ anaconda upload ${LABEL_OPTION} --force ${CONDA_FILE}
 ```
 `RECIPES_PATH`：对应Conda包的recipes路径，如：conda/recipes/libarctern/cpu
+
 `LABELS`: Conda包的label，如：`main`(默认) 或者 `cuda10.0`等
 
 方式二:
@@ -177,13 +178,21 @@ $ test -e ${CONDA_FILE}
 $ anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${CONDA_FILE}
 ```
 `LABELS`: Conda包的label，如：`main`(默认) 或者 `cuda10.0`等
+
 `RECIPES_PATH`：对应Conda包的recipes路径，如：conda/recipes/libarctern/cpu
+
 `CONDA_USERNAME`: Anaconda Cloud的用户名，默认为 `arctern`
+
 `MY_UPLOAD_KEY`: Anaconda Cloud的Token
 
 获取Anaconda Cloud Token方式
+
   1.登陆`Anaconda Cloud`(https://anaconda.org/)
+
   2.点击右上角的用户名，跳转到`设置`
+
   3.在左侧面板，跳转到`访问`，然后要求输入密码
+
   4.现在，我们需要创建一个API Token。为其命名，并至少勾选`允许对API站点的读取访问权限`和`允许对API站点的写入权限`
+  
   5.创建Token并复制保存
