@@ -17,6 +17,8 @@
 #pragma once
 
 #include <ogr_geometry.h>
+#include <iostream>
+#include <string>
 
 namespace zilliz {
 namespace gis {
@@ -32,6 +34,19 @@ class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
 
  private:
   int64_t npoints_ = 0;
+};
+
+class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
+ public :
+  PrecisionReduceVisitor(int32_t precision) : precision_(precision){}
+  ~PrecisionReduceVisitor() = default;
+  
+  double coordinate_precision_reduce(double coordinate);
+  void visit(OGRPoint*);
+  void geometry_precision_reduce(OGRGeometry* geo); 
+  
+ private:
+  int32_t precision_ = 0;
 };
 
 }  // namespace gdal

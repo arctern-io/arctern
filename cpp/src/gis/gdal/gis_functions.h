@@ -62,9 +62,9 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
                                         double buffer_distance,
                                         int n_quadrant_segments = 30);
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-//                    int32_t precision);
+std::shared_ptr<arrow::Array>
+ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
+                   int32_t precision);
 
 std::shared_ptr<arrow::Array> ST_Intersection(
     const std::shared_ptr<arrow::Array>& geometries_1,

@@ -607,23 +607,45 @@ TEST(geometry_test, test_ST_Intersection) {
   ASSERT_EQ(res_str->GetString(49), "POLYGON ((0 1,2 3,1 1,1 0,0 1))");
 }
 
-// TEST(geometry_test, test_ST_PrecisionReduce){
-//   OGRPoint point(1.5555555,1.55555555);
-//   arrow::StringBuilder string_builder;
-//   std::shared_ptr<arrow::Array> array;
+TEST(geometry_test, test_ST_PrecisionReduce){
+   auto l0 = "POINT (120.6 100.999)";
+   auto l1 = "POINT (50.555 6.00008)";
+   auto l2 = "POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456))";
+   auto l3 = "LINESTRING (100.345 89.666,89.03 78)";
+   auto l4 = "MULTIPOINT (120 90,89 90.009)";
+   auto l5 = "MULTIPOINT ((12978 89765),(89.876 90.087))";
+   auto l6 = "MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.78987,20 11,20 20,20 11,11 11.78987)))";
+   auto l7 = "MULTILINESTRING ((12.666 15.23,89.45 98.67),(12.555 78.777,90.789 67.3))";
+   auto l8 = "GEOMETRYCOLLECTION (POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456)),POINT (120.6 100.999))";
+  arrow::StringBuilder string_builder;
+  std::shared_ptr<arrow::Array> array;
 
-//   char *str = nullptr;
-//   CHECK_GDAL(point.exportToWkt(&str));
-//   string_builder.Append(std::string(str));
-//   CPLFree(str);
+  string_builder.Append(l0);
+  string_builder.Append(l1);
+  string_builder.Append(l2);
+  string_builder.Append(l3);
+  string_builder.Append(l4);
+  string_builder.Append(l5);
+  string_builder.Append(l6);
+  string_builder.Append(l7);
+  string_builder.Append(l8);
 
-//   string_builder.Finish(&array);
-//   auto geometries = zilliz::gis::ST_PrecisionReduce(array,6);
-//   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
+  string_builder.Finish(&array);
+  std::cout << " TEST " << std::endl;
+  auto geometries = zilliz::gis::ST_PrecisionReduce(array,4);
+  std::cout << "END TEST" << std::endl;
+  auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
-//   // ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.55556 1.55556)");
-//   ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
-// }
+  ASSERT_EQ(geometries_arr->GetString(0),"POINT (120.6 101.0)");
+  ASSERT_EQ(geometries_arr->GetString(1),"POINT (55.56 6.000)");
+  ASSERT_EQ(geometries_arr->GetString(2),"POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46))");
+  ASSERT_EQ(geometries_arr->GetString(3),"LINESTRING (100.3 89.67,89.03 78)");
+  ASSERT_EQ(geometries_arr->GetString(4),"MULTIPOINT (120 90,89 90.01)");
+  ASSERT_EQ(geometries_arr->GetString(5),"MULTIPOINT ((12980 89770),(89.88 90.09))");
+  ASSERT_EQ(geometries_arr->GetString(6),"MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.79,20 11,20 20,20 11,11 11.79)))");
+  ASSERT_EQ(geometries_arr->GetString(7),"MULTILINESTRING ((12.67 15.23,89.45 98.67),(12.56 78.78,90.79 67.3))");
+  ASSERT_EQ(geometries_arr->GetString(8),"GEOMETRYCOLLECTION (POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46)),POINT (120.6 101.0))");
+}
 
 TEST(geometry_test, test_ST_Equals2) {
   auto l0 = "LINESTRING (0 0, 10 10)";

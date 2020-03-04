@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits>
+#include <iostream>
 
 namespace zilliz {
 namespace gis {
@@ -426,9 +427,32 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
       arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
 }
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-//                    int32_t precision) {
+std::shared_ptr<arrow::Array>
+ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
+                   int32_t precision) {
+       gdal::PrecisionReduceVisitor precision_reduce_visitor(precision);
+       auto len = geometries->length();
+       auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+       arrow::StringBuilder builder;
+       void *geo;
+       char *wkt_tmp;
+
+       for (int32_t i = 0; i < len; i++) {
+         std::cout << i << std::endl;
+         std::cout << wkt_geometries->GetString(i) << std::endl;
+         CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+             wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
+         std::cout << "xxxxxx" << std::endl;
+         precision_reduce_visitor.geometry_precision_reduce((OGRGeometry*)geo);
+         CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
+         CHECK_ARROW(builder.Append(wkt_tmp));
+         OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
+         CPLFree(wkt_tmp);         
+       }
+  
+       std::shared_ptr<arrow::Array> results;
+       CHECK_ARROW(builder.Finish(&results));
+       return results;
 
 //     char precision_str[32];
 //     sprintf(precision_str, "%i", precision);
@@ -457,7 +481,7 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
 //     std::shared_ptr<arrow::Array> results;
 //     CHECK_ARROW(builder.Finish(&results));
 //     return results;
-// }
+}
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Intersection, arrow::StringBuilder, geo_1, geo_2,
                                   OGR_G_Intersection(geo_1, geo_2));
