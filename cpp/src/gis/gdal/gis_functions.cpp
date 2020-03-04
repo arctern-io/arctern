@@ -462,8 +462,40 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
 //     return results;
 // }
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Intersection, arrow::StringBuilder, geo_1, geo_2,
-                                  OGR_G_Intersection(geo_1, geo_2));
+std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array>& geo1,
+                                              const std::shared_ptr<arrow::Array>& geo2) {
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  auto len = wkt1->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+      builder.AppendNull();
+    } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.Append("GEOMETRYCOLLECTION EMPTY");
+    } else {
+      auto rst = ogr1->Intersection(ogr2);
+      if (rst == nullptr) {
+        builder.AppendNull();
+      } else if (rst->IsEmpty()) {
+        builder.Append("GEOMETRYCOLLECTION EMPTY");
+      } else {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(rst);
+        builder.Append(std::string(wkt));
+        CPLFree(wkt);
+      }
+      OGRGeometryFactory::destroyGeometry(rst);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+
+  return results;
+}
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_MakeValid, arrow::StringBuilder, geo,
                                  OGR_G_MakeValid(geo));
