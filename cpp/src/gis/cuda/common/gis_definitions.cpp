@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include <gis/cuda/wkb/wkb_transforms.h>
+#include "gis/cuda/wkb/wkb_transforms.h"
 #include <thrust/scan.h>
 
 #include <numeric>
@@ -148,13 +148,22 @@ namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   GeometryVector geo;
   geo.WkbDecodeInitalize();
-  for (auto str : wkt_vec) {
-    auto wkb = Wkt2Wkb(str);
+  for (const auto& wkt : wkt_vec) {
+    auto wkb = Wkt2Wkb(wkt);
     geo.WkbDecodeAppend(wkb.data());
   }
   geo.WkbDecodeFinalize();
   return geo;
 }
+
+std::shared_ptr<arrow::Array>(const std::vector<std::string>& wkt_vec) {
+
+}
+
+GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {
+
+}
+
 }  // namespace GeometryVectorFactory
 
 // only for testing

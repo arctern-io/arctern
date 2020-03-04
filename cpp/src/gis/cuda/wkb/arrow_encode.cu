@@ -11,9 +11,10 @@ namespace internal {
 __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int size) {
   auto index = threadIdx.x + blockDim.x * blockIdx.x;
   if (index < size) {
+    auto byte_order_offset = (int)(sizeof(WkbByteOrder) * index);
     auto value_offset = input.value_offsets[index];
     auto meta_offset = input.meta_offsets[index];
-    auto wkb_length = sizeof(WkbByteOrder) + value_offset + meta_offset;
+    auto wkb_length = byte_order_offset + value_offset + meta_offset;
     output.offsets[index] = wkb_length;
   }
 }

@@ -213,8 +213,11 @@ class GeometryVector {
   DataState data_state_ = DataState::Invalid;
 };
 
+
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
+
+GeometryVector CreateFromWktsArrow(const vector<std::string>& wkt_vec);
 
 }  // namespace GeometryVectorFactory
 bool test_cuda_abi(const std::string& str);
