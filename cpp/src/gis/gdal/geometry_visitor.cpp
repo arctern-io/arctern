@@ -101,7 +101,7 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo){
     std::cout << geo->getX() << "," << geo->getY() << std::endl;
 }
 
-void
+/*void
 PrecisionReduceVisitor::geometry_precision_reduce(OGRGeometry* geo){
   std::string geometry_type = geo->getGeometryName();
 
@@ -168,7 +168,7 @@ PrecisionReduceVisitor::geometry_precision_reduce(OGRGeometry* geo){
   if ( geometry_type == "TRIANGULATEDSURFACE") { 
     this->visit((OGRTriangualtedSurface*)geo);
   }
-}
+}*/
 
 }  // namespace gdal
 }  // namespace gis

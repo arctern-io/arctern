@@ -637,7 +637,7 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
   ASSERT_EQ(geometries_arr->GetString(0),"POINT (120.6 101.0)");
-  ASSERT_EQ(geometries_arr->GetString(1),"POINT (55.56 6.000)");
+  ASSERT_EQ(geometries_arr->GetString(1),"POINT (55.56 6.0)");
   ASSERT_EQ(geometries_arr->GetString(2),"POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46))");
   ASSERT_EQ(geometries_arr->GetString(3),"LINESTRING (100.3 89.67,89.03 78)");
   ASSERT_EQ(geometries_arr->GetString(4),"MULTIPOINT (120 90,89 90.01)");

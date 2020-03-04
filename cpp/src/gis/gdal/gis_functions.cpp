@@ -430,7 +430,7 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
 std::shared_ptr<arrow::Array>
 ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
                    int32_t precision) {
-       gdal::PrecisionReduceVisitor precision_reduce_visitor(precision);
+       auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
        auto len = geometries->length();
        auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
        arrow::StringBuilder builder;
@@ -443,7 +443,7 @@ ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
          CHECK_GDAL(OGRGeometryFactory::createFromWkt(
              wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
          std::cout << "xxxxxx" << std::endl;
-         precision_reduce_visitor.geometry_precision_reduce((OGRGeometry*)geo);
+         ((OGRGeometry*)geo)->accept(precision_reduce_visitor);
          CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
          CHECK_ARROW(builder.Append(wkt_tmp));
          OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
