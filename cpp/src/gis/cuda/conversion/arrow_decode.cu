@@ -68,8 +68,14 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
                                                       int index, GpuContext& results,
                                                       bool skip_write) {
   auto wkb_iter = input.get_wkb_ptr(index);
-  auto metas = results.get_meta_ptr(index);
-  auto values = results.get_value_ptr(index);
+  printf("offset(%ld)", wkb_iter - input.values);
+
+  uint32_t* metas = nullptr;
+  double* values = nullptr;
+  if(!skip_write) {
+    metas = results.get_meta_ptr(index);
+    values = results.get_value_ptr(index);
+  }
 
   WkbDecoder decoder{wkb_iter, metas, values, skip_write};
 
@@ -80,6 +86,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
   constexpr auto demensions = 2;
   switch (tag.get_category()) {
     case WkbCategory::Point: {
+      printf("point");
       decoder.DecodePoint(demensions);
       break;
     }
@@ -92,12 +99,16 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
       break;
     }
     default: {
+      printf("tag(%d)", tag.data);
+      assert(false);
       break;
     }
   }
 
-  auto result_tag = WkbTag(WkbCategory::Polygon, WkbGroup::None);
-  return OutputInfo{result_tag, 1 + 1, 2 * 5};
+  int meta_size = (int)(decoder.metas - metas);
+  int value_size = (int)(decoder.values - values);
+  printf("(%d-%d-%d)", index, meta_size, value_size);
+  return OutputInfo{tag, meta_size, value_size};
 }
 }  // namespace
 
