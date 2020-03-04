@@ -35,8 +35,6 @@ void ExportWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
   }
 }
 
-
-
 __global__ static void CalcValues(GpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
