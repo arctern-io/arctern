@@ -23,7 +23,7 @@ struct WkbDecoder {
     auto count = demensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
-      memcpy(&values, wkb_iter, bytes);
+      memcpy(values, wkb_iter, bytes);
     }
     wkb_iter += bytes;
     values += count;
@@ -48,7 +48,10 @@ struct WkbDecoder {
     return tmp;
   }
 
-  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
+  __device__ void DecodePoint(int demensions) {
+    // wtf
+    WkbToValues(demensions, 1);
+  }
 
   __device__ void DecodeLineString(int demensions) {
     auto size = WkbToMeta<int>();
@@ -68,7 +71,6 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
                                                       int index, GpuContext& results,
                                                       bool skip_write) {
   auto wkb_iter = input.get_wkb_ptr(index);
-  printf("offset(%ld)", wkb_iter - input.values);
 
   uint32_t* metas = nullptr;
   double* values = nullptr;
@@ -86,7 +88,6 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
   constexpr auto demensions = 2;
   switch (tag.get_category()) {
     case WkbCategory::Point: {
-      printf("point");
       decoder.DecodePoint(demensions);
       break;
     }
@@ -99,7 +100,6 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
       break;
     }
     default: {
-      printf("tag(%d)", tag.data);
       assert(false);
       break;
     }
@@ -107,7 +107,6 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);
-  printf("(%d-%d-%d)", index, meta_size, value_size);
   return OutputInfo{tag, meta_size, value_size};
 }
 }  // namespace

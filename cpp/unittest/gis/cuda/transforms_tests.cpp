@@ -51,7 +51,7 @@ TEST(Transform, Naive) {
 TEST(Transform, Arrow) {
   vector<std::string> wkt_vec = {
       "Point(1 1)",
-      "Point(1 2)",
+//      "Point(1 2)",
   };
   auto wkb_arrow = WktsToArrowWkb(wkt_vec);
   auto geo_vec = ArrowWkbToGeometryVector(wkb_arrow);
