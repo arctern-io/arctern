@@ -186,6 +186,7 @@ class GeometryVector {
   }
 
  private:
+  // TODO(dog): Use Arrow Format internally
   // Currently, GpuVector contains host memory only
   // next goal should make it switchable between host and device memory.
   GpuVector<WkbTag> tags_;

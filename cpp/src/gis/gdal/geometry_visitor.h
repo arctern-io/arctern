@@ -26,7 +26,7 @@ namespace gdal {
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
-  void visit(const OGRPoint*);
+  void visit(const OGRPoint*) override;
 
   const int64_t npoints() const { return npoints_; }
   void reset() { npoints_ = 0; }

@@ -1,11 +1,9 @@
-FROM nvidia/cudagl:10.0-devel-ubuntu18.04
-
-ENV NVIDIA_DRIVER_CAPABILITIES compute,utility,graphics
+FROM ubuntu:18.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends wget \
-    git ccache lcov clang-6.0 clang-format-6.0 clang-tidy-6.0  && \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential wget ca-certificates \
+    git ccache lcov clang-6.0 clang-format-6.0 clang-tidy-6.0 libgl1-mesa-dev libgles2-mesa-dev libosmesa6-dev libglu1-mesa-dev  && \
     wget -qO- "https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local && \
     wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
@@ -14,19 +12,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY docker/build_env/gpu/zgis.yml /tmp/zgis.yml
+COPY docker/build_env/cpu/zgis.yml /tmp/zgis.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
     conda env create -f /tmp/zgis.yml && \
-    rm /tmp/zgis.yml && \
     conda clean --all -y && \
+    rm /tmp/zgis.yml && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate bash" >> ~/.bashrc
+    echo "conda activate base" >> ~/.bashrc
 
-COPY docker/build_env/gpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
-WORKDIR /root
+# use login shell to activate environment un the RUN commands
+SHELL [ "/bin/bash", "-c", "-l" ]
 
-ENTRYPOINT [ "/opt/docker-entrypoint.sh" ]
-CMD [ "start" ]
+# use login shell when running the container
+ENTRYPOINT [ "/bin/bash", "-c", "-l" ]

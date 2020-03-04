@@ -26,8 +26,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits>
 #include <iostream>
+#include <limits>
+#include <utility>
+#include <vector>
 
 namespace zilliz {
 namespace gis {
@@ -674,32 +676,100 @@ BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Within, arrow::BooleanBuilder, geo_1, geo_2
 
 /*********************** AGGREGATE FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_Union_Aggr(
-    const std::shared_ptr<arrow::Array>& geometries) {
-  auto len = geometries->length();
-  assert(len > 0);
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>& geo) {
+  auto len = geo->length();
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  std::vector<OGRGeometry*> union_agg;
+  OGRPolygon empty_polygon;
+  OGRGeometry *g0, *g1;
+  OGRGeometry *u0, *u1;
+  for (int i = 0; i <= len / 2; i++) {
+    if ((i * 2) < len) {
+      g0 = Wrapper_createFromWkt(wkt, 2 * i);
+    } else {
+      g0 = nullptr;
+    }
 
-  arrow::StringBuilder builder;
-  OGRGeometry *geo_result, *geo_var, *geo_tmp;
-  char* wkt_result;
+    if ((i * 2 + 1) < len) {
+      g1 = Wrapper_createFromWkt(wkt, 2 * i + 1);
+    } else {
+      g1 = nullptr;
+    }
 
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(0).c_str(),
-                                               nullptr, &geo_result));
+    if (g0 != nullptr) {
+      auto type = wkbFlatten(g0->getGeometryType());
+      if (type == wkbMultiPolygon) {
+        u0 = g0->UnionCascaded();
+        OGRGeometryFactory::destroyGeometry(g0);
+      } else {
+        u0 = g0;
+      }
+    } else {
+      u0 = nullptr;
+    }
 
-  for (int32_t i = 1; i < len; i++) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, &geo_var));
-    geo_tmp = geo_result;
-    geo_result = geo_result->Union(geo_var);
-    OGRGeometryFactory::destroyGeometry(geo_var);
-    OGRGeometryFactory::destroyGeometry(geo_tmp);
+    if (g1 != nullptr) {
+      auto type = wkbFlatten(g1->getGeometryType());
+      if (type == wkbMultiPolygon) {
+        u1 = g1->UnionCascaded();
+        OGRGeometryFactory::destroyGeometry(g1);
+      } else {
+        u1 = g1;
+      }
+    } else {
+      u1 = nullptr;
+    }
+
+    if ((u0 != nullptr) && (u1 != nullptr)) {
+      OGRGeometry* ua = u0->Union(u1);
+      union_agg.push_back(ua);
+      OGRGeometryFactory::destroyGeometry(u0);
+      OGRGeometryFactory::destroyGeometry(u1);
+    } else if ((u0 != nullptr) && (u1 == nullptr)) {
+      union_agg.push_back(u0);
+    } else if ((u0 == nullptr) && (u1 != nullptr)) {
+      union_agg.push_back(u1);
+    }
   }
+  len = union_agg.size();
+  while (len > 1) {
+    std::vector<OGRGeometry*> union_tmp;
+    for (int i = 0; i <= len / 2; ++i) {
+      if (i * 2 < len) {
+        u0 = union_agg[i * 2];
+      } else {
+        u0 = nullptr;
+      }
 
-  CHECK_GDAL(OGR_G_ExportToWkt(geo_result, &wkt_result));
-  OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo_result);
-  CHECK_ARROW(builder.Append(wkt_result));
-  CPLFree(wkt_result);
+      if (i * 2 + 1 < len) {
+        u1 = union_agg[i * 2 + 1];
+      } else {
+        u1 = nullptr;
+      }
+
+      if ((u0 != nullptr) && (u1 != nullptr)) {
+        OGRGeometry* ua = u0->Union(u1);
+        union_tmp.push_back(ua);
+        OGRGeometryFactory::destroyGeometry(u0);
+        OGRGeometryFactory::destroyGeometry(u1);
+      } else if ((u0 != nullptr) && (u1 == nullptr)) {
+        union_tmp.push_back(u0);
+      } else if ((u0 == nullptr) && (u1 != nullptr)) {
+        union_tmp.push_back(u1);
+      }
+    }
+    union_agg = std::move(union_tmp);
+    len = union_agg.size();
+  }
+  arrow::StringBuilder builder;
+  if (union_agg.empty()) {
+    builder.AppendNull();
+  } else {
+    char* wkt = Wrapper_OGR_G_ExportToWkt(union_agg[0]);
+    CHECK_ARROW(builder.Append(wkt));
+    CPLFree(wkt);
+    OGRGeometryFactory::destroyGeometry(union_agg[0]);
+  }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

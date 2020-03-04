@@ -10,7 +10,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../python"
+PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../spark/pyspark"
 
 HELP="
 Usage:

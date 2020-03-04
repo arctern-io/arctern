@@ -55,28 +55,33 @@ add_library(
 )
 
 add_dependencies(windrose miniz_ep stb_ep)
-target_link_libraries(windrose
-	        gdal
+set(third_party_libs
+        gdal
         arrow
-            pthread
-            miniz
-)
-
+        miniz
+        )
 
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
     add_subdirectory(gis/cuda)
-    target_link_libraries(windrose
+    set(third_party_libs
+            ${third_party_libs}
             GL
             EGL
             cudart
             )
 else ()
-    target_link_libraries(windrose
+    set(third_party_libs
+            ${third_party_libs}
             GLU
             OSMesa
             )
 endif ()
+
+target_link_libraries(windrose
+            pthread
+            ${third_party_libs}
+)
 
 
 install(TARGETS windrose
