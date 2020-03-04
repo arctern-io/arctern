@@ -16,11 +16,21 @@
 // under the License.
 
 #pragma once
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <cstdlib>
 #include <string>
 #include <vector>
 
-inline std::vector<char> hexstring_to_binary(std::string str) {
+#include "common/version.h"
+#include "gis/api.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "utils/check_status.h"
+
+inline std::vector<char> hexstring_to_binary(const std::string& str) {
   std::vector<char> vec;
   assert(str.size() % 2 == 0);
   for (size_t index = 0; index < str.size(); index += 2) {

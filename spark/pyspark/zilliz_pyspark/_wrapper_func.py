@@ -32,6 +32,7 @@ __all__ = [
     "ST_Area_UDF",
     "ST_Centroid_UDF",
     "ST_Length_UDF",
+    "ST_HausdorffDistance_UDF",
     "ST_ConvexHull_UDF",
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
@@ -39,6 +40,12 @@ __all__ = [
     "ST_Union_Aggr_UDF",
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
+    "ST_GeomFromGeoJSON_UDF",
+    "ST_PointFromText_UDF",
+    "ST_PolygonFromText_UDF",
+    "ST_LineStringFromText_UDF",
+    "ST_GeomFromText_UDF",
+    "ST_GeomFromWKT_UDF",
     "my_plot" # or point_map
 ]
 
@@ -59,11 +66,38 @@ def my_plot(x, y):
     return curve_z_copy.buffers()[1].hex()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PointFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PolygonFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_LineStringFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromWKT_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Point_UDF(x, y):
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
     from zilliz_gis import ST_Point
     rs = ST_Point(arr_x, arr_y)
+    return rs.to_pandas()
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_GeomFromGeoJSON_UDF(json):
+    geo = pa.array(json,type='string')
+    from zilliz_gis import ST_GeomFromGeoJSON
+    rs = ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
@@ -204,6 +238,14 @@ def ST_Length_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_Length
     rs = ST_Length(arr_geos)
+    return rs.to_pandas()
+
+@pandas_udf("double", PandasUDFType.SCALAR)
+def ST_HausdorffDistance_UDF(geo1, geo2):
+    arr1 = pa.array(geo1, type='string')
+    arr2 = pa.array(geo2, type='string')
+    from zilliz_gis import ST_HausdorffDistance
+    rs = ST_HausdorffDistance(arr1, arr2)
     return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)

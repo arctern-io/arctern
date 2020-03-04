@@ -625,6 +625,38 @@ TEST(geometry_test, test_ST_Intersection) {
 //   ASSERT_EQ(geometries_arr->GetString(0),"POINT (1.5555555 1.55555555)");
 // }
 
+TEST(geometry_test, test_ST_Equals2) {
+  auto l0 = "LINESTRING (0 0, 10 10)";
+  auto l1 = "LINESTRING (10 10, 0 0)";
+  auto l2 = "LINESTRING(0 0, 1 1)";
+
+  auto r0 = "LINESTRING (0 0, 5 5, 10 10)";
+  auto r1 = "LINESTRING (0 0, 5 5, 10 10)";
+  auto r2 = "LINESTRING(1 1, 0 0)";
+
+  arrow::StringBuilder builder1, builder2;
+
+  builder1.Append(std::string(l0));
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+
+  builder2.Append(std::string(r0));
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Equals(input1, input2);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+}
+
 TEST(geometry_test, test_ST_Equals) {
   auto l1 = "POINT (0 1)";
   auto l2 = "POINT (0 1)";
@@ -820,29 +852,29 @@ TEST(geometry_test, test_ST_Equals) {
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
-  // ASSERT_EQ(res_bool->Value(3), true); // false
+  ASSERT_EQ(res_bool->Value(3), true);
   ASSERT_EQ(res_bool->Value(4), false);
-  // ASSERT_EQ(res_bool->Value(5), true); // false
+  ASSERT_EQ(res_bool->Value(5), true);
   ASSERT_EQ(res_bool->Value(6), false);
-  // ASSERT_EQ(res_bool->Value(7), true); // false
+  ASSERT_EQ(res_bool->Value(7), false);
   ASSERT_EQ(res_bool->Value(8), false);
-  // ASSERT_EQ(res_bool->Value(9), true); // false
+  ASSERT_EQ(res_bool->Value(9), true);
   ASSERT_EQ(res_bool->Value(10), false);
-  // ASSERT_EQ(res_bool->Value(11), true); // false
+  ASSERT_EQ(res_bool->Value(11), false);
   ASSERT_EQ(res_bool->Value(12), false);
   ASSERT_EQ(res_bool->Value(13), false);
   ASSERT_EQ(res_bool->Value(14), true);
   ASSERT_EQ(res_bool->Value(15), false);
   ASSERT_EQ(res_bool->Value(16), false);
   ASSERT_EQ(res_bool->Value(17), false);
-  ASSERT_EQ(res_bool->Value(18), false);
-  ASSERT_EQ(res_bool->Value(19), false);
+  ASSERT_EQ(res_bool->Value(18), true);
+  ASSERT_EQ(res_bool->Value(19), true);
   ASSERT_EQ(res_bool->Value(20), false);
   ASSERT_EQ(res_bool->Value(21), false);
   ASSERT_EQ(res_bool->Value(22), false);
   ASSERT_EQ(res_bool->Value(23), false);
   ASSERT_EQ(res_bool->Value(24), true);
-  ASSERT_EQ(res_bool->Value(25), false);
+  ASSERT_EQ(res_bool->Value(25), true);
   ASSERT_EQ(res_bool->Value(26), false);
   ASSERT_EQ(res_bool->Value(27), false);
   ASSERT_EQ(res_bool->Value(28), false);
@@ -854,7 +886,7 @@ TEST(geometry_test, test_ST_Equals) {
   ASSERT_EQ(res_bool->Value(34), false);
   ASSERT_EQ(res_bool->Value(35), false);
   ASSERT_EQ(res_bool->Value(36), true);
-  ASSERT_EQ(res_bool->Value(37), false);
+  ASSERT_EQ(res_bool->Value(37), true);
   ASSERT_EQ(res_bool->Value(38), false);
   ASSERT_EQ(res_bool->Value(39), false);
   ASSERT_EQ(res_bool->Value(40), false);
@@ -2149,6 +2181,37 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(22), false);
 }
 
+TEST(geometry_test, test_ST_Distance_Empty) {
+  auto l0 = "";
+  auto l1 = "POINT EMPTY";
+  auto l2 = "POINT(0 0)";
+
+  auto r0 = "POINT (0 1)";
+  auto r1 = "POINT (0 1)";
+  auto r2 = "POINT (0 1)";
+
+  arrow::StringBuilder builder1, builder2;
+  builder1.Append(std::string(l0));
+  builder1.Append(std::string(l1));
+  builder1.Append(std::string(l2));
+
+  builder2.Append(std::string(r0));
+  builder2.Append(std::string(r1));
+  builder2.Append(std::string(r2));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_Distance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_EQ(res_double->IsNull(0), true);
+  ASSERT_EQ(res_double->IsNull(1), true);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
+}
+
 TEST(geometry_test, test_ST_Distance) {
   auto l1 = "POINT (0 0)";
   auto l2 = "POINT (0 0)";
@@ -2277,6 +2340,31 @@ TEST(geometry_test, test_ST_Distance) {
   EXPECT_DOUBLE_EQ(res_double->Value(20), 0);
 }
 
+TEST(geometry_test, test_ST_HausdorffDistance) {
+  auto p11 = "POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))";
+  auto p12 = "POINT(0 0)";
+
+  auto p21 = "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))";
+  auto p22 = "POINT(0 1)";
+
+  arrow::StringBuilder builder1, builder2;
+  builder1.Append(std::string(p11));
+  builder1.Append(std::string(p12));
+
+  builder2.Append(std::string(p21));
+  builder2.Append(std::string(p22));
+
+  std::shared_ptr<arrow::Array> input1, input2;
+  builder1.Finish(&input1);
+  builder2.Finish(&input2);
+
+  auto res = zilliz::gis::ST_HausdorffDistance(input1, input2);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  EXPECT_DOUBLE_EQ(res_double->Value(0), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(1), 1);
+}
+
 TEST(geometry_test, test_ST_Area) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
@@ -2287,6 +2375,7 @@ TEST(geometry_test, test_ST_Area) {
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
   auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p10 = "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2299,6 +2388,7 @@ TEST(geometry_test, test_ST_Area) {
   builder.Append(std::string(p7));
   builder.Append(std::string(p8));
   builder.Append(std::string(p9));
+  builder.Append(std::string(p10));
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_Area(input);
@@ -2306,13 +2396,14 @@ TEST(geometry_test, test_ST_Area) {
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
-  //  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(3), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
   // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
 }
 
 TEST(geometry_test, test_ST_Centroid) {
@@ -2433,6 +2524,39 @@ TEST(geometry_test, test_ST_ConvexHull) {
   ASSERT_EQ(res_str->GetString(8), "POLYGON ((0 0,0 1,1 4,1 0,0 0))");
 }
 
+TEST(geometry_test, test_ST_NPoints2) {
+  auto p0 = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+  auto p1 = "POLYGON ((1 2, 3 4, 5 6, 1 2))";
+  auto p2 = "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))";
+  auto p3 = "MULTIPOINT(0 0, 7 7)";
+  auto p4 = "GEOMETRYCOLLECTION(POINT(1 1), LINESTRING( 1 1 , 2 2, 3 3))";
+  auto p5 = "POINT EMPTY";
+  auto p6 = "";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_NPoints(input);
+  auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
+
+  ASSERT_EQ(res_int->Value(0), 5);
+  ASSERT_EQ(res_int->Value(1), 4);
+  ASSERT_EQ(res_int->Value(2), 5);
+  ASSERT_EQ(res_int->Value(3), 2);
+  ASSERT_EQ(res_int->Value(4), 4);
+  ASSERT_EQ(res_int->Value(5), 0);
+  ASSERT_EQ(res_int->IsNull(6), true);
+}
+
 // TODO : geospark ST_NPoints can not work.
 TEST(geometry_test, test_ST_NPoints) {
   auto p1 = "POINT (0 1)";
@@ -2459,17 +2583,50 @@ TEST(geometry_test, test_ST_NPoints) {
   builder.Finish(&input);
 
   auto res = zilliz::gis::ST_NPoints(input);
-  auto res_int = std::static_pointer_cast<arrow::UInt32Array>(res);
+  auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
 
   ASSERT_EQ(res_int->Value(0), 1);
-  ASSERT_EQ(res_int->Value(1), 0);  //?
-  ASSERT_EQ(res_int->Value(2), 3);
-  ASSERT_EQ(res_int->Value(3), 0);  //?
-  ASSERT_EQ(res_int->Value(4), 4);  // 3?
-  ASSERT_EQ(res_int->Value(5), 0);  //?
-  ASSERT_EQ(res_int->Value(6), 0);  //?
-  ASSERT_EQ(res_int->Value(7), 0);  //?
-  ASSERT_EQ(res_int->Value(8), 0);  //?
+  ASSERT_EQ(res_int->Value(1), 3);
+  ASSERT_EQ(res_int->Value(2), 4);
+  ASSERT_EQ(res_int->Value(3), 5);
+  ASSERT_EQ(res_int->Value(4), 4);
+  ASSERT_EQ(res_int->Value(5), 9);
+  ASSERT_EQ(res_int->Value(6), 4);
+  ASSERT_EQ(res_int->Value(7), 10);
+  ASSERT_EQ(res_int->Value(8), 8);
+}
+
+TEST(geometry_test, test_ST_Envelope_Empty) {
+  auto p0 = "POLYGON EMPTY";
+  auto p1 = "LINESTRING EMPTY";
+  auto p2 = "POINT EMPTY";
+  auto p3 = "MULTIPOLYGON EMPTY";
+  auto p4 = "MULTILINESTRING EMPTY";
+  auto p5 = "MULTIPOINT EMPTY";
+  auto p6 = "GEOMETRYCOLLECTION EMPTY";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Finish(&input);
+
+  auto result = zilliz::gis::ST_Envelope(input);
+  auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
+
+  ASSERT_EQ(result_str->GetString(0), p0);
+  ASSERT_EQ(result_str->GetString(1), p1);
+  ASSERT_EQ(result_str->GetString(2), p2);
+  ASSERT_EQ(result_str->GetString(3), p3);
+  ASSERT_EQ(result_str->GetString(4), p4);
+  ASSERT_EQ(result_str->GetString(5), p5);
+  ASSERT_EQ(result_str->GetString(6), p6);
 }
 
 TEST(geometry_test, test_ST_Envelope) {
@@ -2568,6 +2725,16 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Append(22);
   y_max_builder.Append(33);
 
+  x_min_builder.Append(1);
+  x_max_builder.Append(0);
+  y_min_builder.Append(22);
+  y_max_builder.Append(33);
+
+  x_min_builder.Append(0);
+  x_max_builder.Append(1);
+  y_min_builder.Append(55);
+  y_max_builder.Append(33);
+
   std::shared_ptr<arrow::Array> x_min;
   std::shared_ptr<arrow::Array> x_max;
   std::shared_ptr<arrow::Array> y_min;
@@ -2582,8 +2749,10 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,1 2,0 3,1 3,0 2))");
-  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,11 22,0 33,11 33,0 22))");
+  ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
 }
 
 TEST(geometry_test, test_ST_Transform) {
@@ -2606,6 +2775,51 @@ TEST(geometry_test, test_ST_Transform) {
   ASSERT_DOUBLE_EQ(rst_pointer->getY(), 1118889.97485796);
 
   OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
+TEST(geometry_test, test_ST_GeomFromGeoJSON) {
+  auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
+  auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
+  auto j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(j0));
+  builder.Append(std::string(j1));
+  builder.Append(std::string(j2));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_GeomFromGeoJSON(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+}
+
+TEST(geometry_test, test_ST_Union_Aggr2) {
+  auto p0 = "MULTIPOINT (1 1,3 4)";
+  auto p1 = "LINESTRING (1 1,1 2,2 3)";
+  auto p2 = "MULTILINESTRING ((1 1,1 2),(2 4,1 9,1 8))";
+  auto p3 = "MULTILINESTRING ((1 1,3 4))";
+  auto p4 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto p5 = "MULTIPOLYGON ( ((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,3 4,-2 3,0 0)) )";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_Union_Aggr(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0),
+            "GEOMETRYCOLLECTION (LINESTRING (2 4,1 9,1 8),POLYGON ((2.0 1.5,2 1,1.8 "
+            "1.0,1 -1,0 0,-2 3,3 4,2.0 1.5)))");
 }
 
 TEST(geometry_test, test_ST_Union_Aggr) {

@@ -22,3 +22,8 @@ spec:
       requests:
         memory: "8Gi"
         cpu: "4.0"
+  tolerations:
+  - key: dedicated
+    operator: Equal
+    value: arctern
+    effect: NoSchedule

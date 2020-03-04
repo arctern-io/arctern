@@ -51,7 +51,8 @@ if (USE_GPU)
     message("importing ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
     include_directories(${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES})
     link_directories(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
 else()
     set(CPU_OR_GPU "CPU")
     message(STATUS "Building on CPU")
@@ -123,12 +124,13 @@ message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
 
 
-message(STATUS "conda_prefix = " $ENV{CONDA_PREFIX})
+set(CONDA_PREFIX "$ENV{CONDA_PREFIX}")
+message(STATUS "conda_prefix = " ${CONDA_PREFIX})
 
 include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
-include_directories($ENV{CONDA_PREFIX}/include)
+include_directories(${CONDA_PREFIX}/include)
 link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
-link_directories($ENV{CONDA_PREFIX}/lib)
+link_directories(${CONDA_PREFIX}/lib)
 
 add_subdirectory(src)
 

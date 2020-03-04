@@ -28,6 +28,58 @@ def run_st_point(spark):
     for i in range(10):
         assert rs[i][0] == ('POINT (%.1f %.1f)' % (i + 0.1, i + 0.1))
 
+def run_st_geomfromgeojson(spark):
+    test_data = []
+    test_data.extend([("{\"type\":\"Point\",\"coordinates\":[1,2]}",)])
+    test_data.extend([("{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}",)])
+    test_data.extend([("{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",)])
+    json_df = spark.createDataFrame(data=test_data,schema=["json"]).cache()
+    json_df.createOrReplaceTempView("json")
+    rs = spark.sql("select ST_GeomFromGeoJSON_UDF(json) from json").collect()
+    assert rs[0][0] == 'POINT (1 2)'
+    assert rs[1][0] == 'LINESTRING (1 2,4 5,7 8)'
+    assert rs[2][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
+
+def run_st_pointfromtext(spark):
+    test_data = []
+    test_data.extend([('POINT (30 10)',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_PointFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'POINT (30 10)'
+
+def run_st_polygonfromtext(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_PolygonFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+
+def run_st_linestringfromtext(spark):
+    test_data = []
+    test_data.extend([('LINESTRING (0 0, 0 1, 1 1, 1 0)',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_LineStringFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'LINESTRING (0 0, 0 1, 1 1, 1 0)'
+
+def run_st_geomfromwkt(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_GeomFromWKT_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+
+def run_st_geomfromtext(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_GeomFromText_UDF(data) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+    
 def run_st_intersection(spark):
     test_data = []
     test_data.extend([('POINT(0 0)', 'LINESTRING ( 2 0, 0 2 )')])
@@ -55,8 +107,8 @@ def run_st_equals(spark):
     equals_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     equals_df.createOrReplaceTempView("equals")
     rs = spark.sql("select ST_Equals_UDF(left, right) from equals").collect()
-    assert not rs[0][0]
-    assert not rs[1][0]
+    assert rs[0][0]
+    assert rs[1][0]
 
 def run_st_touches(spark):
     test_data = []
@@ -143,8 +195,8 @@ def run_st_polygon_from_envelope(spark):
     polygon_from_envelope_df = spark.createDataFrame(data=test_data, schema=['min_x', 'min_y', 'max_x', 'max_y']).cache()
     polygon_from_envelope_df.createOrReplaceTempView('polygon_from_envelope')
     rs = spark.sql("select ST_PolygonFromEnvelope_UDF(min_x, min_y, max_x, max_y) from polygon_from_envelope").collect()
-    assert rs[0][0] == 'POLYGON ((1 3,5 3,1 7,5 7,1 3))'
-    assert rs[1][0] == 'POLYGON ((2 4,6 4,2 8,6 8,2 4))'
+    assert rs[0][0] == 'POLYGON ((1 3,1 7,5 7,5 3,1 3))'
+    assert rs[1][0] == 'POLYGON ((2 4,2 8,6 8,6 4,2 4))'
 
 def run_st_contains(spark):
     test_data = []
@@ -239,6 +291,16 @@ def run_st_length(spark):
     rs = spark.sql("select ST_Length_UDF(geos) from length").collect()
     assert rs[0][0] == 122.63074400009504
     assert rs[1][0] == 0.30901547439030225
+
+def run_st_hausdorffdistance(spark):
+    test_data = []
+    test_data.extend([("POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))",)])
+    test_data.extend([("POINT(0 0)", "POINT(0 1)",)])
+    hausdorff_df = spark.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
+    hausdorff_df.createOrReplaceTempView("hausdorff")
+    rs = spark.sql("select ST_HausdorffDistance_UDF(geo1,geo2) from hausdorff").collect()
+    assert rs[0][0] == 1
+    assert rs[1][0] == 1
 
 def run_st_convexhull(spark):
     test_data = []
@@ -370,6 +432,7 @@ if __name__ == "__main__":
     run_st_area(spark_session)
     run_st_centroid(spark_session)
     run_st_length(spark_session)
+    run_st_hausdorffdistance(spark_session)
     run_st_convexhull(spark_session)
     run_st_npoints(spark_session)
     run_st_envelope(spark_session)
@@ -377,5 +440,11 @@ if __name__ == "__main__":
     run_st_union_aggr(spark_session)
     run_st_envelope_aggr(spark_session)
     run_st_transform(spark_session)
+    run_st_geomfromgeojson(spark_session)
+    run_st_pointfromtext(spark_session)
+    run_st_polygonfromtext(spark_session)
+    run_st_linestringfromtext(spark_session)
+    run_st_geomfromwkt(spark_session)
+    run_st_geomfromtext(spark_session)
 
     spark_session.stop()
