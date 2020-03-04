@@ -7,11 +7,6 @@ namespace gis {
 namespace cuda {
 
 namespace {
-struct Iter {
-  uint32_t* metas;
-  double* values;
-};
-
 struct WkbDecoder {
   const char* wkb_iter;
   uint32_t* metas;
@@ -29,13 +24,14 @@ struct WkbDecoder {
     values += count;
   }
   template <typename T>
-  __device__ int WkbToMeta() {
-    auto size = FetchFromWkb<int>();
+  __device__ T WkbToMeta() {
+    static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
+    auto m = FetchFromWkb<uint32_t>();
     if (!skip_write) {
-      *metas = size;
+      *metas = m;
     }
     metas += 1;
-    return size;
+    return static_cast<T>(m);
   }
 
  public:
