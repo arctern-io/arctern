@@ -12,16 +12,16 @@ geo2=wkt.loads('GEOMETRYCOLLECTION(POLYGON((0 0,0 100000,100000.001 100000,10000
 geo3=wkt.loads('GEOMETRYCOLLECTION(POLYGON((0 0,0 100000,100000.00100001 100000,100000 0,0 0)),LINESTRING(160 90, 10 150, 90 190.00001 ),POINT(90 190) ) ')
 
 geo1.equals(geo2)
-geo1.almost_equals(geo2)
-geo1.equals_exact(geo2,0)
-geo1.equals_exact(geo2,1e-2)  
-geo1.equals_exact(geo2,1e-46)
+geo1.almost_equals(geo2)        # false
+geo1.equals_exact(geo2,0)       
+geo1.equals_exact(geo2,1e-2)    # true
+geo1.equals_exact(geo2,1e-46)   # false
 
 geo3.equals(geo2)
-geo3.almost_equals(geo2)
-geo3.equals_exact(geo2,0)
-geo3.equals_exact(geo2,1e-2)  
-geo3.equals_exact(geo2,1e-46)
+geo3.almost_equals(geo2)        # true
+geo3.equals_exact(geo2,0)       
+geo3.equals_exact(geo2,1e-2)    # true
+geo3.equals_exact(geo2,1e-7)    # true
 
 ```
 ### conda安装 shapely
