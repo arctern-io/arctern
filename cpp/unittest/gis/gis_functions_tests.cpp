@@ -545,7 +545,7 @@ TEST(geometry_test, test_ST_Intersection) {
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
-  ASSERT_EQ(res_str->GetString(1), "POINT EMPTY");
+  ASSERT_EQ(res_str->GetString(1), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(2), "POINT (0 1)");
   // ASSERT_EQ(res_str->GetString(3), "MULTIPOLYGON EMPTY"); // POINT EMPTY
   ASSERT_EQ(res_str->GetString(4), "POINT (0 1)");
@@ -562,15 +562,15 @@ TEST(geometry_test, test_ST_Intersection) {
   // ASSERT_EQ(res_str->GetString(15), "MULTIPOLYGON EMPTY"); // error
   // TODO : need verify against geospark result below.
   ASSERT_EQ(res_str->GetString(16), "POINT (1 8)");
-  ASSERT_EQ(res_str->GetString(17), "POINT EMPTY");
+  ASSERT_EQ(res_str->GetString(17), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(18), "POINT (2 3)");
-  ASSERT_EQ(res_str->GetString(19), "POINT EMPTY");
+  ASSERT_EQ(res_str->GetString(19), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(20), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(21), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(22), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(23), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(24), "POINT (1 8)");
-  ASSERT_EQ(res_str->GetString(25), "POINT EMPTY");
+  ASSERT_EQ(res_str->GetString(25), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(26), "MULTIPOINT (1 8,2 3)");
   ASSERT_EQ(res_str->GetString(27), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(28), "MULTILINESTRING ((0 0,1 0),(1 0,1 8))");
@@ -582,7 +582,7 @@ TEST(geometry_test, test_ST_Intersection) {
   ASSERT_EQ(res_str->GetString(34), "MULTIPOINT (0 0,1 1,1 3,1 8)");
   ASSERT_EQ(res_str->GetString(35), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(36), "MULTIPOINT (0 0,1 8)");
-  ASSERT_EQ(res_str->GetString(37), "LINESTRING EMPTY");
+  ASSERT_EQ(res_str->GetString(37), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(38), "LINESTRING (0 0,1 0,1 8)");
   ASSERT_EQ(res_str->GetString(39), "LINESTRING (0 1,2 3,1 1)");
   ASSERT_EQ(res_str->GetString(40), "MULTILINESTRING ((0 1,2 3),(2 3,1 1))");
