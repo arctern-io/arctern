@@ -209,9 +209,7 @@ class GeometryVector {
 
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
-
-
-GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec);
+GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
 
 }  // namespace GeometryVectorFactory
 bool test_cuda_abi(const std::string& str);

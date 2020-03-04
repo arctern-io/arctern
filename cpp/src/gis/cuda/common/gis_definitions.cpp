@@ -150,9 +150,21 @@ void GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
 namespace GeometryVectorFactory {
 
 GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
-  auto input_ = WktsToArrowWkb(wkt_vec);
-  auto input = std::static_pointer_cast<arrow::BinaryArray>(input_);
+  auto input = WktsToArrowWkb(wkt_vec);
   return ArrowWkbToGeometryVector(input);
+}
+
+GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
+  arrow::BinaryBuilder builder;
+  for (const auto& wkb : wkb_vec) {
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::Array> arrow_wkb;
+  auto st = builder.Finish(&arrow_wkb);
+  assert(st.ok());
+  auto result = ArrowWkbToGeometryVector(arrow_wkb);
+  return result;
 }
 
 }  // namespace GeometryVectorFactory
