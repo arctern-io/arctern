@@ -5,7 +5,7 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-GeometryVector ArrowWkbToGeometryVector(std::shared_ptr<arrow::Array> wkb_arrow);
+GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& wkb_arrow);
 std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector&);
 
 }  // namespace cuda
