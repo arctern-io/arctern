@@ -1,7 +1,7 @@
 #include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/wkb/conversions.h"
-#include "gis/cuda/wkb/conversions.impl.h"
+#include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/conversion/conversions.impl.h"
 
 namespace zilliz {
 namespace gis {

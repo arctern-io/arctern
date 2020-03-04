@@ -1,7 +1,7 @@
 #include <exception>
 
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/wkb/conversions.h"
+#include "gis/cuda/conversion/conversions.h"
 
 namespace zilliz {
 namespace gis {

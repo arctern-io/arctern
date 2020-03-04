@@ -1,6 +1,6 @@
 #include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/geometry_output.h"
-#include "gis/cuda/wkb/conversions.h"
 
 namespace zilliz {
 namespace gis {

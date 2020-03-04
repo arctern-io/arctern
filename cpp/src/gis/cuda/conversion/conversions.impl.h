@@ -1,6 +1,6 @@
 #pragma once
+#include "conversions.h"
 #include "gis/cuda/mock/arrow/api.h"
-#include "gis/cuda/wkb/conversions.h"
 
 namespace zilliz {
 namespace gis {
