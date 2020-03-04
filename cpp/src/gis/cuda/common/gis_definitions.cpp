@@ -15,13 +15,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "gis/cuda/wkb/wkb_transforms.h"
+#include "gis/cuda/common/gis_definitions.h"
+
 #include <thrust/scan.h>
 
 #include <numeric>
 
-#include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/wkb/wkb_transforms.h"
 
 namespace zilliz {
 namespace gis {
@@ -145,24 +146,34 @@ void GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
 // only for testing
 // create Geometry from WktArray
 namespace GeometryVectorFactory {
-GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
-  GeometryVector geo;
-  geo.WkbDecodeInitalize();
+
+std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
+  arrow::BinaryBuilder builder;
   for (const auto& wkt : wkt_vec) {
     auto wkb = Wkt2Wkb(wkt);
-    geo.WkbDecodeAppend(wkb.data());
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::Array> result;
+  auto st = builder.Finish(&result);
+  assert(st.ok());
+  return result;
+}
+
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
+  auto input_ = WktsToArrowWkb(wkt_vec);
+  auto input = std::static_pointer_cast<arrow::BinaryArray>(input_);
+  GeometryVector geo;
+  geo.WkbDecodeInitalize();
+  for (int index = 0; index < input->length(); ++index) {
+    int size;
+    geo.WkbDecodeAppend((const char*)input->GetValue(index, &size));
   }
   geo.WkbDecodeFinalize();
   return geo;
 }
 
-std::shared_ptr<arrow::Array>(const std::vector<std::string>& wkt_vec) {
-
-}
-
-GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {
-
-}
+//GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {}
 
 }  // namespace GeometryVectorFactory
 
