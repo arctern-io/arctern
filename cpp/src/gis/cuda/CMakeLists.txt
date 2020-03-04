@@ -1,5 +1,4 @@
 set(WKB_CUDA_SOURCES
-        wkb/wkb_decode.cpp
         wkb/wkb_transforms.cpp
         conversion/arrow_decode.cu
         conversion/arrow_decode.cpp

@@ -26,9 +26,8 @@
 #include <vector>
 
 #include "gis/cuda/mock/arrow/api.h"
-using std::vector;
 template <typename T>
-using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
+using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
 
 #include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/wkb/wkb_tag.h"
@@ -161,12 +160,6 @@ class GeometryVector {
 
   GpuContextHolder CreateReadGpuContext() const;  // TODO
   GeometryVector() = default;
-  GpuVector<char> EncodeToWkb() const;  // TODO
-
-  void WkbDecodeInitalize();
-  // append single element
-  void WkbDecodeAppend(const char* bin);
-  void WkbDecodeFinalize();
 
   // STEP 1: Initialize vector with size of elements
   void OutputInitialize(int size);

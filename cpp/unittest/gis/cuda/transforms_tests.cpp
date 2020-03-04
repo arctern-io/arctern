@@ -27,6 +27,7 @@
 namespace zilliz {
 namespace gis {
 namespace cuda {
+using std::vector;
 
 TEST(Transform, TestABI) {
   using std::string;

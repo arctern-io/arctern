@@ -33,7 +33,8 @@ GeometryVector::GpuContextHolder GeometryVector::CreateReadGpuContext() const {
   assert(data_state_ == DataState::PrefixSumOffset_FullData);
 
   GeometryVector::GpuContextHolder holder(new GpuContext);
-  static_assert(std::is_same<GpuVector<int>, vector<int>>::value, "here use vector now");
+  static_assert(std::is_same<GpuVector<int>, std::vector<int>>::value,
+                "here use vector now");
   auto size = tags_.size();  // size_ of elements
   assert(size + 1 == meta_offsets_.size());
   assert(size + 1 == value_offsets_.size());
@@ -151,23 +152,19 @@ namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   auto input_ = WktsToArrowWkb(wkt_vec);
   auto input = std::static_pointer_cast<arrow::BinaryArray>(input_);
-  GeometryVector geo;
-  geo.WkbDecodeInitalize();
-  for (int index = 0; index < input->length(); ++index) {
-    int size;
-    geo.WkbDecodeAppend((const char*)input->GetValue(index, &size));
-  }
-  geo.WkbDecodeFinalize();
-  return geo;
-}
-
-GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {
-  auto input_ = WktsToArrowWkb(wkt_vec);
-  auto input = std::static_pointer_cast<arrow::BinaryArray>(input_);
   return ArrowWkbToGeometryVector(input);
 }
 
 }  // namespace GeometryVectorFactory
+
+void GeometryVector::clear() {
+  tags_.clear();
+  metas_.clear();
+  values_.clear();
+  meta_offsets_.clear();
+  value_offsets_.clear();
+  data_state_ = DataState::Invalid;
+}
 
 // only for testing
 bool test_cuda_abi(const std::string& str) {

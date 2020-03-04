@@ -31,6 +31,7 @@
 namespace zilliz {
 namespace gis {
 namespace cuda {
+using std::vector;
 TEST(ArrowConversionTest, naive) {
   vector<double> xs{1, 2, 3, 4, 5};
   vector<double> ys{0, 1, 2, 3, 4};
