@@ -74,7 +74,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   uint32_t* metas = nullptr;
   double* values = nullptr;
-  if(!skip_write) {
+  if (!skip_write) {
     metas = results.get_meta_ptr(index);
     values = results.get_value_ptr(index);
   }
@@ -107,6 +107,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);
+  auto wkb_len = meta_size * sizeof(int) + value_size * sizeof(double) + sizeof(WkbTag) +
+                 sizeof(WkbByteOrder);
+  assert(wkb_len == input.get_wkb_ptr(index + 1) - input.get_wkb_ptr(index));
   return OutputInfo{tag, meta_size, value_size};
 }
 }  // namespace
