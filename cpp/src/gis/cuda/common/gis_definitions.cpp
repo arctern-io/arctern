@@ -16,6 +16,7 @@
 // under the License.
 
 #include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
 
 #include <thrust/scan.h>
 
@@ -173,7 +174,11 @@ GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   return geo;
 }
 
-//GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {}
+GeometryVector CreateFromWktsArrow(const std::vector<std::string>& wkt_vec) {
+  auto input_ = WktsToArrowWkb(wkt_vec);
+  auto input = std::static_pointer_cast<arrow::BinaryArray>(input_);
+  return CreateGeometryVecorFromWkb(input);
+}
 
 }  // namespace GeometryVectorFactory
 
