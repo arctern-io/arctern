@@ -637,12 +637,12 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
   ASSERT_EQ(geometries_arr->GetString(0),"POINT (120.6 101.0)");
-  ASSERT_EQ(geometries_arr->GetString(1),"POINT (55.56 6.0)");
+  ASSERT_EQ(geometries_arr->GetString(1),"POINT (50.56 6.0)");
   ASSERT_EQ(geometries_arr->GetString(2),"POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46))");
-  ASSERT_EQ(geometries_arr->GetString(3),"LINESTRING (100.3 89.67,89.03 78)");
-  ASSERT_EQ(geometries_arr->GetString(4),"MULTIPOINT (120 90,89 90.01)");
-  ASSERT_EQ(geometries_arr->GetString(5),"MULTIPOINT ((12980 89770),(89.88 90.09))");
-  ASSERT_EQ(geometries_arr->GetString(6),"MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.79,20 11,20 20,20 11,11 11.79)))");
+  ASSERT_EQ(geometries_arr->GetString(3),"LINESTRING (100.3 89.67,89.03 78.0)");
+  ASSERT_EQ(geometries_arr->GetString(4),"MULTIPOINT (120 90,89.0 90.01)");
+  ASSERT_EQ(geometries_arr->GetString(5),"MULTIPOINT (12980 89770,89.88 90.09)");
+  ASSERT_EQ(geometries_arr->GetString(6),"MULTIPOLYGON (((0.0 0.555,10 0,10 10,0 10,0.0 0.555)),((11.0 11.79,20 11,20 20,20 11,11.0 11.79)))");
   ASSERT_EQ(geometries_arr->GetString(7),"MULTILINESTRING ((12.67 15.23,89.45 98.67),(12.56 78.78,90.79 67.3))");
   ASSERT_EQ(geometries_arr->GetString(8),"GEOMETRYCOLLECTION (POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46)),POINT (120.6 101.0))");
 }

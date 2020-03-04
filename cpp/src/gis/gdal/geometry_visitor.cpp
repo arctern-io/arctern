@@ -97,78 +97,9 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo){
     double coordinate_y = geo->getY();
     geo->setX(coordinate_precision_reduce(coordinate_x));
     geo->setY(coordinate_precision_reduce(coordinate_y));
-    std::cout << ",,," << std::endl;
-    std::cout << geo->getX() << "," << geo->getY() << std::endl;
 }
 
-/*void
-PrecisionReduceVisitor::geometry_precision_reduce(OGRGeometry* geo){
-  std::string geometry_type = geo->getGeometryName();
 
-  if ( geometry_type == "POINT") {
-    visit((OGRPoint*)geo);
-  }
-  
-  if ( geometry_type == "LINESTRING") { 
-    visit((OGRLineString*)geo);
-  }
-
-  if ( geometry_type == "LINEARRING") { 
-    visit((OGRLinearRing*)geo);
-  }
-
-  if ( geometry_type == "POLYGON") { 
-    visit((OGRPolygon*)geo);
-  }
-
-  if ( geometry_type == "MULTIPOINT") { 
-    visit((OGRMultiPoint*)geo);
-  }
-
-  if ( geometry_type == "MULTILINESTRING") { 
-    visit((OGRMultiLineString*)geo);
-  }
-
-  if ( geometry_type == "MULTIPOLYGON") { 
-    visit((OGRMultiPolygon*)geo);
-  }
-
-  if ( geometry_type == "GEOMETRYCOLLECTION") { 
-    visit((OGRGeometryCollection*)geo);
-  }
-
-  if ( geometry_type == "CIRCULARSTRING") { 
-    visit((OGRCularString*)geo);
-  }
-
-  if ( geometry_type == "COMPOUNDCURVE") { 
-    visit((OGRCompoundCurve*)compound_curve);
-  }
-
-  if ( geometry_type == "CURVEPOLYGON") { 
-     visit((OGRCurvePolygon*)geo);
-  }
-
-  if ( geometry_type == "MULTICURVE") {
-     visit((OGRMultiCurve*)geo);
-  }
-
-  if ( geometry_type == "MULTISURFACE") { 
-    visit((OGRMultiSurface*)geo);
-  }
-
-  if ( geometry_type == "TRIANGLE") { 
-    visit((OGRTriangle*)geo);
-  }
-
-  if ( geometry_type == "POLYHEDRALSURFACE") { 
-    visit((OGRPolyhdralSurface*)geo);
-  }
-
-  if ( geometry_type == "TRIANGULATEDSURFACE") { 
-    this->visit((OGRTriangualtedSurface*)geo);
-  }
-}*/
 
 }  // namespace gdal
 }  // namespace gis

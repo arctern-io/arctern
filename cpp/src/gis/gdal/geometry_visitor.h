@@ -17,7 +17,6 @@
 #pragma once
 
 #include <ogr_geometry.h>
-#include <iostream>
 #include <string>
 
 namespace zilliz {
