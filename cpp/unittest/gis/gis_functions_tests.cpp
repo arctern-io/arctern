@@ -631,9 +631,7 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   string_builder.Append(l8);
 
   string_builder.Finish(&array);
-  std::cout << " TEST " << std::endl;
   auto geometries = zilliz::gis::ST_PrecisionReduce(array,4);
-  std::cout << "END TEST" << std::endl;
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
   ASSERT_EQ(geometries_arr->GetString(0),"POINT (120.6 101.0)");

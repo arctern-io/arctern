@@ -438,8 +438,6 @@ ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
        char *wkt_tmp;
 
        for (int32_t i = 0; i < len; i++) {
-         std::cout << i << std::endl;
-         std::cout << wkt_geometries->GetString(i) << std::endl;
          CHECK_GDAL(OGRGeometryFactory::createFromWkt(
              wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
          ((OGRGeometry*)geo)->accept(precision_reduce_visitor);
