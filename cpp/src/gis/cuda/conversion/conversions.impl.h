@@ -13,8 +13,10 @@ struct WkbArrowContext {
   int size;
 
  public:
-  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return values + index; }
-  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const { return values + index; }
+  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return values + offsets[index]; }
+  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const {
+    return values + offsets[index];
+  }
   DEVICE_RUNNABLE inline int null_counts() const { return 0 * size; }
 };
 
