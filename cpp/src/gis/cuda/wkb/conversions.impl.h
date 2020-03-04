@@ -21,9 +21,10 @@ struct WkbArrowContext {
 GeometryVector CreateGeometryVectorFromWkbImpl(const WkbArrowContext& input);
 
 // return size of total data length in bytes
-int ExportWkbFillOffsets(const GeometryVector& vec, WkbArrowContext& output);
+void ExportWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+                          int* value_length);
 
-void ExportWkbFillValues(const GeometryVector& vec, WkbArrowContext& output);
+void ExportWkbFillValues(const GpuContext& input, WkbArrowContext& output);
 
 }  // namespace internal
 

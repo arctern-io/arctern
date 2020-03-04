@@ -18,17 +18,8 @@ struct WkbDecoder {
   double* values;
   bool skip_write;
 
- public:
-  template <typename T>
-  __device__ T fetch() {
-    T tmp;
-    int len = sizeof(T);
-    memcpy(&tmp, wkb_iter, len);
-    wkb_iter += len;
-    return tmp;
-  }
-
-  __device__ void extend_values(int demensions, int points) {
+ private:
+  __device__ void WkbToValues(int demensions, int points) {
     auto count = demensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
@@ -37,9 +28,9 @@ struct WkbDecoder {
     wkb_iter += bytes;
     values += count;
   }
-
-  __device__ int extend_size_meta() {
-    auto size = fetch<int>();
+  template <typename T>
+  __device__ int WkbToMeta() {
+    auto size = FetchFromWkb<int>();
     if (!skip_write) {
       *metas = size;
     }
@@ -48,18 +39,27 @@ struct WkbDecoder {
   }
 
  public:
-  __device__ void DecodePoint(int demensions) { extend_values(demensions, 1); }
+  template <typename T>
+  __device__ T FetchFromWkb() {
+    T tmp;
+    int len = sizeof(T);
+    memcpy(&tmp, wkb_iter, len);
+    wkb_iter += len;
+    return tmp;
+  }
+
+  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
 
   __device__ void DecodeLineString(int demensions) {
-    auto size = extend_size_meta();
-    extend_values(demensions, size);
+    auto size = WkbToMeta<int>();
+    WkbToValues(demensions, size);
   }
 
   __device__ void DecodePolygon(int demensions) {
-    auto polys = extend_size_meta();
+    auto polys = WkbToMeta<int>();
     for (int i = 0; i < polys; ++i) {
-      auto size = extend_size_meta();
-      extend_values(demensions, size);
+      auto size = WkbToMeta<int>();
+      WkbToValues(demensions, size);
     }
   }
 };
@@ -74,9 +74,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   WkbDecoder decoder{wkb_iter, metas, values, skip_write};
 
-  auto byte_order = decoder.fetch<WkbByteOrder>();
+  auto byte_order = decoder.FetchFromWkb<WkbByteOrder>();
   assert(byte_order == WkbByteOrder::LittleEndian);
-  auto tag = decoder.fetch<WkbTag>();
+  auto tag = decoder.FetchFromWkb<WkbTag>();
   assert(tag.get_group() == WkbGroup::None);
   constexpr auto demensions = 2;
   switch (tag.get_category()) {

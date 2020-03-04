@@ -29,14 +29,16 @@ std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_pt
 std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector& geo_vec) {
   auto size = geo_vec.size();
   auto offsets = GpuMakeUniqueArray<int>(size);
+  auto input_holder = geo_vec.CreateReadGpuContext();
 
   WkbArrowContext arrow_ctx{nullptr, offsets.get(), size};
-  auto values_length = internal::ExportWkbFillOffsets(geo_vec, arrow_ctx);
-  auto values = GpuMakeUniqueArray<char>(values_length);
-  internal::ExportWkbFillValues(geo_vec, arrow_ctx);
+  int value_length;
+  internal::ExportWkbFillOffsets(*input_holder, arrow_ctx, &value_length);
+  auto values = GpuMakeUniqueArray<char>(value_length);
+  internal::ExportWkbFillValues(*input_holder, arrow_ctx);
 
   auto offsets_buffer = AllocArrowBufferAndCopy(size + 1, offsets.get());
-  auto values_buffer = AllocArrowBufferAndCopy(values_length, offsets.get());
+  auto values_buffer = AllocArrowBufferAndCopy(value_length, offsets.get());
 
   auto results = std::make_shared<arrow::BinaryArray>(size, offsets_buffer, values_buffer,
                                                       nullptr, 0);

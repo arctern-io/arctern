@@ -37,7 +37,6 @@ enum class WkbCategory : uint32_t {
   // TODO: TO BE CONTINUE, LAZY NOW
 };
 
-constexpr uint32_t WkbGroupBase = 1000;
 enum class WkbGroup : uint32_t {
   None = 0,  // normal 2D
   Z = 1,     // XYZ
@@ -47,6 +46,7 @@ enum class WkbGroup : uint32_t {
 
 struct WkbTag {
   WkbTag() = default;
+  static constexpr uint32_t WkbGroupBase = 1000;
   constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbGroup group)
       : data((uint32_t)category + (uint32_t)group * WkbGroupBase) {}
 
