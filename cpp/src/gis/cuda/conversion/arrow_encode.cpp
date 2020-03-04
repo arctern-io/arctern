@@ -45,6 +45,8 @@ std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector& geo_vec) {
   return results;
 }
 
+
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz

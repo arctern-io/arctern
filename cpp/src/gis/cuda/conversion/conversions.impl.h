@@ -18,7 +18,7 @@ struct WkbArrowContext {
   DEVICE_RUNNABLE inline int null_counts() const { return 0 * size; }
 };
 
-GeometryVector CreateGeometryVectorFromWkbImpl(const WkbArrowContext& input);
+GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input);
 
 // return size of total data length in bytes
 void ExportWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,

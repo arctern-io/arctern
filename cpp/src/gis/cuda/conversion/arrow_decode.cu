@@ -102,7 +102,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 }  // namespace
 
 namespace internal {
-GeometryVector CreateGeometryVectorFromWkbImpl(const WkbArrowContext& input) {
+GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input) {
   GeometryVector results;
   int size = input.size;
   // TODO(dog): add hanlder for nulls

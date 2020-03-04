@@ -11,13 +11,13 @@ std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector&);
 
 using internal::WkbArrowContext;
 
-GeometryVector CreateGeometryVectorFromWkb(const std::shared_ptr<arrow::Array>& wkb_) {
+GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& wkb_) {
   auto wkb = std::static_pointer_cast<arrow::BinaryArray>(wkb_);
   auto size = (int)wkb->length();
   auto binary_bytes = wkb->value_offset(size);
   auto data = GpuMakeUniqueArrayAndCopy((char*)wkb->value_data()->data(), binary_bytes);
   auto offsets = GpuMakeUniqueArrayAndCopy(wkb->raw_value_offsets(), size + 1);
-  auto geo_vec = internal::CreateGeometryVectorFromWkbImpl(
+  auto geo_vec = internal::ArrowWkbToGeometryVectorImpl(
       WkbArrowContext{data.get(), offsets.get(), size});
   return geo_vec;
 }

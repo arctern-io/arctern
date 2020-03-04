@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
 #include "test_utils/transforms.h"
 
@@ -45,6 +47,18 @@ TEST(Transform, Naive) {
   auto pnt = Wkt2Wkb("POINT(1 1)");
   ASSERT_TRUE(pnt.size() == 1 + 4 + 16);
 }
+
+TEST(Transform, Arrow) {
+  vector<std::string> wkt_vec = {
+      "Point(1 1)",
+      "Point(1 2)",
+  };
+  auto wkb_arrow = WktsToArrowWkb(wkt_vec);
+  auto geo_vec = ArrowWkbToGeometryVector(wkb_arrow);
+  auto x = 1 + 1;
+}
+
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz
