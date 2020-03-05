@@ -6,7 +6,7 @@ namespace gis {
 namespace cuda {
 
 GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& wkb_arrow);
-std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector&);
+std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
 
 }  // namespace cuda
 }  // namespace gis

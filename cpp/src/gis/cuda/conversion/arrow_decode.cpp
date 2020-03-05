@@ -7,7 +7,7 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 
-std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector&);
+std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
 
 using internal::WkbArrowContext;
 

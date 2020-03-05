@@ -20,7 +20,7 @@ __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int
 }
 
 // return: size of total data length in bytes
-void ExportWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
                           int* value_length) {
   assert(input.size == output.size);
   assert(output.offsets);
@@ -127,7 +127,7 @@ __global__ static void CalcValues(const GpuContext input, WkbArrowContext output
   }
 }
 
-void ExportWkbFillValues(const GpuContext& input, WkbArrowContext& output) {
+void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output) {
   assert(input.size == output.size);
   assert(output.offsets);
   assert(output.values);

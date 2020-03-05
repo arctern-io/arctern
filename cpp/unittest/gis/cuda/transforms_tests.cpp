@@ -60,7 +60,7 @@ TEST(Transform, Arrow) {
   };
   auto wkb_arrow = WktsToArrowWkb(wkt_vec);
   auto geo_vec = ArrowWkbToGeometryVector(wkb_arrow);
-  auto x = 1 + 1;
+//  auto ret_arrow = Ge
 }
 
 

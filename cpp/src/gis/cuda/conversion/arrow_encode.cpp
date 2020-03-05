@@ -26,16 +26,17 @@ std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_pt
 }
 }  // namespace
 
-std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector& geo_vec) {
+std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector& geo_vec) {
   auto size = geo_vec.size();
-  auto offsets = GpuMakeUniqueArray<int>(size);
+  auto offsets = GpuMakeUniqueArray<int>(size + 1);
   auto input_holder = geo_vec.CreateReadGpuContext();
 
   WkbArrowContext arrow_ctx{nullptr, offsets.get(), size};
   int value_length;
-  internal::ExportWkbFillOffsets(*input_holder, arrow_ctx, &value_length);
+  internal::ToArrowWkbFillOffsets(*input_holder, arrow_ctx, &value_length);
   auto values = GpuMakeUniqueArray<char>(value_length);
-  internal::ExportWkbFillValues(*input_holder, arrow_ctx);
+  arrow_ctx.values = values.get();
+  internal::ToArrowWkbFillValues(*input_holder, arrow_ctx);
 
   auto offsets_buffer = AllocArrowBufferAndCopy(size + 1, offsets.get());
   auto values_buffer = AllocArrowBufferAndCopy(value_length, offsets.get());
@@ -44,8 +45,6 @@ std::shared_ptr<arrow::Array> ExportWkbFrom(const GeometryVector& geo_vec) {
                                                       nullptr, 0);
   return results;
 }
-
-
 
 }  // namespace cuda
 }  // namespace gis
