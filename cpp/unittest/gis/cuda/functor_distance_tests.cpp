@@ -21,7 +21,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_distance.h"
-#include "test_utils/transforms.h"
+#include "gis/cuda/test_common/test_common.h"
 
 using std::vector;
 namespace zilliz::gis::cuda {

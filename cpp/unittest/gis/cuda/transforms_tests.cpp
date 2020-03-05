@@ -21,19 +21,13 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/test_common/test_common.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
-#include "test_utils/transforms.h"
 
 namespace zilliz {
 namespace gis {
 namespace cuda {
 using std::vector;
-
-TEST(Transform, TestABI) {
-  using std::string;
-  string str("hello,world");
-  ASSERT_TRUE(test_cuda_abi(str));
-}
 
 TEST(Transform, Naive) {
   auto std_data = hexstring_to_binary(
@@ -58,10 +52,10 @@ TEST(Transform, Arrow) {
       "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
       "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
   };
-  auto std_wkb_arrow = WktsToArrowWkb(wkt_vec);
-  auto geo_vec = ArrowWkbToGeometryVector(std_wkb_arrow);
-  auto wkb_arrow = GeometryVectorToArrowWkb(geo_vec);
-  auto is_equal = wkb_arrow->Equals(std_wkb_arrow);
+  auto std_arrow_wkb = WktsToArrowWkb(wkt_vec);
+  auto geo_vec = ArrowWkbToGeometryVector(std_arrow_wkb);
+  auto arrow_wkb = GeometryVectorToArrowWkb(geo_vec);
+  auto is_equal = arrow_wkb->Equals(std_arrow_wkb);
   ASSERT_TRUE(is_equal);
   //  auto ret_arrow = Ge
 }

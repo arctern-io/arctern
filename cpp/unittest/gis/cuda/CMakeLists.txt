@@ -1,4 +1,6 @@
-set(gis_cuda_test_srcs transforms_tests.cpp
+set(gis_cuda_test_srcs
+        test_common/test_common.cpp
+        transforms_tests.cpp
         functor_distance_tests.cpp
         functor_area_tests.cpp
         functor_point_tests.cpp

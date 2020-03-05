@@ -28,7 +28,18 @@
 #include "common/version.h"
 #include "gis/api.h"
 #include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
 #include "utils/check_status.h"
+
+namespace zilliz {
+namespace gis {
+namespace cuda {
+
+namespace GeometryVectorFactory {
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
+GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
+
+}  // namespace GeometryVectorFactory
 
 inline std::vector<char> hexstring_to_binary(const std::string& str) {
   std::vector<char> vec;
@@ -42,3 +53,6 @@ inline std::vector<char> hexstring_to_binary(const std::string& str) {
   }
   return vec;
 }
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

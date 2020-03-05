@@ -28,8 +28,8 @@ std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
 
 using internal::WkbArrowContext;
 
-GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& wkb_) {
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(wkb_);
+GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& array_wkb) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array_wkb);
   auto size = (int)wkb->length();
   auto binary_bytes = wkb->value_offset(size);
   auto data = GpuMakeUniqueArrayAndCopy((char*)wkb->value_data()->data(), binary_bytes);

@@ -206,13 +206,6 @@ class GeometryVector {
   DataState data_state_ = DataState::Invalid;
 };
 
-namespace GeometryVectorFactory {
-GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
-GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
-
-}  // namespace GeometryVectorFactory
-bool test_cuda_abi(const std::string& str);
-
 using GpuContext = GeometryVector::GpuContext;
 namespace internal {
 void ExclusiveScan(int* offsets, int size);
