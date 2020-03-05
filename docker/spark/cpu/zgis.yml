@@ -1,5 +1,6 @@
 name: zgis_dev
 dependencies:
+- python=3.7
 - conda-forge::gdal=3.0.4
 - conda-forge::pyarrow
 - conda-forge::rapidjson
