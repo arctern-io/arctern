@@ -50,6 +50,34 @@ class AreaVisitor : public OGRDefaultConstGeometryVisitor {
   double area_ = 0;
 };
 
+class LengthVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~LengthVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString* geo) override { length_ += geo->get_Length(); }
+  void visit(const OGRLinearRing* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRPolygon* ) override;
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRMultiPolygon* ) override;
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRCompoundCurve*) override;
+  // void visit(const OGRCurvePolygon* ) override ;
+  // void visit(const OGRMultiCurve*) override;
+  // void visit(const OGRMultiSurface*) override;
+  // void visit(const OGRTriangle*) override;
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const double length() const { return length_; }
+  void reset() { length_ = 0; }
+
+ private:
+  double length_ = 0;
+};
+
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
