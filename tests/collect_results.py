@@ -59,6 +59,7 @@ import glob
 def collect_results(file_path, results_dir):
     with open(file_path, 'r') as f:
         cs = f.readlines()
+        cs = [x.strip() for x in cs if not x.startswith('#')]
         names = [x.strip().split('=')[0] for x in cs]
         table_names = [x.strip().split('=')[1] for x in cs]
     
@@ -68,13 +69,11 @@ def collect_results(file_path, results_dir):
         target = os.path.join(base_dir, x, '*.json')
         file_name = glob.glob(target)
         # file_name = glob.glob(target)
-        print(file_name)
+        # print(file_name)
         if os.path.isfile(file_name[0]):
             shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.json'))
         else:
             print('file [%s] not exist' % file_name[0])
-
-            
 
 
 def get_sort_zgis(file_path):

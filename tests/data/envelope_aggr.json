@@ -1,7 +1,7 @@
 {"geos":"POINT (1 8)"}
 {"geos":"MULTIPOINT (1 1,3 4)"}
 {"geos":"LINESTRING (1 1,1 2,2 3)"}
-{"geos":"MULTILINESTRING ((1 1,1 2}(2 4,1 9,1 8))"} 
+{"geos":"MULTILINESTRING ((1 1,1 2),(2 4,1 9,1 8))"} 
 {"geos":"MULTILINESTRING ((1 1,3 4))"}
 {"geos":"POLYGON ((1 1,1 2,2 2,2 1,1 1))"}
 {"geos":"POINT EMPTY"}

@@ -542,10 +542,11 @@ if __name__ == "__main__":
     # confs = get_test_config('test.json')
     # for c in confs:
     #     run_test(spark_session, c)
-
+    
     run_test_st_point(spark_session)
     run_test_envelope_aggr_1(spark_session)
     run_test_envelope_aggr_2(spark_session)
+    run_test_union_aggr_1(spark_session)
     run_test_union_aggr_2(spark_session)
     run_test_st_isvalid_1(spark_session)
     run_test_st_intersection(spark_session)

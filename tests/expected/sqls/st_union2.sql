@@ -13,5 +13,5 @@ insert into test_table values
 (10.8, 83.9, 16.5, 84.4),
 (12.5, 80.8, 14.8, 97.1);   
 
-select st_astext(st_makeenvelope(x_min,y_min,x_max,y_max)) as myshape from test_table;
-select st_astext(st_union(myshape)) as union_aggr from (select st_astext(st_makeenvelope(x_min,y_min,x_max,y_max)) as myshape from test_table);
+
+select st_astext(st_union(myshape)) from (select st_makeenvelope(x_min,y_min,x_max,y_max) as myshape from test_table) as union_aggr;
