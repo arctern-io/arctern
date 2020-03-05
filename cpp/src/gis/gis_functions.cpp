@@ -138,6 +138,12 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   return gdal::ST_Length(geometries);
 }
 
+std::shared_ptr<arrow::Array> ST_HausdorffDistance(
+    const std::shared_ptr<arrow::Array>& geo1,
+    const std::shared_ptr<arrow::Array>& geo2) {
+  return gdal::ST_HausdorffDistance(geo1, geo2);
+}
+
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
 std::shared_ptr<arrow::Array> ST_Equals(

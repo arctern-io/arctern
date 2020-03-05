@@ -32,6 +32,7 @@ __all__ = [
     "ST_Area_UDF",
     "ST_Centroid_UDF",
     "ST_Length_UDF",
+    "ST_HausdorffDistance_UDF",
     "ST_ConvexHull_UDF",
     "ST_NPoints_UDF",
     "ST_Envelope_UDF",
@@ -237,6 +238,14 @@ def ST_Length_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_Length
     rs = ST_Length(arr_geos)
+    return rs.to_pandas()
+
+@pandas_udf("double", PandasUDFType.SCALAR)
+def ST_HausdorffDistance_UDF(geo1, geo2):
+    arr1 = pa.array(geo1, type='string')
+    arr2 = pa.array(geo2, type='string')
+    from zilliz_gis import ST_HausdorffDistance
+    rs = ST_HausdorffDistance(arr1, arr2)
     return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)

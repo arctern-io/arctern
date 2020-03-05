@@ -54,7 +54,7 @@ export PROJ_LIB=/opt/conda/envs/arctern_dev/share/proj
 
 ### 下载pyspark测试用例
 ```bash
-wget https://raw.githubusercontent.com/zilliztech/GIS/conda/spark/pyspark/examples/gis/spark_udf_ex.py
+wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/examples/gis/spark_udf_ex.py
 ```
 
 ### 运行spark测试用例

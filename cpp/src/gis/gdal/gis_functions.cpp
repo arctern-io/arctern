@@ -16,6 +16,8 @@
 
 #include "gis/gdal/gis_functions.h"
 #include "common/version.h"
+#include "gis/gdal/arctern_geos.h"
+#include "gis/gdal/geometry_visitor.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
@@ -24,7 +26,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 #include <limits>
+#include <utility>
+#include <vector>
 
 namespace zilliz {
 namespace gis {
@@ -203,6 +208,16 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   return is_valid;
 }
 
+inline OGRGeometry* Wrapper_createFromWkt(
+    const std::shared_ptr<arrow::StringArray>& array, int idx) {
+  if (array->IsNull(idx)) return nullptr;
+  OGRGeometry* geo = nullptr;
+  auto err_code =
+      OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
+  if (err_code) return nullptr;
+  return geo;
+}
+
 inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
   OGRGeometry* geo = nullptr;
   auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
@@ -333,8 +348,27 @@ UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_IsSimple, arrow::BooleanBuilder, geo,
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_GeometryType, arrow::StringBuilder, geo,
                                  Wrapper_OGR_G_GetGeometryName(geo));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_NPoints, arrow::Int64Builder, geo,
-                                 OGR_G_GetPointCount(geo));
+std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo) {
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto len = geo->length();
+  arrow::Int64Builder builder;
+  auto npoints = new NPointsVisitor;
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkt(wkt, i);
+    if (geo == nullptr) {
+      builder.AppendNull();
+    } else {
+      npoints->reset();
+      geo->accept(npoints);
+      builder.Append(npoints->npoints());
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  delete npoints;
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
@@ -428,8 +462,40 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
 //     return results;
 // }
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Intersection, arrow::StringBuilder, geo_1, geo_2,
-                                  OGR_G_Intersection(geo_1, geo_2));
+std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array>& geo1,
+                                              const std::shared_ptr<arrow::Array>& geo2) {
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  auto len = wkt1->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+      builder.AppendNull();
+    } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.Append("GEOMETRYCOLLECTION EMPTY");
+    } else {
+      auto rst = ogr1->Intersection(ogr2);
+      if (rst == nullptr) {
+        builder.AppendNull();
+      } else if (rst->IsEmpty()) {
+        builder.Append("GEOMETRYCOLLECTION EMPTY");
+      } else {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(rst);
+        builder.Append(std::string(wkt));
+        CPLFree(wkt);
+      }
+      OGRGeometryFactory::destroyGeometry(rst);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+
+  return results;
+}
 
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_MakeValid, arrow::StringBuilder, geo,
                                  OGR_G_MakeValid(geo));
@@ -536,13 +602,99 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   return results;
 }
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Distance, arrow::DoubleBuilder, geo_1, geo_2,
-                                  OGR_G_Distance(geo_1, geo_2));
+std::shared_ptr<arrow::Array> ST_HausdorffDistance(
+    const std::shared_ptr<arrow::Array>& geo1,
+    const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::DoubleBuilder builder;
+  auto geos_ctx = OGRGeometry::createGEOSContext();
+  for (int32_t i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
+    auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
+    auto geos1 = ogr1->exportToGEOS(geos_ctx);
+    auto geos2 = ogr2->exportToGEOS(geos_ctx);
+    double dist;
+    int geos_err = GEOSHausdorffDistance_r(geos_ctx, geos1, geos2, &dist);
+    if (geos_err == 0) {  // geos error
+      dist = -1;
+    }
+    GEOSGeom_destroy_r(geos_ctx, geos1);
+    GEOSGeom_destroy_r(geos_ctx, geos2);
+    CHECK_ARROW(builder.Append(dist));
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  OGRGeometry::freeGEOSContext(geos_ctx);
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
+std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
+                                          const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::DoubleBuilder builder;
+
+  for (int i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.AppendNull();
+    } else if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      double dist = OGR_G_Distance(ogr1, ogr2);
+      if (dist < 0) {
+        builder.AppendNull();
+      } else {
+        builder.Append(dist);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 /************************ SPATIAL RELATIONSHIP ************************/
 
-BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Equals, arrow::BooleanBuilder, geo_1, geo_2,
-                                  OGR_G_Equals(geo_1, geo_2) != 0);
+/*************************************************
+ * https://postgis.net/docs/ST_Equals.html
+ * Returns TRUE if the given Geometries are "spatially equal".
+ * Use this for a 'better' answer than '='.
+ * Note by spatially equal we mean ST_Within(A,B) = true and ST_Within(B,A) = true and
+ * also mean ordering of points can be different but represent the same geometry
+ * structure. To verify the order of points is consistent, use ST_OrderingEquals (it must
+ * be noted ST_OrderingEquals is a little more stringent than simply verifying order of
+ * points are the same).
+ * ***********************************************/
+std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
+                                        const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  arrow::BooleanBuilder builder;
+  for (int32_t i = 0; i < len; ++i) {
+    auto ogr1 = Wrapper_createFromWkt(wkt1->GetString(i).c_str());
+    auto ogr2 = Wrapper_createFromWkt(wkt2->GetString(i).c_str());
+    if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
+      builder.Append(true);
+    } else {
+      builder.Append(false);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Touches, arrow::BooleanBuilder, geo_1, geo_2,
                                   OGR_G_Touches(geo_1, geo_2) != 0);
@@ -564,32 +716,100 @@ BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Within, arrow::BooleanBuilder, geo_1, geo_2
 
 /*********************** AGGREGATE FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_Union_Aggr(
-    const std::shared_ptr<arrow::Array>& geometries) {
-  auto len = geometries->length();
-  assert(len > 0);
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>& geo) {
+  auto len = geo->length();
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  std::vector<OGRGeometry*> union_agg;
+  OGRPolygon empty_polygon;
+  OGRGeometry *g0, *g1;
+  OGRGeometry *u0, *u1;
+  for (int i = 0; i <= len / 2; i++) {
+    if ((i * 2) < len) {
+      g0 = Wrapper_createFromWkt(wkt, 2 * i);
+    } else {
+      g0 = nullptr;
+    }
 
-  arrow::StringBuilder builder;
-  OGRGeometry *geo_result, *geo_var, *geo_tmp;
-  char* wkt_result;
+    if ((i * 2 + 1) < len) {
+      g1 = Wrapper_createFromWkt(wkt, 2 * i + 1);
+    } else {
+      g1 = nullptr;
+    }
 
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(0).c_str(),
-                                               nullptr, &geo_result));
+    if (g0 != nullptr) {
+      auto type = wkbFlatten(g0->getGeometryType());
+      if (type == wkbMultiPolygon) {
+        u0 = g0->UnionCascaded();
+        OGRGeometryFactory::destroyGeometry(g0);
+      } else {
+        u0 = g0;
+      }
+    } else {
+      u0 = nullptr;
+    }
 
-  for (int32_t i = 1; i < len; i++) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, &geo_var));
-    geo_tmp = geo_result;
-    geo_result = geo_result->Union(geo_var);
-    OGRGeometryFactory::destroyGeometry(geo_var);
-    OGRGeometryFactory::destroyGeometry(geo_tmp);
+    if (g1 != nullptr) {
+      auto type = wkbFlatten(g1->getGeometryType());
+      if (type == wkbMultiPolygon) {
+        u1 = g1->UnionCascaded();
+        OGRGeometryFactory::destroyGeometry(g1);
+      } else {
+        u1 = g1;
+      }
+    } else {
+      u1 = nullptr;
+    }
+
+    if ((u0 != nullptr) && (u1 != nullptr)) {
+      OGRGeometry* ua = u0->Union(u1);
+      union_agg.push_back(ua);
+      OGRGeometryFactory::destroyGeometry(u0);
+      OGRGeometryFactory::destroyGeometry(u1);
+    } else if ((u0 != nullptr) && (u1 == nullptr)) {
+      union_agg.push_back(u0);
+    } else if ((u0 == nullptr) && (u1 != nullptr)) {
+      union_agg.push_back(u1);
+    }
   }
+  len = union_agg.size();
+  while (len > 1) {
+    std::vector<OGRGeometry*> union_tmp;
+    for (int i = 0; i <= len / 2; ++i) {
+      if (i * 2 < len) {
+        u0 = union_agg[i * 2];
+      } else {
+        u0 = nullptr;
+      }
 
-  CHECK_GDAL(OGR_G_ExportToWkt(geo_result, &wkt_result));
-  OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo_result);
-  CHECK_ARROW(builder.Append(wkt_result));
-  CPLFree(wkt_result);
+      if (i * 2 + 1 < len) {
+        u1 = union_agg[i * 2 + 1];
+      } else {
+        u1 = nullptr;
+      }
+
+      if ((u0 != nullptr) && (u1 != nullptr)) {
+        OGRGeometry* ua = u0->Union(u1);
+        union_tmp.push_back(ua);
+        OGRGeometryFactory::destroyGeometry(u0);
+        OGRGeometryFactory::destroyGeometry(u1);
+      } else if ((u0 != nullptr) && (u1 == nullptr)) {
+        union_tmp.push_back(u0);
+      } else if ((u0 == nullptr) && (u1 != nullptr)) {
+        union_tmp.push_back(u1);
+      }
+    }
+    union_agg = std::move(union_tmp);
+    len = union_agg.size();
+  }
+  arrow::StringBuilder builder;
+  if (union_agg.empty()) {
+    builder.AppendNull();
+  } else {
+    char* wkt = Wrapper_OGR_G_ExportToWkt(union_agg[0]);
+    CHECK_ARROW(builder.Append(wkt));
+    CPLFree(wkt);
+    OGRGeometryFactory::destroyGeometry(union_agg[0]);
+  }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
