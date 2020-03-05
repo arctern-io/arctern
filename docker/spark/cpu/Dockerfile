@@ -27,6 +27,7 @@ RUN mkdir -p /opt/spark && \
 
 COPY arctern /tmp/arctern
 
+ENV PATH=/opt/conda/bin:$PATH
 RUN /tmp/arctern/install_arctern_spark.sh
 
 COPY prebuildfs /
