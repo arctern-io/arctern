@@ -145,7 +145,6 @@ void GeometryVector::OutputFinalizeWith(const GpuContext& gpu_ctx) {
   data_state_ = DataState::PrefixSumOffset_FullData;
 }
 
-
 void GeometryVector::clear() {
   tags_.clear();
   metas_.clear();
