@@ -16,6 +16,8 @@
 // under the License.
 
 #pragma once
+#include <memory>
+
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/mock/arrow/api.h"
 namespace zilliz {
@@ -28,4 +30,4 @@ std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz
-#include "conversions.impl.h"
+#include "gis/cuda/conversion/conversions.impl.h"

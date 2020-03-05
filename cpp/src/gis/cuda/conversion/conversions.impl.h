@@ -16,7 +16,7 @@
 // under the License.
 
 #pragma once
-#include "conversions.h"
+#include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/mock/arrow/api.h"
 
 namespace zilliz {

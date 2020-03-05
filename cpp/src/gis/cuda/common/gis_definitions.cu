@@ -16,6 +16,8 @@
 // under the License.
 
 #include <thrust/scan.h>
+
+#include "gis/cuda/common/gis_definitions.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
