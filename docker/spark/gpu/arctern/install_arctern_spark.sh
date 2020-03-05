@@ -28,5 +28,6 @@ fi
 
 cd ${SCRIPTS_DIR}
 
-conda install -y -q -n arctern -c conda-forge -c arctern-dev ${LIBARCTERN_FILE} ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
+conda install -y -q -n arctern -c conda-forge -c arctern-dev/label/cuda10.0 ${LIBARCTERN_FILE}
+conda install -y -q -n arctern -c conda-forge -c arctern-dev ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 conda clean --all -y

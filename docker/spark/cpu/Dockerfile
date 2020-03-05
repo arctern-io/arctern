@@ -18,12 +18,13 @@ RUN mkdir -p /opt/spark && \
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda create -n arctern python=3.7 && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate arctern" >> ~/.bashrc
 
 COPY arctern /tmp/arctern
 
 ENV PATH=/opt/conda/bin:$PATH
-RUN /tmp/arctern/install_arctern_spark.sh
+RUN /tmp/arctern/install_arctern_spark.sh && rm -rf /tmp/arctern
 
 COPY prebuildfs /
 COPY rootfs /
