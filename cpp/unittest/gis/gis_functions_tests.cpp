@@ -608,15 +608,17 @@ TEST(geometry_test, test_ST_Intersection) {
 }
 
 TEST(geometry_test, test_ST_PrecisionReduce){
-   auto l0 = "POINT (120.6 100.999)";
-   auto l1 = "POINT (50.555 6.00008)";
-   auto l2 = "POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456))";
-   auto l3 = "LINESTRING (100.345 89.666,89.03 78)";
-   auto l4 = "MULTIPOINT (120 90,89 90.009)";
-   auto l5 = "MULTIPOINT ((12978 89765),(89.876 90.087))";
-   auto l6 = "MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.78987,20 11,20 20,20 11,11 11.78987)))";
-   auto l7 = "MULTILINESTRING ((12.666 15.23,89.45 98.67),(12.555 78.777,90.789 67.3))";
-   auto l8 = "GEOMETRYCOLLECTION (POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456)),POINT (120.6 100.999))";
+  auto l0 = "POINT (120.6 100.999)";
+  auto l1 = "POINT (50.555 6.00008)";
+  auto l2 = "POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456))";
+  auto l3 = "LINESTRING (100.345 89.666,89.03 78)";
+  auto l4 = "MULTIPOINT (120 90,89 90.009)";
+  auto l5 = "MULTIPOINT ((12978 89765),(89.876 90.087))";
+  auto l6 = "MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.78987,20 11,20 20,20 11,11 11.78987)))";
+  auto l7 = "MULTILINESTRING ((12.666 15.23,89.45 98.67),(12.555 78.777,90.789 67.3))";
+  auto l8 = "GEOMETRYCOLLECTION (POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456)),POINT (120.6 100.999))";
+  auto l9 = "CIRCULARSTRING (0.999 2.888, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)";
+
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> array;
 

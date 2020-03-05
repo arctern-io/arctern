@@ -15,6 +15,7 @@
  */
 
 #include "gis/gdal/geometry_visitor.h"
+#include <iostream>
 
 namespace zilliz {
 namespace gis {
@@ -27,69 +28,70 @@ void NPointsVisitor::visit(const OGRPoint* geo) {
 
 double PrecisionReduceVisitor::coordinate_precision_reduce(double coordinate){
     std::string coordinate_string = std::to_string(coordinate);
-    std::string precision_reduce_coordinate;
-    int32_t num_0_to_add = 0;
-
-    if (int64_t(coordinate_string.find(".")) == -1 || int64_t(coordinate_string.find(".")) > precision_) {
-      if (int64_t(coordinate_string.find(".")) == -1){
-        num_0_to_add = coordinate_string.length() - precision_;
-      }
-      else{
-        num_0_to_add = coordinate_string.find(".") - precision_;
-      }
-      
-      if (coordinate_string.length() <= precision_) {
-        precision_reduce_coordinate = coordinate_string;
-      }
-      else{
-
-        if (int32_t(coordinate_string[precision_] - 48) < 5) {
-          precision_reduce_coordinate = coordinate_string.substr(0, precision_);
-          for(int32_t i = 0; i < num_0_to_add; i++){
-            precision_reduce_coordinate += "0";
-          }
-        }
-        else{
-         double value_of_coordinate = std::stod(coordinate_string.substr(0, precision_)) + 1;
-         precision_reduce_coordinate = std::to_string(value_of_coordinate).substr(0, precision_);
-         for (int32_t i = 0; i < num_0_to_add; i++) {
-           precision_reduce_coordinate += "0";
-         }     
-        }
-
-      }
-    }
-    else{
-     if (coordinate_string.find(".") == precision_) {
-       if (int32_t(coordinate_string[precision_ + 1] - 48) < 5) {
-         precision_reduce_coordinate = coordinate_string.substr(0, precision_);
-       }
-       else{
-         double value_of_coordinate = std::stod(coordinate_string.substr(0, precision_));
-         precision_reduce_coordinate = std::to_string(value_of_coordinate + 1).substr(0, precision_); 
-       }
-     }
-     else{
-       if (coordinate_string.length() <= precision_ + 1){
-         precision_reduce_coordinate = coordinate_string;
-       }
-       else{
-         if(int32_t(coordinate_string[precision_ + 1] - 48 ) < 5){
-           precision_reduce_coordinate = coordinate_string.substr(0, precision_ + 1);
-         }
-         else{
-           double value_of_coordinate = std::stod(coordinate_string.substr(0, precision_ + 1));
-           double carry_value = 1;
-           for (int32_t i = 0; i < (precision_ - coordinate_string.find(".")); i++) {
-             carry_value /= 10;
-           }
-           precision_reduce_coordinate = std::to_string(value_of_coordinate + carry_value).substr(0, precision_ + 1);
-         }
-       }
-     }
-    }
+    int32_t sign_flag = 0;
     
-    return std::stod(precision_reduce_coordinate);    
+    if (coordinate < 0) { 
+      sign_flag = 1;
+      coordinate -= coordinate;
+    }
+
+    if (int64_t(coordinate_string.find(".")) != -1) {
+      if (coordinate_string.length() <= (precision_ + 1)) {
+       
+      }
+      else {
+        if (coordinate_string.find(".") > precision_) {
+          double carry_value = 1;
+          for (int32_t i = 0; i < (coordinate_string.find(".") - precision_); i++) {
+            carry_value *= 10;
+          }
+          coordinate /= carry_value;
+          if (int32_t(coordinate_string[precision_] - 48) < 5) {
+            coordinate = int64_t(coordinate) * carry_value; 
+          }  
+          else {
+            coordinate = int64_t(coordinate + 1) * carry_value; 
+          }
+       }
+       else {
+          double carry_value = 1;
+          for (int32_t i = 0; i < (precision_ - coordinate_string.find(".")); i++){
+             carry_value *= 10;
+          }
+          coordinate *= carry_value;
+          if (int32_t(coordinate_string[precision_ + 1] - 48) < 5) {
+             coordinate = int64_t(coordinate) / carry_value;
+          }
+          else{
+             coordinate = int64_t(coordinate + 1) / carry_value;
+          }
+       }
+     }
+   }
+   else {
+     if (coordinate_string.length() < precision_){
+
+     }
+     else {
+       int32_t carry_value = 1;
+       for (int32_t i = 0; i < (coordinate_string.length() - precision_); i++) {
+          carry_value *= 10;
+       }
+       coordinate /= carry_value;
+       if (coordinate_string[precision_] < 5) {
+         coordinate = int64_t(coordinate) * carry_value;
+       }
+       else {
+         coordinate = int64_t(coordinate + 1) * carry_value;
+       }
+     }
+   }
+
+   if (sign_flag == 1) {
+      coordinate -= coordinate;
+   }
+   
+   return coordinate;
 }
 
 void PrecisionReduceVisitor::visit(OGRPoint* geo){
