@@ -1,3 +1,20 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 #include <exception>
 
 #include "gis/cuda/common/gpu_memory.h"
@@ -21,7 +38,7 @@ __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int
 
 // return: size of total data length in bytes
 void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
-                          int* value_length_ptr) {
+                           int* value_length_ptr) {
   assert(input.size == output.size);
   assert(output.offsets);
   assert(!output.values);
@@ -125,7 +142,7 @@ __global__ static void CalcValues(const GpuContext input, WkbArrowContext output
       }
     }
     auto wkb_length = encoder.wkb_iter - wkb_iter;
-    auto std_wkb_length =  output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
+    auto std_wkb_length = output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
     assert(std_wkb_length == wkb_length);
   }
 }

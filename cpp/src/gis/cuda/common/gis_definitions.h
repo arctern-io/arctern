@@ -206,7 +206,6 @@ class GeometryVector {
   DataState data_state_ = DataState::Invalid;
 };
 
-
 namespace GeometryVectorFactory {
 GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
 GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
