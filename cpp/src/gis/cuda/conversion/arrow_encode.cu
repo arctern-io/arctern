@@ -12,8 +12,8 @@ __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int
   auto index = threadIdx.x + blockDim.x * blockIdx.x;
   if (index < size) {
     auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
-    auto value_offset = input.value_offsets[index];
-    auto meta_offset = input.meta_offsets[index];
+    auto value_offset = input.value_offsets[index] * sizeof(double);
+    auto meta_offset = input.meta_offsets[index] * sizeof(int);
     auto wkb_length = common_offset + value_offset + meta_offset;
     output.offsets[index] = wkb_length;
   }
@@ -21,7 +21,7 @@ __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int
 
 // return: size of total data length in bytes
 void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
-                          int* value_length) {
+                          int* value_length_ptr) {
   assert(input.size == output.size);
   assert(output.offsets);
   assert(!output.values);
@@ -30,9 +30,9 @@ void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
     auto config = GetKernelExecConfig(offset_size);
     CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
   }
-  if (value_length) {
-    auto src = input.meta_offsets + input.size;
-    GpuMemcpy(value_length, src, 1);
+  if (value_length_ptr) {
+    auto src = output.offsets + input.size;
+    GpuMemcpy(value_length_ptr, src, 1);
   }
 }
 
@@ -123,7 +123,8 @@ __global__ static void CalcValues(const GpuContext input, WkbArrowContext output
       }
     }
     auto wkb_length = encoder.wkb_iter - wkb_iter;
-    assert(output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index) == wkb_length);
+    auto std_wkb_length =  output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
+    assert(std_wkb_length == wkb_length);
   }
 }
 
