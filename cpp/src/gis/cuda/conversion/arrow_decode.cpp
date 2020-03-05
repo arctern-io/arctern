@@ -15,29 +15,30 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#pragma once
-#include <cstdint>
+#include "gis/cuda/common/function_wrapper.h"
+#include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/conversion/conversions.impl.h"
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
 
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
+std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
-  }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
-};
+using internal::WkbArrowContext;
+
+GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& array_wkb) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array_wkb);
+  auto size = (int)wkb->length();
+  auto binary_bytes = wkb->value_offset(size);
+  auto data =
+      GpuMakeUniqueArrayAndCopy((const char*)wkb->value_data()->data(), binary_bytes);
+  auto offsets = GpuMakeUniqueArrayAndCopy(wkb->raw_value_offsets(), size + 1);
+  auto geo_vec = internal::ArrowWkbToGeometryVectorImpl(
+      WkbArrowContext{data.get(), offsets.get(), size});
+  return geo_vec;
+}
 
 }  // namespace cuda
 }  // namespace gis

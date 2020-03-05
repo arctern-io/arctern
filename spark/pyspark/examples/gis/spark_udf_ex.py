@@ -95,7 +95,7 @@ def run_st_intersection(spark):
     intersection_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     intersection_df.createOrReplaceTempView("intersection")
     rs = spark.sql("select ST_Intersection_UDF(left, right) from intersection").collect()
-    assert rs[0][0] == 'POINT EMPTY'
+    assert rs[0][0] == 'GEOMETRYCOLLECTION EMPTY'
     assert rs[1][0] == 'POINT (0 0)'
 
 def run_st_isvalid(spark):

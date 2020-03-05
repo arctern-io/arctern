@@ -15,30 +15,36 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#pragma once
-#include <cstdint>
+#include "gis/cuda/test_common/test_common.h"
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
+#include "gis/cuda/wkb/wkb_transforms.h"
+
 namespace zilliz {
 namespace gis {
 namespace cuda {
+// only for testing
+// create Geometry from WktArray
+namespace GeometryVectorFactory {
 
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
+  auto input = WktsToArrowWkb(wkt_vec);
+  return ArrowWkbToGeometryVector(input);
+}
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
+GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
+  arrow::BinaryBuilder builder;
+  for (const auto& wkb : wkb_vec) {
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
   }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
-};
+  std::shared_ptr<arrow::Array> arrow_wkb;
+  auto st = builder.Finish(&arrow_wkb);
+  assert(st.ok());
+  auto result = ArrowWkbToGeometryVector(arrow_wkb);
+  return result;
+}
 
+}  // namespace GeometryVectorFactory
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz

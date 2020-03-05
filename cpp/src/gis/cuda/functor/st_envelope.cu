@@ -57,7 +57,7 @@ struct MinMax {
 __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, int index,
                                                       GpuContext& results,
                                                       bool skip_write) {
-  assert(input.get_tag(index).get_group() == WkbGroup::None);
+  assert(input.get_tag(index).get_space_type() == WkbSpaceType::XY);
   if (!skip_write) {
     auto values_beg = input.get_value_ptr(index);
     auto values_end = input.get_value_ptr(index + 1);
@@ -97,7 +97,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, i
     value_output[4 * 2 + 1] = final_y.min;
   }
 
-  auto result_tag = WkbTag(WkbCategory::Polygon, WkbGroup::None);
+  auto result_tag = WkbTag(WkbCategory::kPolygon, WkbSpaceType::XY);
   return OutputInfo{result_tag, 1 + 1, 2 * 5};
 }
 }  // namespace

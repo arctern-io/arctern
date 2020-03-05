@@ -16,12 +16,16 @@
 // under the License.
 
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "gis/cuda/mock/arrow/api.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
 std::vector<char> Wkt2Wkb(const std::string& geo_wkt);
+std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec);
 
 }  // namespace cuda
 }  // namespace gis
