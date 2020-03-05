@@ -2486,35 +2486,34 @@ TEST(geometry_test, test_ST_Centroid) {
   // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
 }
 
-// TEST(geometry_test, test_ST_Length2) {
-//   auto p0 = "CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1
-//   1))"; auto p1 = "CURVEPOLYGON(COMPOUNDCURVE(CIRCULARSTRING(0 0,2 0, 2 1, 2 3, 4 3),(4
-//   3, 4 5, 1 4, 0 0)), CIRCULARSTRING(1.7 1, 1.4 0.4, 1.6 0.4, 1.6 0.5, 1.7 1) )"; auto
-//   p2 = "MULTISURFACE(CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3
-//   1, 1 1)),((10 10, 14 12, 11 10, 10 10),(11 11, 11.5 11, 11 11.5, 11 11)))"; auto p3 =
-//   "MULTISURFACE Z (CURVEPOLYGON Z (CIRCULARSTRING Z (-2 0 0, -1 -1 1, 0 0 2, 1 -1 3, 2
-//   0 4, 0 2 2, -2 0 0), (-1 0 1, 0 0.5 2, 1 0 3, 0 1 3, -1 0 1)), ((7 8 7, 10 10 5, 6 14
-//   3, 4 11 4, 7 8 7)))"; auto p4 = "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1
-//   -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4
-//   11, 7 8)))";
+TEST(geometry_test, test_ST_Length2) {
+  auto p0 = "CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))";
+  auto p1 = "CURVEPOLYGON(COMPOUNDCURVE(CIRCULARSTRING(0 0,2 0, 2 1, 2 3, 4 3),(4 3, 4 5, 1 4, 0 0)), CIRCULARSTRING(1.7 1, 1.4 0.4, 1.6 0.4, 1.6 0.5, 1.7 1) )";
+  auto p2 = "MULTISURFACE(CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1)),((10 10, 14 12, 11 10, 10 10),(11 11, 11.5 11, 11 11.5, 11 11)))";
+  auto p3 = "MULTISURFACE Z (CURVEPOLYGON Z (CIRCULARSTRING Z (-2 0 0, -1 -1 1, 0 0 2, 1 -1 3, 2 0 4, 0 2 2, -2 0 0), (-1 0 1, 0 0.5 2, 1 0 3, 0 1 3, -1 0 1)), ((7 8 7, 10 10 5, 6 14 3, 4 11 4, 7 8 7)))";
+  auto p4 = "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 11, 7 8)))";
 
-//   arrow::StringBuilder builder;
-//   std::shared_ptr<arrow::Array> input;
-//   builder.Append(std::string(p0));
-//   builder.Append(std::string(p1));
-//   builder.Append(std::string(p2));
-//   builder.Append(std::string(p3));
-//   builder.Append(std::string(p4));
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Finish(&input);
 
-//   auto res = zilliz::gis::ST_Length(input);
-//   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+  auto res = zilliz::gis::ST_Length(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-//   EXPECT_DOUBLE_EQ(res_double->Value(0), 24.5999588773797);
-//   EXPECT_DOUBLE_EQ(res_double->Value(1), 19.2364895818726);
-//   EXPECT_DOUBLE_EQ(res_double->Value(2), 24.5999588773797);
-//   EXPECT_DOUBLE_EQ(res_double->Value(3), 17.6308657166052);
-//   EXPECT_DOUBLE_EQ(res_double->Value(4), 17.6308657166052);
-// }
+  EXPECT_DOUBLE_EQ(res_double->Value(0), 24.599958877379656);
+  std::cout << res_double->Value(1) << std::endl;
+  std::cout << res_double->Value(2) << std::endl;
+  std::cout << res_double->Value(3) << std::endl;
+  std::cout << res_double->Value(4) << std::endl;
+  // EXPECT_DOUBLE_EQ(res_double->Value(2), 24.5999588773797);
+  // EXPECT_DOUBLE_EQ(res_double->Value(3), 17.6308657166052);
+  // EXPECT_DOUBLE_EQ(res_double->Value(4), 17.6308657166052);
+}
 
 TEST(geometry_test, test_ST_Length) {
   auto p1 = "POINT (0 1)";
