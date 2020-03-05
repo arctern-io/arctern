@@ -86,7 +86,7 @@ TEST END: /opt/conda/envs/arctern/conda-bld/linux-64/libarctern-0.0.0.dev-0.tar.
 
 安装包依赖
 ```shell
-$ sudo apt install libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev
+$ sudo apt install libgl1-mesa-dev libegl1-mesa-dev
 ```
 
 构建Conda包

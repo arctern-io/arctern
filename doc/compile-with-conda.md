@@ -93,7 +93,7 @@ source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 ```
 其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
 - 运行ci/scripts目录下的python_build.sh  
-`./python_build.sh -l $ARCTERN_LIB_DIR`
+`./python_build.sh`
 
 python_build.sh具体参数设置可运行下面命令:
 ```
