@@ -52,16 +52,17 @@ TEST(Transform, Naive) {
 TEST(Transform, Arrow) {
   vector<std::string> wkt_vec = {
       "Point(1 2)",
-//      "Point(2 3)",
-//      "LineString(3 4,4 5)",
-//      "LineString(3 4,4 5)",
-//      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
-//      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
+      "Point(2 3)",
+      "LineString(3 4,4 5)",
+      "LineString(3 4,4 5)",
+      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
+      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
   };
   auto std_wkb_arrow = WktsToArrowWkb(wkt_vec);
   auto geo_vec = ArrowWkbToGeometryVector(std_wkb_arrow);
   auto wkb_arrow = GeometryVectorToArrowWkb(geo_vec);
-  auto x = 1+1;
+  auto is_equal = wkb_arrow->Equals(std_wkb_arrow);
+  ASSERT_TRUE(is_equal);
   //  auto ret_arrow = Ge
 }
 
