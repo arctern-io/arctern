@@ -12,18 +12,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends gosu sudo \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY zgis.yml /tmp/zgis.yml
-
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda activate base && \
-    conda env create -f /tmp/zgis.yml && \
-    rm /tmp/zgis.yml && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate zgis_dev" >> ~/.bashrc
-
 RUN mkdir -p /opt/spark && \
     wget -qO- "http://mirror.bit.edu.cn/apache/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz" | tar --strip-components=1 -xz -C /opt/spark && \
     chown -R root:root /opt/spark
+
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    conda create -n arctern python=3.7 && \
+    echo "conda activate arctern" >> ~/.bashrc
 
 COPY arctern /tmp/arctern
 
