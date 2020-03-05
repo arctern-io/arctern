@@ -1,6 +1,47 @@
 # conda环境搭建
-## 安装conda
-conda环境的安装有很多教程，详见`https://www.jianshu.com/p/edaa744ea47d`。
+
+## 安装前提
+
+### 系统要求
+
+| 操作系统    | 版本          |
+| ---------- | ------------ |
+| CentOS     | 7 或以上      |
+| Ubuntu LTS | 16.04 或以上  |
+
+### 软件要求
+
+| 软件名称                    |
+| -------------------------- |
+| miniconda（推荐） 或者 anaconda     |
+
+## 安装并配置conda
+
+查看您当前conda环境配置，确认conda配置成功
+```shell
+$ conda env list
+
+# conda environments:
+#
+base                  *  /opt/conda
+...
+```
+
+如未成功配置Conda，请按照以下命令安装并配置Conda
+```shell
+# 安装conda
+$ wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+$ /bin/bash ~/miniconda.sh -b -p /opt/conda
+$ rm ~/miniconda.sh
+
+# 配置conda
+$ ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+$ echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
+$ echo "conda activate base" >> ~/.bashrc
+$ . /opt/conda/etc/profile.d/conda.sh
+$ conda activate base
+```
+
 ## 创建并使用gis-dev开发环境以及第三方库
 1. 首先查看当前conda环境的所有环境名:  
 `conda env list`  
