@@ -1,0 +1,10 @@
+{"ST_Intersection_UDF(left, right)":"POLYGON ((2 8,8 8,8 2,2 2,2 8))"}
+{"ST_Intersection_UDF(left, right)":"POLYGON ((3 3,2 2,2 3,3 3))"}
+{"ST_Intersection_UDF(left, right)":"POLYGON ((2 2,2 3,3 3,2 2))"}
+{"ST_Intersection_UDF(left, right)":"GEOMETRYCOLLECTION EMPTY"}
+{"ST_Intersection_UDF(left, right)":"POINT (5 5)"}
+{"ST_Intersection_UDF(left, right)":"GEOMETRYCOLLECTION EMPTY"}
+{"ST_Intersection_UDF(left, right)":"GEOMETRYCOLLECTION EMPTY"}
+{"ST_Intersection_UDF(left, right)":"GEOMETRYCOLLECTION EMPTY"}
+{"ST_Intersection_UDF(left, right)":"GEOMETRYCOLLECTION EMPTY"}
+{"ST_Intersection_UDF(left, right)":"POINT (7.5 7.5)"}

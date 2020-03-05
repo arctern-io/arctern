@@ -1,0 +1,21 @@
+{"geos":"POINT (30 10)"}
+{"geos":"POLYGON ((10 10,10 40,40 40,40 10,10 10))"}
+{"geos":"POLYGON ((1 2,1 6,5 6,5 2,1 2))"}
+{"geos":"POLYGON ((1 1,1 3,3 3,3 1,1 1))"}
+{"geos":"POLYGON ((1 1,1.0 3.5,2.0 3.5,2 1,1 1))"}
+{"geos":"LINESTRING (0 0,0 2)"}
+{"geos":"POLYGON ((77.27 29.07,77.27 29.31,77.42 29.31,77.42 29.07,77.27 29.07))"}
+{"geos":"POLYGON EMPTY"}
+{"geos":"LINESTRING EMPTY"}
+{"geos":"POINT EMPTY"}
+{"geos":"MULTIPOLYGON EMPTY"}
+{"geos":"MULTILINESTRING EMPTY"}
+{"geos":"MULTIPOINT EMPTY"}
+{"geos":"GEOMETRYCOLLECTION EMPTY"}
+{"geos":"LINESTRING (38.769917 9.106194,38.769917 10.780694)"}
+{"geos":"POLYGON ((0 0,0 2,2 2,2 0,0 0))"}
+{"geos":"POLYGON ((0 0,0 2,2 2,2 0,0 0))"}
+{"geos":"POLYGON ((-1 0,-1 2,2 2,2 0,-1 0))"}
+{"geos":"POLYGON ((-1 0,-1 2,2 2,2 0,-1 0))"}
+{"geos":"POLYGON ((-5 36,-5 49,15 49,15 36,-5 36))"}
+{"geos":"POLYGON ((10 5,10 45,45 45,45 5,10 5))"}

@@ -1,0 +1,12 @@
+[
+    {
+        "data":"points.json",
+        "table_name":"yads1",
+        "sql":"select ST_Point_UDF(x, y) from ydas1"
+    },
+    {
+        "data":"points.json",
+        "table_name":"yads2",
+        "sql":"select ST_Point_UDF(x, y) from ydas2"
+    }
+]

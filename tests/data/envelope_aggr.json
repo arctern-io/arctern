@@ -1,0 +1,5 @@
+{"geos": "MULTILINESTRING ((-5 45, 8 36), (1 49, 15 41))"}
+{"geos": "POLYGON ((0 0,4 0,4 4,0 4,0 0))"}
+{"geos": "POLYGON ((5 1,7 1,7 2,5 2,5 1))"}
+{"geos": "MULTIPOINT ((0 0), (10 0))"}
+

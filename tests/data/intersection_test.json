@@ -1,0 +1,4 @@
+{"left": "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))", "right": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
+{"left": "POLYGON ((1 1, 1 5, 5 5, 1 1))", "right": "POLYGON ((2 2, 2 3, 3 3, 2 2))"}
+{"left": "POLYGON ((2 2, 2 3, 3 3, 2 2))", "right": "POLYGON ((1 1, 1 5, 5 5, 1 1))"}
+{"left": "POLYGON ((40 21, 40 22, 40 23, 40 21))", "right": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
