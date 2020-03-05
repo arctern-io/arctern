@@ -7,8 +7,7 @@
 
 | 操作系统    | 版本          |
 | ---------- | ------------ |
-| CentOS     | 7 或以上      |
-| Ubuntu LTS | 16.04 或以上  |
+| Ubuntu LTS | 18.04 或以上  |
 
 ### 软件要求
 
@@ -73,7 +72,7 @@ python
 ```
 导入`zilliz_gis`,`zilliz_pyspark`验证安装成功
 ```python
-Python 3.8.1 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04) 
+Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import zilliz_gis
@@ -106,7 +105,7 @@ export PROJ_LIB=/opt/conda/envs/arctern/share/proj
 
 ### 下载pyspark测试用例
 ```bash
-wget https://raw.githubusercontent.com/zilliztech/GIS/conda/spark/pyspark/examples/gis/spark_udf_ex.py
+wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/examples/gis/spark_udf_ex.py
 ```
 
 ### 运行spark测试用例
