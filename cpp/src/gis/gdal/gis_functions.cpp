@@ -572,6 +572,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
     }
     OGRGeometryFactory::destroyGeometry(ogr);
   }
+  delete area;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
