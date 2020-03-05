@@ -24,3 +24,4 @@ run_test_st_crosses=test_crosses=st_crosses=st_crosses
 run_test_st_overlaps=test_overlaps=st_overlaps=st_overlaps
 run_test_st_touches=test_touches=st_touches=st_touches
 # run_test_union_aggr_2=test_union_aggr_2=st_union=st_union
+run_test_envelope_aggr_1=test_envelope_aggr_1=st_envelope_aggr=st_envelope_aggr
