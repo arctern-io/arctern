@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "antlr4-runtime/antlr4-runtime.h"
+#include "antlr4-runtime.h"
 #include "wktListener.h"
 
 
@@ -15,6 +15,9 @@
  */
 class  wktBaseListener : public wktListener {
 public:
+
+  virtual void enterGeometryCollection(wktParser::GeometryCollectionContext * /*ctx*/) override { }
+  virtual void exitGeometryCollection(wktParser::GeometryCollectionContext * /*ctx*/) override { }
 
   virtual void enterGeometry(wktParser::GeometryContext * /*ctx*/) override { }
   virtual void exitGeometry(wktParser::GeometryContext * /*ctx*/) override { }

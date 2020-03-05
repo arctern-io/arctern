@@ -209,20 +209,23 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   return is_valid;
 }
 
-inline int AntlrWktCheck(const std::string &wkt) {
+inline bool AntlrWktCheck(const std::string &wkt) {
     antlr4::ANTLRInputStream input(wkt);
     wktLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
     tokens.fill();
     wktParser parser(&tokens);
     parser.geometry();
-    return parser.getNumberOfSyntaxErrors();
+    auto syntax_errors_nums = parser.getNumberOfSyntaxErrors();
+    if (syntax_errors_nums == 0) return true;
+    parser.geometryCollection();
+    return parser.getNumberOfSyntaxErrors() - syntax_errors_nums == 0;
 }
 
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
-  if (AntlrWktCheck(array->GetString(idx)) > 0) return nullptr;
+  if (!AntlrWktCheck(array->GetString(idx)) && !array->GetString(idx).empty()) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code =
       OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
@@ -231,7 +234,7 @@ inline OGRGeometry* Wrapper_createFromWkt(
 }
 
 inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
-  if (AntlrWktCheck(geo_wkt) > 0) return nullptr;
+  if (!AntlrWktCheck(geo_wkt) && geo_wkt[0] != '\0') return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
   if (err_code) {

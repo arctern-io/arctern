@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "antlr4-runtime/antlr4-runtime.h"
+#include "antlr4-runtime.h"
 #include "wktParser.h"
 
 
@@ -13,6 +13,9 @@
  */
 class  wktListener : public antlr4::tree::ParseTreeListener {
 public:
+
+  virtual void enterGeometryCollection(wktParser::GeometryCollectionContext *ctx) = 0;
+  virtual void exitGeometryCollection(wktParser::GeometryCollectionContext *ctx) = 0;
 
   virtual void enterGeometry(wktParser::GeometryContext *ctx) = 0;
   virtual void exitGeometry(wktParser::GeometryContext *ctx) = 0;

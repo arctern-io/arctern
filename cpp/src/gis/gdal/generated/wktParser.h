@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "antlr4-runtime/antlr4-runtime.h"
+#include "antlr4-runtime.h"
 
 
 
@@ -20,10 +20,11 @@ public:
   };
 
   enum {
-    RuleGeometry = 0, RulePointGeometry = 1, RuleLineStringGeometry = 2, 
-    RulePolygonGeometry = 3, RuleMultiPointGeometry = 4, RuleMultiLineStringGeometry = 5, 
-    RuleMultiPolygonGeometry = 6, RuleCircularStringGeometry = 7, RulePointOrClosedPoint = 8, 
-    RulePolygon = 9, RuleLineString = 10, RulePoint = 11, RuleName = 12
+    RuleGeometryCollection = 0, RuleGeometry = 1, RulePointGeometry = 2, 
+    RuleLineStringGeometry = 3, RulePolygonGeometry = 4, RuleMultiPointGeometry = 5, 
+    RuleMultiLineStringGeometry = 6, RuleMultiPolygonGeometry = 7, RuleCircularStringGeometry = 8, 
+    RulePointOrClosedPoint = 9, RulePolygon = 10, RuleLineString = 11, RulePoint = 12, 
+    RuleName = 13
   };
 
   wktParser(antlr4::TokenStream *input);
@@ -36,6 +37,7 @@ public:
   virtual antlr4::dfa::Vocabulary& getVocabulary() const override;
 
 
+  class GeometryCollectionContext;
   class GeometryContext;
   class PointGeometryContext;
   class LineStringGeometryContext;
@@ -50,25 +52,41 @@ public:
   class PointContext;
   class NameContext; 
 
+  class  GeometryCollectionContext : public antlr4::ParserRuleContext {
+  public:
+    GeometryCollectionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *GEOMETRYCOLLECTION();
+    antlr4::tree::TerminalNode *EOF();
+    std::vector<antlr4::tree::TerminalNode *> LPAR();
+    antlr4::tree::TerminalNode* LPAR(size_t i);
+    std::vector<GeometryContext *> geometry();
+    GeometryContext* geometry(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> RPAR();
+    antlr4::tree::TerminalNode* RPAR(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> EMPTY();
+    antlr4::tree::TerminalNode* EMPTY(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMMA();
+    antlr4::tree::TerminalNode* COMMA(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  GeometryCollectionContext* geometryCollection();
+
   class  GeometryContext : public antlr4::ParserRuleContext {
   public:
     GeometryContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *EOF();
-    std::vector<PolygonGeometryContext *> polygonGeometry();
-    PolygonGeometryContext* polygonGeometry(size_t i);
-    std::vector<LineStringGeometryContext *> lineStringGeometry();
-    LineStringGeometryContext* lineStringGeometry(size_t i);
-    std::vector<PointGeometryContext *> pointGeometry();
-    PointGeometryContext* pointGeometry(size_t i);
-    std::vector<MultiPointGeometryContext *> multiPointGeometry();
-    MultiPointGeometryContext* multiPointGeometry(size_t i);
-    std::vector<MultiLineStringGeometryContext *> multiLineStringGeometry();
-    MultiLineStringGeometryContext* multiLineStringGeometry(size_t i);
-    std::vector<MultiPolygonGeometryContext *> multiPolygonGeometry();
-    MultiPolygonGeometryContext* multiPolygonGeometry(size_t i);
-    std::vector<CircularStringGeometryContext *> circularStringGeometry();
-    CircularStringGeometryContext* circularStringGeometry(size_t i);
+    PolygonGeometryContext *polygonGeometry();
+    LineStringGeometryContext *lineStringGeometry();
+    PointGeometryContext *pointGeometry();
+    MultiPointGeometryContext *multiPointGeometry();
+    MultiLineStringGeometryContext *multiLineStringGeometry();
+    MultiPolygonGeometryContext *multiPolygonGeometry();
+    CircularStringGeometryContext *circularStringGeometry();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
