@@ -36,14 +36,14 @@ class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
 };
 
 class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
- public :
-  PrecisionReduceVisitor(int32_t precision) : precision_(precision){}
+ public:
+  PrecisionReduceVisitor(int32_t precision) : precision_(precision) {}
   ~PrecisionReduceVisitor() = default;
-  
+
   double coordinate_precision_reduce(double coordinate);
   void visit(OGRPoint*) override;
-  // void geometry_precision_reduce(OGRGeometry* geo); 
-  
+  // void geometry_precision_reduce(OGRGeometry* geo);
+
  private:
   int32_t precision_ = 0;
 };

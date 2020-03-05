@@ -617,7 +617,11 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   auto l6 = "MULTIPOLYGON (((0 0.555,10 0,10 10,0 10,0 0.555)),((11 11.78987,20 11,20 20,20 11,11 11.78987)))";
   auto l7 = "MULTILINESTRING ((12.666 15.23,89.45 98.67),(12.555 78.777,90.789 67.3))";
   auto l8 = "GEOMETRYCOLLECTION (POLYGON ((100.33333 20.456,120 30,130 40,100.33333 20.456)),POINT (120.6 100.999))";
-  auto l9 = "CIRCULARSTRING (0.999 2.888, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)";
+  auto l9 = "CIRCULARSTRING (0.999 2.8886,-1.3373 1,0 0,0.5 0,1 0,2 1,1 2,0.5 2,0 2)";
+  auto l10 = "COMPOUNDCURVE (CIRCULARSTRING (0 2,-1 1,0 0),(0 0,0.5 0,1 0),CIRCULARSTRING (1 0,2.6796 1.9089,1 2),(1 2,0.5 2,0 2))";
+  auto l11 = "MULTICURVE ((5 5,3 5,3 3,0 3),CIRCULARSTRING (0 0,0.2 1,0.5 1.4),COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,1 0),(1 0,0 1)))";
+  auto l12 = "CURVEPOLYGON (CIRCULARSTRING (0 0,4 0,4 4,0 4,0 0),(1.8888 1.787,3 3,3 1,1.8888 1.787))";
+  auto l13 = "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (0 0,2 0,2 1,2 3,4 3),(4 3,4 5,1 4,0 0)),CIRCULARSTRING (1.79999 1.9865,1.4 0.4,1.6 0.4,1.6 0.5,1.79999 1.9865))";
 
   arrow::StringBuilder string_builder;
   std::shared_ptr<arrow::Array> array;
@@ -631,6 +635,11 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   string_builder.Append(l6);
   string_builder.Append(l7);
   string_builder.Append(l8);
+  string_builder.Append(l9);
+  string_builder.Append(l10);
+  string_builder.Append(l11);
+  string_builder.Append(l12);
+  string_builder.Append(l13);
 
   string_builder.Finish(&array);
   auto geometries = zilliz::gis::ST_PrecisionReduce(array,4);
@@ -645,6 +654,11 @@ TEST(geometry_test, test_ST_PrecisionReduce){
   ASSERT_EQ(geometries_arr->GetString(6),"MULTIPOLYGON (((0.0 0.555,10 0,10 10,0 10,0.0 0.555)),((11.0 11.79,20 11,20 20,20 11,11.0 11.79)))");
   ASSERT_EQ(geometries_arr->GetString(7),"MULTILINESTRING ((12.67 15.23,89.45 98.67),(12.56 78.78,90.79 67.3))");
   ASSERT_EQ(geometries_arr->GetString(8),"GEOMETRYCOLLECTION (POLYGON ((100.3 20.46,120 30,130 40,100.3 20.46)),POINT (120.6 101.0))");
+  ASSERT_EQ(geometries_arr->GetString(9),"CIRCULARSTRING (0.999 2.889,-1.337 1.0,0 0,0.5 0.0,1 0,2 1,1 2,0.5 2.0,0 2)");
+  ASSERT_EQ(geometries_arr->GetString(10),"COMPOUNDCURVE (CIRCULARSTRING (0 2,-1 1,0 0),(0 0,0.5 0.0,1 0),CIRCULARSTRING (1 0,2.68 1.909,1 2),(1 2,0.5 2.0,0 2))");
+  ASSERT_EQ(geometries_arr->GetString(11),"MULTICURVE ((5 5,3 5,3 3,0 3),CIRCULARSTRING (0 0,0.2 1.0,0.5 1.4),COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,1 0),(1 0,0 1)))");
+  ASSERT_EQ(geometries_arr->GetString(12),"CURVEPOLYGON (CIRCULARSTRING (0 0,4 0,4 4,0 4,0 0),(1.889 1.787,3 3,3 1,1.889 1.787))");
+  ASSERT_EQ(geometries_arr->GetString(13),"CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (0 0,2 0,2 1,2 3,4 3),(4 3,4 5,1 4,0 0)),CIRCULARSTRING (1.8 1.987,1.4 0.4,1.6 0.4,1.6 0.5,1.8 1.987))");
 }
 
 TEST(geometry_test, test_ST_Equals2) {
