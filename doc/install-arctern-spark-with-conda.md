@@ -54,12 +54,26 @@ $ conda activate arctern
 
 ## 安装`Arctern Spark`
 
-CPU版本
+### CPU版本
+
+安装包依赖
+```shell
+$ sudo apt install libgl-dev libosmesa6-dev libglu1-mesa-dev
+```
+
+`Arctern Spark` Conda 包安装
 ```shell
 conda install -y -q -n arctern -c conda-forge -c arctern-dev arctern-spark
 ```
 
-CUDA 10.0版本
+### CUDA 10.0版本
+
+安装包依赖
+```shell
+$ sudo apt install libgl1-mesa-dev libegl1-mesa-dev
+```
+
+`Arctern Spark` Conda 包安装
 ```shell
 conda install -y -q -n arctern -c conda-forge -c arctern-dev/label/cuda10.0 libarctern
 conda install -y -q -n arctern -c conda-forge -c arctern-dev arctern arctern-spark
