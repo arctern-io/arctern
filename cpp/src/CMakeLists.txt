@@ -39,8 +39,9 @@ set(render_src
 set(gis_src
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/geometry_visitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/format_conversion.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
