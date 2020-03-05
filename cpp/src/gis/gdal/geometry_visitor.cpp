@@ -30,7 +30,7 @@ double PrecisionReduceVisitor::coordinate_precision_reduce(double coordinate) {
 
   if (coordinate < 0) {
     sign_flag = 1;
-    coordinate = - coordinate;
+    coordinate = -coordinate;
   }
 
   std::string coordinate_string = std::to_string(coordinate);
@@ -79,7 +79,7 @@ double PrecisionReduceVisitor::coordinate_precision_reduce(double coordinate) {
   }
 
   if (sign_flag == 1) {
-    coordinate = - coordinate;
+    coordinate = -coordinate;
   }
 
   return coordinate;
