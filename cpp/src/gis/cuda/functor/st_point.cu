@@ -32,7 +32,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const double* xs, const do
     value[0] = xs[index];
     value[1] = ys[index];
   }
-  return OutputInfo{WkbTag(WkbCategory::Point, WkbGroup::None), 0, 2};
+  return OutputInfo{WkbTag(WkbCategory::kPoint, WkbSpaceType::XY), 0, 2};
 }
 }  // namespace
 

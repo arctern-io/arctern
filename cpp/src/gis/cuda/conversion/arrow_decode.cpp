@@ -32,7 +32,7 @@ GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& arr
   auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array_wkb);
   auto size = (int)wkb->length();
   auto binary_bytes = wkb->value_offset(size);
-  auto data = GpuMakeUniqueArrayAndCopy((char*)wkb->value_data()->data(), binary_bytes);
+  auto data = GpuMakeUniqueArrayAndCopy((const char*)wkb->value_data()->data(), binary_bytes);
   auto offsets = GpuMakeUniqueArrayAndCopy(wkb->raw_value_offsets(), size + 1);
   auto geo_vec = internal::ArrowWkbToGeometryVectorImpl(
       WkbArrowContext{data.get(), offsets.get(), size});

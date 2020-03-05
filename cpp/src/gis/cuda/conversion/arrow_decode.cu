@@ -95,20 +95,20 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
   WkbDecoder decoder{wkb_iter, metas, values, skip_write};
 
   auto byte_order = decoder.FetchFromWkb<WkbByteOrder>();
-  assert(byte_order == WkbByteOrder::LittleEndian);
+  assert(byte_order == WkbByteOrder::kLittleEndian);
   auto tag = decoder.FetchFromWkb<WkbTag>();
-  assert(tag.get_group() == WkbGroup::None);
+  assert(tag.get_space_type() == WkbSpaceType::XY);
   constexpr auto demensions = 2;
   switch (tag.get_category()) {
-    case WkbCategory::Point: {
+    case WkbCategory::kPoint: {
       decoder.DecodePoint(demensions);
       break;
     }
-    case WkbCategory::LineString: {
+    case WkbCategory::kLineString: {
       decoder.DecodeLineString(demensions);
       break;
     }
-    case WkbCategory::Polygon: {
+    case WkbCategory::kPolygon: {
       decoder.DecodePolygon(demensions);
       break;
     }

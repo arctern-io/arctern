@@ -113,26 +113,26 @@ __global__ static void CalcValues(const GpuContext input, WkbArrowContext output
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
     auto tag = input.get_tag(index);
-    assert(tag.get_group() == WkbGroup::None);
+    assert(tag.get_space_type() == WkbSpaceType::XY);
     int dimensions = 2;
     auto metas = input.get_meta_ptr(index);
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
 
     WkbEncoder encoder{metas, values, wkb_iter};
-    encoder.InsertIntoWkb(WkbByteOrder::LittleEndian);
+    encoder.InsertIntoWkb(WkbByteOrder::kLittleEndian);
     encoder.InsertIntoWkb(tag);
 
     switch (tag.get_category()) {
-      case WkbCategory::Point: {
+      case WkbCategory::kPoint: {
         encoder.EncodePoint(dimensions);
         break;
       }
-      case WkbCategory::LineString: {
+      case WkbCategory::kLineString: {
         encoder.EncodeLineString(dimensions);
         break;
       }
-      case WkbCategory::Polygon: {
+      case WkbCategory::kPolygon: {
         encoder.EncodePolygon(dimensions);
         break;
       }

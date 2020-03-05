@@ -19,6 +19,7 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
+#include "utils/check_status.h"
 
 namespace zilliz {
 namespace gis {
@@ -26,18 +27,12 @@ namespace cuda {
 using internal::WkbArrowContext;
 
 namespace {
-void check(arrow::Status status) {
-  if (!status.ok()) {
-    throw std::runtime_error("action failed for " + status.message());
-  }
-}
 
 template <typename T>
 std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_ptr) {
   std::shared_ptr<arrow::Buffer> buffer;
   auto len = sizeof(T) * size;
-  auto status = arrow::AllocateBuffer(len, &buffer);
-  check(status);
+  CHECK_ARROW(arrow::AllocateBuffer(len, &buffer));
   GpuMemcpy((T*)buffer->mutable_data(), dev_ptr, size);
   return buffer;
 }

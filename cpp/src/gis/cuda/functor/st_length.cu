@@ -46,11 +46,11 @@ __global__ void ST_LengthKernel(const GpuContext ctx, double* results) {
   if (index < ctx.size) {
     auto tag = ctx.get_tag(index);
     // handle 2d case only for now
-    assert(tag.get_group() == WkbGroup::None);
+    assert(tag.get_space_type() == WkbSpaceType::XY);
     double result;
     switch (tag.get_category()) {
       // handle polygon case only
-      case WkbCategory::LineString: {
+      case WkbCategory::kLineString: {
         ConstIter iter = ctx.get_iter(index);
         result = LineStringLength(iter);
         assert(iter.metas == ctx.get_meta_ptr(index + 1));
