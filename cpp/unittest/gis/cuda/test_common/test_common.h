@@ -16,29 +16,44 @@
 // under the License.
 
 #pragma once
-#include <cstdint>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
+#include <cstdlib>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "common/version.h"
+#include "gis/api.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
+#include "utils/check_status.h"
+
 namespace zilliz {
 namespace gis {
 namespace cuda {
 
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
+namespace GeometryVectorFactory {
+GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
+GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
-  }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
-};
+}  // namespace GeometryVectorFactory
 
+inline std::vector<char> hexstring_to_binary(const std::string& str) {
+  std::vector<char> vec;
+  assert(str.size() % 2 == 0);
+  for (size_t index = 0; index < str.size(); index += 2) {
+    auto byte_str = str.substr(index, 2);
+    char* tmp;
+    auto data = strtoul(byte_str.c_str(), &tmp, 16);
+    assert(*tmp == 0);
+    vec.push_back((char)data);
+  }
+  return vec;
+}
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz

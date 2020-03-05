@@ -47,10 +47,10 @@ __global__ void ST_AreaKernel(GpuContext ctx, double* result) {
   if (tid < ctx.size) {
     auto tag = ctx.get_tag(tid);
     // handle 2d case only for now
-    assert(tag.get_group() == WkbGroup::None);
+    assert(tag.get_space_type() == WkbSpaceType::XY);
     switch (tag.get_category()) {
       // handle polygon case only
-      case WkbCategory::Polygon: {
+      case WkbCategory::kPolygon: {
         result[tid] = PolygonArea(ctx, tid);
         break;
       }

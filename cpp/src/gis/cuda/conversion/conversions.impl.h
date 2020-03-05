@@ -16,28 +16,36 @@
 // under the License.
 
 #pragma once
-#include <cstdint>
+#include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/mock/arrow/api.h"
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
 namespace zilliz {
 namespace gis {
 namespace cuda {
 
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
+namespace internal {
+struct WkbArrowContext {
+  char* values;
+  int* offsets;
+  int size;
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
+ public:
+  DEVICE_RUNNABLE inline char* get_wkb_ptr(int index) { return values + offsets[index]; }
+  DEVICE_RUNNABLE inline const char* get_wkb_ptr(int index) const {
+    return values + offsets[index];
   }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
+  DEVICE_RUNNABLE inline int null_counts() const { return 0 * size; }
 };
+
+GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input);
+
+// return size of total data length in bytes
+void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+                           int* value_length);
+
+void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output);
+
+}  // namespace internal
 
 }  // namespace cuda
 }  // namespace gis

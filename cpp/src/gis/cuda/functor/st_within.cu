@@ -116,11 +116,11 @@ __global__ void ST_WithinKernel(GpuContext left, GpuContext right, bool* result)
     auto left_tag = left.get_tag(tid);
     auto right_tag = right.get_tag(tid);
     // handle 2d case only for now
-    assert(left_tag.get_group() == WkbGroup::None);
-    assert(right_tag.get_group() == WkbGroup::None);
+    assert(left_tag.get_space_type() == WkbSpaceType::XY);
+    assert(right_tag.get_space_type() == WkbSpaceType::XY);
     // handle point to point case only
-    if (left_tag.get_category() == WkbCategory::Point &&
-        right_tag.get_category() == WkbCategory::Polygon) {
+    if (left_tag.get_category() == WkbCategory::kPoint &&
+        right_tag.get_category() == WkbCategory::kPolygon) {
       result[tid] = PointInPolygon(left, right, tid);
     } else {
       result[tid] = false;

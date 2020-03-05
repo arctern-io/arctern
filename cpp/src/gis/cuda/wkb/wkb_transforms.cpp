@@ -44,6 +44,19 @@ std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
   return result;
 }
 
+std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
+  arrow::BinaryBuilder builder;
+  for (const auto& wkt : wkt_vec) {
+    auto wkb = Wkt2Wkb(wkt);
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::Array> result;
+  auto st = builder.Finish(&result);
+  assert(st.ok());
+  return result;
+}
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz
