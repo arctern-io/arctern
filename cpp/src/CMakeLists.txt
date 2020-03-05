@@ -36,11 +36,20 @@ set(render_src
         ${arrow_src}
         )
 
+include_directories(${CMAKE_BINARY_DIR}/thirdparty/include/antlr4-runtime)
+set(antlr_generated_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/generated/wktBaseListener.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/generated/wktLexer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/generated/wktListener.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/generated/wktParser.cpp
+        )
+
 set(gis_src
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/geometry_visitor.cpp
+        ${antlr_generated_src}
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -54,11 +63,12 @@ add_library(
     ${gis_src}
 )
 
-add_dependencies(windrose miniz_ep stb_ep)
+add_dependencies(windrose miniz_ep stb_ep antlr4_runtime_ep)
 set(third_party_libs
         gdal
         arrow
         miniz
+        antlr4-runtime
         )
 
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)

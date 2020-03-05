@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include "gis/gdal/generated/wktLexer.h"
+#include "gis/gdal/generated/wktParser.h"
 #include "gis/gdal/gis_functions.h"
 #include "common/version.h"
 #include "gis/gdal/arctern_geos.h"
@@ -208,9 +209,20 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   return is_valid;
 }
 
+inline int AntlrWktCheck(const std::string &wkt) {
+    antlr4::ANTLRInputStream input(wkt);
+    wktLexer lexer(&input);
+    antlr4::CommonTokenStream tokens(&lexer);
+    tokens.fill();
+    wktParser parser(&tokens);
+    parser.geometry();
+    return parser.getNumberOfSyntaxErrors();
+}
+
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
+  if (AntlrWktCheck(array->GetString(idx)) > 0) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code =
       OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
@@ -219,6 +231,7 @@ inline OGRGeometry* Wrapper_createFromWkt(
 }
 
 inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
+  if (AntlrWktCheck(geo_wkt) > 0) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, &geo);
   if (err_code) {

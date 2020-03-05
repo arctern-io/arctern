@@ -1,3 +1,4 @@
+include(ConfigureAntlr4Runtime)
 #include(ConfigureArrow)
 #include(ConfigureSqlite3)
 #include(ConfigureProj)

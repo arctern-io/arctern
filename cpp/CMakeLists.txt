@@ -99,7 +99,7 @@ if (GIS_BUILD_ARCH STREQUAL "ppc64le")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfloat128")
 endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wno-unused-variable -Wno-sign-compare -Wno-attributes -Werror")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
