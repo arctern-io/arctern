@@ -28,7 +28,9 @@ void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
   {
     auto offset_size = input.size + 1;
     auto config = GetKernelExecConfig(offset_size);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
     CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
   }
   if (value_length_ptr) {
     auto src = output.offsets + input.size;

@@ -39,7 +39,7 @@ std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector& geo
   internal::ToArrowWkbFillValues(*input_holder, arrow_ctx);
 
   auto offsets_buffer = AllocArrowBufferAndCopy(size + 1, offsets.get());
-  auto values_buffer = AllocArrowBufferAndCopy(value_length, offsets.get());
+  auto values_buffer = AllocArrowBufferAndCopy(value_length, values.get());
 
   auto results = std::make_shared<arrow::BinaryArray>(size, offsets_buffer, values_buffer,
                                                       nullptr, 0);
