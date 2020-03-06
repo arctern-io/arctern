@@ -24,12 +24,12 @@ def test_ST_IsValid():
     assert rst[0] == 1
     assert rst[1] == 1
 
-# def test_ST_PrecisionReduce():
-#     data = pandas.Series(["POINT (1.333 2.666)","POINT (2.655 4.447)"])
-#     array = pyarrow.array(data)
-#     rst = zilliz_gis.ST_PrecisionReduce(array,3)
-#     assert rst[0] == "POINT (1.333 2.666)"
-#     assert rst[1] == "POINT (2.655 4.447)"
+def test_ST_PrecisionReduce():
+    data = pandas.Series(["POINT (1.333 2.666)","POINT (2.655 4.447)"])
+    array = pyarrow.array(data)
+    rst = zilliz_gis.ST_PrecisionReduce(array,3)
+    assert rst[0] == "POINT (1.33 2.67)"
+    assert rst[1] == "POINT (2.66 4.45)"
 
 def test_ST_Intersection():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
