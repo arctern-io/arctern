@@ -574,20 +574,19 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   auto len = geometries->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
   arrow::DoubleBuilder builder;
-  OGRGeometry* geo;
-  for (int32_t i = 0; i < len; i++) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, (OGRGeometry**)(&geo)));
-    OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
-    if (OGR_GT_IsCurve(eType) || OGR_GT_IsSubClassOf(eType, wkbMultiCurve) ||
-        eType == wkbGeometryCollection) {
-      CHECK_ARROW(builder.Append(OGR_G_Length(geo)));
+  auto* len_sum = new LengthVisitor;
+  for (int i = 0; i < len; i++) {
+    auto ogr = Wrapper_createFromWkt(wkt_geometries, i);
+    if (ogr == nullptr) {
+      builder.AppendNull();
     } else {
-      CHECK_ARROW(builder.Append(0));
+      len_sum->reset();
+      ogr->accept(len_sum);
+      builder.Append(len_sum->length());
     }
-
-    OGRGeometryFactory::destroyGeometry(geo);
+    OGRGeometryFactory::destroyGeometry(ogr);
   }
+  delete len_sum;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
