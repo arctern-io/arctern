@@ -92,9 +92,7 @@ struct WkbEncoder {
     wkb_iter += len;
   }
 
-  __device__ void EncodePoint(int demensions) {
-    ValuesToWkb(demensions, 1);
-  }
+  __device__ void EncodePoint(int demensions) { ValuesToWkb(demensions, 1); }
 
   __device__ void EncodeLineString(int demensions) {
     auto size = MetaToWkb<int>();

@@ -61,9 +61,7 @@ struct WkbDecoder {
     return tmp;
   }
 
-  __device__ void DecodePoint(int demensions) {
-    WkbToValues(demensions, 1);
-  }
+  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
 
   __device__ void DecodeLineString(int demensions) {
     auto size = WkbToMeta<int>();
