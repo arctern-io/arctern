@@ -16,10 +16,12 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace zilliz {
 namespace gis {
 
-enum class WkbTypes {
+enum class WkbTypes : uint32_t {
   kUnknown = 0, /* non-standard */
 
   kPoint = 1,              /* standard WKB */
@@ -41,16 +43,23 @@ enum class WkbTypes {
   kTIN = 16,               /* ISO SQL/MM Part 3 */
   kTriangle = 17,          /* ISO SQL/MM Part 3 */
 
-  kCircularStringZ = 1008,    /* ISO SQL/MM Part 3 */
-  kCompoundCurveZ = 1009,     /* ISO SQL/MM Part 3 */
-  kCurvePolygonZ = 1010,      /* ISO SQL/MM Part 3 */
-  kMultiCurveZ = 1011,        /* ISO SQL/MM Part 3 */
-  kMultiSurfaceZ = 1012,      /* ISO SQL/MM Part 3 */
-  kCurveZ = 1013,             /* ISO SQL/MM Part 3 */
-  kSurfaceZ = 1014,           /* ISO SQL/MM Part 3 */
-  kPolyhedralSurfaceZ = 1015, /* ISO SQL/MM Part 3 */
-  kTINZ = 1016,               /* ISO SQL/MM Part 3 */
-  kTriangleZ = 1017,          /* ISO SQL/MM Part 3 */
+  kPointZ = 1001,              /* ISO SQL/MM Part 3 */
+  kLineStringZ = 1002,         /* ISO SQL/MM Part 3 */
+  kPolygonZ = 1003,            /* ISO SQL/MM Part 3 */
+  kMultiPointZ = 1004,         /* ISO SQL/MM Part 3 */
+  kMultiLineStringZ = 1005,    /* ISO SQL/MM Part 3 */
+  kMultiPolygonZ = 1006,       /* ISO SQL/MM Part 3 */
+  kGeometryCollectionZ = 1007, /* ISO SQL/MM Part 3 */
+  kCircularStringZ = 1008,     /* ISO SQL/MM Part 3 */
+  kCompoundCurveZ = 1009,      /* ISO SQL/MM Part 3 */
+  kCurvePolygonZ = 1010,       /* ISO SQL/MM Part 3 */
+  kMultiCurveZ = 1011,         /* ISO SQL/MM Part 3 */
+  kMultiSurfaceZ = 1012,       /* ISO SQL/MM Part 3 */
+  kCurveZ = 1013,              /* ISO SQL/MM Part 3 */
+  kSurfaceZ = 1014,            /* ISO SQL/MM Part 3 */
+  kPolyhedralSurfaceZ = 1015,  /* ISO SQL/MM Part 3 */
+  kTINZ = 1016,                /* ISO SQL/MM Part 3 */
+  kTriangleZ = 1017,           /* ISO SQL/MM Part 3 */
 
   kPointM = 2001,              /* ISO SQL/MM Part 3 */
   kLineStringM = 2002,         /* ISO SQL/MM Part 3 */
@@ -89,6 +98,38 @@ enum class WkbTypes {
   kTriangleZM = 3017,           /* ISO SQL/MM Part 3 */
 
   kMaxTypeNumber = kTriangleZM,
+};
+
+constexpr uint32_t kWkbSpaceTypeEncodeBase = 1000;
+
+enum class WkbByteOrder : uint8_t { kBigEndian = 0, kLittleEndian = 1 };
+
+enum class WkbCategory : uint32_t {
+  kInvalid = 0,
+  kPoint = 1,
+  kLineString = 2,
+  kPolygon = 3,
+  kMultiPoint = 4,
+  kMultiLineString = 5,
+  kMultiPolygon = 6,
+  kGeometryCollection = 7,
+  kCircularString = 8,
+  kCompoundCurve = 9,
+  kCurvePolygon = 10,
+  kMultiCurve = 11,
+  kMultiSurface = 12,
+  kCurve = 13,
+  kSurface = 14,
+  kPolyhedralSurface = 15,
+  kTIN = 16,
+  kTriangle = 17,
+};
+
+enum class WkbSpaceType : uint32_t {
+  XY = 0,   // normal 2D
+  XYZ = 1,  // XYZ
+  XYM = 2,  // XYM
+  XYZM = 3  // XYZM
 };
 
 }  // namespace gis

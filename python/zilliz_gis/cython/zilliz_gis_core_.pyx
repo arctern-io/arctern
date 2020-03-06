@@ -60,8 +60,8 @@ def ST_GeometryType(object geometries):
 def ST_MakeValid(object geometries):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_MakeValid(pyarrow_unwrap_array(geometries)))
 
-#def ST_PrecisionReduce(object geometries,int num_dat):
-#    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
+def ST_PrecisionReduce(object geometries,int num_dat):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))

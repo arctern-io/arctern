@@ -29,8 +29,8 @@ namespace zilliz {
 namespace gis {
 namespace cuda {
 namespace {
-inline DEVICE_RUNNABLE double Point2PointDistance(const GpuContext& left,
-                                                  const GpuContext& right, int index) {
+inline DEVICE_RUNNABLE double Point2PointDistance(ConstGpuContext& left,
+                                                  ConstGpuContext& right, int index) {
   auto lv = left.get_value_ptr(index);
   auto rv = right.get_value_ptr(index);
   auto dx = (lv[0] - rv[0]);
@@ -38,17 +38,18 @@ inline DEVICE_RUNNABLE double Point2PointDistance(const GpuContext& left,
   return sqrt(dx * dx + dy * dy);
 }
 
-__global__ void ST_DistanceKernel(GpuContext left, GpuContext right, double* result) {
+__global__ void ST_DistanceKernel(ConstGpuContext left, ConstGpuContext right,
+                                  double* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < left.size) {
     auto left_tag = left.get_tag(tid);
     auto right_tag = right.get_tag(tid);
     // handle 2d case only for now
-    assert(left_tag.get_group() == WkbGroup::None);
-    assert(right_tag.get_group() == WkbGroup::None);
+    assert(left_tag.get_space_type() == WkbSpaceType::XY);
+    assert(right_tag.get_space_type() == WkbSpaceType::XY);
     // handle point to point case only
-    if (left_tag.get_category() == WkbCategory::Point &&
-        right_tag.get_category() == WkbCategory::Point) {
+    if (left_tag.get_category() == WkbCategory::kPoint &&
+        right_tag.get_category() == WkbCategory::kPoint) {
       result[tid] = Point2PointDistance(left, right, tid);
     } else {
       result[tid] = NAN;

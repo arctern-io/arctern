@@ -39,7 +39,26 @@ set(render_src
 set(gis_src
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/geometry_visitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/format_conversion.cpp
+        )
+
+set(cuda_gis_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/wkb/wkb_transforms.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_distance.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_within.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_length.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_area.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_envelope.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_point.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/gis_functions.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -47,35 +66,48 @@ if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
 endif (STATIC_LIB_SWITCH)
 
-add_library(
-    windrose ${LIBRARY_TYPE}
-    ${render_src}
-    ${gis_src}
-)
+if (USE_GPU)
+    add_library(
+        windrose ${LIBRARY_TYPE}
+        ${render_src}
+        ${gis_src}
+        ${cuda_gis_src}
+    )
+else ()
+    add_library(
+        windrose ${LIBRARY_TYPE}
+        ${render_src}
+        ${gis_src}
+    )
+endif ()
 
 add_dependencies(windrose miniz_ep stb_ep)
-target_link_libraries(windrose
-	        gdal
+set(third_party_libs
+        gdal
         arrow
-            pthread
-            miniz
-)
-
+        miniz
+        )
 
 set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
-    add_subdirectory(gis/cuda)
-    target_link_libraries(windrose
+    set(third_party_libs
+            ${third_party_libs}
             GL
             EGL
             cudart
             )
 else ()
-    target_link_libraries(windrose
+    set(third_party_libs
+            ${third_party_libs}
             GLU
             OSMesa
             )
 endif ()
+
+target_link_libraries(windrose
+            pthread
+            ${third_party_libs}
+)
 
 
 install(TARGETS windrose

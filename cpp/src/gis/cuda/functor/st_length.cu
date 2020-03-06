@@ -24,7 +24,7 @@ namespace cuda {
 
 namespace {
 using Iter = GpuContext::Iter;
-using ConstIter = GpuContext::ConstIter;
+using ConstIter = ConstGpuContext::ConstIter;
 
 inline DEVICE_RUNNABLE double LineStringLength(ConstIter& iter) {
   auto count = *iter.metas++;
@@ -41,23 +41,26 @@ inline DEVICE_RUNNABLE double LineStringLength(ConstIter& iter) {
   return sum_length;
 }
 
-__global__ void ST_LengthKernel(const GpuContext ctx, double* results) {
+__global__ void ST_LengthKernel(ConstGpuContext ctx, double* results) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < ctx.size) {
     auto tag = ctx.get_tag(index);
     // handle 2d case only for now
-    assert(tag.get_group() == WkbGroup::None);
+    assert(tag.get_space_type() == WkbSpaceType::XY);
     double result;
     switch (tag.get_category()) {
       // handle polygon case only
-      case WkbCategory::LineString: {
+      case WkbCategory::kLineString: {
         ConstIter iter = ctx.get_iter(index);
         result = LineStringLength(iter);
         assert(iter.metas == ctx.get_meta_ptr(index + 1));
         assert(iter.values == ctx.get_value_ptr(index + 1));
         break;
       }
-      default: { result = 0; }
+      default: {
+        result = 0;
+        break;
+      }
     }
     results[index] = result;
   }

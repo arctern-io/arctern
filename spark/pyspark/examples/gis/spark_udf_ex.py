@@ -56,6 +56,14 @@ def run_st_polygonfromtext(spark):
     rs = spark.sql("select ST_PolygonFromText_UDF(data) from data").collect()
     assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
 
+def run_st_precision_reduce(spark):
+    test_data = []
+    test_data.extend([('POINT (10.777 11.888)',)])
+    precision_reduce_df = spark.createDataFrame(data=test_data,schema=["geos"]).cache()
+    precision_reduce_df.createOrReplaceTempView("precision_reduce")
+    rs = spark.sql("select ST_PrecisionReduce_UDF(geos, 4) from precision_reduce").collect()
+    assert rs[0][0] == 'POINT (10.78 11.89)'
+
 def run_st_linestringfromtext(spark):
     test_data = []
     test_data.extend([('LINESTRING (0 0, 0 1, 1 1, 1 0)',)])
@@ -87,7 +95,7 @@ def run_st_intersection(spark):
     intersection_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     intersection_df.createOrReplaceTempView("intersection")
     rs = spark.sql("select ST_Intersection_UDF(left, right) from intersection").collect()
-    assert rs[0][0] == 'POINT EMPTY'
+    assert rs[0][0] == 'GEOMETRYCOLLECTION EMPTY'
     assert rs[1][0] == 'POINT (0 0)'
 
 def run_st_isvalid(spark):
@@ -107,8 +115,8 @@ def run_st_equals(spark):
     equals_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     equals_df.createOrReplaceTempView("equals")
     rs = spark.sql("select ST_Equals_UDF(left, right) from equals").collect()
-    assert not rs[0][0]
-    assert not rs[1][0]
+    assert rs[0][0]
+    assert rs[1][0]
 
 def run_st_touches(spark):
     test_data = []
