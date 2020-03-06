@@ -25,9 +25,9 @@ def test_ST_IsValid():
     assert rst[1] == 1
 
 def test_ST_PrecisionReduce():
-    data = pandas.Series(["POINT (1.333 2.666)","POINT (2.655 4.447)"])
+    data = pandas.Series(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
     array = pyarrow.array(data)
-    rst = zilliz_gis.ST_PrecisionReduce(array,3)
+    rst = zilliz_gis.ST_PrecisionReduce(array, 3)
     assert rst[0] == "POINT (1.33 2.67)"
     assert rst[1] == "POINT (2.66 4.45)"
 
@@ -230,6 +230,13 @@ def test_ST_Transform():
     rst_point = ogr.CreateGeometryFromWkt(str(wkt))
     assert abs(rst_point.GetX() - 1113194.90793274 < 0.01)
     assert abs(rst_point.GetY() - 1118889.97485796 < 0.01)
+
+def test_ST_CurveToLine():
+    data = ["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"]
+    array = pyarrow.array(pandas.Series(data))
+    rst = zilliz_gis.ST_CurveToLine(array)
+
+    assert str(rst[0]).startswith("POLYGON")
 
 def test_ST_NPoints():
     data = ["LINESTRING(1 1,1 4)"]

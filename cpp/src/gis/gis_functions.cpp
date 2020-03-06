@@ -142,6 +142,11 @@ std::shared_ptr<arrow::Array> ST_Transform(
   return gdal::ST_Transform(geometries, src_rs, dst_rs);
 }
 
+std::shared_ptr<arrow::Array> ST_CurveToLine(
+    const std::shared_ptr<arrow::Array>& geometries) {
+  return gdal::ST_CurveToLine(geometries);
+}
+
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Distance(
