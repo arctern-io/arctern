@@ -41,6 +41,7 @@ __all__ = [
     "ST_Union_Aggr_UDF",
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
+    "ST_CurveToLine_UDF",
     "ST_GeomFromGeoJSON_UDF",
     "ST_PointFromText_UDF",
     "ST_PolygonFromText_UDF",
@@ -307,4 +308,11 @@ def ST_Transform_UDF(geos, src_rs, dst_rs):
     src_rs1 = bytes(src_rs[0], encoding="utf8")
     dst_rs1 = bytes(dst_rs[0], encoding="utf8")
     rs = ST_Transform(arr_geos, src_rs1, dst_rs1)
+    return rs.to_pandas()
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_CurveToLine_UDF(geos):
+    arr_geos = pa.array(geos, type='string')
+    from zilliz_gis import ST_CurveToLine
+    rs = ST_CurveToLine(arr_geos)
     return rs.to_pandas()
