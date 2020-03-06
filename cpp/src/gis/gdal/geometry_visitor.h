@@ -22,6 +22,34 @@ namespace zilliz {
 namespace gis {
 namespace gdal {
 
+class AreaVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~AreaVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString*) override {}
+  void visit(const OGRLinearRing*) override {}
+  void visit(const OGRPolygon* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString*) override {}
+  void visit(const OGRMultiPolygon* geo) override { area_ += geo->get_Area(); }
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString*) override {}
+  // void visit(const OGRCompoundCurve*) override;
+  void visit(const OGRCurvePolygon* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiCurve* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiSurface* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRTriangle* geo) override { area_ += geo->get_Area(); }
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const double area() const { return area_; }
+  void reset() { area_ = 0; }
+
+ private:
+  double area_ = 0;
+};
+
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;

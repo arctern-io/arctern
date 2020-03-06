@@ -27,7 +27,7 @@ struct OutputInfo {
 };
 
 // Functor should be equivalent to
-//    [=] __device__ (int index, GpuContext& results, bool skip_write) => OutputInfo
+//    [=] __device__ (int index, GpuContext& results, bool skip_write) -> OutputInfo
 // See "gis/cuda/functor/st_point.cu" for example
 template <typename Functor>
 extern void GeometryOutput(Functor functor, int size, GeometryVector& results);

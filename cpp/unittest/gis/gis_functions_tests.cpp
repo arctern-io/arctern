@@ -2365,6 +2365,44 @@ TEST(geometry_test, test_ST_HausdorffDistance) {
   EXPECT_DOUBLE_EQ(res_double->Value(1), 1);
 }
 
+TEST(geometry_test, test_ST_Area2) {
+  auto p0 = "CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)";
+  auto p1 =
+      "COMPOUNDCURVE(CIRCULARSTRING(0 2, -1 1,0 0),(0 0, 0.5 0, 1 0),CIRCULARSTRING( 1 "
+      "0, 2 1, 1 2),(1 2, 0.5 2, 0 2))";
+  auto p2 =
+      "GEOMETRYCOLLECTION ( LINESTRING ( 90 190, 120 190, 50 60, 130 10, 190 50, 160 90, "
+      "10 150, 90 190 ), POINT(90 190) )";
+  auto p3 =
+      "POLYHEDRALSURFACE (((0 0,0 0,0 1,0 0)),((0 0,0 1,1 0,0 0)),((0 0,1 0,0 0,0 "
+      "0)),((1 0,0 1,0 0,1 0)))";
+  auto p4 = "TIN ( ((0 0, 0 0, 0 1, 0 0)), ((0 0, 0 1, 1 1, 0 0)) )";
+  auto p5 =
+      "POLYHEDRALSURFACE( ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, "
+      "1 0 0, 0 0 0)), ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)), ((1 1 0, 1 1 1, 1 0 1, 1 0 "
+      "0, 1 1 0)), ((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)), ((0 0 1, 1 0 1, 1 1 1, 0 1 1, "
+      "0 0 1)) )";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_Area(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+  EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(2), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(3), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(4), 0.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(5), 2);
+}
+
 TEST(geometry_test, test_ST_Area) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
