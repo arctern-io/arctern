@@ -103,6 +103,7 @@ class GeometryVector {
   // use struct to simplify data transfer in CUDA
   // fields are explained below (at class variable members declarations)
   struct GpuContext;
+  struct ConstGpuContext;
 
  public:
   static void GpuContextDeleter(GpuContext*);
