@@ -21,6 +21,8 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate arctern" >> ~/.bashrc
 
+RUN mkdir -p /home/arctern_test
+
 COPY arctern /tmp/arctern
 
 ENV PATH=/opt/conda/bin:$PATH

@@ -16,10 +16,14 @@ g2 = "MULTIPOLYGON (((100 100, 100 130, 130 130, 130 100, 100 100)), ((0 0, 10 0
 
 geo1 = list(wkt.loads(g1))
 geo2 = list(wkt.loads(g2))
-print(type(geo1))
+gc1 = [x.wkt for x in geo1]
+gc2 = [x.wkt for x in geo2]
+gc1.sort()
+gc2.sort()
+print(gc1)
+print(gc2)
 
-geo1.sort()
-geo2.sort()
+
 print(geo1 == geo2)
 exit(0)
 geo1 = wkt.loads(g1)
