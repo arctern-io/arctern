@@ -127,17 +127,17 @@ TEST(type_scan_test, single_type_scan) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
   zilliz::gis::gdal::TypeScannerForWkt scanner(input);
-  scanner.mutable_types().push_back(WkbTypes::kPoint);
-  scanner.mutable_types().push_back(WkbTypes::kLineString);
-  scanner.mutable_types().push_back(WkbTypes::kPolygon);
-  scanner.mutable_types().push_back(WkbTypes::kMultiPoint);
-  scanner.mutable_types().push_back(WkbTypes::kMultiLineString);
-  scanner.mutable_types().push_back(WkbTypes::kMultiPolygon);
+  scanner.mutable_types().push_back({WkbTypes::kPoint});
+  scanner.mutable_types().push_back({WkbTypes::kLineString});
+  scanner.mutable_types().push_back({WkbTypes::kPolygon});
+  scanner.mutable_types().push_back({WkbTypes::kMultiPoint});
+  scanner.mutable_types().push_back({WkbTypes::kMultiLineString});
+  scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
   auto type_masks = scanner.Scan();
   ASSERT_EQ(type_masks->is_unique_type, false);
-  ASSERT_EQ(type_masks->is_unique_grouped_types, false);
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kPoint];
+    GroupedWkbTypes type = {WkbTypes::kPoint};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i == 0) {
         ASSERT_EQ(mask[i], true);
@@ -145,11 +145,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kPoint];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 1);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kLineString];
+    GroupedWkbTypes type = {WkbTypes::kLineString};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 0 && i < 7) {
         ASSERT_EQ(mask[i], true);
@@ -157,11 +158,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kLineString];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 6);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kPolygon];
+    GroupedWkbTypes type = {WkbTypes::kPolygon};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 6 && i < 11) {
         ASSERT_EQ(mask[i], true);
@@ -169,11 +171,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kPolygon];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 4);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kMultiPoint];
+    GroupedWkbTypes type = {WkbTypes::kMultiPoint};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 10 && i < 13) {
         ASSERT_EQ(mask[i], true);
@@ -181,11 +184,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kMultiPoint];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 2);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kMultiLineString];
+    GroupedWkbTypes type = {WkbTypes::kMultiLineString};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 12 && i < 16) {
         ASSERT_EQ(mask[i], true);
@@ -193,11 +197,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kMultiLineString];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 3);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kMultiPolygon];
+    GroupedWkbTypes type = {WkbTypes::kMultiPolygon};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 15 && i < 33) {
         ASSERT_EQ(mask[i], true);
@@ -205,11 +210,12 @@ TEST(type_scan_test, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[WkbTypes::kMultiPolygon];
+    auto count = type_masks->type_mask_counts[type];
     ASSERT_EQ(count, 17);
   }
   {
-    auto& mask = type_masks->type_masks[WkbTypes::kUnknown];
+    GroupedWkbTypes type = {WkbTypes::kUnknown};
+    auto& mask = type_masks->type_masks[type];
     for (int i = 0; i < mask.size(); i++) {
       ASSERT_EQ(mask[i], false);
     }
@@ -220,14 +226,14 @@ TEST(type_scan_test, unknown_type) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
   zilliz::gis::gdal::TypeScannerForWkt scanner(input);
-  scanner.mutable_types().push_back(WkbTypes::kLineString);
-  scanner.mutable_types().push_back(WkbTypes::kMultiPoint);
-  scanner.mutable_types().push_back(WkbTypes::kMultiPolygon);
+  scanner.mutable_types().push_back({WkbTypes::kLineString});
+  scanner.mutable_types().push_back({WkbTypes::kMultiPoint});
+  scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
   auto type_masks = scanner.Scan();
   ASSERT_EQ(type_masks->is_unique_type, false);
-  ASSERT_EQ(type_masks->is_unique_grouped_types, false);
 
-  auto& mask = type_masks->type_masks[WkbTypes::kUnknown];
+  GroupedWkbTypes type = {WkbTypes::kUnknown};
+  auto& mask = type_masks->type_masks[type];
   for (int i = 0; i < mask.size(); i++) {
     if ((i == 0) || (i > 6 && i < 11) || (i > 12 && i < 16)) {
       ASSERT_EQ(mask[i], true);
@@ -243,18 +249,17 @@ TEST(type_scan_test, unique_type) {
   {
     zilliz::gis::gdal::TypeScannerForWkt scanner(input);
     auto type_masks = scanner.Scan();
+    GroupedWkbTypes type = {WkbTypes::kUnknown};
     ASSERT_EQ(type_masks->is_unique_type, true);
-    ASSERT_EQ(type_masks->unique_type, WkbTypes::kUnknown);
-    ASSERT_EQ(type_masks->is_unique_grouped_types, false);
-    ASSERT_EQ(type_masks->type_masks.size(), 0);
+    ASSERT_EQ(type_masks->unique_type, type);
   }
 
   {
     zilliz::gis::gdal::TypeScannerForWkt scanner(input);
-    scanner.mutable_types().push_back(WkbTypes::kMultiPolygon);
+    scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
     auto type_masks = scanner.Scan();
+    GroupedWkbTypes type = {WkbTypes::kMultiPolygon};
     ASSERT_EQ(type_masks->is_unique_type, false);
-    ASSERT_EQ(type_masks->is_unique_grouped_types, false);
   }
   {
     auto p2 = "LINESTRING (0 0, 0 1)";
@@ -273,11 +278,11 @@ TEST(type_scan_test, unique_type) {
     builder.Append(std::string(p7));
     builder.Finish(&input);
     zilliz::gis::gdal::TypeScannerForWkt scanner(input);
-    scanner.mutable_types().push_back(WkbTypes::kLineString);
+    scanner.mutable_types().push_back({WkbTypes::kLineString});
     auto type_masks = scanner.Scan();
+    GroupedWkbTypes type = {WkbTypes::kLineString};
     ASSERT_EQ(type_masks->is_unique_type, true);
-    ASSERT_EQ(type_masks->is_unique_grouped_types, false);
-    ASSERT_EQ(type_masks->unique_type, WkbTypes::kLineString);
+    ASSERT_EQ(type_masks->unique_type, type);
     ASSERT_EQ(type_masks->type_masks.size(), 0);
   }
 }
@@ -288,14 +293,13 @@ TEST(type_scan_test, grouped_type) {
   zilliz::gis::gdal::TypeScannerForWkt scanner(input);
   GroupedWkbTypes type1({WkbTypes::kPoint, WkbTypes::kLineString});
   GroupedWkbTypes type2({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
-  scanner.mutable_grouped_types().push_back(type1);
-  scanner.mutable_grouped_types().push_back(type2);
+  scanner.mutable_types().push_back(type1);
+  scanner.mutable_types().push_back(type2);
   auto type_masks = scanner.Scan();
   ASSERT_EQ(type_masks->is_unique_type, false);
-  ASSERT_EQ(type_masks->is_unique_grouped_types, false);
 
   {
-    auto& mask = type_masks->grouped_type_masks[type1];
+    auto& mask = type_masks->type_masks[type1];
     for (int i = 0; i < mask.size(); i++) {
       if (i < 7) {
         ASSERT_EQ(mask[i], true);
@@ -305,7 +309,7 @@ TEST(type_scan_test, grouped_type) {
     }
   }
   {
-    auto& mask = type_masks->grouped_type_masks[type2];
+    auto& mask = type_masks->type_masks[type2];
     for (int i = 0; i < mask.size(); i++) {
       if (i > 6 && i < 13) {
         ASSERT_EQ(mask[i], true);
@@ -336,9 +340,8 @@ TEST(type_scan_test, unique_grouped_type) {
 
   zilliz::gis::gdal::TypeScannerForWkt scanner(input);
   GroupedWkbTypes type({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
-  scanner.mutable_grouped_types().push_back(type);
+  scanner.mutable_types().push_back(type);
   auto type_masks = scanner.Scan();
-  ASSERT_EQ(type_masks->is_unique_type, false);
-  ASSERT_EQ(type_masks->is_unique_grouped_types, true);
-  ASSERT_EQ(type_masks->unique_grouped_types, type);
+  ASSERT_EQ(type_masks->is_unique_type, true);
+  ASSERT_EQ(type_masks->unique_type, type);
 }

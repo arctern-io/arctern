@@ -7,8 +7,7 @@
 
 | 操作系统    | 版本          |
 | ---------- | ------------ |
-| CentOS     | 7 或以上      |
-| Ubuntu LTS | 16.04 或以上  |
+| Ubuntu LTS | 18.04 或以上  |
 
 ### 软件要求
 
@@ -86,7 +85,7 @@ TEST END: /opt/conda/envs/arctern/conda-bld/linux-64/libarctern-0.0.0.dev-0.tar.
 
 安装包依赖
 ```shell
-$ sudo apt install libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev
+$ sudo apt install libgl1-mesa-dev libegl1-mesa-dev
 ```
 
 构建Conda包

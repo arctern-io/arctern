@@ -16,29 +16,14 @@
 // under the License.
 
 #pragma once
-#include <cstdint>
+// provide mock declaration
+// since nvcc can't parse arrow/api.h headers
+namespace arrow {
+class Array;
+class Table;
+}  // namespace arrow
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
-namespace zilliz {
-namespace gis {
-namespace cuda {
-
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
-
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
-  }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
-};
-
-}  // namespace cuda
-}  // namespace gis
-}  // namespace zilliz
+#ifndef __CUDACC__
+#include <arrow/api.h>
+#include <arrow/array.h>
+#endif
