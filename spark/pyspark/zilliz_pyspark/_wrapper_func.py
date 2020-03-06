@@ -16,6 +16,7 @@ __all__ = [
     "ST_Point_UDF",
     "ST_Intersection_UDF",
     "ST_IsValid_UDF",
+    "ST_PrecisionReduce_UDF",
     "ST_Equals_UDF",
     "ST_Touches_UDF",
     "ST_Overlaps_UDF",
@@ -113,6 +114,13 @@ def ST_IsValid_UDF(geos):
     arr_geos = pa.array(geos, type='string')
     from zilliz_gis import ST_IsValid
     rs = ST_IsValid(arr_geos)
+    return rs.to_pandas()
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_PrecisionReduce_UDF(geos, precision):
+    arr_geos = pa.array(geos, type='string')
+    from zilliz_gis import ST_PrecisionReduce
+    rs = ST_PrecisionReduce(arr_geos, precision)
     return rs.to_pandas()
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
