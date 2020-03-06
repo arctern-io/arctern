@@ -25,7 +25,8 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 COPY arctern /tmp/arctern
 
 ENV PATH=/opt/conda/bin:$PATH
-RUN /tmp/arctern/install_arctern_spark.sh && rm -rf /tmp/arctern
+RUN /tmp/arctern/install_arctern_spark.sh && rm -rf /tmp/arctern && \
+    conda clean --all -y
 
 COPY prebuildfs /
 COPY rootfs /
