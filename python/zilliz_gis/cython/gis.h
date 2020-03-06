@@ -59,8 +59,8 @@ std::shared_ptr<arrow::Array>
 ST_IsSimple(const std::shared_ptr<arrow::Array> &geometries);
 
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries, int32_t num_dot);
+std::shared_ptr<arrow::Array>
+ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries, int32_t num_dot);
 
 
 std::shared_ptr<arrow::Array>

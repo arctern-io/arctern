@@ -429,38 +429,30 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
       arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
 }
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-//                    int32_t precision) {
+std::shared_ptr<arrow::Array> ST_PrecisionReduce(
+    const std::shared_ptr<arrow::Array>& geometries, int32_t precision) {
+  auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
+  auto len = geometries->length();
+  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  arrow::StringBuilder builder;
+  void* geo;
+  char* wkt_tmp;
 
-//     char precision_str[32];
-//     sprintf(precision_str, "%i", precision);
+  for (int32_t i = 0; i < len; i++) {
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
+                                                 nullptr, (OGRGeometry**)(&geo)));
+    ((OGRGeometry*)geo)->accept(precision_reduce_visitor);
+    CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
+    CHECK_ARROW(builder.Append(wkt_tmp));
+    OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
+    CPLFree(wkt_tmp);
+  }
 
-//     const char *prev_config = CPLGetConfigOption("OGR_WKT_PRECISION", nullptr);
-//     char *old_precision_str = prev_config ? CPLStrdup(prev_config) : nullptr;
-//     CPLSetConfigOption("OGR_WKT_PRECISION", precision_str);
-
-//     auto len = geometries->length();
-//     auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
-//     arrow::StringBuilder builder;
-//     void *geo;
-//     char *wkt_tmp;
-//     for (int32_t i = 0; i < len; i++) {
-//         CHECK_GDAL(OGRGeometryFactory::createFromWkt(
-//             wkt_geometries->GetString(i).c_str(), nullptr, (OGRGeometry**)(&geo)));
-//         CHECK_GDAL(OGR_G_ExportToWkt(geo, &wkt_tmp));
-//         CHECK_ARROW(builder.Append(wkt_tmp));
-//         OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
-//         CPLFree(wkt_tmp);
-//     }
-
-//     CPLSetConfigOption("OGR_WKT_PRECISION", old_precision_str);
-//     CPLFree(old_precision_str);
-
-//     std::shared_ptr<arrow::Array> results;
-//     CHECK_ARROW(builder.Finish(&results));
-//     return results;
-// }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  delete precision_reduce_visitor;
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array>& geo1,
                                               const std::shared_ptr<arrow::Array>& geo2) {
