@@ -450,6 +450,7 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
+  delete precision_reduce_visitor;
   return results;
 }
 

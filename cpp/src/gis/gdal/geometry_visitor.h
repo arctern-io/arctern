@@ -70,7 +70,6 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
 
   double coordinate_precision_reduce(double coordinate);
   void visit(OGRPoint*) override;
-  void geometry_precision_reduce(OGRGeometry* geo);
 
  private:
   int32_t precision_ = 0;
