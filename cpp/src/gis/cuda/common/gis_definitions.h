@@ -24,9 +24,10 @@
 #include <string>
 #include <tuple>
 #include <vector>
-using std::vector;
+
+#include "gis/cuda/mock/arrow/api.h"
 template <typename T>
-using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
+using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
 
 #include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/wkb/wkb_tag.h"
@@ -34,6 +35,13 @@ using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
 namespace zilliz {
 namespace gis {
 namespace cuda {
+// namespace arrow {
+// class Array {
+// public:
+//  int length() { return 0; }
+//  int null_count() { return 0; }
+//};
+//}  // namespace arrow
 
 //// Not used yet, comment later
 // struct GeoWorkspace {
@@ -152,12 +160,6 @@ class GeometryVector {
 
   GpuContextHolder CreateReadGpuContext() const;  // TODO
   GeometryVector() = default;
-  GpuVector<char> EncodeToWkb() const;  // TODO
-
-  void WkbDecodeInitalize();
-  // append single element
-  void WkbDecodeAppend(const char* bin);
-  void WkbDecodeFinalize();
 
   // STEP 1: Initialize vector with size of elements
   void OutputInitialize(int size);
@@ -204,12 +206,10 @@ class GeometryVector {
   DataState data_state_ = DataState::Invalid;
 };
 
-namespace GeometryVectorFactory {
-GeometryVector CreateFromWkts(const vector<std::string>& wkt_vec);
-}
-bool test_cuda_abi(const std::string& str);
-
 using GpuContext = GeometryVector::GpuContext;
+namespace internal {
+void ExclusiveScan(int* offsets, int size);
+}  // namespace internal
 
 }  // namespace cuda
 }  // namespace gis

@@ -17,10 +17,39 @@
 #pragma once
 
 #include <ogr_geometry.h>
+#include <string>
 
 namespace zilliz {
 namespace gis {
 namespace gdal {
+
+class AreaVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~AreaVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString*) override {}
+  void visit(const OGRLinearRing*) override {}
+  void visit(const OGRPolygon* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString*) override {}
+  void visit(const OGRMultiPolygon* geo) override { area_ += geo->get_Area(); }
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString*) override {}
+  // void visit(const OGRCompoundCurve*) override;
+  void visit(const OGRCurvePolygon* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiCurve* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiSurface* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRTriangle* geo) override { area_ += geo->get_Area(); }
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const double area() const { return area_; }
+  void reset() { area_ = 0; }
+
+ private:
+  double area_ = 0;
+};
 
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
@@ -32,6 +61,18 @@ class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
 
  private:
   int64_t npoints_ = 0;
+};
+
+class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit PrecisionReduceVisitor(int32_t precision) : precision_(precision) {}
+  ~PrecisionReduceVisitor() = default;
+
+  double coordinate_precision_reduce(double coordinate);
+  void visit(OGRPoint*) override;
+
+ private:
+  int32_t precision_ = 0;
 };
 
 }  // namespace gdal

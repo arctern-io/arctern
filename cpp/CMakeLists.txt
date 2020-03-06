@@ -42,6 +42,7 @@ set(LIB_VERSION "0.1.0")
 
 set(CMAKE_CXX_STANDARD 14)
 if (USE_GPU)
+    set(PYARROW_WITH_CUDA 1)
     message(STATUS "Building on GPU")
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 14)

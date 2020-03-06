@@ -86,9 +86,10 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
   return gdal::ST_Buffer(geometries, buffer_distance, n_quadrant_segments);
 }
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-//                    int32_t precision);
+std::shared_ptr<arrow::Array> ST_PrecisionReduce(
+    const std::shared_ptr<arrow::Array>& geometries, int32_t precision) {
+  return gdal::ST_PrecisionReduce(geometries, precision);
+}
 
 std::shared_ptr<arrow::Array> ST_Intersection(
     const std::shared_ptr<arrow::Array>& geometries_1,
