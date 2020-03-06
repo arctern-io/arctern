@@ -2550,6 +2550,30 @@ TEST(geometry_test, test_ST_Centroid) {
   // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
 }
 
+TEST(geometry_test, test_ST_Length2) {
+  auto p0 = "CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))";
+  auto p1 =
+      "CURVEPOLYGON(COMPOUNDCURVE(CIRCULARSTRING(0 0,2 0, 2 1, 2 3, 4 3),(4 3, 4 5, 1 4, "
+      "0 0)), CIRCULARSTRING(1.7 1, 1.4 0.4, 1.6 0.4, 1.6 0.5, 1.7 1) )";
+  auto p2 =
+      "MULTISURFACE(CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, "
+      "1 1)))";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Finish(&input);
+
+  auto res = zilliz::gis::ST_Length(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_TRUE(std::abs(res_double->Value(0) - 24.5999588773797) < 1e-7);
+  ASSERT_TRUE(std::abs(res_double->Value(1) - 19.2364895818726) < 1e-7);
+  ASSERT_TRUE(std::abs(res_double->Value(2) - 24.5999588773797) < 1e-7);
+}
+
 TEST(geometry_test, test_ST_Length) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
@@ -2580,12 +2604,12 @@ TEST(geometry_test, test_ST_Length) {
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0.0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 2.0);
   EXPECT_DOUBLE_EQ(res_double->Value(2), 3.414213562373095);
-  //  EXPECT_DOUBLE_EQ(res_double->Value(3),4.0); //0
+  EXPECT_DOUBLE_EQ(res_double->Value(3), 4.0);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
-  //  EXPECT_DOUBLE_EQ(res_double->Value(5), 121.74489533575682); //0
-  //  EXPECT_DOUBLE_EQ(res_double->Value(6),9.123105625617661); //0
-  //  EXPECT_DOUBLE_EQ(res_double->Value(7),26.0); //0
-  //  EXPECT_DOUBLE_EQ(res_double->Value(8),12.537319187990757); //0
+  EXPECT_DOUBLE_EQ(res_double->Value(5), 121.74489533575682);
+  EXPECT_DOUBLE_EQ(res_double->Value(6), 9.123105625617661);
+  EXPECT_DOUBLE_EQ(res_double->Value(7), 26.0);
+  EXPECT_DOUBLE_EQ(res_double->Value(8), 12.537319187990757);
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
