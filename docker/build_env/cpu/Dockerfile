@@ -27,5 +27,10 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 COPY docker/build_env/cpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
-ENTRYPOINT [ "/opt/docker-entrypoint.sh" ]
+# use login shell to activate environment un the RUN commands
+SHELL [ "/bin/bash", "-c", "-l" ]
+
+# use login shell when running the container
+ENTRYPOINT [ "/bin/bash", "-c", "-l", "/opt/docker-entrypoint.sh" ]
+
 CMD [ "start" ]

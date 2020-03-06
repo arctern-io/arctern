@@ -37,5 +37,10 @@ ENV NSS_WRAPPER_GROUP="/opt/spark/tmp/nss_group" \
 
 WORKDIR /opt/spark
 USER 1001
-ENTRYPOINT [ "/entrypoint.sh" ]
+
+# use login shell to activate environment un the RUN commands
+SHELL [ "/bin/bash", "-c", "-l" ]
+
+# use login shell when running the container
+ENTRYPOINT [ "/bin/bash", "-c", "-l", "/entrypoint.sh" ]
 CMD [ "/run.sh" ]

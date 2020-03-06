@@ -20,13 +20,18 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
     conda env create -f /tmp/zgis.yml && \
-    rm /tmp/zgis.yml && \
     conda clean --all -y && \
+    rm /tmp/zgis.yml && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate bash" >> ~/.bashrc
+    echo "conda activate base" >> ~/.bashrc
 
 COPY docker/build_env/gpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
-ENTRYPOINT [ "/opt/docker-entrypoint.sh" ]
+# use login shell to activate environment un the RUN commands
+SHELL [ "/bin/bash", "-c", "-l" ]
+
+# use login shell when running the container
+ENTRYPOINT [ "/bin/bash", "-c", "-l", "/opt/docker-entrypoint.sh" ]
+
 CMD [ "start" ]
