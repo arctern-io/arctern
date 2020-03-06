@@ -30,7 +30,6 @@ WORKDIR /root
 # use login shell to activate environment un the RUN commands
 SHELL [ "/bin/bash", "-c", "-l" ]
 
-# use login shell when running the container
-ENTRYPOINT [ "/bin/bash", "-c", "-l", "/opt/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/opt/docker-entrypoint.sh" ]
 
 CMD [ "start" ]

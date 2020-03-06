@@ -38,5 +38,9 @@ ENV NSS_WRAPPER_GROUP="/opt/spark/tmp/nss_group" \
 
 WORKDIR /opt/spark
 USER 1001
+
+# use login shell to activate environment un the RUN commands
+SHELL [ "/bin/bash", "-c", "-l" ]
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/run.sh" ]
