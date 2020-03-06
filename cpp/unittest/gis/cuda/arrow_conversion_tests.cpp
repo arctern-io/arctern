@@ -15,30 +15,44 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#pragma once
-#include <cstdint>
+//
+// Created by mike on 2/10/20.
+//
 
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
+#include <gtest/gtest.h>
+
+#include <cmath>
+
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/functor/st_distance.h"
+#include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/test_common/test_common.h"
+
 namespace zilliz {
 namespace gis {
 namespace cuda {
-
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
-
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
+using std::vector;
+TEST(ArrowConversionTest, naive) {
+  vector<double> xs{1, 2, 3, 4, 5};
+  vector<double> ys{0, 1, 2, 3, 4};
+  GeometryVector left_points;
+  GeometryVector right_points;
+  ST_Point(xs.data(), ys.data(), (int)xs.size(), left_points);
+  for (auto& x : xs) {
+    x = -x;
   }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
+  for (auto& y : ys) {
+    y = -y;
   }
-  uint32_t data;
-};
-
+  ST_Point(xs.data(), ys.data(), (int)xs.size(), right_points);
+  vector<double> distance(xs.size());
+  ST_Distance(left_points, right_points, distance.data());
+  for (size_t i = 0; i < xs.size(); ++i) {
+    auto std = (xs[i] * xs[i] + ys[i] * ys[i]) * 4;
+    auto res = distance[i] * distance[i];
+    ASSERT_DOUBLE_EQ(res, std);
+  }
+}
 }  // namespace cuda
 }  // namespace gis
 }  // namespace zilliz

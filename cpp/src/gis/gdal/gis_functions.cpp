@@ -560,20 +560,19 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
   auto len = geometries->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
   arrow::DoubleBuilder builder;
-  OGRGeometry* geo;
+  auto* area = new AreaVisitor;
   for (int32_t i = 0; i < len; i++) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, (OGRGeometry**)(&geo)));
-    OGRwkbGeometryType eType = wkbFlatten(geo->getGeometryType());
-    if ((eType != wkbLineString) &&
-        (OGR_GT_IsSurface(eType) || OGR_GT_IsCurve(eType) ||
-         OGR_GT_IsSubClassOf(eType, wkbMultiSurface) || eType == wkbGeometryCollection)) {
-      CHECK_ARROW(builder.Append(OGR_G_Area(geo)));
+    auto ogr = Wrapper_createFromWkt(wkt_geometries, i);
+    if (ogr == nullptr) {
+      builder.AppendNull();
     } else {
-      CHECK_ARROW(builder.Append(0));
+      area->reset();
+      ogr->accept(area);
+      builder.Append(area->area());
     }
-    OGRGeometryFactory::destroyGeometry(geo);
+    OGRGeometryFactory::destroyGeometry(ogr);
   }
+  delete area;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

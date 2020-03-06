@@ -25,8 +25,9 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_area.h"
-#include "test_utils/transforms.h"
+#include "gis/cuda/test_common/test_common.h"
 
+using std::vector;
 namespace zilliz::gis::cuda {
 TEST(FunctorArea, naive) {
   ASSERT_TRUE(true);
@@ -35,13 +36,12 @@ TEST(FunctorArea, naive) {
       "00000010400000000000001040000000000000104000000000000010400000000000000840");
 
   int n = 3;
-  GeometryVector gvec;
-  gvec.WkbDecodeInitalize();
+  vector<vector<char>> lists;
   for (int i = 0; i < n; ++i) {
-    gvec.WkbDecodeAppend(raw_data.data());
+    lists.push_back(raw_data);
   }
-  gvec.WkbDecodeFinalize();
 
+  auto gvec = GeometryVectorFactory::CreateFromWkbs(lists);
   vector<double> result(n);
   ST_Area(gvec, result.data());
   for (int i = 0; i < n; ++i) {
