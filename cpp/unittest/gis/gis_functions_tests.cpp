@@ -2903,6 +2903,19 @@ TEST(geometry_test, test_ST_Transform) {
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
+TEST(geometry_test, test_ST_CurveToLine) {
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input_data;
+
+  builder.Append(std::string("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"));
+  builder.Finish(&input_data);
+
+  auto res = zilliz::gis::ST_CurveToLine(input_data);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0).substr(0,7),"POLYGON");
+}
+
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
   auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
