@@ -2913,7 +2913,7 @@ TEST(geometry_test, test_ST_CurveToLine) {
   auto res = zilliz::gis::ST_CurveToLine(input_data);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0).substr(0,7),"POLYGON");
+  ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");
 }
 
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
