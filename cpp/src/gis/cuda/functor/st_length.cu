@@ -24,7 +24,7 @@ namespace cuda {
 
 namespace {
 using Iter = GpuContext::Iter;
-using ConstIter = GpuContext::ConstIter;
+using ConstIter = ConstGpuContext::ConstIter;
 
 inline DEVICE_RUNNABLE double LineStringLength(ConstIter& iter) {
   auto count = *iter.metas++;
@@ -41,7 +41,7 @@ inline DEVICE_RUNNABLE double LineStringLength(ConstIter& iter) {
   return sum_length;
 }
 
-__global__ void ST_LengthKernel(const GpuContext ctx, double* results) {
+__global__ void ST_LengthKernel(ConstGpuContext ctx, double* results) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < ctx.size) {
     auto tag = ctx.get_tag(index);

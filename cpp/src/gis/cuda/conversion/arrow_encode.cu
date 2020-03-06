@@ -25,7 +25,7 @@ namespace gis {
 namespace cuda {
 
 namespace internal {
-__global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int size) {
+__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output, int size) {
   auto index = threadIdx.x + blockDim.x * blockIdx.x;
   if (index < size) {
     auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
@@ -37,7 +37,7 @@ __global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int
 }
 
 // return: size of total data length in bytes
-void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
                            int* value_length_ptr) {
   assert(input.size == output.size);
   assert(output.offsets);
@@ -109,7 +109,7 @@ struct WkbEncoder {
   }
 };
 
-__global__ static void CalcValues(const GpuContext input, WkbArrowContext output) {
+__global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
     auto tag = input.get_tag(index);
@@ -147,7 +147,7 @@ __global__ static void CalcValues(const GpuContext input, WkbArrowContext output
   }
 }
 
-void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output) {
+void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output) {
   assert(input.size == output.size);
   assert(output.offsets);
   assert(output.values);

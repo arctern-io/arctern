@@ -107,10 +107,11 @@ class GeometryVector {
 
  public:
   static void GpuContextDeleter(GpuContext*);
-  using GpuContextHolder =
-      std::unique_ptr<GpuContext, DeleterWrapper<GpuContext, GpuContextDeleter>>;
+  static void GpuContextDeleter(ConstGpuContext*);
+  using GpuContextHolder = UniquePtrWithDeleter<GpuContext, GpuContextDeleter>;
+  using ConstGpuContextHolder = UniquePtrWithDeleter<ConstGpuContext, GpuContextDeleter>;
 
-  GpuContextHolder CreateReadGpuContext() const;  // TODO
+  ConstGpuContextHolder CreateReadGpuContext() const;  // TODO
   GeometryVector() = default;
 
   // STEP 1: Initialize vector with size of elements
@@ -128,7 +129,7 @@ class GeometryVector {
   // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
 
   // STEP 6: Copy data(metas and values) back to GeometryVector
-  void OutputFinalizeWith(const GpuContext&);
+  void OutputFinalizeWith(GpuContext&);
   // NOTE: see functor/st_point.cu for a detailed example
 
   void clear();
@@ -158,6 +159,7 @@ class GeometryVector {
   DataState data_state_ = DataState::Invalid;
 };
 using GpuContext = GeometryVector::GpuContext;
+using ConstGpuContext = GeometryVector::ConstGpuContext;
 
 }  // namespace cuda
 }  // namespace gis

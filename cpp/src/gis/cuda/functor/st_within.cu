@@ -100,8 +100,8 @@ inline DEVICE_RUNNABLE bool PointInPolygonImpl(Point point, Iter& polygon_iter) 
 //  return final;
 //}
 
-inline DEVICE_RUNNABLE bool PointInPolygon(const GpuContext& point,
-                                           const GpuContext& polygon, int index) {
+inline DEVICE_RUNNABLE bool PointInPolygon(ConstGpuContext& point,
+                                           ConstGpuContext& polygon, int index) {
   auto pv = point.get_value_ptr(index);
   auto iter = Iter{polygon.get_meta_ptr(index), polygon.get_value_ptr(index)};
   auto result = PointInPolygonImpl(Point{pv[0], pv[1]}, iter);
@@ -110,7 +110,7 @@ inline DEVICE_RUNNABLE bool PointInPolygon(const GpuContext& point,
   return result;
 }
 
-__global__ void ST_WithinKernel(GpuContext left, GpuContext right, bool* result) {
+__global__ void ST_WithinKernel(ConstGpuContext left, ConstGpuContext right, bool* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < left.size) {
     auto left_tag = left.get_tag(tid);
