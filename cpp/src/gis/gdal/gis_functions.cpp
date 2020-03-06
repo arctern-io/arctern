@@ -436,11 +436,12 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
   auto len = geometries->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  arrow::StringBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
     auto geo = Wrapper_createFromWkt(wkt_geometries, i);
     if (geo == nullptr) {
-      CHECK_ARROW(builder.AppendNull);
+      CHECK_ARROW(builder.AppendNull());
     } else {
       geo->accept(precision_reduce_visitor);
       auto wkt_tmp = Wrapper_OGR_G_ExportToWkt(geo);
@@ -609,7 +610,7 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   for (int32_t i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkt(wkt1, i);
     auto ogr2 = Wrapper_createFromWkt(wkt2, i);
-    if ((org1 == nullptr) || (ogr2 == nullptr)) {
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       auto geos1 = ogr1->exportToGEOS(geos_ctx);
@@ -841,6 +842,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     if (env.MaxY > ymax) ymax = env.MaxY;
     OGRGeometryFactory::destroyGeometry(geo);
   }
+  arrow::StringBuilder builder;
   if (set_env) {
     OGRLinearRing ring;
     ring.addPoint(xmin, ymin);
@@ -852,7 +854,6 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     polygon.addRing(&ring);
     char* wkt = nullptr;
     wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
-    arrow::StringBuilder builder;
     CHECK_ARROW(builder.Append(wkt));
     CPLFree(wkt);
   } else {
