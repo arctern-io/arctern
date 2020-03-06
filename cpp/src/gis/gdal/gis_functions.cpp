@@ -553,6 +553,29 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   return results;
 }
 
+std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos) {
+  auto len = geos->length();
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geos);
+  arrow::StringBuilder builder;
+  for (int32_t i = 0; i < len; i++) {
+    auto ogr = Wrapper_createFromWkt(wkt, i);
+    if (ogr == nullptr) {
+      CHECK_ARROW(builder.AppendNull());
+    } else {
+      auto line = ogr->getLinearGeometry();
+      auto line_wkt = Wrapper_OGR_G_ExportToWkt(line);
+      CHECK_ARROW(builder.Append(line_wkt));
+      CPLFree(line_wkt);
+      OGRGeometryFactory::destroyGeometry(line);
+      OGRGeometryFactory::destroyGeometry(ogr);
+    }
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+
+  return results;
+}
+
 /************************ MEASUREMENT FUNCTIONS ************************/
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
