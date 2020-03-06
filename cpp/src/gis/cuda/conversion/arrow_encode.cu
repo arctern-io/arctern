@@ -25,7 +25,8 @@ namespace gis {
 namespace cuda {
 
 namespace internal {
-__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output, int size) {
+__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output,
+                                   int size) {
   auto index = threadIdx.x + blockDim.x * blockIdx.x;
   if (index < size) {
     auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);

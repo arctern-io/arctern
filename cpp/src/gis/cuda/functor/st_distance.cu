@@ -38,7 +38,8 @@ inline DEVICE_RUNNABLE double Point2PointDistance(ConstGpuContext& left,
   return sqrt(dx * dx + dy * dy);
 }
 
-__global__ void ST_DistanceKernel(ConstGpuContext left, ConstGpuContext right, double* result) {
+__global__ void ST_DistanceKernel(ConstGpuContext left, ConstGpuContext right,
+                                  double* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < left.size) {
     auto left_tag = left.get_tag(tid);

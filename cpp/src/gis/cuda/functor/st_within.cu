@@ -110,7 +110,8 @@ inline DEVICE_RUNNABLE bool PointInPolygon(ConstGpuContext& point,
   return result;
 }
 
-__global__ void ST_WithinKernel(ConstGpuContext left, ConstGpuContext right, bool* result) {
+__global__ void ST_WithinKernel(ConstGpuContext left, ConstGpuContext right,
+                                bool* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < left.size) {
     auto left_tag = left.get_tag(tid);
