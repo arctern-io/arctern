@@ -410,6 +410,14 @@ def run_st_transform(spark):
     rs = spark.sql("select ST_Transform_UDF(geos, 'epsg:4326', 'epsg:3857') from buffer").collect()
     assert rs[0][0] == 'POINT (1113194.90793274 1118889.97485796)'
 
+def run_st_curvetoline(spark):
+    test_data = []
+    test_data.extend([('CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))',)])
+    buffer_df = spark.createDataFrame(data=test_data, schema=['geos']).cache()
+    buffer_df.createOrReplaceTempView("buffer")
+    rs = spark.sql("select ST_CurveToLine_UDF(geos) from buffer").collect()
+    assert str(rs[0][0]).startswith("POLYGON")
+
 
 if __name__ == "__main__":
     spark_session = SparkSession \
@@ -448,6 +456,7 @@ if __name__ == "__main__":
     run_st_union_aggr(spark_session)
     run_st_envelope_aggr(spark_session)
     run_st_transform(spark_session)
+    run_st_curvetoline(spark_session)
     run_st_geomfromgeojson(spark_session)
     run_st_pointfromtext(spark_session)
     run_st_polygonfromtext(spark_session)
