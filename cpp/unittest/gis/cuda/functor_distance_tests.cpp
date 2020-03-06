@@ -24,7 +24,10 @@
 #include "gis/cuda/test_common/test_common.h"
 
 using std::vector;
-namespace zilliz::gis::cuda {
+namespace zilliz {
+namespace gis {
+namespace cuda {
+
 TEST(FunctorDistance, naive) {
   ASSERT_TRUE(true);
   // TODO use gdal to convert better good
@@ -66,4 +69,7 @@ TEST(FunctorDistance, naive) {
     ASSERT_DOUBLE_EQ(result[i], std);
   }
 }
-}  // namespace zilliz::gis::cuda
+
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz
