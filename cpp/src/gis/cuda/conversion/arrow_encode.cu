@@ -93,7 +93,6 @@ struct WkbEncoder {
   }
 
   __device__ void EncodePoint(int demensions) {
-    // wtf
     ValuesToWkb(demensions, 1);
   }
 

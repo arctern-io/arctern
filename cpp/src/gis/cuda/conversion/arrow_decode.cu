@@ -62,7 +62,6 @@ struct WkbDecoder {
   }
 
   __device__ void DecodePoint(int demensions) {
-    // wtf
     WkbToValues(demensions, 1);
   }
 
