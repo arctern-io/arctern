@@ -54,8 +54,8 @@ struct MinMax {
   }
 };
 
-__device__ inline OutputInfo GetInfoAndDataPerElement(const GpuContext& input, int index,
-                                                      GpuContext& results,
+__device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& input,
+                                                      int index, GpuContext& results,
                                                       bool skip_write) {
   assert(input.get_tag(index).get_space_type() == WkbSpaceType::XY);
   if (!skip_write) {

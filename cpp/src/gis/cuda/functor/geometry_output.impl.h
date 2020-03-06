@@ -41,7 +41,7 @@ __global__ void FillInfoKernel(Functor functor, GpuContext results) {
   }
 }
 
-__device__ inline void AssertInfo(OutputInfo info, const GpuContext& ctx, int index) {
+__device__ inline void AssertInfo(OutputInfo info, GpuContext& ctx, int index) {
   assert(info.tag.data == ctx.get_tag(index).data);
   assert(info.meta_size == ctx.meta_offsets[index + 1] - ctx.meta_offsets[index]);
   assert(info.value_size == ctx.value_offsets[index + 1] - ctx.value_offsets[index]);

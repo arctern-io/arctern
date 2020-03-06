@@ -15,6 +15,17 @@
  */
 
 #include "gis/cuda/gis_functions.h"
+
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <iostream>
+#include <limits>
+#include <utility>
+#include <vector>
+
 #include "common/version.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/st_area.h"
@@ -25,15 +36,6 @@
 #include "gis/cuda/functor/st_within.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
-
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include <limits>
-#include <utility>
-#include <vector>
 
 namespace zilliz {
 namespace gis {

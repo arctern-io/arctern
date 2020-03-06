@@ -40,10 +40,10 @@ struct WkbArrowContext {
 GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input);
 
 // return size of total data length in bytes
-void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
                            int* value_length);
 
-void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output);
+void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output);
 
 }  // namespace internal
 
