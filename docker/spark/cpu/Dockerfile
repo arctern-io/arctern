@@ -32,7 +32,7 @@ RUN /postunpack.sh
 
 ENV NSS_WRAPPER_GROUP="/opt/spark/tmp/nss_group" \
     NSS_WRAPPER_PASSWD="/opt/spark/tmp/nss_passwd" \
-    PATH="/opt/conda/envs/zgis_dev/bin:/opt/spark/bin:/opt/spark/sbin:$PATH" \
+    PATH="/opt/conda/envs/arctern/bin:/opt/spark/bin:/opt/spark/sbin:$PATH" \
     SPARK_HOME="/opt/spark"
 
 WORKDIR /opt/spark
