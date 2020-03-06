@@ -31,6 +31,15 @@ public:
   virtual void enterPolygonGeometry(wktParser::PolygonGeometryContext * /*ctx*/) override { }
   virtual void exitPolygonGeometry(wktParser::PolygonGeometryContext * /*ctx*/) override { }
 
+  virtual void enterMultiCurveGeometry(wktParser::MultiCurveGeometryContext * /*ctx*/) override { }
+  virtual void exitMultiCurveGeometry(wktParser::MultiCurveGeometryContext * /*ctx*/) override { }
+
+  virtual void enterMultiSurfaceGeometry(wktParser::MultiSurfaceGeometryContext * /*ctx*/) override { }
+  virtual void exitMultiSurfaceGeometry(wktParser::MultiSurfaceGeometryContext * /*ctx*/) override { }
+
+  virtual void enterCurvePolygonGeometry(wktParser::CurvePolygonGeometryContext * /*ctx*/) override { }
+  virtual void exitCurvePolygonGeometry(wktParser::CurvePolygonGeometryContext * /*ctx*/) override { }
+
   virtual void enterCompoundCurveGeometry(wktParser::CompoundCurveGeometryContext * /*ctx*/) override { }
   virtual void exitCompoundCurveGeometry(wktParser::CompoundCurveGeometryContext * /*ctx*/) override { }
 

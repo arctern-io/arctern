@@ -29,6 +29,15 @@ public:
   virtual void enterPolygonGeometry(wktParser::PolygonGeometryContext *ctx) = 0;
   virtual void exitPolygonGeometry(wktParser::PolygonGeometryContext *ctx) = 0;
 
+  virtual void enterMultiCurveGeometry(wktParser::MultiCurveGeometryContext *ctx) = 0;
+  virtual void exitMultiCurveGeometry(wktParser::MultiCurveGeometryContext *ctx) = 0;
+
+  virtual void enterMultiSurfaceGeometry(wktParser::MultiSurfaceGeometryContext *ctx) = 0;
+  virtual void exitMultiSurfaceGeometry(wktParser::MultiSurfaceGeometryContext *ctx) = 0;
+
+  virtual void enterCurvePolygonGeometry(wktParser::CurvePolygonGeometryContext *ctx) = 0;
+  virtual void exitCurvePolygonGeometry(wktParser::CurvePolygonGeometryContext *ctx) = 0;
+
   virtual void enterCompoundCurveGeometry(wktParser::CompoundCurveGeometryContext *ctx) = 0;
   virtual void exitCompoundCurveGeometry(wktParser::CompoundCurveGeometryContext *ctx) = 0;
 
