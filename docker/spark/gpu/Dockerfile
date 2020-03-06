@@ -18,7 +18,7 @@ RUN mkdir -p /opt/spark && \
     chown -R root:root /opt/spark
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda create -n arctern python=3.7 && \
+    conda create -n arctern shapely && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate arctern" >> ~/.bashrc
 
