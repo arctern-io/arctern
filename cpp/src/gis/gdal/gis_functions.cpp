@@ -377,10 +377,10 @@ std::shared_ptr<arrow::Array> ST_Envelope(
   arrow::StringBuilder builder;
   OGREnvelope env;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries,i);
-    if(geo==nullptr){
+    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    if (geo == nullptr) {
       builder.AppendNull();
-    }else if (geo->IsEmpty()) {
+    } else if (geo->IsEmpty()) {
       CHECK_ARROW(builder.Append(wkt_geometries->GetString(i)));
     } else {
       OGR_G_GetEnvelope(geo, &env);
@@ -438,11 +438,10 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
 
   for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries,i);
-    if(geo==nullptr){
+    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull);
-    }
-    else{
+    } else {
       geo->accept(precision_reduce_visitor);
       auto wkt_tmp = Wrapper_OGR_G_ExportToWkt(geo);
       CHECK_ARROW(builder.Append(wkt_tmp));
@@ -534,10 +533,10 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
 
   for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries,i);
-    if(geo==nullptr){
+    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull());
-    }else{
+    } else {
       CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT))
       auto wkt = Wrapper_OGR_G_ExportToWkt(geo);
       CHECK_ARROW(builder.Append(wkt));
@@ -608,9 +607,9 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   arrow::DoubleBuilder builder;
   auto geos_ctx = OGRGeometry::createGEOSContext();
   for (int32_t i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1,i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2,i);
-    if((org1==nullptr) || (ogr2==nullptr)){
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((org1 == nullptr) || (ogr2 == nullptr)) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       auto geos1 = ogr1->exportToGEOS(geos_ctx);
@@ -682,12 +681,11 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
   auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
   arrow::BooleanBuilder builder;
   for (int32_t i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1,i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2,i);
-    if((ogr1==nullptr) || (ogr2==nullptr)){
+    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       builder.AppendNull();
-    }
-    else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
+    } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
     } else {
       builder.Append(false);
@@ -832,9 +830,9 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   OGREnvelope env;
   bool set_env = false;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries,i);
-    if(geo==nullptr) continue;
-    if(geo->IsEmpty()) continue;
+    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    if (geo == nullptr) continue;
+    if (geo->IsEmpty()) continue;
     set_env = true;
     OGR_G_GetEnvelope(geo, &env);
     if (env.MinX < xmin) xmin = env.MinX;
@@ -843,7 +841,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     if (env.MaxY > ymax) ymax = env.MaxY;
     OGRGeometryFactory::destroyGeometry(geo);
   }
-  if(set_env){
+  if (set_env) {
     OGRLinearRing ring;
     ring.addPoint(xmin, ymin);
     ring.addPoint(xmin, ymax);
@@ -857,7 +855,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     arrow::StringBuilder builder;
     CHECK_ARROW(builder.Append(wkt));
     CPLFree(wkt);
-  }else{
+  } else {
     CHECK_ARROW(builder.Append("POLYGON EMPTY"));
   }
   std::shared_ptr<arrow::Array> results;
