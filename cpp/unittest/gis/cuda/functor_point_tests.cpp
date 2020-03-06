@@ -24,7 +24,10 @@
 #include "gis/cuda/functor/st_point.h"
 #include "gis/cuda/test_common/test_common.h"
 using std::vector;
-namespace zilliz::gis::cuda {
+namespace zilliz {
+namespace gis {
+namespace cuda {
+
 TEST(FunctorPoint, naive) {
   vector<double> xs{1, 2, 3, 4, 5};
   vector<double> ys{0, 1, 2, 3, 4};
@@ -46,4 +49,6 @@ TEST(FunctorPoint, naive) {
     ASSERT_DOUBLE_EQ(res, std);
   }
 }
-}  // namespace zilliz::gis::cuda
+}  // namespace cuda
+}  // namespace gis
+}  // namespace zilliz

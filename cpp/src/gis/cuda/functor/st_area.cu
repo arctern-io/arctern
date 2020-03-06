@@ -27,7 +27,7 @@ namespace gis {
 namespace cuda {
 
 namespace {
-inline DEVICE_RUNNABLE double PolygonArea(const GpuContext& ctx, int index) {
+inline DEVICE_RUNNABLE double PolygonArea(ConstGpuContext& ctx, int index) {
   auto meta = ctx.get_meta_ptr(index);
   auto value = ctx.get_value_ptr(index);
   assert(meta[0] == 1);
@@ -42,7 +42,7 @@ inline DEVICE_RUNNABLE double PolygonArea(const GpuContext& ctx, int index) {
   return fabs(sum_area / 2);
 }
 
-__global__ void ST_AreaKernel(GpuContext ctx, double* result) {
+__global__ void ST_AreaKernel(ConstGpuContext ctx, double* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < ctx.size) {
     auto tag = ctx.get_tag(tid);
