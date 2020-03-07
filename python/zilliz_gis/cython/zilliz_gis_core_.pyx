@@ -99,6 +99,9 @@ def ST_ConvexHull(object geo_arr):
 def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
 
+def ST_CurveToLine(object geo_arr):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr)))
+
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))
 
