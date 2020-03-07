@@ -152,7 +152,7 @@ def parse(config_file):
         xs = [x.strip().split('=') for x in lines if not x.strip().startswith('#')]
     return xs
 
-arc_result_dir = './arctern_results'
+arc_result_dir = '/tmp/arctern_results'
 pgis_result_dir = './expected/results'
 
 def compare_all():
@@ -208,7 +208,7 @@ def update_json():
 
 if __name__ == '__main__':
     
-    r1 = compare_results('./arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
+    # r1 = compare_results('./arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # r2 = compare_results('./arctern_results/run_test_st_equals_1.json', './expected/results/st_equals.out')
     # r3 = compare_results('./arctern_results/run_test_st_equals_2.json', './expected/results/st_equals_2.out')
     # r4 = compare_results('./arctern_results/run_test_st_buffer.json', './expected/results/st_buffer.out')

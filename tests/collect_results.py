@@ -85,4 +85,5 @@ def get_sort_zgis(file_path):
             print(x)
 
 if __name__ == '__main__':
-    collect_results('./config.txt', './arctern_results')
+    # collect_results('./config.txt', './arctern_results')
+    collect_results('./config.txt', '/tmp/arctern_results')
