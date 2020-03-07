@@ -22,7 +22,7 @@
 
 #include "render/window/window.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class WindowGPU : public Window {
@@ -47,4 +47,4 @@ class WindowGPU : public Window {
 using WindowGPUPtr = std::shared_ptr<WindowGPU>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

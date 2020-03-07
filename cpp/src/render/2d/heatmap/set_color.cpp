@@ -18,7 +18,7 @@
 
 #include "render/2d/heatmap/set_color.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 const double eps = 1e-6;
@@ -111,4 +111,4 @@ void MeanKernel_cpu(float* img_in, float* img_out, int64_t r, int64_t img_w,
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

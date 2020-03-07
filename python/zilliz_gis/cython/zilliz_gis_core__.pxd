@@ -16,13 +16,13 @@ from pyarrow.lib cimport *
 from libcpp.string cimport *
 
 
-cdef extern from "render.h" namespace "zilliz::render":
+cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const string &conf)
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c,const string &conf)
     shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &ptr_wkt,const shared_ptr[CArray] &ptr_count,const string &conf)
 
 
-cdef extern from "gis.h" namespace "zilliz::gis":
+cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
     shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)

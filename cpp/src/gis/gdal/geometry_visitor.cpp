@@ -16,7 +16,7 @@
 
 #include "gis/gdal/geometry_visitor.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -94,4 +94,4 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo) {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

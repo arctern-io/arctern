@@ -28,7 +28,7 @@
 #include "gis/wkb_types.h"
 #include "utils/check_status.h"
 
-using WkbTypes = zilliz::gis::WkbTypes;
+using WkbTypes = arctern::gis::WkbTypes;
 
 class XYSpaceWktCases {
  public:

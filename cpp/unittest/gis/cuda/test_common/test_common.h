@@ -32,7 +32,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "utils/check_status.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -56,4 +56,4 @@ inline std::vector<char> hexstring_to_binary(const std::string& str) {
 }
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

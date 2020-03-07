@@ -19,7 +19,7 @@
 #include <ogr_geometry.h>
 #include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -105,4 +105,4 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

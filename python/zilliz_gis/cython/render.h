@@ -19,7 +19,7 @@
 
 #include "arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 
@@ -42,6 +42,6 @@ choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkt,
 
 
 } // render
-} // zilliz
+} // arctern
 
 #endif

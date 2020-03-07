@@ -19,7 +19,7 @@
 
 #include "arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 
@@ -137,7 +137,7 @@ std::shared_ptr<arrow::Array>
 ST_Envelope_Aggr(const std::shared_ptr<arrow::Array> &geo_arr);
 
 } // gis
-} // zilliz
+} // arctern
 
 #endif
 

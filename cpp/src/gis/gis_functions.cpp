@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
@@ -304,4 +304,4 @@ std::shared_ptr<std::string> GIS_Version() {
 }
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -27,7 +27,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_within.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 namespace {
@@ -146,4 +146,4 @@ void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

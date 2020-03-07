@@ -23,7 +23,7 @@
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -115,4 +115,4 @@ void ST_Envelope(const GeometryVector& input_vec, GeometryVector& results) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

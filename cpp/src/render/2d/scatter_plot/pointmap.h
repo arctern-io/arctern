@@ -19,7 +19,7 @@
 #include "render/2d/input.h"
 #include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class PointMap : public General2D {
@@ -57,4 +57,4 @@ class PointMap : public General2D {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

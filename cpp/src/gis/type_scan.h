@@ -23,7 +23,7 @@
 
 #include "gis/wkb_types.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 using GroupedWkbTypes = std::set<WkbTypes>;
@@ -52,4 +52,4 @@ class GeometryTypeScanner {
 };
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -17,7 +17,7 @@
 
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 VegaHeatMap::VegaHeatMap(const std::string& json) { Parse(json); }
@@ -63,4 +63,4 @@ void VegaHeatMap::Parse(const std::string& json) {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

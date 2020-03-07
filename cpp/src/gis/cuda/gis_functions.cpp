@@ -37,7 +37,7 @@
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -142,4 +142,4 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& lhs
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

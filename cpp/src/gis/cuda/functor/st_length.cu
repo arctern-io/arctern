@@ -18,7 +18,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_length.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -77,4 +77,4 @@ void ST_Length(const GeometryVector& vec, double* host_results) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

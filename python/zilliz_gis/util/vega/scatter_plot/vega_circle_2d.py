@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import json
-from zilliz_gis.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
-from zilliz_gis.util.vega.vega_node import (RootMarks, Root, Description, Data,
+from arctern_gis.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
+from arctern_gis.util.vega.vega_node import (RootMarks, Root, Description, Data,
                                             Width, Height, Scales)
 
 class Marks(RootMarks):
