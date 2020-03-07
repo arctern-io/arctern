@@ -75,4 +75,5 @@ source ci/scripts/conda/cpu/arctern-spark/build_arctern-spark.sh
 # UPLOAD - Conda packages
 ################################################################################
 
+source ci/scripts/conda/cpu/upload_package.sh
 source ci/scripts/conda/cpu/upload_anaconda.sh
