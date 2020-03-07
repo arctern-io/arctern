@@ -1,9 +1,5 @@
 version: '3.5'
 
-volumes:
-  amd64-conda-build-cache:
-  amd64-conda-cudagl-build-cache:
-
 services:
   conda-build:
     # Usage:
@@ -20,7 +16,6 @@ services:
     shm_size: &shm-size 2G
     volumes: &conda-volumes
       - .:/arctern:delegated
-      - ${ARCH}-conda-build-cache:/opt/conda/envs/zgis_dev/conda-bld/linux-64:delegated
     command: &build-conda-command
       ["source /arctern/ci/scripts/conda/cpu/prebuild.sh &&
         /arctern/ci/scripts/conda/cpu/build.sh"]
@@ -41,7 +36,6 @@ services:
     shm_size: *shm-size
     volumes: &conda-cudagl-volumes
       - .:/arctern:delegated
-      - ${ARCH}-conda-cudagl-build-cache:/opt/conda/envs/zgis_dev/conda-bld/linux-64:delegated
     command: &build-conda-cudagl-command
       ["source /arctern/ci/scripts/conda/gpu/prebuild.sh &&
         /arctern/ci/scripts/conda/gpu/build.sh"]
