@@ -25,7 +25,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -63,7 +63,8 @@ void GeometryVector::GpuContextDeleter(ConstGpuContext* ptr) {
   ptr->data_state = DataState::Invalid;
 }
 void GeometryVector::GpuContextDeleter(GpuContext* ptr) {
-  static_assert(sizeof(ConstGpuContext) == sizeof(GpuContext));
+  static_assert(sizeof(ConstGpuContext) == sizeof(GpuContext),
+                "abnormal GpuContext size");
   GpuContextDeleter(reinterpret_cast<ConstGpuContext*>(ptr));
 }
 
@@ -160,4 +161,4 @@ void GeometryVector::clear() {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

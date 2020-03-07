@@ -7,7 +7,7 @@ add_executable(gis_tests ${gis_tests_src})
 #add_dependencies(gis_tests googletest_ep)
 
 target_link_libraries(gis_tests
-        windrose
+        arctern
         arrow
         gtest
         pthread

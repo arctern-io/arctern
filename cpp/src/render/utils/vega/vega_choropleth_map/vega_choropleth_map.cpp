@@ -18,7 +18,7 @@
 
 #include "render/utils/vega/vega_choropleth_map/vega_choropleth_map.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 VegaChoroplethMap::VegaChoroplethMap(const std::string& json) { Parse(json); }
@@ -128,4 +128,4 @@ void VegaChoroplethMap::Parse(const std::string& json) {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

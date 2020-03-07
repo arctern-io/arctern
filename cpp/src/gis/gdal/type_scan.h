@@ -25,7 +25,7 @@
 
 #include "gis/type_scan.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -41,4 +41,4 @@ class TypeScannerForWkt : public GeometryTypeScanner {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

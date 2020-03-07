@@ -21,7 +21,7 @@
 #include "render/2d/general_2d.h"
 #include "render/utils/vega/vega_choropleth_map/vega_choropleth_map.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 template <typename T>
@@ -58,4 +58,4 @@ class ChoroplethMap : public General2D {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

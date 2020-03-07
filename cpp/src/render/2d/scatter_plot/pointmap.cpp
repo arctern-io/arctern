@@ -22,7 +22,7 @@
 
 #include "render/2d/scatter_plot/pointmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 PointMap::PointMap() : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {}
@@ -194,4 +194,4 @@ uint8_t* PointMap::Render() {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

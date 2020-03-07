@@ -19,7 +19,7 @@
 
 #include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class VegaCircle2d : public VegaScatterPlot {
@@ -41,4 +41,4 @@ class VegaCircle2d : public VegaScatterPlot {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

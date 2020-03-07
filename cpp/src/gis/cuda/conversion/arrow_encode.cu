@@ -20,7 +20,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -157,4 +157,4 @@ void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

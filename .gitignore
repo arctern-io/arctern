@@ -11,7 +11,7 @@ cpp/src/common/version.h
 .vscode/
 cpp/cmake-build-debug/
 cpp/cmake-build-debug/*
-python/zilliz_gis/cython/*.cpp
+python/arctern_gis/cython/*.cpp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

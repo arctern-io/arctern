@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
@@ -140,6 +140,11 @@ std::shared_ptr<arrow::Array> ST_Transform(
     const std::shared_ptr<arrow::Array>& geometries, const std::string& src_rs,
     const std::string& dst_rs) {
   return gdal::ST_Transform(geometries, src_rs, dst_rs);
+}
+
+std::shared_ptr<arrow::Array> ST_CurveToLine(
+    const std::shared_ptr<arrow::Array>& geometries) {
+  return gdal::ST_CurveToLine(geometries);
 }
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
@@ -299,4 +304,4 @@ std::shared_ptr<std::string> GIS_Version() {
 }
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

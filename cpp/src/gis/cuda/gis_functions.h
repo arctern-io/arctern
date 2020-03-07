@@ -24,7 +24,7 @@
 #include "arrow/api.h"
 #include "arrow/array.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -144,4 +144,4 @@ std::shared_ptr<arrow::Array> ST_Within(
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

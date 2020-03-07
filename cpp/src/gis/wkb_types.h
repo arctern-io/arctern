@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 enum class WkbTypes : uint32_t {
@@ -133,4 +133,4 @@ enum class WkbSpaceType : uint32_t {
 };
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

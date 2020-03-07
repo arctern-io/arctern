@@ -24,7 +24,7 @@
 #include "gis/cuda/functor/st_envelope.h"
 #include "gis/cuda/test_common/test_common.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 TEST(FunctorEnvelope, naive) {
@@ -53,4 +53,4 @@ TEST(FunctorEnvelope, naive) {
 }
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

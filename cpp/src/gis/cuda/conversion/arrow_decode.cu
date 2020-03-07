@@ -19,7 +19,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/geometry_output.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -141,4 +141,4 @@ GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input) {
 }  // namespace internal
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

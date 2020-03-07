@@ -23,7 +23,7 @@
 
 #include "stb/stb_image_write.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 General2D::~General2D() { free(buffer_); }
@@ -86,7 +86,7 @@ uint8_t* General2D::Output() {
   return output_image_;
 }
 
-void General2D::InitBuffer(zilliz::render::WindowParams& window_params) {
+void General2D::InitBuffer(arctern::render::WindowParams& window_params) {
   buffer_ =
       (unsigned char*)calloc(size_t(window_params.width() * window_params.height()), 4);
 }
@@ -102,4 +102,4 @@ void General2D::ExportImage() {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
