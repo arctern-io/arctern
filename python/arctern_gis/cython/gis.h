@@ -17,9 +17,9 @@
 #ifndef GIS_H
 #define GIS_H
 
-#include "arrow/api.h"
-#include <string>
 #include <memory>
+#include <string>
+#include "arrow/api.h"
 
 namespace arctern {
 namespace gis {
