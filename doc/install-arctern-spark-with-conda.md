@@ -126,3 +126,8 @@ wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/ex
 ```bash
 ./bin/spark-submit ./spark_udf_ex.py
 ```
+
+## 卸载`Arctern Spark`
+```shell
+conda uninstall -n arctern libarctern arctern arctern-spark
+```

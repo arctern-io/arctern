@@ -14,16 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY docker/build_env/gpu/zgis.yml /tmp/zgis.yml
-
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
-    conda env create -f /tmp/zgis.yml && \
-    rm /tmp/zgis.yml && \
+    conda create -n zgis_dev python=3.7 && \
     conda clean --all -y && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate bash" >> ~/.bashrc
+    echo "conda activate base" >> ~/.bashrc
 
 # use login shell to activate environment un the RUN commands
 SHELL [ "/bin/bash", "-c", "-l" ]
