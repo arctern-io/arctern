@@ -517,14 +517,14 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oSrcSRS.SetFromUserInput(src_rs.c_str()) != OGRERR_NONE) {
     std::string err_msg = "faild to tranform with sourceCRS = " + src_rs;
-    throw new std::runtime_error(err_msg);
+    throw std::runtime_error(err_msg);
   }
 
   OGRSpatialReference oDstS;
   oDstS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oDstS.SetFromUserInput(dst_rs.c_str()) != OGRERR_NONE) {
     std::string err_msg = "faild to tranform with targetCRS = " + dst_rs;
-    throw new std::runtime_error(err_msg);
+    throw std::runtime_error(err_msg);
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
