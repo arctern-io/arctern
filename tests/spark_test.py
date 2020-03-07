@@ -37,11 +37,20 @@ def to_json_file(file_path, content):
     with open(file_path, 'w') as f:
         json.dump(content, f)
 
+def read_data(spark, base_dir, data):
+    ext = os.path.splitext(data)[1][1:]
+    if ext == 'json':
+        return spark.read.json(get_data(base_dir, data)).cache()
+    elif ext == 'csv':
+        # return spark.read.csv(get_data(base_dir, data)).cache()
+        return spark.read.format('csv').options(header='true').load(get_data(base_dir, data)).cache()
+
 def to_txt(file_dir, df):
     df.write.text(file_dir)
 
 def to_json(file_dir, df):
-    df.write.json(file_dir)
+    tmp = '/tmp'
+    df.write.json(os.path.join(tmp, file_dir))
 
 def get_test_config(config_file):
     with open(config_file, 'r') as f:
@@ -512,6 +521,21 @@ def run_test_st_simplifypreservetopology(spark):
     rs.show()
     to_json("results/%s" % table_name, rs)
 
+def run_test_st_curvetoline(spark):
+    data = "curvetoline.csv"
+    table_name = 'test_curvetoline'
+    sql = "select st_curvetoline_udf(geos) as geos from test_curvetoline"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    to_json("results/%s" % table_name, rs)
+
 # def run_test(spark, config):
 #     print('================= Run from config =================')
 #     data = config['data']
@@ -543,37 +567,38 @@ if __name__ == "__main__":
     # for c in confs:
     #     run_test(spark_session, c)
     
-    run_test_st_point(spark_session)
-    run_test_envelope_aggr_1(spark_session)
-    run_test_envelope_aggr_2(spark_session)
-    run_test_union_aggr_1(spark_session)
-    run_test_union_aggr_2(spark_session)
-    run_test_st_isvalid_1(spark_session)
-    run_test_st_intersection(spark_session)
-    run_test_st_convexhull(spark_session)
-    run_test_st_buffer(spark_session)
-    run_test_st_envelope(spark_session)
-    run_test_st_centroid(spark_session)
-    run_test_st_length(spark_session)
-    run_test_st_area(spark_session)
-    run_test_st_distance(spark_session)
-    run_test_st_issimple(spark_session)
-    run_test_st_npoints(spark_session)
-    run_test_st_geometrytype(spark_session)
-    run_test_st_transform(spark_session)
-    run_test_st_intersects(spark_session)
-    run_test_st_contains(spark_session)
-    run_test_st_within(spark_session)
-    run_test_st_equals_1(spark_session)
-    run_test_st_equals_2(spark_session)
-    run_test_st_crosses(spark_session)
-    run_test_st_overlaps(spark_session)
-    run_test_st_touches(spark_session)
-    run_test_st_makevalid(spark_session)
-    run_test_st_polygonfromenvelope(spark_session)
-    run_test_st_simplifypreservetopology(spark_session)
+    # run_test_st_point(spark_session)
+    run_test_st_curvetoline(spark_session)
+    # run_test_envelope_aggr_1(spark_session)
+    # run_test_envelope_aggr_2(spark_session)
+    # run_test_union_aggr_1(spark_session)
+    # run_test_union_aggr_2(spark_session)
+    # run_test_st_isvalid_1(spark_session)
+    # run_test_st_intersection(spark_session)
+    # run_test_st_convexhull(spark_session)
+    # run_test_st_buffer(spark_session)
+    # run_test_st_envelope(spark_session)
+    # run_test_st_centroid(spark_session)
+    # run_test_st_length(spark_session)
+    # run_test_st_area(spark_session)
+    # run_test_st_distance(spark_session)
+    # run_test_st_issimple(spark_session)
+    # run_test_st_npoints(spark_session)
+    # run_test_st_geometrytype(spark_session)
+    # run_test_st_transform(spark_session)
+    # run_test_st_intersects(spark_session)
+    # run_test_st_contains(spark_session)
+    # run_test_st_within(spark_session)
+    # run_test_st_equals_1(spark_session)
+    # run_test_st_equals_2(spark_session)
+    # run_test_st_crosses(spark_session)
+    # run_test_st_overlaps(spark_session)
+    # run_test_st_touches(spark_session)
+    # run_test_st_makevalid(spark_session)
+    # run_test_st_polygonfromenvelope(spark_session)
+    # run_test_st_simplifypreservetopology(spark_session)
 
 
     spark_session.stop()
-
     
+    # clear_result_dir('results')

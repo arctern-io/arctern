@@ -37,7 +37,9 @@ ENV NSS_WRAPPER_GROUP="/opt/spark/tmp/nss_group" \
     PATH="/opt/conda/envs/zgis_dev/bin:/opt/spark/bin:/opt/spark/sbin:$PATH" \
     SPARK_HOME="/opt/spark"
 
+COPY docker-entrypoint.sh /entrypoint.sh
+
 WORKDIR /opt/spark
-USER 1001
+USER 1000
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/run.sh" ]

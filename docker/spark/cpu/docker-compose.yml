@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   spark:
-    image: zilliz/arc_test:latest
+    image: zilliz/arctern:0.2
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -16,7 +16,7 @@ services:
       - '8080:8080'
       - '7077:7077'
   spark-worker-1:
-    image: zilliz/arc_test:latest
+    image: zilliz/arctern:0.2
     depends_on:
       - spark
     environment:

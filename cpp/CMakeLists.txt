@@ -135,6 +135,7 @@ link_directories(${CONDA_PREFIX}/lib)
 add_subdirectory(src)
 
 if (BUILD_UNITTEST)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     if (BUILD_COVERAGE STREQUAL "ON")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     endif ()
@@ -147,6 +148,7 @@ find_package(ClangTools)
 set(BUILD_SUPPORT_DIR "${CMAKE_SOURCE_DIR}/build-support")
 
 #
+message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # "make lint" target
 #
 if (NOT GIS_VERBOSE_LINT)
