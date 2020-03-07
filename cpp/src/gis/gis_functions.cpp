@@ -36,7 +36,7 @@ namespace gis {
 
 std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
                                        const std::shared_ptr<arrow::Array>& y_values) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   return cuda::ST_Point(x_values, y_values);
 #else
   return gdal::ST_Point(x_values, y_values);
