@@ -22,8 +22,8 @@ from Cython.Build import cythonize
 
 
 def gen_gis_core_modules():
-    gis_core_modules = cythonize(Extension(name="zilliz_gis.arctern_gis_core_",
-                                           sources=["zilliz_gis/cython/arctern_gis_core_.pyx"]))
+    gis_core_modules = cythonize(Extension(name="arctern_gis.arctern_gis_core_",
+                                           sources=["arctern_gis/cython/arctern_gis_core_.pyx"]))
     for ext in gis_core_modules:
         # The Numpy C headers are currently required
         ext.include_dirs.append(np.get_include())
