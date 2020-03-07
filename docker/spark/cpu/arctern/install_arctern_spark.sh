@@ -10,6 +10,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
+cd ${SCRIPTS_DIR}
+
 LIBARCTERN_FILE=${LIBARCTERN_FILE:="libarctern"}
 ARCTERN_FILE=${ARCTERN_FILE:="arctern"}
 ARCTERN_SPARK_FILE=${ARCTERN_SPARK_FILE:="arctern-spark"}
@@ -19,14 +21,12 @@ if [ -f ${SCRIPTS_DIR}/libarctern-[0-9]\.[0-9]\.[0-9]\.*tar* ];then
 fi
 
 if [ -f ${SCRIPTS_DIR}/arctern-[0-9]\.[0-9]\.[0-9]\.*tar* ];then
-    ARCTERN_FILE=`echo ./arctern-[0-9]\.[0-9]\.[0-9]\.*tar*`
+    ARCTERN_FILE=`echo arctern-[0-9]\.[0-9]\.[0-9]\.*tar*`
 fi
 
 if [ -f ${SCRIPTS_DIR}/arctern-spark-[0-9]\.[0-9]\.[0-9]\.*tar* ];then
-    ARCTERN_SPARK_FILE=`echo ./arctern-spark-[0-9]\.[0-9]\.[0-9]\.*tar*`
+    ARCTERN_SPARK_FILE=`echo arctern-spark-[0-9]\.[0-9]\.[0-9]\.*tar*`
 fi
-
-cd ${SCRIPTS_DIR}
 
 conda install -y -q -n arctern -c conda-forge -c arctern-dev ${LIBARCTERN_FILE} ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 conda clean --all -y
