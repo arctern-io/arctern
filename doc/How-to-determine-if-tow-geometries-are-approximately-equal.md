@@ -11,7 +11,7 @@ wiki: https://en.wikipedia.org/wiki/Hausdorff_distance
 #### `arctern`测试脚本
 ```python
 from pyspark.sql import SparkSession
-from zilliz_pyspark import register_funcs
+from arctern_pyspark import register_funcs
 
 if __name__ == "__main__":
     spark = SparkSession \

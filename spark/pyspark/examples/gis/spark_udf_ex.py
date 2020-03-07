@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
-from zilliz_pyspark import register_funcs
+from arctern_pyspark import register_funcs
 
 def run_st_point(spark):
     points_data = []
