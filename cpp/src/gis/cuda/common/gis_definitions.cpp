@@ -63,7 +63,8 @@ void GeometryVector::GpuContextDeleter(ConstGpuContext* ptr) {
   ptr->data_state = DataState::Invalid;
 }
 void GeometryVector::GpuContextDeleter(GpuContext* ptr) {
-  static_assert(sizeof(ConstGpuContext) == sizeof(GpuContext), "abnormal GpuContext size");
+  static_assert(sizeof(ConstGpuContext) == sizeof(GpuContext),
+                "abnormal GpuContext size");
   GpuContextDeleter(reinterpret_cast<ConstGpuContext*>(ptr));
 }
 

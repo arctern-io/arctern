@@ -18,30 +18,26 @@
 #define RENDER_H
 
 #include "arrow/api.h"
+#include <string>
+#include <memory>
 
 namespace arctern {
 namespace render {
 
+std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
+                                        const std::shared_ptr<arrow::Array>& arr_y,
+                                        const std::string& conf);
 
-std::shared_ptr<arrow::Array>
-point_map(const std::shared_ptr<arrow::Array> &arr_x,
-          const std::shared_ptr<arrow::Array> &arr_y,
-          const std::string &conf);
+std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
+                                       const std::shared_ptr<arrow::Array>& arr_y,
+                                       const std::shared_ptr<arrow::Array>& arr_c,
+                                       const std::string& conf);
 
+std::shared_ptr<arrow::Array> choropleth_map(
+    const std::shared_ptr<arrow::Array>& arr_wkt,
+    const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf);
 
-std::shared_ptr<arrow::Array>
-heat_map(const std::shared_ptr<arrow::Array> &arr_x,
-         const std::shared_ptr<arrow::Array> &arr_y,
-         const std::shared_ptr<arrow::Array> &arr_c,
-         const std::string &conf);
-
-std::shared_ptr<arrow::Array>
-choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkt,
-               const std::shared_ptr<arrow::Array>& arr_count,
-               const std::string& conf);
-
-
-} // render
-} // arctern
+}  // namespace render
+}  // namespace arctern
 
 #endif
