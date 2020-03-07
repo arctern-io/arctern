@@ -31,7 +31,7 @@ requirements:
 
 test:
   commands:
-    - python -c "import zilliz_gis"
+    - python -c "import arctern_gis"
 
 about:
   home: http://www.github.com/zilliztech/arctern

@@ -84,12 +84,12 @@ conda install -y -q -n arctern -c conda-forge -c arctern-dev arctern arctern-spa
 conda activate arctern
 python
 ```
-导入`zilliz_gis`,`zilliz_pyspark`验证安装成功
+导入`arctern_gis`,`zilliz_pyspark`验证安装成功
 ```python
 Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import zilliz_gis
+>>> import arctern_gis
 >>> import zilliz_pyspark
 ```
 
