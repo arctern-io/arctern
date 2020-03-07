@@ -13,7 +13,7 @@ if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
     test -e ${LIBARCTERN_FILE}
     echo "Upload libarctern package file ..."
     echo ${LIBARCTERN_FILE}
-    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${LIBARCTERN_FILE} ${ARTFACTORY_URL}/${LIBARCTERN_FILE}
+    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${LIBARCTERN_FILE} ${ARTFACTORY_URL}/${LIBARCTERN_FILE##*/}
 fi
 
 if [ "$UPLOAD_ARCTERN" == "1" ]; then
@@ -22,7 +22,7 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
     test -e ${ARCTERN_FILE}
     echo "Upload arctern package file ..."
     echo ${ARCTERN_FILE}
-    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${ARCTERN_FILE} ${ARTFACTORY_URL}/${ARCTERN_FILE}
+    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${ARCTERN_FILE} ${ARTFACTORY_URL}/${ARCTERN_FILE##*/}
 fi
 
 if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
@@ -31,5 +31,5 @@ if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
     test -e ${ARCTERN_SPARK_FILE}
     echo "Upload arctern-spark package file..."
     echo ${ARCTERN_SPARK_FILE}
-    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${ARCTERN_SPARK_FILE} ${ARTFACTORY_URL}/${ARCTERN_SPARK_FILE}
+    curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ${ARCTERN_SPARK_FILE} ${ARTFACTORY_URL}/${ARCTERN_SPARK_FILE##*/}
 fi
