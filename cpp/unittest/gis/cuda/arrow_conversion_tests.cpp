@@ -28,7 +28,7 @@
 #include "gis/cuda/functor/st_point.h"
 #include "gis/cuda/test_common/test_common.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 using std::vector;
@@ -55,4 +55,4 @@ TEST(ArrowConversionTest, naive) {
 }
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -24,7 +24,7 @@
 #include "gis/cuda/test_common/test_common.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 using std::vector;
@@ -62,4 +62,4 @@ TEST(Transform, Arrow) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

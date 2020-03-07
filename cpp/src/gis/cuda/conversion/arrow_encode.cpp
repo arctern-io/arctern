@@ -21,7 +21,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "utils/check_status.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 using internal::WkbArrowContext;
@@ -60,4 +60,4 @@ std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector& geo
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

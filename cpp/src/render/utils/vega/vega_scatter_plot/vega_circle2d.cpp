@@ -15,7 +15,7 @@
  */
 #include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 VegaCircle2d::VegaCircle2d(const std::string& json) { Parse(json); }
@@ -68,4 +68,4 @@ void VegaCircle2d::Parse(const std::string& json) {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

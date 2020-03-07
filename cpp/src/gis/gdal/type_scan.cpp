@@ -26,7 +26,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -119,4 +119,4 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

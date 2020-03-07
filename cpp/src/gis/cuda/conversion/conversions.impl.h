@@ -19,7 +19,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/mock/arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -49,4 +49,4 @@ void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output);
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

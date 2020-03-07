@@ -23,7 +23,7 @@
 #include "arrow/api.h"
 #include "arrow/array.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -141,4 +141,4 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -76,4 +76,4 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& wkt)
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

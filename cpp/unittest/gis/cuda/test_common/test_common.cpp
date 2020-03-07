@@ -19,7 +19,7 @@
 
 #include "gis/cuda/wkb/wkb_transforms.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 // only for testing
@@ -47,4 +47,4 @@ GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
 }  // namespace GeometryVectorFactory
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
