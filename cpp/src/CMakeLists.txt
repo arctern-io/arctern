@@ -1,3 +1,7 @@
+include_directories(${ARCTERN_SOURCE_DIR})
+include_directories(${ARCTERN_ENGINE_SRC})
+include_directories(${ARCTERN_THIRDPARTY_SRC})
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/scatter_plot/pointmap.cpp
@@ -81,7 +85,7 @@ else ()
     )
 endif ()
 
-add_dependencies(windrose miniz_ep stb_ep)
+#add_dependencies(windrose miniz_ep stb_ep)
 set(third_party_libs
         gdal
         arrow
