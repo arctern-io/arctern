@@ -55,20 +55,25 @@ struct WkbDecoderImpl {
     return static_cast<T>(m);
   }
 
+  // write into meta
   __device__ auto VisitMetaInt() {
     return VisitMeta<int>();
   }
 
+  // write into meta
   __device__ auto VisitMetaWkbTag() {
     return VisitMeta<WkbTag>();
   }
 
  public:
-  __device__ void VisitByteOrder() {
+
+  // do not write into meta
+  __device__ WkbByteOrder VisitByteOrder() {
     auto byte_order = FetchFromWkb<WkbByteOrder>();
-    assert(byte_order == WkbByteOrder::kLittleEndian);
+    return byte_order;
   }
 
+  // do not write into meta
   __device__ WkbTag VisitTag() {
     auto tag = FetchFromWkb<WkbTag>();
     return tag;
@@ -101,7 +106,8 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   WkbDecoder decoder(wkb_iter, metas, values, skip_write);
 
-  decoder.VisitByteOrder();
+  auto byte_order = decoder.VisitByteOrder();
+  assert(byte_order == WkbByteOrder::kLittleEndian);
   auto tag = decoder.VisitTag();
   decoder.VisitBody(tag);
 
