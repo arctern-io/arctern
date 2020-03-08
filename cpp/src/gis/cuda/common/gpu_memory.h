@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -81,6 +82,13 @@ auto GpuMakeUniqueArrayAndCopy(const T* src, int size)
   auto ptr = std::unique_ptr<T, GpuFreeWrapper<T>>(GpuAlloc<T>(size));
   GpuMemcpy(ptr.get(), src, size);
   return ptr;
+}
+
+template <typename T>
+auto DebugInspect(const T* src, int size) {
+  std::vector<T> tmp(size);
+  GpuMemcpy(tmp.data(), src, size);
+  return tmp;
 }
 
 }  // namespace cuda

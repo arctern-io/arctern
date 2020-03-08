@@ -90,7 +90,7 @@ struct WkbEncoderImpl {
   template <typename T>
   __device__ void InsertIntoWkb(T data) {
     int len = sizeof(T);
-    if (skip_write) {
+    if (!skip_write) {
       memcpy(wkb_iter, &data, len);
     }
     wkb_iter += len;
@@ -113,8 +113,9 @@ __global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output
     encoder.SetTag(tag);
     encoder.VisitBody(tag);
 
-    auto wkb_length = encoder.wkb_iter - wkb_iter;
+    int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
     output.offsets[index] = wkb_length;
+    printf("{%d}", wkb_length);
   }
 }
 
@@ -122,17 +123,21 @@ __global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output
 void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
                            int* value_length_ptr) {
   assert(input.size == output.size);
+  auto size = input.size;
   assert(output.offsets);
   assert(!output.values);
   {
-    auto config = GetKernelExecConfig(input.size);
+    auto config = GetKernelExecConfig(size);
     assert(cudaDeviceSynchronize() == cudaSuccess);
-    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, input.size);
-    ExclusiveScan(output.offsets, input.size + 1);
+    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, size);
+    auto dbg1 = DebugInspect(output.offsets, size);
+    ExclusiveScan(output.offsets, size + 1);
+    auto dbg2 = DebugInspect(output.offsets, size + 1);
+
     assert(cudaDeviceSynchronize() == cudaSuccess);
   }
   if (value_length_ptr) {
-    auto src = output.offsets + input.size;
+    auto src = output.offsets + size;
     GpuMemcpy(value_length_ptr, src, 1);
   }
 }
@@ -152,6 +157,7 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
 
     auto wkb_length = encoder.wkb_iter - wkb_iter;
     auto std_wkb_length = output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
+    printf("<%d-%d>", wkb_length, std_wkb_length);
     assert(std_wkb_length == wkb_length);
   }
 }
@@ -161,6 +167,7 @@ void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output) {
   assert(output.offsets);
   assert(output.values);
   auto config = GetKernelExecConfig(input.size);
+  auto dbg2 = DebugInspect(output.offsets, input.size + 1);
   CalcValues<<<config.grid_dim, config.block_dim>>>(input, output);
 }
 
