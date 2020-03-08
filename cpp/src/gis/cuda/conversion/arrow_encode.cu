@@ -87,14 +87,23 @@ struct WkbEncoderImpl {
 
 };
 
+using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
+
 __global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output,
                                    int size) {
-  auto index = threadIdx.x + blockDim.x * blockIdx.x;
-  if (index < size) {
-    auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
-    auto value_offset = input.value_offsets[index] * sizeof(double);
-    auto meta_offset = input.meta_offsets[index] * sizeof(int);
-    auto wkb_length = common_offset + value_offset + meta_offset;
+  auto index = threadIdx.x + blockIdx.x * blockDim.x;
+  if (index < input.size) {
+    auto tag = input.get_tag(index);
+    auto metas = input.get_meta_ptr(index);
+    auto values = input.get_value_ptr(index);
+    auto wkb_iter = output.get_wkb_ptr(index);
+
+    WkbEncoder encoder(wkb_iter, metas, values, true);
+    encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
+    encoder.SetTag(tag);
+    encoder.VisitBody(tag);
+
+    auto wkb_length = encoder.wkb_iter - wkb_iter;
     output.offsets[index] = wkb_length;
   }
 }
@@ -106,10 +115,10 @@ void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
   assert(output.offsets);
   assert(!output.values);
   {
-    auto offset_size = input.size + 1;
-    auto config = GetKernelExecConfig(offset_size);
+    auto config = GetKernelExecConfig(input.size);
     assert(cudaDeviceSynchronize() == cudaSuccess);
-    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
+    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, input.size);
+    ExclusiveScan(output.offsets, input.size + 1);
     assert(cudaDeviceSynchronize() == cudaSuccess);
   }
   if (value_length_ptr) {
@@ -118,7 +127,6 @@ void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
   }
 }
 
-using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
 
 __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
