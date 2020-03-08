@@ -17,6 +17,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/conversion/wkb_visitor.h"
 #include "gis/cuda/functor/geometry_output.h"
 
 namespace arctern {
@@ -24,13 +25,16 @@ namespace gis {
 namespace cuda {
 
 namespace {
-struct WkbDecoder {
+struct WkbDecoderImpl {
   const char* wkb_iter;
   uint32_t* metas;
   double* values;
   bool skip_write;
+  __device__ WkbDecoderImpl(const char* wkb_iter, uint32_t* metas, double* values,
+                            bool skip_write)
+      : wkb_iter(wkb_iter), metas(metas), values(values), skip_write(skip_write) {}
 
- private:
+ protected:
   __device__ void VisitValues(int demensions, int points) {
     auto count = demensions * points;
     auto bytes = count * sizeof(double);
@@ -51,6 +55,10 @@ struct WkbDecoder {
     return static_cast<T>(m);
   }
 
+  __device__ int VisitMetaInt() {
+    return VisitMeta<int>();
+  }
+
  public:
   template <typename T>
   __device__ T FetchFromWkb() {
@@ -60,21 +68,9 @@ struct WkbDecoder {
     wkb_iter += len;
     return tmp;
   }
-
-  __device__ void VisitPoint(int demensions) { VisitValues(demensions, 1); }
-
-  __device__ void VisitLineString(int demensions) {
-    auto size = VisitMeta<int>();
-    VisitValues(demensions, size);
-  }
-
-  __device__ void VisitPolygon(int demensions) {
-    auto polys = VisitMeta<int>();
-    for (int i = 0; i < polys; ++i) {
-      VisitLineString(demensions);
-    }
-  }
 };
+
+using WkbDecoder = WkbVisitor<WkbDecoderImpl>;
 
 using internal::WkbArrowContext;
 __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& input,
@@ -89,7 +85,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
     values = results.get_value_ptr(index);
   }
 
-  WkbDecoder decoder{wkb_iter, metas, values, skip_write};
+  WkbDecoder decoder(wkb_iter, metas, values, skip_write);
 
   auto byte_order = decoder.FetchFromWkb<WkbByteOrder>();
   assert(byte_order == WkbByteOrder::kLittleEndian);
