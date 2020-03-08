@@ -31,7 +31,7 @@ struct WkbDecoder {
   bool skip_write;
 
  private:
-  __device__ void WkbToValues(int demensions, int points) {
+  __device__ void VisitValues(int demensions, int points) {
     auto count = demensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
@@ -41,7 +41,7 @@ struct WkbDecoder {
     values += count;
   }
   template <typename T>
-  __device__ T WkbToMeta() {
+  __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
     auto m = FetchFromWkb<uint32_t>();
     if (!skip_write) {
@@ -61,17 +61,17 @@ struct WkbDecoder {
     return tmp;
   }
 
-  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
+  __device__ void VisitPoint(int demensions) { VisitValues(demensions, 1); }
 
-  __device__ void DecodeLineString(int demensions) {
-    auto size = WkbToMeta<int>();
-    WkbToValues(demensions, size);
+  __device__ void VisitLineString(int demensions) {
+    auto size = VisitMeta<int>();
+    VisitValues(demensions, size);
   }
 
-  __device__ void DecodePolygon(int demensions) {
-    auto polys = WkbToMeta<int>();
+  __device__ void VisitPolygon(int demensions) {
+    auto polys = VisitMeta<int>();
     for (int i = 0; i < polys; ++i) {
-      DecodeLineString(demensions);
+      VisitLineString(demensions);
     }
   }
 };
@@ -98,15 +98,15 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
   constexpr auto demensions = 2;
   switch (tag.get_category()) {
     case WkbCategory::kPoint: {
-      decoder.DecodePoint(demensions);
+      decoder.VisitPoint(demensions);
       break;
     }
     case WkbCategory::kLineString: {
-      decoder.DecodeLineString(demensions);
+      decoder.VisitLineString(demensions);
       break;
     }
     case WkbCategory::kPolygon: {
-      decoder.DecodePolygon(demensions);
+      decoder.VisitPolygon(demensions);
       break;
     }
     default: {

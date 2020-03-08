@@ -62,8 +62,8 @@ struct WkbEncoder {
   char* wkb_iter;
   static constexpr bool skip_write = false;
 
- private:
-  __device__ void ValuesToWkb(int demensions, int points) {
+ protected:
+  __device__ void VisitValues(int demensions, int points) {
     auto count = demensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
@@ -74,7 +74,7 @@ struct WkbEncoder {
   }
 
   template <typename T>
-  __device__ T MetaToWkb() {
+  __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
     auto m = static_cast<T>(*metas);
     if (!skip_write) {
@@ -92,17 +92,17 @@ struct WkbEncoder {
     wkb_iter += len;
   }
 
-  __device__ void EncodePoint(int demensions) { ValuesToWkb(demensions, 1); }
+  __device__ void VisitPoint(int demensions) { VisitValues(demensions, 1); }
 
-  __device__ void EncodeLineString(int demensions) {
-    auto size = MetaToWkb<int>();
-    ValuesToWkb(demensions, size);
+  __device__ void VisitLineString(int demensions) {
+    auto size = VisitMeta<int>();
+    VisitValues(demensions, size);
   }
 
-  __device__ void EncodePolygon(int demensions) {
-    auto polys = MetaToWkb<int>();
+  __device__ void VisitPolygon(int demensions) {
+    auto polys = VisitMeta<int>();
     for (int i = 0; i < polys; ++i) {
-      EncodeLineString(demensions);
+      VisitLineString(demensions);
     }
   }
 };
@@ -123,15 +123,15 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
 
     switch (tag.get_category()) {
       case WkbCategory::kPoint: {
-        encoder.EncodePoint(dimensions);
+        encoder.VisitPoint(dimensions);
         break;
       }
       case WkbCategory::kLineString: {
-        encoder.EncodeLineString(dimensions);
+        encoder.VisitLineString(dimensions);
         break;
       }
       case WkbCategory::kPolygon: {
-        encoder.EncodePolygon(dimensions);
+        encoder.VisitPolygon(dimensions);
         break;
       }
       default: {
