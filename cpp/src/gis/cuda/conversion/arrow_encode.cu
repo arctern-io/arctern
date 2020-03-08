@@ -149,15 +149,17 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
     auto metas = input.get_meta_ptr(index);
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
+    int std_wkb_length = (int)(output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index));
+    printf("@%d-%d-%d#, ", index, output.offsets[index], std_wkb_length);
 
     WkbEncoder encoder(wkb_iter, metas, values, false);
     encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
     encoder.SetTag(tag);
     encoder.VisitBody(tag);
 
-    auto wkb_length = encoder.wkb_iter - wkb_iter;
-    auto std_wkb_length = output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
-    printf("<%d-%d>", wkb_length, std_wkb_length);
+    int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
+
+    printf("[%d-%d]", wkb_length, std_wkb_length);
     assert(std_wkb_length == wkb_length);
   }
 }
