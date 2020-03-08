@@ -35,8 +35,8 @@ struct WkbDecoderImpl {
       : wkb_iter(wkb_iter), metas(metas), values(values), skip_write(skip_write) {}
 
  protected:
-  __device__ void VisitValues(int demensions, int points) {
-    auto count = demensions * points;
+  __device__ void VisitValues(int dimensions, int points) {
+    auto count = dimensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
       memcpy(values, wkb_iter, bytes);
@@ -55,11 +55,25 @@ struct WkbDecoderImpl {
     return static_cast<T>(m);
   }
 
-  __device__ int VisitMetaInt() {
+  __device__ auto VisitMetaInt() {
     return VisitMeta<int>();
   }
 
+  __device__ auto VisitMetaWkbTag() {
+    return VisitMeta<WkbTag>();
+  }
+
  public:
+  __device__ void VisitByteOrder() {
+    auto byte_order = FetchFromWkb<WkbByteOrder>();
+    assert(byte_order == WkbByteOrder::kLittleEndian);
+  }
+
+  __device__ WkbTag VisitTag() {
+    auto tag = FetchFromWkb<WkbTag>();
+    return tag;
+  }
+ private:
   template <typename T>
   __device__ T FetchFromWkb() {
     T tmp;
@@ -70,7 +84,7 @@ struct WkbDecoderImpl {
   }
 };
 
-using WkbDecoder = WkbVisitor<WkbDecoderImpl>;
+using WkbDecoder = WkbCodingVisitor<WkbDecoderImpl>;
 
 using internal::WkbArrowContext;
 __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& input,
@@ -87,29 +101,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   WkbDecoder decoder(wkb_iter, metas, values, skip_write);
 
-  auto byte_order = decoder.FetchFromWkb<WkbByteOrder>();
-  assert(byte_order == WkbByteOrder::kLittleEndian);
-  auto tag = decoder.FetchFromWkb<WkbTag>();
-  assert(tag.get_space_type() == WkbSpaceType::XY);
-  constexpr auto demensions = 2;
-  switch (tag.get_category()) {
-    case WkbCategory::kPoint: {
-      decoder.VisitPoint(demensions);
-      break;
-    }
-    case WkbCategory::kLineString: {
-      decoder.VisitLineString(demensions);
-      break;
-    }
-    case WkbCategory::kPolygon: {
-      decoder.VisitPolygon(demensions);
-      break;
-    }
-    default: {
-      assert(false);
-      break;
-    }
-  }
+  decoder.VisitByteOrder();
+  auto tag = decoder.VisitTag();
+  decoder.VisitBody(tag);
 
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);

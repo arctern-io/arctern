@@ -63,8 +63,8 @@ struct WkbEncoder {
   static constexpr bool skip_write = false;
 
  protected:
-  __device__ void VisitValues(int demensions, int points) {
-    auto count = demensions * points;
+  __device__ void VisitValues(int dimensions, int points) {
+    auto count = dimensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
       memcpy(wkb_iter, values, bytes);
@@ -92,17 +92,17 @@ struct WkbEncoder {
     wkb_iter += len;
   }
 
-  __device__ void VisitPoint(int demensions) { VisitValues(demensions, 1); }
+  __device__ void VisitPoint(int dimensions) { VisitValues(dimensions, 1); }
 
-  __device__ void VisitLineString(int demensions) {
+  __device__ void VisitLineString(int dimensions) {
     auto size = VisitMeta<int>();
-    VisitValues(demensions, size);
+    VisitValues(dimensions, size);
   }
 
-  __device__ void VisitPolygon(int demensions) {
+  __device__ void VisitPolygon(int dimensions) {
     auto polys = VisitMeta<int>();
     for (int i = 0; i < polys; ++i) {
-      VisitLineString(demensions);
+      VisitLineString(dimensions);
     }
   }
 };
