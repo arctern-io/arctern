@@ -24,10 +24,9 @@ struct WkbCodingVisitor : public WkbVisitorImpl {
   __device__ void VisitPolygon(int dimensions) {
     auto size = VisitMetaInt();
     for (int i = 0; i < size; ++i) {
-      auto polys = VisitMetaInt();
-      for (int poly = 0; poly < polys; ++poly) {
-        VisitValues(dimensions, size);
-      }
+//      auto polys = VisitMetaInt();
+//      VisitValues(dimensions, polys);
+      VisitLineString(dimensions);
     }
   }
 

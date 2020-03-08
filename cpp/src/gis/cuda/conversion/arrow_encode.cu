@@ -26,16 +26,20 @@ namespace cuda {
 
 namespace internal {
 
-
 struct WkbEncoderImpl {
   char* wkb_iter;
   const uint32_t* metas;
   const double* values;
   bool skip_write;
+  int skipped_bytes;
 
   __device__ WkbEncoderImpl(char* wkb_iter, const uint32_t* metas, const double* values,
                             bool skip_write)
-      : wkb_iter(wkb_iter), metas(metas), values(values), skip_write(skip_write) {}
+      : wkb_iter(wkb_iter),
+        metas(metas),
+        values(values),
+        skip_write(skip_write),
+        skipped_bytes(0) {}
 
  protected:
   __device__ void VisitValues(int dimensions, int points) {
@@ -67,24 +71,30 @@ struct WkbEncoderImpl {
 
   // read from constant
   __device__ void VisitByteOrder() {
-    constexpr auto byte_order = WkbByteOrder::kLittleEndian;
+    InsertIntoWkb(WkbByteOrder::kLittleEndian);
+    skipped_bytes += sizeof(WkbTag);
+  }
+
+ public:
+  __device__ void SetByteOrder(WkbByteOrder byte_order) {
     InsertIntoWkb(byte_order);
+    skipped_bytes += sizeof(WkbTag);
+  }
+
+  __device__ void SetTag(WkbTag tag) {
+    InsertIntoWkb(tag);
+    skipped_bytes += sizeof(WkbTag);
   }
 
  private:
   template <typename T>
   __device__ void InsertIntoWkb(T data) {
     int len = sizeof(T);
-    memcpy(wkb_iter, &data, len);
+    if (skip_write) {
+      memcpy(wkb_iter, &data, len);
+    }
     wkb_iter += len;
   }
-
- public:
-  __device__ void SetByteOrder(WkbByteOrder byte_order) {
-    return InsertIntoWkb(byte_order);
-  }
-  __device__ void SetTag(WkbTag tag) { InsertIntoWkb(tag); }
-
 };
 
 using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
@@ -126,7 +136,6 @@ void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
     GpuMemcpy(value_length_ptr, src, 1);
   }
 }
-
 
 __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
