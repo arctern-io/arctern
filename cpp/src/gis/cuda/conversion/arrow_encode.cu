@@ -56,11 +56,15 @@ void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
   }
 }
 
-struct WkbEncoder {
+struct WkbEncoderImpl {
+  char* wkb_iter;
   const uint32_t* metas;
   const double* values;
-  char* wkb_iter;
-  static constexpr bool skip_write = false;
+  bool skip_write;
+
+  __device__ WkbEncoderImpl(char* wkb_iter, const uint32_t* metas, const double* values,
+                            bool skip_write)
+      : wkb_iter(wkb_iter), metas(metas), values(values), skip_write(skip_write) {}
 
  protected:
   __device__ void VisitValues(int dimensions, int points) {
@@ -84,7 +88,19 @@ struct WkbEncoder {
     return m;
   }
 
- public:
+  // read from meta
+  __device__ auto VisitMetaInt() { return VisitMeta<int>(); }
+
+  // read from meta
+  __device__ auto VisitMetaWkbTag() { return VisitMeta<WkbTag>(); }
+
+  // read from constant
+  __device__ void VisitByteOrder() {
+    constexpr auto byte_order = WkbByteOrder::kLittleEndian;
+    InsertIntoWkb(byte_order);
+  }
+
+ private:
   template <typename T>
   __device__ void InsertIntoWkb(T data) {
     int len = sizeof(T);
@@ -92,6 +108,13 @@ struct WkbEncoder {
     wkb_iter += len;
   }
 
+ public:
+  __device__ void SetByteOrder(WkbByteOrder byte_order) {
+    return InsertIntoWkb(byte_order);
+  }
+  __device__ void SetTag(WkbTag tag) { InsertIntoWkb(tag); }
+
+ public:
   __device__ void VisitPoint(int dimensions) { VisitValues(dimensions, 1); }
 
   __device__ void VisitLineString(int dimensions) {
@@ -107,6 +130,8 @@ struct WkbEncoder {
   }
 };
 
+using WkbEncoder = WkbEncoderImpl;
+
 __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
@@ -117,9 +142,9 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
 
-    WkbEncoder encoder{metas, values, wkb_iter};
-    encoder.InsertIntoWkb(WkbByteOrder::kLittleEndian);
-    encoder.InsertIntoWkb(tag);
+    WkbEncoder encoder(wkb_iter, metas, values, false);
+    encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
+    encoder.SetTag(tag);
 
     switch (tag.get_category()) {
       case WkbCategory::kPoint: {

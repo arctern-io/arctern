@@ -56,28 +56,24 @@ struct WkbDecoderImpl {
   }
 
   // write into meta
-  __device__ auto VisitMetaInt() {
-    return VisitMeta<int>();
-  }
+  __device__ auto VisitMetaInt() { return VisitMeta<int>(); }
 
   // write into meta
-  __device__ auto VisitMetaWkbTag() {
-    return VisitMeta<WkbTag>();
+  __device__ auto VisitMetaWkbTag() { return VisitMeta<WkbTag>(); }
+
+  // write into constant(assert)
+  __device__ void VisitByteOrder() {
+    auto byte_order = FetchFromWkb<WkbByteOrder>();
+    assert(byte_order == WkbByteOrder::kLittleEndian);
   }
 
  public:
-
-  // do not write into meta
-  __device__ WkbByteOrder VisitByteOrder() {
-    auto byte_order = FetchFromWkb<WkbByteOrder>();
-    return byte_order;
-  }
-
-  // do not write into meta
-  __device__ WkbTag VisitTag() {
+  __device__ WkbByteOrder GetByteOrder() { return FetchFromWkb<WkbByteOrder>(); }
+  __device__ WkbTag GetTag() {
     auto tag = FetchFromWkb<WkbTag>();
     return tag;
   }
+
  private:
   template <typename T>
   __device__ T FetchFromWkb() {
@@ -106,9 +102,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   WkbDecoder decoder(wkb_iter, metas, values, skip_write);
 
-  auto byte_order = decoder.VisitByteOrder();
+  auto byte_order = decoder.GetByteOrder();
   assert(byte_order == WkbByteOrder::kLittleEndian);
-  auto tag = decoder.VisitTag();
+  auto tag = decoder.GetTag();
   decoder.VisitBody(tag);
 
   int meta_size = (int)(decoder.metas - metas);

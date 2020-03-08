@@ -7,10 +7,10 @@ namespace cuda {
 template <typename WkbVisitorImpl>
 struct WkbCodingVisitor : public WkbVisitorImpl {
   using WkbVisitorImpl::WkbVisitorImpl;
-
   using WkbVisitorImpl::VisitMetaInt;
-
+  using WkbVisitorImpl::VisitMetaWkbTag;
   using WkbVisitorImpl::VisitValues;
+  using WkbVisitorImpl::VisitByteOrder;
 
   __device__ void VisitPoint(int dimensions) { VisitValues(dimensions, 1); }
 
@@ -36,13 +36,13 @@ struct WkbCodingVisitor : public WkbVisitorImpl {
   __device__ void VisitMultiLineString(int dimensions) {
     auto size = VisitMetaInt();
     for (int i = 0; i < size; ++i) {
-      VisitMultiLineString(dimensions);
+      VisitLineString(dimensions);
     }
   }
   __device__ void VisitMultiPolygon(int dimensions) {
     auto size = VisitMetaInt();
     for (int i = 0; i < size; ++i) {
-      VisitMultiLineString(dimensions);
+      VisitPolygon(dimensions);
     }
   }
 
