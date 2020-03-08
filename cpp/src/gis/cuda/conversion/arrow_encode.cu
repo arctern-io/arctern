@@ -19,7 +19,7 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
-
+#include "gis/cuda/conversion/wkb_visitor.h"
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -114,30 +114,14 @@ struct WkbEncoderImpl {
   }
   __device__ void SetTag(WkbTag tag) { InsertIntoWkb(tag); }
 
- public:
-  __device__ void VisitPoint(int dimensions) { VisitValues(dimensions, 1); }
-
-  __device__ void VisitLineString(int dimensions) {
-    auto size = VisitMeta<int>();
-    VisitValues(dimensions, size);
-  }
-
-  __device__ void VisitPolygon(int dimensions) {
-    auto polys = VisitMeta<int>();
-    for (int i = 0; i < polys; ++i) {
-      VisitLineString(dimensions);
-    }
-  }
 };
 
-using WkbEncoder = WkbEncoderImpl;
+using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
 
 __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
     auto tag = input.get_tag(index);
-    assert(tag.get_space_type() == WkbSpaceType::XY);
-    int dimensions = 2;
     auto metas = input.get_meta_ptr(index);
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
@@ -145,25 +129,8 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
     WkbEncoder encoder(wkb_iter, metas, values, false);
     encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
     encoder.SetTag(tag);
+    encoder.VisitBody(tag);
 
-    switch (tag.get_category()) {
-      case WkbCategory::kPoint: {
-        encoder.VisitPoint(dimensions);
-        break;
-      }
-      case WkbCategory::kLineString: {
-        encoder.VisitLineString(dimensions);
-        break;
-      }
-      case WkbCategory::kPolygon: {
-        encoder.VisitPolygon(dimensions);
-        break;
-      }
-      default: {
-        assert(false);
-        break;
-      }
-    }
     auto wkb_length = encoder.wkb_iter - wkb_iter;
     auto std_wkb_length = output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
     assert(std_wkb_length == wkb_length);
