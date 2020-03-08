@@ -25,36 +25,7 @@ namespace gis {
 namespace cuda {
 
 namespace internal {
-__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output,
-                                   int size) {
-  auto index = threadIdx.x + blockDim.x * blockIdx.x;
-  if (index < size) {
-    auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
-    auto value_offset = input.value_offsets[index] * sizeof(double);
-    auto meta_offset = input.meta_offsets[index] * sizeof(int);
-    auto wkb_length = common_offset + value_offset + meta_offset;
-    output.offsets[index] = wkb_length;
-  }
-}
 
-// return: size of total data length in bytes
-void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
-                           int* value_length_ptr) {
-  assert(input.size == output.size);
-  assert(output.offsets);
-  assert(!output.values);
-  {
-    auto offset_size = input.size + 1;
-    auto config = GetKernelExecConfig(offset_size);
-    assert(cudaDeviceSynchronize() == cudaSuccess);
-    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
-    assert(cudaDeviceSynchronize() == cudaSuccess);
-  }
-  if (value_length_ptr) {
-    auto src = output.offsets + input.size;
-    GpuMemcpy(value_length_ptr, src, 1);
-  }
-}
 
 struct WkbEncoderImpl {
   char* wkb_iter;
@@ -115,6 +86,37 @@ struct WkbEncoderImpl {
   __device__ void SetTag(WkbTag tag) { InsertIntoWkb(tag); }
 
 };
+
+__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output,
+                                   int size) {
+  auto index = threadIdx.x + blockDim.x * blockIdx.x;
+  if (index < size) {
+    auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
+    auto value_offset = input.value_offsets[index] * sizeof(double);
+    auto meta_offset = input.meta_offsets[index] * sizeof(int);
+    auto wkb_length = common_offset + value_offset + meta_offset;
+    output.offsets[index] = wkb_length;
+  }
+}
+
+// return: size of total data length in bytes
+void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
+                           int* value_length_ptr) {
+  assert(input.size == output.size);
+  assert(output.offsets);
+  assert(!output.values);
+  {
+    auto offset_size = input.size + 1;
+    auto config = GetKernelExecConfig(offset_size);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
+    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
+  }
+  if (value_length_ptr) {
+    auto src = output.offsets + input.size;
+    GpuMemcpy(value_length_ptr, src, 1);
+  }
+}
 
 using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
 

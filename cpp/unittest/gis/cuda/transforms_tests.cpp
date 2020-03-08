@@ -51,8 +51,8 @@ TEST(Transform, Arrow) {
       "LineString(3 4,4 5)",
       "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
       "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
-      "MultiPoint(1 2, 2 3)",
-      "MultiPoint(2 3, 3 4)",
+//      "MultiPoint(1 2, 2 3)",
+//      "MultiPoint(2 3, 3 4)",
 //      "MultiLineString((3 4,4 5), (-3 -4,-4 -5))",
 //      "MultiLineString((-3 4,-4 -5), (3 4,4 5))",
 //      "MultiPOLYGON(((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1)), "

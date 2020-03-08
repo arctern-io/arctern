@@ -30,9 +30,14 @@ struct WkbDecoderImpl {
   uint32_t* metas;
   double* values;
   bool skip_write;
+  int skipped_bytes;
   __device__ WkbDecoderImpl(const char* wkb_iter, uint32_t* metas, double* values,
                             bool skip_write)
-      : wkb_iter(wkb_iter), metas(metas), values(values), skip_write(skip_write) {}
+      : wkb_iter(wkb_iter),
+        metas(metas),
+        values(values),
+        skip_write(skip_write),
+        skipped_bytes(0) {}
 
  protected:
   __device__ void VisitValues(int dimensions, int points) {
@@ -44,6 +49,7 @@ struct WkbDecoderImpl {
     wkb_iter += bytes;
     values += count;
   }
+
   template <typename T>
   __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
@@ -61,16 +67,22 @@ struct WkbDecoderImpl {
   // write into meta
   __device__ auto VisitMetaWkbTag() { return VisitMeta<WkbTag>(); }
 
-  // write into constant(assert)
   __device__ void VisitByteOrder() {
     auto byte_order = FetchFromWkb<WkbByteOrder>();
+    ++skipped_bytes;
     assert(byte_order == WkbByteOrder::kLittleEndian);
   }
 
  public:
-  __device__ WkbByteOrder GetByteOrder() { return FetchFromWkb<WkbByteOrder>(); }
+  __device__ WkbByteOrder GetByteOrder() {
+    auto byte_order = FetchFromWkb<WkbByteOrder>();
+    skipped_bytes += sizeof(WkbTag);
+    return byte_order;
+  }
+
   __device__ WkbTag GetTag() {
     auto tag = FetchFromWkb<WkbTag>();
+    skipped_bytes += sizeof(WkbTag);
     return tag;
   }
 
