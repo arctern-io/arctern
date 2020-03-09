@@ -2882,9 +2882,6 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 }
 
 TEST(geometry_test, test_ST_Transform) {
-  // TODO(dog): skip failed test
-  return;
-
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input_data;
 
