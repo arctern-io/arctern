@@ -147,3 +147,8 @@ dmypy.json
 .pyre/
 
 spark-warehouse/
+
+# tests
+tests/results
+tests/rundocker.sh
+tests/runlocal.sh
