@@ -62,14 +62,20 @@ def collect_results(file_path, results_dir):
         cs = [x.strip() for x in cs if not x.startswith('#')]
         names = [x.strip().split('=')[0] for x in cs]
         table_names = [x.strip().split('=')[1] for x in cs]
-    
-    base_dir = './results'
+        # for x in names:
+        #     print(x)
+        # print('------------------')
+        # for x in table_names:
+        #     print(x)
+
+    base_dir = '/tmp/results'
     for x, y in zip(table_names, names):
-        # print(x, y)
+        print(x, y)
         target = os.path.join(base_dir, x, '*.json')
         file_name = glob.glob(target)
         # file_name = glob.glob(target)
-        # print(file_name)
+        print(file_name)
+        print(file_name[0])
         if os.path.isfile(file_name[0]):
             shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.json'))
         else:
