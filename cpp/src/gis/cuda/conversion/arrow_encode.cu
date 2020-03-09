@@ -127,9 +127,7 @@ void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
     auto config = GetKernelExecConfig(size);
     assert(cudaDeviceSynchronize() == cudaSuccess);
     CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, size);
-    auto dbg1 = DebugInspect(output.offsets, size);
     ExclusiveScan(output.offsets, size + 1);
-    auto dbg2 = DebugInspect(output.offsets, size + 1);
 
     assert(cudaDeviceSynchronize() == cudaSuccess);
   }
@@ -162,7 +160,6 @@ void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output) {
   assert(output.offsets);
   assert(output.values);
   auto config = GetKernelExecConfig(input.size);
-  auto dbg2 = DebugInspect(output.offsets, input.size + 1);
   CalcValues<<<config.grid_dim, config.block_dim>>>(input, output);
 }
 

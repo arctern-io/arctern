@@ -156,22 +156,22 @@ std::shared_ptr<arrow::Array> ST_Distance(
   // currently support ST_Point
   bool lhs_ok = false;
   bool rhs_ok = false;
-//  {
-//    gdal::TypeScannerForWkt lhs_scanner(geometries_1);
-//    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
-//    lhs_scanner.mutable_types().push_back(lhs_supported_types);
-//    auto lhs_type_masks = lhs_scanner.Scan();
-//    lhs_ok = lhs_type_masks->is_unique_group &&
-//             (lhs_type_masks->unique_group == lhs_supported_types);
-//  }
-//  {
-//    gdal::TypeScannerForWkt rhs_scanner(geometries_2);
-//    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
-//    rhs_scanner.mutable_types().push_back(rhs_supported_types);
-//    auto rhs_type_masks = rhs_scanner.Scan();
-//    rhs_ok = rhs_type_masks->is_unique_group &&
-//             (rhs_type_masks->unique_group == rhs_supported_types);
-//  }
+  //  {
+  //    gdal::TypeScannerForWkt lhs_scanner(geometries_1);
+  //    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
+  //    lhs_scanner.mutable_types().push_back(lhs_supported_types);
+  //    auto lhs_type_masks = lhs_scanner.Scan();
+  //    lhs_ok = lhs_type_masks->is_unique_group &&
+  //             (lhs_type_masks->unique_group == lhs_supported_types);
+  //  }
+  //  {
+  //    gdal::TypeScannerForWkt rhs_scanner(geometries_2);
+  //    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
+  //    rhs_scanner.mutable_types().push_back(rhs_supported_types);
+  //    auto rhs_type_masks = rhs_scanner.Scan();
+  //    rhs_ok = rhs_type_masks->is_unique_group &&
+  //             (rhs_type_masks->unique_group == rhs_supported_types);
+  //  }
 
   if (lhs_ok && rhs_ok) {
     return cuda::ST_Distance(geometries_1, geometries_2);

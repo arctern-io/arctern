@@ -84,13 +84,6 @@ auto GpuMakeUniqueArrayAndCopy(const T* src, int size)
   return ptr;
 }
 
-template <typename T>
-auto DebugInspect(const T* src, int size) {
-  std::vector<T> tmp(size);
-  GpuMemcpy(tmp.data(), src, size);
-  return tmp;
-}
-
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern
