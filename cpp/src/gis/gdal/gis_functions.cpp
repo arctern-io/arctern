@@ -343,11 +343,37 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(ST_IsValid, arrow::BooleanBuilder, geo_wkt,
                                  Wrapper_OGR_G_IsValid(geo_wkt));
 
-UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_IsSimple, arrow::BooleanBuilder, geo,
-                                 OGR_G_IsSimple(geo) != 0);
-
 UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_GeometryType, arrow::StringBuilder, geo,
                                  Wrapper_OGR_G_GetGeometryName(geo));
+
+std::shared_ptr<arrow::Array> ST_IsSimple(const std::shared_ptr<arrow::Array>& geo) {
+  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto len = geo->length();
+  arrow::BooleanBuilder builder;
+  auto has_circular = new HasCircularVisitor;
+  const char* papszOptions[] = {(const char*)"ADD_INTERMEDIATE_POINT=YES", nullptr};
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkt(wkt, i);
+    if (geo == nullptr) {
+      builder.AppendNull();
+    } else {
+      has_circular->reset();
+      geo->accept(has_circular);
+      if (has_circular->has_circular()) {
+        auto linear = geo->getLinearGeometry(0, papszOptions);
+        builder.Append(linear->IsSimple() != 0);
+        OGRGeometryFactory::destroyGeometry(linear);
+      } else {
+        builder.Append(geo->IsSimple() != 0);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  delete has_circular;
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo) {
   auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
