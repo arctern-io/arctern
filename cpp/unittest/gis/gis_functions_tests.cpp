@@ -2917,9 +2917,9 @@ TEST(geometry_test, test_ST_CurveToLine) {
 }
 
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
-  auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
-  auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
-  auto j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}";
+  auto j0 = R"({"type":"Point","coordinates":[1,2]})";
+  auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
+  auto j2 = R"({"type":"Polygon","coordinates":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]})";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;

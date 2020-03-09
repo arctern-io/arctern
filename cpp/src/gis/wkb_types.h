@@ -105,7 +105,7 @@ constexpr uint32_t kWkbSpaceTypeEncodeBase = 1000;
 enum class WkbByteOrder : uint8_t { kBigEndian = 0, kLittleEndian = 1 };
 
 enum class WkbCategory : uint32_t {
-  kInvalid = 0,
+  kUnknown = 0,
   kPoint = 1,
   kLineString = 2,
   kPolygon = 3,

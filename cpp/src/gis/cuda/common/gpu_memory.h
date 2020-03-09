@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 namespace arctern {
 namespace gis {
 namespace cuda {
