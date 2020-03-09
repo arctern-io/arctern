@@ -81,7 +81,7 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
   gdal::TypeScannerForWkt scanner(geometries);
   GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
