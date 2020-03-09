@@ -15,7 +15,7 @@ services:
   spark-worker:
     image: ${ARCTERN_REPO}:${ARCTERN_TAG}
     depends_on:
-      - spark
+      - spark-master
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
