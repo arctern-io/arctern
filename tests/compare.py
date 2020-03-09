@@ -242,6 +242,6 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # print(r)
 
-    # update_json()
+    update_json()
     compare_all()
     
