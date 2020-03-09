@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   spark:
-    image: registry.zilliz.com/arctern/arctern-spark:v0.1.0-ubuntu18.04
+    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -13,7 +13,7 @@ services:
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ../../..:/arctern
   spark-worker:
-    image: registry.zilliz.com/arctern/arctern-spark:v0.1.0-ubuntu18.04
+    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
     depends_on:
       - spark
     environment:
