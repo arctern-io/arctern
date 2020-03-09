@@ -37,10 +37,6 @@ def clear_result_dir(dir_name):
 def get_data(base_dir, fname):
     return os.path.join(base_dir, fname)
 
-def to_json_file(file_path, content):
-    with open(file_path, 'w') as f:
-        json.dump(content, f)
-
 def read_data(spark, base_dir, data):
     ext = os.path.splitext(data)[1][1:]
     if ext == 'json':
@@ -54,7 +50,8 @@ def to_txt(file_dir, df):
 
 def to_json(file_dir, df):
     tmp = '/tmp'
-    df.write.csv(os.path.join(tmp, file_dir))
+    # df.write.csv(os.path.join(tmp, file_dir))
+    df.write.json(os.path.join(tmp, file_dir))
 
 def get_test_config(config_file):
     with open(config_file, 'r') as f:
@@ -191,6 +188,22 @@ def run_test_st_convexhull(spark):
     data = "convexhull.csv"
     table_name = 'test_convexhull'
     sql = "select ST_convexhull_UDF(geos) as geos from test_convexhull"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    to_json("results/%s" % table_name, rs)
+
+def run_test_st_convexhull2(spark):
+    # this test is to test convexhull's result is curve, which not support in postgis, we need to convert arctern result to basic types, then compare
+    data = "convexhull2.csv"
+    table_name = 'test_convexhull2'
+    sql = "select st_curvetoline_udf(ST_convexhull_UDF(geos)) as geos from test_convexhull2"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -542,9 +555,9 @@ def run_test_st_curvetoline(spark):
     rs.show()
     to_json("results/%s" % table_name, rs)
 
-def run_test_st_geomfromGeoJSON(spark):
-   
-    data = "geojson/geojson.json"
+def run_test_st_geomfromgeojson(spark):
+
+    data = "geojson.csv"
     table_name = 'test_geomfromjson'
     sql = "select st_geomfromgeojson_udf(geos) as geos from test_geomfromjson"
     
@@ -556,6 +569,23 @@ def run_test_st_geomfromGeoJSON(spark):
     rs = spark.sql(sql).cache()
     rs.printSchema()
     rs.show()
+    to_json("results/%s" % table_name, rs)
+
+def run_test_st_geomfromgeojson2(spark):
+    # this test is only test that arctern can handle empty geojsons, which postgis cannot, do not need to compare with postgis
+    data = "geojson2.csv"
+    table_name = 'test_geomfromjson2'
+    sql = "select st_geomfromgeojson_udf(geos) as geos from test_geomfromjson2"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    to_json("results/%s" % table_name, rs)
 
 def run_test_ST_PrecisionReduce(spark):
     pass
@@ -593,39 +623,39 @@ if __name__ == "__main__":
     # confs = get_test_config('test.csv')
     # for c in confs:
     #     run_test(spark_session, c)
-    run_test_st_geomfromGeoJSON(spark_session)
-    # run_test_st_curvetoline(spark_session)
-    
-    # run_test_st_point(spark_session)
-    # run_test_envelope_aggr_1(spark_session)
-    # run_test_envelope_aggr_2(spark_session)
-    # run_test_union_aggr_1(spark_session)
-    # run_test_union_aggr_2(spark_session)
-    # run_test_st_isvalid_1(spark_session)
-    # run_test_st_intersection(spark_session)
-    # run_test_st_convexhull(spark_session)
-    # run_test_st_buffer(spark_session)
-    # run_test_st_envelope(spark_session)
-    # run_test_st_centroid(spark_session)
-    # run_test_st_length(spark_session)
-    # run_test_st_area(spark_session)
-    # run_test_st_distance(spark_session)
-    # run_test_st_issimple(spark_session)
-    # run_test_st_npoints(spark_session)
-    # run_test_st_geometrytype(spark_session)
-    # run_test_st_transform(spark_session)
-    # run_test_st_intersects(spark_session)
-    # run_test_st_contains(spark_session)
-    # run_test_st_within(spark_session)
-    # run_test_st_equals_1(spark_session)
-    # run_test_st_equals_2(spark_session)
-    # run_test_st_crosses(spark_session)
-    # run_test_st_overlaps(spark_session)
-    # run_test_st_touches(spark_session)
-    # run_test_st_makevalid(spark_session)
-    # run_test_st_polygonfromenvelope(spark_session)
-    # run_test_st_simplifypreservetopology(spark_session)
-
+    run_test_st_geomfromgeojson(spark_session)
+    run_test_st_geomfromgeojson2(spark_session)
+    run_test_st_curvetoline(spark_session)
+    run_test_st_point(spark_session)
+    run_test_envelope_aggr_1(spark_session)
+    run_test_envelope_aggr_2(spark_session)
+    run_test_union_aggr_1(spark_session)
+    run_test_union_aggr_2(spark_session)
+    run_test_st_isvalid_1(spark_session)
+    run_test_st_intersection(spark_session)
+    run_test_st_convexhull(spark_session)
+    run_test_st_convexhull2(spark_session)
+    run_test_st_buffer(spark_session)
+    run_test_st_envelope(spark_session)
+    run_test_st_centroid(spark_session)
+    run_test_st_length(spark_session)
+    run_test_st_area(spark_session)
+    run_test_st_distance(spark_session)
+    run_test_st_issimple(spark_session)
+    run_test_st_npoints(spark_session)
+    run_test_st_geometrytype(spark_session)
+    run_test_st_transform(spark_session)
+    run_test_st_intersects(spark_session)
+    run_test_st_contains(spark_session)
+    run_test_st_within(spark_session)
+    run_test_st_equals_1(spark_session)
+    run_test_st_equals_2(spark_session)
+    run_test_st_crosses(spark_session)
+    run_test_st_overlaps(spark_session)
+    run_test_st_touches(spark_session)
+    run_test_st_makevalid(spark_session)
+    run_test_st_polygonfromenvelope(spark_session)
+    run_test_st_simplifypreservetopology(spark_session)
 
     spark_session.stop()
     

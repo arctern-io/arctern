@@ -56,7 +56,11 @@ def is_geometrycollection(geo):
 def is_geometrytype(geo):
     geo = geo.strip().upper()
 
-    for x in geo_types:
+    arr = []
+    arr.extend(geo_types)
+    arr.extend(geo_collection_types)
+
+    for x in arr:
         if x in geo:
             return True
         else:
@@ -85,8 +89,8 @@ def compare_geometry(x, y):
     pgis = wkt.loads(y)
     result = arct.equals_exact(pgis, EPOCH)
 
-    if not result:
-        print(arct, pgis)
+    # if not result:
+    #     print(arct, pgis)
     
     return result
 
@@ -95,8 +99,8 @@ def compare_geometrycollection(x, y):
     pgis = wkt.loads(y)
     result = arct.equals(pgis)
 
-    if not result:
-        print(arct, pgis)
+    # if not result:
+    #     print(arct, pgis)
     
     return result
 
@@ -132,7 +136,7 @@ def compare_one(x, y):
             if is_geometrytype(x) and is_geometrytype(y):
                 return x == y
             
-            print(x, y)
+            # print(x, y)
             return False
     
     if isinstance(x, int) or isinstance(x, float):
@@ -233,13 +237,11 @@ def update_json():
 
 if __name__ == '__main__':
     
-    r1 = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
-    print(r1)
-    # r2 = compare_results('./arctern_results/run_test_st_equals_1.json', './expected/results/st_equals.out')
-    # r3 = compare_results('./arctern_results/run_test_st_equals_2.json', './expected/results/st_equals_2.out')
-    # r4 = compare_results('./arctern_results/run_test_st_buffer.json', './expected/results/st_buffer.out')
-    # print(r1)
+    # r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
+    # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
+    # print(r)
+
     # update_json()
-    # print(parse(config_file))
-    # compare_all()
+    compare_all()
     
