@@ -10,6 +10,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
+TESTS_DIR="${SCRIPTS_DIR}/../../tests"
+
 HELP="
 Usage:
   $0 [flags] [Arguments] [application-arguments]
@@ -46,4 +48,8 @@ done
 # Set defaults for vars modified by flags to this script
 MASTER_URL=${MASTER_URL:="spark://127.0.0.1:7077"}
 
+pushd ${TESTS_DIR}
+
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
+
+popd
