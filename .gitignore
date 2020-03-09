@@ -147,3 +147,6 @@ dmypy.json
 .pyre/
 
 spark-warehouse/
+
+# tests
+tests/results
