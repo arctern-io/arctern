@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -59,4 +59,4 @@ std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

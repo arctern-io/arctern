@@ -87,5 +87,5 @@ TEST(TWOD_TEST, POIN_TEST) {
       "  ]\n"
       "}";
 
-  zilliz::render::point_map(array1, array2, vega);
+  arctern::render::point_map(array1, array2, vega);
 }

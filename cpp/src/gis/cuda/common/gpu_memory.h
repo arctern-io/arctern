@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -41,7 +41,7 @@ T* GpuAlloc(size_t size) {
 
 template <typename T>
 void GpuFree(T* ptr) {
-  cudaFree(ptr);
+  cudaFree(const_cast<std::remove_cv_t<T>*>(ptr));
 }
 
 template <typename T>
@@ -85,4 +85,4 @@ auto GpuMakeUniqueArrayAndCopy(const T* src, int size)
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

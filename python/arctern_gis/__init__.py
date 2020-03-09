@@ -13,4 +13,4 @@
 # limitations under the License.
 
 import pyarrow
-from .zilliz_gis_core_ import *
+from .arctern_gis_core_ import *

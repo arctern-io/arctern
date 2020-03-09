@@ -30,7 +30,7 @@ requirements:
 
 test:
   commands:
-    - python -c "import zilliz_pyspark"
+    - python -c "import arctern_pyspark"
 
 about:
   home: http://www.github.com/zilliztech/arctern

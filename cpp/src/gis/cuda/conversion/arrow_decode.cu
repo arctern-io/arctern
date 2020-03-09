@@ -19,7 +19,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/geometry_output.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -61,10 +61,7 @@ struct WkbDecoder {
     return tmp;
   }
 
-  __device__ void DecodePoint(int demensions) {
-    // wtf
-    WkbToValues(demensions, 1);
-  }
+  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
 
   __device__ void DecodeLineString(int demensions) {
     auto size = WkbToMeta<int>();
@@ -144,4 +141,4 @@ GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input) {
 }  // namespace internal
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

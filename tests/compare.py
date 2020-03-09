@@ -28,7 +28,7 @@ def collect_results(file_path, results_dir):
         else:
             print('file [%s] not exist' % file_name[0])
 
-geo_types = ['POLYGON', 'POINT', 'LINESTRING']
+geo_types = ['POLYGON', 'POINT', 'LINESTRING', 'CURVEPOLYGON']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 
 def is_geometry(geo):
@@ -233,12 +233,13 @@ def update_json():
 
 if __name__ == '__main__':
     
-    # r1 = compare_results('./arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
+    r1 = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
+    print(r1)
     # r2 = compare_results('./arctern_results/run_test_st_equals_1.json', './expected/results/st_equals.out')
     # r3 = compare_results('./arctern_results/run_test_st_equals_2.json', './expected/results/st_equals_2.out')
     # r4 = compare_results('./arctern_results/run_test_st_buffer.json', './expected/results/st_buffer.out')
     # print(r1)
-    update_json()
+    # update_json()
     # print(parse(config_file))
-    compare_all()
+    # compare_all()
     

@@ -23,7 +23,7 @@
 #include "render/2d/heatmap/heatmap.h"
 #include "render/2d/scatter_plot/pointmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
@@ -39,6 +39,6 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_w
                                            const std::string& conf);
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
 
 #include "render/render_builder_impl.h"

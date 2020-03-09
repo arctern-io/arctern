@@ -17,7 +17,7 @@
 
 #pragma once
 #include "gis/cuda/common/gis_definitions.h"
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 struct OutputInfo {
@@ -34,6 +34,6 @@ extern void GeometryOutput(Functor functor, int size, GeometryVector& results);
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
 
 #include "gis/cuda/functor/geometry_output.impl.h"

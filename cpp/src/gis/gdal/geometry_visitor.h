@@ -17,8 +17,9 @@
 #pragma once
 
 #include <ogr_geometry.h>
+#include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -50,6 +51,34 @@ class AreaVisitor : public OGRDefaultConstGeometryVisitor {
   double area_ = 0;
 };
 
+class LengthVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~LengthVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString* geo) override { length_ += geo->get_Length(); }
+  void visit(const OGRLinearRing* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRPolygon* ) override;
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRMultiPolygon* ) override;
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString* geo) override { length_ += geo->get_Length(); }
+  // void visit(const OGRCompoundCurve*) override;
+  // void visit(const OGRCurvePolygon* ) override ;
+  // void visit(const OGRMultiCurve*) override;
+  // void visit(const OGRMultiSurface*) override;
+  // void visit(const OGRTriangle*) override;
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const double length() const { return length_; }
+  void reset() { length_ = 0; }
+
+ private:
+  double length_ = 0;
+};
+
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
@@ -62,6 +91,18 @@ class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
   int64_t npoints_ = 0;
 };
 
+class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit PrecisionReduceVisitor(int32_t precision) : precision_(precision) {}
+  ~PrecisionReduceVisitor() = default;
+
+  double coordinate_precision_reduce(double coordinate);
+  void visit(OGRPoint*) override;
+
+ private:
+  int32_t precision_ = 0;
+};
+
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
