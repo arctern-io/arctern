@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -35,8 +35,8 @@ std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& wkb)
   char* wkt = nullptr;
 
   for (int i = 0; i < len; ++i) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(wkb_array->GetString(i).c_str(), nullptr,
-                                                 &geo));
+    auto str = wkb_array->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(str.c_str(), nullptr, &geo));
     CHECK_GDAL(OGR_G_ExportToWkt((void*)geo, &wkt));
     builder.Append(wkt);
     OGRGeometryFactory::destroyGeometry(geo);
@@ -76,4 +76,4 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& wkt)
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

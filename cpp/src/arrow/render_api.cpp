@@ -23,7 +23,7 @@
 
 #include "arrow/render_api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
@@ -209,4 +209,4 @@ std::shared_ptr<arrow::Array> choropleth_map(
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

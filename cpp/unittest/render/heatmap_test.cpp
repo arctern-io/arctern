@@ -99,5 +99,5 @@ TEST(TWOD_TEST, HEATMAP_TEST) {
       "  ]\n"
       "}";
 
-  zilliz::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heat_map(array1, array2, array3, vega);
 }

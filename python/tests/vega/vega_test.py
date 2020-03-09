@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import json
-from zilliz_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from zilliz_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from zilliz_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
+from arctern_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from arctern_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 
 
 def test_vega_circle2d():

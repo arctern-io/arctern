@@ -1,0 +1,8 @@
+{"left": "POINT (0 0)", "right": "POINT (0 0)"}
+{"left": "POLYGON EMPTY", "right": "POINT (0 0)"}
+{"left": "LINESTRING EMPTY", "right": "POINT (0 0)"}
+{"left": "POINT EMPTY", "right": "POINT (0 0)"}
+{"left": "MULTIPOLYGON EMPTY", "right": "POINT (0 0)"}
+{"left": "MULTILINESTRING EMPTY", "right": "POINT (0 0)"}
+{"left": "MULTIPOINT EMPTY", "right": "POINT (0 0)"}
+{"left": "GEOMETRYCOLLECTION EMPTY", "right": "POINT (0 0)"}

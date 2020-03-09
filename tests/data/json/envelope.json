@@ -1,0 +1,21 @@
+{"geos": "POINT (30 10)"}
+{"geos": "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"}
+{"geos": "POLYGON ((1 2, 3 4, 5 6, 1 2))"}
+{"geos": "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"}
+{"geos": "LINESTRING (1 1,2 2,2 3.5,1 3,1 2,2 1)"}
+{"geos": "LINESTRING (0 0, 0 2)"}
+{"geos": "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)"}
+{"geos": "POLYGON EMPTY"}
+{"geos": "LINESTRING EMPTY"}
+{"geos": "POINT EMPTY"}
+{"geos": "MULTIPOLYGON EMPTY"}
+{"geos": "MULTILINESTRING EMPTY"}
+{"geos": "MULTIPOINT EMPTY"}
+{"geos": "GEOMETRYCOLLECTION EMPTY"}
+{"geos": "LINESTRING(38.769917 10.780694, 38.769917 9.106194)"}
+{"geos": "MULTILINESTRING((0 0, 1 1),(0 0, 1 1, 2 2))"}
+{"geos": "MULTILINESTRING((0 0 0, 1 1 1),(0 0 0, 1 1 1, 2 2 2))"}
+{"geos": "CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)"}
+{"geos": "COMPOUNDCURVE(CIRCULARSTRING(0 2, -1 1,0 0),(0 0, 0.5 0, 1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2))"}
+{"geos": "MULTILINESTRING((-5 45, 8 36), (1 49, 15 41))"}
+{"geos": "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 10 30, 10 10, 30 5, 45 20, 20 35), (30 20, 20 15, 20 25, 30 20)))"}

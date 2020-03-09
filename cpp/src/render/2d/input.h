@@ -21,7 +21,7 @@
 #include "arrow/api.h"
 #include "render/utils/vega/vega.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 struct Input {
@@ -33,4 +33,4 @@ struct Input {
 using InputPtr = std::shared_ptr<Input>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

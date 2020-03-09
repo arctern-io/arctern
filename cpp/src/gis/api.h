@@ -23,7 +23,7 @@
 #include "arrow/api.h"
 #include "arrow/array.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 // TODO: add description for each api
@@ -86,6 +86,9 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
                                            const std::string& src_rs,
                                            const std::string& dst_rs);
 
+std::shared_ptr<arrow::Array> ST_CurveToLine(
+    const std::shared_ptr<arrow::Array>& geometries);
+
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Distance(
@@ -140,4 +143,4 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 std::shared_ptr<std::string> GIS_Version();
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

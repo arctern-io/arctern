@@ -19,7 +19,7 @@
 
 #include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class ColorGradient {
@@ -43,4 +43,4 @@ class ColorGradient {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

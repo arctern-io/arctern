@@ -8,7 +8,7 @@ add_executable(gdal_tests ${gdal_tests_src})
 #add_dependencies(gdal_tests googletest_ep)
 
 target_link_libraries(gdal_tests
-        windrose
+        arctern
         arrow
         gtest
         pthread

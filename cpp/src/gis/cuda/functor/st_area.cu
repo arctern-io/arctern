@@ -22,7 +22,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_area.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -73,4 +73,4 @@ void ST_Area(const GeometryVector& vec, double* host_results) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

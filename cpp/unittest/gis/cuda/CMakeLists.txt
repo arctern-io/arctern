@@ -12,6 +12,6 @@ set(gis_cuda_test_srcs
         )
 add_executable(gis_cuda_tests ${gis_cuda_test_srcs})
 
-target_link_libraries(gis_cuda_tests windrose gtest)
+target_link_libraries(gis_cuda_tests arctern gtest)
 
 install(TARGETS gis_cuda_tests DESTINATION unittest)

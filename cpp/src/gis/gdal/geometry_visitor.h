@@ -19,7 +19,7 @@
 #include <ogr_geometry.h>
 #include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -79,6 +79,34 @@ class LengthVisitor : public OGRDefaultConstGeometryVisitor {
   double length_ = 0;
 };
 
+class HasCircularVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~HasCircularVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString*) override {}
+  void visit(const OGRLinearRing*) override {}
+  void visit(const OGRPolygon*) override {}
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString*) override {}
+  void visit(const OGRMultiPolygon*) override {}
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString* geo) override;
+  // void visit(const OGRCompoundCurve*) override;
+  // void visit(const OGRCurvePolygon* ) override ;
+  // void visit(const OGRMultiCurve*) override;
+  // void visit(const OGRMultiSurface*) override;
+  // void visit(const OGRTriangle*) override;
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const bool has_circular() const { return has_circular_; }
+  void reset() { has_circular_ = false; }
+
+ private:
+  bool has_circular_ = false;
+};
+
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
@@ -105,4 +133,4 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
