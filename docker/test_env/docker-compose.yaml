@@ -1,0 +1,15 @@
+version: '2.3'
+
+services:
+  regression:
+    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    user: root
+    tty: true
+    volumes:
+      - ../..:/arctern
+    command: &spark-test
+      ["/arctern/ci/scripts/run_spark_regression.sh --master spark://spark-master:7077 /arctern/tests/spark_test.py"]
+networks:
+  default:
+    external:
+      name: ${ARCTERN_NETWORK}
