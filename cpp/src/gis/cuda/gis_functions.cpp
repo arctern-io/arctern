@@ -45,11 +45,11 @@ std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_va
                                        const std::shared_ptr<arrow::Array>& y_values) {
   assert(x_values->length() == y_values->length());
   auto len = x_values->length();
-  auto xs = std::static_pointer_cast<arrow::DoubleArray>(x_values)->raw_values();
-  auto ys = std::static_pointer_cast<arrow::DoubleArray>(y_values)->raw_values();
+  auto xs = std::static_pointer_cast<arrow::DoubleArray>(x_values);
+  auto ys = std::static_pointer_cast<arrow::DoubleArray>(y_values);
 
   GeometryVector geo_vector;
-  ST_Point(xs, ys, len, geo_vector);
+  ST_Point(xs->raw_values(), ys->raw_values(), len, geo_vector);
   auto wkb_points = GeometryVectorToArrowWkb(geo_vector);
 
   return gdal::WkbToWkt(wkb_points);

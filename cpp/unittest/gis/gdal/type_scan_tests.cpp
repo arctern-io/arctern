@@ -40,7 +40,7 @@ TEST(type_scan, single_type_scan) {
   scanner.mutable_types().push_back({WkbTypes::kMultiLineString});
   scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
   auto type_masks = scanner.Scan();
-  ASSERT_EQ(type_masks->is_unique_type, false);
+  ASSERT_EQ(type_masks->is_unique_group, false);
 
   for (auto type : scanner.types()) {
     auto& mask = type_masks->type_masks[type];
@@ -52,7 +52,7 @@ TEST(type_scan, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[type];
+    auto count = type_masks->group_mask_counts[type];
     ASSERT_EQ(count, range.second - range.first);
   }
   {
@@ -72,7 +72,7 @@ TEST(type_scan, unknown_type) {
   scanner.mutable_types().push_back({WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
   auto type_masks = scanner.Scan();
-  ASSERT_EQ(type_masks->is_unique_type, false);
+  ASSERT_EQ(type_masks->is_unique_group, false);
 
   GroupedWkbTypes type = {WkbTypes::kUnknown};
   auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
@@ -97,8 +97,8 @@ TEST(type_scan, unique_type) {
     arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kUnknown};
-    ASSERT_EQ(type_masks->is_unique_type, true);
-    ASSERT_EQ(type_masks->unique_type, type);
+    ASSERT_EQ(type_masks->is_unique_group, true);
+    ASSERT_EQ(type_masks->unique_group, type);
   }
 
   {
@@ -106,7 +106,7 @@ TEST(type_scan, unique_type) {
     scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kMultiPolygon};
-    ASSERT_EQ(type_masks->is_unique_type, false);
+    ASSERT_EQ(type_masks->is_unique_group, false);
   }
   {
     auto geo_cases = cases.GetCases({WkbTypes::kLineString});
@@ -114,8 +114,8 @@ TEST(type_scan, unique_type) {
     scanner.mutable_types().push_back({WkbTypes::kLineString});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kLineString};
-    ASSERT_EQ(type_masks->is_unique_type, true);
-    ASSERT_EQ(type_masks->unique_type, type);
+    ASSERT_EQ(type_masks->is_unique_group, true);
+    ASSERT_EQ(type_masks->unique_group, type);
     ASSERT_EQ(type_masks->type_masks.size(), 0);
   }
 }
@@ -129,7 +129,7 @@ TEST(type_scan, grouped_type) {
   scanner.mutable_types().push_back(type1);
   scanner.mutable_types().push_back(type2);
   auto type_masks = scanner.Scan();
-  ASSERT_EQ(type_masks->is_unique_type, false);
+  ASSERT_EQ(type_masks->is_unique_group, false);
 
   {
     auto& mask = type_masks->type_masks[type1];
@@ -167,6 +167,6 @@ TEST(type_scan, unique_grouped_type) {
   GroupedWkbTypes type({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back(type);
   auto type_masks = scanner.Scan();
-  ASSERT_EQ(type_masks->is_unique_type, true);
-  ASSERT_EQ(type_masks->unique_type, type);
+  ASSERT_EQ(type_masks->is_unique_group, true);
+  ASSERT_EQ(type_masks->unique_group, type);
 }
