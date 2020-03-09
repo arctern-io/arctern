@@ -56,9 +56,7 @@ struct WkbEncoderImpl {
   __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
     auto m = static_cast<T>(*metas);
-    if (!skip_write) {
-      InsertIntoWkb(m);
-    }
+    InsertIntoWkb(m);
     metas += 1;
     return m;
   }
@@ -115,7 +113,6 @@ __global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output
 
     int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
     output.offsets[index] = wkb_length;
-    printf("{%d}", wkb_length);
   }
 }
 
@@ -150,16 +147,12 @@ __global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output)
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
     int std_wkb_length = (int)(output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index));
-    printf("@%d-%d-%d#, ", index, output.offsets[index], std_wkb_length);
-
     WkbEncoder encoder(wkb_iter, metas, values, false);
     encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
     encoder.SetTag(tag);
     encoder.VisitBody(tag);
 
     int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
-
-    printf("[%d-%d]", wkb_length, std_wkb_length);
     assert(std_wkb_length == wkb_length);
   }
 }
