@@ -91,7 +91,7 @@ class HasCircularVisitor : public OGRDefaultConstGeometryVisitor {
   void visit(const OGRMultiLineString*) override {}
   void visit(const OGRMultiPolygon*) override {}
   // void visit(const OGRGeometryCollection*) override;
-  void visit(const OGRCircularString* geo) override { has_circular_ = true; }
+  void visit(const OGRCircularString* geo) override;
   // void visit(const OGRCompoundCurve*) override;
   // void visit(const OGRCurvePolygon* ) override ;
   // void visit(const OGRMultiCurve*) override;

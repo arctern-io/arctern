@@ -1511,10 +1511,10 @@ TEST(geometry_test, test_ST_Crosses) {
   ASSERT_EQ(res_bool->Value(11), true);
 }
 
-TEST(geometry_test, test_ST_IsSimple2){
+TEST(geometry_test, test_ST_IsSimple2) {
   auto s0 = "POLYGON ((1 2,3 4,5 6,1 2))";
   auto s1 = "MULTICURVE((0 0,5 5),CIRCULARSTRING (4 0,4 4,8 4))";
-  
+
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
 
@@ -1524,7 +1524,6 @@ TEST(geometry_test, test_ST_IsSimple2){
 
   auto res = arctern::gis::ST_IsSimple(input);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-
 
   ASSERT_EQ(res_bool->Value(0), false);
   ASSERT_EQ(res_bool->Value(1), false);
