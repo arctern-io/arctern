@@ -12,9 +12,6 @@ services:
     volumes:
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ../../..:/arctern
-    ports:
-      - '8080:8080'
-      - '7077:7077'
   spark-worker:
     image: registry.zilliz.com/arctern/arctern-spark:v0.1.0-ubuntu18.04
     depends_on:
