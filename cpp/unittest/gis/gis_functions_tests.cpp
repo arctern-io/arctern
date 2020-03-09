@@ -1511,6 +1511,24 @@ TEST(geometry_test, test_ST_Crosses) {
   ASSERT_EQ(res_bool->Value(11), true);
 }
 
+TEST(geometry_test, test_ST_IsSimple2) {
+  auto s0 = "POLYGON ((1 2,3 4,5 6,1 2))";
+  auto s1 = "MULTICURVE((0 0,5 5),CIRCULARSTRING (4 0,4 4,8 4))";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+
+  builder.Append(std::string(s0));
+  builder.Append(std::string(s1));
+  builder.Finish(&input);
+
+  auto res = arctern::gis::ST_IsSimple(input);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), false);
+  ASSERT_EQ(res_bool->Value(1), false);
+}
+
 TEST(geometry_test, test_ST_IsSimple) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
@@ -2917,9 +2935,9 @@ TEST(geometry_test, test_ST_CurveToLine) {
 }
 
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
-  auto j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}";
-  auto j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}";
-  auto j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}";
+  auto j0 = R"({"type":"Point","coordinates":[1,2]})";
+  auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
+  auto j2 = R"({"type":"Polygon","coordinates":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]})";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;

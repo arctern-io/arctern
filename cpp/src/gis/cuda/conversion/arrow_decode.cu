@@ -17,6 +17,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/conversion/wkb_visitor.h"
 #include "gis/cuda/functor/geometry_output.h"
 
 namespace arctern {
@@ -24,15 +25,23 @@ namespace gis {
 namespace cuda {
 
 namespace {
-struct WkbDecoder {
+struct WkbDecoderImpl {
   const char* wkb_iter;
   uint32_t* metas;
   double* values;
   bool skip_write;
+  int skipped_bytes;
+  __device__ WkbDecoderImpl(const char* wkb_iter, uint32_t* metas, double* values,
+                            bool skip_write)
+      : wkb_iter(wkb_iter),
+        metas(metas),
+        values(values),
+        skip_write(skip_write),
+        skipped_bytes(0) {}
 
- private:
-  __device__ void WkbToValues(int demensions, int points) {
-    auto count = demensions * points;
+ protected:
+  __device__ void VisitValues(int dimensions, int points) {
+    auto count = dimensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
       memcpy(values, wkb_iter, bytes);
@@ -40,8 +49,9 @@ struct WkbDecoder {
     wkb_iter += bytes;
     values += count;
   }
+
   template <typename T>
-  __device__ T WkbToMeta() {
+  __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
     auto m = FetchFromWkb<uint32_t>();
     if (!skip_write) {
@@ -51,7 +61,32 @@ struct WkbDecoder {
     return static_cast<T>(m);
   }
 
+  // write into meta
+  __device__ auto VisitMetaInt() { return VisitMeta<int>(); }
+
+  // write into meta
+  __device__ auto VisitMetaWkbTag() { return VisitMeta<WkbTag>(); }
+
+  __device__ void VisitByteOrder() {
+    auto byte_order = FetchFromWkb<WkbByteOrder>();
+    ++skipped_bytes;
+    assert(byte_order == WkbByteOrder::kLittleEndian);
+  }
+
  public:
+  __device__ WkbByteOrder GetByteOrder() {
+    auto byte_order = FetchFromWkb<WkbByteOrder>();
+    skipped_bytes += sizeof(WkbTag);
+    return byte_order;
+  }
+
+  __device__ WkbTag GetTag() {
+    auto tag = FetchFromWkb<WkbTag>();
+    skipped_bytes += sizeof(WkbTag);
+    return tag;
+  }
+
+ private:
   template <typename T>
   __device__ T FetchFromWkb() {
     T tmp;
@@ -60,21 +95,9 @@ struct WkbDecoder {
     wkb_iter += len;
     return tmp;
   }
-
-  __device__ void DecodePoint(int demensions) { WkbToValues(demensions, 1); }
-
-  __device__ void DecodeLineString(int demensions) {
-    auto size = WkbToMeta<int>();
-    WkbToValues(demensions, size);
-  }
-
-  __device__ void DecodePolygon(int demensions) {
-    auto polys = WkbToMeta<int>();
-    for (int i = 0; i < polys; ++i) {
-      DecodeLineString(demensions);
-    }
-  }
 };
+
+using WkbDecoder = WkbCodingVisitor<WkbDecoderImpl>;
 
 using internal::WkbArrowContext;
 __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& input,
@@ -89,31 +112,12 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
     values = results.get_value_ptr(index);
   }
 
-  WkbDecoder decoder{wkb_iter, metas, values, skip_write};
+  WkbDecoder decoder(wkb_iter, metas, values, skip_write);
 
-  auto byte_order = decoder.FetchFromWkb<WkbByteOrder>();
+  auto byte_order = decoder.GetByteOrder();
   assert(byte_order == WkbByteOrder::kLittleEndian);
-  auto tag = decoder.FetchFromWkb<WkbTag>();
-  assert(tag.get_space_type() == WkbSpaceType::XY);
-  constexpr auto demensions = 2;
-  switch (tag.get_category()) {
-    case WkbCategory::kPoint: {
-      decoder.DecodePoint(demensions);
-      break;
-    }
-    case WkbCategory::kLineString: {
-      decoder.DecodeLineString(demensions);
-      break;
-    }
-    case WkbCategory::kPolygon: {
-      decoder.DecodePolygon(demensions);
-      break;
-    }
-    default: {
-      assert(false);
-      break;
-    }
-  }
+  auto tag = decoder.GetTag();
+  decoder.VisitBody(tag);
 
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);
