@@ -21,8 +21,6 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate arctern" >> ~/.bashrc
 
-RUN mkdir -p /home/arctern_test
-
 COPY arctern /tmp/arctern
 
 ENV PATH=/opt/conda/bin:$PATH
@@ -37,8 +35,6 @@ ENV NSS_WRAPPER_GROUP="/opt/spark/tmp/nss_group" \
     NSS_WRAPPER_PASSWD="/opt/spark/tmp/nss_passwd" \
     PATH="/opt/conda/envs/arctern/bin:/opt/spark/bin:/opt/spark/sbin:$PATH" \
     SPARK_HOME="/opt/spark"
-
-COPY docker-entrypoint.sh /entrypoint.sh
 
 WORKDIR /opt/spark
 USER 1001

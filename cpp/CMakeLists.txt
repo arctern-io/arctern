@@ -52,7 +52,8 @@ if (USE_GPU)
     message("importing ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
     include_directories(${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES})
     link_directories(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES -arch sm_60 --expt-extended-lambda")
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
 else()
     set(CPU_OR_GPU "CPU")
     message(STATUS "Building on CPU")
@@ -135,10 +136,6 @@ link_directories(${CONDA_PREFIX}/lib)
 add_subdirectory(src)
 
 if (BUILD_UNITTEST)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-    if (BUILD_COVERAGE STREQUAL "ON")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-    endif ()
     add_subdirectory(unittest)
 endif (BUILD_UNITTEST)
 unset(BUILD_UNITTEST CACHE)
@@ -148,7 +145,6 @@ find_package(ClangTools)
 set(BUILD_SUPPORT_DIR "${CMAKE_SOURCE_DIR}/build-support")
 
 #
-message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # "make lint" target
 #
 if (NOT GIS_VERBOSE_LINT)
