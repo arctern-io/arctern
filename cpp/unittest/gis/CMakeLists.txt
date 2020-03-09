@@ -7,7 +7,7 @@ add_executable(gis_tests ${gis_tests_src})
 #add_dependencies(gis_tests googletest_ep)
 
 target_link_libraries(gis_tests
-        windrose
+        arctern
         arrow
         gtest
         pthread
@@ -17,6 +17,6 @@ target_link_libraries(gis_tests
 install(TARGETS gis_tests DESTINATION unittest)
 
 add_subdirectory(gdal)
-if(USE_GPU)
+if(BUILD_WITH_GPU)
     add_subdirectory(cuda)
 endif()

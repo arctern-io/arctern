@@ -17,7 +17,7 @@
 
 #include "arrow/render_api.h"
 
-TEST(TWOD_TEST, HEATMAP_TEST) {
+TEST(TWOD_TEST, CHOROPLETH_MAP_TEST) {
   // param1: wkt string
   std::string wkt_string1 =
       "POLYGON (("

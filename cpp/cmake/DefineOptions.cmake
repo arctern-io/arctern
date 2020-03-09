@@ -64,7 +64,7 @@ define_option(ARCTERN_WITH_STB "Build with stb library" ON)
 #----------------------------------------------------------------------
 set_option_category("Test and benchmark")
 
-define_option(BUILD_UNITTEST "Build the googletest unit tests" ON)
+define_option(BUILD_UNITTEST "Build the googletest unit tests" OFF)
 #unset(BUILD_UNITTEST CACHE)
 #
 #if (BUILD_UNITTEST)

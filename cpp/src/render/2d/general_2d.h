@@ -69,7 +69,6 @@ class General2D {
   int output_image_size_;
 
 #ifndef USE_GPU
-
  public:
   void set_window(WindowCPU2DPtr window) { window_ = window; }
 

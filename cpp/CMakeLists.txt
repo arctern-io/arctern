@@ -1,7 +1,7 @@
 project(ARCTERN LANGUAGES CXX)
 
-#option(USE_GPU off)
-#option(BUILD_UNITTEST off)
+cmake_minimum_required(VERSION 3.12)
+message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
 # get build time
 MACRO(GET_CURRENT_TIME CURRENT_TIME)
@@ -53,40 +53,15 @@ if (BUILD_WITH_GPU)
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 14)
     find_package(CUDA 10 REQUIRED)
-    set(CPU_OR_GPU "GPU")
-    message("importing ${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES}")
-    message("importing ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
     include_directories(${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES})
     link_directories(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
     set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES")
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
 else()
     message(STATUS "Building ARCTERN CPU version")
-    set(CPU_OR_GPU "CPU")
 endif()
 
-#if (USE_GPU)
-#    set(PYARROW_WITH_CUDA 1)
-#    message(STATUS "Building on GPU")
-#    enable_language(CUDA)
-#    set(CMAKE_CUDA_STANDARD 14)
-#    add_compile_definitions(USE_GPU)
-#    set(CPU_OR_GPU "GPU")
-#    message("importing ${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES}")
-#    message("importing ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
-#    include_directories(${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES})
-#    link_directories(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
-#    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES")
-#    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
-#else()
-#    set(CPU_OR_GPU "CPU")
-#    message(STATUS "Building on CPU")
-#endif ()
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/common/version.h @ONLY)
-
-cmake_minimum_required(VERSION 3.12)
-message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -122,7 +97,6 @@ if (ARCTERN_BUILD_ARCH STREQUAL "ppc64le")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -Wall -Wno-unused-variable -Wno-sign-compare -Werror")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     message(STATUS "Building Release version")
@@ -145,8 +119,6 @@ endif ()
 
 set(ARCTERN_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 set(ARCTERN_ENGINE_SRC ${PROJECT_SOURCE_DIR}/src)
-#set(LIB_GIS_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-#set(LIB_GIS_SRC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(ARCTERN_THIRDPARTY_SRC ${PROJECT_SOURCE_DIR}/thirdparty)
 
 include(ExternalProject)
@@ -154,17 +126,9 @@ include(DefineOptions)
 include(BuildUtils)
 include(ThirdParty)
 
-#include_directories(${LIB_GIS_INCLUDE})
-#include_directories(${LIB_GIS_SRC_INCLUDE})
-#include_directories(${PROJECT_BINARY_DIR})
-message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
-
 set(CONDA_PREFIX "$ENV{CONDA_PREFIX}")
 message(STATUS "conda_prefix = " ${CONDA_PREFIX})
-
-#include_directories(${CMAKE_BINARY_DIR}/thirdparty/include)
 include_directories(${CONDA_PREFIX}/include)
-#link_directories(${CMAKE_BINARY_DIR}/thirdparty/lib)
 link_directories(${CONDA_PREFIX}/lib)
 
 config_summary()
@@ -176,11 +140,6 @@ if (BUILD_UNITTEST STREQUAL "ON")
     endif ()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/unittest)
 endif ()
-
-#if (BUILD_UNITTEST)
-#    add_subdirectory(unittest)
-#endif (BUILD_UNITTEST)
-#unset(BUILD_UNITTEST CACHE)
 
 find_package(Python COMPONENTS Interpreter Development)
 find_package(ClangTools)
