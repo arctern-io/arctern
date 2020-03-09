@@ -90,7 +90,7 @@ else ()
     )
 endif ()
 
-add_dependencies(windrose miniz_ep stb_ep antlr4_runtime_ep)
+add_dependencies(arctern miniz_ep stb_ep antlr4_runtime_ep)
 
 set(third_party_libs
         gdal
