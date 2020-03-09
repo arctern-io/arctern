@@ -11,7 +11,7 @@ ExternalProject_Add(antlr4_runtime_ep
         -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty
         ${ANTLR4_RUNTIME_ROOT}/antlr4_runtime_ep
         BUILD_COMMAND
-        make -j1
+        make
         INSTALL_COMMAND
-        make install
+        make -j1 install
         )
