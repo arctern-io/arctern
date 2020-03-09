@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
-from zilliz_pyspark import register_funcs
+# from zilliz_pyspark import register_funcs
+from arctern_pyspark import register_funcs
 from pyspark.sql.types import *
 from pyspark.sql.functions import col
 
@@ -542,7 +543,19 @@ def run_test_st_curvetoline(spark):
     to_json("results/%s" % table_name, rs)
 
 def run_test_st_geomfromGeoJSON(spark):
-    pass
+   
+    data = "geojson/geojson.json"
+    table_name = 'test_geomfromjson'
+    sql = "select st_geomfromgeojson_udf(geos) as geos from test_geomfromjson"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
 
 def run_test_ST_PrecisionReduce(spark):
     pass
@@ -580,9 +593,10 @@ if __name__ == "__main__":
     # confs = get_test_config('test.csv')
     # for c in confs:
     #     run_test(spark_session, c)
-    
-    run_test_st_point(spark_session)
+    run_test_st_geomfromGeoJSON(spark_session)
     # run_test_st_curvetoline(spark_session)
+    
+    # run_test_st_point(spark_session)
     # run_test_envelope_aggr_1(spark_session)
     # run_test_envelope_aggr_2(spark_session)
     # run_test_union_aggr_1(spark_session)

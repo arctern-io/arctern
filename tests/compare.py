@@ -28,12 +28,24 @@ def collect_results(file_path, results_dir):
         else:
             print('file [%s] not exist' % file_name[0])
 
-geo_types = ['POLYGON', 'POINT', 'LINESTRING', 'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
+geo_types = ['POLYGON', 'POINT', 'LINESTRING']
+geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
 
     for x in geo_types:
+        if geo.startswith(x):
+            return True
+        else:
+            continue
+    
+    return False
+
+def is_geometrycollection(geo):
+    geo = geo.strip().upper()
+
+    for x in geo_collection_types:
         if geo.startswith(x):
             return True
         else:
@@ -78,6 +90,16 @@ def compare_geometry(x, y):
     
     return result
 
+def compare_geometrycollection(x, y):
+    arct = wkt.loads(x)
+    pgis = wkt.loads(y)
+    result = arct.equals(pgis)
+
+    if not result:
+        print(arct, pgis)
+    
+    return result
+
 def compare_float(x, y):
 
     x = float(x)
@@ -104,6 +126,8 @@ def compare_one(x, y):
         y = y.strip().upper()
         if is_geometry(x) and is_geometry(y):
             return compare_geometry(x, y)
+        elif is_geometrycollection(x) and is_geometrycollection(y):
+            return compare_geometrycollection(x, y)
         else:
             if is_geometrytype(x) and is_geometrytype(y):
                 return x == y
@@ -152,6 +176,7 @@ def parse(config_file):
         xs = [x.strip().split('=') for x in lines if not x.strip().startswith('#')]
     return xs
 
+# arc_result_dir = './arctern_results'
 arc_result_dir = '/tmp/arctern_results'
 pgis_result_dir = './expected/results'
 
