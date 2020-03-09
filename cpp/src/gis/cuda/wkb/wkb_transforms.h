@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "gis/cuda/mock/arrow/api.h"
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 std::vector<char> Wkt2Wkb(const std::string& geo_wkt);
@@ -29,4 +29,4 @@ std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

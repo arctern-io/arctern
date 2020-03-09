@@ -77,20 +77,21 @@ endif (STATIC_LIB_SWITCH)
 
 if (USE_GPU)
     add_library(
-        windrose ${LIBRARY_TYPE}
+        arctern ${LIBRARY_TYPE}
         ${render_src}
         ${gis_src}
         ${cuda_gis_src}
     )
 else ()
     add_library(
-        windrose ${LIBRARY_TYPE}
+        arctern ${LIBRARY_TYPE}
         ${render_src}
         ${gis_src}
     )
 endif ()
 
 add_dependencies(windrose miniz_ep stb_ep antlr4_runtime_ep)
+
 set(third_party_libs
         gdal
         arrow
@@ -98,7 +99,7 @@ set(third_party_libs
         antlr4-runtime
         )
 
-set_property(TARGET windrose PROPERTY CUDA_STANDARD 14)
+set_property(TARGET arctern PROPERTY CUDA_STANDARD 14)
 if (USE_GPU)
     set(third_party_libs
             ${third_party_libs}
@@ -114,12 +115,12 @@ else ()
             )
 endif ()
 
-target_link_libraries(windrose
+target_link_libraries(arctern
             pthread
             ${third_party_libs}
 )
 
 
-install(TARGETS windrose
+install(TARGETS arctern
         DESTINATION lib)
 

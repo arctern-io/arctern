@@ -32,7 +32,7 @@
 #include <utility>
 #include <vector>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -336,7 +336,8 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
   int len = json_geo->length();
   arrow::StringBuilder builder;
   for (int i = 0; i < len; ++i) {
-    auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(json_geo->GetString(i).c_str());
+    auto str = json_geo->GetString(i);
+    auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
     if (geo != nullptr) {
       char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
       CHECK_ARROW(builder.Append(wkt));
@@ -531,14 +532,14 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oSrcSRS.SetFromUserInput(src_rs.c_str()) != OGRERR_NONE) {
     std::string err_msg = "faild to tranform with sourceCRS = " + src_rs;
-    throw new std::runtime_error(err_msg);
+    throw std::runtime_error(err_msg);
   }
 
   OGRSpatialReference oDstS;
   oDstS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oDstS.SetFromUserInput(dst_rs.c_str()) != OGRERR_NONE) {
     std::string err_msg = "faild to tranform with targetCRS = " + dst_rs;
-    throw new std::runtime_error(err_msg);
+    throw std::runtime_error(err_msg);
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
@@ -903,4 +904,4 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

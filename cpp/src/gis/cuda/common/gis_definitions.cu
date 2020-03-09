@@ -18,7 +18,7 @@
 #include <thrust/scan.h>
 
 #include "gis/cuda/common/gis_definitions.h"
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 namespace internal {
@@ -32,4 +32,4 @@ void ExclusiveScan(int* offsets, int size) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

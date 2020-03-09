@@ -23,7 +23,8 @@
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-namespace zilliz {
+#include <vector>
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -85,4 +86,4 @@ auto GpuMakeUniqueArrayAndCopy(const T* src, int size)
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

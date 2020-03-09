@@ -17,7 +17,7 @@
 
 #include <string>
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 struct Color {
@@ -57,4 +57,4 @@ class ColorParser {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

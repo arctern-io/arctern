@@ -26,7 +26,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -39,8 +39,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   if (types().empty()) {
     // organize return
     auto ret = std::make_shared<GeometryTypeMasks>();
-    ret->is_unique_type = true;
-    ret->unique_type = {WkbTypes::kUnknown};
+    ret->is_unique_group = true;
+    ret->unique_group = {WkbTypes::kUnknown};
     return ret;
   }
 
@@ -83,22 +83,22 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // organize return
   auto ret = std::make_shared<GeometryTypeMasks>();
-  ret->is_unique_type = false;
+  ret->is_unique_group = false;
 
   if (is_unique_type) {
     num_scan_classes = 0;
     if (type_masks[num_scan_classes].front() == true) {
-      ret->is_unique_type = true;
-      ret->unique_type = {WkbTypes::kUnknown};
-      ret->type_mask_counts[ret->unique_type] = len;
+      ret->is_unique_group = true;
+      ret->unique_group = {WkbTypes::kUnknown};
+      ret->group_mask_counts[ret->unique_group] = len;
       return ret;
     }
     num_scan_classes++;
     for (auto& grouped_type : types()) {
       if (type_masks[num_scan_classes].front() == true) {
-        ret->is_unique_type = true;
-        ret->unique_type = grouped_type;
-        ret->type_mask_counts[grouped_type] = len;
+        ret->is_unique_group = true;
+        ret->unique_group = grouped_type;
+        ret->group_mask_counts[grouped_type] = len;
         return ret;
       }
     }
@@ -110,7 +110,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
     for (auto& grouped_type : types()) {
       ret->type_masks[grouped_type] = std::move(type_masks[num_scan_classes]);
-      ret->type_mask_counts[grouped_type] = mask_counts[num_scan_classes];
+      ret->group_mask_counts[grouped_type] = mask_counts[num_scan_classes];
       num_scan_classes++;
     }
   }
@@ -119,4 +119,4 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

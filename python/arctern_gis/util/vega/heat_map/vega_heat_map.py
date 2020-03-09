@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from zilliz_gis.util.vega.vega_node import (Width, Height, Description, Data,
+from arctern_gis.util.vega.vega_node import (Width, Height, Description, Data,
                                             Scales, RootMarks, Root)
 
 
@@ -33,23 +33,16 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, color_style: Value, ruler: Value, opacity: Value):
-            if not (isinstance(bounding_box.v, list) and isinstance(color_style.v, str) and
-                    isinstance(ruler.v, list) and isinstance(opacity.v, float)):
+        def __init__(self, map_scale: Value):
+            if not isinstance(map_scale.v, float):
                 # TODO error log here
                 assert 0, "illegal"
-            self._bounding_box = bounding_box
-            self._color_style = color_style
-            self._ruler = ruler
-            self._opacity = opacity
+            self._map_scale = map_scale
 
         def to_dict(self):
             dic = {
                 "enter": {
-                    "bounding_box": self._bounding_box.to_dict(),
-                    "color_style": self._color_style.to_dict(),
-                    "ruler": self._ruler.to_dict(),
-                    "opacity": self._opacity.to_dict()
+                    "map_scale": self._map_scale.to_dict()
                 }
             }
             return dic
@@ -63,27 +56,21 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaChoroplethMap:
-    def __init__(self, width: int, height: int,
-                 bounding_box: list, color_style: str,
-                 ruler: list, opacity: float):
+class VegaHeatMap():
+    def __init__(self, width: int, height: int, map_scale: float):
         self._width = width
         self._height = height
-        self._bounding_box = bounding_box
-        self._color_style = color_style
-        self._ruler = ruler
-        self._opacity = opacity
+        self._map_scale = map_scale
 
     def build(self):
-        description = Description(desc="building_weighted_2d")
+        description = Description(desc="heat_map_2d")
         data = Data(name="data", url="/data/data.csv")
-        domain = Scales.Scale.Domain("data", "c0")
-        scale = Scales.Scale("building", "linear", domain)
-        scales = Scales([scale])
-        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
-                              color_style=Marks.Encode.Value(self._color_style),
-                              ruler=Marks.Encode.Value(self._ruler),
-                              opacity=Marks.Encode.Value(self._opacity))
+        domain1 = Scales.Scale.Domain("data", "c0")
+        domain2 = Scales.Scale.Domain("data", "c1")
+        scale1 = Scales.Scale("x", "linear", domain1)
+        scale2 = Scales.Scale("y", "linear", domain2)
+        scales = Scales([scale1, scale2])
+        encode = Marks.Encode(map_scale=Marks.Encode.Value(self._map_scale))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)

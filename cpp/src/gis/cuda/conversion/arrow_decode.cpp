@@ -20,7 +20,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/conversion/conversions.impl.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -42,4 +42,4 @@ GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& arr
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

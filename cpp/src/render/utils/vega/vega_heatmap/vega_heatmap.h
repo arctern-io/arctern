@@ -20,7 +20,7 @@
 #include "render/utils/color/color.h"
 #include "render/utils/vega/vega.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class VegaHeatMap : public Vega {
@@ -43,4 +43,4 @@ class VegaHeatMap : public Vega {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

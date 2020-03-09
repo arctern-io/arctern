@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
-from zilliz_pyspark import register_funcs
+from arctern_pyspark import register_funcs
 
 def run_curve_z(spark):
     curve_z_df = spark.read.json("/tmp/z_curve.json").cache()

@@ -1,4 +1,4 @@
-project(zillizgis LANGUAGES CXX)
+project(arctern LANGUAGES CXX)
 
 option(USE_GPU off)
 option(BUILD_UNITTEST off)
