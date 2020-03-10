@@ -1,9 +1,10 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(2d_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/pointmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/scatter_plot/pointmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/choropleth_map/choropleth_map.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
-        render/2d/heatmap/heatmap.cpp
-        render/2d/heatmap/set_color.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/heatmap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/set_color.cpp
         )
 set(window_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/window/window2d.cpp
@@ -18,6 +19,7 @@ endif ()
 
 set(util_src
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_heatmap/vega_heatmap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color.cpp
@@ -35,61 +37,79 @@ set(render_src
         )
 
 set(gis_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/make_point.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/point_map.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/geometry_visitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/format_conversion.cpp
         )
 
-set(gis_cpp_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cpu/gdal_impl.cpp
-	#gis/cpu/geometry.cpp
+set(cuda_gis_src
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/wkb/wkb_transforms.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_distance.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_within.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_length.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_area.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_envelope.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_point.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/gis_functions.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
 endif (STATIC_LIB_SWITCH)
-add_library(
-    GIS ${LIBRARY_TYPE}
-    ${render_src}
-    ${gis_src}
-    ${gis_cpp_src}
-)
 
-add_library(
-        zgeo SHARED
-        ${gis_cpp_src}
-)
-add_dependencies(GIS miniz_ep gdal_ep rapidjson_ep)
-add_dependencies(zgeo miniz_ep gdal_ep rapidjson_ep)
-
-set_property(TARGET GIS PROPERTY CUDA_STANDARD 11)
 if (USE_GPU)
-    target_link_libraries(GIS
+    add_library(
+        arctern ${LIBRARY_TYPE}
+        ${render_src}
+        ${gis_src}
+        ${cuda_gis_src}
+    )
+else ()
+    add_library(
+        arctern ${LIBRARY_TYPE}
+        ${render_src}
+        ${gis_src}
+    )
+endif ()
+
+add_dependencies(arctern miniz_ep stb_ep)
+set(third_party_libs
+        gdal
+        arrow
+        miniz
+        )
+
+set_property(TARGET arctern PROPERTY CUDA_STANDARD 14)
+if (USE_GPU)
+    set(third_party_libs
+            ${third_party_libs}
             GL
             EGL
             cudart
-            arrow
-            pthread
-            miniz
             )
 else ()
-    target_link_libraries(GIS
+    set(third_party_libs
+            ${third_party_libs}
             GLU
             OSMesa
-	    gdal
-            arrow
-            pthread
-            miniz
             )
 endif ()
 
-target_link_libraries(zgeo
-	gdal
-        arrow
-        )
+target_link_libraries(arctern
+            pthread
+            ${third_party_libs}
+)
 
-install(TARGETS GIS
+
+install(TARGETS arctern
         DESTINATION lib)
 
-install(TARGETS zgeo
-        DESTINATION lib)
