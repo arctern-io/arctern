@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+#include "gis/gdal/type_scan.h"
+
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
+
 #include <map>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "gis/gdal/type_scan.h"
 #include "gis/wkb_types.h"
 #include "utils/check_status.h"
-
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
 
 namespace arctern {
 namespace gis {
@@ -90,27 +91,27 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     if (type_masks[num_scan_classes].front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
-      ret->type_dict[ret->unique_type].counts = len;
+      ret->dict_[ret->unique_type].counts = len;
       return ret;
-    }
-    num_scan_classes++;
-    for (auto& grouped_type : types()) {
-      if (type_masks[num_scan_classes].front() == true) {
-        ret->is_unique_type = true;
-        ret->unique_type = grouped_type;
-        ret->type_dict[grouped_type].counts = len;
-        return ret;
+    } else {
+      num_scan_classes++;
+      for (auto& grouped_type : types()) {
+        if (type_masks[num_scan_classes].front() == true) {
+          ret->is_unique_type = true;
+          ret->unique_type = grouped_type;
+          ret->dict_[grouped_type].counts = len;
+          return ret;
+        }
       }
     }
-
   } else {
     num_scan_classes = 0;
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
-    ret->type_dict[unknown_type].masks = std::move(type_masks[num_scan_classes++]);
+    ret->dict_[unknown_type].masks = std::move(type_masks[num_scan_classes++]);
 
     for (auto& grouped_type : types()) {
-      ret->type_dict[grouped_type].masks = std::move(type_masks[num_scan_classes]);
-      ret->type_dict[grouped_type].counts = mask_counts[num_scan_classes];
+      ret->dict_[grouped_type].masks = std::move(type_masks[num_scan_classes]);
+      ret->dict_[grouped_type].counts = mask_counts[num_scan_classes];
       num_scan_classes++;
     }
   }

@@ -29,31 +29,32 @@ namespace gis {
 using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
-  struct Record {
+  // helper function
+  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
+    auto iter = dict_.find(grouped_types);
+    assert(iter != dict_.end());
+    return iter->second.masks;
+  }
+
+  const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
+    auto iter = dict_.find(grouped_types);
+    assert(iter != dict_.end());
+    return iter->second.counts;
+  }
+
+ public:
+  // If the given geometries share identical type, this field will be set true.
+  bool is_unique_type;
+  // This field is valid only if 'is_unique_type' equals true.
+  GroupedWkbTypes unique_type;
+  struct Info {
     // This field contains masks for each geometry type.
     std::vector<bool> masks;
     // This field contains mask counts for each geometry type.
     int64_t counts;
   };
-  std::map<GroupedWkbTypes, Record> type_dict;
-  // If the given geometries share identical type, this field will be set true.
-  bool is_unique_type;
-  // This field is valid only if 'is_unique_type' equals true.
-  GroupedWkbTypes unique_type;
-  // helper function
-  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
-    auto iter = type_dict.find(grouped_types);
-    assert(iter != type_dict.end());
-    return iter->second.masks;
-  }
-
-  const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
-    auto iter = type_dict.find(grouped_types);
-    assert(iter != type_dict.end());
-    return iter->second.counts;
-  }
+  std::map<GroupedWkbTypes, Info> dict_;
 };
-
 
 class GeometryTypeScanner {
  public:
