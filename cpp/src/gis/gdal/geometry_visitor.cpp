@@ -20,6 +20,13 @@ namespace arctern {
 namespace gis {
 namespace gdal {
 
+void HasCircularVisitor::visit(const OGRCircularString* geo) {
+  if (geo->IsEmpty()) {
+    return;
+  }
+  has_circular_ = true;
+}
+
 void NPointsVisitor::visit(const OGRPoint* geo) {
   if (geo->IsEmpty()) return;
   npoints_++;
