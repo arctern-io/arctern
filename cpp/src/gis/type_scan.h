@@ -29,15 +29,31 @@ namespace gis {
 using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
-  // This field contains masks for each geometry type.
-  std::map<GroupedWkbTypes, std::vector<bool>> type_masks;
-  // This field contains mask counts for each geometry type.
-  std::map<GroupedWkbTypes, int64_t> type_mask_counts;
+  struct Record {
+    // This field contains masks for each geometry type.
+    std::vector<bool> masks;
+    // This field contains mask counts for each geometry type.
+    int64_t counts;
+  };
+  std::map<GroupedWkbTypes, Record> type_dict;
   // If the given geometries share identical type, this field will be set true.
   bool is_unique_type;
   // This field is valid only if 'is_unique_type' equals true.
   GroupedWkbTypes unique_type;
+  // helper function
+  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
+    auto iter = type_dict.find(grouped_types);
+    assert(iter != type_dict.end());
+    return iter->second.masks;
+  }
+
+  const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
+    auto iter = type_dict.find(grouped_types);
+    assert(iter != type_dict.end());
+    return iter->second.counts;
+  }
 };
+
 
 class GeometryTypeScanner {
  public:

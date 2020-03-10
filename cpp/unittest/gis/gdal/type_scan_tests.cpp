@@ -43,7 +43,7 @@ TEST(type_scan, single_type_scan) {
   ASSERT_EQ(type_masks->is_unique_type, false);
 
   for (auto type : scanner.types()) {
-    auto& mask = type_masks->type_masks[type];
+    auto& mask = type_masks->get_masks(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
     for (int i = 0; i < mask.size(); i++) {
       if (i >= range.first && i < range.second) {
@@ -52,12 +52,12 @@ TEST(type_scan, single_type_scan) {
         ASSERT_EQ(mask[i], false);
       }
     }
-    auto count = type_masks->type_mask_counts[type];
+    auto count = type_masks->get_counts(type);
     ASSERT_EQ(count, range.second - range.first);
   }
   {
     GroupedWkbTypes type = {WkbTypes::kUnknown};
-    auto& mask = type_masks->type_masks[type];
+    auto& mask = type_masks->get_masks(type);
     for (int i = 0; i < mask.size(); i++) {
       ASSERT_EQ(mask[i], false);
     }
@@ -78,7 +78,7 @@ TEST(type_scan, unknown_type) {
   auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
   auto range1 = cases.GetCaseIndexRange(WkbTypes::kPolygon);
   auto range2 = cases.GetCaseIndexRange(WkbTypes::kMultiLineString);
-  auto& mask = type_masks->type_masks[type];
+  auto& mask = type_masks->get_masks(type);
   for (int i = 0; i < mask.size(); i++) {
     if ((i >= range0.first && i < range0.second) ||
         (i >= range1.first && i < range1.second) ||
@@ -116,7 +116,7 @@ TEST(type_scan, unique_type) {
     GroupedWkbTypes type = {WkbTypes::kLineString};
     ASSERT_EQ(type_masks->is_unique_type, true);
     ASSERT_EQ(type_masks->unique_type, type);
-    ASSERT_EQ(type_masks->type_masks.size(), 0);
+    ASSERT_EQ(type_masks->type_dict.size(), 0);
   }
 }
 
@@ -132,7 +132,7 @@ TEST(type_scan, grouped_type) {
   ASSERT_EQ(type_masks->is_unique_type, false);
 
   {
-    auto& mask = type_masks->type_masks[type1];
+    auto& mask = type_masks->get_masks(type1);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kLineString);
     for (int i = 0; i < mask.size(); i++) {
@@ -145,7 +145,7 @@ TEST(type_scan, grouped_type) {
     }
   }
   {
-    auto& mask = type_masks->type_masks[type2];
+    auto& mask = type_masks->get_masks(type2);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPolygon);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kMultiPoint);
     for (int i = 0; i < mask.size(); i++) {
