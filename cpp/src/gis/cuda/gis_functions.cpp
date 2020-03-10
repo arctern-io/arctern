@@ -71,7 +71,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& wkt) 
   auto input_wkb = gdal::WktToWkb(wkt);
   auto input_geo_vec = ArrowWkbToGeometryVector(input_wkb);
 
-  auto raw_area = std::make_unique<double>(len);
+  auto raw_area = std::make_unique<double[]>(len);
   ST_Area(input_geo_vec, raw_area.get());
 
   arrow::DoubleBuilder builder;
@@ -87,7 +87,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& wkt
   auto input_wkb = gdal::WktToWkb(wkt);
   auto input_geo_vector = ArrowWkbToGeometryVector(input_wkb);
 
-  auto raw_length = std::make_unique<double>(len);
+  auto raw_length = std::make_unique<double[]>(len);
   ST_Length(input_geo_vector, raw_length.get());
 
   arrow::DoubleBuilder builder;
@@ -126,7 +126,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& lhs
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_wkb);
 
 //  auto raw_within = std::make_unique<>(len);
-  auto raw_within = std::make_unique<bool>(len);
+  auto raw_within = std::make_unique<bool[]>(len);
   ST_Within(lhs_geo_vec, rhs_geo_vec, raw_within.get());
 
   arrow::BooleanBuilder builder;
