@@ -121,8 +121,8 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
 
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);
-  auto wkb_len = meta_size * sizeof(int) + value_size * sizeof(double) + sizeof(WkbTag) +
-                 sizeof(WkbByteOrder);
+  auto wkb_len =
+      meta_size * sizeof(int) + value_size * sizeof(double) + decoder.skip_write;
   assert(wkb_len == input.get_wkb_ptr(index + 1) - input.get_wkb_ptr(index));
   return OutputInfo{tag, meta_size, value_size};
 }
