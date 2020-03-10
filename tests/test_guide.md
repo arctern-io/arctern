@@ -31,5 +31,6 @@
 
    比如：run_test_st_area=test_area=st_area=st_area，其中run_test_st_area是arctern测试中测试函数的名称；test_area则是测试过程中临时创建的table的名称；test_area既是sql文件的名称，也是sql执行结果的文件名，分别存放在./expected/sqls和./expected/results中  
 3，在./data中为arctern测试增加数据，目前支持的数据格式为csv
-4，将你的测试函数和数据转换成postgis可以识别的sql语句，并存放在./expected/sqls中，参考https://github.com/liangliu/arctern/blob/conda/tests/expected/sqls/st_crosses.sql  
-5，在postgis中执行上述sql，结果已经生成在./expected/results中，去除结果中的前面2行以及最后的1-2行，确保结果文件中只有测试的结果
+4，将你的测试函数和数据转换成postgis可以识别的sql语句，并存放在./expected/sqls中，参考https://github.com/liangliu/arctern/blob/conda/tests/expected/sqls/st_crosses.sql
+5，在postgis中执行上述sql时，请用当前测试目录的绝对路径替换上述sql文件中的`@path@`
+6，在postgis中执行上述sql，结果已经生成在./expected/results中，去除结果中的前面2行以及最后的1-2行，确保结果文件中只有测试的结果
