@@ -1,12 +1,3 @@
-#include(ConfigureArrow)
-#include(ConfigureSqlite3)
-#include(ConfigureProj)
-#include(ConfigureGoogleTest)
-#include(ConfigureStb)
-#include(ConfigureMiniz)
-#include(ConfigureGdal)
-#include(ConfigureRapidJson)
-
 set(ARCTERN_THIRDPARTY_DEPENDENCIES
 
 	miniz
@@ -150,13 +141,13 @@ endif ()
 macro(build_miniz)
     message(STATUS "Building miniz-${MINIZ_VERSION} from source")
     set(MINIZ_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/miniz_ep-prefix/src/miniz_ep")
-    set(MINIZ_INCLUDE_DIR "${MINIZ_PREFIX}/include")
+    set(MINIZ_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty/include")
     set(MINIZ_SHARED_LIB
-	    "${MINIZ_PREFIX}/lib/libminiz${CMAKE_SHARED_LIBRARY_SUFFIX}")
-
+	    "${CMAKE_BINARY_DIR}/thirdparty/lib/libminiz${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    
     set(MINIZ_CMAKE_ARGS
-#            ${EP_COMMON_CMAKE_ARGS}
-            "-DCMAKE_INSTALL_PREFIX=${MINIZ_PREFIX}"
+#           ${EP_COMMON_CMAKE_ARGS}
+             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/thirdparty"
 	    "-DBUILD_SHARED_LIBS=ON"
 #	    "-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0"
             "-DCMAKE_BUILD_TYPE=Release")
@@ -165,7 +156,7 @@ macro(build_miniz)
             URL
             ${MINIZ_SOURCE_URL}
             BUILD_COMMAND
-            ${MAKE}
+            ${MAKE} install
             ${MAKE_BUILD_ARGS}
             BUILD_BYPRODUCTS
 	    "${MINIZ_SHARED_LIB}"
@@ -197,7 +188,7 @@ macro(build_stb)
 
     set(STB_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/stb_ep-prefix")
     set(STB_TAR_NAME "${STB_PREFIX}/stb-${STB_VERSION}.tar.gz")
-    set(STB_INCLUDE_DIR "${STB_PREFIX}/stb-${STB_VERSION}/include/stb")
+    set(STB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty/include/stb")
 
     if (NOT EXISTS ${STB_INCLUDE_DIR})
         file(MAKE_DIRECTORY ${STB_PREFIX})
@@ -211,5 +202,5 @@ endmacro()
 
 if (ARCTERN_WITH_STB)
     resolve_dependency(stb)
-    include_directories(SYSTEM "${STB_PREFIX}/stb-${STB_VERSION}/include")
+    include_directories(SYSTEM "${CMAKE_BINARY_DIR}/thirdparty/include")
 endif ()
