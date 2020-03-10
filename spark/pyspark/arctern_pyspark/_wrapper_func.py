@@ -48,6 +48,7 @@ __all__ = [
     "ST_LineStringFromText_UDF",
     "ST_GeomFromText_UDF",
     "ST_GeomFromWKT_UDF",
+    "ST_AsText_UDF",
     "my_plot" # or point_map
 ]
 
@@ -85,6 +86,10 @@ def ST_GeomFromWKT_UDF(geo):
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_GeomFromText_UDF(geo):
+    return geo
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def ST_AsText_UDF(geo):
     return geo
 
 @pandas_udf("string", PandasUDFType.SCALAR)

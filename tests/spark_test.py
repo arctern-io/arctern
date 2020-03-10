@@ -623,6 +623,7 @@ if __name__ == "__main__":
     # confs = get_test_config('test.csv')
     # for c in confs:
     #     run_test(spark_session, c)
+
     run_test_st_geomfromgeojson(spark_session)
     run_test_st_geomfromgeojson2(spark_session)
     run_test_st_curvetoline(spark_session)
