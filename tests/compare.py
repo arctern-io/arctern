@@ -152,10 +152,15 @@ def compare_results(arctern_results, postgis_results):
 
     with open(arctern_results, 'r') as f:
         arctern = f.readlines()
-    # print(arctern)
+        for num, v in enumerate(f, 1):
+            print(num)
 
     arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
     # print(arc)
+    
+
+
+    exit(0)
 
     with open(postgis_results, 'r') as f:
         postgis = f.readlines()
@@ -237,7 +242,7 @@ def update_json():
 
 if __name__ == '__main__':
     
-    # r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # print(r)
