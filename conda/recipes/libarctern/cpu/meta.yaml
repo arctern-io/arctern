@@ -38,11 +38,11 @@ test:
 
     # shared
     - test -f $PREFIX/lib/libminiz.so            # [linux]
-    - test -f $PREFIX/lib/libwindrose.so         # [linux]
+    - test -f $PREFIX/lib/libarctern.so         # [linux]
     
     # absence of static libraries
     - test ! -f $PREFIX/lib/libminiz.a           # [unix]
-    - test ! -f $PREFIX/lib/libwindrose.a        # [unix]
+    - test ! -f $PREFIX/lib/libarctern.a        # [unix]
 
     # conda tools
 
