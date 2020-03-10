@@ -6,7 +6,7 @@ services:
     volumes:
       - ../..:/arctern
     command: &spark-test
-      ["/arctern/ci/scripts/run_spark_regression.sh", "--master spark://spark-master:7077", "--conda_env=arctern", "/arctern/tests/spark_test.py"]
+      ["/arctern/ci/scripts/run_spark_regression.sh", "--master", "spark://spark-master:7077", "--conda_env=arctern", "/arctern/tests/spark_test.py"]
 networks:
   default:
     external:
