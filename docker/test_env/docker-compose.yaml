@@ -7,6 +7,14 @@ services:
       - ../..:/arctern
     command: &spark-test
       ["/arctern/ci/scripts/run_spark_regression.sh", "--master", "spark://spark-master:7077", "--conda_env=arctern", "/arctern/tests/spark_test.py"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 200M
 networks:
   default:
     external:

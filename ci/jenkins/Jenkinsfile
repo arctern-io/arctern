@@ -109,7 +109,7 @@ pipeline {
                         }
 
                         environment {
-                            ARTFACTORY_URL = "${env.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
+                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
                         }
 
                         stages {

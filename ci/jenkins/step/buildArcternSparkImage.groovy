@@ -1,7 +1,7 @@
 timeout(time: 15, unit: 'MINUTES') {
     dir ("docker/spark/${BINARY_VERSION}") {
         def channelPackage = "conda-bld.tar.gz"
-        def downloadStatus = sh(returnStatus: true, script: "curl -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
+        def downloadStatus = sh(returnStatus: true, script: "curl -C - -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
 
         if (downloadStatus != 0) {
             error("\" Download \" ${ARTFACTORY_URL}/${channelPackage} \" failed!")
