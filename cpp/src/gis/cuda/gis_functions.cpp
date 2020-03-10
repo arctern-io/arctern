@@ -125,7 +125,6 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& lhs
   auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_wkb);
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_wkb);
 
-//  auto raw_within = std::make_unique<>(len);
   auto raw_within = std::make_unique<bool[]>(len);
   ST_Within(lhs_geo_vec, rhs_geo_vec, raw_within.get());
 
