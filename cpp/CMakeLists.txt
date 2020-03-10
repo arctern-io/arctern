@@ -107,7 +107,7 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
-message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
+#message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
 # EnARCTERNhat a default make is set
@@ -131,15 +131,17 @@ message(STATUS "conda_prefix = " ${CONDA_PREFIX})
 include_directories(${CONDA_PREFIX}/include)
 link_directories(${CONDA_PREFIX}/lib)
 
-config_summary()
-add_subdirectory(src)
-
 if (BUILD_UNITTEST STREQUAL "ON")
     if (BUILD_COVERAGE STREQUAL "ON")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     endif ()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/unittest)
 endif ()
+
+config_summary()
+add_subdirectory(src)
+
+message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 
 find_package(Python COMPONENTS Interpreter Development)
 find_package(ClangTools)
