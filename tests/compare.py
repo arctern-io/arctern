@@ -152,15 +152,11 @@ def compare_results(arctern_results, postgis_results):
 
     with open(arctern_results, 'r') as f:
         arctern = f.readlines()
-        for num, v in enumerate(f, 1):
-            print(num)
+        # for num, v in enumerate(f, 1):
+        #     print(num)
 
     arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
     # print(arc)
-    
-
-
-    exit(0)
 
     with open(postgis_results, 'r') as f:
         postgis = f.readlines()
