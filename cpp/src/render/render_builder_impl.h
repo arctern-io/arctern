@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
@@ -63,4 +63,4 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_w
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

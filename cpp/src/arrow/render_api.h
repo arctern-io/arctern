@@ -20,7 +20,7 @@
 
 #include "arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
@@ -37,4 +37,4 @@ std::shared_ptr<arrow::Array> choropleth_map(
     const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf);
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

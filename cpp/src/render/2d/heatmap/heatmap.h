@@ -18,7 +18,7 @@
 #include "render/2d/general_2d.h"
 #include "render/2d/heatmap/set_color.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 template <typename T>
@@ -55,4 +55,4 @@ class HeatMap : public General2D {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

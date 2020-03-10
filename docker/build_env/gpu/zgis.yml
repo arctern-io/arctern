@@ -7,4 +7,3 @@ dependencies:
 - conda-forge::Cython
 - conda-forge::pytest
 - conda-forge::pylint
-- cctbx::mesa

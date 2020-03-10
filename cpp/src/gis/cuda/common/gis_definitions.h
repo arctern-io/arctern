@@ -21,18 +21,27 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string>
 #include <tuple>
 #include <vector>
-using std::vector;
+
+#include "gis/cuda/mock/arrow/api.h"
 template <typename T>
-using GpuVector = vector<T>;  // TODO: use gpu vector, now just placeholder
+using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
 
 #include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/wkb/wkb_tag.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
+// namespace arrow {
+// class Array {
+// public:
+//  int length() { return 0; }
+//  int null_count() { return 0; }
+//};
+//}  // namespace arrow
 
 //// Not used yet, comment later
 // struct GeoWorkspace {
@@ -93,53 +102,17 @@ class GeometryVector {
   // raw pointers holding device memory for calculation
   // use struct to simplify data transfer in CUDA
   // fields are explained below (at class variable members declarations)
-  struct GpuContext {
-    WkbTag* tags = nullptr;
-    uint32_t* metas = nullptr;
-    double* values = nullptr;
-    int* meta_offsets = nullptr;
-    int* value_offsets = nullptr;
-    int size = 0;
-    DataState data_state = DataState::Invalid;
-
-    DEVICE_RUNNABLE WkbTag get_tag(int index) const { return tags[index]; }
-
-    // const pointer to start location to the index-th element
-    // should be used when offsets are valid
-    DEVICE_RUNNABLE const uint32_t* get_meta_ptr(int index) const {
-      auto offset = meta_offsets[index];
-      return metas + offset;
-    }
-    DEVICE_RUNNABLE const double* get_value_ptr(int index) const {
-      auto offset = value_offsets[index];
-      return values + offset;
-    }
-
-    // nonconst pointer to start location of the index-th element
-    // should be used when offsets are valid
-    DEVICE_RUNNABLE uint32_t* get_meta_ptr(int index) {
-      auto offset = meta_offsets[index];
-      return metas + offset;
-    }
-    DEVICE_RUNNABLE double* get_value_ptr(int index) {
-      auto offset = value_offsets[index];
-      return values + offset;
-    }
-  };
+  struct GpuContext;
+  struct ConstGpuContext;
 
  public:
   static void GpuContextDeleter(GpuContext*);
-  using GpuContextHolder =
-      std::unique_ptr<GpuContext, DeleterWrapper<GpuContext, GpuContextDeleter>>;
+  static void GpuContextDeleter(ConstGpuContext*);
+  using GpuContextHolder = UniquePtrWithDeleter<GpuContext, GpuContextDeleter>;
+  using ConstGpuContextHolder = UniquePtrWithDeleter<ConstGpuContext, GpuContextDeleter>;
 
-  GpuContextHolder CreateReadGpuContext() const;  // TODO
+  ConstGpuContextHolder CreateReadGpuContext() const;  // TODO
   GeometryVector() = default;
-  GpuVector<char> EncodeToWkb() const;  // TODO
-
-  void WkbDecodeInitalize();
-  // append single element
-  void WkbDecodeAppend(const char* bin);
-  void WkbDecodeFinalize();
 
   // STEP 1: Initialize vector with size of elements
   void OutputInitialize(int size);
@@ -156,7 +129,7 @@ class GeometryVector {
   // STEP 5: Fill data(metas and values) to gpu_ctx using CUDA Kernels
 
   // STEP 6: Copy data(metas and values) back to GeometryVector
-  void OutputFinalizeWith(const GpuContext&);
+  void OutputFinalizeWith(GpuContext&);
   // NOTE: see functor/st_point.cu for a detailed example
 
   void clear();
@@ -168,6 +141,7 @@ class GeometryVector {
   }
 
  private:
+  // TODO(dog): Use Arrow Format internally
   // Currently, GpuVector contains host memory only
   // next goal should make it switchable between host and device memory.
   GpuVector<WkbTag> tags_;
@@ -184,9 +158,11 @@ class GeometryVector {
   // shouldn't be used to drive the state machine(e.g. switch statement)
   DataState data_state_ = DataState::Invalid;
 };
-
 using GpuContext = GeometryVector::GpuContext;
+using ConstGpuContext = GeometryVector::ConstGpuContext;
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
+
+#include "gis/cuda/common/gis_definitions.impl.h"

@@ -11,7 +11,7 @@ cpp/src/common/version.h
 .vscode/
 cpp/cmake-build-debug/
 cpp/cmake-build-debug/*
-python/zilliz_gis/cython/*.cpp
+python/arctern_gis/cython/*.cpp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -96,6 +96,10 @@ target/
 profile_default/
 ipython_config.py
 
+# Conda
+.conda/
+.condarc
+
 # pyenv
 .python-version
 
@@ -117,7 +121,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -144,3 +147,8 @@ dmypy.json
 .pyre/
 
 spark-warehouse/
+
+# tests
+tests/results
+tests/rundocker.sh
+tests/runlocal.sh

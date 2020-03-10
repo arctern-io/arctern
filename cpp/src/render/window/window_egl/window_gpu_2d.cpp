@@ -15,7 +15,7 @@
  */
 #include "render/window/window_egl/window_gpu_2d.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 void WindowGPU2D::Init() {
@@ -87,4 +87,4 @@ void WindowGPU2D::Terminate() {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

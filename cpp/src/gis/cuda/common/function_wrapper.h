@@ -17,7 +17,7 @@
 
 #pragma once
 #include <memory>
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -30,6 +30,9 @@ struct DeleterWrapper {
   }
 };
 
+template <typename T, void (*fn)(T*)>
+using UniquePtrWithDeleter = std::unique_ptr<T, DeleterWrapper<T, fn>>;
+
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -10,13 +10,11 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-GIS_PATH="/var/lib/gis"
-
 while getopts "i:e:h" arg
 do
         case $arg in
              i)
-                GIS_PATH=$OPTARG   # GIS PATH
+                ARCTERN_INSTALL_PREFIX=$OPTARG   # ARCTERN PATH
                 ;;
              e)
                 CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
@@ -25,12 +23,12 @@ do
                 echo "
 
 parameter:
--i: GIS path
+-i: Arctern path
 -e: set conda activate environment
 -h: help
 
 usage:
-./run_unittest.sh -i \${GIS_PATH} -e \${CONDA_ENV} [-h]
+./run_unittest.sh -i \${ARCTERN_INSTALL_PREFIX} -e \${CONDA_ENV} [-h]
                 "
                 exit 0
                 ;;
@@ -44,23 +42,30 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
-    if [[ -n ${CONDA_PREFIX} ]]; then
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
-    fi
 fi
 
-GIS_UNITTEST_DIR=${GIS_PATH}/unittest
+# Set defaults for vars that may not have been defined externally
+#  FIXME: if ARCTERN_INSTALL_PREFIX is not set, check PREFIX, then check
+#         CONDA_PREFIX, but there is no fallback from there!
+ARCTERN_INSTALL_PREFIX=${ARCTERN_INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
+ARCTERN_ENV_FILE=${ARCTERN_INSTALL_PREFIX}/scripts/arctern_env.sh
 
-if [[ ! -d ${GIS_UNITTEST_DIR} ]]; then
-    echo "\"${GIS_UNITTEST_DIR}\" directory does not exist !"
+if [[ -f ${ARCTERN_ENV_FILE} ]];then
+    source ${ARCTERN_ENV_FILE}
+fi
+
+ARCTERN_UNITTEST_DIR=${ARCTERN_INSTALL_PREFIX}/unittest
+
+if [[ ! -d ${ARCTERN_UNITTEST_DIR} ]]; then
+    echo "\"${ARCTERN_UNITTEST_DIR}\" directory does not exist !"
     exit 1
 fi
 
-for test in `ls ${GIS_UNITTEST_DIR}`; do
+for test in `ls ${ARCTERN_UNITTEST_DIR}`; do
     echo "run $test unittest"
-    ${GIS_UNITTEST_DIR}/${test}
+    ${ARCTERN_UNITTEST_DIR}/${test}
     if [ $? -ne 0 ]; then
-        echo "${GIS_UNITTEST_DIR}/${test} run failed !"
+        echo "${ARCTERN_UNITTEST_DIR}/${test} run failed !"
         exit 1
     fi
 done

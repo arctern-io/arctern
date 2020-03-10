@@ -18,7 +18,7 @@
 
 #include "render/utils/color/color.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 ColorParser::ColorParser(const std::string& css_color_string) {
@@ -45,4 +45,4 @@ void ColorParser::ParseHEX() {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

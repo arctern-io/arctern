@@ -24,7 +24,7 @@
 #define T int
 #endif
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 TEMPLATE_GEN_PREFIX template void set_colors_gpu<T>(float *colors,
@@ -34,7 +34,7 @@ TEMPLATE_GEN_PREFIX template void set_colors_gpu<T>(float *colors,
                                                  int64_t num,
                                                  VegaHeatMap &vega_heat_map);
 } //render
-} // namespace zilliz
+} // namespace arctern
 
 #undef T
 //#undef TEMPLATE_GEN_PREFIX

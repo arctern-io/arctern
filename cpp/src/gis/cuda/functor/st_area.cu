@@ -22,12 +22,12 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_area.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
 namespace {
-inline DEVICE_RUNNABLE double PolygonArea(const GpuContext& ctx, int index) {
+inline DEVICE_RUNNABLE double PolygonArea(ConstGpuContext& ctx, int index) {
   auto meta = ctx.get_meta_ptr(index);
   auto value = ctx.get_value_ptr(index);
   assert(meta[0] == 1);
@@ -42,20 +42,21 @@ inline DEVICE_RUNNABLE double PolygonArea(const GpuContext& ctx, int index) {
   return fabs(sum_area / 2);
 }
 
-__global__ void ST_AreaKernel(GpuContext ctx, double* result) {
+__global__ void ST_AreaKernel(ConstGpuContext ctx, double* result) {
   auto tid = threadIdx.x + blockIdx.x * blockDim.x;
   if (tid < ctx.size) {
     auto tag = ctx.get_tag(tid);
     // handle 2d case only for now
-    assert(tag.get_group() == WkbGroup::None);
+    assert(tag.get_space_type() == WkbSpaceType::XY);
     switch (tag.get_category()) {
       // handle polygon case only
-      case WkbCategory::Polygon: {
+      case WkbCategory::kPolygon: {
         result[tid] = PolygonArea(ctx, tid);
         break;
       }
       default: {
-        assert(false);
+        result[tid] = 0;
+        break;
       }
     }
   }
@@ -72,4 +73,4 @@ void ST_Area(const GeometryVector& vec, double* host_results) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
