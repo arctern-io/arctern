@@ -87,6 +87,10 @@ EPOCH = 1e-8
 def compare_geometry(x, y):
     arct = wkt.loads(x)
     pgis = wkt.loads(y)
+
+    if x.upper().endswith('EMPTY') and y.upper().endswith('EMPTY'):
+        return True
+        
     result = arct.equals_exact(pgis, EPOCH)
 
     # if not result:
@@ -111,7 +115,7 @@ def compare_float(x, y):
     if (x - y) <= EPOCH:
         return True
     else:
-        print(x, y)
+        # print(x, y)
         return False
 
 def compare_one(result, expect):
