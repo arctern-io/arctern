@@ -62,9 +62,9 @@ Arctern项目将与Sulidae项目同步开源。Sulidae项目是ZILLIZ团队研�
 
 Arctern 0.1.0版本将提供与Sulidae的适配，以下是热力图与轮廓图的可视化效果，交互数据规模一千万条：
 
-<img src="./doc/img/v0.1.0_intro/heat_map.png" width = "700" align=left>
+<img src="./doc/img/v0.1.0_intro/heat_map.png" width = "700" align=left\>
 
-<img src="./doc/img/v0.1.0_intro/contour_map.png" width = "700" align=left>
+<img src="./doc/img/v0.1.0_intro/contour_map.png" width = "700" align=left\>
 
 
 
