@@ -69,6 +69,7 @@ def collect_results(file_path, results_dir):
         #     print(x)
 
     base_dir = '/tmp/results'
+    os.makedirs(base_dir)
     for x, y in zip(table_names, names):
         print(x, y)
         target = os.path.join(base_dir, x, '*.json')
