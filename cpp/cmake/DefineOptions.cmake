@@ -65,26 +65,10 @@ define_option(ARCTERN_WITH_STB "Build with stb library" ON)
 set_option_category("Test and benchmark")
 
 define_option(BUILD_UNITTEST "Build the googletest unit tests" OFF)
-#unset(BUILD_UNITTEST CACHE)
-#
-#if (BUILD_UNITTEST)
-#	define_option(BUILD_UNITTEST "Build the googletest unit tests" ON)
-#else ()
-#	define_ption(BUILD_UNITTEST "Build the googletest unit tests" OFF)
-#endif (BUILD_UNITTEST)
-
 #----------------------------------------------------------------------
 set_option_category("Build with code coverage")
 
 define_option(BUILD_COVERAGE "Build with code coverage" OFF)
-#unset(BUILD_UNITTEST CACHE)
-#
-#if (BUILD_UNITTEST)
-#	define_option(BUILD_UNITTEST "Build the googletest unit tests" ON)
-#else ()
-#	define_ption(BUILD_UNITTEST "Build the googletest unit tests" OFF)
-#endif (BUILD_UNITTEST)
-
 #----------------------------------------------------------------------
 macro(config_summary)
     message(STATUS "---------------------------------------------------------------------")
