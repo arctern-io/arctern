@@ -54,7 +54,8 @@ def split_data(file_path):
             normal_arr.insert(0, 'left|right\n')
         else:
             normal_arr.insert(0, 'geos\n')
-        to_disk(os.path.join(basedir, file_name + '_normal' + file_ext), normal_arr)
+        # to_disk(os.path.join(basedir, file_name + '_normal' + file_ext), normal_arr)
+        to_disk(os.path.join(basedir, basename), normal_arr)
 
     if len(ilnormail_arr) > 0:
         if '|' in ilnormail_arr[0]:
