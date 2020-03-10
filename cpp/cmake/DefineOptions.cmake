@@ -61,14 +61,16 @@ define_option(BUILD_WITH_GPU "Build GPU version" OFF)
 #----------------------------------------------------------------------
 set_option_category("Thirdparty")
 
-set(ARCTERN_DEPENDENCY_SOURCE_DEFAULT "BUNDLED")
+#set(ARCTERN_DEPENDENCY_SOURCE_DEFAULT "BUNDLED")
+add_definitions(-DARCTERN_DEPENDENCY_SOURCE)
+set(ARCTERN_DEPENDENCY_SOURCE "BUNDLED")
 
-define_option_string(ARCTERN_DEPENDENCY_SOURCE
-        "Method to use for acquiring arctern's build dependencies"
-        "${ARCTERN_DEPENDENCY_SOURCE_DEFAULT}"
-        "AUTO"
-        "BUNDLED"
-        "SYSTEM")
+#define_option_string(ARCTERN_DEPENDENCY_SOURCE
+#        "Method to use for acquiring arctern's build dependencies"
+#        "${ARCTERN_DEPENDENCY_SOURCE_DEFAULT}"
+#        "AUTO"
+#        "BUNDLED"
+#        "SYSTEM")
 
 define_option(ARCTERN_WITH_MINIZ "Build with miniz library" ON)
 
