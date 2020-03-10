@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     within_df = spark.read.json('./example.json').cache()
     within_df.createOrReplaceTempView("within")
-    spark.sql("select ST_Within_UDF(geo0, geo1) from within").show()
+    spark.sql("select ST_Within(geo0, geo1) from within").show()
     spark.stop()
 ```
 
