@@ -26,6 +26,7 @@
 
 #include "gis/wkb_types.h"
 #include "utils/check_status.h"
+#include "utils/function_wrapper.h"
 
 namespace arctern {
 namespace gis {
@@ -68,11 +69,13 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // fill type masks
   for (int i = 0; i < len; i++) {
-    OGRGeometry* geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, &geo));
-    auto type = OGR_G_GetGeometryType((void*)geo);
-    OGRGeometryFactory::destroyGeometry(geo);
+    auto geo = [i, &wkt_geometries] {
+      OGRGeometry* geo_;
+      auto str = wkt_geometries->GetString(i);
+      CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
+      return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
+    }();
+    auto type = OGR_G_GetGeometryType(geo.get());
     auto idx = type_to_idx[type];
     type_masks[idx][i] = true;
     mask_counts[idx]++;
