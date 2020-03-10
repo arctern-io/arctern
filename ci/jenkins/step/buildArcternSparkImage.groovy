@@ -1,7 +1,7 @@
 timeout(time: 15, unit: 'MINUTES') {
     dir ("docker/spark/${BINARY_VERSION}") {
-    	def channelPackage = "conda-bld.tar.gz"
-    	def downloadStatus = sh(returnStatus: true, script: "curl -C - -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
+        def channelPackage = "conda-bld.tar.gz"
+        def downloadStatus = sh(returnStatus: true, script: "curl -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
 
         if (downloadStatus != 0) {
             error("\" Download \" ${ARTFACTORY_URL}/${channelPackage} \" failed!")
@@ -12,12 +12,12 @@ timeout(time: 15, unit: 'MINUTES') {
         def imageName = "${IMAGE_REPOSITORY}:${IMAGE_TAG}"
 
         if ("${BINARY_VERSION}" == "gpu") {
-        	imageName = "${IMAGE_REPOSITORY}-${BINARY_VERSION}:${IMAGE_TAG}"
+            imageName = "${IMAGE_REPOSITORY}-${BINARY_VERSION}:${IMAGE_TAG}"
         }
 
         try {
-        	deleteImages("${imageName}", true)
-        	def customImage = docker.build("${imageName}")
+            deleteImages("${imageName}", true)
+            def customImage = docker.build("${imageName}")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()
