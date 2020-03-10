@@ -67,8 +67,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   int last_idx = -1;
 
   // fill type masks
-  OGRGeometry* geo;
   for (int i = 0; i < len; i++) {
+    OGRGeometry* geo;
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
                                                  nullptr, &geo));
     auto type = OGR_G_GetGeometryType((void*)geo);
@@ -91,7 +91,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     if (type_masks[num_scan_classes].front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
-      ret->dict_[ret->unique_type].counts = len;
+      ret->dict_[ret->unique_type].mask_counts = len;
       return ret;
     } else {
       num_scan_classes++;
@@ -99,7 +99,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
         if (type_masks[num_scan_classes].front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
-          ret->dict_[grouped_type].counts = len;
+          ret->dict_[grouped_type].mask_counts = len;
           return ret;
         }
       }
@@ -111,7 +111,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
     for (auto& grouped_type : types()) {
       ret->dict_[grouped_type].masks = std::move(type_masks[num_scan_classes]);
-      ret->dict_[grouped_type].counts = mask_counts[num_scan_classes];
+      ret->dict_[grouped_type].mask_counts = mask_counts[num_scan_classes];
       num_scan_classes++;
     }
   }
