@@ -72,5 +72,5 @@ TEST(TWOD_TEST, CHOROPLETH_MAP_TEST) {
       "  ]\n"
       "}";
 
-  zilliz::render::choropleth_map(string_array, color_array, vega);
+  arctern::render::choropleth_map(string_array, color_array, vega);
 }

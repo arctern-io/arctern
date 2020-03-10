@@ -17,7 +17,7 @@
 
 #include <memory>
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class WindowParams {
@@ -47,4 +47,4 @@ class WindowParams {
 using WindowParamsPtr = std::shared_ptr<WindowParams>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

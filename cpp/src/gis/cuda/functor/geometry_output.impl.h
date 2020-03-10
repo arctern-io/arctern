@@ -22,7 +22,7 @@
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/geometry_output.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -93,4 +93,4 @@ void GeometryOutput(Functor functor, int size, GeometryVector& results) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

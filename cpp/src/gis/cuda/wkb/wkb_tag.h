@@ -20,7 +20,7 @@
 
 #include "gis/cuda/common/common.h"
 #include "gis/wkb_types.h"
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -41,4 +41,4 @@ struct WkbTag {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

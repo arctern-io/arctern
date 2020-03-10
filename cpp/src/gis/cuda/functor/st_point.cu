@@ -19,7 +19,7 @@
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_point.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -52,4 +52,4 @@ void ST_Point(const double* cpu_xs, const double* cpu_ys, int size,
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

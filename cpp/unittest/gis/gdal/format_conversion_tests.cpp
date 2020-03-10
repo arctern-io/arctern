@@ -29,9 +29,9 @@
 TEST(format_conversion, wkt_wkb) {
   XYSpaceWktCases cases;
   auto origin_wkt = cases.GetAllCases();
-  auto wkb = zilliz::gis::gdal::WktToWkb(origin_wkt);
+  auto wkb = arctern::gis::gdal::WktToWkb(origin_wkt);
   auto wkt =
-      std::static_pointer_cast<arrow::StringArray>(zilliz::gis::gdal::WkbToWkt(wkb));
+      std::static_pointer_cast<arrow::StringArray>(arctern::gis::gdal::WkbToWkt(wkb));
 
   ASSERT_EQ(origin_wkt->length(), wkb->length());
   ASSERT_EQ(origin_wkt->length(), wkt->length());

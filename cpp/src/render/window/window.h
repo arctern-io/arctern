@@ -19,7 +19,7 @@
 
 #include "render/window/window_params.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 enum class WindowType { kUnknown = 0, k2D };
@@ -45,4 +45,4 @@ class Window {
 using WindowPtr = std::shared_ptr<Window>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

@@ -32,7 +32,7 @@ using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
 #include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/wkb/wkb_tag.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 // namespace arrow {
@@ -163,6 +163,6 @@ using ConstGpuContext = GeometryVector::ConstGpuContext;
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
 
 #include "gis/cuda/common/gis_definitions.impl.h"

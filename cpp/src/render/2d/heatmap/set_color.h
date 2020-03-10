@@ -21,7 +21,7 @@
 #include "render/utils/color/color_gradient.h"
 #include "render/utils/vega/vega_heatmap/vega_heatmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 void HeatMapArray_cpu(float* in_count, float* out_count, float* kernel,
@@ -112,7 +112,7 @@ inline void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* i
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
 
 //#ifdef USE_GPU
 //

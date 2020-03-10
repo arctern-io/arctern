@@ -24,7 +24,7 @@
 #include "render/window/window_osmesa/window_cpu_2d.h"
 #endif
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class General2D {
@@ -95,4 +95,4 @@ class General2D {
 using General2DPtr = std::shared_ptr<General2D>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

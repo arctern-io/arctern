@@ -23,7 +23,7 @@
 #include "gis/cuda/functor/st_within.h"
 #include "gis/cuda/test_common/test_common.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 TEST(FunctorWithin, naive) {
@@ -56,4 +56,4 @@ TEST(FunctorWithin, naive) {
 }
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
