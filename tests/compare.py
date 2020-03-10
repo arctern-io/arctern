@@ -114,7 +114,9 @@ def compare_float(x, y):
         print(x, y)
         return False
 
-def compare_one(x, y):
+def compare_one(result, expect):
+    x = result[1]
+    y = expect[1]
 
     if y.strip() == 't':
         y = True
@@ -122,25 +124,40 @@ def compare_one(x, y):
         y = False
         
     if isinstance(x, bool):
-        # print(x, y)
-        return x == y
+        flag = (x == y)
+        if not flag:
+            print(result[0], x, expect[0], y)
+        return flag
 
     if isinstance(x, str):
         x = x.strip().upper()
         y = y.strip().upper()
         if is_geometry(x) and is_geometry(y):
-            return compare_geometry(x, y)
+            flag = compare_geometry(x, y)
+            if not flag:
+                print(result[0], x, expect[0], y)
+            return flag
+
         elif is_geometrycollection(x) and is_geometrycollection(y):
-            return compare_geometrycollection(x, y)
+            flag = compare_geometrycollection(x, y)
+            if not flag:
+                print(result[0], x, expect[0], y)
+            return flag
         else:
             if is_geometrytype(x) and is_geometrytype(y):
-                return x == y
+                flag = (x == y)
+                if not flag:
+                    print(result[0], x, expect[0], y)
+                return flag
             
-            # print(x, y)
+            print(result[0], x, expect[0], y)
             return False
     
     if isinstance(x, int) or isinstance(x, float):
-        return compare_float(x, y)
+        flag = compare_float(x, y)
+        if not flag:
+            print(result[0], x, expect[0], y)
+        return flag
 
 
 
@@ -151,25 +168,31 @@ def compare_one(x, y):
 def compare_results(arctern_results, postgis_results):
 
     with open(arctern_results, 'r') as f:
-        arctern = f.readlines()
-        # for num, v in enumerate(f, 1):
-        #     print(num)
+        # arctern = f.readlines()
+        arct_arr = []
+        for (num, value) in enumerate(f, 1):
+            if list(eval(value.strip()).values())[0] != '':
+                arct_arr.append((num, list(eval(value.strip()).values())[0]))
 
-    arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
+    # arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
     # print(arc)
 
     with open(postgis_results, 'r') as f:
-        postgis = f.readlines()
-    pgis = [x.strip() for x in postgis if len(x.strip()) > 0]
+        # postgis = f.readlines()
+        pgis_arr = []
+        for (num, value) in enumerate(f, 1):
+            if value.strip() != '':
+                pgis_arr.append((num, value.strip()))
+    # pgis = [x.strip() for x in postgis if len(x.strip()) > 0]
     # print(pgis)
     
     flag = True
 
-    if len(arc) != len(pgis):
-        print('test result size: %s and expected result size: %s, NOT equal, check the two result files' % (len(arc), len(pgis)))
+    if len(arct_arr) != len(pgis_arr):
+        print('test result size: %s and expected result size: %s, NOT equal, check the two result files' % (len(arct_arr), len(pgis_arr)))
         return False
 
-    for x, y in zip(arc, pgis):
+    for x, y in zip(arct_arr, pgis_arr):
         res = compare_one(x, y)
         flag = flag and res
 
@@ -239,9 +262,13 @@ def update_json():
 if __name__ == '__main__':
     
     # r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # print(r)
+
+    exit(0)
 
     update_json()
     compare_all()
