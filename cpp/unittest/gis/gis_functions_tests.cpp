@@ -2464,8 +2464,14 @@ TEST(geometry_test, test_ST_Area2) {
       "1 0 0, 0 0 0)), ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)), ((1 1 0, 1 1 1, 1 0 1, 1 0 "
       "0, 1 1 0)), ((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)), ((0 0 1, 1 0 1, 1 1 1, 0 1 1, "
       "0 0 1)) )";
-  auto p6 = "MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4),COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2,0 2)))";
-  auto p7 = "MULTICURVE ((5 5, 3 5, 3 3, 0 3), LINESTRING (0 0, 0.2 1, 0.5 1.4),COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2,0 2)))";
+  auto p6 =
+      "MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 "
+      "1.4),COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, "
+      "0.5 2,0 2)))";
+  auto p7 =
+      "MULTICURVE ((5 5, 3 5, 3 3, 0 3), LINESTRING (0 0, 0.2 1, 0.5 "
+      "1.4),COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, "
+      "0.5 2,0 2)))";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
