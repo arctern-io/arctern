@@ -56,6 +56,14 @@ def run_st_polygonfromtext(spark):
     rs = spark.sql("select ST_PolygonFromText_UDF(data) from data").collect()
     assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
 
+def run_st_astext(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    data_df = spark.createDataFrame(data=test_data,schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_AsText_UDF(ST_PolygonFromText_UDF(data)) from data").collect()
+    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+
 def run_st_precision_reduce(spark):
     test_data = []
     test_data.extend([('POINT (10.777 11.888)',)])
@@ -463,5 +471,6 @@ if __name__ == "__main__":
     run_st_linestringfromtext(spark_session)
     run_st_geomfromwkt(spark_session)
     run_st_geomfromtext(spark_session)
+    run_st_astext(spark_session)
 
     spark_session.stop()
