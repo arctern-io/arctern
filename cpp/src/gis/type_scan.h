@@ -32,11 +32,11 @@ struct GeometryTypeMasks {
   // This field contains masks for each geometry type.
   std::map<GroupedWkbTypes, std::vector<bool>> type_masks;
   // This field contains mask counts for each geometry type.
-  std::map<GroupedWkbTypes, int64_t> group_mask_counts;
+  std::map<GroupedWkbTypes, int64_t> type_mask_counts;
   // If the given geometries share identical type, this field will be set true.
-  bool is_unique_group;
-  // This field is valid only if 'is_unique_group' equals true.
-  GroupedWkbTypes unique_group;
+  bool is_unique_type;
+  // This field is valid only if 'is_unique_type' equals true.
+  GroupedWkbTypes unique_type;
 };
 
 class GeometryTypeScanner {

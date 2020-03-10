@@ -88,7 +88,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
                                      WkbTypes::kPolygon};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
+  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
     return cuda::ST_Envelope(geometries);
   } else {
     return gdal::ST_Envelope(geometries);
@@ -161,16 +161,16 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
   //    lhs_scanner.mutable_types().push_back(lhs_supported_types);
   //    auto lhs_type_masks = lhs_scanner.Scan();
-  //    lhs_ok = lhs_type_masks->is_unique_group &&
-  //             (lhs_type_masks->unique_group == lhs_supported_types);
+  //    lhs_ok = lhs_type_masks->is_unique_type &&
+  //             (lhs_type_masks->unique_type == lhs_supported_types);
   //  }
   //  {
   //    gdal::TypeScannerForWkt rhs_scanner(geometries_2);
   //    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
   //    rhs_scanner.mutable_types().push_back(rhs_supported_types);
   //    auto rhs_type_masks = rhs_scanner.Scan();
-  //    rhs_ok = rhs_type_masks->is_unique_group &&
-  //             (rhs_type_masks->unique_group == rhs_supported_types);
+  //    rhs_ok = rhs_type_masks->is_unique_type &&
+  //             (rhs_type_masks->unique_type == rhs_supported_types);
   //  }
 
   if (lhs_ok && rhs_ok) {
@@ -190,7 +190,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
   GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
+  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
     return cuda::ST_Area(geometries);
   } else {
     return gdal::ST_Area(geometries);
@@ -207,7 +207,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   GroupedWkbTypes supported_types = {WkbTypes::kLineString};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
+  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
     return cuda::ST_Length(geometries);
   } else {
     return gdal::ST_Length(geometries);
@@ -276,10 +276,10 @@ std::shared_ptr<arrow::Array> ST_Within(
   rhs_scanner.mutable_types().push_back(rhs_supported_types);
   auto rhs_type_masks = rhs_scanner.Scan();
 
-  if (lhs_type_masks->is_unique_group &&
-      (lhs_type_masks->unique_group == lhs_supported_types) &&
-      rhs_type_masks->is_unique_group &&
-      (rhs_type_masks->unique_group == rhs_supported_types)) {
+  if (lhs_type_masks->is_unique_type &&
+      (lhs_type_masks->unique_type == lhs_supported_types) &&
+      rhs_type_masks->is_unique_type &&
+      (rhs_type_masks->unique_type == rhs_supported_types)) {
     return cuda::ST_Within(geometries_1, geometries_2);
   } else {
     return gdal::ST_Within(geometries_1, geometries_2);
