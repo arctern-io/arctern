@@ -69,9 +69,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // fill type masks
   for (int i = 0; i < len; i++) {
-    auto geo = [i, &wkt_geometries] {
+    auto geo = [str = wkt_geometries->GetString(i)] {
       OGRGeometry* geo_;
-      auto str = wkt_geometries->GetString(i);
       CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
       return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
     }();
