@@ -142,9 +142,11 @@ pipeline {
 
                         stages {
                             stage('Build and Publish Docker Images') {
-                                container('docker-env') {
-                                    script {
-                                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                steps {
+                                    container('docker-env') {
+                                        script {
+                                            load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                        }
                                     }
                                 }
                             }
