@@ -51,6 +51,7 @@ conda activate zgis_dev
 if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
     conda config --add channels ${CONDA_CUSTOM_CHANNEL}
     conda config --set show_channel_urls yes
+    conda config --show channels
 fi
 
 conda install --yes --quiet conda-build anaconda-client -c conda-forge
