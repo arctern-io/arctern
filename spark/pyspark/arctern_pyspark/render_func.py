@@ -12,22 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import pandas_udf, PandasUDFType
-from zilliz_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from zilliz_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from zilliz_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 
 import pyarrow as pa
 import pandas as pd
-
-def save_png(hex_data, file_name):
-    import binascii
-    binary_string = binascii.unhexlify(str(hex_data))
-    with open(file_name, 'wb') as png:
-        png.write(binary_string)
-
 
 def render_point_map(df, vega):
     schema = StructType([StructField('buffer', StringType(), True)])
@@ -37,14 +26,14 @@ def render_point_map(df, vega):
             pdf = pdf.drop_duplicates()
             arr_x = pa.array(pdf.x, type='uint32')
             arr_y = pa.array(pdf.y, type='uint32')
-            from zilliz_gis import point_map
+            from arctern_gis import point_map
             res = point_map(arr_x, arr_y, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
             yield buf_df
 
     hex_data = df.mapInPandas(point_map_UDF).collect()[0][0]
-    save_png(hex_data, '/tmp/hex_point_map.png')
+    return hex_data
 
 
 def render_heat_map(df, vega):
@@ -68,7 +57,7 @@ def render_heat_map(df, vega):
             arr_x = pa.array(arrs.x, type='uint32')
             arr_y = pa.array(arrs.y, type='uint32')
             arr_c = pa.array(arrs.c, type='uint32')
-            from zilliz_gis import heat_map
+            from arctern_gis import heat_map
             res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
@@ -76,7 +65,7 @@ def render_heat_map(df, vega):
 
     render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = render_agg_df.mapInPandas(heat_map_UDF).collect()[0][0]
-    save_png(hex_data, '/tmp/hex_heat_map.png')
+    return hex_data
 
 
 def render_choropleth_map(df, vega):
@@ -98,7 +87,7 @@ def render_choropleth_map(df, vega):
             arrs.columns = ['wkt', 'c']
             arr_wkt = pa.array(arrs.wkt, type='string')
             arr_c = pa.array(arrs.c, type='uint32')
-            from zilliz_gis import choropleth_map
+            from arctern_gis import choropleth_map
             res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
@@ -106,4 +95,4 @@ def render_choropleth_map(df, vega):
 
     render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = render_agg_df.mapInPandas(choropleth_map_UDF).collect()[0][0]
-    save_png(hex_data, '/tmp/hex_choropleth_map.png')
+    return hex_data
