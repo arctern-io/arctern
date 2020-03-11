@@ -9,18 +9,11 @@ timeout(time: 20, unit: 'MINUTES') {
 
         sh "tar zxvf arctern/${channelPackage} -C ./arctern"
 
-        def changeTargetImageName = ""
-        if (CHANGE_TARGET) {
-            changeTargetImageName = "${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO}:${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-            sh "docker pull ${changeTargetImageName} || exit 0"
-        }
-
         def imageName = "${ARCTERN_REPO}:${ARCTERN_TAG}"
 
         try {
             deleteImages("${imageName}", true)
-            sh "docker build -t ${imageName} ."
-            def customImage = docker.image("${imageName}")
+            def customImage = docker.build("${imageName}")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()
@@ -30,9 +23,6 @@ timeout(time: 20, unit: 'MINUTES') {
         } finally {
             deleteImages("${imageName}", true)
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
-            if (CHANGE_TARGET) {
-                sh "docker rmi -f ${changeTargetImageName} || exit 0"
-            }
         }
     }
 }
