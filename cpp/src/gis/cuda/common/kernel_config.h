@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -56,4 +56,4 @@ inline void check_cuda_last_error() {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

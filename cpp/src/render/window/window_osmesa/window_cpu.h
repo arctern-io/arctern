@@ -20,7 +20,7 @@
 
 #include "render/window/window.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class WindowCPU : public Window {
@@ -39,4 +39,4 @@ class WindowCPU : public Window {
 using WindowCPUPtr = std::shared_ptr<WindowCPU>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

@@ -26,7 +26,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -36,12 +36,11 @@ TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geomet
 std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   auto len = geometries_->length();
 
-  if (types().empty() && grouped_types().empty()) {
+  if (types().empty()) {
     // organize return
     auto ret = std::make_shared<GeometryTypeMasks>();
-    ret->is_unique_type = true;
-    ret->is_unique_grouped_types = false;
-    ret->unique_type = WkbTypes::kUnknown;
+    ret->is_unique_group = true;
+    ret->unique_group = {WkbTypes::kUnknown};
     return ret;
   }
 
@@ -49,12 +48,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   std::vector<int> type_to_idx(int(WkbTypes::kMaxTypeNumber), 0);
   int num_scan_classes = 1;
 
-  for (auto& type : types()) {
-    type_to_idx[int(type)] = num_scan_classes;
-    num_scan_classes++;
-  }
-
-  for (auto& grouped_type : grouped_types()) {
+  for (auto& grouped_type : types()) {
     for (auto& type : grouped_type) {
       type_to_idx[int(type)] = num_scan_classes;
     }
@@ -67,11 +61,11 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     type_masks[i].resize(len, false);
   }
 
-  // fill type masks
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
   bool is_unique_type = true;
   int last_idx = -1;
 
+  // fill type masks
   OGRGeometry* geo;
   for (int i = 0; i < len; i++) {
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
@@ -89,48 +83,34 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // organize return
   auto ret = std::make_shared<GeometryTypeMasks>();
-  ret->is_unique_type = false;
-  ret->is_unique_grouped_types = false;
+  ret->is_unique_group = false;
 
   if (is_unique_type) {
     num_scan_classes = 0;
     if (type_masks[num_scan_classes].front() == true) {
-      ret->is_unique_type = true;
-      ret->unique_type = WkbTypes::kUnknown;
-      ret->type_mask_counts[WkbTypes::kUnknown] = len;
+      ret->is_unique_group = true;
+      ret->unique_group = {WkbTypes::kUnknown};
+      ret->group_mask_counts[ret->unique_group] = len;
       return ret;
     }
     num_scan_classes++;
-    for (auto& type : types()) {
+    for (auto& grouped_type : types()) {
       if (type_masks[num_scan_classes].front() == true) {
-        ret->is_unique_type = true;
-        ret->unique_type = type;
-        ret->type_mask_counts[type] = len;
-        return ret;
-      }
-      num_scan_classes++;
-    }
-    for (auto& grouped_type : grouped_types()) {
-      if (type_masks[num_scan_classes].front() == true) {
-        ret->is_unique_grouped_types = true;
-        ret->unique_grouped_types = grouped_type;
-        ret->grouped_type_mask_counts[grouped_type] = len;
+        ret->is_unique_group = true;
+        ret->unique_group = grouped_type;
+        ret->group_mask_counts[grouped_type] = len;
         return ret;
       }
     }
 
   } else {
     num_scan_classes = 0;
-    ret->type_masks[WkbTypes::kUnknown] = std::move(type_masks[num_scan_classes++]);
-    for (auto& type : types()) {
-      ret->type_masks[type] = std::move(type_masks[num_scan_classes]);
-      ret->type_mask_counts[type] = mask_counts[num_scan_classes];
-      num_scan_classes++;
-    }
+    GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
+    ret->type_masks[unknown_type] = std::move(type_masks[num_scan_classes++]);
 
-    for (auto& grouped_type : grouped_types()) {
-      ret->grouped_type_masks[grouped_type] = std::move(type_masks[num_scan_classes]);
-      ret->grouped_type_mask_counts[grouped_type] = mask_counts[num_scan_classes];
+    for (auto& grouped_type : types()) {
+      ret->type_masks[grouped_type] = std::move(type_masks[num_scan_classes]);
+      ret->group_mask_counts[grouped_type] = mask_counts[num_scan_classes];
       num_scan_classes++;
     }
   }
@@ -139,4 +119,4 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -23,20 +23,20 @@
 
 #define RENDER_ENGINE_DOMAIN "RENDER ENGINE"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 namespace engine {
 
-using ErrorCode = zilliz::common::ErrorCode;
+using ErrorCode = arctern::common::ErrorCode;
 
-using zilliz::lib::CUDA_SUCCESS;
-using zilliz::lib::CudaException;
+using arctern::lib::CUDA_SUCCESS;
+using arctern::lib::CudaException;
 
 constexpr ErrorCode ERROR_CODE_BASE = 0x45000;
 constexpr ErrorCode ERROR_CODE_END = 0x46000;
 
 constexpr ErrorCode ToGlobalErrorCode(const ErrorCode error_code) {
-  return zilliz::lib::ToGlobalErrorCode(error_code, ERROR_CODE_BASE);
+  return arctern::lib::ToGlobalErrorCode(error_code, ERROR_CODE_BASE);
 }
 
 constexpr ErrorCode UNKNOWN_PLAN_TYPE = ToGlobalErrorCode(0x001);
@@ -55,7 +55,7 @@ constexpr ErrorCode CAST_FAILED = ToGlobalErrorCode(0x00d);
 constexpr ErrorCode FILE_PATH_NOT_FOUND = ToGlobalErrorCode(0x00e);
 constexpr ErrorCode UNINITIALIZED = ToGlobalErrorCode(0x00f);
 
-class RenderEngineException : public zilliz::common::Exception {
+class RenderEngineException : public arctern::common::Exception {
  public:
   explicit RenderEngineException(ErrorCode error_code,
                                  const std::string& message = nullptr)
@@ -64,7 +64,7 @@ class RenderEngineException : public zilliz::common::Exception {
 
 }  // namespace engine
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
 
 #define THROW_RENDER_ENGINE_ERROR(err_code, err_msg) \
   do {                                               \

@@ -19,7 +19,7 @@
 
 #include "render/window/window_egl/window_gpu.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 class WindowGPU2D : public WindowGPU {
@@ -32,4 +32,4 @@ class WindowGPU2D : public WindowGPU {
 using WindowGPU2DPtr = std::shared_ptr<WindowGPU2D>;
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

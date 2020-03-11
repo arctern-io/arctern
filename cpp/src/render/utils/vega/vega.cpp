@@ -18,7 +18,7 @@
 
 #include "render/utils/vega/vega.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 bool Vega::JsonLabelCheck(rapidjson::Value& value, const std::string& label) {
@@ -81,4 +81,4 @@ bool Vega::JsonNullCheck(rapidjson::Value& value) {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

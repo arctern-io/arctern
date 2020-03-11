@@ -20,7 +20,7 @@
 #include "render/utils/color/color.h"
 #include "render/utils/vega/vega.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 struct CircleParams {
@@ -38,4 +38,4 @@ class VegaScatterPlot : public Vega {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

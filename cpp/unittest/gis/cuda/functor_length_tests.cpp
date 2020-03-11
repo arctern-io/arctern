@@ -21,9 +21,9 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_length.h"
-#include "test_utils/transforms.h"
+#include "gis/cuda/test_common/test_common.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 TEST(FunctorLength, naive) {
@@ -48,4 +48,4 @@ TEST(FunctorLength, naive) {
 }
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

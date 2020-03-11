@@ -24,7 +24,7 @@
 #include "render/2d/heatmap/set_color.h"
 #include "render/utils/color/color_gradient.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 unsigned int iDivUp(const unsigned int& a, const unsigned int& b) {
@@ -170,7 +170,7 @@ void set_colors_gpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
 
 #define TEMPLATE_GEN_PREFIX
 #define T int8_t

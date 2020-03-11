@@ -15,7 +15,7 @@
  */
 #include "render/window/window_osmesa/window_cpu_2d.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 void WindowCPU2D::Init() {
@@ -50,4 +50,4 @@ void WindowCPU2D::Init() {
 void WindowCPU2D::Terminate() { OSMesaDestroyContext(context_); }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
