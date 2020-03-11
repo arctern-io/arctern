@@ -368,6 +368,39 @@ def run_test_st_transform(spark):
     
     to_json("results/%s" % table_name, rs)
 
+def run_test_st_transform1(spark):
+    data = "transform.csv"
+    table_name = 'test_transform1'
+    sql = "select st_transform_udf(geos, 'epsg:4326', 'epsg:3857') as geos from test_transform1"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+
+    to_json("results/%s" % table_name, rs)
+
+def run_test_st_precisionreduce(spark):
+    data = "precisionreduce.csv"
+    table_name = 'test_precisionreduce'
+    sql = "select st_precisionreduce_udf(geos,4) as geos from test_precisionreduce"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+
+    to_json("results/%s" % table_name, rs)
+    
+
 def run_test_st_intersects(spark):
     
     data = "intersects.csv"
@@ -529,7 +562,7 @@ def run_test_st_polygonfromenvelope(spark):
 def run_test_st_simplifypreservetopology(spark):
     data = "simplifypreservetopology.csv"
     table_name = 'test_simplifypreservetopology'
-    sql = "select st_simplifypreservetopology_udf(geos, 10) as geos from test_simplifypreservetopology"
+    sql = "select st_simplifypreservetopology_udf(geos, 1) as geos from test_simplifypreservetopology"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -588,11 +621,20 @@ def run_test_st_geomfromgeojson2(spark):
     rs.show()
     to_json("results/%s" % table_name, rs)
 
-def run_test_ST_PrecisionReduce(spark):
-    pass
+def run_test_st_hausdorffdistance(spark):
+    data = "hausdorffdistance.csv"
+    table_name = 'test_hausdorffdistance'
+    sql = "select st_hausdorffdistance_udf(left,right) as geos from test_hausdorffdistance"
 
-def run_test_ST_HausdorffDistance(spark):
-    pass
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    to_json("results/%s" % table_name, rs)
 
 # def run_test(spark, config):
 #     print('================= Run from config =================')
@@ -632,7 +674,7 @@ if __name__ == "__main__":
     run_test_envelope_aggr_1(spark_session)
     run_test_envelope_aggr_2(spark_session)
     run_test_union_aggr_1(spark_session)
-    run_test_union_aggr_2(spark_session)
+    #run_test_union_aggr_2(spark_session)
     run_test_st_isvalid_1(spark_session)
     run_test_st_intersection(spark_session)
     run_test_st_convexhull(spark_session)
@@ -647,6 +689,7 @@ if __name__ == "__main__":
     run_test_st_npoints(spark_session)
     run_test_st_geometrytype(spark_session)
     run_test_st_transform(spark_session)
+    run_test_st_transform1(spark_session)
     run_test_st_intersects(spark_session)
     run_test_st_contains(spark_session)
     run_test_st_within(spark_session)
@@ -656,7 +699,9 @@ if __name__ == "__main__":
     run_test_st_overlaps(spark_session)
     run_test_st_touches(spark_session)
     run_test_st_makevalid(spark_session)
+    #run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
+    #run_test_st_hausdorffdistance(spark_session)
 
     spark_session.stop()
