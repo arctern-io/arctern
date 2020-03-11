@@ -19,7 +19,8 @@ timeout(time: 20, unit: 'MINUTES') {
 
         try {
             deleteImages("${imageName}", true)
-            def customImage = docker.build("${imageName}")
+            sh "docker build -t ${imageName} ."
+            def customImage = docker.image("${imageName}")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()
