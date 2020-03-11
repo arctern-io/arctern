@@ -41,7 +41,7 @@ struct GeometryTypeMasks {
     assert(iter != dict.end());
     auto& record = iter->second;
 
-    //    assert(record.mask_counts == record.indexes.size());
+    assert(record.mask_counts == record.indexes.size());
     return record.mask_counts;
   }
 

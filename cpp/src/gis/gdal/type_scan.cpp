@@ -96,7 +96,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     if (mapping[num_scan_classes].masks.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
-      ret->dict[ret->unique_type].mask_counts = len;
       return ret;
     } else {
       num_scan_classes++;
@@ -104,7 +103,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
         if (mapping[num_scan_classes].masks.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
-          ret->dict[grouped_type].mask_counts = len;
           return ret;
         }
       }
