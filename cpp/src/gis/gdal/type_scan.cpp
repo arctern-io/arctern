@@ -80,6 +80,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     auto idx = type_to_idx[type];
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
+    mapping[idx].indexes.push_back(i);
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }
