@@ -160,7 +160,8 @@ pipeline {
 
                         environment {
                             IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? IMAGE_REPOSITORY.concat('-gpu') : IMAGE_REPOSITORY}"
+                            GPU_IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark-gpu"
+                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
                             ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                         }
 
