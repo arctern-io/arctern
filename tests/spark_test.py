@@ -69,7 +69,7 @@ def run_test_st_point(spark):
     sql = "select st_point_udf(x_float, y_float) from test_points"
     
     df = read_data(spark, base_dir, data)
-    df = df.withColumn("x_float", col("x").cast("double")).withColumn("y_float", col("y").cast("double"))
+    df = df.withColumn("x_float", col("left").cast("double")).withColumn("y_float", col("right").cast("double"))
     df.printSchema()
     df.show()
     df.createOrReplaceTempView(table_name)
@@ -101,7 +101,7 @@ def run_test_envelope_aggr_2(spark):
     sql = "select st_envelope_aggr_udf(arealandmark) from (select st_point_udf(x_float, y_float) as arealandmark from envelope_aggr_2)"
     
     df = read_data(spark, base_dir, data)
-    df = df.withColumn("x_float", col("x").cast("double")).withColumn("y_float", col("y").cast("double"))
+    df = df.withColumn("x_float", col("left").cast("double")).withColumn("y_float", col("right").cast("double"))
     df.show()
     df.createOrReplaceTempView(table_name)
     
