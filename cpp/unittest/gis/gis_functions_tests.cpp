@@ -2580,6 +2580,36 @@ TEST(geometry_test, test_ST_Centroid) {
   // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
 }
 
+TEST(geometry_test, test_ST_Lenght3) {
+  auto p0 = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+  auto p1 = "POLYGON ((1 2, 3 4, 5 6, 1 2))";
+  auto p2 = "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))";
+  auto p3 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto p4 = "POLYGON ((0 0,0 4,2 2,4 4,4 0,0 0))";
+  auto p5 = "POLYGON ((0 0,0 4,4 4,0 0))";
+  auto p6 = "MULTIPOLYGON (((0 0,1 -1,1 1,-2 3,0 0)))";
+  auto p7 = "MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+  builder.Append(std::string(p6));
+  builder.Append(std::string(p7));
+  builder.Finish(&input);
+
+  auto res = arctern::gis::ST_Length(input);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  for (int i = 0; i < res_double->length(); ++i) {
+    EXPECT_DOUBLE_EQ(res_double->Value(i), 0.0);
+  }
+}
+
 TEST(geometry_test, test_ST_Length2) {
   auto p0 = "CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))";
   auto p1 =
@@ -2634,12 +2664,12 @@ TEST(geometry_test, test_ST_Length) {
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0.0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 2.0);
   EXPECT_DOUBLE_EQ(res_double->Value(2), 3.414213562373095);
-  EXPECT_DOUBLE_EQ(res_double->Value(3), 4.0);
+  EXPECT_DOUBLE_EQ(res_double->Value(3), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(4), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(5), 121.74489533575682);
-  EXPECT_DOUBLE_EQ(res_double->Value(6), 9.123105625617661);
-  EXPECT_DOUBLE_EQ(res_double->Value(7), 26.0);
-  EXPECT_DOUBLE_EQ(res_double->Value(8), 12.537319187990757);
+  EXPECT_DOUBLE_EQ(res_double->Value(6), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(7), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(8), 0);
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
