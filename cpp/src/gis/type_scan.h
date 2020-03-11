@@ -18,6 +18,7 @@
 
 #include <map>
 #include <memory>
+#include <cassert>
 #include <set>
 #include <vector>
 
