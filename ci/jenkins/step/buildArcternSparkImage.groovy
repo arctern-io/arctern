@@ -1,5 +1,5 @@
 timeout(time: 20, unit: 'MINUTES') {
-    dir ("docker/spark/${BINARY_VERSION}") {
+    dir ("docker/spark/${BINARY_VERSION}/runtime") {
         def channelPackage = "conda-bld.tar.gz"
         def downloadStatus = sh(returnStatus: true, script: "curl -C - -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
 
@@ -9,11 +9,14 @@ timeout(time: 20, unit: 'MINUTES') {
 
         sh "tar zxvf arctern/${channelPackage} -C ./arctern"
 
+        def baseImageName = "${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO}:${OS_NAME}-base"
+        sh "docker pull ${baseImageName}"
+
         def imageName = "${ARCTERN_REPO}:${ARCTERN_TAG}"
 
         try {
             deleteImages("${imageName}", true)
-            def customImage = docker.build("${imageName}")
+            def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${baseImageName} .")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()
@@ -23,6 +26,7 @@ timeout(time: 20, unit: 'MINUTES') {
         } finally {
             deleteImages("${imageName}", true)
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
+            deleteImages("${baseImageName}", true)
         }
     }
 }
