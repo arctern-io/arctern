@@ -1,4 +1,4 @@
-FORM ubuntu:18.04
+FROM ubuntu:18.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
