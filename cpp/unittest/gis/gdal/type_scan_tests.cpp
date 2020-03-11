@@ -44,12 +44,16 @@ TEST(type_scan, single_type_scan) {
 
   for (auto type : scanner.types()) {
     auto& mask = type_masks->get_masks(type);
+    auto uid = type_masks->get_scan_class_id(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
+    auto scan_class_ids = type_masks->scan_class_ids;
     for (int i = 0; i < mask.size(); i++) {
       if (i >= range.first && i < range.second) {
         ASSERT_EQ(mask[i], true);
+        ASSERT_EQ(scan_class_ids[i], uid);
       } else {
         ASSERT_EQ(mask[i], false);
+        ASSERT_EQ(scan_class_ids[i], uid);
       }
     }
     auto count = type_masks->get_counts(type);

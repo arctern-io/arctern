@@ -63,9 +63,11 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
     mapping[i].masks.resize(len, false);
+    mapping[i].scan_class_id = i;
   }
 
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
+  std::vector<GeometryTypeMasks::ScanClassId> scan_class_ids(len);
   bool is_unique_type = true;
   int last_idx = -1;
 
@@ -80,6 +82,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     auto idx = type_to_idx[type];
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
+    scan_class_ids[i] = idx;
+
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }

@@ -29,19 +29,37 @@ namespace gis {
 using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
-  // helper function
-  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
+ public:
+  using ScanClassId = uint32_t;
+  struct Info {
+   public:
+    // TODO(dog): remove masks since scan_class_ids contains all the info
+    // TODO(dog): now make unittest happy
+    // This field contains masks[i] = is_matched(data[i]);
+    std::vector<bool> masks;
+    // TODO(dog): remove later since mask_count === indexes.size()
+    // TODO(dog): now make unittest happy
+    // This field contains counts of true in masks, or size of indexes
+    int64_t mask_counts = 0;
+    // This field contains unique id(uid) for each class
+    ScanClassId scan_class_id;
+  };
+  const auto& get_info(const GroupedWkbTypes& grouped_types) const {
     auto iter = dict.find(grouped_types);
     assert(iter != dict.end());
-    return iter->second.masks;
+    return iter->second;
   }
 
+  // helper function
+  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
+    return get_info(grouped_types).masks;
+  }
   const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
-    auto iter = dict.find(grouped_types);
-    assert(iter != dict.end());
-    auto& record = iter->second;
+    return get_info(grouped_types).mask_counts;
+  }
 
-    return record.mask_counts;
+  const ScanClassId get_scan_class_id(const GroupedWkbTypes& grouped_types) {
+    return get_info(grouped_types).scan_class_id;
   }
 
  public:
@@ -51,20 +69,8 @@ struct GeometryTypeMasks {
   GroupedWkbTypes unique_type;
   // extra fields for
  public:
-  struct Info {
-    // This field contains masks[i] = is_matched(data[i]);
-    std::vector<bool> masks;
-    // TODO(dog): remove later since mask_count === indexes.size()
-    // TODO(dog): now make unittest happy
-    // This field contains counts of true in masks, or size of indexes
-    int64_t mask_counts = 0;
-    // This field contains unique id(uid) for each class
-    using ScanClassId = uint32_t;
-    ScanClassId scan_class_id;
-  };
-
   // This field contains uid for each data
-  std::vector<Info::ScanClassId> scan_class_ids;
+  std::vector<ScanClassId> scan_class_ids;
   int num_scan_classes = 0;
   // This contains Info for each geometry type, enable only if !unique_type
   std::map<GroupedWkbTypes, Info> dict;
