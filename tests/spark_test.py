@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
-# from zilliz_pyspark import register_funcs
 from arctern_pyspark import register_funcs
 from pyspark.sql.types import *
 from pyspark.sql.functions import col
@@ -22,7 +21,7 @@ import random
 import shutil
 import os
 import json
-
+import sys
 
 base_dir = './data/'
 
@@ -121,33 +120,6 @@ def run_test_st_isvalid_1(spark):
     df.show()
     df.createOrReplaceTempView(table_name)
     
-    rs = spark.sql(sql).cache()
-    rs.printSchema()
-    rs.show()
-    to_json("results/%s" % table_name, rs)
-    
-
-# def run_test_st_isvalid_2(spark):
-    
-#     data = "points.csv"
-#     table_name = 'points_df'
-#     sql = "select st_isvalid_udf(null)"
-
-#     try:
-#         rs = spark.sql(sql).cache()
-#     except Exception as e:
-#         print(str(e))
-
-def run_test_union_aggr_1(spark):
-    data = 'polygonfromenvelope.json'
-    table_name = 'test_union_aggr_1'
-    sql = "select st_union_aggr_udf(myshape) as union_aggr from (select st_polygonfromenvelope_udf(a,c,b,d) as myshape from test_union_aggr_1)"
-
-    df = read_data(spark, base_dir, data)
-    df.show()
-    df.printSchema()
-    df.createOrReplaceTempView(table_name)
-
     rs = spark.sql(sql).cache()
     rs.printSchema()
     rs.show()
@@ -636,26 +608,9 @@ def run_test_st_hausdorffdistance(spark):
     rs.show()
     to_json("results/%s" % table_name, rs)
 
-# def run_test(spark, config):
-#     print('================= Run from config =================')
-#     data = config['data']
-#     table_name = config['table_name']
-#     sql = config['sql']
-#     print(data)
-#     print(table_name)
-#     print(sql)
-#     df = read_data(spark, base_dir, data)
-#     df.show()
-#     df.createOrReplaceTempView(table_name)
-#     rs = spark.sql(sql).cache()
-#     # to_txt("results/%s" % table_name, df)
-
-import inspect
-import sys
 
 if __name__ == "__main__":
 
-    # url = '192.168.1.65'
     url = 'local'
     spark_session = SparkSession.builder.appName("Python zgis sample").master(url).getOrCreate()
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
@@ -663,17 +618,12 @@ if __name__ == "__main__":
     clear_result_dir('/tmp/results')
     register_funcs(spark_session)
     
-    # confs = get_test_config('test.csv')
-    # for c in confs:
-    #     run_test(spark_session, c)
-
     run_test_st_geomfromgeojson(spark_session)
     run_test_st_geomfromgeojson2(spark_session)
     run_test_st_curvetoline(spark_session)
     run_test_st_point(spark_session)
     run_test_envelope_aggr_1(spark_session)
     run_test_envelope_aggr_2(spark_session)
-    run_test_union_aggr_1(spark_session)
     run_test_union_aggr_2(spark_session)
     run_test_st_isvalid_1(spark_session)
     run_test_st_intersection(spark_session)
