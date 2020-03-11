@@ -224,7 +224,22 @@ def compare_all():
         else:
             print('Arctern test: %s, result: FAILED' % x[0])
 
-def update_json():
+
+def update_quote(file_path):
+    with open(file_path, 'r') as f:
+        content = f.read()
+        update = content.replace(r'"', '')
+    with open(file_path, 'w') as f:
+        f.write(update)
+
+def update_bool(file_path):
+    with open(file_path, 'r') as f:
+        content = f.read()
+        update = content.replace('true', 'True').replace('false', 'False')
+    with open(file_path, 'w') as f:
+        f.write(update)
+
+def update_result():
     arr = ['run_test_st_issimple', 'run_test_st_intersects', 'run_test_st_contains', 'run_test_st_crosses', 'run_test_st_isvalid_1', 'run_test_st_overlaps', 'run_test_st_touches', 'run_test_st_within', 'run_test_st_equals_1', 'run_test_st_equals_2']
     configs = parse(config_file)
     if len(configs) == 0:
@@ -232,23 +247,16 @@ def update_json():
         return 0
 
     for x in configs:
-        # print(x[0])
-        if x[0] not in arr:
-            # print('%s not in given arr' % x[0])
-            continue
-
-        # arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
         arctern_result = os.path.join(arc_result_dir, x[0] + '.csv')
-        # print(arctern_result)
         if not os.path.isfile(arctern_result):
             print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
             continue
+
+        if x[0] not in arr:
+            update_quote(arctern_result)
+        else:
+            update_bool(arctern_result)
         
-        with open(arctern_result, 'r') as f:
-            content = f.read()
-            update = content.replace('true', 'True').replace('false', 'False')
-        with open(arctern_result, 'w') as f:
-            f.write(update)
 
 if __name__ == '__main__':
     
@@ -259,6 +267,6 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # exit(0)
 
-    update_json()
+    update_result()
     compare_all()
     
