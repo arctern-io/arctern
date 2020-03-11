@@ -31,14 +31,14 @@ using GroupedWkbTypes = std::set<WkbTypes>;
 struct GeometryTypeMasks {
   // helper function
   const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
-    auto iter = dict_.find(grouped_types);
-    assert(iter != dict_.end());
+    auto iter = dict.find(grouped_types);
+    assert(iter != dict.end());
     return iter->second.masks;
   }
 
   const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
-    auto iter = dict_.find(grouped_types);
-    assert(iter != dict_.end());
+    auto iter = dict.find(grouped_types);
+    assert(iter != dict.end());
     auto& record = iter->second;
 
     //    assert(record.mask_counts == record.indexes.size());
@@ -56,13 +56,13 @@ struct GeometryTypeMasks {
     // TODO(dog): remove later since mask_count === indexes.size()
     // TODO(dog): now make unittest happy
     // This field contains counts of true in masks, or size of indexes
-    int64_t mask_counts;
+    int64_t mask_counts = 0;
     // This field contains index where is_matched(data[index]) holds
     std::vector<int> indexes;
   };
 
   // This contains Info for each geometry type, enable only if !unique_type
-  std::map<GroupedWkbTypes, Info> dict_;
+  std::map<GroupedWkbTypes, Info> dict;
 };
 
 class GeometryTypeScanner {

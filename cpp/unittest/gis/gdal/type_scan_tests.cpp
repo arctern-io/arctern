@@ -116,7 +116,7 @@ TEST(type_scan, unique_type) {
     GroupedWkbTypes type = {WkbTypes::kLineString};
     ASSERT_EQ(type_masks->is_unique_type, true);
     ASSERT_EQ(type_masks->unique_type, type);
-    ASSERT_EQ(type_masks->dict_.size(), 0);
+    ASSERT_EQ(type_masks->dict.size(), 0);
   }
 }
 

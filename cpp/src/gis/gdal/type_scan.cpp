@@ -57,10 +57,12 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     num_scan_classes++;
   }
 
-  std::vector<int> mask_counts(num_scan_classes, 0);
-  std::vector<std::vector<bool>> type_masks(num_scan_classes);
+//  std::vector<int> mask_counts_mapping(num_scan_classes, 0);
+//  std::vector<std::vector<bool>> masks_mapping(num_scan_classes);
+  using Info = GeometryTypeMasks::Info;
+  std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
-    type_masks[i].resize(len, false);
+    mapping[i].masks.resize(len, false);
   }
 
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
@@ -76,8 +78,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     }();
     auto type = OGR_G_GetGeometryType(geo.get());
     auto idx = type_to_idx[type];
-    type_masks[idx][i] = true;
-    mask_counts[idx]++;
+    mapping[idx].masks[i] = true;
+    mapping[idx].mask_counts++;
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }
@@ -90,18 +92,18 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   if (is_unique_type) {
     num_scan_classes = 0;
-    if (type_masks[num_scan_classes].front() == true) {
+    if (mapping[num_scan_classes].masks.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
-      ret->dict_[ret->unique_type].mask_counts = len;
+      ret->dict[ret->unique_type].mask_counts = len;
       return ret;
     } else {
       num_scan_classes++;
       for (auto& grouped_type : types()) {
-        if (type_masks[num_scan_classes].front() == true) {
+        if (mapping[num_scan_classes].masks.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
-          ret->dict_[grouped_type].mask_counts = len;
+          ret->dict[grouped_type].mask_counts = len;
           return ret;
         }
       }
@@ -109,11 +111,10 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   } else {
     num_scan_classes = 0;
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
-    ret->dict_[unknown_type].masks = std::move(type_masks[num_scan_classes++]);
+    ret->dict[unknown_type] = std::move(mapping[num_scan_classes++]);
 
     for (auto& grouped_type : types()) {
-      ret->dict_[grouped_type].masks = std::move(type_masks[num_scan_classes]);
-      ret->dict_[grouped_type].mask_counts = mask_counts[num_scan_classes];
+      ret->dict[grouped_type] = std::move(mapping[num_scan_classes]);
       num_scan_classes++;
     }
   }
