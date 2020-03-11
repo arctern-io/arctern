@@ -16,7 +16,11 @@ timeout(time: 10, unit: 'MINUTES') {
         throw exc
     } finally {
         dir ("docker/test_env/spark/${BINARY_VERSION}") {
-            sh "docker-compose -p ${composeProject} --compatibility down"
+            sh "docker-compose -p ${composeProject} --compatibility down --rmi all -v"
+        }
+
+        dir ("docker/test_env") {
+            sh "docker-compose -p ${composeProject} --compatibility down --rmi all -v"
         }
     }
 }
