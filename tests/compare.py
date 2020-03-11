@@ -118,50 +118,58 @@ def compare_float(x, y):
         # print(x, y)
         return False
 
+
 def compare_one(result, expect):
     x = result[1]
     y = expect[1]
+    # print('result: %s' % str(x))
+    # print('expect: %s' % str(y))
 
     if y.strip() == 't':
         y = True
     elif y.strip() == 'f':
         y = False
-        
-    if isinstance(x, bool):
-        flag = (x == y)
-        if not flag:
-            print(result[0], x, expect[0], y)
-        return flag
 
-    if isinstance(x, str):
-        x = x.strip().upper()
-        y = y.strip().upper()
-        if is_geometry(x) and is_geometry(y):
-            flag = compare_geometry(x, y)
+    try:
+        if isinstance(x, bool):
+            flag = (x == y)
             if not flag:
                 print(result[0], x, expect[0], y)
             return flag
 
-        elif is_geometrycollection(x) and is_geometrycollection(y):
-            flag = compare_geometrycollection(x, y)
-            if not flag:
-                print(result[0], x, expect[0], y)
-            return flag
-        else:
-            if is_geometrytype(x) and is_geometrytype(y):
-                flag = (x == y)
+        if isinstance(x, str):
+            x = x.strip().upper()
+            y = y.strip().upper()
+            if is_geometry(x) and is_geometry(y):
+                flag = compare_geometry(x, y)
                 if not flag:
                     print(result[0], x, expect[0], y)
                 return flag
-            
-            print(result[0], x, expect[0], y)
-            return False
+
+            elif is_geometrycollection(x) and is_geometrycollection(y):
+                flag = compare_geometrycollection(x, y)
+                if not flag:
+                    print(result[0], x, expect[0], y)
+                return flag
+            else:
+                if is_geometrytype(x) and is_geometrytype(y):
+                    flag = (x == y)
+                    if not flag:
+                        print(result[0], x, expect[0], y)
+                    return flag
+
+                print(result[0], x, expect[0], y)
+                return False
+
+        if isinstance(x, int) or isinstance(x, float):
+            flag = compare_float(x, y)
+            if not flag:
+                print(result[0], x, expect[0], y)
+            return flag
+    except Exception as e:
+        flag = False
     
-    if isinstance(x, int) or isinstance(x, float):
-        flag = compare_float(x, y)
-        if not flag:
-            print(result[0], x, expect[0], y)
-        return flag
+    return flag
 
 
 
@@ -265,7 +273,7 @@ def update_json():
 
 if __name__ == '__main__':
     
-    # r = compare_results('/tmp/results/test_buffer/part-00000-4474aff8-860a-40fe-ae91-04c689b876ae-c000.json', './expected/results/st_buffer.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_simplifypreservetopology.json', './expected/results/st_simplifypreservetopology.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
