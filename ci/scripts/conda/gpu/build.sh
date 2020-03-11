@@ -44,6 +44,12 @@ env
 logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
 conda activate zgis_dev
+
+if [ -n "${CONDA_CHINA_CHANNEL}" ]; then
+    conda config --add channels ${CONDA_CHINA_CHANNEL}
+    conda config --set show_channel_urls yes
+fi
+
 conda install --yes --quiet conda-build anaconda-client -c conda-forge
 
 logger "Check versions..."
