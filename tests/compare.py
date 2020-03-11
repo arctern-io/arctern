@@ -94,7 +94,7 @@ def compare_float(x, y):
 
     x = float(x)
     y = float(y)
-    if (x - y) <= EPOCH:
+    if abs((x - y)) <= EPOCH:
         return True
     else:
         # print(x, y)
@@ -160,8 +160,8 @@ def compare_results(arctern_results, postgis_results):
         # arctern = f.readlines()
         arct_arr = []
         for (num, value) in enumerate(f, 1):
-            if list(eval(value.strip()).values())[0] != '':
-                arct_arr.append((num, list(eval(value.strip()).values())[0]))
+            if value.strip() != '':
+                arct_arr.append((num, value.strip())
 
     # arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
     # print(arc)
@@ -205,7 +205,8 @@ def compare_all():
 
     for x in configs:
         
-        arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
+        # arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
+        arctern_result = os.path.join(arc_result_dir, x[0] + '.csv')
         postgis_result = os.path.join(pgis_result_dir, x[3] + '.out')
         print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (x[0], arctern_result, postgis_result))
         
@@ -236,7 +237,8 @@ def update_json():
             # print('%s not in given arr' % x[0])
             continue
 
-        arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
+        # arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
+        arctern_result = os.path.join(arc_result_dir, x[0] + '.csv')
         # print(arctern_result)
         if not os.path.isfile(arctern_result):
             print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
