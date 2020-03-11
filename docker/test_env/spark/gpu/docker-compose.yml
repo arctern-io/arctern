@@ -3,7 +3,6 @@ version: '3.7'
 services:
   spark-master:
     image: ${ARCTERN_REPO}:${ARCTERN_TAG}
-    runtime: nvidia
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -23,7 +22,6 @@ services:
       - ../../../..:/arctern
   spark-worker:
     image: ${ARCTERN_REPO}:${ARCTERN_TAG}
-    runtime: nvidia
     depends_on:
       - spark-master
     environment:
