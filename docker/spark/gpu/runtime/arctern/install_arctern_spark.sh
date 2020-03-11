@@ -15,8 +15,8 @@ ARCTERN_FILE=${ARCTERN_FILE:="arctern"}
 ARCTERN_SPARK_FILE=${ARCTERN_SPARK_FILE:="arctern-spark"}
 ARCTERN_CHANNEL=${ARCTERN_CHANNEL:="arctern-dev"}
 
-if [ -n "${CONDA_CHINA_CHANNEL}" ]; then
-    conda config --add channels ${CONDA_CHINA_CHANNEL}
+if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
+    conda config --add channels ${CONDA_CUSTOM_CHANNEL}
     conda config --set show_channel_urls yes
 fi
 

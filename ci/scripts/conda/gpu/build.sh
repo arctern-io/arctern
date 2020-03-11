@@ -45,8 +45,8 @@ logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
 conda activate zgis_dev
 
-if [ -n "${CONDA_CHINA_CHANNEL}" ]; then
-    conda config --add channels ${CONDA_CHINA_CHANNEL}
+if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
+    conda config --add channels ${CONDA_CUSTOM_CHANNEL}
     conda config --set show_channel_urls yes
 fi
 
