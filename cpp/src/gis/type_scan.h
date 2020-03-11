@@ -41,7 +41,6 @@ struct GeometryTypeMasks {
     assert(iter != dict.end());
     auto& record = iter->second;
 
-    assert(record.mask_counts == record.indexes.size());
     return record.mask_counts;
   }
 
@@ -50,6 +49,8 @@ struct GeometryTypeMasks {
   bool is_unique_type;
   // This field is valid only if 'is_unique_type' equals true.
   GroupedWkbTypes unique_type;
+  // extra fields for
+ public:
   struct Info {
     // This field contains masks[i] = is_matched(data[i]);
     std::vector<bool> masks;
@@ -57,10 +58,14 @@ struct GeometryTypeMasks {
     // TODO(dog): now make unittest happy
     // This field contains counts of true in masks, or size of indexes
     int64_t mask_counts = 0;
-    // This field contains index where is_matched(data[index]) holds
-    std::vector<int> indexes;
+    // This field contains unique id(uid) for each class
+    using ScanClassId = uint32_t;
+    ScanClassId scan_class_id;
   };
 
+  // This field contains uid for each data
+  std::vector<Info::ScanClassId> scan_class_ids;
+  int num_scan_classes = 0;
   // This contains Info for each geometry type, enable only if !unique_type
   std::map<GroupedWkbTypes, Info> dict;
 };

@@ -80,7 +80,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     auto idx = type_to_idx[type];
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
-    mapping[idx].indexes.push_back(i);
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }
@@ -90,31 +89,33 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // organize return
   auto ret = std::make_shared<GeometryTypeMasks>();
   ret->is_unique_type = false;
+  ret->scan_class_ids.resize(len);
 
   if (is_unique_type) {
-    num_scan_classes = 0;
-    if (mapping[num_scan_classes].masks.front() == true) {
+    int scan_class_id = 0;
+    if (mapping[scan_class_id].masks.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
       return ret;
     } else {
-      num_scan_classes++;
+      scan_class_id++;
       for (auto& grouped_type : types()) {
-        if (mapping[num_scan_classes].masks.front() == true) {
+        if (mapping[scan_class_id].masks.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
           return ret;
         }
       }
+      assert(false/**/);
     }
   } else {
-    num_scan_classes = 0;
+    int scan_class_id = 0;
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
-    ret->dict[unknown_type] = std::move(mapping[num_scan_classes++]);
+    ret->dict[unknown_type] = std::move(mapping[scan_class_id++]);
 
     for (auto& grouped_type : types()) {
-      ret->dict[grouped_type] = std::move(mapping[num_scan_classes]);
-      num_scan_classes++;
+      ret->dict[grouped_type] = std::move(mapping[scan_class_id]);
+      scan_class_id++;
     }
   }
   return ret;
