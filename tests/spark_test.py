@@ -529,7 +529,7 @@ def run_test_st_polygonfromenvelope(spark):
 def run_test_st_simplifypreservetopology(spark):
     data = "simplifypreservetopology.csv"
     table_name = 'test_simplifypreservetopology'
-    sql = "select st_simplifypreservetopology_udf(geos, 10) as geos from test_simplifypreservetopology"
+    sql = "select st_simplifypreservetopology_udf(geos, 1) as geos from test_simplifypreservetopology"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -646,7 +646,7 @@ if __name__ == "__main__":
     run_test_st_issimple(spark_session)
     run_test_st_npoints(spark_session)
     run_test_st_geometrytype(spark_session)
-    run_test_st_transform(spark_session)
+    # run_test_st_transform(spark_session)
     run_test_st_intersects(spark_session)
     run_test_st_contains(spark_session)
     run_test_st_within(spark_session)
@@ -657,6 +657,6 @@ if __name__ == "__main__":
     run_test_st_touches(spark_session)
     run_test_st_makevalid(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
-    run_test_st_simplifypreservetopology(spark_session)
+    # run_test_st_simplifypreservetopology(spark_session)
 
     spark_session.stop()
