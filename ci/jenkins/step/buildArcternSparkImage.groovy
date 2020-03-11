@@ -9,11 +9,13 @@ timeout(time: 20, unit: 'MINUTES') {
 
         sh "tar zxvf arctern/${channelPackage} -C ./arctern"
 
-        def imageName = "${IMAGE_REPOSITORY}:${IMAGE_TAG}"
-
-        if ("${BINARY_VERSION}" == "gpu") {
-            imageName = "${IMAGE_REPOSITORY}-${BINARY_VERSION}:${IMAGE_TAG}"
+        def changeTargetImageName = ""
+        if (CHANGE_TARGET) {
+            changeTargetImageName = "${ARCTERN_REPO}:${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+            sh "docker pull ${changeTargetImageName} || exit 0"
         }
+
+        def imageName = "${ARCTERN_REPO}:${ARCTERN_TAG}"
 
         try {
             deleteImages("${imageName}", true)
@@ -27,6 +29,9 @@ timeout(time: 20, unit: 'MINUTES') {
         } finally {
             deleteImages("${imageName}", true)
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
+            if (CHANGE_TARGET) {
+                sh "docker rmi -f ${changeTargetImageName} || exit 0"
+            }
         }
     }
 }

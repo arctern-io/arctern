@@ -138,7 +138,9 @@ pipeline {
                         environment {
                             ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
                             IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            IMAGE_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                             CONDA_CHINA_CHANNEL = "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/"
                         }
 
@@ -162,7 +164,7 @@ pipeline {
 
                         environment {
                             IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            GPU_IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark-gpu"
+                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
                             ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
                             ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                         }
