@@ -11,7 +11,7 @@ timeout(time: 20, unit: 'MINUTES') {
 
         def changeTargetImageName = ""
         if (CHANGE_TARGET) {
-            changeTargetImageName = "${ARCTERN_REPO}:${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+            changeTargetImageName = "${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO}:${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
             sh "docker pull ${changeTargetImageName} || exit 0"
         }
 
