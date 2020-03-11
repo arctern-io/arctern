@@ -53,7 +53,7 @@ TEST(type_scan, single_type_scan) {
         ASSERT_EQ(scan_class_ids[i], uid);
       } else {
         ASSERT_EQ(mask[i], false);
-        ASSERT_EQ(scan_class_ids[i], uid);
+        ASSERT_NE(scan_class_ids[i], uid);
       }
     }
     auto count = type_masks->get_counts(type);
