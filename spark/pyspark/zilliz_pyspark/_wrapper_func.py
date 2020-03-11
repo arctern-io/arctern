@@ -40,8 +40,10 @@ __all__ = [
     "ST_Envelope_Aggr_UDF",
     "ST_Transform_UDF",
     "render_agg_UDF",
+    "render_wkt_agg_UDF",
     "heat_map_UDF",
-    "my_plot" # or point_map
+    "point_map_UDF", 
+    "choropleth_map_UDF"
 ]
 
 import pyarrow as pa
@@ -52,39 +54,76 @@ def toArrow(parameter):
     return  pa.array(parameter)
 
 schema = StructType([StructField('x', IntegerType(), True),
-			StructField('x', IntegerType(), True),
-			StructField('x', IntegerType(), True)])
+			StructField('y', IntegerType(), True),
+			StructField('c', IntegerType(), True)])
 @pandas_udf(schema, PandasUDFType.MAP_ITER)
 def render_agg_UDF(batch_iter):
     for pdf in batch_iter:
         res = pdf.groupby(['x','y'])
         res = res['c'].agg(['c']).reset_index()
+        res.columns = ['x', 'y', 'c']
         yield res
 
-vega = ''
 schema = StructType([StructField('buffer', StringType(), True)])
 @pandas_udf(schema, PandasUDFType.MAP_ITER)
-def heat_map_UDF(batch_iter, conf = vega):
+def point_map_UDF(batch_iter, conf):
+    for pdf in batch_iter:
+        pdf = pdf.drop_duplicates()
+        arr_x = pa.array(pdf.x, type='uint32')
+        arr_y = pa.array(pdf.y, type='uint32')
+        from zilliz_gis import point_map
+        res = point_map(arr_x, arr_y, conf.encode('utf-8'))
+        buffer = res.buffers()[1].hex()
+        buf_df = pd.DataFrame([(buffer,)],["buffer"])
+        yield buf_df
+
+schema = StructType([StructField('buffer', StringType(), True)])
+@pandas_udf(schema, PandasUDFType.MAP_ITER)
+def heat_map_UDF(batch_iter, conf):
     for pdf in batch_iter:
         arrs = pdf.groupby(['x','y'])['c'].agg(['c']).reset_index()
         arr_x = pa.array(x, type='uint32')
         arr_y = pa.array(y, type='uint32')
         arr_c = pa.array(c, type='uint32')
         from zilliz_gis import heat_map
-        res = heat_map(arr_x, arr_y, arr_c, vega)
+        res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
         buffer = res.buffers()[1].hex()
         buf_df = pd.DataFrame([(buffer,)],["buffer"])
         yield buf_df
 
-@pandas_udf("string", PandasUDFType.GROUPED_AGG)
-def my_plot(x, y):
-    arr_x = pa.array(x, type='uint32')
-    arr_y = pa.array(y, type='uint32')
-    from zilliz_gis import point_map
-    curve_z = point_map(arr_x, arr_y)
-    curve_z_copy = curve_z
-    curve_z = curve_z.buffers()[1].to_pybytes()
-    return curve_z_copy.buffers()[1].hex()
+schema = StructType([StructField('wkt', StringType(), True), 
+    StructField('c', IntegerType(), True)])
+@pandas_udf(schema, PandasUDFType.MAP_ITER)
+def render_wkt_agg_UDF(batch_iter):
+    for pdf in batch_iter:
+        res = pdf.groupby(['wkt'])
+        res = res['c'].agg(['sum']).reset_index()
+        res.columns = ['wkt', 'c']
+        yield res
+
+schema = StructType([StructField('buffer', StringType(), True)])
+@pandas_udf(schema, PandasUDFType.MAP_ITER)
+def choropleth_map_UDF(batch_iter, conf):
+    for pdf in batch_iter:
+        arrs = pdf.groupby(['wkt'])['c'].agg(['sum']).reset_index()
+        arrs.columns = ['wkt', 'c']
+        arr_wkt = pa.array(arrs.wkt, type='string')
+        arr_c = pa.array(arrs.c, type='uint32')
+        from zilliz_gis import choropleth_map
+        res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
+        buffer = res.buffers()[1].hex()
+        buf_df = pd.DataFrame([(buffer,)],["buffer"])
+        yield buf_df
+
+#@pandas_udf("string", PandasUDFType.GROUPED_AGG)
+#def my_plot(x, y):
+#    arr_x = pa.array(x, type='uint32')
+#    arr_y = pa.array(y, type='uint32')
+#    from zilliz_gis import point_map
+#    curve_z = point_map(arr_x, arr_y)
+#    curve_z_copy = curve_z
+#    curve_z = curve_z.buffers()[1].to_pybytes()
+#    return curve_z_copy.buffers()[1].hex()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Point_UDF(x, y):

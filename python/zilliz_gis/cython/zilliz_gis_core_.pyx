@@ -17,6 +17,14 @@
 from pyarrow.lib cimport *
 
 cimport zilliz_gis_core__ as zilliz_gis_core_pxd
+def coordinate_projection(points, top_left, bottom_right, int height, int width):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.heat_map(pyarrow_unwrap_array(points), top_left, bottom_right, height, width))
+
+def point_map(points, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
+
+def heat_map(points arr_c, conf):
+    return pyarrow_wrap_array(zilliz_gis_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
 
 def point_map(arr_x, arr_y, conf):
     return pyarrow_wrap_array(zilliz_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))

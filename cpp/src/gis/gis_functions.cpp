@@ -204,7 +204,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 
 std::shared_ptr<std::string> GIS_Version() {
   const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
-                           "build tyoe : " + CMAKE_BUILD_TYPE + "/" + CPU_OR_GPU + "\n" +
+//                           "build tyoe : " + CMAKE_BUILD_TYPE + "/" + CPU_OR_GPU + "\n" +
                            "build time : " + BUILD_TIME + "\n" +
                            "commit id : " + LAST_COMMIT_ID + "\n";
   return std::make_shared<std::string>(info);

@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from . register import register_funcs
+from . render_func import point_map_UDF
