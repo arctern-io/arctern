@@ -1,5 +1,5 @@
 ARG IMAGE_NAME
-FROM ${IMAGE_NAME}:conda-ubuntu18.04-base
+FROM ${IMAGE_NAME}:ubuntu18.04-base
 
 COPY arctern /tmp/arctern
 
