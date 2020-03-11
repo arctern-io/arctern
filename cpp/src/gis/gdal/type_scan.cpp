@@ -114,6 +114,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     }
   } else {
     int scan_class_id = 0;
+    ret->scan_class_ids = std::move(scan_class_ids);
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
     ret->dict[unknown_type] = std::move(mapping[scan_class_id++]);
 
