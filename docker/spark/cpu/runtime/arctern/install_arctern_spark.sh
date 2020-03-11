@@ -18,6 +18,7 @@ ARCTERN_CHANNEL=${ARCTERN_CHANNEL:="arctern-dev"}
 if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
     conda config --add channels ${CONDA_CUSTOM_CHANNEL}
     conda config --set show_channel_urls yes
+    conda config --show channels
 fi
 
 cd ${SCRIPTS_DIR}
