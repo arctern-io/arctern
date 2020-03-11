@@ -218,9 +218,10 @@ def run_test_st_convexhull2(spark):
 def run_test_st_buffer(spark):
     data = "buffer.csv"
     table_name = 'test_buffer'
-    sql = "select st_buffer_udf(geos, 1) as geos from test_buffer"
+    sql = "select st_buffer_udf(geos, distance) as geos from test_buffer"
     
     df = read_data(spark, base_dir, data)
+    df = df.withColumn("distance", col("distance").cast("double"))
     df.printSchema()
     df.show()
     df.createOrReplaceTempView(table_name)
@@ -354,18 +355,18 @@ def run_test_st_geometrytype(spark):
 def run_test_st_transform(spark):
     data = "transform.csv"
     table_name = 'test_transform'
-    sql = "select st_transform_udf(geos, 'epsg:4326', 'epsg:3857') as geos from test_transform"
+    # sql = "select st_transform_udf(geos, 'epsg:%s', 'epsg:%s') as geos from test_transform" % (from, to)
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
     df.show()
     df.createOrReplaceTempView(table_name)
     
-    rs = spark.sql(sql).cache()
-    rs.printSchema()
-    rs.show()
+    # rs = spark.sql(sql).cache()
+    # rs.printSchema()
+    # rs.show()
     
-    to_json("results/%s" % table_name, rs)
+    # to_json("results/%s" % table_name, rs)
 
 def run_test_st_intersects(spark):
     
@@ -625,19 +626,20 @@ if __name__ == "__main__":
     # for c in confs:
     #     run_test(spark_session, c)
 
-    run_test_st_geomfromgeojson(spark_session)
-    run_test_st_geomfromgeojson2(spark_session)
-    run_test_st_curvetoline(spark_session)
-    run_test_st_point(spark_session)
-    run_test_envelope_aggr_1(spark_session)
-    run_test_envelope_aggr_2(spark_session)
-    run_test_union_aggr_1(spark_session)
+    # run_test_st_geomfromgeojson(spark_session)
+    # run_test_st_geomfromgeojson2(spark_session)
+    # run_test_st_curvetoline(spark_session)
+    # run_test_st_point(spark_session)
+    # run_test_envelope_aggr_1(spark_session)
+    # run_test_envelope_aggr_2(spark_session)
+    # run_test_union_aggr_1(spark_session)
     # run_test_union_aggr_2(spark_session)
-    run_test_st_isvalid_1(spark_session)
-    run_test_st_intersection(spark_session)
-    run_test_st_convexhull(spark_session)
-    run_test_st_convexhull2(spark_session)
+    # run_test_st_isvalid_1(spark_session)
+    # run_test_st_intersection(spark_session)
+    # run_test_st_convexhull(spark_session)
+    # run_test_st_convexhull2(spark_session)
     run_test_st_buffer(spark_session)
+<<<<<<< HEAD
     run_test_st_envelope(spark_session)
     run_test_st_centroid(spark_session)
     run_test_st_length(spark_session)
@@ -658,10 +660,26 @@ if __name__ == "__main__":
     run_test_st_within(spark_session)
     run_test_st_equals_1(spark_session)
 <<<<<<< HEAD
+=======
+    # run_test_st_envelope(spark_session)
+    # run_test_st_centroid(spark_session)
+    # run_test_st_length(spark_session)
+    # run_test_st_area(spark_session)
+    # run_test_st_distance(spark_session)
+    # run_test_st_issimple(spark_session)
+    # run_test_st_npoints(spark_session)
+    # run_test_st_geometrytype(spark_session)
+    # run_test_st_transform(spark_session)
+    # run_test_st_intersects(spark_session)
+    # run_test_st_contains(spark_session)
+    # run_test_st_within(spark_session)
+    # run_test_st_equals_1(spark_session)
+>>>>>>> b9179bdec13d33c45b332de88ff026d003e0b50f
     # run_test_st_equals_2(spark_session)
     # run_test_st_crosses(spark_session)
     # run_test_st_overlaps(spark_session)
     # run_test_st_touches(spark_session)
+<<<<<<< HEAD
 =======
     run_test_st_equals_2(spark_session)
     run_test_st_crosses(spark_session)
@@ -671,6 +689,11 @@ if __name__ == "__main__":
     run_test_st_makevalid(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
+=======
+    # run_test_st_makevalid(spark_session)
+    # run_test_st_polygonfromenvelope(spark_session)
+    # run_test_st_simplifypreservetopology(spark_session)
+>>>>>>> b9179bdec13d33c45b332de88ff026d003e0b50f
 
     spark_session.stop()
     

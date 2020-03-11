@@ -1,20 +1,23 @@
- ST_Point
- ST_Polygon
- ST_Polygon
- ST_Polygon
- ST_LineString
- ST_LineString
  ST_LineString
  ST_Polygon
- ST_LineString
- ST_Point
+ ST_MultiPoint
+ ST_MultiLineString
  ST_MultiPolygon
- ST_MultiLineString
- ST_MultiPoint
  ST_GeometryCollection
+ ST_Point
+ ST_Polygon
+ ST_Polygon
+ ST_Polygon
+ ST_Polygon
+ ST_Polygon
+ ST_LineString
+ ST_LineString
+ ST_LineString
+ ST_MultiPoint
  ST_MultiPoint
  ST_MultiLineString
  ST_MultiLineString
+ ST_MultiPolygon
  ST_MultiPolygon
  ST_GeometryCollection
  ST_GeometryCollection
