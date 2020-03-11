@@ -43,14 +43,20 @@ $ sudo docker pull arctern:arctern-spark:latest
 
 纯CPU 版本
 ```shell
-$ cd docker/spark/cpu/
-$ sudo docker build -t <image name>:<tag> .
+$ pushd docker/spark/cpu/base
+$ sudo docker build -t arctern-spark:ubuntu18.04-base .
+$ popd
+$ pushd docker/spark/cpu/runtime
+$ sudo docker build -t arctern-spark:ubuntu18.04-runtime .
 ```
 
 全功能版本
 ```shell
-$ cd docker/spark/gpu/
-$ sudo docker build -t <image name>:<tag> .
+$ pushd docker/spark/gpu/base
+$ sudo docker build -t arctern-spark-gpu:ubuntu18.04-base .
+$ popd
+$ pushd docker/spark/gpu/runtime
+$ sudo docker build -t arctern-spark-gpu:ubuntu18.04-runtime .
 ```
 
 ## 配置NVIDIA Docker （可选）
@@ -95,7 +101,7 @@ $ docker-compose version
 
 ### 修改docker-compose.yml文件
 
-检查docker-compose.yml中image是否填写的是当前您要使用的docker images。
+检查docker-compose.yml中image是否填写的是当前您要使用的docker images (arctern-spark:ubuntu18.04-runtime 或者 arctern-spark-gpu:ubuntu18.04-runtime)。
 检查master和worker的环境变量设置，[具体设置](https://spark.apache.org/docs/latest/spark-standalone.html)
 
 ### 启动分布式集群
