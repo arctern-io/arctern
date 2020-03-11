@@ -57,6 +57,9 @@ def get_sqls_and_table_names(file_path):
             
 import glob
 def collect_results(file_path, results_dir):
+    if not os.path.isdir(results_dir):
+        os.makedirs(results_dir)
+
     with open(file_path, 'r') as f:
         cs = f.readlines()
         cs = [x.strip() for x in cs if not x.startswith('#')]
@@ -69,12 +72,10 @@ def collect_results(file_path, results_dir):
         #     print(x)
 
     base_dir = '/tmp/results'
-    os.makedirs(base_dir)
     for x, y in zip(table_names, names):
         print(x, y)
         target = os.path.join(base_dir, x, '*.json')
         file_name = glob.glob(target)
-        # file_name = glob.glob(target)
         print(file_name)
         print(file_name[0])
         if os.path.isfile(file_name[0]):
