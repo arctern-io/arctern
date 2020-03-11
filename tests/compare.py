@@ -121,6 +121,8 @@ def compare_float(x, y):
 def compare_one(result, expect):
     x = result[1]
     y = expect[1]
+    print('result: %s' % str(x))
+    print('expect: %s' % str(y))
 
     if y.strip() == 't':
         y = True
@@ -265,14 +267,14 @@ def update_json():
 
 if __name__ == '__main__':
     
-    # r = compare_results('/tmp/results/test_buffer/part-00000-4474aff8-860a-40fe-ae91-04c689b876ae-c000.json', './expected/results/st_buffer.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_simplifypreservetopology.json', './expected/results/st_simplifypreservetopology.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # print(r)
 
-    # exit(0)
+    exit(0)
 
     update_json()
     compare_all()
