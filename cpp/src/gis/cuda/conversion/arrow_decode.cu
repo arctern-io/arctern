@@ -76,7 +76,7 @@ struct WkbDecoderImpl {
  public:
   __device__ WkbByteOrder GetByteOrder() {
     auto byte_order = FetchFromWkb<WkbByteOrder>();
-    skipped_bytes += sizeof(WkbTag);
+    skipped_bytes += sizeof(WkbByteOrder);
     return byte_order;
   }
 
@@ -122,8 +122,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const WkbArrowContext& inp
   int meta_size = (int)(decoder.metas - metas);
   int value_size = (int)(decoder.values - values);
   auto wkb_len =
-      meta_size * sizeof(int) + value_size * sizeof(double) + decoder.skip_write;
-  assert(wkb_len == input.get_wkb_ptr(index + 1) - input.get_wkb_ptr(index));
+      meta_size * sizeof(int) + value_size * sizeof(double) + decoder.skipped_bytes;
+  auto std_wkb_len = input.get_wkb_ptr(index + 1) - input.get_wkb_ptr(index);
+  assert(wkb_len == std_wkb_len);
   return OutputInfo{tag, meta_size, value_size};
 }
 }  // namespace
