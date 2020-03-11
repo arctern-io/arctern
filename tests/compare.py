@@ -161,7 +161,7 @@ def compare_results(arctern_results, postgis_results):
         arct_arr = []
         for (num, value) in enumerate(f, 1):
             if value.strip() != '':
-                arct_arr.append((num, value.strip())
+                arct_arr.append((num, value.strip()))
 
     # arc = [list(eval(x.strip()).values())[0] for x in arctern if len(x.strip()) > 0]
     # print(arc)
