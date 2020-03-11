@@ -47,7 +47,7 @@ $ pushd docker/spark/cpu/base
 $ sudo docker build -t arctern-spark:ubuntu18.04-base .
 $ popd
 $ pushd docker/spark/cpu/runtime
-$ sudo docker build -t arctern-spark:ubuntu18.04-runtime .
+$ sudo docker build -t arctern-spark:ubuntu18.04-runtime --build-arg 'IMAGE_NAME=arctern-spark' .
 ```
 
 全功能版本
@@ -56,7 +56,7 @@ $ pushd docker/spark/gpu/base
 $ sudo docker build -t arctern-spark-gpu:ubuntu18.04-base .
 $ popd
 $ pushd docker/spark/gpu/runtime
-$ sudo docker build -t arctern-spark-gpu:ubuntu18.04-runtime .
+$ sudo docker build -t arctern-spark-gpu:ubuntu18.04-runtime --build-arg 'IMAGE_NAME=arctern-spark-gpu' .
 ```
 
 ## 配置NVIDIA Docker （可选）
