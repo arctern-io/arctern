@@ -30,10 +30,10 @@ using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
  public:
-  using ScanClassId = uint32_t;
+  using EncodeUid = uint32_t;
   struct Info {
    public:
-    // TODO(dog): remove masks since scan_class_ids contains all the info
+    // TODO(dog): remove masks since encode_uids contains all the info
     // TODO(dog): now make unittest happy
     // This field contains masks[i] = is_matched(data[i]);
     std::vector<bool> masks;
@@ -42,7 +42,7 @@ struct GeometryTypeMasks {
     // This field contains counts of true in masks, or size of indexes
     int64_t mask_counts = 0;
     // This field contains unique id(uid) for each class
-    ScanClassId scan_class_id;
+    EncodeUid encode_uid;
   };
   const auto& get_info(const GroupedWkbTypes& grouped_types) const {
     auto iter = dict.find(grouped_types);
@@ -58,8 +58,8 @@ struct GeometryTypeMasks {
     return get_info(grouped_types).mask_counts;
   }
 
-  const ScanClassId get_scan_class_id(const GroupedWkbTypes& grouped_types) {
-    return get_info(grouped_types).scan_class_id;
+  EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) {
+    return get_info(grouped_types).encode_uid;
   }
 
  public:
@@ -70,7 +70,7 @@ struct GeometryTypeMasks {
   // extra fields for
  public:
   // This field contains uid for each data
-  std::vector<ScanClassId> scan_class_ids;
+  std::vector<EncodeUid> encode_uids;
   int num_scan_classes = 0;
   // This contains Info for each geometry type, enable only if !unique_type
   std::map<GroupedWkbTypes, Info> dict;

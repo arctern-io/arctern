@@ -63,11 +63,11 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
     mapping[i].masks.resize(len, false);
-    mapping[i].scan_class_id = i;
+    mapping[i].encode_uid = i;
   }
 
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
-  std::vector<GeometryTypeMasks::ScanClassId> scan_class_ids(len);
+  std::vector<GeometryTypeMasks::EncodeUid> encode_uids(len);
   bool is_unique_type = true;
   int last_idx = -1;
 
@@ -82,7 +82,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     auto idx = type_to_idx[type];
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
-    scan_class_ids[i] = idx;
+    encode_uids[i] = idx;
 
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
@@ -93,18 +93,17 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // organize return
   auto ret = std::make_shared<GeometryTypeMasks>();
   ret->is_unique_type = false;
-  ret->scan_class_ids.resize(len);
 
   if (is_unique_type) {
-    int scan_class_id = 0;
-    if (mapping[scan_class_id].masks.front() == true) {
+    int encode_uid = 0;
+    if (mapping[encode_uid].masks.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
       return ret;
     } else {
-      scan_class_id++;
+      encode_uid++;
       for (auto& grouped_type : types()) {
-        if (mapping[scan_class_id].masks.front() == true) {
+        if (mapping[encode_uid].masks.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
           return ret;
@@ -113,14 +112,14 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       assert(false/**/);
     }
   } else {
-    int scan_class_id = 0;
-    ret->scan_class_ids = std::move(scan_class_ids);
+    int encode_uid = 0;
+    ret->encode_uids = std::move(encode_uids);
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
-    ret->dict[unknown_type] = std::move(mapping[scan_class_id++]);
+    ret->dict[unknown_type] = std::move(mapping[encode_uid++]);
 
     for (auto& grouped_type : types()) {
-      ret->dict[grouped_type] = std::move(mapping[scan_class_id]);
-      scan_class_id++;
+      ret->dict[grouped_type] = std::move(mapping[encode_uid]);
+      encode_uid++;
     }
   }
   return ret;
