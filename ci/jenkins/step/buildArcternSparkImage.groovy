@@ -16,7 +16,7 @@ timeout(time: 20, unit: 'MINUTES') {
 
         try {
             deleteImages("${imageName}", true)
-            def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${baseImageName} .")
+            def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO} .")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()
