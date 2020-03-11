@@ -1,9 +1,8 @@
-drop table if exists test_table;
-create table test_table (geos geometry);
-insert into test_table values
-('MULTILINESTRING ((-5 45, 8 36), (1 49, 15 41))'),
-('POLYGON ((0 0,4 0,4 4,0 4,0 0))'),
-('POLYGON ((5 1,7 1,7 2,5 2,5 1))'),
-('MULTIPOINT ((0 0), (10 0))');
+drop table if exists t1;
+create table t1 (geo1 geometry);
+copy t1 from '@path@/data/union_aggr.csv' DELIMITER '|' csv header;
 
-select st_astext(st_union(geos)) from test_table;
+\o @path@/expected/results/st_union.out
+select st_astext(st_union(geo1)) from t1;
+\o
+

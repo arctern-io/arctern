@@ -449,6 +449,7 @@ def run_test_st_equals_2(spark):
 
 def run_test_st_crosses(spark):
     
+    # data = "crosses.csv"
     data = "crosses.csv"
     table_name = 'test_crosses'
     sql = "select st_crosses_udf(left, right) as geos from test_crosses"
@@ -631,7 +632,7 @@ if __name__ == "__main__":
     run_test_envelope_aggr_1(spark_session)
     run_test_envelope_aggr_2(spark_session)
     run_test_union_aggr_1(spark_session)
-    run_test_union_aggr_2(spark_session)
+    # run_test_union_aggr_2(spark_session)
     run_test_st_isvalid_1(spark_session)
     run_test_st_intersection(spark_session)
     run_test_st_convexhull(spark_session)

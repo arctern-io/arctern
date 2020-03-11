@@ -1,18 +1,8 @@
-select st_distance('POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry, 'POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))'::geometry);
-select st_distance('POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry, 'POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry);
-select st_distance('POINT (0 0)'::geometry, 'LINESTRING (0 0, 0 2)'::geometry);
-select st_distance('POINT (0 0)'::geometry, 'LINESTRING (2 0, 0 2)'::geometry);
-select st_distance('LINESTRING (2 0, 0 2)'::geometry, 'POINT (0 0)'::geometry);
-select st_distance('POINT (15 18)'::geometry, 'POINT (30 25)'::geometry);
-select st_distance('POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry, 'POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry);
-select st_distance('POLYGON ((40 21, 40 22, 40 23, 40 21))'::geometry, 'POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))'::geometry);
-select st_distance('POLYGON ((-1 -1,2 2,0 1,-1 -1))'::geometry, 'POLYGON ((5 2,7 4,5 5,5 2))'::geometry);
-select st_distance('POINT (31.75 31.25)'::geometry, 'LINESTRING (32 32,32 35,40.5 35,32 35,32 32)'::geometry);
-select st_distance('POINT(1 2)'::geometry, 'POINT(1 2)'::geometry);
-select st_distance('POINT(5 0)'::geometry, 'POINT(10 12)'::geometry);
-select st_distance('POINT(10 12)'::geometry, 'POINT(5 0)'::geometry);
-select st_distance('POINT(-10 55)'::geometry, 'POINT(-10 40)'::geometry);
-select st_distance('POINT(-71.0325022849392 42.3793285830812)'::geometry, 'POLYGON((-71.0325022849392 42.3793285830812,-71.0325745928559 42.3793012556699,-71.0326708728343 42.3794450989722,-71.0326045866257 42.3794706688942,-71.0325022849392 42.3793285830812))'::geometry);
-select st_distance('POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))'::geometry, 'POLYGON((11 0, 11 10, 20 10, 20 0, 11 0), (15 5, 15 8, 17 8, 17 5, 15 5))'::geometry);
-select st_distance('MULTILINESTRING((-5 45, 8 36), (1 49, 15 41))'::geometry, 'POINT(5 0)'::geometry);
-select st_distance('POINT(5 0)'::geometry, 'MULTILINESTRING((-5 45, 8 36), (1 49, 15 41))'::geometry);
+drop table if exists t1;
+create table t1 (geo1 geometry, geo2 geometry);
+copy t1 from '@path@/data/distance.csv' DELIMITER '|' csv header;
+
+\o @path@/expected/results/st_distance.out
+select st_distance(geo1, geo2) from t1;
+\o
+
