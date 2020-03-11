@@ -87,6 +87,10 @@ EPOCH = 1e-8
 def compare_geometry(x, y):
     arct = wkt.loads(x)
     pgis = wkt.loads(y)
+
+    if x.upper().endswith('EMPTY') and y.upper().endswith('EMPTY'):
+        return True
+        
     result = arct.equals_exact(pgis, EPOCH)
 
     # if not result:
@@ -111,7 +115,7 @@ def compare_float(x, y):
     if (x - y) <= EPOCH:
         return True
     else:
-        print(x, y)
+        # print(x, y)
         return False
 
 def compare_one(result, expect):
@@ -262,13 +266,13 @@ def update_json():
 if __name__ == '__main__':
     
     # r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
-    r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # print(r)
 
-    exit(0)
+    # exit(0)
 
     update_json()
     compare_all()

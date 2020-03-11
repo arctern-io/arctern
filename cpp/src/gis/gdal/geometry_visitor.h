@@ -36,9 +36,9 @@ class AreaVisitor : public OGRDefaultConstGeometryVisitor {
   void visit(const OGRMultiPolygon* geo) override { area_ += geo->get_Area(); }
   // void visit(const OGRGeometryCollection*) override;
   void visit(const OGRCircularString*) override {}
-  // void visit(const OGRCompoundCurve*) override;
+  void visit(const OGRCompoundCurve*) override {}
   void visit(const OGRCurvePolygon* geo) override { area_ += geo->get_Area(); }
-  void visit(const OGRMultiCurve* geo) override { area_ += geo->get_Area(); }
+  void visit(const OGRMultiCurve*) override {}
   void visit(const OGRMultiSurface* geo) override { area_ += geo->get_Area(); }
   void visit(const OGRTriangle* geo) override { area_ += geo->get_Area(); }
   // void visit(const OGRPolyhedralSurface*) override;
