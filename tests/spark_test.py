@@ -49,8 +49,8 @@ def to_txt(file_dir, df):
 
 def to_json(file_dir, df):
     tmp = '/tmp'
-    # df.write.csv(os.path.join(tmp, file_dir))
-    df.write.json(os.path.join(tmp, file_dir))
+    df.write.csv(os.path.join(tmp, file_dir))
+    # df.write.json(os.path.join(tmp, file_dir))
 
 def get_test_config(config_file):
     with open(config_file, 'r') as f:
