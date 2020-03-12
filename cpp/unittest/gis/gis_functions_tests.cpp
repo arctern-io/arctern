@@ -2426,83 +2426,87 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   auto l0 = "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
   auto r0 = "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))";
 
-  auto l1="POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
-  auto r1="POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
+  auto l1 = "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
+  auto r1 = "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
 
-  auto l2="POLYGON ((1 1, 1 5, 5 5, 1 1))";
-  auto r2="POLYGON ((2 2, 2 3, 3 3, 2 2))";
+  auto l2 = "POLYGON ((1 1, 1 5, 5 5, 1 1))";
+  auto r2 = "POLYGON ((2 2, 2 3, 3 3, 2 2))";
 
-  auto l3="POLYGON ((2 2, 2 3, 3 3, 2 2))";
-  auto r3="POLYGON ((1 1, 1 5, 5 5, 1 1))";
+  auto l3 = "POLYGON ((2 2, 2 3, 3 3, 2 2))";
+  auto r3 = "POLYGON ((1 1, 1 5, 5 5, 1 1))";
 
-  auto l4="POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2))";
-  auto r4="POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
+  auto l4 = "POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2))";
+  auto r4 = "POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
 
-  auto l5="POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2))";
-  auto r5="POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
+  auto l5 = "POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2))";
+  auto r5 = "POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
 
-  auto l6="POLYGON ((0 2,1 1,0 -1,0 2))";
-  auto r6="POLYGON ((-1 3,2 1,0 -3,-1 3))";
+  auto l6 = "POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r6 = "POLYGON ((-1 3,2 1,0 -3,-1 3))";
 
-  auto l7="POLYGON ((0 2,1 1,0 -1,0 2))";
-  auto r7="POINT (0 0)";
+  auto l7 = "POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r7 = "POINT (0 0)";
 
-  auto l8="POINT (0 0)";
-  auto r8="POINT (0 0)";
+  auto l8 = "POINT (0 0)";
+  auto r8 = "POINT (0 0)";
 
-  auto l9="POINT (0 0)";
-  auto r9="POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto l9 = "POINT (0 0)";
+  auto r9 = "POLYGON ((0 2,1 1,0 -1,0 2))";
 
-  auto l10="POLYGON ((0 2,1 1,0 -1,0 2))";
-  auto r10="POINT (0.5 0)";
+  auto l10 = "POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r10 = "POINT (0.5 0)";
 
-  auto l11="POINT (0.5 0)";
-  auto r11="POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto l11 = "POINT (0.5 0)";
+  auto r11 = "POLYGON ((0 2,1 1,0 -1,0 2))";
 
-  auto l12="LINESTRING (0 0, 10 10)";
-  auto r12="LINESTRING (0 0, 5 5, 10 10)";
+  auto l12 = "LINESTRING (0 0, 10 10)";
+  auto r12 = "LINESTRING (0 0, 5 5, 10 10)";
 
-  auto l13="LINESTRING (10 10, 0 0)";
-  auto r13="LINESTRING (0 0, 5 5, 10 10)";
+  auto l13 = "LINESTRING (10 10, 0 0)";
+  auto r13 = "LINESTRING (0 0, 5 5, 10 10)";
 
-  auto l14="LINESTRING(0 0, 1 1)";
-  auto r14="LINESTRING(1 1, 0 0)";
+  auto l14 = "LINESTRING(0 0, 1 1)";
+  auto r14 = "LINESTRING(1 1, 0 0)";
 
-  auto l15="POLYGON EMPTY";
-  auto r15="POINT EMPTY";
+  auto l15 = "POLYGON EMPTY";
+  auto r15 = "POINT EMPTY";
 
-  auto l16="LINESTRING EMPTY";
-  auto r16="POINT EMPTY";
+  auto l16 = "LINESTRING EMPTY";
+  auto r16 = "POINT EMPTY";
 
-  auto l17="POINT EMPTY";
-  auto r17="POINT EMPTY";
+  auto l17 = "POINT EMPTY";
+  auto r17 = "POINT EMPTY";
 
-  auto l18="MULTIPOLYGON EMPTY";
-  auto r18="POINT EMPTY";
+  auto l18 = "MULTIPOLYGON EMPTY";
+  auto r18 = "POINT EMPTY";
 
-  auto l19="MULTILINESTRING EMPTY";
-  auto r19="POINT EMPTY";
+  auto l19 = "MULTILINESTRING EMPTY";
+  auto r19 = "POINT EMPTY";
 
-  auto l20="MULTIPOINT EMPTY";
-  auto r20="POINT EMPTY";
+  auto l20 = "MULTIPOINT EMPTY";
+  auto r20 = "POINT EMPTY";
 
-  auto l21="MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,9 7,7 7)))";
-  auto r21="MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,8 7,7 7)))";
+  auto l21 =
+      "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 "
+      "6,6 6),(7 7,7 8,8 8,9 7,7 7)))";
+  auto r21 =
+      "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 "
+      "6,6 6),(7 7,7 8,8 8,8 7,7 7)))";
 
-  auto l22="COMPOUNDCURVE(CIRCULARSTRING (0 0, 1 1, 1 0),(1 0, 0 1))";
-  auto r22="COMPOUNDCURVE(CIRCULARSTRING (2 0, 3 3, 3 0),(3 0, 2 0))";
+  auto l22 = "COMPOUNDCURVE(CIRCULARSTRING (0 0, 1 1, 1 0),(1 0, 0 1))";
+  auto r22 = "COMPOUNDCURVE(CIRCULARSTRING (2 0, 3 3, 3 0),(3 0, 2 0))";
 
-  auto l23="POLYGON ((1 2,2 3,3 4,1 2))";
-  auto r23="LINESTRING (1 2,3 4)";
+  auto l23 = "POLYGON ((1 2,2 3,3 4,1 2))";
+  auto r23 = "LINESTRING (1 2,3 4)";
 
-  auto l24="CIRCULARSTRING (0 0,1 1,2 0)";
-  auto r24="CIRCULARSTRING (0 0,2 0,1 1)";
+  auto l24 = "CIRCULARSTRING (0 0,1 1,2 0)";
+  auto r24 = "CIRCULARSTRING (0 0,2 0,1 1)";
 
-  auto l25="MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
-  auto r25="MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
+  auto l25 = "MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
+  auto r25 = "MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
 
-  auto l26="MULTIPOLYGON (((0 0,1 0,1 1,0 1,0 0)),((1 0,2 0,2 1,1 1,1 0)))";
-  auto r26="POLYGON((0 0,2 0,2 1,0 1,0 0))";
+  auto l26 = "MULTIPOLYGON (((0 0,1 0,1 1,0 1,0 0)),((1 0,2 0,2 1,1 1,1 0)))";
+  auto r26 = "POLYGON((0 0,2 0,2 1,0 1,0 0))";
 
   arrow::StringBuilder builder_l, builder_r;
 
@@ -2587,7 +2591,6 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   builder_l.Append(std::string(l26));
   builder_r.Append(std::string(r26));
 
-
   std::shared_ptr<arrow::Array> input_l, input_r;
   builder_l.Finish(&input_l);
   builder_r.Finish(&input_r);
@@ -2595,33 +2598,33 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   auto res = arctern::gis::ST_HausdorffDistance(input_l, input_r);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-  ASSERT_TRUE(std::abs(res_double->Value(0)-1.4142135623731)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(1)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(2)-2.82842712474619)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(3)-2.82842712474619)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(4)-2.23606797749979)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(5)-3.60555127546399)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(6)-2)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(7)-2)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(8)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(9)-2)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(10)-2.06155281280883)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(11)-2.06155281280883)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(12)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(13)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(14)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(0) - 1.4142135623731) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(1) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(2) - 2.82842712474619) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(3) - 2.82842712474619) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(4) - 2.23606797749979) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(5) - 3.60555127546399) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(6) - 2) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(7) - 2) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(8) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(9) - 2) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(10) - 2.06155281280883) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(11) - 2.06155281280883) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(12) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(13) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(14) - 0) < 1e-8);
   ASSERT_TRUE(res_double->IsNull(15));
   ASSERT_TRUE(res_double->IsNull(16));
   ASSERT_TRUE(res_double->IsNull(17));
   ASSERT_TRUE(res_double->IsNull(18));
   ASSERT_TRUE(res_double->IsNull(19));
   ASSERT_TRUE(res_double->IsNull(20));
-  ASSERT_TRUE(std::abs(res_double->Value(21)-1)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(22)-3.11029925929037)<1e-4);
-  ASSERT_TRUE(std::abs(res_double->Value(23)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(24)-1.41421356237309)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(25)-0)<1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(26)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(21) - 1) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(22) - 3.11029925929037) < 1e-4);
+  ASSERT_TRUE(std::abs(res_double->Value(23) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(24) - 1.41421356237309) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(25) - 0) < 1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(26) - 0) < 1e-8);
 }
 
 TEST(geometry_test, test_ST_HausdorffDistance) {
