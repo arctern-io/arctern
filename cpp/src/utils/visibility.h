@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef ARROW_UTIL_VISIBILITY_H
-#define ARROW_UTIL_VISIBILITY_H
+#ifndef ARCTERN_UTIL_VISIBILITY_H
+#define ARCTERN_UTIL_VISIBILITY_H
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #if defined(_MSC_VER)
@@ -24,32 +24,32 @@
 #pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
-#ifdef ARROW_STATIC
-#define ARROW_EXPORT
-#elif defined(ARROW_EXPORTING)
-#define ARROW_EXPORT __declspec(dllexport)
+#ifdef ARCTERN_STATIC
+#define ARCTERN_EXPORT
+#elif defined(ARCTERN_EXPORTING)
+#define ARCTERN_EXPORT __declspec(dllexport)
 #else
-#define ARROW_EXPORT __declspec(dllimport)
+#define ARCTERN_EXPORT __declspec(dllimport)
 #endif
 
-#define ARROW_NO_EXPORT
+#define ARCTERN_NO_EXPORT
 #else  // Not Windows
-#ifndef ARROW_EXPORT
-#define ARROW_EXPORT __attribute__((visibility("default")))
+#ifndef ARCTERN_EXPORT
+#define ARCTERN_EXPORT __attribute__((visibility("default")))
 #endif
-#ifndef ARROW_NO_EXPORT
-#define ARROW_NO_EXPORT __attribute__((visibility("hidden")))
+#ifndef ARCTERN_NO_EXPORT
+#define ARCTERN_NO_EXPORT __attribute__((visibility("hidden")))
 #endif
 #endif  // Non-Windows
 
 // This is a complicated topic, some reading on it:
 // http://www.codesynthesis.com/~boris/blog/2010/01/18/dll-export-cxx-templates/
 #if defined(_MSC_VER) || defined(__clang__)
-#define ARROW_TEMPLATE_CLASS_EXPORT
-#define ARROW_TEMPLATE_EXPORT ARROW_EXPORT
+#define ARCTERN_TEMPLATE_CLASS_EXPORT
+#define ARCTERN_TEMPLATE_EXPORT ARCTERN_EXPORT
 #else
-#define ARROW_TEMPLATE_CLASS_EXPORT ARROW_EXPORT
-#define ARROW_TEMPLATE_EXPORT
+#define ARCTERN_TEMPLATE_CLASS_EXPORT ARCTERN_EXPORT
+#define ARCTERN_TEMPLATE_EXPORT
 #endif
 
-#endif  // ARROW_UTIL_VISIBILITY_H
+#endif  // ARCTERN_UTIL_VISIBILITY_H
