@@ -1,5 +1,3 @@
-# Arctern
-
 <img src="./doc/img/icon/arctern-color.png" width = "200">
 
 [中文README](./README_CN.md)
