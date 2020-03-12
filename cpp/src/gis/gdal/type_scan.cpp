@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+#include "gis/gdal/type_scan.h"
+
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
+
 #include <map>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "gis/gdal/type_scan.h"
 #include "gis/wkb_types.h"
 #include "utils/check_status.h"
-
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
+#include "utils/function_wrapper.h"
 
 namespace arctern {
 namespace gis {
@@ -39,8 +41,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   if (types().empty()) {
     // organize return
     auto ret = std::make_shared<GeometryTypeMasks>();
-    ret->is_unique_group = true;
-    ret->unique_group = {WkbTypes::kUnknown};
+    ret->is_unique_type = true;
+    ret->unique_type = {WkbTypes::kUnknown};
     return ret;
   }
 
@@ -55,26 +57,33 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     num_scan_classes++;
   }
 
-  std::vector<int> mask_counts(num_scan_classes, 0);
-  std::vector<std::vector<bool>> type_masks(num_scan_classes);
+  //  std::vector<int> mask_counts_mapping(num_scan_classes, 0);
+  //  std::vector<std::vector<bool>> masks_mapping(num_scan_classes);
+  using Info = GeometryTypeMasks::Info;
+  std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
-    type_masks[i].resize(len, false);
+    mapping[i].masks.resize(len, false);
+    mapping[i].encode_uid = i;
   }
 
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
+  std::vector<GeometryTypeMasks::EncodeUid> encode_uids(len);
   bool is_unique_type = true;
   int last_idx = -1;
 
   // fill type masks
-  OGRGeometry* geo;
   for (int i = 0; i < len; i++) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(),
-                                                 nullptr, &geo));
-    auto type = OGR_G_GetGeometryType((void*)geo);
-    OGRGeometryFactory::destroyGeometry(geo);
+    auto geo = [str = wkt_geometries->GetString(i)] {
+      OGRGeometry* geo_;
+      CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
+      return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
+    }();
+    auto type = OGR_G_GetGeometryType(geo.get());
     auto idx = type_to_idx[type];
-    type_masks[idx][i] = true;
-    mask_counts[idx]++;
+    mapping[idx].masks[i] = true;
+    mapping[idx].mask_counts++;
+    encode_uids[i] = idx;
+
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
     }
@@ -83,35 +92,34 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // organize return
   auto ret = std::make_shared<GeometryTypeMasks>();
-  ret->is_unique_group = false;
+  ret->is_unique_type = false;
 
   if (is_unique_type) {
-    num_scan_classes = 0;
-    if (type_masks[num_scan_classes].front() == true) {
-      ret->is_unique_group = true;
-      ret->unique_group = {WkbTypes::kUnknown};
-      ret->group_mask_counts[ret->unique_group] = len;
+    int encode_uid = 0;
+    if (mapping[encode_uid].masks.front() == true) {
+      ret->is_unique_type = true;
+      ret->unique_type = {WkbTypes::kUnknown};
       return ret;
-    }
-    num_scan_classes++;
-    for (auto& grouped_type : types()) {
-      if (type_masks[num_scan_classes].front() == true) {
-        ret->is_unique_group = true;
-        ret->unique_group = grouped_type;
-        ret->group_mask_counts[grouped_type] = len;
-        return ret;
+    } else {
+      encode_uid++;
+      for (auto& grouped_type : types()) {
+        if (mapping[encode_uid].masks.front() == true) {
+          ret->is_unique_type = true;
+          ret->unique_type = grouped_type;
+          return ret;
+        }
       }
+      assert(false /**/);
     }
-
   } else {
-    num_scan_classes = 0;
+    int encode_uid = 0;
+    ret->encode_uids = std::move(encode_uids);
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
-    ret->type_masks[unknown_type] = std::move(type_masks[num_scan_classes++]);
+    ret->dict[unknown_type] = std::move(mapping[encode_uid++]);
 
     for (auto& grouped_type : types()) {
-      ret->type_masks[grouped_type] = std::move(type_masks[num_scan_classes]);
-      ret->group_mask_counts[grouped_type] = mask_counts[num_scan_classes];
-      num_scan_classes++;
+      ret->dict[grouped_type] = std::move(mapping[encode_uid]);
+      encode_uid++;
     }
   }
   return ret;
