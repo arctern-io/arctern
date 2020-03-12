@@ -166,9 +166,6 @@ def compare_surface(x, y):
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
 
-    print(intersection_area)
-    print(arct_area)
-    print(pgis_area)
     result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     return result
 
