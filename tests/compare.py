@@ -10,24 +10,6 @@ from shapely import wkt
 
 config_file = './config.txt'
 
-def collect_results(file_path, results_dir):
-    with open(file_path, 'r') as f:
-        cs = f.readlines()
-        names = [x.strip().split('=')[0] for x in cs]
-        table_names = [x.strip().split('=')[1] for x in cs]
-    
-    base_dir = './results'
-    for x, y in zip(table_names, names):
-        # print(x, y)
-        target = os.path.join(base_dir, x, '*.json')
-        file_name = glob.glob(target)
-        # file_name = glob.glob(target)
-        print(file_name)
-        if os.path.isfile(file_name[0]):
-            shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.json'))
-        else:
-            print('file [%s] not exist' % file_name[0])
-
 geo_types = ['POLYGON', 'POINT', 'LINESTRING', 'CURVEPOLYGON']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 
@@ -118,56 +100,59 @@ def compare_float(x, y):
         # print(x, y)
         return False
 
+
 def compare_one(result, expect):
     x = result[1]
     y = expect[1]
+    # print('result: %s' % str(x))
+    # print('expect: %s' % str(y))
 
     if y.strip() == 't':
         y = True
     elif y.strip() == 'f':
         y = False
-        
-    if isinstance(x, bool):
-        flag = (x == y)
-        if not flag:
-            print(result[0], x, expect[0], y)
-        return flag
 
-    if isinstance(x, str):
-        x = x.strip().upper()
-        y = y.strip().upper()
-        if is_geometry(x) and is_geometry(y):
-            flag = compare_geometry(x, y)
+    try:
+        if isinstance(x, bool):
+            flag = (x == y)
             if not flag:
                 print(result[0], x, expect[0], y)
             return flag
 
-        elif is_geometrycollection(x) and is_geometrycollection(y):
-            flag = compare_geometrycollection(x, y)
-            if not flag:
-                print(result[0], x, expect[0], y)
-            return flag
-        else:
-            if is_geometrytype(x) and is_geometrytype(y):
-                flag = (x == y)
+        if isinstance(x, str):
+            x = x.strip().upper()
+            y = y.strip().upper()
+            if is_geometry(x) and is_geometry(y):
+                flag = compare_geometry(x, y)
                 if not flag:
                     print(result[0], x, expect[0], y)
                 return flag
-            
-            print(result[0], x, expect[0], y)
-            return False
+
+            elif is_geometrycollection(x) and is_geometrycollection(y):
+                flag = compare_geometrycollection(x, y)
+                if not flag:
+                    print(result[0], x, expect[0], y)
+                return flag
+            else:
+                if is_geometrytype(x) and is_geometrytype(y):
+                    flag = (x == y)
+                    if not flag:
+                        print(result[0], x, expect[0], y)
+                    return flag
+
+                print(result[0], x, expect[0], y)
+                return False
+
+        if isinstance(x, int) or isinstance(x, float):
+            flag = compare_float(x, y)
+            if not flag:
+                print(result[0], x, expect[0], y)
+            return flag
+    except Exception as e:
+        flag = False
     
-    if isinstance(x, int) or isinstance(x, float):
-        flag = compare_float(x, y)
-        if not flag:
-            print(result[0], x, expect[0], y)
-        return flag
+    return flag
 
-
-
-    
-    # return True
-    # return random.choice([True, False])
 
 def compare_results(arctern_results, postgis_results):
 
@@ -265,13 +250,11 @@ def update_json():
 
 if __name__ == '__main__':
     
-    # r = compare_results('/tmp/arctern_results/run_test_st_convexhull.json', './expected/results/st_convexhull.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_simplifypreservetopology.json', './expected/results/st_simplifypreservetopology.out')
+    # r = compare_results('/tmp/results/test_distance/part-00000-9e90a538-627c-49b6-8fb0-e9f0b263b286-c000.json', './st_distance.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    # print(r)
-
     # exit(0)
 
     update_json()
