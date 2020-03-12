@@ -23,12 +23,14 @@ arr = []
 #     for line in arr:
 #         f.writelines(line)
 
-with open('st_crosses.out', 'r') as f:
+name = sys.argv[1]
+
+with open(name, 'r') as f:
     lines = f.readlines()
     for line in lines:
         if line.strip() == '':
             continue
-        if line.strip().startswith('st_crosses'):
+        if line.strip().startswith('geos'):
             continue
         if line.strip().startswith('-----'):
             continue
@@ -37,6 +39,6 @@ with open('st_crosses.out', 'r') as f:
 
         arr.append(line.strip() + '\n')
 
-with open('st_crosses.out.new', 'w') as f:
+with open(name, 'w') as f:
     for e in arr:
         f.writelines(e)
