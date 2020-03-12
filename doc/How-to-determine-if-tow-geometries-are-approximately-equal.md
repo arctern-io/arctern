@@ -93,3 +93,4 @@ conda install -c conda-forge pygeos
 - [postgis-hausdorff-distance](http://postgis.net/docs/ST_HausdorffDistance.html)
 - [pygeos-hausdorff-distance](https://pygeos.readthedocs.io/en/latest/measurement.html)
 - [stack-over-flow](https://gis.stackexchange.com/questions/144714/determining-if-two-geometric-figures-are-approximately-equal-using-postgis)
+

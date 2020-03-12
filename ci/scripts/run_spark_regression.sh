@@ -17,6 +17,7 @@ Usage:
   $0 [flags] [Arguments] [application-arguments]
 
     --master [URL]            The master URL for the cluster (e.g. spark://23.195.26.187:7077)
+    --conda_env=[CONDA_ENV]   Setting conda activate environmen
     -h or --help              Print help information
 
     application-arguments: Arguments passed to the main method of your main class, if any
@@ -25,7 +26,7 @@ Usage:
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "h" -l "master:,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "h" -l "master:,conda_env::,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 
@@ -39,11 +40,21 @@ while true ; do
                                 "") echo "Option master, no argument"; exit 1 ;;
                                 *)  MASTER_URL=$2 ; shift 2 ;;
                         esac ;;
+                --conda_env)
+                        case "$2" in
+                                "") echo "Option conda_env, no argument"; exit 1 ;;
+                                *)  CONDA_ENV=$2 ; shift 2 ;;
+                        esac ;;
                 -h|--help) echo -e "${HELP}" ; exit 0 ;;
                 --) shift ; break ;;
                 *) echo "Internal error!" ; exit 1 ;;
         esac
 done
+
+if [[ -n ${CONDA_ENV} ]]; then
+    eval "$(conda shell.bash hook)"
+    conda activate ${CONDA_ENV}
+fi
 
 # Set defaults for vars modified by flags to this script
 MASTER_URL=${MASTER_URL:="spark://127.0.0.1:7077"}

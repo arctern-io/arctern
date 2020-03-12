@@ -15,10 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/conversion/conversions.impl.h"
+#include "utils/function_wrapper.h"
 
 namespace arctern {
 namespace gis {
