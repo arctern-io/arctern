@@ -150,9 +150,43 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
-  // #if defined(USE_GPU)
+    const std::shared_ptr<arrow::Array>& geo_left,
+    const std::shared_ptr<arrow::Array>& geo_right) {
+#if defined(USE_GPU)
+  auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
+  auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
+    gdal::TypeScannerForWkt scanner(geometries);
+    scanner.mutable_types().emplace_back(groupped_type);
+    return scanner.Scan();
+  };
+  auto lhs_record = scan(geo_left);
+  auto rhs_record = scan(geo_right);
+  enum class Stategy{
+    GDAL_ONLY = 0,
+    MIXED = 1,
+    CUDA_ONLY = 2
+  };
+  auto get_stategy = [&groupped_type](const GeometryTypeMasks& record) {
+    if(record.is_unique_type) {
+      if(record.unique_type == groupped_type)  {
+        return Stategy::CUDA_ONLY;
+      } else {
+        return Stategy::GDAL_ONLY;
+      }
+    } else {
+      return Stategy::MIXED;
+    }
+  };
+  auto lhs_stategy = get_stategy(*lhs_record);
+  auto rhs_stategy = get_stategy(*rhs_record);
+  auto stategy = (Stategy)std::min((int)lhs_stategy, (int)rhs_stategy);
+  if(stategy == Stategy::CUDA_ONLY ) {
+    return cuda::ST_Distance(geo_left, geo_right);
+  } else if(stategy == Stategy::GDAL_ONLY) {
+    return gdal::ST_Distance(geo_left, geo_right);
+  }
+  assert(stategy == Stategy::MIXED);
+  return gdal::ST_Distance(geo_left, geo_right);
   //   // currently support ST_Point
   //   bool lhs_ok = false;
   //   bool rhs_ok = false;
@@ -173,14 +207,9 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   //             (rhs_type_masks->unique_group == rhs_supported_types);
   //   //  }
 
-  //   if (lhs_ok && rhs_ok) {
-  //     return cuda::ST_Distance(geometries_1, geometries_2);
-  //   } else {
-  //     return gdal::ST_Distance(geometries_1, geometries_2);
-  //   }
-  // #else
-  return gdal::ST_Distance(geometries_1, geometries_2);
-  // #endif
+#else
+  return gdal::ST_Distance(geo_left, geo_right);
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {

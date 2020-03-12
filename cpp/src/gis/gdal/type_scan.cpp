@@ -73,13 +73,20 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // fill type masks
   for (int i = 0; i < len; i++) {
-    auto geo = [str = wkt_geometries->GetString(i)] {
+    using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
+    auto geo = [str = wkt_geometries->GetString(i)]() -> Holder {
+      if (str.size() == 0) {
+        return nullptr;
+      }
       OGRGeometry* geo_;
       CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
-      return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
+      return Holder(geo_);
     }();
-    auto type = OGR_G_GetGeometryType(geo.get());
-    auto idx = type_to_idx[type];
+
+    auto type =
+        geo.get() ? (WkbTypes)OGR_G_GetGeometryType(geo.get()) : WkbTypes::kUnknown;
+
+    auto idx = type_to_idx[(int)type];
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
     encode_uids[i] = idx;
