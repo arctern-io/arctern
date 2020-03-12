@@ -36,7 +36,9 @@ if __name__ == "__main__":
         .getOrCreate()
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+
     intersection_gen()
+
     run_st_intersection(spark_session)
 
     spark_session.stop()
