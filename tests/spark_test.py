@@ -699,7 +699,7 @@ if __name__ == "__main__":
     run_test_st_overlaps(spark_session)
     run_test_st_touches(spark_session)
     run_test_st_makevalid(spark_session)
-    run_test_st_precisionreduce(spark_session)
+    #run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
     #run_test_st_hausdorffdistance(spark_session)
