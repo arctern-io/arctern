@@ -57,8 +57,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     num_scan_classes++;
   }
 
-//  std::vector<int> mask_counts_mapping(num_scan_classes, 0);
-//  std::vector<std::vector<bool>> masks_mapping(num_scan_classes);
+  //  std::vector<int> mask_counts_mapping(num_scan_classes, 0);
+  //  std::vector<std::vector<bool>> masks_mapping(num_scan_classes);
   using Info = GeometryTypeMasks::Info;
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
@@ -109,7 +109,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
           return ret;
         }
       }
-      assert(false/**/);
+      assert(false /**/);
     }
   } else {
     int encode_uid = 0;

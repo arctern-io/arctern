@@ -16,9 +16,9 @@
 
 #pragma once
 
+#include <cassert>
 #include <map>
 #include <memory>
-#include <cassert>
 #include <set>
 #include <vector>
 
