@@ -411,13 +411,13 @@ if __name__ == '__main__':
     geo5 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 11, 7 8)))'
     geo6 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 13, 7 8)))'
     
-    # update_result()
+    update_result()
     # r = compare_results('/tmp/arctern_results/run_test_st_buffer.csv', './expected/results/st_buffer.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_length.csv', './expected/results/st_length.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_area.csv', './expected/results/st_area.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    # exit(0)
+    exit(0)
 
     # compare_all()
     assert True == compare_one([14,geo1],[14,geo2])
