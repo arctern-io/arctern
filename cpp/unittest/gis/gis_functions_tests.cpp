@@ -733,15 +733,15 @@ TEST(geometry_test, test_ST_Equals3) {
   builder_l.Finish(&input_l);
   builder_r.Finish(&input_r);
 
-  auto res = arctern::gis::ST_Equals(input1, input2);
+  auto res = arctern::gis::ST_Equals(input_l, input_r);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), true);
   ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), true);
   ASSERT_EQ(res_bool->Value(4), true);
   ASSERT_EQ(res_bool->Value(5), true);
-  ASSERT_EQ(res_bool->Value(6), true);
 }
 
 TEST(geometry_test, test_ST_Equals2) {
