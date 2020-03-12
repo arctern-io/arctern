@@ -16,11 +16,18 @@ from pyspark.sql import SparkSession
 from arctern_pyspark import register_funcs
 
 
+def intersection_gen():
+    with open('/tmp/intersection.json', 'w') as file:
+        file.write('{"left": "POINT(0 0)", "right": "LINESTRING ( 2 0, 0 2  )"}\n')
+        file.write('{"left": "POINT(0 0)", "right": "LINESTRING ( 0 0, 0 2  )"}\n')
+
+
 def run_st_intersection(spark):
     test_df = spark.read.json("/tmp/intersection.json").cache()
     test_df.createOrReplaceTempView("intersection")
     register_funcs(spark)
-    spark.sql("select ST_Intersection_UDF(left, right) from intersection").show()
+    spark.sql("select ST_Intersection(left, right) from intersection").show()
+
 
 if __name__ == "__main__":
     spark_session = SparkSession \
@@ -29,7 +36,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-
+    intersection_gen()
     run_st_intersection(spark_session)
 
     spark_session.stop()

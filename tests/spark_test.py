@@ -187,7 +187,7 @@ def run_test_st_intersection(spark):
 def run_test_st_convexhull(spark):
     data = "convexhull.csv"
     table_name = 'test_convexhull'
-    sql = "select ST_convexhull_UDF(geos) as geos from test_convexhull"
+    sql = "select ST_convexhull(geos) as geos from test_convexhull"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -203,7 +203,7 @@ def run_test_st_convexhull2(spark):
     # this test is to test convexhull's result is curve, which not support in postgis, we need to convert arctern result to basic types, then compare
     data = "convexhull2.csv"
     table_name = 'test_convexhull2'
-    sql = "select st_curvetoline_udf(ST_convexhull_UDF(geos)) as geos from test_convexhull2"
+    sql = "select st_curvetoline_udf(ST_convexhull(geos)) as geos from test_convexhull2"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()

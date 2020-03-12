@@ -86,7 +86,7 @@ def run_st_tmp(spark):
 
     df = spark.createDataFrame(data=input, schema=['geos']).cache()
     df.createOrReplaceTempView("t1")
-    spark.sql("select ST_Area_UDF(geos) from t1").show(100,0)
+    spark.sql("select ST_Area(geos) from t1").show(100,0)
 ```
 
 - postgis result :
