@@ -2422,6 +2422,131 @@ TEST(geometry_test, test_ST_Distance) {
   EXPECT_DOUBLE_EQ(res_double->Value(20), 0);
 }
 
+TEST(geometry_test, test_ST_HausdorffDistance2) {
+  auto l0 = "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
+  auto r0 = "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))";
+
+  auto l1="POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
+  auto r1="POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))";
+
+  auto l2="POLYGON ((1 1, 1 5, 5 5, 1 1))";
+  auto r2="POLYGON ((2 2, 2 3, 3 3, 2 2))";
+
+  auto l3="POLYGON ((2 2, 2 3, 3 3, 2 2))";
+  auto r3="POLYGON ((1 1, 1 5, 5 5, 1 1))";
+
+  auto l4="POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2))";
+  auto r4="POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
+
+  auto l5="POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2))";
+  auto r5="POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))";
+
+  auto l6="POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r6="POLYGON ((-1 3,2 1,0 -3,-1 3))";
+
+  auto l7="POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r7="POINT (0 0)";
+
+  auto l8="POINT (0 0)";
+  auto r8="POINT (0 0)";
+
+  auto l9="POINT (0 0)";
+  auto r9="POLYGON ((0 2,1 1,0 -1,0 2))";
+
+  auto l10="POLYGON ((0 2,1 1,0 -1,0 2))";
+  auto r10="POINT (0.5 0)";
+
+  auto l11="POINT (0.5 0)";
+  auto r11="POLYGON ((0 2,1 1,0 -1,0 2))";
+
+  auto l12="LINESTRING (0 0, 10 10)";
+  auto r12="LINESTRING (0 0, 5 5, 10 10)";
+
+  auto l13="LINESTRING (10 10, 0 0)";
+  auto r13="LINESTRING (0 0, 5 5, 10 10)";
+
+  auto l14="LINESTRING(0 0, 1 1)";
+  auto r14="LINESTRING(1 1, 0 0)";
+
+  auto l15="POLYGON EMPTY";
+  auto r15="POINT EMPTY";
+
+  auto l16="LINESTRING EMPTY";
+  auto r16="POINT EMPTY";
+
+  auto l17="POINT EMPTY";
+  auto r17="POINT EMPTY";
+
+  auto l18="MULTIPOLYGON EMPTY";
+  auto r18="POINT EMPTY";
+
+  auto l19="MULTILINESTRING EMPTY";
+  auto r19="POINT EMPTY";
+
+  auto l20="MULTIPOINT EMPTY";
+  auto r20="POINT EMPTY";
+
+  auto l21="MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,9 7,7 7)))";
+  auto r21="MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,8 7,7 7)))";
+
+  auto l22="COMPOUNDCURVE(CIRCULARSTRING (0 0, 1 1, 1 0),(1 0, 0 1))";
+  auto r22="COMPOUNDCURVE(CIRCULARSTRING (2 0, 3 3, 3 0),(3 0, 2 0))";
+
+  auto l23="POLYGON ((1 2,2 3,3 4,1 2))";
+  auto r23="LINESTRING (1 2,3 4)";
+
+  auto l24="CIRCULARSTRING (0 0,1 1,2 0)";
+  auto r24="CIRCULARSTRING (0 0,2 0,1 1)";
+
+  auto l25="MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
+  auto r25="MULTICURVE ((0 0, 5 5),CIRCULARSTRING (4 0, 4 4, 8 4))";
+
+  auto l26="MULTIPOLYGON (((0 0,1 0,1 1,0 1,0 0)),((1 0,2 0,2 1,1 1,1 0)))";
+  auto r26="POLYGON((0 0,2 0,2 1,0 1,0 0))";
+
+  arrow::StringBuilder builder_l, builder_r;
+
+  builder_l.Append(std::string(l0));
+  builder_r.Append(std::string(r0));
+
+  builder_l.Append(std::string(l1));
+  builder_r.Append(std::string(r1));
+
+  builder_l.Append(std::string(l2));
+  builder_r.Append(std::string(r2));
+
+  builder_l.Append(std::string(l3));
+  builder_r.Append(std::string(r3));
+
+  builder_l.Append(std::string(l4));
+  builder_r.Append(std::string(r4));
+
+  builder_l.Append(std::string(l5));
+  builder_r.Append(std::string(r5));
+
+  builder_l.Append(std::string(l6));
+  builder_r.Append(std::string(r6));
+
+  builder_l.Append(std::string(l7));
+  builder_r.Append(std::string(r7));
+
+  builder_l.Append(std::string(l8));
+  builder_r.Append(std::string(r8));
+
+  builder_l.Append(std::string(l9));
+  builder_r.Append(std::string(r9));
+
+
+  std::shared_ptr<arrow::Array> input_l, input_r;
+  builder_l.Finish(&input_l);
+  builder_r.Finish(&input_r);
+
+  auto res = arctern::gis::ST_HausdorffDistance(input_l, input_r);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+
+}
+
 TEST(geometry_test, test_ST_HausdorffDistance) {
   auto p11 = "POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))";
   auto p12 = "POINT(0 0)";
