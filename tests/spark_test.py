@@ -368,7 +368,7 @@ def run_test_st_precisionreduce(spark):
 
     rs = spark.sql(sql).cache()
     rs.printSchema()
-    rs.show()
+    #rs.show()
 
     save_result("results/%s" % table_name, rs)
     

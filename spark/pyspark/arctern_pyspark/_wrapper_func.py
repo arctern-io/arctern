@@ -125,8 +125,9 @@ def ST_IsValid_UDF(geos):
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PrecisionReduce_UDF(geos, precision):
     arr_geos = pa.array(geos, type='string')
+    precision_value = precision[0]
     from arctern_gis import ST_PrecisionReduce
-    rs = ST_PrecisionReduce(arr_geos, precision)
+    rs = ST_PrecisionReduce(arr_geos, precision_value)
     return rs.to_pandas()
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
