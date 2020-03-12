@@ -2620,7 +2620,7 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   ASSERT_TRUE(res_double->IsNull(19));
   ASSERT_TRUE(res_double->IsNull(20));
   ASSERT_TRUE(std::abs(res_double->Value(21) - 1) < 1e-8);
-  ASSERT_TRUE(std::abs(res_double->Value(22) - 3.11029925929037) < 1e-4);
+  ASSERT_TRUE(std::abs(res_double->Value(22) - 3.11029925929037) < 1e-3);
   ASSERT_TRUE(std::abs(res_double->Value(23) - 0) < 1e-8);
   ASSERT_TRUE(std::abs(res_double->Value(24) - 1.41421356237309) < 1e-8);
   ASSERT_TRUE(std::abs(res_double->Value(25) - 0) < 1e-8);
