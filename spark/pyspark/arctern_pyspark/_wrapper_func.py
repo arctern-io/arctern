@@ -55,8 +55,6 @@ __all__ = [
 import pyarrow as pa
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
-def toArrow(parameter):
-    return  pa.array(parameter)
 
 @pandas_udf("string", PandasUDFType.GROUPED_AGG)
 def my_plot(x, y):
