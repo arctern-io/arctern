@@ -20,7 +20,7 @@ def run_st_point(spark):
     points_df = spark.read.json("/tmp/points.json").cache()
     points_df.createOrReplaceTempView("points")
     register_funcs(spark)
-    spark.sql("select ST_Point_UDF(x, y) from points").show()
+    spark.sql("select ST_Point(x, y) from points").show()
 
 if __name__ == "__main__":
     spark_session = SparkSession \
