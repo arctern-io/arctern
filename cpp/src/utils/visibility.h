@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef ARCTERN_UTIL_VISIBILITY_H
-#define ARCTERN_UTIL_VISIBILITY_H
+#pragma once
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #if defined(_MSC_VER)
