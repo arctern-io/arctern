@@ -58,7 +58,7 @@ class LengthVisitor : public OGRDefaultConstGeometryVisitor {
   void visit(const OGRPoint*) override {}
   void visit(const OGRLineString* geo) override { length_ += geo->get_Length(); }
   void visit(const OGRLinearRing* geo) override { length_ += geo->get_Length(); }
-  // void visit(const OGRPolygon* ) override;
+  void visit(const OGRPolygon*) override {}
   void visit(const OGRMultiPoint*) override {}
   void visit(const OGRMultiLineString* geo) override { length_ += geo->get_Length(); }
   // void visit(const OGRMultiPolygon* ) override;
