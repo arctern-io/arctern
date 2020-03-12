@@ -24,6 +24,7 @@ do
                 echo "
 parameter:
 -i: Arctern install path
+-b: Arctern build path
 -e: set conda activate environment
 -h: help
 usage:
