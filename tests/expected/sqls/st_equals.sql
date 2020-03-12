@@ -1,7 +1,41 @@
-drop table if exists t1;
-create table t1 (geo1 geometry, geo2 geometry);
-copy t1 from '@path@/data/equals.csv' DELIMITER '|' csv header;
-
 \o @path@/expected/results/st_equals.out
-select st_equals(geo1, geo2) from t1;
+select st_equals('POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry, 'POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))'::geometry) as geos;
+select st_equals('POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry, 'POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry, 'POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry) as geos;
+select st_equals('POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry, 'POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2))'::geometry, 'POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2))'::geometry, 'POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POLYGON ((-1 3,2 1,0 -3,-1 3))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POINT (0 0)'::geometry) as geos;
+select st_equals('POINT (0 0)'::geometry, 'POINT (0 0)'::geometry) as geos;
+select st_equals('POINT (0 0)'::geometry, 'POLYGON ((0 2,1 1,0 -1,0 2))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POINT (0.5 0)'::geometry) as geos;
+select st_equals('POINT (0.5 0)'::geometry, 'POLYGON ((0 2,1 1,0 -1,0 2))'::geometry) as geos;
+select st_equals('LINESTRING (0 0, 10 10)'::geometry, 'LINESTRING (0 0, 5 5, 10 10)'::geometry) as geos;
+select st_equals('LINESTRING (10 10, 0 0)'::geometry, 'LINESTRING (0 0, 5 5, 10 10)'::geometry) as geos;
+select st_equals('LINESTRING(0 0, 1 1)'::geometry, 'LINESTRING(1 1, 0 0)'::geometry) as geos;
+select st_equals('POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry, 'POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))'::geometry) as geos;
+select st_equals('POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry, 'POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry, 'POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry) as geos;
+select st_equals('POLYGON ((2 2, 2 3, 3 3, 2 2))'::geometry, 'POLYGON ((1 1, 1 5, 5 5, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2))'::geometry, 'POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2))'::geometry, 'POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POLYGON ((-1 3,2 1,0 -3,-1 3))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POINT (0 0)'::geometry) as geos;
+select st_equals('POINT (0 0)'::geometry, 'POINT (0 0)'::geometry) as geos;
+select st_equals('POINT (0 0)'::geometry, 'POLYGON ((0 2,1 1,0 -1,0 2))'::geometry) as geos;
+select st_equals('POLYGON ((0 2,1 1,0 -1,0 2))'::geometry, 'POINT (0.5 0)'::geometry) as geos;
+select st_equals('POINT (0.5 0)'::geometry, 'POLYGON ((0 2,1 1,0 -1,0 2))'::geometry) as geos;
+select st_equals('LINESTRING (0 0, 10 10)'::geometry, 'LINESTRING (0 0, 5 5, 10 10)'::geometry) as geos;
+select st_equals('LINESTRING (10 10, 0 0)'::geometry, 'LINESTRING (0 0, 5 5, 10 10)'::geometry) as geos;
+select st_equals('LINESTRING(0 0, 1 1)'::geometry, 'LINESTRING(1 1, 0 0)'::geometry) as geos;
+select st_equals('POLYGON EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('LINESTRING EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('POINT EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('MULTIPOLYGON EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('MULTILINESTRING EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('MULTIPOINT EMPTY'::geometry, 'POINT EMPTY'::geometry) as geos;
+select st_equals('MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,9 7,7 7)))'::geometry, 'MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((1 8,2 8,2 9,1 9,1 8)),((6 6,6 12,12 12,12 6,6 6),(7 7,7 8,8 8,8 7,7 7)))'::geometry) as geos;
+select st_equals('POLYGON ((1 2,2 3,3 4,1 2))'::geometry, 'LINESTRING (1 2,3 4)'::geometry) as geos;
+select st_equals('MULTIPOLYGON (((0 0,1 0,1 1,0 1,0 0)),((1 0,2 0,2 1,1 1,1 0)))'::geometry, 'POLYGON((0 0,2 0,2 1,0 1,0 0))'::geometry) as geos;
 \o

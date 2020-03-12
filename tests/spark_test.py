@@ -343,7 +343,7 @@ def run_test_st_transform(spark):
 def run_test_st_transform1(spark):
     data = "transform.csv"
     table_name = 'test_transform1'
-    sql = "select st_transform_udf(geos, 'epsg:4326', 'epsg:3857') as geos from test_transform1"
+    sql = "select st_transform_udf(geos, 'epsg:3857', 'epsg:4326') as geos from test_transform1"
 
     df = read_data(spark, base_dir, data)
     df.printSchema()
