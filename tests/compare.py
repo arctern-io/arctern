@@ -10,24 +10,6 @@ from shapely import wkt
 
 config_file = './config.txt'
 
-def collect_results(file_path, results_dir):
-    with open(file_path, 'r') as f:
-        cs = f.readlines()
-        names = [x.strip().split('=')[0] for x in cs]
-        table_names = [x.strip().split('=')[1] for x in cs]
-    
-    base_dir = './results'
-    for x, y in zip(table_names, names):
-        # print(x, y)
-        target = os.path.join(base_dir, x, '*.json')
-        file_name = glob.glob(target)
-        # file_name = glob.glob(target)
-        print(file_name)
-        if os.path.isfile(file_name[0]):
-            shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.json'))
-        else:
-            print('file [%s] not exist' % file_name[0])
-
 geo_types = ['POLYGON', 'POINT', 'LINESTRING', 'CURVEPOLYGON']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 
@@ -172,11 +154,6 @@ def compare_one(result, expect):
     return flag
 
 
-
-    
-    # return True
-    # return random.choice([True, False])
-
 def compare_results(arctern_results, postgis_results):
 
     with open(arctern_results, 'r') as f:
@@ -274,12 +251,10 @@ def update_json():
 if __name__ == '__main__':
     
     # r = compare_results('/tmp/arctern_results/run_test_st_simplifypreservetopology.json', './expected/results/st_simplifypreservetopology.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_crosses.json', './expected/results/st_crosses.out')
+    # r = compare_results('/tmp/results/test_distance/part-00000-9e90a538-627c-49b6-8fb0-e9f0b263b286-c000.json', './st_distance.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    # print(r)
-
     # exit(0)
 
     update_json()

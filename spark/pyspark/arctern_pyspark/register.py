@@ -26,3 +26,18 @@ def register_funcs(spark):
     for obj in all_funcs:
         #print(obj.__name__, obj)
         spark.udf.register(obj.__name__, obj)
+
+def point_map_2D(df, vega):
+    from . render_func import render_point_map
+    res = render_point_map(df, vega)
+    return res
+
+def heat_map_2D(df, vega):
+    from . render_func import render_heat_map
+    res = render_heat_map(df, vega)
+    return res
+
+def choropleth_map_2D(df, vega):
+    from . render_func import render_choropleth_map
+    res = render_choropleth_map(df, vega)
+    return res
