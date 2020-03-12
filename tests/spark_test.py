@@ -190,10 +190,10 @@ def run_test_st_convexhull2(spark):
 def run_test_st_buffer(spark):
     data = "buffer.csv"
     table_name = 'test_buffer'
-    sql = "select st_buffer_udf(geos, distance) as geos from test_buffer"
+    sql = "select st_buffer_udf(geos, d) as geos from test_buffer"
     
     df = read_data(spark, base_dir, data)
-    df = df.withColumn("distance", col("distance").cast("double"))
+    df = df.withColumn("d", col("distance").cast("double"))
     df.printSchema()
     df.show()
     df.createOrReplaceTempView(table_name)
