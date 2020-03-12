@@ -4,14 +4,17 @@ import inspect
 import sys
 import shutil           
 import glob
-# import pygeos
 import shapely
 from shapely import wkt
+from osgeo import ogr
+from ogr import *
 
 config_file = './config.txt'
 
-geo_types = ['POLYGON', 'POINT', 'LINESTRING', 'CURVEPOLYGON']
+geo_types = ['POLYGON', 'POINT', 'LINESTRING']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
+curve_types = ['CIRCULARSTRING','MULTICURVE','COMPOUNDCURVE']
+surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -50,9 +53,42 @@ def is_geometrytype(geo):
     
     return False
 
+def is_empty(geo):
+    geo = geo.strip().upper()
+    if geo.endswith('EMPTY'):
+        return True
+    else:
+        return False
+
+
+def is_curve(geo):
+    geo = geo.strip().upper()
+
+    for x in curve_types:
+        if geo.startswith(x):
+            return True
+        else:
+            continue
+
+    return False
+
+def is_surface(geo):
+    geo = geo.strip().upper()
+
+    for x in surface_types:
+        if geo.startswith(x):
+            return True
+        else:
+            continue
+
+    return False
+
+
 
 UNIT = 0.0001
 EPOCH = 1e-8
+EPOCH_CURVE = 1e-2
+EPOCH_SURFACE = 1e-2
 
 # def compare_geometry(x, y):
 #     arct = pygeos.Geometry(x)
@@ -90,7 +126,7 @@ def compare_geometrycollection(x, y):
     
     return result
 
-def compare_float(x, y):
+def compare_floats(x, y):
 
     x = float(x)
     y = float(y)
@@ -99,6 +135,38 @@ def compare_float(x, y):
     else:
         # print(x, y)
         return False
+
+def compare_float(x, y, z, precision_error):
+
+    x = float(x)
+    y = float(y)
+    z = float(z)
+    if abs((x - y)) <= precision_error and abs((x-z)) <= precision_error and abs((y-z)) <= precision_error:
+        return True
+    else:
+        # print(x, y)
+        return False
+
+def compare_curve(x, y):
+    arct = CreateGeometryFromWkt(x)
+    pgis = CreateGeometryFromWkt(y)
+
+    intersection_length = Geometry.Length(Geometry.Intersection(arct,pgis))
+    arct_length = Geometry.Length(arct)
+    pgis_length = Geometry.Length(pgis)
+    result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    return result
+
+def compare_surface(x, y):
+    arct = CreateGeometryFromWkt(x)
+    pgis = CreateGeometryFromWkt(y)
+
+    intersection_area = Geometry.Area(Geometry.Intersection(arct,pgis))
+    arct_area = Geometry.Area(arct)
+    pgis_area = Geometry.Area(pgis)
+
+    result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    return result
 
 def convert_str(strr):
     if strr.lower() == 'true' or strr.lower() == 't':
@@ -123,11 +191,6 @@ def compare_one(result, expect):
     x = convert_str(x)
     y = convert_str(y)
 
-    # if y.strip() == 't':
-    #     y = True
-    # elif y.strip() == 'f':
-    #     y = False
-
     try:
         if isinstance(x, bool):
             flag = (x == y)
@@ -138,7 +201,12 @@ def compare_one(result, expect):
         if isinstance(x, str):
             x = x.strip().upper()
             y = y.strip().upper()
-            if is_geometry(x) and is_geometry(y):
+            
+            # check order : empty -> geo_types -> geocollection_types -> curve -> surface
+            if (is_empty(x) and is_empty(y)):
+                return True
+
+            elif is_geometry(x) and is_geometry(y):
                 flag = compare_geometry(x, y)
                 if not flag:
                     print(result[0], x, expect[0], y)
@@ -149,6 +217,19 @@ def compare_one(result, expect):
                 if not flag:
                     print(result[0], x, expect[0], y)
                 return flag
+
+            elif is_curve(x) and is_curve(y):
+                flag = compare_curve(x, y)
+                if not flag:
+                    print(result[0], x, expect[0], y)
+                return flag
+
+            elif is_surface(x) and is_surface(y):
+                flag = compare_surface(x, y)
+                if not flag:
+                    print(result[0], x, expect[0], y)
+                return flag
+
             else:
                 if is_geometrytype(x) and is_geometrytype(y):
                     flag = (x == y)
@@ -160,13 +241,12 @@ def compare_one(result, expect):
                 return False
 
         if isinstance(x, int) or isinstance(x, float):
-            flag = compare_float(x, y)
+            flag = compare_floats(x, y)
             if not flag:
                 print(result[0], x, expect[0], y)
             return flag
     except Exception as e:
         flag = False
-    
     return flag
 
 
@@ -275,8 +355,63 @@ def update_result():
         
 
 if __name__ == '__main__':
+    #compare.py unittest cases (expected no AssertionError)    
+    #test compare EMPTY
+    geo1 = 'POINT EMPTY'
+    geo2 = 'POINT EMPTY'
+    geo3 = 'CIRCULARSTRING EMPTY'
+    geo4 = 'POLYGON((0 0,1000000 0,1000000 2000000,0 0))'
+    assert True == compare_one([1,geo1],[1,geo2])
+    assert True == compare_one([2,geo1],[2,geo3])
+    assert False == compare_one([3,geo1],[3,geo4])
+
+    #test geo_types
+    geo1 = 'POLYGON((0 0,100000000 0,100000000 100000000,0 0))'
+    geo2 = 'POLYGON((0 0,100000000 0,100000000 100000000.000000001,0 0))'
+    geo3 = 'POLYGON((0 0,100000000 0,100000000 200000000,0 0))'
+    assert True == compare_one([4,geo1],[4,geo2])
+    assert False == compare_one([5,geo1],[5,geo3])
+
+
+    #test geo_collection_types
+    geo1 = 'GEOMETRYCOLLECTION (POINT (2 1),LINESTRING (0 0,1 1,2 3),POLYGON((0 0,1000000 0,1000000 1000000,0 0)))'
+    geo2 = 'GEOMETRYCOLLECTION (LINESTRING (0 0,1 1,2 3),POLYGON((0 0,1000000.000000000003 0,1000000 1000000,0 0)),POINT(2 1))'
+    geo3 = 'GEOMETRYCOLLECTION (POINT (2 1),LINESTRING (0 0,1 2,2 3),POLYGON((0 0,2000000 0,1000000 1000000,0 0)))'
     
-    update_result()
+    assert True == compare_one([6,geo1],[6,geo2])
+    assert False == compare_one([7,geo1],[7,geo3])
+
+    #test curve
+    geo1 = 'CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)'
+    geo2 = 'CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)'
+    geo3 = 'CIRCULARSTRING (28 8882, -1 1,0 0, 331.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)'
+    #geo3 = 'CIRCULARSTRING (0 2, -1 1,0 0, 331.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)' # hit assert ex!
+
+    geo4 = 'COMPOUNDCURVE(CIRCULARSTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2))'
+    geo5 = 'COMPOUNDCURVE(CIRCULARSTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2))'
+    geo6 = 'COMPOUNDCURVE(CIRCULARSTRING(0 2, -1 1,11 0),CIRCULARSTRING( 11 0, 2 1, 1 2),(1 2, 0.5 2, 0 2))'
+    
+    geo7 = 'MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2)))'
+    geo8 = 'MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2)))'
+    geo9 = 'MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 3)))'
+    
+    assert True == compare_one([8,geo1],[8,geo2])
+    assert False == compare_one([9,geo1],[9,geo3])
+    assert True == compare_one([10,geo4],[10,geo5])
+    assert False == compare_one([11,geo4],[11,geo6])
+    assert True == compare_one([12,geo7],[12,geo8])
+    assert False == compare_one([13,geo7],[13,geo9])
+
+    #test surface 
+    geo1 = 'CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))'
+    geo2 = 'CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))'
+    geo3 = 'CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3.3 1, 1 1))'
+
+    geo4 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 11, 7 8)))'
+    geo5 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 11, 7 8)))'
+    geo6 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 13, 7 8)))'
+    
+    # update_result()
     # r = compare_results('/tmp/arctern_results/run_test_st_buffer.csv', './expected/results/st_buffer.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_length.csv', './expected/results/st_length.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
@@ -284,5 +419,8 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     # exit(0)
 
-    compare_all()
-    
+    # compare_all()
+    assert True == compare_one([14,geo1],[14,geo2])
+    assert False == compare_one([15,geo1],[15,geo3])
+    assert True == compare_one([16,geo4],[16,geo5])
+    assert False == compare_one([17,geo4],[17,geo6])

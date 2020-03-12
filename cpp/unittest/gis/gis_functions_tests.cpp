@@ -689,6 +689,61 @@ TEST(geometry_test, test_ST_PrecisionReduce) {
             "5,1 4,0 0)),CIRCULARSTRING (1.8 1.987,1.4 0.4,1.6 0.4,1.6 0.5,1.8 1.987))");
 }
 
+TEST(geometry_test, test_ST_Equals3) {
+  auto l0 = "POLYGON EMPTY";
+  auto r0 = "POINT EMPTY";
+
+  auto l1 = "LINESTRING EMPTY";
+  auto r1 = "POINT EMPTY";
+
+  auto l2 = "POINT EMPTY";
+  auto r2 = "POINT EMPTY";
+
+  auto l3 = "MULTIPOLYGON EMPTY";
+  auto r3 = "POINT EMPTY";
+
+  auto l4 = "MULTILINESTRING EMPTY";
+  auto r4 = "POINT EMPTY";
+
+  auto l5 = "MULTIPOINT EMPTY";
+  auto r5 = "POINT EMPTY";
+
+  arrow::StringBuilder builder_l, builder_r;
+
+  builder_l.Append(std::string(l0));
+  builder_r.Append(std::string(r0));
+
+  builder_l.Append(std::string(l1));
+  builder_r.Append(std::string(r1));
+
+  builder_l.Append(std::string(l2));
+  builder_r.Append(std::string(r2));
+
+  builder_l.Append(std::string(l3));
+  builder_r.Append(std::string(r3));
+
+  builder_l.Append(std::string(l4));
+  builder_r.Append(std::string(r4));
+
+  builder_l.Append(std::string(l5));
+  builder_r.Append(std::string(r5));
+
+  std::shared_ptr<arrow::Array> input_l, input_r;
+
+  builder_l.Finish(&input_l);
+  builder_r.Finish(&input_r);
+
+  auto res = arctern::gis::ST_Equals(input_l, input_r);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), true);
+  ASSERT_EQ(res_bool->Value(4), true);
+  ASSERT_EQ(res_bool->Value(5), true);
+}
+
 TEST(geometry_test, test_ST_Equals2) {
   auto l0 = "LINESTRING (0 0, 10 10)";
   auto l1 = "LINESTRING (10 10, 0 0)";
