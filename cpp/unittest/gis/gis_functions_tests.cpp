@@ -2536,6 +2536,42 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   builder_l.Append(std::string(l9));
   builder_r.Append(std::string(r9));
 
+  builder_l.Append(std::string(l10));
+  builder_r.Append(std::string(r10));
+
+  builder_l.Append(std::string(l11));
+  builder_r.Append(std::string(r11));
+
+  builder_l.Append(std::string(l12));
+  builder_r.Append(std::string(r12));
+
+  builder_l.Append(std::string(l13));
+  builder_r.Append(std::string(r13));
+
+  builder_l.Append(std::string(l14));
+  builder_r.Append(std::string(r14));
+
+  builder_l.Append(std::string(l15));
+  builder_r.Append(std::string(r15));
+
+  builder_l.Append(std::string(l16));
+  builder_r.Append(std::string(r16));
+
+  builder_l.Append(std::string(l17));
+  builder_r.Append(std::string(r17));
+
+  builder_l.Append(std::string(l18));
+  builder_r.Append(std::string(r18));
+
+  builder_l.Append(std::string(l19));
+  builder_r.Append(std::string(r19));
+
+  builder_l.Append(std::string(l20));
+  builder_r.Append(std::string(r20));
+
+  builder_l.Append(std::string(l21));
+  builder_r.Append(std::string(r21));
+
 
   std::shared_ptr<arrow::Array> input_l, input_r;
   builder_l.Finish(&input_l);
