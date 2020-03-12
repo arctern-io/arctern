@@ -2595,7 +2595,33 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   auto res = arctern::gis::ST_HausdorffDistance(input_l, input_r);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-
+  ASSERT_TRUE(std::abs(res_double->Value(0)-1.4142135623731)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(1)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(2)-2.82842712474619)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(3)-2.82842712474619)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(4)-2.23606797749979)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(5)-3.60555127546399)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(6)-2)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(7)-2)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(8)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(9)-2)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(10)-2.06155281280883)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(11)-2.06155281280883)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(12)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(13)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(14)-0)<1e-8);
+  ASSERT_TRUE(res_double->IsNull(15));
+  ASSERT_TRUE(res_double->IsNull(16));
+  ASSERT_TRUE(res_double->IsNull(17));
+  ASSERT_TRUE(res_double->IsNull(18));
+  ASSERT_TRUE(res_double->IsNull(19));
+  ASSERT_TRUE(res_double->IsNull(20));
+  ASSERT_TRUE(std::abs(res_double->Value(21)-1)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(22)-3.11029925929037)<1e-4);
+  ASSERT_TRUE(std::abs(res_double->Value(23)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(24)-1.41421356237309)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(25)-0)<1e-8);
+  ASSERT_TRUE(std::abs(res_double->Value(26)-0)<1e-8);
 }
 
 TEST(geometry_test, test_ST_HausdorffDistance) {
