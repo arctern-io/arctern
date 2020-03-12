@@ -1,3 +1,5 @@
+<img src="./doc/img/icon/arctern-color.png" width = "200">
+
 Arctern项目正在积极开发中，预计2020年4月开源0.1.0版本。非常感谢您的关注！
 
 下面对Arctern项目的主要内容进行介绍。
@@ -23,11 +25,11 @@ Arctern是一个面向大规模数据的地理信息分析引擎。定位如下�
 
 
 
-上图是Arctern 0.1.0的基本架构。Arctern分析引擎主要包含两部分内容，分别是地理信息数据处理（GIS）和地理信息数据可视化（Visualization）。当前版本包含OGC标准中常用的35个GIS API，涵盖几何对象的构造、访问、关系分析、度量。引擎中的可视化部分负责几何对象的渲染，API采用vega标准。与传统的web端渲染方案不同，Arctern采用服务器端渲染，可支撑亿级数据的轮廓图、热力图、散点图等渲染任务。在0.1.0版本中，地理信息数据处理与可视化均提供CPU/GPU两种实现，对外部提供统一的API，用户可根据需求灵活选择是否采用GPU加速。
+上图是Arctern 0.1.0的基本架构。Arctern分析引擎主要包含两部分内容，分别是地理信息数据处理（GIS）和地理信息数据可视化（Visualization）。当前版本包含OGC标准中常用的35个GIS API，涵盖几何对象的构造、访问、关系分析、度量。引擎中的可视化部分负责几何对象的渲染，API采用vega标准。与传统的web端渲染方案不同，Arctern采用服务器端渲染，可支撑大规模数据的轮廓图、热力图、散点图等渲染任务。在0.1.0版本中，地理信息数据处理与可视化均提供CPU/GPU两种实现，对外部提供统一的API，用户可根据需求灵活选择是否采用GPU加速。
 
 数据接口方面，Arctern支持标准数值类型及WKB格式，支持json，csv，parquet格式的文件导入。内存层基于Arrow按列式组织数据，可提供与外部系统的零拷贝数据交换。
 
-调用接口方面，Arctern开放C++、python绑定及Spark三层API，均为列式处理接口。API基于Arrow标准进行传参及返回。由于Spark自3.0版本开始支持GPU资源管理，当前Arctern的Spark接口仅支持面向Spark3.0的适配。
+调用接口方面，Arctern开放C++、Python及Spark三层API，均为列式处理接口。C++接口基于Arrow标准进行传参及返回，Python及Spark接口的参数对象为dataframe。由于Spark自3.0版本开始支持GPU资源管理，当前Arctern的Spark接口仅支持面向Spark3.0的适配。
 
 
 
@@ -74,7 +76,7 @@ Arctern 0.1.0版本将提供与Sulidae的适配，以下是热力图与轮廓图
 
 1. 支持OGC标准中常用的35个GIS API。
 2. 支持面向大规模数据的轮廓图、热力图、散点图渲染。
-3. 提供基于Arrow标准的C++、python及Spark API。
+3. 提供基于Arrow标准的C++、Python及Spark API。
 4. 提供基于CPU实现的Arctern引擎。
 5. 提供基于GPU加速的Arctern引擎。
 6. 提供与前端可视化项目Sulidae的适配。
@@ -96,7 +98,7 @@ Arctern 0.1.0版本将提供与Sulidae的适配，以下是热力图与轮廓图
 
 1. 支持OGC标准中常用的35个GIS API。
 2. 支持面向大规模数据的轮廓图、热力图、散点图渲染。
-3. 提供基于Arrow标准的C++、python及Spark API。
+3. 提供基于Arrow标准的C++、Python及Spark API。
 4. 提供基于CPU实现的Arctern引擎。
 5. 提供基于GPU加速的Arctern引擎。
 

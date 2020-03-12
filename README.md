@@ -19,11 +19,11 @@ The following figure shows the architecture of Arctern 0.1.0.
 
 <img src="./doc/img/v0.1.0_intro/arctern_arch_v0.1.0.png" width = "700">
 
-Arctern includes two components: GIS and Visualization. Arctern 0.1.0 includes most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects and provides APIs according to the Vega standard. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for billion-scale data. In 0.1.0, geospatial data analytics and visualization with both CPU and GPU based implementation. Arctern provides a unified set of APIs for you to determine whether to use GPU acceleration based on your own needs.
+Arctern includes two components: GIS and Visualization. Arctern 0.1.0 includes most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects and provides APIs according to the Vega standard. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for massive-scale data. In 0.1.0, geospatial data analytics and visualization with both CPU and GPU based implementation. Arctern provides a unified set of APIs for you to determine whether to use GPU acceleration based on your own needs.
 
 For data interfaces, Arctern supports standard numeric types, WKB formats, and files with JSON, CSV, and parquet format. Arctern organizes data in the memory in a column-based data manner according to the Arrow standard. In this way, Arctern supports zero-copy data exchange with external systems.
 
-For invocation interfaces, Arctern includes three column-based interfaces: C++ API, Python API, and Spark API. The APIs transfer and return arguments with the Arrow standard. Because Spark will start to support GPU resource management since the 3.0 version, the Spark interface of Arctern only supports Spark 3.0.
+For invocation interfaces, Arctern includes three column-based interfaces: C++ API, Python API, and Spark API. The C++ API transfer and return arguments with the Arrow standard, Python and Spark APIs pass arguments in dataframe format. Because Spark will start to support GPU resource management since the 3.0 version, the Spark interface of Arctern only supports Spark 3.0.
 
 ## Code sample
 
