@@ -2572,6 +2572,21 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   builder_l.Append(std::string(l21));
   builder_r.Append(std::string(r21));
 
+  builder_l.Append(std::string(l22));
+  builder_r.Append(std::string(r22));
+
+  builder_l.Append(std::string(l23));
+  builder_r.Append(std::string(r23));
+
+  builder_l.Append(std::string(l24));
+  builder_r.Append(std::string(r24));
+
+  builder_l.Append(std::string(l25));
+  builder_r.Append(std::string(r25));
+
+  builder_l.Append(std::string(l26));
+  builder_r.Append(std::string(r26));
+
 
   std::shared_ptr<arrow::Array> input_l, input_r;
   builder_l.Finish(&input_l);
