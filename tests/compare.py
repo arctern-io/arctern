@@ -277,11 +277,12 @@ def update_result():
 if __name__ == '__main__':
     
     # r = compare_results('./cross_arctern.csv', './st_crosses.out.new')
-    r = compare_results('/tmp/arctern_results/run_test_st_buffer.csv', './expected/results/st_buffer.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_buffer.csv', './expected/results/st_buffer.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_equals_1.csv', './expected/results/st_equals.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_centroid.json', './expected/results/st_centroid.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    exit(0)
+    # exit(0)
 
     update_result()
     compare_all()
