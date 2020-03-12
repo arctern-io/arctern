@@ -19,7 +19,7 @@ The following figure shows the architecture of Arctern 0.1.0.
 
 <img src="./doc/img/v0.1.0_intro/arctern_arch_v0.1.0.png" width = "700">
 
-Arctern includes two components: GIS and Visualization. Arctern 0.1.0 supports most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects. It provides standard Vega rendering APIs. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for massive-scale data.  With a set unified of APIs, Arctern provides both CPU and GPU based implementations for geospatial data analytics and visualization.
+Arctern includes two components: GIS and Visualization. Arctern 0.1.0 supports most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects. It provides standard Vega rendering APIs. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for massive-scale data.  With a set of unified APIs, Arctern provides both CPU and GPU based implementations for geospatial data analytics and visualization.
 
 For data format, Arctern supports standard numeric types, WKB formats, and files with JSON, CSV, and parquet format. Arctern organizes data in the memory in a column-based manner according to the Arrow standard. In this way, Arctern supports zero-copy data exchange with external systems.
 
