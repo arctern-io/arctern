@@ -50,7 +50,7 @@ class Vega {
 
  protected:
   WindowParams window_params_;
-  bool is_valid_;
+  bool is_valid_ = true;
 };
 
 }  // namespace render

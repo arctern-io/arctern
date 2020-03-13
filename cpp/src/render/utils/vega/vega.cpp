@@ -80,7 +80,7 @@ bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
 bool Vega::JsonNullCheck(rapidjson::Value& value) {
   if (value.IsNull()) {
     // TODO: add log here
-    std::cout << "null!!!" << std::endl;
+    std::cout << "null json value" << std::endl;
     is_valid_ = false;
     return false;
   }
