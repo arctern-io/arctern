@@ -81,3 +81,4 @@ if __name__ == "__main__":
     run_choropleth_map(spark_session)
 
     spark_session.stop()
+    

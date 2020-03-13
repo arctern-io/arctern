@@ -45,3 +45,4 @@ def choroplethmap(df, vega):
 def save_png(hex_data, file_name):
     from . render_func import save_png_2D
     save_png_2D(hex_data, file_name)
+    
