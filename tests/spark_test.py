@@ -219,6 +219,86 @@ def run_test_st_buffer1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_buffer2(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer2'
+    sql = "select st_buffer_udf(geos, 5.5) as geos from test_buffer2"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer3(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer3'
+    sql = "select st_buffer_udf(geos, 100) as geos from test_buffer3"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer4(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer4'
+    sql = "select st_buffer_udf(geos, -0.33) as geos from test_buffer4"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer5(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer5'
+    sql = "select st_buffer_udf(geos, -2) as geos from test_buffer5"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer6(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer6'
+    sql = "select st_buffer_udf(geos, -80) as geos from test_buffer6"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_envelope(spark):
     data = "envelope.csv"
     table_name = 'test_envelope'
@@ -647,6 +727,11 @@ if __name__ == "__main__":
     run_test_st_convexhull2(spark_session)
     run_test_st_buffer(spark_session)
     run_test_st_buffer1(spark_session)
+    run_test_st_buffer2(spark_session)
+    run_test_st_buffer3(spark_session)
+    run_test_st_buffer4(spark_session)
+    run_test_st_buffer5(spark_session)
+    run_test_st_buffer6(spark_session)
     run_test_st_envelope(spark_session)
     run_test_st_centroid(spark_session)
     run_test_st_length(spark_session)
