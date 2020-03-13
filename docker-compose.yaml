@@ -55,7 +55,5 @@ services:
       - .:/arctern:delegated
     command: &build-ubuntu-command
       ["/arctern/ci/scripts/cpp_build.sh -t Release -e arctern -l -u --coverage && \
-        /arctern/ci/scripts/python_build.sh -e arctern && \
-        /arctern/ci/scripts/run_unittest.sh -e arctern && \
-        /arctern/ci/scripts/run_pytest.sh -e arctern"]
+        /arctern/ci/scripts/run_unittest.sh -e arctern"]
 
