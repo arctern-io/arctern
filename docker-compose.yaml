@@ -34,7 +34,8 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-conda-cudagl-${CUDA}-build
     shm_size: *shm-size
-    volumes: *conda-volumes
+    volumes: &conda-cudagl-volumes
+      - .:/arctern:delegated
     command: &build-conda-cudagl-command
       ["source /arctern/ci/scripts/conda/gpu/prebuild.sh &&
         /arctern/ci/scripts/conda/gpu/build.sh"]

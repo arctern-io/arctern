@@ -29,8 +29,8 @@
 template <typename T>
 using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
 
-#include "gis/cuda/common/function_wrapper.h"
 #include "gis/cuda/wkb/wkb_tag.h"
+#include "utils/function_wrapper.h"
 
 namespace arctern {
 namespace gis {

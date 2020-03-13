@@ -16,11 +16,18 @@ from pyspark.sql import SparkSession
 from arctern_pyspark import register_funcs
 
 
+def point_gen():
+    with open('/tmp/points.json', 'w') as file:
+        for i in range(10):
+            file.write('{"x": %f, "y": %f}\n' % (i + 0.1, i + 0.1))
+
+
 def run_st_point(spark):
     points_df = spark.read.json("/tmp/points.json").cache()
     points_df.createOrReplaceTempView("points")
     register_funcs(spark)
-    spark.sql("select ST_Point_UDF(x, y) from points").show()
+    spark.sql("select ST_Point(x, y) from points").show()
+
 
 if __name__ == "__main__":
     spark_session = SparkSession \
@@ -29,6 +36,8 @@ if __name__ == "__main__":
         .getOrCreate()
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+
+    point_gen()
 
     run_st_point(spark_session)
 
