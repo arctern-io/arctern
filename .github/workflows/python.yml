@@ -1,4 +1,4 @@
-name: CPP Build
+name: Python Build
 
 # This workflow is triggered on pushes or pull request to the repository.
 on:
