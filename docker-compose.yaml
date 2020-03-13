@@ -1,5 +1,8 @@
 version: '3.5'
 
+volumes:
+  amd64-ubuntu18.04-cache:
+
 services:
   conda-build:
     # Usage:
@@ -14,6 +17,8 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-conda-build
     shm_size: &shm-size 2G
+    environment:
+      BUILD_TYPE: "Release"
     volumes: &conda-volumes
       - .:/arctern:delegated
     command: &build-conda-command
@@ -34,6 +39,8 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-conda-cudagl-${CUDA}-build
     shm_size: *shm-size
+    environment:
+      BUILD_TYPE: "Release"
     volumes: &conda-cudagl-volumes
       - .:/arctern:delegated
     command: &build-conda-cudagl-command
@@ -51,9 +58,17 @@ services:
         arch: ${ARCH}
         ubuntu: ${UBUNTU}
     shm_size: *shm-size
+    environment:
+      ARCTERN_INSTALL_PREFIX: "/usr/local/arctern"
+      BUILD_TYPE: "Release"
+      CONDA_ENV: "arctern"
+      RUN_LINT: "ON"
+      BUILD_UNITTEST: "ON"
+      BUILD_COVERAGE: "ON"
     volumes: &ubuntu-volumes
       - .:/arctern:delegated
+      - ${ARCH}-ubuntu${UBUNTU}-cache:/usr/local/arctern:delegated
     command: &build-ubuntu-command
-      ["/arctern/ci/scripts/cpp_build.sh -t Release -e arctern -l -u --coverage && \
-        /arctern/ci/scripts/run_unittest.sh -e arctern"]
+      ["/arctern/ci/scripts/cpp_build.sh && \
+        /arctern/ci/scripts/run_unittest.sh"]
 
