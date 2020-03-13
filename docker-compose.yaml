@@ -39,3 +39,23 @@ services:
     command: &build-conda-cudagl-command
       ["source /arctern/ci/scripts/conda/gpu/prebuild.sh &&
         /arctern/ci/scripts/conda/gpu/build.sh"]
+
+  ubuntu-cpp:
+    image: ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+    build:
+      context: .
+      dockerfile: ci/docker/ubuntu${UBUNTU}-cpp.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+      args:
+        arch: ${ARCH}
+        ubuntu: ${UBUNTU}
+    shm_size: *shm-size
+    volumes: &ubuntu-volumes
+      - .:/arctern:delegated
+    command: &build-ubuntu-command
+      ["/arctern/ci/scripts/cpp_build.sh -t Release -e arctern -l -u --coverage && \
+        /arctern/ci/scripts/python_build.sh -e arctern && \
+        /arctern/ci/scripts/run_unittest.sh -e arctern && \
+        /arctern/ci/scripts/run_pytest.sh -e arctern"]
+
