@@ -19,7 +19,6 @@
 #include <memory>
 namespace arctern {
 namespace gis {
-namespace cuda {
 
 // create a class deleter from normal function
 template <class T, void (*fn)(T*)>
@@ -29,10 +28,8 @@ struct DeleterWrapper {
     fn(ptr);
   }
 };
-
 template <typename T, void (*fn)(T*)>
 using UniquePtrWithDeleter = std::unique_ptr<T, DeleterWrapper<T, fn>>;
 
-}  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

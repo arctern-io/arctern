@@ -20,7 +20,7 @@
 ```shell
 $ conda env list
 
-# conda environments:
+# conda environments: 
 #
 base                  *  /opt/conda
 ...

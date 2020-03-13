@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <map>
 #include <memory>
 #include <set>
@@ -29,14 +30,51 @@ namespace gis {
 using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
-  // This field contains masks for each geometry type.
-  std::map<GroupedWkbTypes, std::vector<bool>> type_masks;
-  // This field contains mask counts for each geometry type.
-  std::map<GroupedWkbTypes, int64_t> group_mask_counts;
+ public:
+  using EncodeUid = uint32_t;
+  struct Info {
+   public:
+    // TODO(dog): remove masks since encode_uids contains all the info
+    // TODO(dog): now make unittest happy
+    // This field contains masks[i] = is_matched(data[i]);
+    std::vector<bool> masks;
+    // TODO(dog): remove later since mask_count === indexes.size()
+    // TODO(dog): now make unittest happy
+    // This field contains counts of true in masks, or size of indexes
+    int64_t mask_counts = 0;
+    // This field contains unique id(uid) for each class
+    EncodeUid encode_uid;
+  };
+  const auto& get_info(const GroupedWkbTypes& grouped_types) const {
+    auto iter = dict.find(grouped_types);
+    assert(iter != dict.end());
+    return iter->second;
+  }
+
+  // helper function
+  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
+    return get_info(grouped_types).masks;
+  }
+  const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
+    return get_info(grouped_types).mask_counts;
+  }
+
+  EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) {
+    return get_info(grouped_types).encode_uid;
+  }
+
+ public:
   // If the given geometries share identical type, this field will be set true.
-  bool is_unique_group;
-  // This field is valid only if 'is_unique_group' equals true.
-  GroupedWkbTypes unique_group;
+  bool is_unique_type;
+  // This field is valid only if 'is_unique_type' equals true.
+  GroupedWkbTypes unique_type;
+  // extra fields for
+ public:
+  // This field contains uid for each data
+  std::vector<EncodeUid> encode_uids;
+  int num_scan_classes = 0;
+  // This contains Info for each geometry type, enable only if !unique_type
+  std::map<GroupedWkbTypes, Info> dict;
 };
 
 class GeometryTypeScanner {
