@@ -190,10 +190,26 @@ def run_test_st_convexhull2(spark):
 def run_test_st_buffer(spark):
     data = "buffer.csv"
     table_name = 'test_buffer'
-    sql = "select st_buffer_udf(geos, d) as geos from test_buffer"
+    sql = "select st_buffer_udf(geos, 0) as geos from test_buffer"
     
     df = read_data(spark, base_dir, data)
-    df = df.withColumn("d", col("distance").cast("double"))
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer1(spark):
+    data = "buffer.csv"
+    table_name = 'test_buffer1'
+    sql = "select st_buffer_udf(geos, 1) as geos from test_buffer1"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
     df.printSchema()
     df.show()
     df.createOrReplaceTempView(table_name)
@@ -630,6 +646,7 @@ if __name__ == "__main__":
     run_test_st_convexhull(spark_session)
     run_test_st_convexhull2(spark_session)
     run_test_st_buffer(spark_session)
+    run_test_st_buffer1(spark_session)
     run_test_st_envelope(spark_session)
     run_test_st_centroid(spark_session)
     run_test_st_length(spark_session)
