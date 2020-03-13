@@ -125,6 +125,22 @@ def run_test_st_isvalid_1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_isvalid_curve(spark):
+    
+    data = "isvalid_curve.csv"
+    table_name = 'test_isvalid_curve'
+    sql = "select st_isvalid_udf(geos) as is_valid from test_isvalid_curve"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_union_aggr_2(spark):
     data = 'union_aggr.csv'
     table_name = 'test_union_aggr_2'
@@ -452,9 +468,25 @@ def run_test_st_npoints(spark):
     save_result("results/%s" % table_name, rs)
 
 def run_test_st_geometrytype(spark):
-    data = "geom.csv"
+    data = "geometrytype.csv"
     table_name = 'test_gt'
     sql = "select st_geometrytype_udf(geos) as geos from test_gt"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_geometrytype_curve(spark):
+    data = "geometrytype_curve.csv"
+    table_name = 'test_gt_curve'
+    sql = "select st_geometrytype_udf(geos) as geos from test_gt_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -580,6 +612,22 @@ def run_test_st_within(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_within_curve(spark):
+    
+    data = "within_curve.csv"
+    table_name = 'test_within_curve'
+    sql = "select st_within_udf(left, right) as geos from test_within_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_equals_1(spark):
     
     data = "equals.csv"
@@ -659,11 +707,43 @@ def run_test_st_overlaps(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_overlaps_curve(spark):
+    
+    data = "overlaps_curve.csv"
+    table_name = 'test_overlaps_curve'
+    sql = "select st_overlaps_udf(left, right) as geos from test_overlaps_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_touches(spark):
     
     data = "touches.csv"
     table_name = 'test_touches'
     sql = "select st_touches_udf(left, right) as geos from test_touches"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_touches_curve(spark):
+    
+    data = "touches_curve.csv"
+    table_name = 'test_touches_curve'
+    sql = "select st_touches_udf(left, right) as geos from test_touches_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -800,6 +880,7 @@ if __name__ == "__main__":
     run_test_envelope_aggr_2(spark_session)
     run_test_union_aggr_2(spark_session)
     run_test_st_isvalid_1(spark_session)
+    run_test_st_isvalid_curve(spark_session)
     run_test_st_intersection(spark_session)
     run_test_st_convexhull(spark_session)
     run_test_st_convexhull2(spark_session)
@@ -821,18 +902,22 @@ if __name__ == "__main__":
     run_test_st_issimple_curve(spark_session)
     run_test_st_npoints(spark_session)
     run_test_st_geometrytype(spark_session)
+    run_test_st_geometrytype_curve(spark_session)
     run_test_st_transform(spark_session)
     run_test_st_transform1(spark_session)
     run_test_st_intersects(spark_session)
     run_test_st_intersects_curve(spark_session)
     run_test_st_contains(spark_session)
     run_test_st_within(spark_session)
+    run_test_st_within_curve(spark_session)
     run_test_st_equals_1(spark_session)
     run_test_st_equals_2(spark_session)
     run_test_st_crosses(spark_session)
     run_test_st_crosses_curve(spark_session)
     run_test_st_overlaps(spark_session)
+    run_test_st_overlaps_curve(spark_session)
     run_test_st_touches(spark_session)
+    run_test_st_touches_curve(spark_session)
     run_test_st_makevalid(spark_session)
     # run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
