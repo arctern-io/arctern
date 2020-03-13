@@ -72,6 +72,15 @@ pipeline {
                                             }
                                         }
                                     }
+                                    stage('Code Coverage') {
+                                        steps {
+                                            container("arctern-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
