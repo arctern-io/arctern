@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from . register import register_funcs
-from . register import point_map_2D
-from . register import heat_map_2D
-from . register import choropleth_map_2D
+from . register import heatmap
+from . register import pointmap
+from . register import choroplethmap
+from . register import save_png
