@@ -10,7 +10,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../spark/pyspark"
+PYSPARK_SRC_DIR="${SCRIPTS_DIR}/../../spark/pyspark"
 
 HELP="
 Usage:
@@ -56,15 +56,15 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-pushd ${PYTHON_SRC_DIR}
+pushd ${PYSPARK_SRC_DIR}
 
 for arg do
 if [[ $arg == "clean" ]];then
-    if [[ -d ${PYTHON_SRC_DIR}/build ]]; then
-        rm -rf ${PYTHON_SRC_DIR}/build
+    if [[ -d ${PYSPARK_SRC_DIR}/build ]]; then
+        rm -rf ${PYSPARK_SRC_DIR}/build
     fi
-    if [[ -d ${PYTHON_SRC_DIR}/dist ]]; then
-        rm -rf ${PYTHON_SRC_DIR}/dist
+    if [[ -d ${PYSPARK_SRC_DIR}/dist ]]; then
+        rm -rf ${PYSPARK_SRC_DIR}/dist
     fi
     rm -rf *.egg*
     exit 0
@@ -72,11 +72,11 @@ fi
 done
 
 if [[ ${CLEANUP} == "ON" ]];then
-    if [[ -d ${PYTHON_SRC_DIR}/build ]]; then
-        rm -rf ${PYTHON_SRC_DIR}/build
+    if [[ -d ${PYSPARK_SRC_DIR}/build ]]; then
+        rm -rf ${PYSPARK_SRC_DIR}/build
     fi
-    if [[ -d ${PYTHON_SRC_DIR}/dist ]]; then
-        rm -rf ${PYTHON_SRC_DIR}/dist
+    if [[ -d ${PYSPARK_SRC_DIR}/dist ]]; then
+        rm -rf ${PYSPARK_SRC_DIR}/dist
     fi
     rm -rf *.egg*
     exit 0
