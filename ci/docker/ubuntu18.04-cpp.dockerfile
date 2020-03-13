@@ -18,7 +18,7 @@ COPY ci/yaml/conda_env_cpp.yml /arctern/ci/yaml/
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
-    conda create -n arctern -q \
+    conda create -n arctern -c conda-forge -q \
     --file /arctern/ci/yaml/conda_env_cpp.yml && \
     conda clean --all -y && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \

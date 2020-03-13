@@ -48,6 +48,12 @@ services:
         /arctern/ci/scripts/conda/gpu/build.sh"]
 
   ubuntu-cpp:
+    # Usage:
+    #   docker-compose build ubuntu-cpp
+    #   docker-compose run --rm ubuntu-cpp
+    # Parameters:
+    #   ARCH: amd64
+    #   UBUNTU: 18.04
     image: ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
     build:
       context: .
