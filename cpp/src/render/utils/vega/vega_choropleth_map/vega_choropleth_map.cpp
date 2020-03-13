@@ -35,6 +35,8 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   }
 
   if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
+      !JsonNullCheck(document["width"]) ||
+      !JsonNullCheck(document["height"]) ||
       !JsonTypeCheck(document["width"], rapidjson::Type::kNumberType) ||
       !JsonTypeCheck(document["height"], rapidjson::Type::kNumberType)) {
     return;
