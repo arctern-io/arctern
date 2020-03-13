@@ -392,6 +392,21 @@ def run_test_st_length(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_length_curve(spark):
+    data = "length_curve.csv"
+    table_name = 'test_length_curve'
+    sql = "select st_length_udf(geos) as my_length from test_length_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_area(spark):
     data = "area.csv"
     table_name = 'test_area'
@@ -585,6 +600,22 @@ def run_test_st_contains(spark):
     data = "contains.csv"
     table_name = 'test_contains'
     sql = "select st_contains_udf(left, right) as geos from test_contains"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_contains_curve(spark):
+    
+    data = "contains_curve.csv"
+    table_name = 'test_contains_curve'
+    sql = "select st_contains_udf(left, right) as geos from test_contains_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -896,6 +927,7 @@ if __name__ == "__main__":
     run_test_st_envelope(spark_session)
     run_test_st_centroid(spark_session)
     run_test_st_length(spark_session)
+    run_test_st_length_curve(spark_session)
     run_test_st_area(spark_session)
     run_test_st_distance(spark_session)
     run_test_st_issimple(spark_session)
@@ -908,6 +940,7 @@ if __name__ == "__main__":
     run_test_st_intersects(spark_session)
     run_test_st_intersects_curve(spark_session)
     run_test_st_contains(spark_session)
+    run_test_st_contains_curve(spark_session)
     run_test_st_within(spark_session)
     run_test_st_within_curve(spark_session)
     run_test_st_equals_1(spark_session)
