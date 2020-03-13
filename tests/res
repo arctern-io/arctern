@@ -1,0 +1,89 @@
+Arctern test: run_test_st_makevalid, result compare started, test result: /tmp/arctern_results/run_test_st_makevalid.csv, expected result: ./expected/results/st_makevalid.out
+Arctern test: run_test_st_makevalid, result: PASSED
+Arctern test: run_test_st_envelope, result compare started, test result: /tmp/arctern_results/run_test_st_envelope.csv, expected result: ./expected/results/st_envelope.out
+Arctern test: run_test_st_envelope, result: PASSED
+Arctern test: run_test_st_intersection, result compare started, test result: /tmp/arctern_results/run_test_st_intersection.csv, expected result: ./expected/results/st_intersection.out
+Arctern test: run_test_st_intersection, result: PASSED
+Arctern test: run_test_st_length, result compare started, test result: /tmp/arctern_results/run_test_st_length.csv, expected result: ./expected/results/st_length.out
+Arctern test: run_test_st_length, result: PASSED
+Arctern test: run_test_st_polygonfromenvelope, result compare started, test result: /tmp/arctern_results/run_test_st_polygonfromenvelope.csv, expected result: ./expected/results/st_makeenvelope.out
+Arctern test: run_test_st_polygonfromenvelope, result: PASSED
+Arctern test: run_test_st_npoints, result compare started, test result: /tmp/arctern_results/run_test_st_npoints.csv, expected result: ./expected/results/st_npoints.out
+Arctern test: run_test_st_npoints, result: PASSED
+Arctern test: run_test_st_simplifypreservetopology, result compare started, test result: /tmp/arctern_results/run_test_st_simplifypreservetopology.csv, expected result: ./expected/results/st_simplifypreservetopology.out
+test result size: 29 and expected result size: 33, NOT equal, check the two result files
+Arctern test: run_test_st_simplifypreservetopology, result: FAILED
+Arctern test: run_test_st_transform, result compare started, test result: /tmp/arctern_results/run_test_st_transform.csv, expected result: ./expected/results/st_transform.out
+Arctern test: run_test_st_transform, result: FAILED
+Arctern test: run_test_st_transform1, result compare started, test result: /tmp/arctern_results/run_test_st_transform1.csv, expected result: ./expected/results/st_transform1.out
+7 MULTIPOINT (0 0,0.000062882069888 0.000062882069887) 7 MULTIPOINT(0 0,0.000062882069888 0.000062882069888)
+8 GEOMETRYCOLLECTION (POINT (0.000008983152841 0.000008983152841),LINESTRING (0.000008983152841 0.000008983152841,0.000017966305682 0.000017966305682,0.000026949458524 0.000026949458523)) 8 GEOMETRYCOLLECTION(POINT(0.000008983152841 0.000008983152841),LINESTRING(0.000008983152841 0.000008983152841,0.000017966305682 0.000017966305682,0.000026949458524 0.000026949458524))
+20 MULTIPOINT (0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458523) 20 MULTIPOINT(0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458524)
+21 MULTIPOINT (0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458523,0.000008983152841 0.000017966305682,0.000035932611365 0.000053898917046) 21 MULTIPOINT(0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458524,0.000008983152841 0.000017966305682,0.000035932611365 0.000053898917047)
+22 MULTILINESTRING ((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682),(0.000017966305682 0.000035932611364,0.000008983152841 0.000080848375569,0.000008983152841 0.000071865222728)) 22 MULTILINESTRING((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682),(0.000017966305682 0.000035932611365,0.000008983152841 0.000080848375571,0.000008983152841 0.00007186522273))
+25 MULTIPOLYGON (((0 0,0.000035932611365 0.0,0.000035932611365 0.000035932611364,0.0 0.000035932611364,0 0)),((0.000008983152841 0.000071865222728,0.000017966305682 0.000071865222728,0.000017966305682 0.000080848375569,0.000008983152841 0.000080848375569,0.000008983152841 0.000071865222728)),((0.000053898917047 0.000053898917046,0.000053898917047 0.000107797834092,0.000107797834094 0.000107797834092,0.000107797834094 0.000053898917046,0.000053898917047 0.000053898917046),(0.000062882069888 0.000062882069887,0.000062882069888 0.000071865222728,0.00007186522273 0.000071865222728,0.00007186522273 0.000062882069887,0.000062882069888 0.000062882069887))) 25 MULTIPOLYGON(((0 0,0.000035932611365 0,0.000035932611365 0.000035932611365,0 0.000035932611365,0 0)),((0.000008983152841 0.00007186522273,0.000017966305682 0.00007186522273,0.000017966305682 0.000080848375571,0.000008983152841 0.000080848375571,0.000008983152841 0.00007186522273)),((0.000053898917047 0.000053898917047,0.000053898917047 0.000107797834094,0.000107797834094 0.000107797834094,0.000107797834094 0.000053898917047,0.000053898917047 0.000053898917047),(0.000062882069888 0.000062882069888,0.000062882069888 0.00007186522273,0.00007186522273 0.00007186522273,0.00007186522273 0.000062882069888,0.000062882069888 0.000062882069888)))
+26 MULTIPOINT (0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458523,0.000008983152841 0.000017966305682,0.000035932611365 0.000053898917046,0.000017966305682 0.000017966305682,0.000008983152841 0.000053898917046) 26 MULTIPOINT(0.000008983152841 0.000017966305682,0.000017966305682 0.000026949458524,0.000008983152841 0.000017966305682,0.000035932611365 0.000053898917047,0.000017966305682 0.000017966305682,0.000008983152841 0.000053898917047)
+30 MULTIPOINT (0.000008983152841 0.000008983152841,0.000026949458524 0.000035932611364) 30 MULTIPOINT(0.000008983152841 0.000008983152841,0.000026949458524 0.000035932611365)
+31 MULTIPOINT (0.000026949458524 0.000035932611364) 31 MULTIPOINT(0.000026949458524 0.000035932611365)
+34 MULTILINESTRING ((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682),(0.000017966305682 0.000035932611364,0.000008983152841 0.000080848375569,0.000008983152841 0.000071865222728)) 34 MULTILINESTRING((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682),(0.000017966305682 0.000035932611365,0.000008983152841 0.000080848375571,0.000008983152841 0.00007186522273))
+35 MULTILINESTRING ((0.000017966305682 0.000035932611364,0.000008983152841 0.000080848375569,0.000008983152841 0.000071865222728)) 35 MULTILINESTRING((0.000017966305682 0.000035932611365,0.000008983152841 0.000080848375571,0.000008983152841 0.00007186522273))
+36 MULTILINESTRING ((0.000008983152841 0.000008983152841,0.000026949458524 0.000035932611364,0.000008983152841 0.000008983152841)) 36 MULTILINESTRING((0.000008983152841 0.000008983152841,0.000026949458524 0.000035932611365,0.000008983152841 0.000008983152841))
+40 MULTIPOLYGON (((0 0,0.000008983152841 -0.000008983152841,0.000008983152841 0.000008983152841,-0.000017966305682 0.000026949458523,0 0))) 40 MULTIPOLYGON(((0 0,0.000008983152841 -0.000008983152841,0.000008983152841 0.000008983152841,-0.000017966305682 0.000026949458524,0 0)))
+41 MULTIPOLYGON (((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682,0.000017966305682 0.000017966305682,0.000017966305682 0.000008983152841,0.000008983152841 0.000008983152841)),((0 0,0.000008983152841 -0.000008983152841,0.000008983152841 0.000008983152841,-0.000017966305682 0.000026949458523,0 0))) 41 MULTIPOLYGON(((0.000008983152841 0.000008983152841,0.000008983152841 0.000017966305682,0.000017966305682 0.000017966305682,0.000017966305682 0.000008983152841,0.000008983152841 0.000008983152841)),((0 0,0.000008983152841 -0.000008983152841,0.000008983152841 0.000008983152841,-0.000017966305682 0.000026949458524,0 0)))
+Arctern test: run_test_st_transform1, result: FAILED
+Arctern test: run_test_st_area, result compare started, test result: /tmp/arctern_results/run_test_st_area.csv, expected result: ./expected/results/st_area.out
+33 23.132741228718352 33 23.122649255638
+34 9.05354803115023 34 9.05303418413299
+35 23.132741228718352 35 23.122649255638
+36 26.417123955457246 36 26.4209934708643
+Arctern test: run_test_st_area, result: FAILED
+Arctern test: run_test_st_buffer, result compare started, test result: /tmp/arctern_results/run_test_st_buffer.csv, expected result: ./expected/results/st_buffer.out
+test result size: 5 and expected result size: 256, NOT equal, check the two result files
+Arctern test: run_test_st_buffer, result: FAILED
+Arctern test: run_test_st_centroid, result compare started, test result: /tmp/arctern_results/run_test_st_centroid.csv, expected result: ./expected/results/st_centroid.out
+Arctern test: run_test_st_centroid, result: PASSED
+Arctern test: run_test_st_convexhull, result compare started, test result: /tmp/arctern_results/run_test_st_convexhull.csv, expected result: ./expected/results/st_convexhull.out
+Arctern test: run_test_st_convexhull, result: PASSED
+Arctern test: run_test_st_issimple, result compare started, test result: /tmp/arctern_results/run_test_st_issimple.csv, expected result: ./expected/results/st_issimple.out
+Arctern test: run_test_st_issimple, result: PASSED
+Arctern test: run_test_st_point, result compare started, test result: /tmp/arctern_results/run_test_st_point.csv, expected result: ./expected/results/st_point.out
+Arctern test: run_test_st_point, result: PASSED
+Arctern test: run_test_st_isvalid_1, result compare started, test result: /tmp/arctern_results/run_test_st_isvalid_1.csv, expected result: ./expected/results/st_isvalid.out
+Arctern test: run_test_st_isvalid_1, result: PASSED
+Arctern test: run_test_st_geometrytype, result compare started, test result: /tmp/arctern_results/run_test_st_geometrytype.csv, expected result: ./expected/results/st_geometrytype.out
+Arctern test: run_test_st_geometrytype, result: PASSED
+Arctern test: run_test_st_equals_1, result compare started, test result: /tmp/arctern_results/run_test_st_equals_1.csv, expected result: ./expected/results/st_equals.out
+31 False 31 True
+32 False 32 True
+33 False 33 True
+34 False 34 True
+35 False 35 True
+36 False 36 True
+Arctern test: run_test_st_equals_1, result: FAILED
+Arctern test: run_test_st_equals_2, result compare started, test result: /tmp/arctern_results/run_test_st_equals_2.csv, expected result: ./expected/results/st_equals_2.out
+Arctern test: run_test_st_equals_2, result: PASSED
+Arctern test: run_test_st_distance, result compare started, test result: /tmp/arctern_results/run_test_st_distance.csv, expected result: ./expected/results/st_distance.out
+Arctern test: run_test_st_distance, result: PASSED
+Arctern test: run_test_st_intersects, result compare started, test result: /tmp/arctern_results/run_test_st_intersects.csv, expected result: ./expected/results/st_intersects.out
+Arctern test: run_test_st_intersects, result: PASSED
+Arctern test: run_test_st_contains, result compare started, test result: /tmp/arctern_results/run_test_st_contains.csv, expected result: ./expected/results/st_contains.out
+Arctern test: run_test_st_contains, result: PASSED
+Arctern test: run_test_st_within, result compare started, test result: /tmp/arctern_results/run_test_st_within.csv, expected result: ./expected/results/st_within.out
+Arctern test: run_test_st_within, result: PASSED
+Arctern test: run_test_st_crosses, result compare started, test result: /tmp/arctern_results/run_test_st_crosses.csv, expected result: ./expected/results/st_crosses.out
+Arctern test: run_test_st_crosses, result: PASSED
+Arctern test: run_test_st_overlaps, result compare started, test result: /tmp/arctern_results/run_test_st_overlaps.csv, expected result: ./expected/results/st_overlaps.out
+Arctern test: run_test_st_overlaps, result: PASSED
+Arctern test: run_test_st_touches, result compare started, test result: /tmp/arctern_results/run_test_st_touches.csv, expected result: ./expected/results/st_touches.out
+Arctern test: run_test_st_touches, result: PASSED
+Arctern test: run_test_union_aggr_2, result compare started, test result: /tmp/arctern_results/run_test_union_aggr_2.csv, expected result: ./expected/results/st_union.out
+Arctern test: run_test_union_aggr_2, result: PASSED
+Arctern test: run_test_envelope_aggr_1, result compare started, test result: /tmp/arctern_results/run_test_envelope_aggr_1.csv, expected result: ./expected/results/st_envelope_aggr.out
+Arctern test: run_test_envelope_aggr_1, result: PASSED
+Arctern test: run_test_envelope_aggr_2, result compare started, test result: /tmp/arctern_results/run_test_envelope_aggr_2.csv, expected result: ./expected/results/st_envelope_aggr2.out
+Arctern test: run_test_envelope_aggr_2, result: PASSED
+Arctern test: run_test_st_geomfromgeojson, result compare started, test result: /tmp/arctern_results/run_test_st_geomfromgeojson.csv, expected result: ./expected/results/st_geomfromgeojson.out
+Arctern test: run_test_st_geomfromgeojson, result: PASSED
+Arctern test: run_test_st_hausdorffdistance, result compare started, test result: /tmp/arctern_results/run_test_st_hausdorffdistance.csv, expected result: ./expected/results/st_hausdorffdistance.out
+test result size: 43 and expected result size: 214, NOT equal, check the two result files
+Arctern test: run_test_st_hausdorffdistance, result: FAILED
