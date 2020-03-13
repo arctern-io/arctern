@@ -17,7 +17,7 @@ from pyspark.sql.functions import pandas_udf, PandasUDFType
 
 from pyspark.sql.types import *
 
-def save_png(hex_data, file_name):
+def save_png_2D(hex_data, file_name):
     import binascii
     binary_string = binascii.unhexlify(str(hex_data))
     with open(file_name, 'wb') as png:
@@ -38,7 +38,7 @@ def print_partitions(df):
             j = j + 1
         i = i + 1
 
-def pointmap(df, vega):
+def pointmap_2D(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
         arr_point = pa.array(point, type='string')
@@ -51,7 +51,7 @@ def pointmap(df, vega):
     hex_data = df.agg(pointmap_wkt(df['point'])).collect()[0][0]
     return hex_data
 
-def heatmap(df, vega):
+def heatmap_2D(df, vega):
     agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -77,7 +77,7 @@ def heatmap(df, vega):
     hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
     return hex_data
 
-def choroplethmap(df, vega):
+def choroplethmap_2D(df, vega):
     agg_schema = StructType([StructField('wkt', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
