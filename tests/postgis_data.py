@@ -12,11 +12,14 @@ sql_template_2 = "select %s('%s'::geometry, '%s'::geometry)"
 sql_template_3 = "select st_astext(%s('%s'::geometry, %s))"
 sql_template_4 = "select st_astext(%s('%s'::geometry, '%s'::geometry))"
 sql_template_5 = "select st_astext(%s('%s'::geometry))"
+sql_template_6 = "select st_astext(%s(st_geomfromtext('%s',3857),4326))"
+sql_template_7 = "select st_astext(%s('%s'::geometry, 1))"
 
 st_buffer = ['st_buffer']
 intersection = ['st_intersection']
 convexhull = ['st_convexhull']
-
+transform = ['st_transform']
+simplifypreservetopology = ['st_simplifypreservetopology']
 
 def get_sqls_from_data(function_name, file_path):
     sql_arr = []
@@ -27,6 +30,10 @@ def get_sqls_from_data(function_name, file_path):
             if len(line) == 1:
                 if function_name in convexhull:
                     sql = sql_template_5 % (function_name, line[0])
+                elif function_name in transform:
+                    sql = sql_template_6 % (function_name, line[0])
+                elif function_name in simplifypreservetopology:
+                    sql = sql_template_7 % (function_name, line[0])
                 else:
                     sql = sql_template_1 % (function_name, line[0])
                     
@@ -34,12 +41,13 @@ def get_sqls_from_data(function_name, file_path):
                 if function_name in st_buffer:
                     sql = sql_template_3 % (function_name, line[0], line[1])
                 elif function_name in intersection:
-                    arr.append(sql_template_4 % (function_name, values[0], values[1]))
+                    sql = sql_template_4 % (function_name, line[0], line[1])
                 else:
-                    arr.append(sql_template_2 % (function_name, values[0], values[1]))    
+                    sql = sql_template_2 % (function_name, line[0], line[1])
             
             sql_arr.append(sql)
     return sql_arr
+
 
 def execute_sql(sql):
     cur.execute(sql)
@@ -52,11 +60,15 @@ def get_postgis_result(sqls, result_path):
     results = [execute_sql(sql) for sql in sqls]
     with open(result_path, 'w') as f:
         for r in results:
-            f.writelines(r + '\n')
+            f.writelines(str(r) + '\n')
+
 
 if __name__ == '__main__':
     function_name = sys.argv[1]
     file_path = sys.argv[2]
     result_path = sys.argv[3]
-    sqls = get_sqls_from_data(file_path)
+    # print(function_name)
+    # print(file_path)
+    # print(result_path)
+    sqls = get_sqls_from_data(function_name, file_path)
     get_postgis_result(sqls, result_path)
