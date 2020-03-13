@@ -421,6 +421,21 @@ def run_test_st_issimple(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_issimple_curve(spark):
+    data = "issimple_curve.csv"
+    table_name = 'test_issimple_curve'
+    sql = "select st_issimple_udf(geos) from test_issimple_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_npoints(spark):
     data = "npoints.csv"
     table_name = 'test_npoints'
@@ -506,6 +521,22 @@ def run_test_st_intersects(spark):
     data = "intersects.csv"
     table_name = 'test_intersects'
     sql = "select st_intersects_udf(left, right) as geos from test_intersects"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_intersects_curve(spark):
+    
+    data = "intersects_curve.csv"
+    table_name = 'test_intersects_curve'
+    sql = "select st_intersects_udf(left, right) as geos from test_intersects_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -787,11 +818,13 @@ if __name__ == "__main__":
     run_test_st_area(spark_session)
     run_test_st_distance(spark_session)
     run_test_st_issimple(spark_session)
+    run_test_st_issimple_curve(spark_session)
     run_test_st_npoints(spark_session)
     run_test_st_geometrytype(spark_session)
     run_test_st_transform(spark_session)
     run_test_st_transform1(spark_session)
     run_test_st_intersects(spark_session)
+    run_test_st_intersects_curve(spark_session)
     run_test_st_contains(spark_session)
     run_test_st_within(spark_session)
     run_test_st_equals_1(spark_session)
