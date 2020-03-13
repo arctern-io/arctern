@@ -597,6 +597,21 @@ def run_test_st_crosses(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_crosses_curve(spark):
+    data = "crosses_curve.csv"
+    table_name = 'test_crosses_curve'
+    sql = "select st_crosses_udf(left, right) as geos from test_crosses_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_overlaps(spark):
     
     data = "overlaps.csv"
@@ -782,6 +797,7 @@ if __name__ == "__main__":
     run_test_st_equals_1(spark_session)
     run_test_st_equals_2(spark_session)
     run_test_st_crosses(spark_session)
+    run_test_st_crosses_curve(spark_session)
     run_test_st_overlaps(spark_session)
     run_test_st_touches(spark_session)
     run_test_st_makevalid(spark_session)

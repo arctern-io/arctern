@@ -31,6 +31,7 @@ run_test_st_intersects=test_intersects=st_intersects=st_intersects
 run_test_st_contains=test_contains=st_contains=st_contains
 run_test_st_within=test_within=st_within=st_within
 run_test_st_crosses=test_crosses=st_crosses=st_crosses
+run_test_st_crosses_curve=test_crosses_curve=st_crosses=st_crosses_curve
 run_test_st_overlaps=test_overlaps=st_overlaps=st_overlaps
 run_test_st_touches=test_touches=st_touches=st_touches
 run_test_union_aggr_2=test_union_aggr_2=st_union=st_union
