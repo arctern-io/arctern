@@ -412,7 +412,7 @@ if __name__ == '__main__':
     geo6 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 13, 7 8)))'
     
     update_result()
-    r = compare_results('/tmp/arctern_results/run_test_st_buffer1.csv', './expected/results/st_buffer1.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_buffer5.csv', './expected/results/st_buffer5.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_area.csv', './expected/results/st_area.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')

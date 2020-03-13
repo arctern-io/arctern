@@ -10,6 +10,11 @@ run_test_st_transform1=test_transform1=st_transform1=st_transform1
 run_test_st_area=test_area=st_area=st_area
 run_test_st_buffer=test_buffer=st_buffer=st_buffer
 run_test_st_buffer1=test_buffer1=st_buffer=st_buffer1
+run_test_st_buffer2=test_buffer2=st_buffer=st_buffer2
+run_test_st_buffer3=test_buffer3=st_buffer=st_buffer3
+run_test_st_buffer4=test_buffer4=st_buffer=st_buffer4
+run_test_st_buffer5=test_buffer5=st_buffer=st_buffer5
+run_test_st_buffer6=test_buffer6=st_buffer=st_buffer6
 run_test_st_centroid=test_centroid=st_centroid=st_centroid
 run_test_st_convexhull=test_convexhull=st_convexhull=st_convexhull
 # run_test_st_convexhull2=test_convexhull2=st_convexhull2=st_convexhull2

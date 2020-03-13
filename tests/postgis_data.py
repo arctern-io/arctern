@@ -9,7 +9,7 @@ sql = r"select datname from pg_database;"
 
 sql_template_1 = "select %s('%s'::geometry)"
 sql_template_2 = "select %s('%s'::geometry, '%s'::geometry)"
-sql_template_3 = "select st_astext(%s('%s'::geometry, 0, 30))"
+sql_template_3 = "select st_astext(%s('%s'::geometry, -2, 30))"
 sql_template_4 = "select st_astext(%s('%s'::geometry, '%s'::geometry))"
 sql_template_5 = "select st_astext(%s('%s'::geometry))"
 sql_template_6 = "select st_astext(%s(st_geomfromtext('%s',3857),4326))"
@@ -34,13 +34,13 @@ def get_sqls_from_data(function_name, file_path):
                     sql = sql_template_6 % (function_name, line[0])
                 elif function_name in simplifypreservetopology:
                     sql = sql_template_7 % (function_name, line[0])
+                elif function_name in st_buffer:
+                    sql = sql_template_3 % (function_name, line[0])
                 else:
                     sql = sql_template_1 % (function_name, line[0])
                     
             if len(line) == 2:
-                if function_name in st_buffer:
-                    sql = sql_template_3 % (function_name, line[0])
-                elif function_name in intersection:
+                if function_name in intersection:
                     sql = sql_template_4 % (function_name, line[0], line[1])
                 else:
                     sql = sql_template_2 % (function_name, line[0], line[1])
