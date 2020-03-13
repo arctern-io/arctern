@@ -96,7 +96,6 @@ services:
     volumes: *ubuntu-volumes
     command: &ubuntu-python-command
       ["/arctern/ci/scripts/cpp_build.sh && \
-        /arctern/ci/scripts/run_pylint.sh && \
         /arctern/ci/scripts/python_build.sh && \
         /arctern/ci/scripts/run_pytest.sh"]
 

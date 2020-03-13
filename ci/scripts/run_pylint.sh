@@ -46,7 +46,7 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-cd "${REPO_ROOT_PATH}"
+pushd "${REPO_ROOT_PATH}"
 
 find . -name \*.py \
 	-and -not -path ./cpp/\* \
@@ -56,3 +56,5 @@ find . -name \*.py \
 | sed 's/./\\&/g' \
 | xargs pylint -j 4 -ry --msg-template='{path}:{line}:{column}: {msg_id}: {msg} ({symbol})' --ignore="" \
 "$@" || exit 1
+
+popd
