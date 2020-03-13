@@ -26,7 +26,7 @@ def render_point_map(df, vega):
             pdf = pdf.drop_duplicates()
             arr_x = pa.array(pdf.x, type='uint32')
             arr_y = pa.array(pdf.y, type='uint32')
-            from arctern_gis import point_map
+            from arctern import point_map
             res = point_map(arr_x, arr_y, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
@@ -57,7 +57,7 @@ def render_heat_map(df, vega):
             arr_x = pa.array(arrs.x, type='uint32')
             arr_y = pa.array(arrs.y, type='uint32')
             arr_c = pa.array(arrs.c, type='uint32')
-            from arctern_gis import heat_map
+            from arctern import heat_map
             res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
@@ -87,7 +87,7 @@ def render_choropleth_map(df, vega):
             arrs.columns = ['wkt', 'c']
             arr_wkt = pa.array(arrs.wkt, type='string')
             arr_c = pa.array(arrs.c, type='uint32')
-            from arctern_gis import choropleth_map
+            from arctern import choropleth_map
             res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
             buffer = res.buffers()[1].hex()
             buf_df = pd.DataFrame([(buffer,)],["buffer"])
