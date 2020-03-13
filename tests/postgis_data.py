@@ -9,7 +9,7 @@ sql = r"select datname from pg_database;"
 
 sql_template_1 = "select %s('%s'::geometry)"
 sql_template_2 = "select %s('%s'::geometry, '%s'::geometry)"
-sql_template_3 = "select st_astext(%s('%s'::geometry, -2, 30))"
+sql_template_3 = "select st_astext(%s('%s'::geometry, 1, 30))"
 sql_template_4 = "select st_astext(%s('%s'::geometry, '%s'::geometry))"
 sql_template_5 = "select st_astext(%s('%s'::geometry))"
 sql_template_6 = "select st_astext(%s(st_geomfromtext('%s',3857),4326))"
