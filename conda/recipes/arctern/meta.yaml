@@ -1,0 +1,41 @@
+# Usage:
+#   conda build . -c defaults -c conda-forge
+
+{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
+#{% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
+{% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+package:
+  name: arctern
+  version: {{ version }}
+
+source:
+  path: ../../..
+
+# ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
+build:
+  number: {{ git_revision_count }}
+  string: {{ git_revision_count }}
+
+requirements:
+  build:
+    - python ===3.7.6
+    - Cython ==0.29.15
+    - setuptools
+    - libarctern {{ version }}
+    - pyarrow ==0.16.0
+
+  run:
+    - python ===3.7.6
+    - libarctern {{ version }}
+    - pyarrow ==0.16.0
+
+test:
+  commands:
+    - python -c "import arctern_gis"
+
+about:
+  home: http://www.github.com/zilliztech/arctern
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary:  Python library for Arctern

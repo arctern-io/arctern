@@ -23,7 +23,7 @@
 #include "render/2d/heatmap/heatmap.h"
 #include "render/2d/scatter_plot/pointmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::vector<std::string> coordinate_projection(const std::vector<std::string>& point_wkt,
@@ -44,6 +44,6 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_w
                                            const std::string& conf);
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern
 
 #include "render/render_builder_impl.h"

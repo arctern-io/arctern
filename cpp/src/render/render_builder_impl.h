@@ -22,7 +22,7 @@
 
 #include "utils/check_status.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 void pointXY_from_wkt(std::string wkt, double& x, double& y) {
@@ -48,10 +48,6 @@ std::vector<std::string> coordinate_projection(const std::vector<std::string>& p
   uint32_t output_x, output_y;
   for (int i = 0; i < size; i++) {
     pointXY_from_wkt(point_wkt[i], input_x, input_y);
-    if (input_x < top_left_x || input_x > bottom_right_x || input_y > top_left_y ||
-        input_y < bottom_right_y) {
-      continue;
-    }
     output_x =
         (uint32_t)(((input_x - top_left_x) * width) / (bottom_right_x - top_left_x));
     output_y =
@@ -60,9 +56,8 @@ std::vector<std::string> coordinate_projection(const std::vector<std::string>& p
     char* point_str = nullptr;
     CHECK_GDAL(point.exportToWkt(&point_str));
     std::string out_wkt(point_str);
-    output_point.push_back(out_wkt);
+    output_point[i] = out_wkt;
   }
-
   return output_point;
 }
 
@@ -107,4 +102,4 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_w
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

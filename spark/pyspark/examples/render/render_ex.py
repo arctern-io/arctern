@@ -15,11 +15,10 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import pandas_udf, PandasUDFType
-from zilliz_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from zilliz_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from zilliz_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
-from zilliz_pyspark import register_funcs
-from zilliz_pyspark import point_map_UDF
+from arctern_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
+from arctern_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from arctern_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+
 import pyarrow as pa
 import pandas as pd
 
@@ -29,7 +28,6 @@ def save_png(hex_data, file_name):
     with open(file_name, 'wb') as png:
         png.write(binary_string)
 
-
 def run_point_map(spark):
     points_data = []
     for i in range(300):
@@ -37,24 +35,22 @@ def run_point_map(spark):
     df = spark.createDataFrame(data = points_data, schema = ["x", "y"]).cache().coalesce(1)
     vega_circle2d = VegaCircle2d(300, 200, 3, "#2DEF4A", 0.5)
     vega = vega_circle2d.build()
-    register_funcs(spark)
-
-#    schema = StructType([StructField('buffer', StringType(), True)])
-#    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-#    def point_map_UDF(batch_iter, conf = vega):
-#        for pdf in batch_iter:
-#            pdf = pdf.drop_duplicates()
-#            arr_x = pa.array(pdf.x, type='uint32')
-#            arr_y = pa.array(pdf.y, type='uint32')
-#            from zilliz_gis import point_map
-#            res = point_map(arr_x, arr_y, conf.encode('utf-8'))
-#            buffer = res.buffers()[1].hex()
-#            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-#            yield buf_df
-
-    hex_data = df.mapInPandas(point_map_UDF("vega")).collect()[0][0]
+    
+    schema = StructType([StructField('buffer', StringType(), True)])
+    @pandas_udf(schema, PandasUDFType.MAP_ITER)
+    def point_map_UDF(batch_iter, conf = vega):
+        for pdf in batch_iter:
+            pdf = pdf.drop_duplicates()
+            arr_x = pa.array(pdf.x, type='uint32')
+            arr_y = pa.array(pdf.y, type='uint32')
+            from zilliz_gis import point_map
+            res = point_map(arr_x, arr_y, conf.encode('utf-8'))
+            buffer = res.buffers()[1].hex()
+            buf_df = pd.DataFrame([(buffer,)],["buffer"])
+            yield buf_df
+    
+    hex_data = df.mapInPandas(point_map_UDF).collect()[0][0]
     save_png(hex_data, '/tmp/hex_point_map.png')
-
 
 def run_heat_map(spark):
     points_data = []
@@ -65,8 +61,8 @@ def run_heat_map(spark):
     vega = vega_heat_map.build()
 
     agg_schema = StructType([StructField('x', IntegerType(), True),
-                             StructField('y', IntegerType(), True),
-                             StructField('c', IntegerType(), True)])
+                            StructField('y', IntegerType(), True),
+                            StructField('c', IntegerType(), True)])
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
@@ -75,20 +71,20 @@ def run_heat_map(spark):
             res.columns = ['x', 'y', 'c']
             yield res
 
-#    schema = StructType([StructField('buffer', StringType(), True)])
-#    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-#    def heat_map_UDF(batch_iter, conf = vega):
-#        for pdf in batch_iter:
-#            arrs = pdf.groupby(['x','y'])['c'].agg(['sum']).reset_index()
-#            arrs.columns = ['x', 'y', 'c']
-#            arr_x = pa.array(arrs.x, type='uint32')
-#            arr_y = pa.array(arrs.y, type='uint32')
-#            arr_c = pa.array(arrs.c, type='uint32')
-#            from zilliz_gis import heat_map
-#            res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
-#            buffer = res.buffers()[1].hex()
-#            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-#            yield buf_df
+    schema = StructType([StructField('buffer', StringType(), True)])
+    @pandas_udf(schema, PandasUDFType.MAP_ITER)
+    def heat_map_UDF(batch_iter, conf = vega):
+        for pdf in batch_iter:
+            arrs = pdf.groupby(['x','y'])['c'].agg(['sum']).reset_index()
+            arrs.columns = ['x', 'y', 'c']
+            arr_x = pa.array(arrs.x, type='uint32')
+            arr_y = pa.array(arrs.y, type='uint32')
+            arr_c = pa.array(arrs.c, type='uint32')
+            from zilliz_gis import heat_map
+            res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
+            buffer = res.buffers()[1].hex()
+            buf_df = pd.DataFrame([(buffer,)],["buffer"])
+            yield buf_df
 
     render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = render_agg_df.mapInPandas(heat_map_UDF).collect()[0][0]
@@ -119,19 +115,19 @@ def run_choropleth_map(spark):
             res.columns = ['wkt', 'c']
             yield res
 
-#    schema = StructType([StructField('buffer', StringType(), True)])
-#    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-#    def choropleth_map_UDF(batch_iter, conf = vega):
-#        for pdf in batch_iter:
-#            arrs = pdf.groupby(['wkt'])['c'].agg(['sum']).reset_index()
-#            arrs.columns = ['wkt', 'c']
-#            arr_wkt = pa.array(arrs.wkt, type='string')
-#            arr_c = pa.array(arrs.c, type='uint32')
-#            from zilliz_gis import choropleth_map
-#            res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
-#            buffer = res.buffers()[1].hex()
-#            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-#            yield buf_df
+    schema = StructType([StructField('buffer', StringType(), True)])
+    @pandas_udf(schema, PandasUDFType.MAP_ITER)
+    def choropleth_map_UDF(batch_iter, conf = vega):
+        for pdf in batch_iter:
+            arrs = pdf.groupby(['wkt'])['c'].agg(['sum']).reset_index()
+            arrs.columns = ['wkt', 'c']
+            arr_wkt = pa.array(arrs.wkt, type='string')
+            arr_c = pa.array(arrs.c, type='uint32')
+            from zilliz_gis import choropleth_map
+            res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
+            buffer = res.buffers()[1].hex()
+            buf_df = pd.DataFrame([(buffer,)],["buffer"])
+            yield buf_df
 
     render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = render_agg_df.mapInPandas(choropleth_map_UDF).collect()[0][0]

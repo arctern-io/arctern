@@ -23,7 +23,7 @@
 
 #include "arrow/render_api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
@@ -143,46 +143,56 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
     case arrow::Type::INT8: {
       auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<int8_t>(input_x, input_y, input_c_int8, points_size, conf);
+      break;
     }
     case arrow::Type::INT16: {
       auto input_c_int16 = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<int16_t>(input_x, input_y, input_c_int16, points_size, conf);
+      break;
     }
     case arrow::Type::INT32: {
       auto input_c_int32 = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<int32_t>(input_x, input_y, input_c_int32, points_size, conf);
+      break;
     }
     case arrow::Type::INT64: {
       auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<int64_t>(input_x, input_y, input_c_int64, points_size, conf);
+      break;
     }
     case arrow::Type::UINT8: {
       auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<uint8_t>(input_x, input_y, input_c_uint8, points_size, conf);
+      break;
     }
     case arrow::Type::UINT16: {
       auto input_c_uint16 = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<uint16_t>(input_x, input_y, input_c_uint16, points_size, conf);
+      break;
     }
     case arrow::Type::UINT32: {
       auto input_c_uint32 = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<uint32_t>(input_x, input_y, input_c_uint32, points_size, conf);
+      break;
     }
     case arrow::Type::UINT64: {
       auto input_c_uint64 = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<uint64_t>(input_x, input_y, input_c_uint64, points_size, conf);
+      break;
     }
     case arrow::Type::FLOAT: {
       auto input_c_float = (float*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<float>(input_x, input_y, input_c_float, points_size, conf);
+      break;
     }
     case arrow::Type::DOUBLE: {
       auto input_c_double = (double*)arr_c->data()->GetValues<uint8_t>(1);
       result = heatmap<double>(input_x, input_y, input_c_double, points_size, conf);
+      break;
     }
     default:
       // TODO: add log here
-      std::cout << "type error!";
+      std::cout << "type error! ";
   }
 
   free(input_x);
@@ -255,7 +265,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     default:
       // TODO: add log here
-      std::cout << "type error!";
+      std::cout << "type error! hjahj hjh heatmap1";
   }
   return nullptr;
 }
@@ -336,4 +346,4 @@ std::shared_ptr<arrow::Array> choropleth_map(
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

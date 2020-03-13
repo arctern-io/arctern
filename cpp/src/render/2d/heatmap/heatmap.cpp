@@ -21,7 +21,7 @@
 
 #include "render/2d/heatmap/heatmap.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 template class HeatMap<int8_t>;
@@ -233,4 +233,4 @@ uint8_t* HeatMap<T>::Render() {
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

@@ -18,7 +18,7 @@
 #pragma once
 #include "gis/cuda/common/gis_definitions.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -27,4 +27,4 @@ void ST_Distance(const GeometryVector& left_vec, const GeometryVector& right_vec
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

@@ -23,7 +23,7 @@
 #include "arrow/api.h"
 #include "arrow/array.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace gdal {
 
@@ -62,9 +62,8 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geo
                                         double buffer_distance,
                                         int n_quadrant_segments = 30);
 
-// std::shared_ptr<arrow::Array>
-// ST_PrecisionReduce(const std::shared_ptr<arrow::Array> &geometries,
-//                    int32_t precision);
+std::shared_ptr<arrow::Array> ST_PrecisionReduce(
+    const std::shared_ptr<arrow::Array>& geometries, int32_t precision);
 
 std::shared_ptr<arrow::Array> ST_Intersection(
     const std::shared_ptr<arrow::Array>& geometries_1,
@@ -85,6 +84,9 @@ std::shared_ptr<arrow::Array> ST_ConvexHull(
 std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& geos,
                                            const std::string& src_rs,
                                            const std::string& dst_rs);
+
+std::shared_ptr<arrow::Array> ST_CurveToLine(
+    const std::shared_ptr<arrow::Array>& geometries);
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
@@ -139,4 +141,4 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 
 }  // namespace gdal
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

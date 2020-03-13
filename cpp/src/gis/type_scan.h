@@ -23,46 +23,33 @@
 
 #include "gis/wkb_types.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 
 using GroupedWkbTypes = std::set<WkbTypes>;
 
 struct GeometryTypeMasks {
   // This field contains masks for each geometry type.
-  std::map<WkbTypes, std::vector<bool>> type_masks;
+  std::map<GroupedWkbTypes, std::vector<bool>> type_masks;
   // This field contains mask counts for each geometry type.
-  std::map<WkbTypes, int64_t> type_mask_counts;
-  // This field contains masks for each grouped geometry type.
-  std::map<GroupedWkbTypes, std::vector<bool>> grouped_type_masks;
-  // This field contains mask counts for each grouped geometry type.
-  std::map<GroupedWkbTypes, int64_t> grouped_type_mask_counts;
+  std::map<GroupedWkbTypes, int64_t> group_mask_counts;
   // If the given geometries share identical type, this field will be set true.
-  bool is_unique_type;
-  // This field is valid only if 'is_unique_type' equals true.
-  WkbTypes unique_type = WkbTypes::kUnknown;
-  // If the given geometries share identical grouped types, this field will be set true.
-  bool is_unique_grouped_types;
-  // This field is valid only if 'is_unique_grouped_types' equals true.
-  GroupedWkbTypes unique_grouped_types;
+  bool is_unique_group;
+  // This field is valid only if 'is_unique_group' equals true.
+  GroupedWkbTypes unique_group;
 };
 
 class GeometryTypeScanner {
  public:
   virtual std::shared_ptr<GeometryTypeMasks> Scan() = 0;
 
-  const std::vector<WkbTypes>& types() { return types_; }
+  const std::vector<GroupedWkbTypes>& types() { return types_; }
 
-  const std::vector<GroupedWkbTypes>& grouped_types() { return grouped_types_; }
-
-  std::vector<WkbTypes>& mutable_types() { return types_; }
-
-  std::vector<GroupedWkbTypes>& mutable_grouped_types() { return grouped_types_; }
+  std::vector<GroupedWkbTypes>& mutable_types() { return types_; }
 
  private:
-  std::vector<WkbTypes> types_;
-  std::vector<GroupedWkbTypes> grouped_types_;
+  std::vector<GroupedWkbTypes> types_;
 };
 
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

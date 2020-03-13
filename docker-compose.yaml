@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  conda-build:
+    # Usage:
+    #   docker-compose build conda-build
+    #   docker-compose run --rm conda-build
+    # Parameters:
+    #   ARCH: amd64
+    image: ${REPO}:${ARCH}-conda-build
+    build:
+      context: .
+      dockerfile: ci/docker/conda-build.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-conda-build
+    shm_size: &shm-size 2G
+    volumes: &conda-volumes
+      - .:/arctern:delegated
+    command: &build-conda-command
+      ["source /arctern/ci/scripts/conda/cpu/prebuild.sh &&
+        /arctern/ci/scripts/conda/cpu/build.sh"]
+
+  conda-cudagl-build:
+    # Usage:
+    #   docker-compose build conda-cudagl-build
+    #   docker-compose run --rm conda-cudagl-build
+    # Parameters:
+    #   ARCH: amd64
+    #   CUDA: 10.0
+    image: ${REPO}:${ARCH}-conda-cudagl-${CUDA}-build
+    build:
+      context: .
+      dockerfile: ci/docker/conda-cudagl-${CUDA}-build.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-conda-cudagl-${CUDA}-build
+    shm_size: *shm-size
+    volumes: *conda-volumes
+    command: &build-conda-cudagl-command
+      ["source /arctern/ci/scripts/conda/gpu/prebuild.sh &&
+        /arctern/ci/scripts/conda/gpu/build.sh"]

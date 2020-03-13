@@ -19,18 +19,15 @@
 
 #include <string>
 
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
+#include "gis/cuda/test_common/test_common.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
-#include "test_utils/transforms.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
-
-TEST(Transform, TestABI) {
-  using std::string;
-  string str("hello,world");
-  ASSERT_TRUE(test_cuda_abi(str));
-}
+using std::vector;
 
 TEST(Transform, Naive) {
   auto std_data = hexstring_to_binary(
@@ -45,6 +42,32 @@ TEST(Transform, Naive) {
   auto pnt = Wkt2Wkb("POINT(1 1)");
   ASSERT_TRUE(pnt.size() == 1 + 4 + 16);
 }
+
+TEST(Transform, Arrow) {
+  vector<std::string> wkt_vec = {
+      "Point(1 2)",
+      "Point(2 3)",
+      "LineString(3 4,4 5)",
+      "LineString(3 4,4 5)",
+      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
+      "POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
+      "MultiPoint(1 2, 2 3)",
+      "MultiPoint(2 3, 3 4)",
+      "MultiLineString((3 4,4 5), (-3 -4,-4 -5))",
+      "MultiLineString((-3 4,-4 -5), (3 4,4 5))",
+      "MultiPOLYGON(((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1)), "
+      "((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1)))",
+      "MultiPOLYGON(((10 12, -12 -12, 22 -22, 10 12),(30 31, -31 -31, 31 -31, 30 31)), "
+      "((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1)))",
+  };
+  auto std_arrow_wkb = WktsToArrowWkb(wkt_vec);
+  auto geo_vec = ArrowWkbToGeometryVector(std_arrow_wkb);
+  auto arrow_wkb = GeometryVectorToArrowWkb(geo_vec);
+  auto is_equal = arrow_wkb->Equals(std_arrow_wkb);
+  ASSERT_TRUE(is_equal);
+  //  auto ret_arrow = Ge
+}
+
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
