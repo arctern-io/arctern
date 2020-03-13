@@ -65,16 +65,38 @@ services:
         ubuntu: ${UBUNTU}
     shm_size: *shm-size
     environment:
-      ARCTERN_INSTALL_PREFIX: "/usr/local/arctern"
       BUILD_TYPE: "Release"
       CONDA_ENV: "arctern"
-      RUN_LINT: "ON"
-      BUILD_UNITTEST: "ON"
-      BUILD_COVERAGE: "ON"
     volumes: &ubuntu-volumes
       - .:/arctern:delegated
-      - ${ARCH}-ubuntu${UBUNTU}-cache:/usr/local/arctern:delegated
-    command: &build-ubuntu-command
+      - ${ARCH}-ubuntu${UBUNTU}-cache:/arctern/cpp/cmake_build:delegated
+    command: &ubuntu-cpp-command
       ["/arctern/ci/scripts/cpp_build.sh && \
         /arctern/ci/scripts/run_unittest.sh"]
+
+  ubuntu-python:
+    # Usage:
+    #   docker-compose build ubuntu-cpp
+    #   docker-compose build ubuntu-python
+    #   docker-compose run --rm ubuntu-python
+    # Parameters:
+    #   ARCH: amd64
+    #   UBUNTU: 18.04
+    image: ${REPO}:${ARCH}-ubuntu${UBUNTU}-python
+    build:
+      context: .
+      dockerfile: ci/docker/linux-apt-python.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-ubuntu${UBUNTU}-python
+      args:
+        base: ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+    shm_size: *shm-size
+    environment:
+      CONDA_ENV: "arctern"
+    volumes: *ubuntu-volumes
+    command: &ubuntu-python-command
+      ["/arctern/ci/scripts/cpp_build.sh && \
+        /arctern/ci/scripts/run_pylint && \
+        /arctern/ci/scripts/python_build.sh && \
+        /arctern/ci/scripts/run_pytest.sh"]
 

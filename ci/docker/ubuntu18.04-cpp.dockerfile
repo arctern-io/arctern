@@ -24,6 +24,11 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
+ENV RUN_LINT=ON \
+    BUILD_UNITTEST=ON \
+    BUILD_COVERAGE=ON \
+    USE_GPU=OFF
+
 # use login shell to activate arrow environment un the RUN commands
 SHELL [ "/bin/bash", "-c", "-l" ]
 
