@@ -9,7 +9,7 @@ sql = r"select datname from pg_database;"
 
 sql_template_1 = "select %s('%s'::geometry)"
 sql_template_2 = "select %s('%s'::geometry, '%s'::geometry)"
-sql_template_3 = "select st_astext(%s('%s'::geometry, %s))"
+sql_template_3 = "select st_astext(%s('%s'::geometry, %s, 30))"
 sql_template_4 = "select st_astext(%s('%s'::geometry, '%s'::geometry))"
 sql_template_5 = "select st_astext(%s('%s'::geometry))"
 sql_template_6 = "select st_astext(%s(st_geomfromtext('%s',3857),4326))"
@@ -50,10 +50,15 @@ def get_sqls_from_data(function_name, file_path):
 
 
 def execute_sql(sql):
-    cur.execute(sql)
-    rows = [row for row in cur.fetchall()]
-    for r in rows:
-        return r[0]
+    try:
+        cur.execute(sql)
+        rows = [row for row in cur.fetchall()]
+        for r in rows:
+            return r[0]
+    except Exception as e:
+        # print(sql)
+        # print('sql failed')
+        pass
 
 
 def get_postgis_result(sqls, result_path):
