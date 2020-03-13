@@ -1,4 +1,4 @@
-name: Conda CUDA Build
+name: Python Build
 
 # This workflow is triggered on pushes or pull request to the repository.
 on:
@@ -8,8 +8,7 @@ on:
       - 'ci/**'
       - 'cpp/**'
       - 'python/**'
-      - 'spark/**'
-      - '.github/workflows/conda_cuda_build.yml'
+      - '.github/workflows/python.yml'
       - '!**.md'
       - '!ci/jenkins/**'
   pull_request:
@@ -18,8 +17,7 @@ on:
       - 'ci/**'
       - 'cpp/**'
       - 'python/**'
-      - 'spark/**'
-      - '.github/workflows/conda_cuda_build.yml'
+      - '.github/workflows/python.yml'
       - '!**.md'
       - '!ci/jenkins/**'
 
@@ -27,6 +25,7 @@ jobs:
   ubuntu:
     name: AMD64 Ubuntu ${{ matrix.ubuntu }}
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
@@ -40,17 +39,16 @@ jobs:
       - name: Docker Pull
         shell: bash
         run: |
-          docker-compose pull --ignore-pull-failures conda-cudagl-build
+          docker-compose pull --ignore-pull-failures ubuntu-cpp
+          docker-compose pull --ignore-pull-failures ubuntu-python
       - name: Docker Build
         shell: bash
         run: |
-          docker-compose build conda-cudagl-build
+          docker-compose build ubuntu-cpp
+          docker-compose build ubuntu-python
       - name: Docker Run
         run: |
-          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
-                             -e CONDA_USERNAME=arctern-dev \
-                             -e MY_UPLOAD_KEY=${{ secrets.DEV_ANACONDA_TOKEN }} \
-                             conda-cudagl-build
+          docker-compose run ubuntu-python
       - name: Docker Push
         if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
         continue-on-error: true
@@ -58,4 +56,4 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USER }} \
                        -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-compose push conda-cudagl-build
+          docker-compose push ubuntu-python
