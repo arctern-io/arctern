@@ -437,6 +437,21 @@ def run_test_st_distance(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_distance_curve(spark):
+    data = "distance_curve.csv"
+    table_name = 'test_distance_curve'
+    sql = "select st_distance_udf(left, right) as my_distance from test_distance_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_issimple(spark):
     data = "issimple.csv"
     table_name = 'test_issimple'
@@ -930,6 +945,7 @@ if __name__ == "__main__":
     run_test_st_length_curve(spark_session)
     run_test_st_area(spark_session)
     run_test_st_distance(spark_session)
+    run_test_st_distance_curve(spark_session)
     run_test_st_issimple(spark_session)
     run_test_st_issimple_curve(spark_session)
     run_test_st_npoints(spark_session)
