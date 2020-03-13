@@ -299,6 +299,38 @@ def run_test_st_buffer6(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_buffer_curve(spark):
+    data = "buffer_curve.csv"
+    table_name = 'test_buffer_curve'
+    sql = "select st_buffer_udf(geos, 0) as geos from test_buffer_curve"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_buffer_curve1(spark):
+    data = "buffer_curve.csv"
+    table_name = 'test_buffer_curve1'
+    sql = "select st_buffer_udf(geos, 1) as geos from test_buffer_curve1"
+    
+    df = read_data(spark, base_dir, data)
+    # df = df.withColumn("d", col("distance").cast("double"))
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_st_envelope(spark):
     data = "envelope.csv"
     table_name = 'test_envelope'
@@ -732,6 +764,8 @@ if __name__ == "__main__":
     run_test_st_buffer4(spark_session)
     run_test_st_buffer5(spark_session)
     run_test_st_buffer6(spark_session)
+    run_test_st_buffer_curve(spark_session)
+    run_test_st_buffer_curve1(spark_session)
     run_test_st_envelope(spark_session)
     run_test_st_centroid(spark_session)
     run_test_st_length(spark_session)
@@ -751,7 +785,7 @@ if __name__ == "__main__":
     run_test_st_overlaps(spark_session)
     run_test_st_touches(spark_session)
     run_test_st_makevalid(spark_session)
-    # run_test_st_precisionreduce(spark_session)
+    run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
     run_test_st_hausdorffdistance(spark_session)
