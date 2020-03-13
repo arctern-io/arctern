@@ -25,6 +25,7 @@ bool Vega::JsonLabelCheck(rapidjson::Value& value, const std::string& label) {
   if (!value.HasMember(label.c_str())) {
     // TODO: add log here
     std::cout << "Cannot find label [" << label << "] !";
+    is_valid_ = false;
     return false;
   }
   return true;
@@ -35,6 +36,7 @@ bool Vega::JsonSizeCheck(rapidjson::Value& value, const std::string& label, size
     // TODO: add log here
     std::cout << "Member [" << label << "].size should be " << size << ", but get "
               << value.Size() << std::endl;
+    is_valid_ = false;
     return false;
   }
   return true;
@@ -46,6 +48,7 @@ bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
       if (!value.IsNumber()) {
         // TODO: add log here
         std::cout << "not number type" << std::endl;
+        is_valid_ = false;
         return false;
       }
       return true;
@@ -53,6 +56,7 @@ bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
       if (!value.IsArray()) {
         // TODO: add log here
         std::cout << "not array type" << std::endl;
+        is_valid_ = false;
         return false;
       }
       return true;
@@ -60,12 +64,14 @@ bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
       if (!value.IsString()) {
         // TODO: add log here
         std::cout << "not string type" << std::endl;
+        is_valid_ = false;
         return false;
       }
       return true;
     default: {
       // TODO: add log here
       std::cout << "unknown type" << std::endl;
+      is_valid_ = false;
       return false;
     }
   }
@@ -75,6 +81,7 @@ bool Vega::JsonNullCheck(rapidjson::Value& value) {
   if (value.IsNull()) {
     // TODO: add log here
     std::cout << "null!!!" << std::endl;
+    is_valid_ = false;
     return false;
   }
   return true;
