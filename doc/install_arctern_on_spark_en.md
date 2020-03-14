@@ -4,7 +4,6 @@ This topic introduces how to install Arctern in Spark.
 
 ## TOC
 
-## Prerequisites
 <!-- TOC -->
 
 - [TOC](#toc)
@@ -20,6 +19,7 @@ This topic introduces how to install Arctern in Spark.
     - [Support for Spark](#support-for-spark)
 
 <!-- /TOC -->
+## Prerequisites
 - CPU version
 
 | Component     | Version              |
