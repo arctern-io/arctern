@@ -30,8 +30,7 @@ struct CircleParams {
 
 class VegaScatterPlot : public Vega {
  public:
-  // TODO: add Build() api to build a vega json string.
-  // virtual std::string Build() = 0;
+  virtual std::string Build() = 0;
 
  protected:
   // vega json to vega struct

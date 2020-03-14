@@ -38,8 +38,7 @@ class VegaChoroplethMap : public Vega {
 
   explicit VegaChoroplethMap(const std::string& json);
 
-  // TODO: add Build() api to build a vega json string.
-  // std::string Build() final;
+  std::string Build() final;
 
   const BoundingBox& bounding_box() const { return bounding_box_; }
 
