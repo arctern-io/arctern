@@ -36,7 +36,8 @@ TEST(COODINATE_PROJECTION_TEST, POINT_TEST) {
   // param3: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.756342)";
 
-  auto arr = arctern::render::coordinate_projection(string_array, top_left, bottom_right, 200, 300);
+  auto arr = arctern::render::coordinate_projection(string_array, top_left, bottom_right,
+                                                    200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::StringArray>(arr);
   auto res1 = str_arr->GetString(0);

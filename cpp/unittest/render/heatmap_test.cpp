@@ -817,7 +817,7 @@ TEST(HEATMAP_TEST, RAW_POINT_DOUBLE_TEST) {
 
   auto bit_map3 = new uint8_t{0xff};
 
-  auto buff_data3 = (double *)malloc(5 * sizeof(double));
+  auto buff_data3 = (double*)malloc(5 * sizeof(double));
   for (int i = 0; i < 5; ++i) {
     buff_data3[i] = i + 50;
   }
