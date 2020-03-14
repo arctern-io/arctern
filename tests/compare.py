@@ -119,27 +119,17 @@ def compare_geometry(x, y):
     return result
 
 def compare_geometrycollection(x, y):
-    # arct = wkt.loads(x)
-    # pgis = wkt.loads(y)
+    arct = wkt.loads(x)
+    pgis = wkt.loads(y)
     
-    arct = CreateGeometryFromWkt(x)
-    pgis = CreateGeometryFromWkt(y)
-
-    intersection_length = Geometry.Length(Geometry.Intersection(arct,pgis))
-    arct_length = Geometry.Length(arct)
-    pgis_length = Geometry.Length(pgis)
-    result_length = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
-    print(result_length) 
-    intersection_area = Geometry.Area(Geometry.Intersection(arct,pgis))
-    arct_area = Geometry.Area(arct)
-    pgis_area = Geometry.Area(pgis)
-    result_area = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
-    print(result_area) 
-    return (result_length and result_area)
+    # arct = CreateGeometryFromWkt(x)
+    # pgis = CreateGeometryFromWkt(y)
+    
+    result = arct.equals(pgis)
     # if not result:
     #     print(arct, pgis)
     
-    # return result
+    return result
 
 def compare_floats(x, y):
 
