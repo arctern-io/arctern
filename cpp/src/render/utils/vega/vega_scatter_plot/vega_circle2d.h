@@ -24,20 +24,21 @@ namespace render {
 
 class VegaCircle2d : public VegaScatterPlot {
  public:
-  VegaCircle2d() = default;
+    VegaCircle2d() = default;
 
-  explicit VegaCircle2d(const std::string& json);
+    explicit VegaCircle2d(const std::string& json);
 
-  std::string Build() final;
+    // TODO: add Build() api to build a vega json string.
+    // std::string Build() final;
 
-  const CircleParams circle_params() const { return circle_params_; }
-
- private:
-  // vega json to vega struct
-  void Parse(const std::string& json) final;
+    const CircleParams circle_params() const { return circle_params_; }
 
  private:
-  CircleParams circle_params_;
+    // vega json to vega struct
+    void Parse(const std::string& json) final;
+
+ private:
+    CircleParams circle_params_;
 };
 
 }  // namespace render

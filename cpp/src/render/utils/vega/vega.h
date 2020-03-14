@@ -28,26 +28,29 @@ namespace render {
  */
 class Vega {
  public:
-  //    std::string ToString();
+    // std::string ToString();
 
-  virtual std::string Build() = 0;
+    // virtual std::string Build() = 0;
 
-  const WindowParams& window_params() const { return window_params_; }
+    const WindowParams& window_params() const { return window_params_; }
 
- protected:
-  // vega json to vega struct
-  virtual void Parse(const std::string& json) = 0;
-
-  bool JsonLabelCheck(rapidjson::Value& value, const std::string& label);
-
-  bool JsonSizeCheck(rapidjson::Value& value, const std::string& label, size_t size);
-
-  bool JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type);
-
-  bool JsonNullCheck(rapidjson::Value& value);
+    const bool& is_valid() const { return is_valid_; }
 
  protected:
-  WindowParams window_params_;
+    // vega json to vega struct
+    virtual void Parse(const std::string& json) = 0;
+
+    bool JsonLabelCheck(rapidjson::Value& value, const std::string& label);
+
+    bool JsonSizeCheck(rapidjson::Value& value, const std::string& label, size_t size);
+
+    bool JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type);
+
+    bool JsonNullCheck(rapidjson::Value& value);
+
+ protected:
+    WindowParams window_params_;
+    bool is_valid_ = true;
 };
 
 }  // namespace render
