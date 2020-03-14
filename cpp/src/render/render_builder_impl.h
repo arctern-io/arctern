@@ -65,8 +65,8 @@ std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t 
                                       const std::string& conf) {
   VegaCircle2d vega_circle_2d(conf);
   if (!vega_circle_2d.is_valid()) {
-      // TODO:: add log here
-      return std::make_pair(nullptr, -1);
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
   }
 
   PointMap point_map(arr_x, arr_y, num);
@@ -82,8 +82,8 @@ std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                      int64_t num_vertices, const std::string& conf) {
   VegaHeatMap vega_heat_map(conf);
   if (!vega_heat_map.is_valid()) {
-      // TODO:: add log here
-      return std::make_pair(nullptr, -1);
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
   }
 
   HeatMap<T> heat_map(arr_x, arr_y, arr_c, num_vertices);
@@ -98,11 +98,10 @@ template <typename T>
 std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
-
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
-      // TODO:: add log here
-      return std::make_pair(nullptr, -1);
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
   }
 
   ChoroplethMap<T> choropleth_map(arr_wkt, arr_c, num_buildings);

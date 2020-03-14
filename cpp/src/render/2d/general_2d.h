@@ -47,7 +47,7 @@ class General2D {
   void ExportImage();
 
  public:
-  void set_input(Input &input) { input_ = input; }
+  void set_input(Input& input) { input_ = input; }
 
   const Input& input() const { return input_; }
 

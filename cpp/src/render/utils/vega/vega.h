@@ -28,9 +28,9 @@ namespace render {
  */
 class Vega {
  public:
-  //std::string ToString();
+  // std::string ToString();
 
-  //virtual std::string Build() = 0;
+  // virtual std::string Build() = 0;
 
   const WindowParams& window_params() const { return window_params_; }
 

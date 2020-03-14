@@ -43,29 +43,29 @@ bool Vega::JsonSizeCheck(rapidjson::Value& value, const std::string& label, size
 }
 
 bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
-    if (type == rapidjson::Type::kNumberType) {
-        if (!value.IsNumber()) {
-            // TODO: add log here
-            std::cout << "not number type" << std::endl;
-            is_valid_ = false;
-            return false;
-        }
-    } else if (type == rapidjson::Type::kArrayType) {
-        if (!value.IsArray()) {
-            // TODO: add log here
-            std::cout << "not array type" << std::endl;
-            is_valid_ = false;
-            return false;
-        }
-    } else if (type == rapidjson::Type::kStringType) {
-        if (!value.IsString()) {
-            // TODO: add log here
-            std::cout << "not string type" << std::endl;
-            is_valid_ = false;
-            return false;
-        }
+  if (type == rapidjson::Type::kNumberType) {
+    if (!value.IsNumber()) {
+      // TODO: add log here
+      std::cout << "not number type" << std::endl;
+      is_valid_ = false;
+      return false;
     }
-    return true;
+  } else if (type == rapidjson::Type::kArrayType) {
+    if (!value.IsArray()) {
+      // TODO: add log here
+      std::cout << "not array type" << std::endl;
+      is_valid_ = false;
+      return false;
+    }
+  } else if (type == rapidjson::Type::kStringType) {
+    if (!value.IsString()) {
+      // TODO: add log here
+      std::cout << "not string type" << std::endl;
+      is_valid_ = false;
+      return false;
+    }
+  }
+  return true;
 }
 
 bool Vega::JsonNullCheck(rapidjson::Value& value) {

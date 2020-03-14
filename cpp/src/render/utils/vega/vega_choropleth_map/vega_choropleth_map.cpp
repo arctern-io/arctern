@@ -28,15 +28,14 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   document.Parse(json.c_str());
 
   if (document.Parse(json.c_str()).HasParseError()) {
-    //TODO:: add log here
+    // TODO: add log here
     printf("json format error\n");
     is_valid_ = false;
     return;
   }
 
   if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
-      !JsonNullCheck(document["width"]) ||
-      !JsonNullCheck(document["height"]) ||
+      !JsonNullCheck(document["width"]) || !JsonNullCheck(document["height"]) ||
       !JsonTypeCheck(document["width"], rapidjson::Type::kNumberType) ||
       !JsonTypeCheck(document["height"], rapidjson::Type::kNumberType)) {
     return;
