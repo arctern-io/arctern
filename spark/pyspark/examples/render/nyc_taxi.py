@@ -32,7 +32,7 @@ from pyspark.sql.types import *
 def draw_point_map(spark):
     # file 0_5M_nyc_build.csv is generated from New York taxi data and taxi zone shapefile. Data is available at the following URL: https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
-        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double").load(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string"").load(
         "file:///tmp/0_5M_nyc_build.csv").cache()
     df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
@@ -62,7 +62,7 @@ def draw_point_map(spark):
 
 def draw_heat_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
-        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double").load(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_build.csv").cache()
     df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
