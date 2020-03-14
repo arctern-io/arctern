@@ -20,15 +20,26 @@
 
 #include "arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
+
+std::shared_ptr<arrow::Array> coordinate_projection(
+    const std::shared_ptr<arrow::Array>& input_point, const std::string top_left,
+    const std::string bottom_right, const int height, const int width);
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
                                         const std::shared_ptr<arrow::Array>& arr_y,
                                         const std::string& conf);
 
+std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
+                                        const std::string& conf);
+
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
                                        const std::shared_ptr<arrow::Array>& arr_y,
+                                       const std::shared_ptr<arrow::Array>& arr_c,
+                                       const std::string& conf);
+
+std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
                                        const std::shared_ptr<arrow::Array>& arr_c,
                                        const std::string& conf);
 
@@ -37,4 +48,4 @@ std::shared_ptr<arrow::Array> choropleth_map(
     const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf);
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

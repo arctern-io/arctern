@@ -1,0 +1,39 @@
+{"left": "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))", "right": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
+{"left": "POLYGON ((1 1, 1 5, 5 5, 1 1))", "right": "POLYGON ((2 2, 2 3, 3 3, 2 2))"}
+{"left": "POINT (0 0)", "right": "LINESTRING (0 0, 0 2)"}
+{"left": "POINT (0 0)", "right": "LINESTRING (2 0, 0 2)"}
+{"left": "POLYGON ((2 2, 2 3, 3 3, 2 2))", "right": "POLYGON ((1 1, 1 5, 5 5, 1 1))"}
+{"left": "POLYGON ((40 21, 40 22, 40 23, 40 21))", "right": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POINT(5 5)"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POINT(0 0)"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POINT(-1 0)"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POINT(0 5)"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POINT(0 12)"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POLYGON((2 2, 2 3, 3 3, 3 2, 2 2))"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POLYGON((-5 -5, 5 -5, 5 5, -5 5, -5 -5))"}
+{"left": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "right": "POLYGON((-2 -2, -2 -3, -3 -3, -3 -2, -2 -2))"}
+{"left": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "right": "POLYGON((2 2, 2 3, 3 3, 3 2, 2 2))"}
+{"left": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "right": "POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))"}
+{"left": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "right": "POLYGON((-5 -5, 5 -5, 5 5, -5 5, -5 -5))"}
+{"left": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "right": "POLYGON((-2 -2, -2 -3, -3 -3, -3 -2, -2 -2))"}
+{"right": "POLYGON ((1 1, 8 1, 8 8, 1 8, 1 1))", "left": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
+{"right": "POLYGON ((1 1, 1 5, 5 5, 1 1))", "left": "POLYGON ((2 2, 2 3, 3 3, 2 2))"}
+{"right": "POINT (0 0)", "left": "LINESTRING (0 0, 0 2)"}
+{"right": "POINT (0 0)", "left": "LINESTRING (2 0, 0 2)"}
+{"right": "POLYGON ((2 2, 2 3, 3 3, 2 2))", "left": "POLYGON ((1 1, 1 5, 5 5, 1 1))"}
+{"right": "POLYGON ((40 21, 40 22, 40 23, 40 21))", "left": "POLYGON ((2 2, 9 2, 9 9, 2 9, 2 2))"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POINT(5 5)"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POINT(0 0)"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POINT(-1 0)"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POINT(0 5)"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POINT(0 12)"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POLYGON((2 2, 2 3, 3 3, 3 2, 2 2))"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POLYGON((-5 -5, 5 -5, 5 5, -5 5, -5 -5))"}
+{"right": "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))", "left": "POLYGON((-2 -2, -2 -3, -3 -3, -3 -2, -2 -2))"}
+{"right": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "left": "POLYGON((2 2, 2 3, 3 3, 3 2, 2 2))"}
+{"right": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "left": "POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))"}
+{"right": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "left": "POLYGON((-5 -5, 5 -5, 5 5, -5 5, -5 -5))"}
+{"right": "POLYGON((0 0, 0 10, 10 11, 10 0, 0 0))", "left": "POLYGON((-2 -2, -2 -3, -3 -3, -3 -2, -2 -2))"}
+{"right": "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,1.0 0.0,0.0 0.0))", "left": "POLYGON((0.0 2.0,1.0 2.0,1.0 3.0,0.0 3.0,0.0 2.0))"}

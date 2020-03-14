@@ -11,7 +11,7 @@ wiki: https://en.wikipedia.org/wiki/Hausdorff_distance
 #### `arctern`测试脚本
 ```python
 from pyspark.sql import SparkSession
-from zilliz_pyspark import register_funcs
+from arctern_pyspark import register_funcs
 
 if __name__ == "__main__":
     spark = SparkSession \
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     register_funcs(spark)
     test_df = spark.read.json("/tmp/t.json").cache()
     test_df.createOrReplaceTempView("st_union")
-    spark.sql("select ST_Union_Aggr_UDF(geos) from (select ST_PolygonFromEnvelope_UDF(a,c,b,d) as geos from st_union) as foo").show(1,0)
+    spark.sql("select ST_Union_Aggr(geos) from (select ST_PolygonFromEnvelope(a,c,b,d) as geos from st_union) as foo").show(1,0)
 
 ```
 `/tmp/t.json`内如如下：
@@ -93,3 +93,4 @@ conda install -c conda-forge pygeos
 - [postgis-hausdorff-distance](http://postgis.net/docs/ST_HausdorffDistance.html)
 - [pygeos-hausdorff-distance](https://pygeos.readthedocs.io/en/latest/measurement.html)
 - [stack-over-flow](https://gis.stackexchange.com/questions/144714/determining-if-two-geometric-figures-are-approximately-equal-using-postgis)
+

@@ -20,13 +20,13 @@
 #include <ostream>
 #include <string>
 
-namespace zilliz {
-namespace GIS {
+namespace arctern {
+namespace gis {
 
 enum class LogLevel : int { DEBUG = -1, INFO = 0, WARNNING = 1, ERROR = 2, FATAL = 3 };
 
-#define GIS_LOG_INTERNAL(level) ::zilliz::GIS::GisLog(__FILE__, __LINE__, level)
-#define GIS_LOG(level) GIS_LOG_INTERNAL(::zilliz::GIS::LogLevel::##level)
+#define GIS_LOG_INTERNAL(level) ::arctern::GIS::GisLog(__FILE__, __LINE__, level)
+#define GIS_LOG(level) GIS_LOG_INTERNAL(::arctern::GIS::LogLevel::##level)
 
-}  // namespace GIS
-}  // namespace zilliz
+}  // namespace gis
+}  // namespace arctern

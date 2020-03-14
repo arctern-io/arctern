@@ -19,51 +19,31 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
-
-namespace zilliz {
+#include "gis/cuda/conversion/wkb_visitor.h"
+namespace arctern {
 namespace gis {
 namespace cuda {
 
 namespace internal {
-__global__ static void CalcOffsets(GpuContext input, WkbArrowContext output, int size) {
-  auto index = threadIdx.x + blockDim.x * blockIdx.x;
-  if (index < size) {
-    auto common_offset = (int)((sizeof(WkbByteOrder) + sizeof(WkbTag)) * index);
-    auto value_offset = input.value_offsets[index] * sizeof(double);
-    auto meta_offset = input.meta_offsets[index] * sizeof(int);
-    auto wkb_length = common_offset + value_offset + meta_offset;
-    output.offsets[index] = wkb_length;
-  }
-}
 
-// return: size of total data length in bytes
-void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
-                           int* value_length_ptr) {
-  assert(input.size == output.size);
-  assert(output.offsets);
-  assert(!output.values);
-  {
-    auto offset_size = input.size + 1;
-    auto config = GetKernelExecConfig(offset_size);
-    assert(cudaDeviceSynchronize() == cudaSuccess);
-    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, offset_size);
-    assert(cudaDeviceSynchronize() == cudaSuccess);
-  }
-  if (value_length_ptr) {
-    auto src = output.offsets + input.size;
-    GpuMemcpy(value_length_ptr, src, 1);
-  }
-}
-
-struct WkbEncoder {
+struct WkbEncoderImpl {
+  char* wkb_iter;
   const uint32_t* metas;
   const double* values;
-  char* wkb_iter;
-  static constexpr bool skip_write = false;
+  bool skip_write;
+  int skipped_bytes;
 
- private:
-  __device__ void ValuesToWkb(int demensions, int points) {
-    auto count = demensions * points;
+  __device__ WkbEncoderImpl(char* wkb_iter, const uint32_t* metas, const double* values,
+                            bool skip_write)
+      : wkb_iter(wkb_iter),
+        metas(metas),
+        values(values),
+        skip_write(skip_write),
+        skipped_bytes(0) {}
+
+ protected:
+  __device__ void VisitValues(int dimensions, int points) {
+    auto count = dimensions * points;
     auto bytes = count * sizeof(double);
     if (!skip_write) {
       memcpy(wkb_iter, values, bytes);
@@ -73,81 +53,109 @@ struct WkbEncoder {
   }
 
   template <typename T>
-  __device__ T MetaToWkb() {
+  __device__ T VisitMeta() {
     static_assert(sizeof(T) == sizeof(*metas), "size of T must match meta");
     auto m = static_cast<T>(*metas);
-    if (!skip_write) {
-      InsertIntoWkb(m);
-    }
+    InsertIntoWkb(m);
     metas += 1;
     return m;
   }
 
+  // read from meta
+  __device__ auto VisitMetaInt() { return VisitMeta<int>(); }
+
+  // read from meta
+  __device__ auto VisitMetaWkbTag() { return VisitMeta<WkbTag>(); }
+
+  // read from constant
+  __device__ void VisitByteOrder() {
+    InsertIntoWkb(WkbByteOrder::kLittleEndian);
+    skipped_bytes += sizeof(WkbTag);
+  }
+
  public:
+  __device__ void SetByteOrder(WkbByteOrder byte_order) {
+    InsertIntoWkb(byte_order);
+    skipped_bytes += sizeof(WkbTag);
+  }
+
+  __device__ void SetTag(WkbTag tag) {
+    InsertIntoWkb(tag);
+    skipped_bytes += sizeof(WkbTag);
+  }
+
+ private:
   template <typename T>
   __device__ void InsertIntoWkb(T data) {
     int len = sizeof(T);
-    memcpy(wkb_iter, &data, len);
-    wkb_iter += len;
-  }
-
-  __device__ void EncodePoint(int demensions) {
-    // wtf
-    ValuesToWkb(demensions, 1);
-  }
-
-  __device__ void EncodeLineString(int demensions) {
-    auto size = MetaToWkb<int>();
-    ValuesToWkb(demensions, size);
-  }
-
-  __device__ void EncodePolygon(int demensions) {
-    auto polys = MetaToWkb<int>();
-    for (int i = 0; i < polys; ++i) {
-      EncodeLineString(demensions);
+    if (!skip_write) {
+      memcpy(wkb_iter, &data, len);
     }
+    wkb_iter += len;
   }
 };
 
-__global__ static void CalcValues(const GpuContext input, WkbArrowContext output) {
+using WkbEncoder = WkbCodingVisitor<WkbEncoderImpl>;
+
+__global__ static void CalcOffsets(ConstGpuContext input, WkbArrowContext output,
+                                   int size) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < input.size) {
     auto tag = input.get_tag(index);
-    assert(tag.get_space_type() == WkbSpaceType::XY);
-    int dimensions = 2;
     auto metas = input.get_meta_ptr(index);
     auto values = input.get_value_ptr(index);
     auto wkb_iter = output.get_wkb_ptr(index);
 
-    WkbEncoder encoder{metas, values, wkb_iter};
-    encoder.InsertIntoWkb(WkbByteOrder::kLittleEndian);
-    encoder.InsertIntoWkb(tag);
+    WkbEncoder encoder(wkb_iter, metas, values, true);
+    encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
+    encoder.SetTag(tag);
+    encoder.VisitBody(tag);
 
-    switch (tag.get_category()) {
-      case WkbCategory::kPoint: {
-        encoder.EncodePoint(dimensions);
-        break;
-      }
-      case WkbCategory::kLineString: {
-        encoder.EncodeLineString(dimensions);
-        break;
-      }
-      case WkbCategory::kPolygon: {
-        encoder.EncodePolygon(dimensions);
-        break;
-      }
-      default: {
-        assert(false);
-        break;
-      }
-    }
-    auto wkb_length = encoder.wkb_iter - wkb_iter;
-    auto std_wkb_length = output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index);
+    int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
+    output.offsets[index] = wkb_length;
+  }
+}
+
+// return: size of total data length in bytes
+void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
+                           int* value_length_ptr) {
+  assert(input.size == output.size);
+  auto size = input.size;
+  assert(output.offsets);
+  assert(!output.values);
+  {
+    auto config = GetKernelExecConfig(size);
+    assert(cudaDeviceSynchronize() == cudaSuccess);
+    CalcOffsets<<<config.grid_dim, config.block_dim>>>(input, output, size);
+    ExclusiveScan(output.offsets, size + 1);
+
+    assert(cudaDeviceSynchronize() == cudaSuccess);
+  }
+  if (value_length_ptr) {
+    auto src = output.offsets + size;
+    GpuMemcpy(value_length_ptr, src, 1);
+  }
+}
+
+__global__ static void CalcValues(ConstGpuContext input, WkbArrowContext output) {
+  auto index = threadIdx.x + blockIdx.x * blockDim.x;
+  if (index < input.size) {
+    auto tag = input.get_tag(index);
+    auto metas = input.get_meta_ptr(index);
+    auto values = input.get_value_ptr(index);
+    auto wkb_iter = output.get_wkb_ptr(index);
+    int std_wkb_length = (int)(output.get_wkb_ptr(index + 1) - output.get_wkb_ptr(index));
+    WkbEncoder encoder(wkb_iter, metas, values, false);
+    encoder.SetByteOrder(WkbByteOrder::kLittleEndian);
+    encoder.SetTag(tag);
+    encoder.VisitBody(tag);
+
+    int wkb_length = (int)(encoder.wkb_iter - wkb_iter);
     assert(std_wkb_length == wkb_length);
   }
 }
 
-void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output) {
+void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output) {
   assert(input.size == output.size);
   assert(output.offsets);
   assert(output.values);
@@ -159,4 +167,4 @@ void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output) {
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern

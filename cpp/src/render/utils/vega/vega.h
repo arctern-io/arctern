@@ -20,7 +20,7 @@
 #include "rapidjson/document.h"
 #include "render/window/window_params.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 /***
@@ -51,4 +51,4 @@ class Vega {
 };
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

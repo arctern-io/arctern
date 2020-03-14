@@ -23,7 +23,7 @@
 
 #include "arrow/render_api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
@@ -44,6 +44,59 @@ std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
   return array;
 }
 
+std::shared_ptr<arrow::Array> coordinate_projection(
+    const std::shared_ptr<arrow::Array>& input_point, const std::string top_left,
+    const std::string bottom_right, const int height, const int width) {
+  auto arr_wkt_length = input_point->length();
+  auto wkt_type = input_point->type_id();
+  assert(wkt_type == arrow::Type::STRING);
+
+  auto string_array = std::static_pointer_cast<arrow::StringArray>(input_point);
+  std::vector<std::string> input_wkt(arr_wkt_length);
+  for (int i = 0; i < arr_wkt_length; i++) {
+    input_wkt[i] = string_array->GetString(i);
+  }
+
+  auto output_point =
+      coordinate_projection(input_wkt, top_left, bottom_right, height, width);
+  //  assert(arr_wkt_length == output_point.size());
+
+  arrow::StringBuilder string_builder;
+  std::shared_ptr<arrow::Array> points;
+  for (int i = 0; i < arr_wkt_length; i++) {
+    string_builder.Append(output_point[i]);
+  }
+  std::vector<std::string>().swap(input_wkt);
+  std::vector<std::string>().swap(output_point);
+  string_builder.Finish(&points);
+  return points;
+}
+
+std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
+                                        const std::string& conf) {
+  auto points_arr = std::static_pointer_cast<arrow::StringArray>(points);
+  auto points_size = points->length();
+  auto wkt_type = points->type_id();
+  assert(wkt_type == arrow::Type::STRING);
+
+  uint32_t *input_x, *input_y;
+  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  OGRGeometry* res_geo = nullptr;
+  for (size_t i = 0; i < points_size; i++) {
+    std::string point_wkt = points_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
+    auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+    input_x[i] = rst_pointer->getX();
+    input_y[i] = rst_pointer->getY();
+  }
+
+  auto result = pointmap(input_x, input_y, points_size, conf);
+  free(input_x);
+  free(input_y);
+  return out_pic(result);
+}
+
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
                                         const std::shared_ptr<arrow::Array>& arr_y,
                                         const std::string& conf) {
@@ -61,6 +114,90 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
   auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
 
   return out_pic(pointmap(input_x, input_y, x_length, conf));
+}
+
+std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
+                                       const std::shared_ptr<arrow::Array>& arr_c,
+                                       const std::string& conf) {
+  auto points_arr = std::static_pointer_cast<arrow::StringArray>(points);
+  auto points_size = points->length();
+  auto wkt_type = points->type_id();
+  assert(wkt_type == arrow::Type::STRING);
+
+  uint32_t *input_x, *input_y;
+  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  OGRGeometry* res_geo = nullptr;
+  for (size_t i = 0; i < points_size; i++) {
+    std::string point_wkt = points_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
+    auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+    input_x[i] = rst_pointer->getX();
+    input_y[i] = rst_pointer->getY();
+  }
+
+  std::pair<uint8_t*, int64_t> result;
+  auto c_length = arr_c->length();
+  auto c_type = arr_c->type_id();
+  switch (c_type) {
+    case arrow::Type::INT8: {
+      auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<int8_t>(input_x, input_y, input_c_int8, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT16: {
+      auto input_c_int16 = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<int16_t>(input_x, input_y, input_c_int16, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT32: {
+      auto input_c_int32 = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<int32_t>(input_x, input_y, input_c_int32, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT64: {
+      auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<int64_t>(input_x, input_y, input_c_int64, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT8: {
+      auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<uint8_t>(input_x, input_y, input_c_uint8, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT16: {
+      auto input_c_uint16 = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<uint16_t>(input_x, input_y, input_c_uint16, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT32: {
+      auto input_c_uint32 = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<uint32_t>(input_x, input_y, input_c_uint32, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT64: {
+      auto input_c_uint64 = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<uint64_t>(input_x, input_y, input_c_uint64, points_size, conf);
+      break;
+    }
+    case arrow::Type::FLOAT: {
+      auto input_c_float = (float*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<float>(input_x, input_y, input_c_float, points_size, conf);
+      break;
+    }
+    case arrow::Type::DOUBLE: {
+      auto input_c_double = (double*)arr_c->data()->GetValues<uint8_t>(1);
+      result = heatmap<double>(input_x, input_y, input_c_double, points_size, conf);
+      break;
+    }
+    default:
+      // TODO: add log here
+      std::cout << "type error! ";
+  }
+
+  free(input_x);
+  free(input_y);
+  return out_pic(result);
 }
 
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
@@ -128,7 +265,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     default:
       // TODO: add log here
-      std::cout << "type error!";
+      std::cout << "type error! hjahj hjh heatmap1";
   }
   return nullptr;
 }
@@ -209,4 +346,4 @@ std::shared_ptr<arrow::Array> choropleth_map(
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

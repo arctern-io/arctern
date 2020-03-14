@@ -2,7 +2,7 @@
 #   conda build . -c defaults -c conda-forge
 
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
-{% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
+# {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
 package:
   name: libarctern
@@ -38,11 +38,11 @@ test:
 
     # shared
     - test -f $PREFIX/lib/libminiz.so            # [linux]
-    - test -f $PREFIX/lib/libwindrose.so         # [linux]
+    - test -f $PREFIX/lib/libarctern.so         # [linux]
     
     # absence of static libraries
     - test ! -f $PREFIX/lib/libminiz.a           # [unix]
-    - test ! -f $PREFIX/lib/libwindrose.a        # [unix]
+    - test ! -f $PREFIX/lib/libarctern.a        # [unix]
 
     # conda tools
 

@@ -24,7 +24,10 @@
 #include "gis/cuda/test_common/test_common.h"
 
 using std::vector;
-namespace zilliz::gis::cuda {
+namespace arctern {
+namespace gis {
+namespace cuda {
+
 TEST(FunctorDistance, naive) {
   ASSERT_TRUE(true);
   // TODO use gdal to convert better good
@@ -49,7 +52,6 @@ TEST(FunctorDistance, naive) {
   for (int i = 0; i < num; ++i) {
     double x = i;
     double y = i + 1;
-    static_assert(sizeof(x) == 8, "wtf");
     memcpy(vec_right.data() + 5, &x, sizeof(x));
     memcpy(vec_right.data() + 5 + 8, &y, sizeof(y));
 
@@ -66,4 +68,7 @@ TEST(FunctorDistance, naive) {
     ASSERT_DOUBLE_EQ(result[i], std);
   }
 }
-}  // namespace zilliz::gis::cuda
+
+}  // namespace cuda
+}  // namespace gis
+}  // namespace arctern

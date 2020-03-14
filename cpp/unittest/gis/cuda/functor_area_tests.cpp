@@ -28,7 +28,10 @@
 #include "gis/cuda/test_common/test_common.h"
 
 using std::vector;
-namespace zilliz::gis::cuda {
+namespace arctern {
+namespace gis {
+namespace cuda {
+
 TEST(FunctorArea, naive) {
   ASSERT_TRUE(true);
   auto raw_data = hexstring_to_binary(
@@ -49,4 +52,6 @@ TEST(FunctorArea, naive) {
     ASSERT_DOUBLE_EQ(result[i], std);
   }
 }
-}  // namespace zilliz::gis::cuda
+}  // namespace cuda
+}  // namespace gis
+}  // namespace arctern

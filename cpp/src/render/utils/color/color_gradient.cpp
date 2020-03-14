@@ -29,7 +29,7 @@
 
 #define TRANSPARENCY 0.5f
 
-namespace zilliz {
+namespace arctern {
 namespace render {
 
 void ColorGradient::createDefaultHeatMapGradient() {
@@ -88,7 +88,7 @@ void HexToRGB(int64_t color, CircleParams& circle_params_2d, ColorStyle color_st
   }
 }
 
-CircleParams ColorGradient::GetCircleParams(zilliz::render::ColorStyle color_style,
+CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_style,
                                             double ratio) {
   CircleParams circle_params_2d;
 
@@ -167,4 +167,4 @@ CircleParams ColorGradient::GetCircleParams(zilliz::render::ColorStyle color_sty
 }
 
 }  // namespace render
-}  // namespace zilliz
+}  // namespace arctern

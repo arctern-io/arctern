@@ -1,71 +1,99 @@
-# GIS
+<img src="./doc/img/icon/arctern-color.png" width = "200">
 
-#### ST_Intersection
+[中文README](./README_CN.md)
 
-** Introduction: Return the intersection shape of two geometries. The return type is a geometry. The data in geometries is organized into WTK.**
+> Notice: Arctern is still in development and the 0.1.0 version is expected to be released in April 2020.
 
-*Format: std::shared_ptr\<arrow::Array> ST_Intersection (std::shared_ptr\<arrow::Array> geometries_1, std::shared_ptr\<arrow::Array> geometries_2)*
+## Overview
 
+Arctern is a geospatial analytics engine for massive-scale data. Compared with other geospatial analytics tools, Arctern aims at providing the following advantages:
 
-#### ST_IsValid
+1. Provides domain-specific APIs to improve the development efficiency of upper-level applications.
+2. Provides extensible, low-cost distributed solutions.
+3. Provides GPU acceleration for geospatial analytics algorithms.
+4. Support hybrid analysis with GIS, SQL, and ML functionalities.
 
-** Introduction: Test if Geometry is valid.Return an array of boolean,geometries_1 is an array of WKT. **
+## Architecture
 
-*Format: std::shared_ptr\<arrow::Array> ST_IsValid (std::shared_ptr\<arrow::Array> geometries_1)*
+The following figure shows the architecture of Arctern 0.1.0.  
 
+<img src="./doc/img/v0.1.0_intro/arctern_arch_v0.1.0.png" width = "700">
 
-#### ST_PrecisionReduce
+Arctern includes two components: GIS and Visualization. Arctern 0.1.0 supports most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects. It provides standard Vega rendering APIs. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for massive-scale data.  With a set of unified APIs, Arctern provides both CPU and GPU based implementations for geospatial data analytics and visualization.
 
-** Introduction: Reduce the precision of the given geometry to the given number of decimal places.Return an array of WTK,geometies_1 is an array of WKT. **
+For data format, Arctern supports standard numeric types, WKB formats, and files with JSON, CSV, and parquet format. Arctern organizes data in the memory in a column-based manner according to the Arrow standard. In this way, Arctern supports zero-copy data exchange with external systems.
 
-*Format: std::shared_ptr\<arrow::Array> ST_PrecisionReduce (std::shared_ptr\<arrow::Array> geometies_1, int32_t num_dot)*
+Arctern includes three types of column-based interface: C++ API, Python API, and Spark API. The C++ APIs pass arguments in Arrow format, Python and Spark APIs pass arguments in dataframe format. Because Spark will start to support GPU resource management since the 3.0 version, the Spark interface of Arctern only supports Spark 3.0.
 
-#### ST_Equals
+## Code example
 
-** Introduction: Test if leftGeometry is equal to rightGeometry.Return an array of boolean,The data in geometries is organized into WTK. **
+```python
+# Invoke Arctern API in PySpark
 
-*Format: std::shared_ptr\<arrow::Array> ST_Equals (std::shared_ptr\<arrow::Array> geometries_1, std::shared_ptr\<arrow::Array> geometries_2)*
+from pyspark.sql import SparkSession
+import arctern
 
+if __name__ == "__main__":
+    spark = SparkSession \
+        .builder \
+        .appName("Arctern-PySpark example") \
+        .getOrCreate()
 
-#### ST_Touches
+    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+    arctern.pyspark.register(spark)
 
-** Introduction: Test if leftGeometry touches rightGeometry.Return an array of boolean,The data in geometries is organized into WTK.**
+    within_df = spark.read.json('./example.json').cache()
+    within_df.createOrReplaceTempView("within")
+    spark.sql("select ST_Within_UDF(geo0, geo1) from within").show()
+    spark.stop()
+```
 
-*Format: std::shared_ptr\<arrow::Array> ST_Touches (std::shared_ptr\<arrow::Array> geometries_1, std::shared_ptr\<arrow::Array> geometries_2)*
+## Visualization
 
+Arctern will be open sourced along with Sulidae, which is a front-end visualization system developed by ZILLIZ and provides hybrid visualization solutions with both web frontend and server-side rendering. Sulidae combines the speed and flexibility of web frontend rendering and massive-scale data rendering capability of the backend.
 
-#### ST_Overlaps
+Arctern 0.1.0 is compatible with Sulidae. The following figures show the visualization effects of a headmap and a choropleth with 10 million data.
 
-** Introduction: Test if leftGeometry overlaps rightGeometry.Return an array of boolean,The data in geometries is organized into WTK. **
+<img src="./doc/img/v0.1.0_intro/heat_map.png" width = "700">
 
-*Format: std::shared_ptr\<arrow::Array> ST_Touches (std::shared_ptr\<arrow::Array> geometries_1, std::shared_ptr\<arrow::Array> geometries_2)*
+<img src="./doc/img/v0.1.0_intro/contour_map.png" width = "700">
 
+## Arctern roadmap
 
-#### ST_Crosses
+### v0.1.0
 
-** Introduction: Test if leftGeometry crosses rightGeometry.Return an array of boolean,The data in geometries is organized into WTK. **
+1. Support most frequently used 35 GIS APIs in the OGC standard.
+2. Support rendering choropleths, heatmaps, and scatter plots for massive-scale datasets.
+3. Provide C++, Python, and Spark APIs that comply with Arrow standard.
+4. Arctern engine with CPU based implementation.
+5. Arctern engine with GPU based implementation.
+6. Compatibility with Sulidae.
+7. Documentation for installation, deployment, and API reference.
 
-*Format: std::shared_ptr\<arrow::Array> ST_Crosses (std::shared_ptr\<arrow::Array> geometries_1, std::shared_ptr\<arrow::Array> geometries_2)*
+### v0.2.0
 
+1. Domain-specific API for trace analysis and geospatial data analysis.
+2. Geospatial indexes for domain-specific API.
+3. Performance optimization in Spark 3.0.
+4. Support more GIS APIs.
+5. Continuously improve system stability.
 
-#### ST_IsSimple
+### In progress:
 
-** Introduction: Test if Geometry is simple.Return an array of boolean,The data in geometries is organized into WTK. **
+#### Completed by 2020.03.10
 
-*Format: std::shared_ptr\<arrow::Array> ST_IsSimple (std::shared_ptr\<arrow::Array> geometries)*
+1. Support most frequently used 35 GIS APIs in the OGC standard.
+2. Support rendering horopleths, heatmaps, and scatter plots for massive-scale datasets.
+3. Support C++, Python, and Spark APIs that comply with Arrow standard.
+4. Arctern engine with CPU support.
+5. Arctern engine with GPU support.
 
+### Contact us
 
-ST_MakeValid
-** Introduction: Given an invalid polygon or multipolygon and removeHoles boolean flag, create a valid representation of the geometry. **
+#### Email
 
-Format: ST_MakeValid (A:geometry, removeHoles:Boolean)
+support@zilliz.com
 
-Spark SQL Example:
+##### ZILLIZ Wechat
 
-SELECT geometryValid.polygon FROM table
-LATERAL VIEW ST_MakeValid(polygon, false) geometryValid AS polygon
-
-
-ST_SimplifyPreserveTopology
-ST_AsText
-ST_GeometryType 
+<img src="./doc/img/v0.1.0_intro/zilliz.png" width = "200" align=left>

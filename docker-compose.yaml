@@ -1,5 +1,8 @@
 version: '3.5'
 
+volumes:
+  amd64-ubuntu18.04-cache:
+
 services:
   conda-build:
     # Usage:
@@ -14,6 +17,8 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-conda-build
     shm_size: &shm-size 2G
+    environment:
+      BUILD_TYPE: "Release"
     volumes: &conda-volumes
       - .:/arctern:delegated
     command: &build-conda-command
@@ -34,7 +39,63 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-conda-cudagl-${CUDA}-build
     shm_size: *shm-size
-    volumes: *conda-volumes
+    environment:
+      BUILD_TYPE: "Release"
+    volumes: &conda-cudagl-volumes
+      - .:/arctern:delegated
     command: &build-conda-cudagl-command
       ["source /arctern/ci/scripts/conda/gpu/prebuild.sh &&
         /arctern/ci/scripts/conda/gpu/build.sh"]
+
+  ubuntu-cpp:
+    # Usage:
+    #   docker-compose build ubuntu-cpp
+    #   docker-compose run --rm ubuntu-cpp
+    # Parameters:
+    #   ARCH: amd64
+    #   UBUNTU: 18.04
+    image: ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+    build:
+      context: .
+      dockerfile: ci/docker/ubuntu${UBUNTU}-cpp.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+      args:
+        arch: ${ARCH}
+        ubuntu: ${UBUNTU}
+    shm_size: *shm-size
+    environment:
+      BUILD_TYPE: "Release"
+      CONDA_ENV: "arctern"
+    volumes: &ubuntu-volumes
+      - .:/arctern:delegated
+      - ${ARCH}-ubuntu${UBUNTU}-cache:/arctern/cpp/cmake_build:delegated
+    command: &ubuntu-cpp-command
+      ["/arctern/ci/scripts/cpp_build.sh && \
+        /arctern/ci/scripts/run_unittest.sh"]
+
+  ubuntu-python:
+    # Usage:
+    #   docker-compose build ubuntu-cpp
+    #   docker-compose build ubuntu-python
+    #   docker-compose run --rm ubuntu-python
+    # Parameters:
+    #   ARCH: amd64
+    #   UBUNTU: 18.04
+    image: ${REPO}:${ARCH}-ubuntu${UBUNTU}-python
+    build:
+      context: .
+      dockerfile: ci/docker/linux-apt-python.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-ubuntu${UBUNTU}-python
+      args:
+        base: ${REPO}:${ARCH}-ubuntu${UBUNTU}-cpp
+    shm_size: *shm-size
+    environment:
+      CONDA_ENV: "arctern"
+    volumes: *ubuntu-volumes
+    command: &ubuntu-python-command
+      ["/arctern/ci/scripts/cpp_build.sh && \
+        /arctern/ci/scripts/python_build.sh && \
+        /arctern/ci/scripts/run_pytest.sh"]
+

@@ -19,7 +19,7 @@
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/mock/arrow/api.h"
 
-namespace zilliz {
+namespace arctern {
 namespace gis {
 namespace cuda {
 
@@ -40,13 +40,13 @@ struct WkbArrowContext {
 GeometryVector ArrowWkbToGeometryVectorImpl(const WkbArrowContext& input);
 
 // return size of total data length in bytes
-void ToArrowWkbFillOffsets(const GpuContext& input, WkbArrowContext& output,
+void ToArrowWkbFillOffsets(ConstGpuContext& input, WkbArrowContext& output,
                            int* value_length);
 
-void ToArrowWkbFillValues(const GpuContext& input, WkbArrowContext& output);
+void ToArrowWkbFillValues(ConstGpuContext& input, WkbArrowContext& output);
 
 }  // namespace internal
 
 }  // namespace cuda
 }  // namespace gis
-}  // namespace zilliz
+}  // namespace arctern
