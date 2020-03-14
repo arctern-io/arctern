@@ -21,10 +21,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "render/utils/my_zlib_compress.h"
 
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-//#include "stb/stb_image_write.h"
-
 namespace arctern {
 namespace render {
 
