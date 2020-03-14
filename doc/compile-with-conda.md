@@ -85,7 +85,7 @@ source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 
 # python封装以及单元测试的运行
 上一步编译测试成功后
-## Python包 arctern_gis的编译和安装
+## Python包 arctern的编译和安装
 - 加载GIS环境
 ```
 source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
@@ -99,7 +99,7 @@ python_build.sh具体参数设置可运行下面命令:
 ./python_build.sh -h
 ```
 
-## 运行Python包 arctern_gis的单元测试
+## 运行Python包 arctern的单元测试
 1. 需要保证`LD_LIBRARY_PATH`中加入`CMAKE_INSTALL_PREFIX/lib`这个路径以及`cuda`的`lib`路径
 ```
 source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
