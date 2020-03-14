@@ -337,17 +337,14 @@ def compare_all():
         # arctern_result = os.path.join(arc_result_dir, x[0] + '.json')
         arctern_result = os.path.join(arc_result_dir, x[0] + '.csv')
         postgis_result = os.path.join(pgis_result_dir, x[3] + '.out')
-        print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (
-        x[0], arctern_result, postgis_result))
+        print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (x[0], arctern_result, postgis_result))
 
         if not os.path.isfile(arctern_result):
-            print(
-                'Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
+            print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
             continue
 
         if not os.path.isfile(postgis_result):
-            print('Arctern test: %s, result: FAILED, reason: %s' % (
-            x[0], 'expected result not found [%s]' % postgis_result))
+            print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'expected result not found [%s]' % postgis_result))
             continue
 
         res = compare_results(arctern_result, postgis_result)
@@ -385,8 +382,7 @@ def update_result():
     for x in configs:
         arctern_result = os.path.join(arc_result_dir, x[0] + '.csv')
         if not os.path.isfile(arctern_result):
-            print(
-                'Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
+            print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'test result not found [%s]' % arctern_result))
             continue
 
         if x[0] not in arr:
