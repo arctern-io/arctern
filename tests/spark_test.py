@@ -364,7 +364,7 @@ def run_test_st_buffer6(spark):
 def run_test_st_buffer_curve(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve'
-    sql = "select st_buffer(geos, 0) as geos from test_buffer_curve"
+    sql = "select st_curvetoline(st_buffer(geos, 0)) as geos from test_buffer_curve"
     
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -380,7 +380,7 @@ def run_test_st_buffer_curve(spark):
 def run_test_st_buffer_curve1(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve1'
-    sql = "select st_buffer(geos, 1) as geos from test_buffer_curve1"
+    sql = "select st_curvetoline(st_buffer(geos, 1)) as geos from test_buffer_curve1"
     
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))

@@ -15,7 +15,10 @@ geo_types = ['POLYGON', 'POINT', 'LINESTRING']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 curve_types = ['CIRCULARSTRING','MULTICURVE','COMPOUNDCURVE']
 surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
+geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
+geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
+blist = ['run_test_st_curvetoline', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -27,6 +30,29 @@ def is_geometry(geo):
             continue
     
     return False
+
+def is_length_types(geo):
+    geo = geo.strip().upper()
+
+    for x in geo_length_types:
+        if geo.startswith(x) and len(geo) != len(x):
+            return True
+        else:
+            continue
+    
+    return False
+
+def is_area_types(geo):
+    geo = geo.strip().upper()
+
+    for x in geo_area_types:
+        if geo.startswith(x) and len(geo) != len(x):
+            return True
+        else:
+            continue
+    
+    return False
+
 
 def is_geometrycollection(geo):
     geo = geo.strip().upper()
@@ -95,44 +121,57 @@ EPOCH_SURFACE = 1e-2
 EPOCH_CURVE_RELATIVE = 2e-4
 EPOCH_SURFACE_RELATIVE = 3e-6
 
-# def compare_geometry(x, y):
-#     arct = pygeos.Geometry(x)
-#     pgis = pygeos.Geometry(y)
-#     dist = pygeos.measurement.hausdorff_distance(arct, pgis)
-#     arct_length = pygeos.measurement.length(arct)
-#     pgis_length = pygeos.measurement.length(pgis)
-#     max_len = max(arct_length, pgis_length)
-#     if dist > max_len * UNIT:
-#         return False
-#     else:
-#         return True
+def compare_length(x, y):
+    arct = CreateGeometryFromWkt(x)
+    pgis = CreateGeometryFromWkt(y)
+
+    intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
+    arct_length = Geometry.Length(arct)
+    pgis_length = Geometry.Length(pgis)
+    # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
+    result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
+    return result
+
+def compare_area(x, y):
+    arct = CreateGeometryFromWkt(x)
+    pgis = CreateGeometryFromWkt(y)
+
+    intersection_area = Geometry.Area(Geometry.Intersection(arct, pgis))
+    arct_area = Geometry.Area(arct)
+    pgis_area = Geometry.Area(pgis)
+
+    #result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
+    return result
 
 def compare_geometry(c, x, y):
-    arct = wkt.loads(x)
-    pgis = wkt.loads(y)
-
+    
     if x.upper().endswith('EMPTY') and y.upper().endswith('EMPTY'):
         return True
-        
-    result = arct.equals_exact(pgis, EPOCH)
+    
+    if c in blist:
+        if is_length_types(x) and is_length_types(y):
+            return compare_length(x, y)
+        elif if is_area_types(x) and is_area_types(y):
+            return compare_area(x, y)
+    else:
+        arct = wkt.loads(x)
+        pgis = wkt.loads(y)
+        result = arct.equals_exact(pgis, EPOCH)
+        return result
 
-    # if not result:
-    #     print(arct, pgis)
+def compare_geometrycollection(c, x, y):
     
-    return result
-
-def compare_geometrycollection(x, y):
-    arct = wkt.loads(x)
-    pgis = wkt.loads(y)
-    
-    # arct = CreateGeometryFromWkt(x)
-    # pgis = CreateGeometryFromWkt(y)
-    
-    result = arct.equals(pgis)
-    # if not result:
-    #     print(arct, pgis)
-    
-    return result
+    if c in blist:
+        if is_length_types(x) and is_length_types(y):
+            return compare_length(x, y)
+        elif if is_area_types(x) and is_area_types(y):
+            return compare_area(x, y)
+    else:
+        arct = wkt.loads(x)
+        pgis = wkt.loads(y)
+        result = arct.equals(pgis)
+        return result
 
 def compare_floats(c, x, y):
     x = float(x)
@@ -168,6 +207,10 @@ def compare2float_relative(x_base, y_check, relative_error):
         # print(x, y)
         return False
 
+def compare3float_relative(x_base, y_check, z_intersection, relative_error):
+    return compare2float_relative(x_base, y_check, relative_error) and \
+           compare2float_relative(x_base, z_intersection,relative_error) and \
+           compare2float_relative(y_check, z_intersection, relative_error)
 
 def compare_curve(x, y):
     arct = CreateGeometryFromWkt(x)
@@ -439,8 +482,8 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
-    r = compare_results(('run_test_st_distance_curve', ''), '/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
-    # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
+    # r = compare_results(('run_test_st_distance_curve', ''), '/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
+    r = compare_results(('run_test_st_curvetoline', ''), '/tmp/arctern_results/run_test_st_curvetoline.csv', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     exit(0)
 
