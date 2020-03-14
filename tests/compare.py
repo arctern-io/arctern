@@ -119,16 +119,27 @@ def compare_geometry(x, y):
     return result
 
 def compare_geometrycollection(x, y):
-    arct = wkt.loads(x)
-    pgis = wkt.loads(y)
-    # arct = CreateGeometryFromWkt(x)
-    # pgis = CreateGeometryFromWkt(y)
-    result = arct.equals(pgis)
+    # arct = wkt.loads(x)
+    # pgis = wkt.loads(y)
+    
+    arct = CreateGeometryFromWkt(x)
+    pgis = CreateGeometryFromWkt(y)
 
+    intersection_length = Geometry.Length(Geometry.Intersection(arct,pgis))
+    arct_length = Geometry.Length(arct)
+    pgis_length = Geometry.Length(pgis)
+    result_length = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    print(result_length) 
+    intersection_area = Geometry.Area(Geometry.Intersection(arct,pgis))
+    arct_area = Geometry.Area(arct)
+    pgis_area = Geometry.Area(pgis)
+    result_area = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    print(result_area) 
+    return (result_length and result_area)
     # if not result:
     #     print(arct, pgis)
     
-    return result
+    # return result
 
 def compare_floats(x, y):
 
@@ -383,7 +394,7 @@ if __name__ == '__main__':
     geo3 = 'GEOMETRYCOLLECTION (POINT (2 1),LINESTRING (0 0,1 2,2 3),POLYGON((0 0,2000000 0,1000000 1000000,0 0)))'
     
     assert True == compare_one([6,geo1],[6,geo2])
-    # assert False == compare_one([7,geo1],[7,geo3])
+    assert False == compare_one([7,geo1],[7,geo3])
 
     #test curve
     geo1 = 'CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)'
@@ -417,7 +428,7 @@ if __name__ == '__main__':
     
     update_result()
     # r = compare_results('/tmp/arctern_results/run_test_union_aggr_curve.csv', './expected/results/st_union_aggr_curve.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_area.csv', './expected/results/st_area.out')
+    # r = compare_results('/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_crosses.csv', './expected/results/st_crosses.out')
