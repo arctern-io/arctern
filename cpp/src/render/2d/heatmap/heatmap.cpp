@@ -45,6 +45,9 @@ template class HeatMap<float>;
 template class HeatMap<double>;
 
 template <typename T>
+HeatMap<T>::HeatMap() : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {}
+
+template <typename T>
 HeatMap<T>::HeatMap(uint32_t* input_x, uint32_t* input_y, T* count, int64_t num_vertices)
     : vertices_x_(input_x),
       vertices_y_(input_y),
@@ -56,6 +59,13 @@ HeatMap<T>::~HeatMap() {
   free(vertices_x_);
   free(vertices_y_);
   free(colors_);
+}
+
+template <typename T>
+void HeatMap<T>::InputInit() {
+  array_vector_ = input().array_vector;
+  VegaHeatMap vega_heatmap(input().vega);
+  heatmap_vega_ = vega_heatmap;
 }
 
 template <typename T>
@@ -114,7 +124,6 @@ void HeatMap<T>::Draw() {
 #endif
 }
 
-#ifdef USE_GPU
 template <typename T>
 void HeatMap<T>::Shader() {
   const char* vertexShaderSource =
@@ -209,10 +218,10 @@ void HeatMap<T>::Shader() {
   glUniform2f(3, window()->window_params().width(), window()->window_params().height());
   glBindVertexArray(VAO_);
 }
-#endif
 
 template <typename T>
 uint8_t* HeatMap<T>::Render() {
+  //    InputInit();
   WindowsInit(heatmap_vega_.window_params());
   DataInit();
 #ifdef USE_GPU

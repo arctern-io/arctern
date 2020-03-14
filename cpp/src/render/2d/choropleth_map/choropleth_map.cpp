@@ -50,6 +50,10 @@ template class ChoroplethMap<float>;
 template class ChoroplethMap<double>;
 
 template <typename T>
+ChoroplethMap<T>::ChoroplethMap()
+    : choropleth_wkt_(), count_(nullptr), num_buildings_(0) {}
+
+template <typename T>
 ChoroplethMap<T>::ChoroplethMap(std::vector<std::string> choropleth_wkt, T* count,
                                 int64_t num_buildings)
     : choropleth_wkt_(std::move(choropleth_wkt)),

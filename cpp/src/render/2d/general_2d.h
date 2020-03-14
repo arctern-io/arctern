@@ -31,9 +31,13 @@ class General2D {
  public:
   ~General2D();
 
+  virtual void DataInit() = 0;
+
   virtual uint8_t* Render() = 0;
 
   virtual void Draw() = 0;
+
+  virtual void InputInit() = 0;
 
  protected:
   void WindowsInit(WindowParams window_params);
@@ -47,11 +51,13 @@ class General2D {
   void ExportImage();
 
  public:
-  void set_input(Input& input) { input_ = input; }
+  void set_input(Input input) { input_ = input; }
 
   const Input& input() const { return input_; }
 
   unsigned char* mutable_buffer() { return buffer_; }
+
+  const arrow::ArrayVector& array_vector() const { return array_vector_; }
 
   int output_image_size() { return output_image_size_; }
 
