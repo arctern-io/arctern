@@ -15,6 +15,7 @@ geo_types = ['POLYGON', 'POINT', 'LINESTRING']
 geo_collection_types = ['MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']
 curve_types = ['CIRCULARSTRING','MULTICURVE','COMPOUNDCURVE']
 surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
+alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -104,7 +105,7 @@ EPOCH_SURFACE = 1e-2
 #     else:
 #         return True
 
-def compare_geometry(x, y):
+def compare_geometry(c, x, y):
     arct = wkt.loads(x)
     pgis = wkt.loads(y)
 
@@ -141,11 +142,15 @@ def compare_geometrycollection(x, y):
     
     # return result
 
-def compare_floats(x, y):
+def compare_floats(c, x, y):
 
     x = float(x)
     y = float(y)
-    if abs((x - y)) <= EPOCH:
+    if c in alist:
+        precision_error = EPOCH_CURVE
+    else:
+        precision_error = EPOCH
+    if abs((x - y)) <= precision_error:
         return True
     else:
         # print(x, y)
@@ -197,9 +202,10 @@ def convert_str(strr):
 
     return strr
 
-def compare_one(result, expect):
+def compare_one(config, result, expect):
     x = result[1]
     y = expect[1]
+    c = config[0]
     # print('result: %s' % str(x))
     # print('expect: %s' % str(y))
 
@@ -222,28 +228,28 @@ def compare_one(result, expect):
                 return True
 
             elif is_geometry(x) and is_geometry(y):
-                flag = compare_geometry(x, y)
+                flag = compare_geometry(c, x, y)
                 if not flag:
                     print(result[0], x, expect[0], y)
                 return flag
 
             elif is_geometrycollection(x) and is_geometrycollection(y):
-                flag = compare_geometrycollection(x, y)
+                flag = compare_geometrycollection(c, x, y)
                 if not flag:
                     print(result[0], x, expect[0], y)
                 return flag
 
-            elif is_curve(x) and is_curve(y):
-                flag = compare_curve(x, y)
-                if not flag:
-                    print(result[0], x, expect[0], y)
-                return flag
+            # elif is_curve(x) and is_curve(y):
+            #     flag = compare_curve(x, y)
+            #     if not flag:
+            #         print(result[0], x, expect[0], y)
+            #     return flag
 
-            elif is_surface(x) and is_surface(y):
-                flag = compare_surface(x, y)
-                if not flag:
-                    print(result[0], x, expect[0], y)
-                return flag
+            # elif is_surface(x) and is_surface(y):
+            #     flag = compare_surface(x, y)
+            #     if not flag:
+            #         print(result[0], x, expect[0], y)
+            #     return flag
 
             else:
                 if is_geometrytype(x) and is_geometrytype(y):
@@ -256,7 +262,7 @@ def compare_one(result, expect):
                 return False
 
         if isinstance(x, int) or isinstance(x, float):
-            flag = compare_floats(x, y)
+            flag = compare_floats(c, x, y)
             if not flag:
                 print(result[0], x, expect[0], y)
             return flag
@@ -265,7 +271,7 @@ def compare_one(result, expect):
     return flag
 
 
-def compare_results(arctern_results, postgis_results):
+def compare_results(config, arctern_results, postgis_results):
 
     with open(arctern_results, 'r') as f:
         # arctern = f.readlines()
@@ -293,7 +299,7 @@ def compare_results(arctern_results, postgis_results):
         return False
 
     for x, y in zip(arct_arr, pgis_arr):
-        res = compare_one(x, y)
+        res = compare_one(config, x, y)
         flag = flag and res
 
     return flag
@@ -329,7 +335,7 @@ def compare_all():
             print('Arctern test: %s, result: FAILED, reason: %s' % (x[0], 'expected result not found [%s]' % postgis_result))
             continue
 
-        res = compare_results(arctern_result, postgis_result)
+        res = compare_results(x, arctern_result, postgis_result)
         if res == True:
             print('Arctern test: %s, result: PASSED' % x[0])
         else:
@@ -431,10 +437,10 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_crosses.csv', './expected/results/st_crosses.out')
+    r = compare_results('/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    # exit(0)
+    exit(0)
 
     compare_all()
     assert True == compare_one([14,geo1],[14,geo2])
