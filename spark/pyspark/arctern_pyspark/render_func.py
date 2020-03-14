@@ -12,87 +12,93 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import *
+import pyarrow as pa
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
-import pyarrow as pa
-import pandas as pd
+from pyspark.sql.types import *
 
-def render_point_map(df, vega):
-    schema = StructType([StructField('buffer', StringType(), True)])
-    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-    def point_map_UDF(batch_iter, conf = vega):
-        for pdf in batch_iter:
-            pdf = pdf.drop_duplicates()
-            arr_x = pa.array(pdf.x, type='uint32')
-            arr_y = pa.array(pdf.y, type='uint32')
-            from arctern_gis import point_map
-            res = point_map(arr_x, arr_y, conf.encode('utf-8'))
-            buffer = res.buffers()[1].hex()
-            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-            yield buf_df
+def save_png_2D(hex_data, file_name):
+    import binascii
+    binary_string = binascii.unhexlify(str(hex_data))
+    with open(file_name, 'wb') as png:
+        png.write(binary_string)
 
-    hex_data = df.mapInPandas(point_map_UDF).collect()[0][0]
+def print_partitions(df):
+    numPartitions = df.rdd.getNumPartitions()
+    print("Total partitions: {}".format(numPartitions))
+    print("Partitioner: {}".format(df.rdd.partitioner))
+    df.explain()
+    parts = df.rdd.glom().collect()
+    i = 0
+    j = 0
+    for p in parts:
+        print("Partition {}:".format(i))
+        for r in p:
+            print("Row {}:{}".format(j, r))
+            j = j + 1
+        i = i + 1
+
+def pointmap_2D(df, vega):
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def pointmap_wkt(point, conf=vega):
+        arr_point = pa.array(point, type='string')
+        from arctern_gis import point_map_wkt
+        png = point_map_wkt(arr_point, conf.encode('utf-8'))
+        buffer = png.buffers()[1].hex()
+        return buffer
+
+    df = df.coalesce(1)
+    hex_data = df.agg(pointmap_wkt(df['point'])).collect()[0][0]
     return hex_data
 
+def heatmap_2D(df, vega):
+    agg_schema = StructType([StructField('point', StringType(), True),
+                             StructField('w', IntegerType(), True)])
 
-def render_heat_map(df, vega):
-    agg_schema = StructType([StructField('x', IntegerType(), True),
-                             StructField('y', IntegerType(), True),
-                             StructField('c', IntegerType(), True)])
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
-            res = pdf.groupby(['x','y'])
-            res = res['c'].agg(['sum']).reset_index()
-            res.columns = ['x', 'y', 'c']
-            yield res
+            dd = pdf.groupby(['point'])
+            dd = dd['w'].agg(['sum']).reset_index()
+            dd.columns = ['point', 'w']
+            yield dd
 
-    schema = StructType([StructField('buffer', StringType(), True)])
-    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-    def heat_map_UDF(batch_iter, conf = vega):
-        for pdf in batch_iter:
-            arrs = pdf.groupby(['x','y'])['c'].agg(['sum']).reset_index()
-            arrs.columns = ['x', 'y', 'c']
-            arr_x = pa.array(arrs.x, type='uint32')
-            arr_y = pa.array(arrs.y, type='uint32')
-            arr_c = pa.array(arrs.c, type='uint32')
-            from arctern_gis import heat_map
-            res = heat_map(arr_x, arr_y, arr_c, conf.encode('utf-8'))
-            buffer = res.buffers()[1].hex()
-            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-            yield buf_df
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def heatmap_wkt(point, w, conf=vega):
+        arr_point = pa.array(point, type='string')
+        arr_c = pa.array(w, type='int64')
+        from arctern_gis import heat_map_wkt
+        png = heat_map_wkt(arr_point, arr_c, conf.encode('utf-8'))
+        buffer = png.buffers()[1].hex()
+        return buffer
 
-    render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
-    hex_data = render_agg_df.mapInPandas(heat_map_UDF).collect()[0][0]
+    first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
+    final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
+    hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
     return hex_data
 
-
-def render_choropleth_map(df, vega):
+def choroplethmap_2D(df, vega):
     agg_schema = StructType([StructField('wkt', StringType(), True),
-                             StructField('c', IntegerType(), True)])
+                             StructField('w', IntegerType(), True)])
+
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
-            res = pdf.groupby(['wkt'])
-            res = res['c'].agg(['sum']).reset_index()
-            res.columns = ['wkt', 'c']
-            yield res
+            dd = pdf.groupby(['wkt'])
+            dd = dd['w'].agg(['sum']).reset_index()
+            dd.columns = ['wkt', 'w']
+            yield dd
 
-    schema = StructType([StructField('buffer', StringType(), True)])
-    @pandas_udf(schema, PandasUDFType.MAP_ITER)
-    def choropleth_map_UDF(batch_iter, conf = vega):
-        for pdf in batch_iter:
-            arrs = pdf.groupby(['wkt'])['c'].agg(['sum']).reset_index()
-            arrs.columns = ['wkt', 'c']
-            arr_wkt = pa.array(arrs.wkt, type='string')
-            arr_c = pa.array(arrs.c, type='uint32')
-            from arctern_gis import choropleth_map
-            res = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
-            buffer = res.buffers()[1].hex()
-            buf_df = pd.DataFrame([(buffer,)],["buffer"])
-            yield buf_df
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def choroplethmap_wkt(wkt, w, conf=vega):
+        arr_wkt = pa.array(wkt, type='string')
+        arr_c = pa.array(w, type='int64')
+        from arctern_gis import choropleth_map
+        png = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
+        buffer = png.buffers()[1].hex()
+        return buffer
 
-    render_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
-    hex_data = render_agg_df.mapInPandas(choropleth_map_UDF).collect()[0][0]
+    first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
+    final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
+    hex_data = final_agg_df.agg(choroplethmap_wkt(final_agg_df['wkt'], final_agg_df['w'])).collect()[0][0]
     return hex_data

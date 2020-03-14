@@ -49,22 +49,23 @@ __all__ = [
     "ST_GeomFromText",
     "ST_GeomFromWKT",
     "ST_AsText",
-    "my_plot" # or point_map
+    "Projection",
 ]
 
 import pyarrow as pa
 from pyspark.sql.functions import pandas_udf, PandasUDFType
+from pyspark.sql.types import *
 
-
-@pandas_udf("string", PandasUDFType.GROUPED_AGG)
-def my_plot(x, y):
-    arr_x = pa.array(x, type='uint32')
-    arr_y = pa.array(y, type='uint32')
-    from arctern_gis import point_map
-    curve_z = point_map(arr_x, arr_y)
-    curve_z_copy = curve_z
-    curve_z = curve_z.buffers()[1].to_pybytes()
-    return curve_z_copy.buffers()[1].hex()
+@pandas_udf("string", PandasUDFType.SCALAR)
+def Projection(geos, top_left, bottom_right, height, width):
+    arr_geos = pa.array(geos, type='string')
+    from arctern_gis import coordinate_projection
+    src_rs1 = bytes(top_left[0], encoding="utf8")
+    dst_rs1 = bytes(bottom_right[0], encoding="utf8")
+    h = int(height[0])
+    w = int(width[0])
+    rs = coordinate_projection(arr_geos, src_rs1, dst_rs1, h, w)
+    return rs.to_pandas()
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):

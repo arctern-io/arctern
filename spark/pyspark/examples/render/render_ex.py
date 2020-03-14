@@ -13,12 +13,18 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
-from arctern_pyspark import point_map_2D
-from arctern_pyspark import heat_map_2D
-from arctern_pyspark import choropleth_map_2D
+from pyspark.sql.types import *
+
 from arctern_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from arctern_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+
+from arctern_pyspark import heatmap
+from arctern_pyspark import pointmap
+from arctern_pyspark import choroplethmap
+
+import pyarrow as pa
+import pandas as pd
 
 def save_png(hex_data, file_name):
     import binascii
@@ -33,8 +39,8 @@ def run_point_map(spark):
     df = spark.createDataFrame(data = points_data, schema = ["x", "y"]).cache().coalesce(1)
     vega_circle2d = VegaCircle2d(300, 200, 3, "#2DEF4A", 0.5)
     vega = vega_circle2d.build()
-    res = point_map_2D(df, vega)
-    save_png(res, '/tmp/hex_point_map.png')
+    hex_data = pointmap(df, vega) 
+    save_png(hex_data, '/tmp/hex_point_map.png')
 
 def run_heat_map(spark):
     points_data = []
@@ -43,8 +49,8 @@ def run_heat_map(spark):
     df = spark.createDataFrame(data = points_data, schema = ["x", "y", "c"]).cache()
     vega_heat_map = VegaHeatMap(300, 200, 10.0)
     vega = vega_heat_map.build()
-    res = heat_map_2D(df, vega)
-    save_png(res, '/tmp/hex_heat_map.png')
+    hex_data = heatmap(df, vega) 
+    save_png(hex_data, '/tmp/hex_heat_map.png')
 
 def run_choropleth_map(spark):
     points_data = []
@@ -59,7 +65,7 @@ def run_choropleth_map(spark):
                                             [-73.984092, 40.753893, -73.977588, 40.756342],
                                             "blue_to_red", [2.5, 5], 1.0)
     vega = vega_choropleth_map.build()
-    res = choropleth_map_2D(df, vega)
+    res = choroplethmap(df, vega)
     save_png(res, '/tmp/hex_choropleth_map.png')
 
 if __name__ == "__main__":
@@ -75,3 +81,4 @@ if __name__ == "__main__":
     run_choropleth_map(spark_session)
 
     spark_session.stop()
+    
