@@ -92,6 +92,8 @@ UNIT = 0.0001
 EPOCH = 1e-8
 EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
+EPOCH_CURVE_RELATIVE = 2e-4
+EPOCH_SURFACE_RELATIVE = 3e-6
 
 # def compare_geometry(x, y):
 #     arct = pygeos.Geometry(x)
@@ -136,7 +138,8 @@ def compare_floats(c, x, y):
     x = float(x)
     y = float(y)
     if c in alist:
-        precision_error = EPOCH_CURVE
+        precision_error = EPOCH_CURVE_RELATIVE
+        return compare2float_relative(x, y, precision_error)
     else:
         precision_error = EPOCH
     if abs((x - y)) <= precision_error:
@@ -155,6 +158,16 @@ def compare_float(x, y, z, precision_error):
     else:
         # print(x, y)
         return False
+
+def compare2float_relative(x_base, y_check, relative_error):
+    x = float(x_base)
+    y = float(y_check)
+    if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
+        return True
+    else:
+        # print(x, y)
+        return False
+
 
 def compare_curve(x, y):
     arct = CreateGeometryFromWkt(x)
