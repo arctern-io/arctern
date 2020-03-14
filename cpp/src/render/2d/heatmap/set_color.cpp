@@ -30,12 +30,12 @@ void guassiankernel(float* kernel, int size, float sigma) {
   for (int i = 0; i < size; ++i) {
     float index = (size >> 1) - i;
     *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
-//    if (size & 1) {
-//      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
-//    } else {
-//      index -= 0.5;
-//      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
-//    }
+    //    if (size & 1) {
+    //      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
+    //    } else {
+    //      index -= 0.5;
+    //      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
+    //    }
     sum += *(data + i);
   }
 

@@ -16,7 +16,8 @@
 #include "miniz/miniz.h"
 #include "stb/stb_image_write.h"
 
-//STBIWDEF unsigned char* my_zlib_compress(unsigned char* data, int data_len, int* out_len,
+// STBIWDEF unsigned char* my_zlib_compress(unsigned char* data, int data_len, int*
+// out_len,
 //                                         int quality) {
 //  mz_ulong buflen = mz_compressBound(data_len);
 //  // Note that the returned buffer will be free'd by stbi_write_png*()
