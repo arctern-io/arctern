@@ -37,7 +37,7 @@ pipeline {
                     }
                     axis {
                         name 'BINARY_VERSION'
-                        values 'gpu', 'cpu'
+                        values 'gpu'
                     }
                 }
 
@@ -68,6 +68,15 @@ pipeline {
                                             container("arctern-${BINARY_VERSION}-build-env") {
                                                 script {
                                                     load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
+                                    stage('Code Coverage') {
+                                        steps {
+                                            container("arctern-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
                                                 }
                                             }
                                         }

@@ -737,6 +737,8 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
     auto ogr2 = Wrapper_createFromWkt(wkt2, i);
     if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       builder.AppendNull();
+    } else if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
+      builder.Append(true);
     } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
     } else {

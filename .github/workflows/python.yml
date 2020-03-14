@@ -1,0 +1,59 @@
+name: Python Build
+
+# This workflow is triggered on pushes or pull request to the repository.
+on:
+  push:
+    # file paths to consider in the event. Optional; defaults to all.
+    paths:
+      - 'ci/**'
+      - 'cpp/**'
+      - 'python/**'
+      - '.github/workflows/python.yml'
+      - '!**.md'
+      - '!ci/jenkins/**'
+  pull_request:
+    # file paths to consider in the event. Optional; defaults to all.
+    paths:
+      - 'ci/**'
+      - 'cpp/**'
+      - 'python/**'
+      - '.github/workflows/python.yml'
+      - '!**.md'
+      - '!ci/jenkins/**'
+
+jobs:
+  ubuntu:
+    name: AMD64 Ubuntu ${{ matrix.ubuntu }}
+    runs-on: ubuntu-latest
+    # if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: [18.04]
+    env:
+      UBUNTU: ${{ matrix.ubuntu }}
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Checkout Arctern
+        uses: actions/checkout@v1
+      - name: Docker Pull
+        shell: bash
+        run: |
+          docker-compose pull --ignore-pull-failures ubuntu-cpp
+          docker-compose pull --ignore-pull-failures ubuntu-python
+      - name: Docker Build
+        shell: bash
+        run: |
+          docker-compose build ubuntu-cpp
+          docker-compose build ubuntu-python
+      - name: Docker Run
+        run: |
+          docker-compose run ubuntu-python
+      - name: Docker Push
+        if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
+        continue-on-error: true
+        shell: bash
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USER }} \
+                       -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker-compose push ubuntu-python
