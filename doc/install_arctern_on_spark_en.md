@@ -102,13 +102,13 @@ $ conda activate arctern
 
 ## Validating installation
 
-In Python, import `arctern_gis` and `arctern_pyspark` to validate whether the installation is successful.
+In Python, import `arctern` and `arctern_pyspark` to validate whether the installation is successful.
 
 ```python
 Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import arctern_gis
+>>> import arctern
 >>> import arctern_pyspark
 ```
 
