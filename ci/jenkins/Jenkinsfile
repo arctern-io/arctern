@@ -9,13 +9,17 @@ pipeline {
 
     parameters{
         choice choices: ['Release', 'Debug'], description: 'Build Type', name: 'BUILD_TYPE'
+        string defaultValue: 'registry.zilliz.com', description: 'DOCKER REGISTRY URL', name: 'DOKCER_REGISTRY_URL', trim: true
+        string defaultValue: 'ba070c98-c8cc-4f7c-b657-897715f359fc', description: 'DOCKER CREDENTIALS ID', name: 'DOCKER_CREDENTIALS_ID', trim: true
+        string defaultValue: 'http://192.168.1.201/artifactory/arctern', description: 'JFROG ARTFACTORY URL', name: 'JFROG_ARTFACTORY_URL', trim: true
+        string defaultValue: '1a527823-d2b7-44fd-834b-9844350baf14', description: 'JFROG CREDENTIALS ID', name: 'JFROG_CREDENTIALS_ID', trim: true
     }
 
     environment {
         PROJECT_NAME = "arctern"
         PIPELINE_NAME = "arctern-ci"
-        // ARCTERN_ROOT_PATH="/var/lib"
-        // ARCTERN_INSTALL_PREFIX = "${env.ARCTERN_ROOT_PATH}/${env.PROJECT_NAME}"
+        LOWER_BUILD_TYPE = params.BUILD_TYPE.toLowerCase()
+        SEMVER = "${BRANCH_NAME.contains('/') ? BRANCH_NAME.substring(BRANCH_NAME.lastIndexOf('/') + 1) : BRANCH_NAME}"
     }
 
     stages {
@@ -33,7 +37,7 @@ pipeline {
                     }
                     axis {
                         name 'BINARY_VERSION'
-                        values 'gpu', 'cpu'
+                        values 'gpu'
                     }
                 }
 
@@ -68,6 +72,15 @@ pipeline {
                                             }
                                         }
                                     }
+                                    stage('Code Coverage') {
+                                        steps {
+                                            container("arctern-${BINARY_VERSION}-build-env") {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -75,51 +88,108 @@ pipeline {
                 }
             }
         }
-        // stage ('Arctern Conda') {
-        //     matrix {
-        //         agent none
-        //         axes {
-        //             axis {
-        //                 name 'OS_NAME'
-        //                 values 'ubuntu18.04'
-        //             }
-        //             axis {
-        //                 name 'CPU_ARCH'
-        //                 values 'amd64'
-        //             }
-        //             axis {
-        //                 name 'BINARY_VERSION'
-        //                 values 'gpu', 'cpu'
-        //             }
-        //         }
-// 
-        //         stages {
-        //             stage("Conda Build and Upload") {
-        //                 environment {
-        //                     CONDA_USERNAME = "arctern-dev"
-        //                 }
-        //                 agent {
-        //                     kubernetes {
-        //                         label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
-        //                         defaultContainer 'jnlp'
-        //                         yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
-        //                     }
-        //                 }
-// 
-        //                 stages {
-        //                     stage('Build and Upload') {
-        //                         steps {
-        //                             container("arctern-${BINARY_VERSION}-build-env") {
-        //                                 script {
-        //                                     load "${env.WORKSPACE}/ci/jenkins/step/condaBuild.groovy"
-        //                                 }
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+
+        stage ('Arctern Conda') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu18.04'
+                    }
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                stages {
+                    stage("Conda Build and Upload") {
+                        agent {
+                            kubernetes {
+                                label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                defaultContainer 'jnlp'
+                                yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                            }
+                        }
+
+                        environment {
+                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
+                            CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
+                        }
+
+                        stages {
+                            stage('Build and Upload') {
+                                steps {
+                                    container("arctern-${BINARY_VERSION}-build-env") {
+                                        script {
+                                            load "${env.WORKSPACE}/ci/jenkins/step/condaBuild.groovy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    stage('Arctern Spark Docker Images') {
+                        agent {
+                            kubernetes {
+                                label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
+                                defaultContainer 'jnlp'
+                                yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                            }
+                        }
+
+                        environment {
+                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
+                            IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                            CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
+                        }
+
+                        stages {
+                            stage('Build and Publish Docker Images') {
+                                steps {
+                                    container('docker-env') {
+                                        script {
+                                            load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    stage('Arctern Spark Regression') {
+                        agent {
+                            label "performance"
+                        }
+
+                        environment {
+                            IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                        }
+
+                        stages {
+                            stage('Regression') {
+                                steps {
+                                    script {
+                                        load "${env.WORKSPACE}/ci/jenkins/step/arcternSparkRegression.groovy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

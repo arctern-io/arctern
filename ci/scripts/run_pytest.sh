@@ -2,28 +2,42 @@
 
 set -e
 
-while getopts "e:h" arg
-do
-        case $arg in
-             e)
-                CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
-                ;;
-             h) # help
-                echo "
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-parameter:
--e: set conda activate environment
--h: help
+PYTHON_SRC_DIR="${SCRIPTS_DIR}/../../python"
 
-usage:
-./run_pytest.sh -e \${CONDA_ENV} [-h]
-                "
-                exit 0
-                ;;
-             ?)
-                echo "ERROR! unknown argument"
-        exit 1
-        ;;
+HELP="
+Usage:
+  $0 [flags] [Arguments]
+
+    -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
+                              Setting conda activate environment
+    -h or --help              Print help information
+
+
+Use \"$0  --help\" for more information about a given command.
+"
+
+ARGS=`getopt -o "e:h" -l "conda_env::,help" -n "$0" -- "$@"`
+
+eval set -- "${ARGS}"
+
+while true ; do
+        case "$1" in
+                -e|--conda_env)
+                        case "$2" in
+                                "") echo "Option conda_env, no argument"; exit 1 ;;
+                                *)  CONDA_ENV=$2 ; shift 2 ;;
+                        esac ;;
+                -h|--help) echo -e "${HELP}" ; exit 0 ;;
+                --) shift ; break ;;
+                *) echo "Internal error!" ; exit 1 ;;
         esac
 done
 
@@ -32,8 +46,10 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-cd "$(git rev-parse --show-toplevel)/python"
+pushd "${PYTHON_SRC_DIR}"
 
 pytest
 # --ignore "examples/example_test.py" \
-# --ignore-glob "examples/*" \
+# --ignore-glob "examples/*"
+
+popd

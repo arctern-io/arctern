@@ -70,6 +70,11 @@ fi
 #  FIXME: if ARCTERN_INSTALL_PREFIX is not set, check PREFIX, then check
 #         CONDA_PREFIX, but there is no fallback from there!
 ARCTERN_INSTALL_PREFIX=${ARCTERN_INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
+ARCTERN_ENV_FILE=${ARCTERN_INSTALL_PREFIX}/scripts/arctern_env.sh
+
+if [[ -f ${ARCTERN_ENV_FILE} ]];then
+    source ${ARCTERN_ENV_FILE}
+fi
 
 pushd ${PYTHON_SRC_DIR}
 

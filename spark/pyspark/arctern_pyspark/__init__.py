@@ -13,3 +13,7 @@
 # limitations under the License.
 
 from . register import register_funcs
+from . register import heatmap
+from . register import pointmap
+from . register import choroplethmap
+from . register import save_png

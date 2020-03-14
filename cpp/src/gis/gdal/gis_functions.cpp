@@ -660,7 +660,8 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   for (int32_t i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkt(wkt1, i);
     auto ogr2 = Wrapper_createFromWkt(wkt2, i);
-    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+    if ((ogr1 == nullptr) || (ogr1->IsEmpty()) || (ogr2 == nullptr) ||
+        (ogr2->IsEmpty())) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       auto geos1 = ogr1->exportToGEOS(geos_ctx);
@@ -736,6 +737,8 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
     auto ogr2 = Wrapper_createFromWkt(wkt2, i);
     if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       builder.AppendNull();
+    } else if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
+      builder.Append(true);
     } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
     } else {
