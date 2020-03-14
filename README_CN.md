@@ -39,7 +39,8 @@ Arctern是一个面向大规模数据的地理信息分析引擎。定位如下�
 # 在pyspark上调用Arctern API
 
 from pyspark.sql import SparkSession
-import arctern
+from arctern_pyspark import register_funcs, heatmap, save_png
+from arctern import vega_heatmap
 
 if __name__ == "__main__":
     spark = SparkSession \
@@ -48,11 +49,31 @@ if __name__ == "__main__":
         .getOrCreate()
 
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-    arctern.pyspark.register(spark)
+    register_funcs(spark)
 
-    within_df = spark.read.json('./example.json').cache()
-    within_df.createOrReplaceTempView("within")
-    spark.sql("select ST_Within(geo0, geo1) from within").show()
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        "file:///tmp/0_5M_nyc_build.csv").cache()
+    df.createOrReplaceTempView("nyc_taxi")
+    
+    df = spark.sql("select pickup_latitude as x, pickup_longitude as y, passenger_count as w from nyc_taxi")
+    df.createOrReplaceTempView("records")
+
+    filtered = spark.sql("select x, y, w from records where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, 40.780816 -73.998427, 40.780816 -73.954348, 40.730309 -73.998427))')")
+    filtered.createOrReplaceTempView("pickup")
+
+    res = spark.sql(
+        "select ST_Transform(ST_Point(x, y), 'EPSG:4326','EPSG:3857' ) as pickup_point, w from pickup")
+    res.createOrReplaceTempView("project")
+
+    res = spark.sql(
+        "select Projection(pickup_point, 'POINT (40.730309 -73.998427)', 'POINT (40.780816 -73.954348)', 'EPSG:4326','EPSG:3857', 1024, 896) as point, w from project")
+    res.cache()
+
+    vega = vega_heatmap(1024, 896, 10.0)
+    res = heatmap(res, vega)
+    save_png(res, '/tmp/heatmap.png')
+
     spark.stop()
 ```
 
