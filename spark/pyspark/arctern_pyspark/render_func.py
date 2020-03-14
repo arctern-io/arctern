@@ -42,7 +42,7 @@ def pointmap_2D(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
         arr_point = pa.array(point, type='string')
-        from arctern_gis import point_map_wkt
+        from arctern import point_map_wkt
         png = point_map_wkt(arr_point, conf.encode('utf-8'))
         buffer = png.buffers()[1].hex()
         return buffer
@@ -67,7 +67,7 @@ def heatmap_2D(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         arr_point = pa.array(point, type='string')
         arr_c = pa.array(w, type='int64')
-        from arctern_gis import heat_map_wkt
+        from arctern import heat_map_wkt
         png = heat_map_wkt(arr_point, arr_c, conf.encode('utf-8'))
         buffer = png.buffers()[1].hex()
         return buffer
@@ -93,7 +93,7 @@ def choroplethmap_2D(df, vega):
     def choroplethmap_wkt(wkt, w, conf=vega):
         arr_wkt = pa.array(wkt, type='string')
         arr_c = pa.array(w, type='int64')
-        from arctern_gis import choropleth_map
+        from arctern import choropleth_map
         png = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
         buffer = png.buffers()[1].hex()
         return buffer
