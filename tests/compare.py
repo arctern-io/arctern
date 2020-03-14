@@ -133,7 +133,6 @@ def compare_geometrycollection(x, y):
     return result
 
 def compare_floats(c, x, y):
-
     x = float(x)
     y = float(y)
     if c in alist:
@@ -372,15 +371,15 @@ if __name__ == '__main__':
     geo2 = 'POINT EMPTY'
     geo3 = 'CIRCULARSTRING EMPTY'
     geo4 = 'POLYGON((0 0,1000000 0,1000000 2000000,0 0))'
-    assert True == compare_one([1,geo1],[1,geo2])
-    assert True == compare_one([2,geo1],[2,geo3])
+    # assert True == compare_one([1,geo1],[1,geo2])
+    # assert True == compare_one([2,geo1],[2,geo3])
     # assert False == compare_one([3,geo1],[3,geo4])
 
     #test geo_types
     geo1 = 'POLYGON((0 0,100000000 0,100000000 100000000,0 0))'
     geo2 = 'POLYGON((0 0,100000000 0,100000000 100000000.000000001,0 0))'
     geo3 = 'POLYGON((0 0,100000000 0,100000000 200000000,0 0))'
-    assert True == compare_one([4,geo1],[4,geo2])
+    # assert True == compare_one([4,geo1],[4,geo2])
     # assert False == compare_one([5,geo1],[5,geo3])
 
 
@@ -389,8 +388,8 @@ if __name__ == '__main__':
     geo2 = 'GEOMETRYCOLLECTION (LINESTRING (0 0,1 1,2 3),POLYGON((0 0,1000000.000000000003 0,1000000 1000000,0 0)),POINT(2 1))'
     geo3 = 'GEOMETRYCOLLECTION (POINT (2 1),LINESTRING (0 0,1 2,2 3),POLYGON((0 0,2000000 0,1000000 1000000,0 0)))'
     
-    assert True == compare_one([6,geo1],[6,geo2])
-    assert False == compare_one([7,geo1],[7,geo3])
+    # assert True == compare_one([6,geo1],[6,geo2])
+    # assert False == compare_one([7,geo1],[7,geo3])
 
     #test curve
     geo1 = 'CIRCULARSTRING (0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)'
@@ -406,11 +405,11 @@ if __name__ == '__main__':
     geo8 = 'MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 2)))'
     geo9 = 'MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 2, 0 3)))'
     
-    assert True == compare_one([8,geo1],[8,geo2])
+    # assert True == compare_one([8,geo1],[8,geo2])
     # assert False == compare_one([9,geo1],[9,geo3])
-    assert True == compare_one([10,geo4],[10,geo5])
+    # assert True == compare_one([10,geo4],[10,geo5])
     # assert False == compare_one([11,geo4],[11,geo6])
-    assert True == compare_one([12,geo7],[12,geo8])
+    # assert True == compare_one([12,geo7],[12,geo8])
     # assert False == compare_one([13,geo7],[13,geo9])
 
     #test surface 
@@ -427,7 +426,7 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
-    r = compare_results('/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
+    r = compare_results(('run_test_st_distance_curve', ''), '/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
     # r = compare_results('/tmp/results/test_curvetoline/part-00000-034d8bf0-cc68-4195-8fcf-c23390524865-c000.json', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
     exit(0)
