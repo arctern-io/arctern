@@ -779,6 +779,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
   OGRPolygon empty_polygon;
   OGRGeometry *g0, *g1;
   OGRGeometry *u0, *u1;
+  auto has_circular = new HasCircularVisitor;
   for (int i = 0; i <= len / 2; i++) {
     if ((i * 2) < len) {
       g0 = Wrapper_createFromWkt(wkt, 2 * i);
@@ -798,6 +799,13 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
         u0 = g0->UnionCascaded();
         OGRGeometryFactory::destroyGeometry(g0);
       } else {
+        has_circular->reset();
+        g0->accept(has_circular);
+        if (has_circular->has_circular()) {
+          auto linear = g0->getLinearGeometry();
+          OGRGeometryFactory::destroyGeometry(g0);
+          g0 = linear;
+        }
         u0 = g0;
       }
     } else {
@@ -866,6 +874,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     CPLFree(wkt);
     OGRGeometryFactory::destroyGeometry(union_agg[0]);
   }
+  delete has_circular;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
