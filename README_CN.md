@@ -52,8 +52,8 @@ if __name__ == "__main__":
     register_funcs(spark)
 
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
-        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
-        "file:///tmp/0_5M_nyc_build.csv").cache()
+        "passenger_count long, pickup_longitude double, pickup_latitude double").load(
+        "file:///nyc.csv").cache()
     df.createOrReplaceTempView("nyc_taxi")
     
     df = spark.sql("select pickup_latitude as x, pickup_longitude as y, passenger_count as w from nyc_taxi")
