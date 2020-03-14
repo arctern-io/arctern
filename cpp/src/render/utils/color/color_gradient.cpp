@@ -33,112 +33,112 @@ namespace arctern {
 namespace render {
 
 void ColorGradient::createDefaultHeatMapGradient() {
-    color.clear();
-    color.push_back(ColorPoint(0, 0, 1, 0.0f));   // Blue.
-    color.push_back(ColorPoint(0, 1, 1, 0.25f));  // Cyan.
-    color.push_back(ColorPoint(0, 1, 0, 0.5f));   // Green.
-    color.push_back(ColorPoint(1, 1, 0, 0.75f));  // Yellow.
-    color.push_back(ColorPoint(1, 0, 0, 1.0f));   // Red.
+  color.clear();
+  color.push_back(ColorPoint(0, 0, 1, 0.0f));   // Blue.
+  color.push_back(ColorPoint(0, 1, 1, 0.25f));  // Cyan.
+  color.push_back(ColorPoint(0, 1, 0, 0.5f));   // Green.
+  color.push_back(ColorPoint(1, 1, 0, 0.75f));  // Yellow.
+  color.push_back(ColorPoint(1, 0, 0, 1.0f));   // Red.
 }
 
 void ColorGradient::getColorAtValue(const float value, float& red, float& green,
                                     float& blue) {
-    if (color.size() == 0) return;
+  if (color.size() == 0) return;
 
-    for (unsigned int i = 0; i < color.size(); i++) {
-        ColorPoint& curr_color = color[i];
-        if (value < curr_color.val) {
-            int index = (i - 1) > 0 ? i - 1 : 0;
-            ColorPoint& prev_color = color[index];
-            float value_diff = (prev_color.val - curr_color.val);
-            float fract_between = (value_diff == 0) ? 0 : (value - curr_color.val) / value_diff;
-            red = (prev_color.r - curr_color.r) * fract_between + curr_color.r;
-            green = (prev_color.g - curr_color.g) * fract_between + curr_color.g;
-            blue = (prev_color.b - curr_color.b) * fract_between + curr_color.b;
-            return;
-        }
+  for (unsigned int i = 0; i < color.size(); i++) {
+    ColorPoint& curr_color = color[i];
+    if (value < curr_color.val) {
+      int index = (i - 1) > 0 ? i - 1 : 0;
+      ColorPoint& prev_color = color[index];
+      float value_diff = (prev_color.val - curr_color.val);
+      float fract_between = (value_diff == 0) ? 0 : (value - curr_color.val) / value_diff;
+      red = (prev_color.r - curr_color.r) * fract_between + curr_color.r;
+      green = (prev_color.g - curr_color.g) * fract_between + curr_color.g;
+      blue = (prev_color.b - curr_color.b) * fract_between + curr_color.b;
+      return;
     }
-    red = color.back().r;
-    green = color.back().g;
-    blue = color.back().b;
-    return;
+  }
+  red = color.back().r;
+  green = color.back().g;
+  blue = color.back().b;
+  return;
 }
 
 CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_style,
                                             double ratio) {
-    CircleParams circle_params_2d;
+  CircleParams circle_params_2d;
 
-    switch (color_style) {
-        case ColorStyle::kBlueToRed: {
-            circle_params_2d.color.a = 1.0;
-            circle_params_2d.color.r = ratio;
-            circle_params_2d.color.g = 0.0;
-            circle_params_2d.color.b = 1 - ratio;
-            break;
-        }
-        case ColorStyle::kPurpleToYellow: {
-            circle_params_2d.color.a = 1.0;
-            circle_params_2d.color.r = 1.0;
-            circle_params_2d.color.g = ratio;
-            circle_params_2d.color.b = 1 - ratio;
-            break;
-        }
-        case ColorStyle::kSkyBlueToWhite: {
-            int64_t sky_blue = SKYBLUE circle_params_2d.color.a = 1.0;
-            circle_params_2d.color.r = ((255 - (sky_blue >> 16 & 0xff)) * ratio) / 255.0f;
-            circle_params_2d.color.g = ((255 - (sky_blue >> 8 & 0xff)) * ratio) / 255.0f;
-            circle_params_2d.color.b = ((255 - (sky_blue & 0xff)) * ratio) / 255.0f;
-            break;
-        }
-        case ColorStyle::kRedTransParency: {
-            int64_t red_lp = RED circle_params_2d.color.a = ratio + TRANSPARENCY;
-            circle_params_2d.color.r = (red_lp >> 16 & 0xff) / 255.0f;
-            circle_params_2d.color.g = (red_lp >> 8 & 0xff) / 255.0f;
-            circle_params_2d.color.b = (red_lp & 0xff) / 255.0f;
-            break;
-        }
-        case ColorStyle::kBlueTransParency: {
-            int64_t blue_lp = BLUE circle_params_2d.color.a = ratio + TRANSPARENCY;
-            circle_params_2d.color.r = (blue_lp >> 16 & 0xff) / 255.0f;
-            circle_params_2d.color.g = (blue_lp >> 8 & 0xff) / 255.0f;
-            circle_params_2d.color.b = (blue_lp & 0xff) / 255.0f;
-            break;
-        }
-        case ColorStyle::kBlueGreenYellow: {
-            circle_params_2d.color.r = (17.0f + (208.0f - 17.0f) * ratio) / 255.0f;
-            circle_params_2d.color.g = (95.0f + (244.0f - 95.0f) * ratio) / 255.0f;
-            circle_params_2d.color.b = (154.0f * (1.0f - ratio)) / 255.0f;
-            circle_params_2d.color.a = 1.0;
-            break;
-        }
-        case ColorStyle::kWhiteToBlue: {
-            circle_params_2d.color.r = (226.0f + (17.0f - 226.0f) * ratio) / 255.0f;
-            circle_params_2d.color.g = (226.0f + (95.0f - 226.0f) * ratio) / 255.0f;
-            circle_params_2d.color.b = (226.0f + (154.0f - 226.0f) * ratio) / 255.0f;
-            circle_params_2d.color.a = 1.0;
-            break;
-        }
-        case ColorStyle::kGreenYellowRed: {
-            circle_params_2d.color.r = (77.0f + (194.0f - 77.0f) * ratio) / 255.0f;
-            circle_params_2d.color.g = (144.0f + (55.0f - 144.0f) * ratio) / 255.0f;
-            circle_params_2d.color.b = (79.0f + (40.0f - 79.0f) * ratio) / 255.0f;
-            circle_params_2d.color.a = 1.0;
-            break;
-        }
-        case ColorStyle::kBlueWhiteRed: {
-            circle_params_2d.color.r = (25.0f + (194.0f - 25.0f) * ratio) / 255.0f;
-            circle_params_2d.color.g = (132.0f + (55.0f - 132.0f) * ratio) / 255.0f;
-            circle_params_2d.color.b = (197.0f + (40.0f - 197.0f) * ratio) / 255.0f;
-            circle_params_2d.color.a = 1.0;
-            break;
-        }
-        default: {
-            std::string msg = "cannot find color style";
-            // TODO: add log here
-            break;
-        }
+  switch (color_style) {
+    case ColorStyle::kBlueToRed: {
+      circle_params_2d.color.a = 1.0;
+      circle_params_2d.color.r = ratio;
+      circle_params_2d.color.g = 0.0;
+      circle_params_2d.color.b = 1 - ratio;
+      break;
     }
-    return circle_params_2d;
+    case ColorStyle::kPurpleToYellow: {
+      circle_params_2d.color.a = 1.0;
+      circle_params_2d.color.r = 1.0;
+      circle_params_2d.color.g = ratio;
+      circle_params_2d.color.b = 1 - ratio;
+      break;
+    }
+    case ColorStyle::kSkyBlueToWhite: {
+      int64_t sky_blue = SKYBLUE circle_params_2d.color.a = 1.0;
+      circle_params_2d.color.r = ((255 - (sky_blue >> 16 & 0xff)) * ratio) / 255.0f;
+      circle_params_2d.color.g = ((255 - (sky_blue >> 8 & 0xff)) * ratio) / 255.0f;
+      circle_params_2d.color.b = ((255 - (sky_blue & 0xff)) * ratio) / 255.0f;
+      break;
+    }
+    case ColorStyle::kRedTransParency: {
+      int64_t red_lp = RED circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = (red_lp >> 16 & 0xff) / 255.0f;
+      circle_params_2d.color.g = (red_lp >> 8 & 0xff) / 255.0f;
+      circle_params_2d.color.b = (red_lp & 0xff) / 255.0f;
+      break;
+    }
+    case ColorStyle::kBlueTransParency: {
+      int64_t blue_lp = BLUE circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = (blue_lp >> 16 & 0xff) / 255.0f;
+      circle_params_2d.color.g = (blue_lp >> 8 & 0xff) / 255.0f;
+      circle_params_2d.color.b = (blue_lp & 0xff) / 255.0f;
+      break;
+    }
+    case ColorStyle::kBlueGreenYellow: {
+      circle_params_2d.color.r = (17.0f + (208.0f - 17.0f) * ratio) / 255.0f;
+      circle_params_2d.color.g = (95.0f + (244.0f - 95.0f) * ratio) / 255.0f;
+      circle_params_2d.color.b = (154.0f * (1.0f - ratio)) / 255.0f;
+      circle_params_2d.color.a = 1.0;
+      break;
+    }
+    case ColorStyle::kWhiteToBlue: {
+      circle_params_2d.color.r = (226.0f + (17.0f - 226.0f) * ratio) / 255.0f;
+      circle_params_2d.color.g = (226.0f + (95.0f - 226.0f) * ratio) / 255.0f;
+      circle_params_2d.color.b = (226.0f + (154.0f - 226.0f) * ratio) / 255.0f;
+      circle_params_2d.color.a = 1.0;
+      break;
+    }
+    case ColorStyle::kGreenYellowRed: {
+      circle_params_2d.color.r = (77.0f + (194.0f - 77.0f) * ratio) / 255.0f;
+      circle_params_2d.color.g = (144.0f + (55.0f - 144.0f) * ratio) / 255.0f;
+      circle_params_2d.color.b = (79.0f + (40.0f - 79.0f) * ratio) / 255.0f;
+      circle_params_2d.color.a = 1.0;
+      break;
+    }
+    case ColorStyle::kBlueWhiteRed: {
+      circle_params_2d.color.r = (25.0f + (194.0f - 25.0f) * ratio) / 255.0f;
+      circle_params_2d.color.g = (132.0f + (55.0f - 132.0f) * ratio) / 255.0f;
+      circle_params_2d.color.b = (197.0f + (40.0f - 197.0f) * ratio) / 255.0f;
+      circle_params_2d.color.a = 1.0;
+      break;
+    }
+    default: {
+      std::string msg = "cannot find color style";
+      // TODO: add log here
+      break;
+    }
+  }
+  return circle_params_2d;
 }
 
 }  // namespace render

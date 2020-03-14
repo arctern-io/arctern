@@ -24,18 +24,18 @@ namespace arctern {
 namespace render {
 
 struct CircleParams {
-    int radius;
-    Color color;
+  int radius;
+  Color color;
 };
 
 class VegaScatterPlot : public Vega {
  public:
-    // TODO: add Build() api to build a vega json string.
-    // virtual std::string Build() = 0;
+  // TODO: add Build() api to build a vega json string.
+  // virtual std::string Build() = 0;
 
  protected:
-    // vega json to vega struct
-    virtual void Parse(const std::string& json) = 0;
+  // vega json to vega struct
+  virtual void Parse(const std::string& json) = 0;
 };
 
 }  // namespace render

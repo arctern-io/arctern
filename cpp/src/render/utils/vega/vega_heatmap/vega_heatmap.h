@@ -25,22 +25,22 @@ namespace render {
 
 class VegaHeatMap : public Vega {
  public:
-    VegaHeatMap() = default;
+  VegaHeatMap() = default;
 
-    explicit VegaHeatMap(const std::string& json);
+  explicit VegaHeatMap(const std::string& json);
 
-    // TODO: add Build() api to build a vega json string.
-    // std::string Build() final;
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
  public:
-    const double& map_scale() const { return map_scale_; }
+  const double& map_scale() const { return map_scale_; }
 
  protected:
-    // vega json to vega struct
-    void Parse(const std::string& json) final;
+  // vega json to vega struct
+  void Parse(const std::string& json) final;
 
  private:
-    double map_scale_;
+  double map_scale_;
 };
 
 }  // namespace render
