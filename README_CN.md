@@ -59,7 +59,13 @@ if __name__ == "__main__":
     df = spark.sql("select pickup_latitude as x, pickup_longitude as y, passenger_count as w from nyc_taxi")
     df.createOrReplaceTempView("records")
 
-    filtered = spark.sql("select x, y, w from records where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, 40.780816 -73.998427, 40.780816 -73.954348, 40.730309 -73.998427))')")
+    filtered = spark.sql(
+        "select x, y, w \
+        from records \
+        where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, \
+                                                   40.780816 -73.998427, \
+                                                   40.780816 -73.954348, \
+                                                   40.730309 -73.998427))')")
     filtered.createOrReplaceTempView("pickup")
 
     res = spark.sql(
@@ -67,7 +73,16 @@ if __name__ == "__main__":
     res.createOrReplaceTempView("project")
 
     res = spark.sql(
-        "select Projection(pickup_point, 'POINT (40.730309 -73.998427)', 'POINT (40.780816 -73.954348)', 'EPSG:4326','EPSG:3857', 1024, 896) as point, w from project")
+        "select Projection(pickup_point, \
+                           'POINT (40.730309 -73.998427)', \
+                           'POINT (40.780816 -73.954348)', \
+                           'EPSG:4326', \
+                           'EPSG:3857', \
+                           1024, \
+                           896) \
+        as point, w \
+        from project")
+        
     res.cache()
 
     vega = vega_heatmap(1024, 896, 10.0)
