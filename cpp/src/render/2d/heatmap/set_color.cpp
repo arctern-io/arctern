@@ -65,7 +65,7 @@ void guassiankernel2d(float* kernel, int sizeX, int sizeY, float sigmaX, float s
   free(matY);
 }
 
-#ifdef USE_GPU
+#ifndef USE_GPU
 void HeatMapArray_cpu(float* in_count, float* out_count, float* kernel,
                       int64_t kernel_size, int64_t width, int64_t height) {
   for (int y = 0; y < height; y++) {
