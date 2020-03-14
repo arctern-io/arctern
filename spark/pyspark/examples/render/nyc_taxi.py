@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# import arctern_gis
+# import arctern
 # import arctern_pyspark
 # arctern_pyspark.register_funcs(spark)
 
-from arctern_gis.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from arctern_gis.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from arctern_gis.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
+from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap

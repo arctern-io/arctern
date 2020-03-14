@@ -1,0 +1,4 @@
+gdal=3.0.4
+arrow-cpp=0.16.0
+gtest=1.10.0
+rapidjson=1.1.0

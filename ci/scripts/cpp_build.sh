@@ -28,6 +28,7 @@ Usage:
     -l                        Run cpplint & check clang-format
     -n                        No make and make install step
     -g                        Building for the architecture of the GPU in the system
+    --coverage                Build Code Coverage
     -u or --tests             Build unittest case
     -p or --privileges        Install command with elevated privileges
     -v or --verbose           A level above ‘basic’; includes messages about which makefiles were parsed, prerequisites that did not need to be rebuilt
@@ -37,7 +38,7 @@ Usage:
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "o:t:e:j::lngupvh" -l "install_prefix::,build_type::,conda_env::,tests,jobs::,privileges,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "o:t:e:j::lngupvh" -l "install_prefix::,build_type::,conda_env::,coverage,tests,jobs::,privileges,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 
@@ -67,6 +68,7 @@ while true ; do
                                 *)  PARALLEL_LEVEL=$2 ; shift 2 ;;
                         esac ;;
                 -g) echo "Building for the architecture of the GPU in the system..." ; USE_GPU="ON" ; shift ;;
+                --coverage) echo "Build code coverage" ; BUILD_COVERAGE="ON" ; shift ;;
                 -u|--tests) echo "Build unittest cases" ; BUILD_UNITTEST="ON" ; shift ;;
                 -n) echo "No build and install step" ; COMPILE_BUILD="OFF" ; shift ;;
                 -l) RUN_LINT="ON" ; shift ;;
@@ -83,6 +85,7 @@ CUDA_COMPILER=/usr/local/cuda/bin/nvcc
 VERBOSE=${VERBOSE:=""}
 BUILD_TYPE=${BUILD_TYPE:="Release"}
 BUILD_UNITTEST=${BUILD_UNITTEST:="OFF"}
+BUILD_COVERAGE=${BUILD_COVERAGE:="OFF"}
 COMPILE_BUILD=${COMPILE_BUILD:="ON"}
 USE_GPU=${USE_GPU:="OFF"}
 RUN_LINT=${RUN_LINT:="OFF"}
@@ -122,6 +125,7 @@ CMAKE_CMD="cmake \
 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -DBUILD_WITH_GPU=${USE_GPU} \
 -DBUILD_UNITTEST=${BUILD_UNITTEST} \
+-DBUILD_COVERAGE=${BUILD_COVERAGE} \
 -DCMAKE_CUDA_COMPILER=${CUDA_COMPILER} \
 ${CPP_SRC_DIR}
 "
@@ -135,14 +139,12 @@ fi
 
 if [[ ${COMPILE_BUILD} == "ON" ]];then
     # compile and build
-    # make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} || exit 1
+    make -j${PARALLEL_LEVEL} VERBOSE=${VERBOSE} || exit 1
 
     if [[ ${PRIVILEGES} == "ON" ]];then
-        sudo make -j${PARALLEL_LEVEL} install || exit 1
-        # sudo make install || exit 1
+        sudo make install || exit 1
     else
-        make -j${PARALLEL_LEVEL} install || exit 1
-        # make install || exit 1
+        make install || exit 1
     fi
 fi
 
