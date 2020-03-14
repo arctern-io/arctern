@@ -100,29 +100,35 @@ void PointMap::Shader() {
   glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
   glCompileShader(vertex_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "vertex shader compile failed.";
   }
+#endif
 
   int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
   glCompileShader(fragment_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "fragment shader compile failed.";
   }
+#endif
 
   int shader_program = glCreateProgram();
   glAttachShader(shader_program, vertex_shader);
   glAttachShader(shader_program, fragment_shader);
   glLinkProgram(shader_program);
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "shader program link failed.";
   }
+#endif
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);

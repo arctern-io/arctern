@@ -147,27 +147,33 @@ void HeatMap<T>::Shader() {
   glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShader);
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "vertex shader compile failed.";
   }
+#endif
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   glCompileShader(fragmentShader);
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "fragment shader compile failed.";
   }
+#endif
   int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "shader program link failed.";
   }
+#endif
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 

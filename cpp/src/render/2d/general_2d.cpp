@@ -67,19 +67,18 @@ uint8_t* General2D::Output() {
   // export image to memory
   ExportImage();
 
-  auto write_image = true;
-  if (write_image) {
-    // TODO: add log here
-    std::cout << "******************" << output_image_size_ << "******************"
-              << std::endl;
-    FILE* f = fopen("/tmp/offscreen.png", "wb");
-    if (!f) {
-      std::cout << "export png error";
-    } else {
-      fwrite(output_image_, 1, output_image_size_, f);
-      fclose(f);
-    }
+#ifdef DEBUG_RENDER
+  // TODO: add log here
+  std::cout << "******************" << output_image_size_ << "******************"
+            << std::endl;
+  FILE* f = fopen("/tmp/offscreen.png", "wb");
+  if (!f) {
+    std::cout << "export png error";
+  } else {
+    fwrite(output_image_, 1, output_image_size_, f);
+    fclose(f);
   }
+#endif
 
   return output_image_;
 }

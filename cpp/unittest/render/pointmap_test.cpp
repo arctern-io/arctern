@@ -163,7 +163,7 @@ TEST(POINT_TEST, INVALID_COLOR_TEST) {
   arctern::render::point_map(array1, array2, vega);
 }
 
-TEST(POINT_TEST, INVALID_JSON_TEST) {
+TEST(POINT_TEST, RAW_POINT_INVALID_JSON_TEST) {
   auto bit_map = new uint8_t{0xff};
 
   auto data_type = arrow::uint32();
@@ -285,6 +285,64 @@ TEST(POINT_TEST, WKT_POINT_TEST) {
       "          \"stroke\": {\"value\": \"#ff0000\"},\n"
       "          \"strokeWidth\": {\"value\": 5},\n"
       "          \"opacity\": {\"value\": 1}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  arctern::render::point_map(string_array, vega);
+}
+
+TEST(POINT_TEST, WKT_POINT_INVALID_JSON_TEST) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (20 20)";
+  std::string wkt3 = "POINT (30 30)";
+  std::string wkt4 = "POINT (40 40)";
+  std::string wkt5 = "POINT (50 50)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"circle_2d\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"stroke\": {\"value\": \"#ff0000\"},\n"
+      "          \"strokeWidth\": {\"value\": 5},\n"
+      "          \"opacity\": {\"value\": \"INVALID_NUMBER\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
