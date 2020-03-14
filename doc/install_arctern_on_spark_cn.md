@@ -106,13 +106,13 @@
 
 ## <span id = "verification">安装验证</span>
 
-进入 Python 环境，尝试导入 `arctern_gis` 和 `arctern_pyspark` 验证安装是否成功。
+进入 Python 环境，尝试导入 `arctern` 和 `arctern_pyspark` 验证安装是否成功。
 
 ```python
 Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import arctern_gis
+>>> import arctern
 >>> import arctern_pyspark
 ```
 
