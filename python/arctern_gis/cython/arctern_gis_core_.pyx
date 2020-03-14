@@ -18,6 +18,15 @@ from pyarrow.lib cimport *
 
 cimport arctern_gis_core__ as arctern_gis_core_pxd
 
+def coordinate_projection(points, top_left, bottom_right, int height, int width):
+    return pyarrow_wrap_array(arctern_gis_core_pxd.coordinate_projection(pyarrow_unwrap_array(points), top_left, bottom_right, height, width))
+
+def point_map_wkt(points, conf):
+    return pyarrow_wrap_array(arctern_gis_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
+
+def heat_map_wkt(points, arr_c, conf):
+    return pyarrow_wrap_array(arctern_gis_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
+
 def point_map(arr_x, arr_y, conf):
     return pyarrow_wrap_array(arctern_gis_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
 

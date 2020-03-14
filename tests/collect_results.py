@@ -24,12 +24,12 @@ def collect_results(file_path, results_dir):
     base_dir = '/tmp/results'
     for x, y in zip(table_names, names):
         print(x, y)
-        target = os.path.join(base_dir, x, '*.json')
+        target = os.path.join(base_dir, x, '*.csv')
         file_name = glob.glob(target)
         print(file_name)
         print(file_name[0])
         if os.path.isfile(file_name[0]):
-            shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.json'))
+            shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.csv'))
         else:
             print('file [%s] not exist' % file_name[0])
 

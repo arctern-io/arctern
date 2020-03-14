@@ -77,4 +77,8 @@ def split_all(folder):
 if __name__ == '__main__':
     # split_data('./data/area.csv')
     # split_data('./data/crosses.csv')
-    split_all('./data')
+    # split_all('./data')
+    a = 't'
+    b = 'f'
+    print(bool(a))
+    print(bool(b))

@@ -10,32 +10,42 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-while getopts "i:e:h" arg
-do
-        case $arg in
-             i)
-                ARCTERN_INSTALL_PREFIX=$OPTARG   # ARCTERN PATH
-                ;;
-             e)
-                CONDA_ENV=$OPTARG # CONDA ENVIRONMENT
-                ;;
-             h) # help
-                echo "
+HELP="
+Usage:
+  $0 [flags] [Arguments]
 
-parameter:
--i: Arctern path
--e: set conda activate environment
--h: help
+    -i [ARCTERN_INSTALL_PREFIX] or --install_prefix=[ARCTERN_INSTALL_PREFIX]
+                              Install directory used by install.
+    -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
+                              Setting conda activate environment
+    -h or --help              Print help information
 
-usage:
-./run_unittest.sh -i \${ARCTERN_INSTALL_PREFIX} -e \${CONDA_ENV} [-h]
-                "
-                exit 0
-                ;;
-             ?)
-                echo "ERROR! unknown argument"
-        exit 1
-        ;;
+
+Use \"$0  --help\" for more information about a given command.
+"
+
+ARGS=`getopt -o "i:e:h" -l "install_prefix::,conda_env::,help" -n "$0" -- "$@"`
+
+eval set -- "${ARGS}"
+
+while true ; do
+        case "$1" in
+                -i|--install_prefix)
+                        # o has an optional argument. As we are in quoted mode,
+                        # an empty parameter will be generated if its optional
+                        # argument is not found.
+                        case "$2" in
+                                "") echo "Option install_prefix, no argument"; exit 1 ;;
+                                *)  ARCTERN_INSTALL_PREFIX=$2 ; shift 2 ;;
+                        esac ;;
+                -e|--conda_env)
+                        case "$2" in
+                                "") echo "Option conda_env, no argument"; exit 1 ;;
+                                *)  CONDA_ENV=$2 ; shift 2 ;;
+                        esac ;;
+                -h|--help) echo -e "${HELP}" ; exit 0 ;;
+                --) shift ; break ;;
+                *) echo "Internal error!" ; exit 1 ;;
         esac
 done
 
