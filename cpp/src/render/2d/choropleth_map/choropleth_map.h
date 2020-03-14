@@ -27,17 +27,13 @@ namespace render {
 template <typename T>
 class ChoroplethMap : public General2D {
  public:
-  ChoroplethMap();
+  ChoroplethMap() = delete;
 
   ChoroplethMap(std::vector<std::string> choropleth_wkt, T* count, int64_t num_vertices);
 
   uint8_t* Render() final;
 
   void Draw() final;
-
-  void DataInit() final{};
-
-  void InputInit() final{};
 
   VegaChoroplethMap& mutable_choroplethmap_vega() { return choropleth_vega_; }
 

@@ -29,7 +29,8 @@ class VegaHeatMap : public Vega {
 
   explicit VegaHeatMap(const std::string& json);
 
-  std::string Build() final;
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
  public:
   const double& map_scale() const { return map_scale_; }
