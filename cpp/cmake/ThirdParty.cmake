@@ -166,16 +166,31 @@ macro(build_miniz)
 #	    "-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0"
             "-DCMAKE_BUILD_TYPE=Release")
 
-    externalproject_add(miniz_ep
-            URL
-            ${MINIZ_SOURCE_URL}
-            BUILD_COMMAND
-            ${MAKE} install
-            ${MAKE_BUILD_ARGS}
-            BUILD_BYPRODUCTS
-	    "${MINIZ_SHARED_LIB}"
-            CMAKE_ARGS
-            ${MINIZ_CMAKE_ARGS})
+    if (DEFINED ENV{ARCTERN_MINIZ_URL})
+        externalproject_add(miniz_ep
+                URL
+                ${MINIZ_SOURCE_URL}
+                BUILD_COMMAND
+                ${MAKE} install
+                ${MAKE_BUILD_ARGS}
+                BUILD_BYPRODUCTS
+                "${MINIZ_SHARED_LIB}"
+                CMAKE_ARGS
+                ${MINIZ_CMAKE_ARGS})
+    else ()
+        externalproject_add(miniz_ep
+                URL
+                ${MINIZ_SOURCE_URL}
+		URL_HASH
+		SHA1=f703804cbb325aa5ca22ebea362bb18ed73e097f
+                BUILD_COMMAND
+                ${MAKE} install
+                ${MAKE_BUILD_ARGS}
+                BUILD_BYPRODUCTS
+                "${MINIZ_SHARED_LIB}"
+                CMAKE_ARGS
+                ${MINIZ_CMAKE_ARGS})
+    endif ()
 
     file(MAKE_DIRECTORY "${MINIZ_INCLUDE_DIR}")
     add_library(miniz SHARED IMPORTED)
