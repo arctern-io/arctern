@@ -794,18 +794,18 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g0 != nullptr) {
+      has_circular->reset();
+      g0->accept(has_circular);
+      if (has_circular->has_circular()) {
+        auto linear = g0->getLinearGeometry();
+        OGRGeometryFactory::destroyGeometry(g0);
+        g0 = linear;
+      }
       auto type = wkbFlatten(g0->getGeometryType());
       if (type == wkbMultiPolygon) {
         u0 = g0->UnionCascaded();
         OGRGeometryFactory::destroyGeometry(g0);
       } else {
-        has_circular->reset();
-        g0->accept(has_circular);
-        if (has_circular->has_circular()) {
-          auto linear = g0->getLinearGeometry();
-          OGRGeometryFactory::destroyGeometry(g0);
-          g0 = linear;
-        }
         u0 = g0;
       }
     } else {
@@ -813,6 +813,13 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g1 != nullptr) {
+      has_circular->reset();
+      g1->accept(has_circular);
+      if (has_circular->has_circular()) {
+        auto linear = g1->getLinearGeometry();
+        OGRGeometryFactory::destroyGeometry(g1);
+        g1 = linear;
+      }
       auto type = wkbFlatten(g1->getGeometryType());
       if (type == wkbMultiPolygon) {
         u1 = g1->UnionCascaded();
