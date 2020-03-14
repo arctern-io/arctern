@@ -47,16 +47,11 @@ class General2D {
   void ExportImage();
 
  public:
-  void set_input(Input& input) { input_ = input; }
-
-  const Input& input() const { return input_; }
-
   unsigned char* mutable_buffer() { return buffer_; }
 
   int output_image_size() { return output_image_size_; }
 
  protected:
-  Input input_;
   arrow::ArrayVector array_vector_;
   unsigned char* buffer_;
   unsigned char* output_image_;

@@ -28,12 +28,6 @@ namespace render {
 PointMap::PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices) {}
 
-void PointMap::InputInit() {
-  array_vector_ = input().array_vector;
-  VegaCircle2d vega_circle_2d(input().vega);
-  point_vega_ = vega_circle_2d;
-}
-
 void PointMap::Draw() {
   glClear(GL_COLOR_BUFFER_BIT);
 

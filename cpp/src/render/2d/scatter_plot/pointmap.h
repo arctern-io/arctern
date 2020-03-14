@@ -34,8 +34,6 @@ class PointMap : public General2D {
 
   void Draw() final;
 
-  void InputInit();
-
  public:
   uint32_t* mutable_vertices_x() { return vertices_x_; }
 
