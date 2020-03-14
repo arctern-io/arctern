@@ -93,6 +93,21 @@ def run_test_envelope_aggr_1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_envelope_aggr_curve(spark):
+    
+    data = "envelope_aggr_curve.csv"
+    table_name = 'test_envelope_aggr_curve'
+    sql = "select st_envelope_aggr(geos) as my_envelope from test_envelope_aggr_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_envelope_aggr_2(spark):
     
     data = "points.csv"
@@ -1013,6 +1028,7 @@ if __name__ == "__main__":
     run_test_st_curvetoline(spark_session)
     run_test_st_point(spark_session)
     run_test_envelope_aggr_1(spark_session)
+    run_test_envelope_aggr_curve(spark_session)
     run_test_envelope_aggr_2(spark_session)
     run_test_union_aggr_2(spark_session)
     run_test_union_aggr_curve(spark_session)
