@@ -779,7 +779,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
   OGRPolygon empty_polygon;
   OGRGeometry *g0, *g1;
   OGRGeometry *u0, *u1;
-  auto has_circular = new HasCircularVisitor;
+  auto has_curve = new HasCurveVisitor;
   for (int i = 0; i <= len / 2; i++) {
     if ((i * 2) < len) {
       g0 = Wrapper_createFromWkt(wkt, 2 * i);
@@ -794,9 +794,9 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g0 != nullptr) {
-      has_circular->reset();
-      g0->accept(has_circular);
-      if (has_circular->has_circular()) {
+      has_curve->reset();
+      g0->accept(has_curve);
+      if (has_curve->has_curve()) {
         auto linear = g0->getLinearGeometry();
         OGRGeometryFactory::destroyGeometry(g0);
         g0 = linear;
@@ -813,9 +813,9 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g1 != nullptr) {
-      has_circular->reset();
-      g1->accept(has_circular);
-      if (has_circular->has_circular()) {
+      has_curve->reset();
+      g1->accept(has_curve);
+      if (has_curve->has_curve()) {
         auto linear = g1->getLinearGeometry();
         OGRGeometryFactory::destroyGeometry(g1);
         g1 = linear;
@@ -881,7 +881,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     CPLFree(wkt);
     OGRGeometryFactory::destroyGeometry(union_agg[0]);
   }
-  delete has_circular;
+  delete has_curve;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

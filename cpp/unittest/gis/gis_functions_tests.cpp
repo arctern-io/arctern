@@ -3286,7 +3286,12 @@ TEST(geometry_test, test_ST_Union_Aggr3) {
   builder.Finish(&input);
 
   auto res = arctern::gis::ST_Union_Aggr(input);
-  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  auto len = arctern::gis::ST_Length(res);
+  auto area = arctern::gis::ST_Area(res);
+  auto len_dbl = std::static_pointer_cast<arrow::DoubleArray>(len);
+  auto area_dbl = std::static_pointer_cast<arrow::DoubleArray>(area);
+  ASSERT_TRUE(std::abs(len_dbl->Value(0) - 9.91129) < 1e4);
+  ASSERT_TRUE(std::abs(area_dbl->Value(0) - 23.9208) < 1e4);
 }
 
 TEST(geometry_test, test_ST_Union_Aggr2) {
