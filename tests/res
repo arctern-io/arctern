@@ -563,7 +563,11 @@ Arctern test: run_test_st_transform1, result: FAILED
 Arctern test: run_test_st_area, result compare started, test result: /tmp/arctern_results/run_test_st_area.csv, expected result: ./expected/results/st_area.out
 Arctern test: run_test_st_area, result: PASSED
 Arctern test: run_test_st_area_curve, result compare started, test result: /tmp/arctern_results/run_test_st_area_curve.csv, expected result: ./expected/results/st_area_curve.out
-Arctern test: run_test_st_area_curve, result: FAILED
+arctern: 23.132741228718352, postgis: 23.122649255638, precision_error: 0.001
+arctern: 9.05354803115023, postgis: 9.05303418413299, precision_error: 0.001
+arctern: 23.132741228718352, postgis: 23.122649255638, precision_error: 0.001
+arctern: 26.417123955457246, postgis: 26.4209934708643, precision_error: 0.001
+Arctern test: run_test_st_area_curve, result: PASSED
 Arctern test: run_test_st_buffer, result compare started, test result: /tmp/arctern_results/run_test_st_buffer.csv, expected result: ./expected/results/st_buffer.out
 Arctern test: run_test_st_buffer, result: PASSED
 Arctern test: run_test_st_buffer1, result compare started, test result: /tmp/arctern_results/run_test_st_buffer1.csv, expected result: ./expected/results/st_buffer1.out
@@ -610,27 +614,7 @@ Arctern test: run_test_st_buffer_curve1, result: FAILED
 Arctern test: run_test_st_centroid, result compare started, test result: /tmp/arctern_results/run_test_st_centroid.csv, expected result: ./expected/results/st_centroid.out
 Arctern test: run_test_st_centroid, result: PASSED
 Arctern test: run_test_st_centroid_curve, result compare started, test result: /tmp/arctern_results/run_test_st_centroid_curve.csv, expected result: ./expected/results/st_centroid_curve.out
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-arctern length: 0.0, postgis length: 0.0, intersection length: 0.0
-Arctern test: run_test_st_centroid_curve, result: FAILED
+Arctern test: run_test_st_centroid_curve, result: PASSED
 Arctern test: run_test_st_convexhull, result compare started, test result: /tmp/arctern_results/run_test_st_convexhull.csv, expected result: ./expected/results/st_convexhull.out
 Arctern test: run_test_st_convexhull, result: PASSED
 Arctern test: run_test_st_convexhull_curve, result compare started, test result: /tmp/arctern_results/run_test_st_convexhull_curve.csv, expected result: ./expected/results/st_convexhull_curve.out
@@ -676,17 +660,147 @@ Arctern test: run_test_st_equals_2, result: PASSED
 Arctern test: run_test_st_distance, result compare started, test result: /tmp/arctern_results/run_test_st_distance.csv, expected result: ./expected/results/st_distance.out
 Arctern test: run_test_st_distance, result: PASSED
 Arctern test: run_test_st_distance_curve, result compare started, test result: /tmp/arctern_results/run_test_st_distance_curve.csv, expected result: ./expected/results/st_distance_curve.out
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 5.963740607062745, postgis: 5.96372525087662, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 0.8740357724153696, postgis: 0.874032048897642, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 6.809942421862942, postgis: 6.80954140799991, precision_error: 0.001
+arctern: 0.894427190999916, postgis: 1.0, precision_error: 0.001
 11 0.894427190999916 11 1.0
+arctern: 3.8564623403657584e-14, postgis: 0.0, precision_error: 0.001
 12 3.8564623403657584e-14 12 0.0
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 4.949747468305833, postgis: 4.94974746830583, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.2558603852476713, postgis: 3.25433540555203, precision_error: 0.001
+arctern: 3.794733192202055, postgis: 3.79473319220206, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59405585233477, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 3.594400877075301, postgis: 3.59405585233477, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 0.7071067811865476, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 3.0006483030145907, postgis: 3.0, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 0.8740357724153696, postgis: 0.874032048897642, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 3.1011466362900064, postgis: 3.10077977174541, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 2.4723118907008157, postgis: 2.47213595499958, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 5.963740607062745, postgis: 5.96372525087662, precision_error: 0.001
+arctern: 0.8740357724153696, postgis: 0.874032048897642, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 0.9993908270190965, postgis: 1.0, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59405585233477, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 0.8740357724153696, postgis: 0.874032048897642, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 0.7931302307566668, postgis: 0.792893218813452, precision_error: 0.001
+arctern: 0.0003159943460017127, postgis: 0.0, precision_error: 0.001
 254 0.0003159943460017127 254 0.0
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 0.7072121230975142, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 76.57485088567863, postgis: 76.5748445399337, precision_error: 0.001
+arctern: 0.7072121230975141, postgis: 0.0, precision_error: 0.001
 265 0.7072121230975141 265 0.0
+arctern: 0.0003159943460017127, postgis: 0.0, precision_error: 0.001
 266 0.0003159943460017127 266 0.0
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 0.14177788673397676, postgis: 0.0, precision_error: 0.001
 287 0.14177788673397676 287 0.0
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 0.894427190999916, postgis: 1.0, precision_error: 0.001
 296 0.894427190999916 296 1.0
+arctern: 6.809942421862942, postgis: 6.80954140799991, precision_error: 0.001
+arctern: 3.8564623403657584e-14, postgis: 0.0, precision_error: 0.001
 298 3.8564623403657584e-14 298 0.0
+arctern: 2.6061076975874866, postgis: 2.60555127546399, precision_error: 0.001
+arctern: 3.594400877075301, postgis: 3.59405585233477, precision_error: 0.001
+arctern: 2.162795716241274, postgis: 2.16227766016838, precision_error: 0.001
+arctern: 3.1011466362900064, postgis: 3.10077977174541, precision_error: 0.001
+arctern: 0.0003159943460017127, postgis: 0.0, precision_error: 0.001
 326 0.0003159943460017127 326 0.0
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 76.69140551603275, postgis: 76.6912136140262, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 4.949747468305833, postgis: 4.94974746830583, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 0.7071067811865476, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 0.7072121230975142, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 76.57485088567863, postgis: 76.5748445399337, precision_error: 0.001
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 0.7072121230975141, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 0.0003159943460017127, postgis: 0.0, precision_error: 0.001
 403 0.0003159943460017127 403 0.0
+arctern: 75.69421094088152, postgis: 75.694197955256, precision_error: 0.001
+arctern: 76.69140551603275, postgis: 76.6912136140262, precision_error: 0.001
+arctern: 76.69419795525604, postgis: 76.694197955256, precision_error: 0.001
+arctern: 76.69419795525604, postgis: 76.694197955256, precision_error: 0.001
+arctern: 69.97268705930657, postgis: 69.972671768059, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 69.97268705930657, postgis: 69.972671768059, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 72.4585576984531, postgis: 72.4576937741287, precision_error: 0.001
+arctern: 71.7007670809734, postgis: 71.7007670809734, precision_error: 0.001
+arctern: 63.655321851358195, postgis: 63.6553218513582, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 1.0, postgis: 1.0, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 71.06335201775947, postgis: 71.0633520177595, precision_error: 0.001
+arctern: 3.2558603852476713, postgis: 3.25433540555203, precision_error: 0.001
+arctern: 3.794733192202055, postgis: 3.79473319220206, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 3.0006483030145907, postgis: 3.0, precision_error: 0.001
+arctern: 2.4723118907008157, postgis: 2.47213595499958, precision_error: 0.001
+arctern: 0.14177788673397676, postgis: 0.0, precision_error: 0.001
 549 0.14177788673397676 549 0.0
+arctern: 72.4585576984531, postgis: 72.4576937741287, precision_error: 0.001
+arctern: 71.7007670809734, postgis: 71.7007670809734, precision_error: 0.001
+arctern: 63.655321851358195, postgis: 63.6553218513582, precision_error: 0.001
 Arctern test: run_test_st_distance_curve, result: FAILED
 Arctern test: run_test_st_intersects, result compare started, test result: /tmp/arctern_results/run_test_st_intersects.csv, expected result: ./expected/results/st_intersects.out
 Arctern test: run_test_st_intersects, result: PASSED
@@ -730,6 +844,596 @@ Arctern test: run_test_st_geomfromgeojson, result: PASSED
 Arctern test: run_test_st_hausdorffdistance, result compare started, test result: /tmp/arctern_results/run_test_st_hausdorffdistance.csv, expected result: ./expected/results/st_hausdorffdistance.out
 Arctern test: run_test_st_hausdorffdistance, result: PASSED
 Arctern test: run_test_st_hausdorffdistance_curve, result compare started, test result: /tmp/arctern_results/run_test_st_hausdorffdistance_curve.csv, expected result: ./expected/results/st_hausdorffdistance_curve.out
+arctern: 8.071065553215519, postgis: 8.07105520290982, precision_error: 0.001
+arctern: 7.377682958104122, postgis: 7.37782776980923, precision_error: 0.001
+arctern: 8.071065553215519, postgis: 8.07105520290982, precision_error: 0.001
+arctern: 8.393443516424382, postgis: 8.3933892802545, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 3.5944008770753015, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 8.54400374531753, postgis: 8.54400374531753, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 8.910494380277475, postgis: 8.91088081904964, precision_error: 0.001
+arctern: 8.617986672965209, postgis: 8.61780149444037, precision_error: 0.001
+arctern: 9.246211072802485, postgis: 9.24621115758913, precision_error: 0.001
+arctern: 3.5315911364426804, postgis: 3.56302102535724, precision_error: 0.001
+26 3.5315911364426804 26 3.56302102535724
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 5.242517431996371, postgis: 5.24264068711928, precision_error: 0.001
+arctern: 5.008252488362848, postgis: 5.00817227481684, precision_error: 0.001
+arctern: 5.242517431996371, postgis: 5.24264068711928, precision_error: 0.001
+arctern: 5.4276934972262, postgis: 5.42763025600922, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.2087744570905197, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.2087744570905197, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 6.941839099409611, postgis: 6.94142291545181, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 2.208729882670978, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 2.208729882670978, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 7.807819873418375, postgis: 7.80762244431871, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 6.082762530298219, postgis: 6.08276253029822, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 6.082762530298219, postgis: 6.08276253029822, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 5.0640292280686685, postgis: 5.06419669797344, precision_error: 0.001
+arctern: 5.148782093110879, postgis: 5.14916238405501, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 3.451517532411009, postgis: 3.45076948957353, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 11.704699910719626, postgis: 11.7046999107196, precision_error: 0.001
+arctern: 3.2755592228062085, postgis: 3.27496488101881, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 11.704699910719626, postgis: 11.7046999107196, precision_error: 0.001
+arctern: 4.243557526034936, postgis: 4.24270853168126, precision_error: 0.001
+arctern: 4.743416490252569, postgis: 4.74341649025257, precision_error: 0.001
+arctern: 9.021342216356466, postgis: 9.02134221635647, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 6.941839099409611, postgis: 6.94142291545181, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 7.807819873418375, postgis: 7.80762244431871, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 3.5944008770753015, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 4.828248685225452, postgis: 4.82842712474619, precision_error: 0.001
+arctern: 4.758054989997293, postgis: 4.75807534658588, precision_error: 0.001
+arctern: 9.021342216356466, postgis: 9.02134221635647, precision_error: 0.001
+arctern: 3.105038045538744, postgis: 3.10577567548905, precision_error: 0.001
+arctern: 1.6641005886756874, postgis: 1.66410058867569, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.2070804452184234, postgis: 2.20710678118655, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.440710123855844, postgis: 4.44081617446226, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.440710123855844, postgis: 4.44081617446226, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 2.208566824281401, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 1.8861535681208161, postgis: 1.88564564503637, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.1213203435596424, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 2.82842712474615, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 6.324555320336759, postgis: 6.32455532033676, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 2.828789581926858, postgis: 2.82843984567466, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 3.5355339059327378, postgis: 3.53553390593274, precision_error: 0.001
+arctern: 7.615773105863909, postgis: 7.61577310586391, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.1623197990766982, postgis: 2.1625674634818, precision_error: 0.001
+arctern: 2.1623197990766982, postgis: 2.1625674634818, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 2.8284271247464026, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 12.649110640673518, postgis: 12.6491106406735, precision_error: 0.001
+arctern: 1.9647905774382903, postgis: 2.0, precision_error: 0.001
+160 1.9647905774382903 160 2.0
+arctern: 1.92334747816604, postgis: 1.92342438345954, precision_error: 0.001
+arctern: 10.198039027185569, postgis: 10.1980390271856, precision_error: 0.001
+arctern: 2.8267041233633705, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 1.4715551646514384, postgis: 1.47132023043186, precision_error: 0.001
+arctern: 10.198039027185569, postgis: 10.1980390271856, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 13.590154807518113, postgis: 13.5901548075181, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 2.208566824281401, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 1.8861535681208161, postgis: 1.88564564503637, precision_error: 0.001
+arctern: 2.1213203435596424, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 2.82842712474615, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 3.5355339059327378, postgis: 3.53553390593274, precision_error: 0.001
+arctern: 6.324555320336759, postgis: 6.32455532033676, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.8284271247464026, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 12.649110640673518, postgis: 12.6491106406735, precision_error: 0.001
+arctern: 8.071065553215519, postgis: 8.07105520290982, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 7.377682958104122, postgis: 7.37782776980923, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 8.071065553215519, postgis: 8.07105520290982, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 8.393443516424382, postgis: 8.3933892802545, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 5.242517431996371, postgis: 5.24264068711928, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 5.008252488362848, postgis: 5.00817227481684, precision_error: 0.001
+arctern: 2.2087744570905197, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 2.2087744570905197, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 6.941839099409611, postgis: 6.94142291545181, precision_error: 0.001
+arctern: 5.242517431996371, postgis: 5.24264068711928, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 5.4276934972262, postgis: 5.42763025600922, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 6.941839099409611, postgis: 6.94142291545181, precision_error: 0.001
+arctern: 3.5943655659222467, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 2.2070804452184234, postgis: 2.20710678118655, precision_error: 0.001
+arctern: 4.440710123855844, postgis: 4.44081617446226, precision_error: 0.001
+arctern: 4.440710123855844, postgis: 4.44081617446226, precision_error: 0.001
+arctern: 2.208566824281401, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.9996953903127992, postgis: 2.0, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 2.0281888288897445, postgis: 2.02833773995743, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 1.8861535681208161, postgis: 1.88564564503637, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 2.208566824281401, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 1.8286627126972543, postgis: 1.82842712474619, precision_error: 0.001
+arctern: 1.8861535681208161, postgis: 1.88564564503637, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 0.344703419318435, postgis: 0.345161007368138, precision_error: 0.001
+238 0.344703419318435 238 0.345161007368138
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 0.344703419318435, postgis: 0.345161007368138, precision_error: 0.001
+246 0.344703419318435 246 0.345161007368138
+arctern: 0.344703419318435, postgis: 0.345161007368138, precision_error: 0.001
+247 0.344703419318435 247 0.345161007368138
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 0.344703419318435, postgis: 0.345161007368138, precision_error: 0.001
+249 0.344703419318435 249 0.345161007368138
+arctern: 0.5524728053594545, postgis: 0.55254745924972, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 1.414371566412978, postgis: 1.41421356237309, precision_error: 0.001
+arctern: 0.5524728053594545, postgis: 0.55254745924972, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.8057709399823784, postgis: 0.805672961486888, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 1.7069544763429731, postgis: 1.70710678118655, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 2.1212150016487143, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 223.01708557254906, postgis: 223.017199351212, precision_error: 0.001
+arctern: 8.153014453903042, postgis: 8.15294337470904, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 1.7069544763429731, postgis: 1.70710678118655, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 1.6495729650064077, postgis: 1.6498988614925, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 4.670411577478215, postgis: 4.67082946689777, precision_error: 0.001
+arctern: 4.993846506803395, postgis: 4.99397567750766, precision_error: 0.001
+arctern: 13.382224226638566, postgis: 13.3819440126448, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 3.5944008770753015, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.208729882670978, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 2.208729882670978, postgis: 2.20836926425781, precision_error: 0.001
+arctern: 7.807819873418375, postgis: 7.80762244431871, precision_error: 0.001
+arctern: 7.0, postgis: 7.0, precision_error: 0.001
+arctern: 2.606107697587487, postgis: 2.60555203250795, precision_error: 0.001
+arctern: 7.807819873418375, postgis: 7.80762244431871, precision_error: 0.001
+arctern: 3.5944008770753015, postgis: 3.59419121162967, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 2.1213203435596424, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.82842712474615, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 2.1213203435596424, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 2.82842712474615, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 0.5524728053594545, postgis: 0.55254745924972, precision_error: 0.001
+arctern: 1.874014534180982, postgis: 1.87397300057685, precision_error: 0.001
+arctern: 0.5524728053594545, postgis: 0.55254745924972, precision_error: 0.001
+arctern: 0.8057709399823784, postgis: 0.805672961486888, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 1.414371566412978, postgis: 1.41421356237309, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 0.7071067811865875, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 223.3253704709621, postgis: 223.325439057376, precision_error: 0.001
+arctern: 7.569386461795208, postgis: 7.56937618760079, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.993830772324275, postgis: 4.99397567750766, precision_error: 0.001
+arctern: 13.870319987391241, postgis: 13.8702855566627, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 8.54400374531753, postgis: 8.54400374531753, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 6.082762530298219, postgis: 6.08276253029822, precision_error: 0.001
+arctern: 6.082762530298219, postgis: 6.08276253029822, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 8.0, postgis: 8.0, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 6.0, postgis: 6.0, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 3.5355339059327378, postgis: 3.53553390593274, precision_error: 0.001
+arctern: 6.324555320336759, postgis: 6.32455532033676, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 7.615773105863909, postgis: 7.61577310586391, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.828789581926858, postgis: 2.82843984567466, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 3.5355339059327378, postgis: 3.53553390593274, precision_error: 0.001
+arctern: 6.324555320336759, postgis: 6.32455532033676, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 1.7069544763429731, postgis: 1.70710678118655, precision_error: 0.001
+arctern: 2.1212150016487143, postgis: 2.12132034355964, precision_error: 0.001
+arctern: 1.7069544763429731, postgis: 1.70710678118655, precision_error: 0.001
+arctern: 1.6495729650064077, postgis: 1.6498988614925, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 223.01708557254906, postgis: 223.017199351212, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 8.153014453903042, postgis: 8.15294337470904, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 0.7071067811865875, postgis: 0.707106781186548, precision_error: 0.001
+arctern: 222.34279173106862, postgis: 222.34302807217, precision_error: 0.001
+arctern: 223.3253704709621, postgis: 223.325439057376, precision_error: 0.001
+arctern: 6.616024975434204, postgis: 6.61585867069812, precision_error: 0.001
+arctern: 7.569386461795208, postgis: 7.56937618760079, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 223.34278586961344, postgis: 223.342785869613, precision_error: 0.001
+arctern: 7.615773105863909, postgis: 7.61577310586391, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 223.34278586961344, postgis: 223.342785869613, precision_error: 0.001
+arctern: 217.03653111361567, postgis: 217.03520477768, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 7.615773105863909, postgis: 7.61577310586391, precision_error: 0.001
+arctern: 217.03653111361567, postgis: 217.03520477768, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 13.92838827718412, postgis: 13.9283882771841, precision_error: 0.001
+arctern: 219.13587580145978, postgis: 219.136138725946, precision_error: 0.001
+arctern: 218.35979483412234, postgis: 218.359794834122, precision_error: 0.001
+arctern: 209.69501663129716, postgis: 209.695016631297, precision_error: 0.001
+arctern: 3.4975436391467913, postgis: 3.49695730897894, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 3.001893346180959, postgis: 2.99117825985908, precision_error: 0.001
+446 3.001893346180959 446 2.99117825985908
+arctern: 1.0498836016676523, postgis: 1.06939217050794, precision_error: 0.001
+447 1.0498836016676523 447 1.06939217050794
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 8.06225774829855, postgis: 8.06225774829855, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 4.47213595499958, postgis: 4.47213595499958, precision_error: 0.001
+arctern: 2.23606797749979, postgis: 2.23606797749979, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.1623197990766982, postgis: 2.1625674634818, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 2.1623197990766982, postgis: 2.1625674634818, precision_error: 0.001
+arctern: 1.4142135623730951, postgis: 1.4142135623731, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.812148352043696, postgis: 5.81229246463396, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 4.657039256181817, postgis: 4.65685424949238, precision_error: 0.001
+arctern: 5.65685424949234, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 5.656854249492381, postgis: 5.65685424949238, precision_error: 0.001
+arctern: 217.83020910791964, postgis: 217.83020910792, precision_error: 0.001
+arctern: 3.1622776601683795, postgis: 3.16227766016838, precision_error: 0.001
+arctern: 0.9999999999999949, postgis: 1.0, precision_error: 0.001
+arctern: 0.07561965507909528, postgis: 0.0755861362991386, precision_error: 0.001
+arctern: 0.07561965507909528, postgis: 0.0755861362991386, precision_error: 0.001
+arctern: 2.6051375556428544, postgis: 2.61436091089413, precision_error: 0.001
+499 2.6051375556428544 499 2.61436091089413
+arctern: 1.212678125181665, postgis: 1.21267812518166, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 2.6051375556428544, postgis: 2.61436091089413, precision_error: 0.001
+502 2.6051375556428544 502 2.61436091089413
+arctern: 1.212678125181665, postgis: 1.21267812518166, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 8.910494380277475, postgis: 8.91088081904964, precision_error: 0.001
+arctern: 3.5315911364426804, postgis: 3.56302102535724, precision_error: 0.001
+506 3.5315911364426804 506 3.56302102535724
+arctern: 8.617986672965209, postgis: 8.61780149444037, precision_error: 0.001
+arctern: 2.0, postgis: 2.0, precision_error: 0.001
+arctern: 9.246211072802485, postgis: 9.24621115758913, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 5.0640292280686685, postgis: 5.06419669797344, precision_error: 0.001
+arctern: 3.451517532411009, postgis: 3.45076948957353, precision_error: 0.001
+arctern: 3.2755592228062085, postgis: 3.27496488101881, precision_error: 0.001
+arctern: 4.243557526034936, postgis: 4.24270853168126, precision_error: 0.001
+arctern: 5.148782093110879, postgis: 5.14916238405501, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 2.8284271247461903, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 4.743416490252569, postgis: 4.74341649025257, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 11.704699910719626, postgis: 11.7046999107196, precision_error: 0.001
+arctern: 11.704699910719626, postgis: 11.7046999107196, precision_error: 0.001
+arctern: 9.021342216356466, postgis: 9.02134221635647, precision_error: 0.001
+arctern: 4.828248685225452, postgis: 4.82842712474619, precision_error: 0.001
+arctern: 3.105038045538744, postgis: 3.10577567548905, precision_error: 0.001
+arctern: 4.758054989997293, postgis: 4.75807534658588, precision_error: 0.001
+arctern: 1.6641005886756874, postgis: 1.66410058867569, precision_error: 0.001
+arctern: 9.021342216356466, postgis: 9.02134221635647, precision_error: 0.001
+arctern: 10.44030650891055, postgis: 10.4403065089106, precision_error: 0.001
+arctern: 2.8284271247464026, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 1.9647905774382903, postgis: 2.0, precision_error: 0.001
+530 1.9647905774382903 530 2.0
+arctern: 2.8267041233633705, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 1.92334747816604, postgis: 1.92342438345954, precision_error: 0.001
+arctern: 1.4715551646514384, postgis: 1.47132023043186, precision_error: 0.001
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 12.649110640673518, postgis: 12.6491106406735, precision_error: 0.001
+arctern: 10.198039027185569, postgis: 10.1980390271856, precision_error: 0.001
+arctern: 10.198039027185569, postgis: 10.1980390271856, precision_error: 0.001
+arctern: 13.590154807518113, postgis: 13.5901548075181, precision_error: 0.001
+arctern: 2.8284271247464026, postgis: 2.82842712474619, precision_error: 0.001
+arctern: 3.605551275463989, postgis: 3.60555127546399, precision_error: 0.001
+arctern: 12.649110640673518, postgis: 12.6491106406735, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.670411577478215, postgis: 4.67082946689777, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 4.993846506803395, postgis: 4.99397567750766, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 13.382224226638566, postgis: 13.3819440126448, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 3.2428399552265734, postgis: 3.24264068711928, precision_error: 0.001
+arctern: 4.242640687119245, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 4.000144063811342, postgis: 4.00001799010957, precision_error: 0.001
+arctern: 4.993830772324275, postgis: 4.99397567750766, precision_error: 0.001
+arctern: 12.928564902041856, postgis: 12.9286827488303, precision_error: 0.001
+arctern: 13.870319987391241, postgis: 13.8702855566627, precision_error: 0.001
+arctern: 4.242640687119285, postgis: 4.24264068711928, precision_error: 0.001
+arctern: 219.13587580145978, postgis: 219.136138725946, precision_error: 0.001
+arctern: 3.4975436391467913, postgis: 3.49695730897894, precision_error: 0.001
+arctern: 3.001893346180959, postgis: 2.99117825985908, precision_error: 0.001
+565 3.001893346180959 565 2.99117825985908
+arctern: 5.0, postgis: 5.0, precision_error: 0.001
+arctern: 218.35979483412234, postgis: 218.359794834122, precision_error: 0.001
+arctern: 4.0, postgis: 4.0, precision_error: 0.001
+arctern: 1.0498836016676523, postgis: 1.06939217050794, precision_error: 0.001
+569 1.0498836016676523 569 1.06939217050794
+arctern: 13.92838827718412, postgis: 13.9283882771841, precision_error: 0.001
+arctern: 209.69501663129716, postgis: 209.695016631297, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 2.6051375556428544, postgis: 2.61436091089413, precision_error: 0.001
+574 2.6051375556428544 574 2.61436091089413
+arctern: 2.6051375556428544, postgis: 2.61436091089413, precision_error: 0.001
+575 2.6051375556428544 575 2.61436091089413
+arctern: 1.212678125181665, postgis: 1.21267812518166, precision_error: 0.001
+arctern: 1.212678125181665, postgis: 1.21267812518166, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 9.055385138137417, postgis: 9.05538513813742, precision_error: 0.001
+arctern: 2.3425562965103026, postgis: 2.38072333869734, precision_error: 0.001
+581 2.3425562965103026 581 2.38072333869734
+arctern: 9.821825901932845, postgis: 9.82148987333494, precision_error: 0.001
+arctern: 2.3425562965103026, postgis: 2.38072333869734, precision_error: 0.001
+583 2.3425562965103026 583 2.38072333869734
+arctern: 9.219544457292887, postgis: 9.21954445729289, precision_error: 0.001
+arctern: 9.821825901932845, postgis: 9.82148987333494, precision_error: 0.001
+arctern: 9.219544457292887, postgis: 9.21954445729289, precision_error: 0.001
 Arctern test: run_test_st_hausdorffdistance_curve, result: FAILED
 Arctern test: run_test_st_curvetoline, result compare started, test result: /tmp/arctern_results/run_test_st_curvetoline.csv, expected result: ./expected/results/st_curvetoline.out
 arctern length: 13.326001375518675, postgis length: 13.3273106743296, intersection length: 0.0

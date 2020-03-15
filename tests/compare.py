@@ -18,7 +18,7 @@ surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
-blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_centroid_curve', 'run_test_st_convexhull_curve', 'run_test_envelope_aggr_curve', 'run_test_st_intersection_curve']
+blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_convexhull_curve', 'run_test_envelope_aggr_curve', 'run_test_st_intersection_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -120,7 +120,7 @@ EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
 # EPOCH_CURVE_RELATIVE = 2e-4
 # EPOCH_SURFACE_RELATIVE = 3e-6
-EPOCH_CURVE_RELATIVE = 1e-1
+EPOCH_CURVE_RELATIVE = 1e-3
 EPOCH_SURFACE_RELATIVE = 1e-1
 
 def compare_length(x, y):
@@ -179,8 +179,14 @@ def compare_geometrycollection(c, x, y):
 def compare_floats(c, x, y):
     x = float(x)
     y = float(y)
+    if x == 0:
+        if y ==0:
+            return True
+        else:
+            return False
     if c in alist:
         precision_error = EPOCH_CURVE_RELATIVE
+        print('arctern: %s, postgis: %s, precision_error: %s' % (str(x), str(y), str(precision_error)))
         return compare2float_relative(x, y, precision_error)
     else:
         precision_error = EPOCH
@@ -207,7 +213,6 @@ def compare2float_relative(x_base, y_check, relative_error):
     if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
         return True
     else:
-<<<<<<< HEAD
         # print(x, y)
         return False
 
