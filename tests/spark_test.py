@@ -984,6 +984,24 @@ def run_test_st_hausdorffdistance_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_pointfromtext(spark):
+    pass
+
+def run_test_st_polygonfromtext(spark):
+    pass
+
+def run_test_st_linestringfromtext(spark):
+    pass
+
+def run_test_st_geomfromtext(spark):
+    pass
+
+def run_test_st_geomfromwkt(spark):
+    pass
+
+def run_test_st_astext(spark):
+    pass
+
 if __name__ == "__main__":
 
     url = 'local'
