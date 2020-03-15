@@ -174,7 +174,7 @@ def run_test_union_aggr_2(spark):
 def run_test_union_aggr_curve(spark):
     data = 'union_aggr_curve.csv'
     table_name = 'test_union_aggr_curve'
-    sql = "select st_curvetoline(st_union_aggr(geos)) as union_aggr from test_union_aggr_curve"
+    sql = "select st_union_aggr(geos) as union_aggr from test_union_aggr_curve"
 
     df = read_data(spark, base_dir, data)
     df.show()
