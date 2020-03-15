@@ -118,8 +118,11 @@ UNIT = 0.0001
 EPOCH = 1e-8
 EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
-EPOCH_CURVE_RELATIVE = 2e-4
-EPOCH_SURFACE_RELATIVE = 3e-6
+# EPOCH_CURVE_RELATIVE = 2e-4
+# EPOCH_SURFACE_RELATIVE = 3e-6
+
+EPOCH_CURVE_RELATIVE = 1e-1
+EPOCH_SURFACE_RELATIVE = 1e-1
 
 def compare_length(x, y):
     arct = CreateGeometryFromWkt(x)
@@ -128,6 +131,7 @@ def compare_length(x, y):
     intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
+    print('arctern length: %s, postgis length: %s, intersection length: %s' % (str(arct_length), str(pgis_length), str(intersection_length)))
     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
     result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
     return result
@@ -139,7 +143,7 @@ def compare_area(x, y):
     intersection_area = Geometry.Area(Geometry.Intersection(arct, pgis))
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
-
+    print('arctern area: %s, postgis area: %s, intersection area: %s' % (str(arct_area), str(pgis_area), str(intersection_area)))
     #result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     result = compare3float_relative(pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
     return result
@@ -152,7 +156,7 @@ def compare_geometry(c, x, y):
     if c in blist:
         if is_length_types(x) and is_length_types(y):
             return compare_length(x, y)
-        elif if is_area_types(x) and is_area_types(y):
+        elif is_area_types(x) and is_area_types(y):
             return compare_area(x, y)
     else:
         arct = wkt.loads(x)
@@ -165,7 +169,7 @@ def compare_geometrycollection(c, x, y):
     if c in blist:
         if is_length_types(x) and is_length_types(y):
             return compare_length(x, y)
-        elif if is_area_types(x) and is_area_types(y):
+        elif is_area_types(x) and is_area_types(y):
             return compare_area(x, y)
     else:
         arct = wkt.loads(x)
