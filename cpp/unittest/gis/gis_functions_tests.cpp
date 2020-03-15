@@ -3255,6 +3255,45 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
 }
 
+TEST(geometry_test, test_ST_Union_Aggr3) {
+  auto g8 = "COMPOUNDCURVE(LINESTRING(0 0, 1 1, 1 0))";
+  auto g9 = "MULTICURVE((0 0, 5 5),CIRCULARSTRING(4 0, 4 4, 8 4))";
+  auto g10 =
+      "MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), "
+      "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,1 0),(1 0,0 1)))";
+  auto g11 =
+      "MULTICURVE ((5 5, 3 5, 3 3, 0 3), CIRCULARSTRING (0 0, 0.2 1, 0.5 1.4), "
+      "COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 "
+      "2, 0 2)))";
+  auto g12 =
+      "MULTICURVE ((5 5, 3 5, 3 3, 0 3), LINESTRING (0 0, 0.2 1, 0.5 1.4), "
+      "COMPOUNDCURVE(LINESTRING(0 2, -1 1,1 0),CIRCULARSTRING( 1 0, 2 1, 1 2),(1 2, 0.5 "
+      "2, 0 2)))";
+  auto g13 = "CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))";
+  auto g14 =
+      "CURVEPOLYGON(COMPOUNDCURVE(CIRCULARSTRING(0 0,2 0, 2 1, 2 3, 4 3),(4 3, 4 5, 1 4, "
+      "0 0)), CIRCULARSTRING(1.7 1, 1.4 0.4, 1.6 0.4, 1.6 0.5, 1.7 1) )";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(g8));
+  builder.Append(std::string(g9));
+  builder.Append(std::string(g10));
+  builder.Append(std::string(g11));
+  builder.Append(std::string(g12));
+  builder.Append(std::string(g13));
+  builder.Append(std::string(g14));
+  builder.Finish(&input);
+
+  auto res = arctern::gis::ST_Union_Aggr(input);
+  auto len = arctern::gis::ST_Length(res);
+  auto area = arctern::gis::ST_Area(res);
+  auto len_dbl = std::static_pointer_cast<arrow::DoubleArray>(len);
+  auto area_dbl = std::static_pointer_cast<arrow::DoubleArray>(area);
+  ASSERT_TRUE(std::abs(len_dbl->Value(0) - 9.91129) < 1e4);
+  ASSERT_TRUE(std::abs(area_dbl->Value(0) - 23.9208) < 1e4);
+}
+
 TEST(geometry_test, test_ST_Union_Aggr2) {
   auto p0 = "MULTIPOINT (1 1,3 4)";
   auto p1 = "LINESTRING (1 1,1 2,2 3)";
