@@ -74,17 +74,19 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // fill type masks
   for (int i = 0; i < len; i++) {
     using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
-    auto geo = [str = wkt_geometries->GetString(i)]() -> Holder {
+    auto type = [&] {
+      if (wkt_geometries->IsNull(i)) {
+        return WkbTypes::kUnknown;
+      }
+      auto str = wkt_geometries->GetString(i);
       if (str.size() == 0) {
-        return nullptr;
+        return WkbTypes::kUnknown;
       }
       OGRGeometry* geo_;
       CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
-      return Holder(geo_);
+      Holder holder(geo_);
+      return (WkbTypes)OGR_G_GetGeometryType(holder.get());
     }();
-
-    auto type =
-        geo.get() ? (WkbTypes)OGR_G_GetGeometryType(geo.get()) : WkbTypes::kUnknown;
 
     auto idx = type_to_idx[(int)type];
     mapping[idx].masks[i] = true;
@@ -130,7 +132,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     }
   }
   return ret;
-}
+}  // namespace gdal
 
 }  // namespace gdal
 }  // namespace gis
