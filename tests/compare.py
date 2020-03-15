@@ -18,7 +18,7 @@ surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
-blist = ['run_test_st_curvetoline', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1']
+blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_centroid_curve', 'run_test_st_convexhull_curve', 'run_test_envelope_aggr_curve', 'run_test_st_intersection_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -118,8 +118,10 @@ UNIT = 0.0001
 EPOCH = 1e-8
 EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
-EPOCH_CURVE_RELATIVE = 2e-4
-EPOCH_SURFACE_RELATIVE = 3e-6
+# EPOCH_CURVE_RELATIVE = 2e-4
+# EPOCH_SURFACE_RELATIVE = 3e-6
+EPOCH_CURVE_RELATIVE = 1e-1
+EPOCH_SURFACE_RELATIVE = 1e-1
 
 def compare_length(x, y):
     arct = CreateGeometryFromWkt(x)
@@ -128,8 +130,9 @@ def compare_length(x, y):
     intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
+    print('arctern length: %s, postgis length: %s, intersection length: %s' % (str(arct_length), str(pgis_length), str(intersection_length)))
     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
-    result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
+    result = compare3float_relative(pgis_length, arct_length, intersection_length, EPOCH_CURVE_RELATIVE)
     return result
 
 def compare_area(x, y):
@@ -139,7 +142,7 @@ def compare_area(x, y):
     intersection_area = Geometry.Area(Geometry.Intersection(arct, pgis))
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
-
+    print('arctern area: %s, postgis area: %s, intersection area: %s' % (str(arct_area), str(pgis_area), str(intersection_area)))
     #result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     result = compare3float_relative(pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
     return result

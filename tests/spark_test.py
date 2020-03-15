@@ -233,11 +233,11 @@ def run_test_st_convexhull(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_convexhull2(spark):
+def run_test_st_convexhull_curve(spark):
     # this test is to test convexhull's result is curve, which not support in postgis, we need to convert arctern result to basic types, then compare
-    data = "convexhull2.csv"
-    table_name = 'test_convexhull2'
-    sql = "select st_curvetoline(st_convexhull(geos)) as geos from test_convexhull2"
+    data = "convexhull_curve.csv"
+    table_name = 'test_convexhull_curve'
+    sql = "select st_curvetoline(st_convexhull(geos)) as geos from test_convexhull_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -427,6 +427,21 @@ def run_test_st_centroid(spark):
     data = "centroid.csv"
     table_name = 'test_centroid'
     sql = "select st_centroid(geos) as my_centroid from test_centroid"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_centroid_curve(spark):
+    data = "centroid_curve.csv"
+    table_name = 'test_centroid_curve'
+    sql = "select st_centroid(geos) as my_centroid from test_centroid_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -1037,7 +1052,7 @@ if __name__ == "__main__":
     run_test_st_intersection(spark_session)
     run_test_st_intersection_curve(spark_session)
     run_test_st_convexhull(spark_session)
-    run_test_st_convexhull2(spark_session)
+    run_test_st_convexhull_curve(spark_session)
     run_test_st_buffer(spark_session)
     run_test_st_buffer1(spark_session)
     run_test_st_buffer2(spark_session)
@@ -1050,6 +1065,7 @@ if __name__ == "__main__":
     run_test_st_envelope(spark_session)
     run_test_st_envelope_curve(spark_session)
     run_test_st_centroid(spark_session)
+    run_test_st_centroid_curve(spark_session)
     run_test_st_length(spark_session)
     run_test_st_length_curve(spark_session)
     run_test_st_area(spark_session)
