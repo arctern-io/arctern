@@ -940,7 +940,7 @@ def run_test_st_simplifypreservetopology(spark):
 def run_test_st_simplifypreservetopology_curve(spark):
     data = "simplifypreservetopology_curve.csv"
     table_name = 'test_simplifypreservetopology_curve'
-    sql = "select st_simplifypreservetopology(geos, 1) as geos from test_simplifypreservetopology_curve"
+    sql = "select st_curvetoline(st_simplifypreservetopology(geos, 1)) as geos from test_simplifypreservetopology_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -1094,7 +1094,7 @@ if __name__ == "__main__":
     run_test_st_touches(spark_session)
     run_test_st_touches_curve(spark_session)
     run_test_st_makevalid(spark_session)
-    # run_test_st_precisionreduce(spark_session)
+    run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
     run_test_st_simplifypreservetopology_curve(spark_session)
