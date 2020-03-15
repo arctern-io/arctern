@@ -18,7 +18,7 @@ surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
-blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_convexhull_curve', 'run_test_envelope_aggr_curve', 'run_test_st_intersection_curve']
+blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_intersection_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -186,7 +186,6 @@ def compare_floats(c, x, y):
             return False
     if c in alist:
         precision_error = EPOCH_CURVE_RELATIVE
-        print('arctern: %s, postgis: %s, precision_error: %s' % (str(x), str(y), str(precision_error)))
         return compare2float_relative(x, y, precision_error)
     else:
         precision_error = EPOCH
@@ -213,7 +212,7 @@ def compare2float_relative(x_base, y_check, relative_error):
     if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
         return True
     else:
-        # print(x, y)
+        print('arctern: %s, postgis: %s, precision_error: %s' % (str(x), str(y), str(relative_error)))
         return False
 
 def compare3float_relative(x_base, y_check, z_intersection, relative_error):
