@@ -18,7 +18,7 @@ surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
-blist = ['run_test_st_curvetoline', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1']
+blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_centroid_curve', 'run_test_st_convexhull_curve', 'run_test_envelope_aggr_curve', 'run_test_st_intersection_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -120,7 +120,6 @@ EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
 # EPOCH_CURVE_RELATIVE = 2e-4
 # EPOCH_SURFACE_RELATIVE = 3e-6
-
 EPOCH_CURVE_RELATIVE = 1e-1
 EPOCH_SURFACE_RELATIVE = 1e-1
 
@@ -133,7 +132,7 @@ def compare_length(x, y):
     pgis_length = Geometry.Length(pgis)
     print('arctern length: %s, postgis length: %s, intersection length: %s' % (str(arct_length), str(pgis_length), str(intersection_length)))
     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
-    result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
+    result = compare3float_relative(pgis_length, arct_length, intersection_length, EPOCH_CURVE_RELATIVE)
     return result
 
 def compare_area(x, y):
@@ -487,12 +486,12 @@ if __name__ == '__main__':
     # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
     # r = compare_results(('run_test_st_distance_curve', ''), '/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
-    r = compare_results(('run_test_st_curvetoline', ''), '/tmp/arctern_results/run_test_st_curvetoline.csv', './expected/results/st_curvetoline.out')
+    # r = compare_results(('run_test_st_curvetoline', ''), '/tmp/arctern_results/run_test_st_curvetoline.csv', './expected/results/st_curvetoline.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    exit(0)
+    # exit(0)
 
     compare_all()
-    assert True == compare_one([14,geo1],[14,geo2])
+    # assert True == compare_one([14,geo1],[14,geo2])
     # assert False == compare_one([15,geo1],[15,geo3])
-    assert True == compare_one([16,geo4],[16,geo5])
+    # assert True == compare_one([16,geo4],[16,geo5])
     # assert False == compare_one([17,geo4],[17,geo6])

@@ -17,7 +17,7 @@ sql_template_7 = "select st_astext(%s('%s'::geometry, 1))"
 
 st_buffer = ['st_buffer']
 intersection = ['st_intersection']
-convexhull = ['st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline']
+convexhull = ['st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline', 'st_centroid']
 transform = ['st_transform']
 simplifypreservetopology = ['st_simplifypreservetopology']
 
