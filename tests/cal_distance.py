@@ -1,4 +1,5 @@
 import shapely
+import sys
 from shapely import wkt
 from osgeo import ogr
 from ogr import *
@@ -165,8 +166,10 @@ def arc_distance(geox, geoy):
 # exit(0)
 
 
-arc_path = '/tmp/arctern_results/run_test_st_transform.csv'
-pgs_path = 'expected/results/st_transform.out'
+# arc_path = '/tmp/arctern_results/run_test_st_transform.csv'
+# pgs_path = 'expected/results/st_transform.out'
+arc_path = sys.argv[1] 
+pgs_path = sys.argv[2]
 
 with open(arc_path, 'r') as arc, open(pgs_path, 'r') as pgs:
     arcs = arc.readlines()[1:]
