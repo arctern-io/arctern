@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import json
-from arctern_gis.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
-from arctern_gis.util.vega.vega_node import (RootMarks, Root, Description, Data,
-                                            Width, Height, Scales)
+from arctern.util.vega.vega_node import (Width, Height, Description, Data,
+                                            Scales, RootMarks, Root)
+
 
 class Marks(RootMarks):
     """
@@ -33,23 +33,22 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, shape: Value, stroke: Value, strokeWidth: Value, opacity: Value):
-            if not (isinstance(shape.v, str) and isinstance(strokeWidth.v, int) and
-                    isinstance(stroke.v, str) and isinstance(opacity.v, float)):
+        def __init__(self, bounding_box: Value, color_style: Value, ruler: Value, opacity: Value):
+            if not (isinstance(bounding_box.v, list) and isinstance(color_style.v, str) and
+                    isinstance(ruler.v, list) and isinstance(opacity.v, float)):
                 # TODO error log here
-                print("illegal")
-                assert 0
-            self._shape = shape
-            self._stroke = stroke
-            self._strokeWidth = strokeWidth
+                assert 0, "illegal"
+            self._bounding_box = bounding_box
+            self._color_style = color_style
+            self._ruler = ruler
             self._opacity = opacity
 
         def to_dict(self):
             dic = {
                 "enter": {
-                    "shape": self._shape.to_dict(),
-                    "stroke": self._stroke.to_dict(),
-                    "strokeWidth": self._strokeWidth.to_dict(),
+                    "bounding_box": self._bounding_box.to_dict(),
+                    "color_style": self._color_style.to_dict(),
+                    "ruler": self._ruler.to_dict(),
                     "opacity": self._opacity.to_dict()
                 }
             }
@@ -64,24 +63,26 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaCircle2d(VegaScatterPlot):
-    def __init__(self, width: int, height: int, mark_size: int, mark_color: str, opacity: float):
-        VegaScatterPlot.__init__(self, width, height)
-        self._mark_size = mark_size
-        self._mark_color = mark_color
+class VegaChoroplethMap:
+    def __init__(self, width: int, height: int,
+                 bounding_box: list, color_style: str,
+                 ruler: list, opacity: float):
+        self._width = width
+        self._height = height
+        self._bounding_box = bounding_box
+        self._color_style = color_style
+        self._ruler = ruler
         self._opacity = opacity
 
     def build(self):
-        description = Description(desc="circle_2d")
+        description = Description(desc="building_weighted_2d")
         data = Data(name="data", url="/data/data.csv")
-        domain1 = Scales.Scale.Domain(data="data", field="c0")
-        domain2 = Scales.Scale.Domain(data="data", field="c1")
-        scale1 = Scales.Scale("x", "linear", domain1)
-        scale2 = Scales.Scale("y", "linear", domain2)
-        scales = Scales([scale1, scale2])
-        encode = Marks.Encode(shape=Marks.Encode.Value("circle"),
-                              stroke=Marks.Encode.Value(self._mark_color),
-                              strokeWidth=Marks.Encode.Value(self._mark_size),
+        domain = Scales.Scale.Domain("data", "c0")
+        scale = Scales.Scale("building", "linear", domain)
+        scales = Scales([scale])
+        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
+                              color_style=Marks.Encode.Value(self._color_style),
+                              ruler=Marks.Encode.Value(self._ruler),
                               opacity=Marks.Encode.Value(self._opacity))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,

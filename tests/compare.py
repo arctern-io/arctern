@@ -207,6 +207,7 @@ def compare2float_relative(x_base, y_check, relative_error):
     if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
         return True
     else:
+<<<<<<< HEAD
         # print(x, y)
         return False
 
@@ -222,7 +223,8 @@ def compare_curve(x, y):
     intersection_length = Geometry.Length(Geometry.Intersection(arct,pgis))
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
-    result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    #result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
     return result
 
 def compare_surface(x, y):
@@ -233,7 +235,8 @@ def compare_surface(x, y):
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
 
-    result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
+    #result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     return result
 
 def convert_str(strr):
