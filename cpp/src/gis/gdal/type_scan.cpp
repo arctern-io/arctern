@@ -83,7 +83,10 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
         return WkbTypes::kUnknown;
       }
       OGRGeometry* geo_;
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
+      auto error_code = OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_);
+      if(error_code != OGRERR_NONE) {
+        return WkbTypes::kUnknown;
+      }
       Holder holder(geo_);
       return (WkbTypes)OGR_G_GetGeometryType(holder.get());
     }();
