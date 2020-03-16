@@ -20,6 +20,7 @@
 #include <ogrsf_frmts.h>
 
 #include <memory>
+#include <vector>
 
 #include "arrow/api.h"
 #include "arrow/array.h"

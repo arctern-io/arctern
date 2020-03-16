@@ -171,7 +171,7 @@ std::shared_ptr<arrow::Array> WktArrayMerge(
     int array_index = mask[i] ? 1 : 0;
     auto& input = inputs[array_index];
     auto index = indexes[array_index]++;
-    if(input->IsNull(index)) {
+    if (input->IsNull(index)) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       CHECK_ARROW(builder.Append(input->GetView(index)));
@@ -186,7 +186,7 @@ std::shared_ptr<arrow::Array> WktArrayMerge(
 std::shared_ptr<arrow::Array> DoubleArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
     const std::vector<bool>& mask) {
-  std::array<std::shared_ptr<arrow::DoubleArray >, 2> inputs;
+  std::array<std::shared_ptr<arrow::DoubleArray>, 2> inputs;
   for (int i = 0; i < inputs.size(); ++i) {
     inputs[i] = std::static_pointer_cast<arrow::DoubleArray>(inputs_raw[i]);
   }
@@ -197,7 +197,7 @@ std::shared_ptr<arrow::Array> DoubleArrayMerge(
     int array_index = mask[i] ? 1 : 0;
     auto& input = inputs[array_index];
     auto index = indexes[array_index]++;
-    if(input->IsNull(index)) {
+    if (input->IsNull(index)) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       CHECK_ARROW(builder.Append(input->GetView(index)));
