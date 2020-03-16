@@ -26,11 +26,3 @@ def register_funcs(spark):
     for obj in all_funcs:
         #print(obj.__name__, obj)
         spark.udf.register(obj.__name__, obj)
-
-
-def load_udfs():
-    import arctern_pyspark as ap
-    from . import  _wrapper_func
-    all_funcs = _get_funcs_in_module(_wrapper_func)
-    for obj in all_funcs:
-        setattr(ap, obj.__name__, obj)

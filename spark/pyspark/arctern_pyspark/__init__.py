@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .register import register_funcs, load_udfs
+from .register import register_funcs
 from .render_func import *
