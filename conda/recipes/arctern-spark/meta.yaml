@@ -28,6 +28,10 @@ requirements:
     - arctern {{ version }}
     - pyarrow ==0.16.0
 
+test:
+  commands:
+    - python -c "import arctern_pyspark"
+
 about:
   home: http://www.github.com/zilliztech/arctern
   license: Apache-2.0

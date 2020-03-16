@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.functions import pandas_udf, PandasUDFType
-
-from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
-
 __all__ = [
     "pointmap",
     "heatmap",
@@ -40,6 +36,8 @@ def print_partitions(df):
 
 
 def pointmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType
+
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
         from arctern import point_map_wkt
@@ -50,6 +48,9 @@ def pointmap(df, vega):
     return hex_data
 
 def heatmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType
+    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+
     agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -72,6 +73,9 @@ def heatmap(df, vega):
     return hex_data
 
 def choroplethmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType
+    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+
     agg_schema = StructType([StructField('wkt', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
