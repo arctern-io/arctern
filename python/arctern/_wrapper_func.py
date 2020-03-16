@@ -48,6 +48,7 @@ __all__ = [
     "heat_map",
     "heat_map_wkt",
     "choropleth_map",
+    "coordinate_projection",
 ]
 
 
@@ -229,16 +230,19 @@ def ST_Union_Aggr(geos):
     arr_geos = pa.array(geos, type='string')
     from .arctern_core_ import ST_Union_Aggr
     rs = ST_Union_Aggr(arr_geos)
-    return rs[0]
+    return str(rs[0])
 
 def ST_Envelope_Aggr(geos):
     arr_geos = pa.array(geos, type='string')
     from .arctern_core_ import ST_Envelope_Aggr
     rs = ST_Envelope_Aggr(arr_geos)
-    return rs[0]
+    return str(rs[0])
 
 def ST_Transform(geos, src, dst):
     arr_geos = pa.array(geos, type='string')
+    src = bytes(src, encoding="utf8")
+    dst = bytes(dst, encoding="utf8")
+
     from .arctern_core_ import ST_Transform
     rs = ST_Transform(arr_geos, src, dst)
     return rs.to_pandas()
@@ -255,13 +259,13 @@ def point_map(xs, ys, conf):
     arr_y = pa.array(ys, type='uint32') 
     from .arctern_core_ import point_map
     rs = point_map(arr_x, arr_y, conf)
-    return rs.buffers()[1].to_pybytes()
+    return rs.buffers()[1].to_pybytes().hex()
 
 def point_map_wkt(points, conf):
     array_points = pa.array(points, type='string')
     from .arctern_core_ import point_map_wkt
     rs = point_map_wkt(array_points, conf)
-    return rs.buffers()[1].to_pybytes()
+    return rs.buffers()[1].to_pybytes().hex()
 
 def heat_map(x_data, y_data, c_data, conf):
     arr_x = pa.array(x_data, type='uint32')
@@ -269,18 +273,35 @@ def heat_map(x_data, y_data, c_data, conf):
     arr_c = pa.array(c_data, type='uint32')
     from .arctern_core_ import heat_map
     rs = heat_map(arr_x, arr_y, arr_c, conf)
-    return rs.buffers()[1].to_pybytes()
+    return rs.buffers()[1].to_pybytes().hex()
 
-def heat_map_wkt(points, arr_c, conf):
+
+def heat_map_wkt(points, c_data, conf):
     array_points = pa.array(points, type='string')
-    arr_c = pa.array(c_data, type='uint32')
+
+    if isinstance(c_data[0], float):
+        arr_c = pa.array(count_data, type='double')
+    else:
+        arr_c = pa.array(count_data, type='int64')
+
     from .arctern_core_ import heat_map_wkt
     rs = heat_map_wkt(array_points, arr_c, conf)
-    return rs.buffers()[1].to_pybytes()
+    return rs.buffers()[1].to_pybytes().hex()
 
 def choropleth_map(wkt_data, count_data, conf):
     arr_wkt = pa.array(wkt_data, type='string')
-    arr_count = pa.array(count_data, type='double')
+    if isinstance(count_data[0], float):
+        arr_count = pa.array(count_data, type='double')
+    else:
+        arr_count = pa.array(count_data, type='int64')
     from .arctern_core_ import choropleth_map
     rs = choropleth_map(arr_wkt, arr_count, conf)
-    return rs.buffers()[1].to_pybytes()
+    return rs.buffers()[1].to_pybytes().hex()
+
+def coordinate_projection(geos, top_left, bottom_right, height, width):
+    arr_geos = pa.array(geos, type='string')
+    from .arctern_core_ import coordinate_projection
+    src_rs1 = bytes(top_left[0], encoding="utf8")
+    dst_rs1 = bytes(bottom_right[0], encoding="utf8")
+    rs = coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
+    return rs.to_pandas()

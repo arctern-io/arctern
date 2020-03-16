@@ -217,7 +217,7 @@ def test_ST_ConvexHull():
 def test_ST_Transform():
     data = ["POINT (10 10)"]
     data = pandas.Series(data)
-    rst = arctern.ST_Transform(data, b"EPSG:4326", b"EPSG:3857")
+    rst = arctern.ST_Transform(data, "EPSG:4326", "EPSG:3857")
 
     wkt = rst[0]
     rst_point = ogr.CreateGeometryFromWkt(str(wkt))

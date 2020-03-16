@@ -18,6 +18,7 @@ from pyspark.sql.types import *
 from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern.util import save_png
 
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
@@ -25,12 +26,6 @@ from arctern_pyspark import choroplethmap
 
 import pyarrow as pa
 import pandas as pd
-
-def save_png(hex_data, file_name):
-    import binascii
-    binary_string = binascii.unhexlify(str(hex_data))
-    with open(file_name, 'wb') as png:
-        png.write(binary_string)
 
 def run_point_map(spark):
     points_data = []
@@ -81,4 +76,3 @@ if __name__ == "__main__":
     run_choropleth_map(spark_session)
 
     spark_session.stop()
-    

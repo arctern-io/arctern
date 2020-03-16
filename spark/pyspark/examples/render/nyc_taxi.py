@@ -24,7 +24,7 @@ from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
-from arctern_pyspark import save_png
+from arctern.util import save_png
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *

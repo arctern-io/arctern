@@ -59,13 +59,7 @@ import arctern
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def Projection(geos, top_left, bottom_right, height, width):
-    arr_geos = pa.array(geos, type='string')
-    src_rs1 = bytes(top_left[0], encoding="utf8")
-    dst_rs1 = bytes(bottom_right[0], encoding="utf8")
-    h = int(height[0])
-    w = int(width[0])
-    rs = arctern.coordinate_projection(arr_geos, src_rs1, dst_rs1, h, w)
-    return rs.to_pandas()
+    return arctern.coordinate_projection(geos, top_left[0], bottom_right[0], height[0], width[0]) 
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):
@@ -208,7 +202,7 @@ def ST_Envelope_Aggr(geos):
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Transform(geos, src_rs, dst_rs):
-    return arctern.ST_Transform(geos, src_rs, dst_rs)
+    return arctern.ST_Transform(geos, src_rs[0], dst_rs[0])
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_CurveToLine(geos):
