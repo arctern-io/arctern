@@ -64,30 +64,6 @@ void ColorGradient::getColorAtValue(const float value, float& red, float& green,
   return;
 }
 
-void HexToRGB(int64_t color, CircleParams& circle_params_2d, ColorStyle color_style) {
-  switch (color_style) {
-    case ColorStyle::kBlueToRed:
-    case ColorStyle::kPurpleToYellow:
-    case ColorStyle::kSkyBlueToWhite:
-      circle_params_2d.color.r = (color >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (color >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (color & 0xff) / 255.0f;
-      break;
-    case ColorStyle::kBlueTransParency:
-    case ColorStyle::kRedTransParency: {
-      circle_params_2d.color.r = (color >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (color >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (color & 0xff) / 255.0f;
-      break;
-    }
-    default: {
-      std::string msg = "cannot find color style";
-      // TODO: add log here
-      break;
-    }
-  }
-}
-
 CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_style,
                                             double ratio) {
   CircleParams circle_params_2d;
@@ -108,25 +84,24 @@ CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_st
       break;
     }
     case ColorStyle::kSkyBlueToWhite: {
-      int64_t sky_blue = SKYBLUE;
-      circle_params_2d.color.a = 1.0;
+      int64_t sky_blue = SKYBLUE circle_params_2d.color.a = 1.0;
       circle_params_2d.color.r = ((255 - (sky_blue >> 16 & 0xff)) * ratio) / 255.0f;
       circle_params_2d.color.g = ((255 - (sky_blue >> 8 & 0xff)) * ratio) / 255.0f;
       circle_params_2d.color.b = ((255 - (sky_blue & 0xff)) * ratio) / 255.0f;
       break;
     }
     case ColorStyle::kRedTransParency: {
-      int64_t red_lp = RED;
-      circle_params_2d.color.a = ratio + TRANSPARENCY;
-
-      HexToRGB(red_lp, circle_params_2d, color_style);
+      int64_t red_lp = RED circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = (red_lp >> 16 & 0xff) / 255.0f;
+      circle_params_2d.color.g = (red_lp >> 8 & 0xff) / 255.0f;
+      circle_params_2d.color.b = (red_lp & 0xff) / 255.0f;
       break;
     }
     case ColorStyle::kBlueTransParency: {
-      int64_t blue_lp = BLUE;
-      circle_params_2d.color.a = ratio + TRANSPARENCY;
-
-      HexToRGB(blue_lp, circle_params_2d, color_style);
+      int64_t blue_lp = BLUE circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = (blue_lp >> 16 & 0xff) / 255.0f;
+      circle_params_2d.color.g = (blue_lp >> 8 & 0xff) / 255.0f;
+      circle_params_2d.color.b = (blue_lp & 0xff) / 255.0f;
       break;
     }
     case ColorStyle::kBlueGreenYellow: {

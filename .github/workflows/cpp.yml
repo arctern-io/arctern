@@ -44,6 +44,15 @@ jobs:
       - name: Docker Run
         run: |
           docker-compose run ubuntu-cpp
+      - name: Upload coverage to Codecov
+        if: success() && github.repository == 'zilliztech/arctern'
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./ci/scripts/output_new.info
+          name: amd64-linux-cpu-unittests
+          flags: amd64_linux_cpu_unittests
+          yml: ./codecov.yaml
       - name: Docker Push
         if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
         continue-on-error: true

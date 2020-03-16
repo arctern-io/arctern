@@ -27,6 +27,11 @@ namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
+  if (output.first == nullptr || output.second < 0) {
+    // TODO: add log here
+    return nullptr;
+  }
+
   auto output_length = output.second;
   auto output_data = output.first;
   auto bit_map = (uint8_t*)malloc(output_length);
@@ -192,7 +197,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
     }
     default:
       // TODO: add log here
-      std::cout << "type error! ";
+      std::cout << "type error! " << std::endl;
   }
 
   free(input_x);
@@ -236,8 +241,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     case arrow::Type::INT64: {
       auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          output = heatmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
+      return out_pic(heatmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
     }
     case arrow::Type::UINT8: {
       auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
@@ -265,7 +269,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     default:
       // TODO: add log here
-      std::cout << "type error! hjahj hjh heatmap1";
+      std::cout << "type error! heatmap" << std::endl;
   }
   return nullptr;
 }
@@ -340,7 +344,7 @@ std::shared_ptr<arrow::Array> choropleth_map(
     }
     default:
       // TODO: add log here
-      std::cout << "type error!";
+      std::cout << "type error!" << std::endl;
   }
   return nullptr;
 }
