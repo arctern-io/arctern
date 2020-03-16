@@ -8,6 +8,7 @@ import shapely
 from shapely import wkt
 from osgeo import ogr
 from ogr import *
+from util import *
 
 config_file = './config.txt'
 
@@ -18,7 +19,7 @@ surface_types = ['CURVEPOLYGON','MULTISURFACE','SURFACE']
 geo_length_types = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 geo_area_types = ['POLYGON', 'MULTIPOLYGON']
 alist = ['run_test_st_area_curve', 'run_test_st_distance_curve', 'run_test_st_hausdorffdistance_curve']
-blist = ['run_test_st_curvetoline', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_intersection_curve']
+blist = ['run_test_st_curvetoline', 'run_test_st_transform', 'run_test_st_transform1', 'run_test_union_aggr_curve', 'run_test_st_buffer_curve', 'run_test_st_buffer_curve1', 'run_test_st_intersection_curve', 'run_test_st_simplifypreservetopology_curve']
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -153,10 +154,15 @@ def compare_geometry(c, x, y):
         return True
     
     if c in blist:
-        if is_length_types(x) and is_length_types(y):
-            return compare_length(x, y)
-        elif is_area_types(x) and is_area_types(y):
-            return compare_area(x, y)
+        # if is_length_types(x) and is_length_types(y):
+        #     return compare_length(x, y)
+        # elif is_area_types(x) and is_area_types(y):
+        #     return compare_area(x, y)
+        if arc_distance(x, y) < EPOCH_CURVE_RELATIVE:
+            return True
+        else:
+            print('arc distance: %s' % str(arc_distance(x, y)))
+            return False
     else:
         arct = wkt.loads(x)
         pgis = wkt.loads(y)
@@ -166,10 +172,11 @@ def compare_geometry(c, x, y):
 def compare_geometrycollection(c, x, y):
     
     if c in blist:
-        if is_length_types(x) and is_length_types(y):
-            return compare_length(x, y)
-        elif is_area_types(x) and is_area_types(y):
-            return compare_area(x, y)
+        if arc_distance(x, y) < EPOCH_CURVE_RELATIVE:
+            return True
+        else:
+            print('arc distance: %s' % str(arc_distance(x, y)))
+            return False
     else:
         arct = wkt.loads(x)
         pgis = wkt.loads(y)
@@ -488,14 +495,15 @@ if __name__ == '__main__':
     geo6 = 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 13, 7 8)))'
     
     update_result()
+    
     # r = compare_results('/tmp/arctern_results/run_test_union_aggr_curve.csv', './expected/results/st_union_aggr_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_transform.csv', './expected/results/st_transform.out')
-    # r = compare_results('/tmp/arctern_results/run_test_st_transform1.csv', './expected/results/st_transform1.out')
+    # r = compare_results(('run_test_st_simplifypreservetopology_curve', ''), '/tmp/arctern_results/run_test_st_simplifypreservetopology_curve.csv', './expected/results/st_simplifypreservetopology_curve.out')
+    # r = compare_results(('run_test_st_buffer_curve1', ''), '/tmp/arctern_results/run_test_st_buffer_curve1.csv', './expected/results/st_buffer_curve1.out')
     # r = compare_results(('run_test_st_distance_curve', ''), '/tmp/arctern_results/run_test_st_distance_curve.csv', './expected/results/st_distance_curve.out')
-    # r = compare_results(('run_test_st_curvetoline', ''), '/tmp/arctern_results/run_test_st_curvetoline.csv', './expected/results/st_curvetoline.out')
+    r = compare_results(('run_test_st_intersection_curve', ''), '/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
     # r = compare_results('/tmp/arctern_results/run_test_st_geometrytype.json', './expected/results/st_geometrytype.out')
-    # exit(0)
+    exit(0)
 
     compare_all()
     # assert True == compare_one([14,geo1],[14,geo2])
