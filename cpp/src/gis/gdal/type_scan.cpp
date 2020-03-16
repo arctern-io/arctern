@@ -84,7 +84,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       }
       OGRGeometry* geo_;
       auto error_code = OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_);
-      if(error_code != OGRERR_NONE) {
+      if (error_code != OGRERR_NONE) {
         return WkbTypes::kUnknown;
       }
       Holder holder(geo_);
