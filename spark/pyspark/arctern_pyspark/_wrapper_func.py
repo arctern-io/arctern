@@ -101,7 +101,7 @@ def ST_IsValid(geos):
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PrecisionReduce(geos, precision):
-    return arctern.ST_PrecisionReduce(geos, precision)
+    return arctern.ST_PrecisionReduce(geos, precision[0])
 
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
@@ -135,7 +135,7 @@ def ST_MakeValid(geos):
 # TODO: ST_SimplifyPreserveTopology
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
-    return arctern.ST_SimplifyPreserveTopology(geos, distance_tolerance)
+    return arctern.ST_SimplifyPreserveTopology(geos, distance_tolerance[0])
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
@@ -188,7 +188,7 @@ def ST_Envelope(geos):
 # TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_Buffer(geos, dfDist):
-    return arctern.ST_Buffer(geos, dfDist)
+    return arctern.ST_Buffer(geos, dfDist[0])
 
 @pandas_udf("string", PandasUDFType.GROUPED_AGG)
 def ST_Union_Aggr(geos):
