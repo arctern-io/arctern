@@ -38,6 +38,8 @@ def print_partitions(df):
             j = j + 1
         i = i + 1
 
+
+
 def pointmap_2D(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
