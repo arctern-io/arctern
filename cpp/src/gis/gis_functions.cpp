@@ -246,8 +246,10 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   // MIXED METHOD
   auto mask = type_masks->get_masks(supported_types);
   auto split_inputs = gdal::WktArraySplit(geometries, mask);
-
-  return cuda::ST_Length()
+  assert(split_inputs[1]->null_count() == 0);
+  auto gdal_output = gdal::ST_Length(split_inputs[0]);
+  auto cuda_output = cuda::ST_Length(split_inputs[1]);
+  return gdal::DoubleArrayMerge({gdal_output, cuda_output}, mask);
 #else
   return gdal::ST_Length(geometries);
 #endif
