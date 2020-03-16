@@ -105,7 +105,7 @@ std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& l
   auto rhs_wkb = gdal::WktToWkb(rhs_geo);
   auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_wkb);
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_wkb);
-auto raw_distance = std::make_unique<double[]>(len);
+  auto raw_distance = std::make_unique<double[]>(len);
   ST_Distance(lhs_geo_vec, rhs_geo_vec, raw_distance.get());
 
   arrow::DoubleBuilder builder;
