@@ -91,6 +91,8 @@ UNIT = 0.0001
 EPOCH = 1e-8
 EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
+EPOCH_CURVE_RELATIVE = 1e-2
+EPOCH_SURFACE_RELATIVE = 1e-2
 
 # def compare_geometry(x, y):
 #     arct = pygeos.Geometry(x)
@@ -151,6 +153,19 @@ def compare_float(x, y, z, precision_error):
         # print(x, y)
         return False
 
+def compare2float_relative(x_base, y_check, relative_error):
+    x = float(x_base)
+    y = float(y_check)
+    if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
+        return True
+    else:
+        return False
+
+
+def compare3float_relative(x_base, y_check, z_intersection, relative_error):
+    return compare2float_relative(x_base, y_check, relative_error) and compare2float_relative(x_base, z_intersection,relative_error) and compare2float_relative(y_check, z_intersection, relative_error)
+
+
 def compare_curve(x, y):
     arct = CreateGeometryFromWkt(x)
     pgis = CreateGeometryFromWkt(y)
@@ -158,7 +173,8 @@ def compare_curve(x, y):
     intersection_length = Geometry.Length(Geometry.Intersection(arct,pgis))
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
-    result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    #result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    result = compare3float_relative(pgis_length, arct_length, intersection_length,EPOCH_CURVE_RELATIVE)
     return result
 
 def compare_surface(x, y):
@@ -169,7 +185,8 @@ def compare_surface(x, y):
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
 
-    result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
+    #result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     return result
 
 def convert_str(strr):
