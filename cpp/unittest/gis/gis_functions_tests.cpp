@@ -2904,6 +2904,8 @@ TEST(geometry_test, test_ST_Length) {
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
   auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p10 = "LINESTRING EMPTY";
+  auto p11 = "LINESTRING (0 0)";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2916,6 +2918,8 @@ TEST(geometry_test, test_ST_Length) {
   builder.Append(std::string(p7));
   builder.Append(std::string(p8));
   builder.Append(std::string(p9));
+  builder.Append(std::string(p10));
+  builder.Append(std::string(p11));
   builder.Finish(&input);
 
   auto res = arctern::gis::ST_Length(input);
@@ -2930,6 +2934,8 @@ TEST(geometry_test, test_ST_Length) {
   EXPECT_DOUBLE_EQ(res_double->Value(6), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(8), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
+  EXPECT_DOUBLE_EQ(res_double->Value(10), 0);
 }
 
 TEST(geometry_test, test_ST_ConvexHull) {
