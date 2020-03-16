@@ -27,8 +27,11 @@ using Iter = GpuContext::Iter;
 using ConstIter = ConstGpuContext::ConstIter;
 
 inline DEVICE_RUNNABLE double LineStringLength(ConstIter& iter) {
-  auto count = *iter.metas++;
+  int count = static_cast<int>(*iter.metas++);
   double sum_length = 0;
+  if (count == 0) {
+    return 0;
+  }
   for (int point_index = 0; point_index < count - 1; ++point_index) {
     auto lv = iter.values + 2 * point_index;
     auto rv = lv + 2;
