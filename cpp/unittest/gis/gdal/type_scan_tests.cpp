@@ -18,8 +18,10 @@
 #include <arrow/array.h>
 #include <gtest/gtest.h>
 #include <ogr_geometry.h>
+
 #include <ctime>
 #include <iostream>
+#include <random>
 
 #include "arrow/gis_api.h"
 #include "gis/gdal/geometry_cases.h"
@@ -186,4 +188,45 @@ TEST(type_scan, unique_grouped_type) {
   ASSERT_EQ(type_masks->unique_type, type);
   ASSERT_TRUE(type_masks->encode_uids.empty());
   ASSERT_TRUE(type_masks->dict.empty());
+}
+
+TEST(type_scan, merge_and_split) {
+  using arctern::gis::gdal::WktArrayMerge;
+  using arctern::gis::gdal::WktArraySplit;
+  using std::string;
+  using std::vector;
+  std::vector<std::string> strs{"one", "two",  "",   "$a", "four",
+                                "#",   "five", "$b", "$c", ""};
+  std::vector<bool> masks;
+  arrow::StringBuilder builder;
+  for (auto str : strs) {
+    if (str == "#") {
+      builder.AppendNull();
+    } else {
+      builder.Append(str);
+    }
+    masks.push_back(!str.empty() && str[0] == '$');
+  }
+  std::shared_ptr<arrow::StringArray> input;
+  builder.Finish(&input);
+  auto tmps = WktArraySplit(input, masks);
+  vector<string> false_strs = {"one", "two", "", "four", "#", "five", ""};
+  vector<string> true_strs = {"$a", "$b", "$c"};
+    auto checker = [](std::shared_ptr<arrow::Array> left_raw, vector<string> right) {
+      auto left = std::static_pointer_cast<arrow::StringArray>(left_raw);
+      ASSERT_EQ(left->length(), right.size());
+      for(auto i = 0; i < right.size(); ++i) {
+        auto str = right[i];
+        if(str == "#"){
+          ASSERT_TRUE(left->IsNull(i));
+        } else {
+          ASSERT_FALSE(left->IsNull(i));
+          ASSERT_EQ(left->GetString(i), str) << i;
+        }
+      }
+    };
+  checker(tmps[0], false_strs);
+  checker(tmps[1], true_strs);
+  auto output = WktArrayMerge(tmps, masks);
+  checker(output, strs);
 }
