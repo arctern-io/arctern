@@ -51,7 +51,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./ci/scripts/output_new.info
           name: amd64-linux-cpu-unittests
-          flags: amd64-linux-cpu-unittests
+          flags: amd64_linux_cpu_unittests
           yml: ./codecov.yaml
       - name: Docker Push
         if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
