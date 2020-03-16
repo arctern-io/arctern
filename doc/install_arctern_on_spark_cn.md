@@ -2,18 +2,18 @@
 本文档介绍在 Spark 环境中安装 Arctern 的步骤。
 
 ## 大纲
-* 安装要求
-* 安装依赖库
-* 创建 Conda 环境
-* 安装 Arctern
-* 验证是否安装成功
-* 配置 Spark的 Python 路径
-* 测试样例
-* 卸载
-* FAQ
+* [安装要求](#prerequisities)
+* [安装依赖库](#installdependency)
+* [创建 Arctern Conda 环境](#constructenv)
+* [安装 Arctern](#install)
+* [验证是否安装成功](#verification)
+* [配置 Spark的 Python 路径](#pathconfiguration)
+* [测试样例](#test)
+* [卸载](#uninstallation)
+* [FAQ](#faq)
 
 
-## 安装要求
+## <span id = "prerequisities">安装要求</span>
 
 * CPU 版本
 
@@ -36,7 +36,7 @@
 
 
 
-## 安装依赖库
+## <span id = "installdependency">安装依赖库</span>
 
 
 * CPU 版本
@@ -56,7 +56,7 @@
 
 
 
-## 创建 Arctern Conda 环境
+## <span id = "constructenv">创建 Arctern Conda 环境</span>
 
 ### 创建 Arctern 虚拟环境
 
@@ -82,7 +82,7 @@
 
 
 
-## 安装 Arctern
+## <span id = "install">安装 Arctern</span>
 
 
 * CPU 版本
@@ -104,19 +104,19 @@
 
 
 
-## 安装验证
+## <span id = "verification">安装验证</span>
 
-进入 Python 环境，尝试导入 `arctern_gis` 和 `arctern_pyspark` 验证安装是否成功。
+进入 Python 环境，尝试导入 `arctern` 和 `arctern_pyspark` 验证安装是否成功。
 
 ```python
 Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import arctern_gis
+>>> import arctern
 >>> import arctern_pyspark
 ```
 
-## 配置 Spark 的 Python 路径
+## <span id = "pathconfiguration">配置 Spark 的 Python 路径</span>
 
 在文件 `conf/spark-env.sh` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
 
@@ -137,7 +137,7 @@ export PROJ_LIB=[path/to/your/conda]/envs/arctern/share/proj
 
 
 
-## 测试样例
+## <span id = "test">测试样例</span>
 
 下载测试文件
 
@@ -158,7 +158,7 @@ wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/ex
 [path/to/your/spark]/bin/spark-submit --master yarn [path/to/]spark_udf_ex.py
 ```
 
-## 卸载
+## <span id = "uninstallation">卸载</span>
 
 在 Conda 环境中输入以下命令可卸载 Arctern
 
@@ -166,7 +166,7 @@ wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/ex
 conda uninstall -n arctern libarctern arctern arctern-spark
 ```
 
-## FAQ
+## <span id = "faq">FAQ</span>
 
 ### 对Spark的支持
 
