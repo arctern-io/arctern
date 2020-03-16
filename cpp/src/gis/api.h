@@ -91,9 +91,8 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geo_left,
-    const std::shared_ptr<arrow::Array>& geo_right);
+std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_left,
+                                          const std::shared_ptr<arrow::Array>& geo_right);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
 
