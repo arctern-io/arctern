@@ -24,13 +24,13 @@ namespace render {
 template <typename T>
 class HeatMap : public General2D {
  public:
-  HeatMap();
+  HeatMap() = delete;
 
   HeatMap(uint32_t* input_x, uint32_t* input_y, T* count, int64_t num_vertices);
 
   ~HeatMap();
 
-  void DataInit() final;
+  void DataInit();
 
   uint8_t* Render() final;
 
@@ -38,14 +38,14 @@ class HeatMap : public General2D {
 
   void Draw() final;
 
-  void InputInit() final;
-
  public:
   VegaHeatMap& mutable_heatmap_vega() { return heatmap_vega_; }
 
  private:
+#ifdef USE_GPU
   unsigned int VAO_;
   unsigned int VBO_[3];
+#endif
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
   T* count_;

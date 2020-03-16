@@ -24,19 +24,15 @@ namespace render {
 
 class PointMap : public General2D {
  public:
-  PointMap();
+  PointMap() = delete;
 
   PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
-
-  void DataInit() final;
 
   uint8_t* Render() final;
 
   void Shader();
 
   void Draw() final;
-
-  void InputInit() final;
 
  public:
   uint32_t* mutable_vertices_x() { return vertices_x_; }
@@ -48,8 +44,10 @@ class PointMap : public General2D {
   const size_t num_vertices() const { return num_vertices_; }
 
  private:
+#ifdef USE_GPU
   unsigned int VAO_;
   unsigned int VBO_[2];
+#endif
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
   size_t num_vertices_;
