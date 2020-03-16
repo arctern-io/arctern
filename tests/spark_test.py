@@ -664,7 +664,6 @@ def run_test_st_precisionreduce(spark):
 
     rs = spark.sql(sql).cache()
     rs.printSchema()
-    #rs.show()
 
     save_result("results/%s" % table_name, rs)
     
@@ -1029,6 +1028,96 @@ def run_test_st_hausdorffdistance_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_pointfromtext(spark):
+    data = "pointfromtext.csv"
+    table_name = 'test_pointfromtext'
+    sql = "select st_pointfromtext(geos) as geos from test_pointfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_polygonfromtext(spark):
+    data = "polygonfromtext.csv"
+    table_name = 'test_polygonfromtext'
+    sql = "select st_polygonfromtext(geos) as geos from test_polygonfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_linestringfromtext(spark):
+    data = "linestringfromtext.csv"
+    table_name = 'test_linestringfromtext'
+    sql = "select st_linestringfromtext(geos) as geos from test_linestringfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_geomfromtext(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_geomfromtext'
+    sql = "select st_geomfromtext(geos) as geos from test_geomfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_geomfromwkt(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_geomfromwkt'
+    sql = "select st_geomfromwkt(geos) as geos from test_geomfromwkt"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_astext(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_astext'
+    sql = "select st_astext(geos) as geos from test_astext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 if __name__ == "__main__":
 
     url = 'local'
@@ -1100,5 +1189,11 @@ if __name__ == "__main__":
     run_test_st_simplifypreservetopology_curve(spark_session)
     run_test_st_hausdorffdistance(spark_session)
     run_test_st_hausdorffdistance_curve(spark_session)
+    run_test_st_pointfromtext(spark_session)
+    run_test_st_polygonfromtext(spark_session)
+    run_test_st_linestringfromtext(spark_session)
+    run_test_st_geomfromtext(spark_session)
+    run_test_st_geomfromwkt(spark_session)
+    run_test_st_astext(spark_session)
 
     spark_session.stop()
