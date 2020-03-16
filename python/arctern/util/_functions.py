@@ -11,4 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ._wrapper_func import *
+
+
+__all__ = [
+    "save_png",
+]
+
+def save_png(hex_str, file_name):
+    import binascii
+    binary_string = binascii.unhexlify(hex_str)
+    with open(file_name, 'wb') as png:
+        png.write(binary_string)
