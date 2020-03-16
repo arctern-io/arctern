@@ -280,9 +280,9 @@ def heat_map_wkt(points, c_data, conf):
     array_points = pa.array(points, type='string')
 
     if isinstance(c_data[0], float):
-        arr_c = pa.array(count_data, type='double')
+        arr_c = pa.array(c_data, type='double')
     else:
-        arr_c = pa.array(count_data, type='int64')
+        arr_c = pa.array(c_data, type='int64')
 
     from .arctern_core_ import heat_map_wkt
     rs = heat_map_wkt(array_points, arr_c, conf)
@@ -301,7 +301,7 @@ def choropleth_map(wkt_data, count_data, conf):
 def coordinate_projection(geos, top_left, bottom_right, height, width):
     arr_geos = pa.array(geos, type='string')
     from .arctern_core_ import coordinate_projection
-    src_rs1 = bytes(top_left[0], encoding="utf8")
-    dst_rs1 = bytes(bottom_right[0], encoding="utf8")
+    src_rs1 = bytes(top_left, encoding="utf8")
+    dst_rs1 = bytes(bottom_right, encoding="utf8")
     rs = coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
     return rs.to_pandas()

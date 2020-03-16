@@ -45,7 +45,7 @@ def pointmap(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
         from arctern import point_map_wkt
-        return point_map_wkt(arr_point, conf.encode('utf-8'))
+        return point_map_wkt(point, conf.encode('utf-8'))
 
     df = df.coalesce(1)
     hex_data = df.agg(pointmap_wkt(df['point'])).collect()[0][0]
@@ -66,7 +66,7 @@ def heatmap(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
-        return heat_map_wkt(arr_point, arr_c, conf.encode('utf-8'))
+        return heat_map_wkt(point, w, conf.encode('utf-8'))
 
     first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
