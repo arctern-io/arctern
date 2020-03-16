@@ -19,13 +19,15 @@ Usage:
                                       Install directory used by install.
     -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
                                       Setting conda activate environment
+    -n NAME                           Custom defined name of the upload. Visible in Codecov UI
+    -F flag                           Flag the upload to group coverage metrics
     -h or --help                      Print help information
 
 
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "e:h" -l "install_prefix::,code_token::,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "e:n:F:h" -l "install_prefix::,code_token::,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 
@@ -43,6 +45,16 @@ while true ; do
                         case "$2" in
                                 "") echo "Option conda_env, no argument"; exit 1 ;;
                                 *)  CONDA_ENV=$2 ; shift 2 ;;
+                        esac ;;
+                -n)
+                        case "$2" in
+                                "") echo "Option codecov_name, no argument"; exit 1 ;;
+                                *)  CODECOV_NAME=$2 ; shift 2 ;;
+                        esac ;;
+                -F)
+                        case "$2" in
+                                "") echo "Option codecov_flag, no argument"; exit 1 ;;
+                                *)  CODECOV_FLAG=$2 ; shift 2 ;;
                         esac ;;
                 -h|--help) echo -e "${HELP}" ; exit 0 ;;
                 --) shift ; break ;;
@@ -107,7 +119,15 @@ fi
 # gen html report
 ${LCOV_GEN_CMD} "${FILE_INFO_OUTPUT_NEW}" --output-directory ${DIR_LCOV_OUTPUT}/
 
+if [ -n ${CODECOV_NAME} ];then
+    CODECOV_NAME_OPTION=" -n ${CODECOV_NAME} "
+fi
+
+if [ -n ${CODECOV_FLAG} ];then
+    CODECOV_FLAG_OPTION=" -F ${CODECOV_FLAG} "
+fi
+
 if [[ -n ${CODECOV_TOKEN} ]];then
     export CODECOV_TOKEN="${CODECOV_TOKEN}"
-    curl -s https://codecov.io/bash | bash -s - -f ${FILE_INFO_OUTPUT_NEW} || echo "Codecov did not collect coverage reports"
+    curl -s https://codecov.io/bash | bash -s - -f ${FILE_INFO_OUTPUT_NEW} ${CODECOV_NAME_OPTION} ${CODECOV_FLAG_OPTION} || echo "Codecov did not collect coverage reports"
 fi

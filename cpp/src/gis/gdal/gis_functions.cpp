@@ -779,6 +779,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
   OGRPolygon empty_polygon;
   OGRGeometry *g0, *g1;
   OGRGeometry *u0, *u1;
+  auto has_curve = new HasCurveVisitor;
   for (int i = 0; i <= len / 2; i++) {
     if ((i * 2) < len) {
       g0 = Wrapper_createFromWkt(wkt, 2 * i);
@@ -793,6 +794,13 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g0 != nullptr) {
+      has_curve->reset();
+      g0->accept(has_curve);
+      if (has_curve->has_curve()) {
+        auto linear = g0->getLinearGeometry();
+        OGRGeometryFactory::destroyGeometry(g0);
+        g0 = linear;
+      }
       auto type = wkbFlatten(g0->getGeometryType());
       if (type == wkbMultiPolygon) {
         u0 = g0->UnionCascaded();
@@ -805,6 +813,13 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g1 != nullptr) {
+      has_curve->reset();
+      g1->accept(has_curve);
+      if (has_curve->has_curve()) {
+        auto linear = g1->getLinearGeometry();
+        OGRGeometryFactory::destroyGeometry(g1);
+        g1 = linear;
+      }
       auto type = wkbFlatten(g1->getGeometryType());
       if (type == wkbMultiPolygon) {
         u1 = g1->UnionCascaded();
@@ -866,6 +881,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     CPLFree(wkt);
     OGRGeometryFactory::destroyGeometry(union_agg[0]);
   }
+  delete has_curve;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

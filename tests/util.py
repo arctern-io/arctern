@@ -126,13 +126,16 @@ def polygon_distance(geox, geoy):
 
 def geometry_distance(geox, geoy):
     if is_point(geox):
-        return point_distance(geox, geoy)
+        d = point_distance(geox, geoy)
     
     if is_linestring(geox):
-        return linestring_distance(geox, geoy)
+        d = linestring_distance(geox, geoy)
 
     if is_polygon(geox):
-        return polygon_distance(geox, geoy)
+        d = polygon_distance(geox, geoy)
+    
+    # print(d)
+    return d
 
 def arc_distance(geox, geoy):
     if is_empty(geox) or is_empty(geoy):
@@ -162,19 +165,25 @@ def arc_distance(geox, geoy):
         return geometry_distance(geox, geoy)
     
 
-# print(arc_distance(g7, g8))
-# exit(0)
+
+
+
+
+g1 = 'MULTILINESTRING ((1 1,1 2,2 3,1.99878165403814 2.99756330807628),(1.60103510383476 2.20207020766953,1 1))'
+g2 = 'MULTILINESTRING((1 1,1 2,1.99999999999999 2.99999999999999),(2 3,2 3),(1.60022183371092 2.20044366742185,1 1))'
+print(arc_distance(g1, g2))
+exit(0)
 
 
 # arc_path = '/tmp/arctern_results/run_test_st_transform.csv'
 # pgs_path = 'expected/results/st_transform.out'
-arc_path = sys.argv[1] 
-pgs_path = sys.argv[2]
+# arc_path = sys.argv[1] 
+# pgs_path = sys.argv[2]
 
-with open(arc_path, 'r') as arc, open(pgs_path, 'r') as pgs:
-    arcs = arc.readlines()[1:]
-    pgss = pgs.readlines()[1:]
-    for x, y in zip(arcs, pgss):
-        # print(x)
-        print(arc_distance(x, y))
+# with open(arc_path, 'r') as arc, open(pgs_path, 'r') as pgs:
+#     arcs = arc.readlines()[1:]
+#     pgss = pgs.readlines()[1:]
+#     for x, y in zip(arcs, pgss):
+#         # print(x)
+#         print(arc_distance(x, y))
     
