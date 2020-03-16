@@ -196,8 +196,6 @@ def ST_Envelope(geos):
     return rs.to_pandas()
 
 def ST_Buffer(geos, distance):
-    print("DDDDDDDDDDD", distance)
-    print("DDDDDDDDDDD", type(distance))
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Buffer(arr_geos, distance)
     return rs.to_pandas()
