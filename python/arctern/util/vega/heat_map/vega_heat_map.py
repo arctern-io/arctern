@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from arctern_gis.util.vega.vega_node import (Width, Height, Description, Data,
+from arctern.util.vega.vega_node import (Width, Height, Description, Data,
                                             Scales, RootMarks, Root)
 
 

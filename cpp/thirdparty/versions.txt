@@ -1,4 +1,4 @@
-MINIZ_VERSION=master
+MINIZ_VERSION=2.1.0
 STB_VERSION=master
 
 # vim: set filetype=sh:
