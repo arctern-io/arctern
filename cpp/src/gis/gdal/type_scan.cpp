@@ -174,7 +174,7 @@ std::shared_ptr<arrow::Array> WktArrayMerge(
     if(input->IsNull(index)) {
       CHECK_ARROW(builder.AppendNull());
     } else {
-      CHECK_ARROW(builder.Append(input->GetView(i)));
+      CHECK_ARROW(builder.Append(input->GetView(index)));
     }
   }
   std::shared_ptr<arrow::Array> result;
