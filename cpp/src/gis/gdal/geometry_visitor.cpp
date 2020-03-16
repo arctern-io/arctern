@@ -20,6 +20,32 @@ namespace arctern {
 namespace gis {
 namespace gdal {
 
+void HasCurveVisitor::visit(const OGRCircularString* geo) {
+  if (geo->IsEmpty()) {
+    return;
+  }
+  has_curve_ = true;
+}
+
+void HasCurveVisitor::visit(const OGRCompoundCurve* geo) {
+  if (geo->IsEmpty()) {
+    return;
+  }
+  has_curve_ = true;
+}
+void HasCurveVisitor::visit(const OGRCurvePolygon* geo) {
+  if (geo->IsEmpty()) {
+    return;
+  }
+  has_curve_ = true;
+}
+void HasCurveVisitor::visit(const OGRMultiCurve* geo) {
+  if (geo->IsEmpty()) {
+    return;
+  }
+  has_curve_ = true;
+}
+
 void HasCircularVisitor::visit(const OGRCircularString* geo) {
   if (geo->IsEmpty()) {
     return;
