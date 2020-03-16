@@ -63,9 +63,13 @@ std::vector<std::string> coordinate_projection(const std::vector<std::string>& p
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
-  PointMap point_map(arr_x, arr_y, num);
-
   VegaCircle2d vega_circle_2d(conf);
+  if (!vega_circle_2d.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  PointMap point_map(arr_x, arr_y, num);
   point_map.mutable_point_vega() = vega_circle_2d;
 
   const auto& render = point_map.Render();
@@ -76,9 +80,13 @@ std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t 
 template <typename T>
 std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                      int64_t num_vertices, const std::string& conf) {
-  HeatMap<T> heat_map(arr_x, arr_y, arr_c, num_vertices);
-
   VegaHeatMap vega_heat_map(conf);
+  if (!vega_heat_map.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  HeatMap<T> heat_map(arr_x, arr_y, arr_c, num_vertices);
   heat_map.mutable_heatmap_vega() = vega_heat_map;
 
   const auto& render = heat_map.Render();
@@ -90,9 +98,13 @@ template <typename T>
 std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
-  ChoroplethMap<T> choropleth_map(arr_wkt, arr_c, num_buildings);
-
   VegaChoroplethMap vega_choropleth_map(conf);
+  if (!vega_choropleth_map.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  ChoroplethMap<T> choropleth_map(arr_wkt, arr_c, num_buildings);
   choropleth_map.mutable_choroplethmap_vega() = vega_choropleth_map;
 
   const auto& render = choropleth_map.Render();

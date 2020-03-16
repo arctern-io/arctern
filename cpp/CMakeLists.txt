@@ -117,7 +117,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 else()
     message(STATUS "Building Debug version")
-    add_definitions(-DWRITE_IMAGE)
+    add_definitions(-DDEBUG_RENDER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
