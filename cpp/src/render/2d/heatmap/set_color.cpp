@@ -29,12 +29,13 @@ void guassiankernel(float* kernel, int size, float sigma) {
 
   for (int i = 0; i < size; ++i) {
     float index = (size >> 1) - i;
-    if (size & 1) {
-      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
-    } else {
-      index -= 0.5;
-      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
-    }
+    *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
+    //    if (size & 1) {
+    //      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
+    //    } else {
+    //      index -= 0.5;
+    //      *(data + i) = exp(-(index * index) / (2 * sigma * sigma + eps));
+    //    }
     sum += *(data + i);
   }
 
@@ -65,6 +66,7 @@ void guassiankernel2d(float* kernel, int sizeX, int sizeY, float sigmaX, float s
   free(matY);
 }
 
+#ifndef USE_GPU
 void HeatMapArray_cpu(float* in_count, float* out_count, float* kernel,
                       int64_t kernel_size, int64_t width, int64_t height) {
   for (int y = 0; y < height; y++) {
@@ -109,6 +111,7 @@ void MeanKernel_cpu(float* img_in, float* img_out, int64_t r, int64_t img_w,
     }
   }
 }
+#endif
 
 }  // namespace render
 }  // namespace arctern

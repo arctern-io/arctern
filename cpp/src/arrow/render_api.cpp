@@ -27,6 +27,11 @@ namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
+  if (output.first == nullptr || output.second < 0) {
+    // TODO: add log here
+    return nullptr;
+  }
+
   auto output_length = output.second;
   auto output_data = output.first;
   auto bit_map = (uint8_t*)malloc(output_length);

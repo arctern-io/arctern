@@ -44,7 +44,8 @@ endif ()
 # get last commit id
 MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
     execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | awk '{print $2}'"
-            OUTPUT_VARIABLE ${LAST_COMMIT_ID})
+        WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE     ${LAST_COMMIT_ID})
 ENDMACRO(GET_LAST_COMMIT_ID)
 
 GET_LAST_COMMIT_ID(LAST_COMMIT_ID)
@@ -117,7 +118,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 else()
     message(STATUS "Building Debug version")
-    add_definitions(-DWRITE_IMAGE)
+    add_definitions(-DDEBUG_RENDER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
