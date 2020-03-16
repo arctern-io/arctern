@@ -229,7 +229,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 }
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // currently support ST_LineString
   gdal::TypeScannerForWkt scanner(geometries);
   GroupedWkbTypes supported_types = {WkbTypes::kLineString};
@@ -244,8 +244,10 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
     }
   }
   // MIXED METHOD
+  auto mask = type_masks->get_masks(supported_types);
+  auto split_inputs = gdal::WktArraySplit(geometries, mask);
 
-
+  return cuda::ST_Length()
 #else
   return gdal::ST_Length(geometries);
 #endif
