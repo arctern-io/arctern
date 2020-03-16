@@ -17,7 +17,7 @@
 
 #include "arrow/render_api.h"
 
-TEST(POINT_TEST, RAW_POINT_TEST) {
+TEST(TWOD_TEST, RAW_POINT_TEST) {
   auto bit_map = new uint8_t{0xff};
 
   auto data_type = arrow::uint32();

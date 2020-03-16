@@ -38,7 +38,7 @@
 {
   "width": 300,
   "height": 200,
-  "description": "heat_map",
+  "description": "circle_2d",
   "data": [
     {
       "name": "nyc_taxi",

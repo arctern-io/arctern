@@ -107,6 +107,34 @@ class HasCircularVisitor : public OGRDefaultConstGeometryVisitor {
   bool has_circular_ = false;
 };
 
+class HasCurveVisitor : public OGRDefaultConstGeometryVisitor {
+ public:
+  ~HasCurveVisitor() = default;
+
+  void visit(const OGRPoint*) override {}
+  void visit(const OGRLineString*) override {}
+  void visit(const OGRLinearRing*) override {}
+  void visit(const OGRPolygon*) override {}
+  void visit(const OGRMultiPoint*) override {}
+  void visit(const OGRMultiLineString*) override {}
+  void visit(const OGRMultiPolygon*) override {}
+  // void visit(const OGRGeometryCollection*) override;
+  void visit(const OGRCircularString* geo) override;
+  void visit(const OGRCompoundCurve* geo) override;
+  void visit(const OGRCurvePolygon* geo) override;
+  void visit(const OGRMultiCurve* geo) override;
+  // void visit(const OGRMultiSurface*) override;
+  // void visit(const OGRTriangle*) override;
+  // void visit(const OGRPolyhedralSurface*) override;
+  // void visit(const OGRTriangulatedSurface*) override;
+
+  const bool has_curve() const { return has_curve_; }
+  void reset() { has_curve_ = false; }
+
+ private:
+  bool has_curve_ = false;
+};
+
 class NPointsVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~NPointsVisitor() = default;
