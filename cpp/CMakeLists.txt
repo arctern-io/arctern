@@ -44,8 +44,8 @@ endif ()
 # get last commit id
 MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
     execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | awk '{print $2}'"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE ${LAST_COMMIT_ID})
+        WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE     ${LAST_COMMIT_ID})
 ENDMACRO(GET_LAST_COMMIT_ID)
 
 GET_LAST_COMMIT_ID(LAST_COMMIT_ID)
