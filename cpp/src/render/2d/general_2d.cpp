@@ -83,10 +83,12 @@ uint8_t* General2D::Output() {
   return output_image_;
 }
 
+#ifdef USE_GPU
 void General2D::InitBuffer(arctern::render::WindowParams& window_params) {
   buffer_ =
       (unsigned char*)calloc(size_t(window_params.width() * window_params.height()), 4);
 }
+#endif
 
 void General2D::ExportImage() {
   auto& window_params = window_->window_params();
