@@ -52,14 +52,12 @@ __all__ = [
     "Projection",
 ]
 
-import pyarrow as pa
-from pyspark.sql.functions import pandas_udf, PandasUDFType
-from pyspark.sql.types import *
 import arctern
+from pyspark.sql.functions import pandas_udf, PandasUDFType
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def Projection(geos, top_left, bottom_right, height, width):
-    return arctern.coordinate_projection(geos, top_left[0], bottom_right[0], height[0], width[0]) 
+    return arctern.coordinate_projection(geos, top_left[0], bottom_right[0], height[0], width[0])
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):

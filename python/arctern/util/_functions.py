@@ -22,4 +22,3 @@ def save_png(hex_str, file_name):
     binary_string = binascii.unhexlify(hex_str)
     with open(file_name, 'wb') as png:
         png.write(binary_string)
-

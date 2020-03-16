@@ -14,15 +14,13 @@
 
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
-from pyspark.sql.types import *
-
+from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
 
 __all__ = [
     "pointmap",
     "heatmap",
     "choroplethmap",
 ]
- 
 
 def print_partitions(df):
     numPartitions = df.rdd.getNumPartitions()
@@ -88,7 +86,7 @@ def choroplethmap(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def choroplethmap_wkt(wkt, w, conf=vega):
         from arctern import choropleth_map
-        return choropleth_map(wkt, w, conf.encode('utf-8')) 
+        return choropleth_map(wkt, w, conf.encode('utf-8'))
 
     first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
