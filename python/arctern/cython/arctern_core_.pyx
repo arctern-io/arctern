@@ -18,6 +18,9 @@ from pyarrow.lib cimport *
 
 cimport arctern_core__ as arctern_core_pxd
 
+def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
+    return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
+
 def coordinate_projection(points, top_left, bottom_right, int height, int width):
     return pyarrow_wrap_array(arctern_core_pxd.coordinate_projection(pyarrow_unwrap_array(points), top_left, bottom_right, height, width))
 
