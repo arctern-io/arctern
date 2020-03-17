@@ -37,6 +37,17 @@ bool IsNumber(const char c) {
   return false;
 }
 
+void SetIfEmpty(TokenInfo *token){
+    static auto empty=(const char*)"empty";
+    static auto Empty=(const char*)"EMPTY";
+    if(token->type!=TokenType::WktKey) return;
+    if(token->len!=5) return;
+    for(int i=0;i<token->len;++i){
+        if((token->start[i]!=empty[i]) && (token->start[i]!=Empty[i])) return;
+    }
+    token->type=TokenType::Empty;
+}
+
 bool NextToken(const char* src, TokenInfo* token) {
   if (*src == '\0') return false;
   token->len = 0;
@@ -47,6 +58,7 @@ bool NextToken(const char* src, TokenInfo* token) {
     switch (token->type) {
       case TokenType::WktKey: {
           if(IsWhiteSpace(input) || input=='('){
+              SetIfEmpty(token);
               return true;
           }else if(IsAlphabet(input)){
               token->len++;
@@ -111,10 +123,13 @@ bool NextToken(const char* src, TokenInfo* token) {
 bool IsValidWkt(const char *src){
     if(src==nullptr) return false;
     TokenInfo token;
-    int bracet_cnt = 0;
+    int bracet_nest = 0;
+    int wkt_nest = 0;
     while(NextToken(src,&token)){
-        src+=token.len;
+
+        src = token.start + token.len;
     }
+    if(wkt_nest==1) return true;
     return false;
 }
 

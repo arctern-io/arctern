@@ -20,7 +20,7 @@ namespace arctern {
 namespace gis {
 namespace parser {
 
-enum class TokenType { WktKey, Number, LeftBracket, RightBracket, Comma, Unknown };
+enum class TokenType { WktKey, Number, Empty, LeftBracket, RightBracket, Comma, Unknown };
 
 struct TokenInfo {
   TokenType type = TokenType::Unknown;
@@ -37,6 +37,8 @@ bool IsWhiteSpace(const char c);
 bool IsAlphabet(const char c);
 
 bool IsNumber(const char c);
+
+void SetIfEmpty(TokenInfo *token);
 
 }  // namespace parser
 }  // namespace gis
