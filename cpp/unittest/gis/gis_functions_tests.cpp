@@ -2307,7 +2307,7 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(15), true);
   ASSERT_EQ(res_bool->Value(16), true);
   ASSERT_EQ(res_bool->Value(17), true);
-  // ASSERT_EQ(res_bool->Value(18), true); // false
+  ASSERT_EQ(res_bool->Value(18), false); 
   ASSERT_EQ(res_bool->Value(19), false);
   ASSERT_EQ(res_bool->Value(20), true);
   ASSERT_EQ(res_bool->Value(21), false);
