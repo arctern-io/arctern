@@ -115,7 +115,7 @@ bool NextToken(const char* src, TokenInfo* token) {
     }
     src++;
   }
-  if(token->type==TokenType::WktKey){
+  if (token->type == TokenType::WktKey) {
     SetIfEmpty(token);
     return true;
   }
@@ -199,7 +199,7 @@ bool IsValidWkt(const char* src) {
           case TokenType::RightBracket: {
             --bracket_nest;
             if (bracket_nest < 0) return false;
-            if(num_cnt!=0) return false;
+            if (num_cnt != 0) return false;
             break;
           }
           default: { return false; }
