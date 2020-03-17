@@ -127,5 +127,8 @@ TEST(parser_test, isvalidwkt) {
 
     ptr = (const char*)"point ( 12 12) abc";
     ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
+
+    ptr=(const char*)"POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))";
+    ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
 }
 
