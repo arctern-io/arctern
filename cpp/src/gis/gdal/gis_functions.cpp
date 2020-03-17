@@ -531,6 +531,9 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
     OGRGeometryFactory::destroyGeometry(ogr1);
     OGRGeometryFactory::destroyGeometry(ogr2);
   }
+
+  delete has_curve;
+
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
 

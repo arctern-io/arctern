@@ -272,6 +272,33 @@ TEST(geometry_test, test_ST_IsValid) {
   ASSERT_EQ(res_bool->Value(32), false);
 }
 
+TEST(geometry_test, test_ST_Intersection2) {
+  auto l1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))";
+  auto r1 =
+      "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (-2 0, -1 -1, 0 0, 1 -1, 2 0, 0 2, -2 "
+      "0), (-1 0, 0 0.5, 1 0, 0 1, -1 0)), ((7 8, 10 10, 6 14, 4 11, 7 8)))";
+
+  arrow::StringBuilder builder_l;
+  arrow::StringBuilder builder_r;
+  builder_l.Append(std::string(l1));
+  builder_r.Append(std::string(r1));
+
+  std::shared_ptr<arrow::Array> array_l;
+  std::shared_ptr<arrow::Array> array_r;
+
+  builder_l.Finish(&array_l);
+  builder_r.Finish(&array_r);
+
+  auto res = arctern::gis::ST_Intersection(array_l, array_r);
+  // auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  // std::cout << res_str->GetString(0) << std::endl;
+
+  auto area = arctern::gis::ST_Area(res);
+  auto area_dbl = std::static_pointer_cast<arrow::DoubleArray>(area);
+  ASSERT_TRUE(std::abs(area_dbl->Value(0) - 0.3142967270928585) < 1e5);
+  // std::cout << area_dbl->Value(0) << std::endl;
+}
+
 TEST(geometry_test, test_ST_Intersection) {
   auto l1 = "POINT (0 1)";
   auto l2 = "POINT (0 1)";
