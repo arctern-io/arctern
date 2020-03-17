@@ -177,6 +177,8 @@ bool IsValidWkt(const char* src) {
           case TokenType::RightBracket: {
             --bracet_nest;
             if (bracet_nest < 0) return false;
+            if ((num_cnt != 2) && (num_cnt != 3)) return false;
+            break;
           }
           default: { return false; }
         }
@@ -194,6 +196,7 @@ bool IsValidWkt(const char* src) {
           case TokenType::RightBracket: {
             --bracet_nest;
             if (bracet_nest < 0) return false;
+            break;
           }
           default: { return false; }
         }
@@ -207,6 +210,7 @@ bool IsValidWkt(const char* src) {
           case TokenType::RightBracket: {
             --bracet_nest;
             if (bracet_nest < 0) return false;
+            break;
           }
           default: { return false; }
         }
