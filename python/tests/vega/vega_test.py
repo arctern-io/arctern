@@ -13,45 +13,54 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern.util.vega.vega_builder import *
 
 
 def test_vega_circle2d():
-    vega_circle2d = VegaCircle2d(1900, 1410, 3, "#2DEF4A", 0.5)
-    vega_json = vega_circle2d.build()
-    vega_dict = json.loads(vega_json)
+    vega = vega_circle2d(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", 3, "#2DEF4A", 0.5, "EPSG:3857")
+    vega_dict = json.loads(vega)
     assert vega_dict["width"] == 1900
     assert vega_dict["height"] == 1410
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"] == "POINT(-73.984092 40.753893)"
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"] == "POINT (-73.977588 40.756342)"
     assert vega_dict["marks"][0]["encode"]["enter"]["shape"]["value"] == "circle"
     assert vega_dict["marks"][0]["encode"]["enter"]["stroke"]["value"] == "#2DEF4A"
     assert vega_dict["marks"][0]["encode"]["enter"]["strokeWidth"]["value"] == 3
     assert vega_dict["marks"][0]["encode"]["enter"]["opacity"]["value"] == 0.5
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+
+    vega = vega_circle2d(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", 3, "#2DEF4A", 0.5)
+    vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:4326"
 
 def test_vega_heat_map():
-    vega_heat_map = VegaHeatMap(1900, 1410, 10.0)
-    vega_json = vega_heat_map.build()
-    vega_dict = json.loads(vega_json)
+    vega = vega_heatmap(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", 10.0, "EPSG:3857")
+    vega_dict = json.loads(vega)
     assert vega_dict["width"] == 1900
     assert vega_dict["height"] == 1410
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"] == "POINT(-73.984092 40.753893)"
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"] == "POINT (-73.977588 40.756342)"
     assert vega_dict["marks"][0]["encode"]["enter"]["map_scale"]["value"] == 10.0
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+
+    vega = vega_heatmap(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", 10.0)
+    vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:4326"
 
 def test_vega_choropleth_map():
-    vega_choropleth_map = VegaChoroplethMap(1900, 1410,
-                                            [-73.984092, 40.753893, -73.977588, 40.756342],
-                                            "blue_to_red", [2.5, 5], 1.0)
-    vega_json = vega_choropleth_map.build()
-    vega_dict = json.loads(vega_json)
+    vega = vega_choroplethmap(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", "blue_to_red", [2.5, 5], 1.0, "EPSG:3857")
+    vega_dict = json.loads(vega)
     assert vega_dict["width"] == 1900
     assert vega_dict["height"] == 1410
-    assert len(vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"]) == 4
-    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][0] == -73.984092
-    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][1] == 40.753893
-    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][2] == -73.977588
-    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][3] == 40.756342
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"] == "POINT(-73.984092 40.753893)"
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"] == "POINT (-73.977588 40.756342)"
     assert vega_dict["marks"][0]["encode"]["enter"]["color_style"]["value"] == "blue_to_red"
     assert len(vega_dict["marks"][0]["encode"]["enter"]["ruler"]["value"]) == 2
     assert vega_dict["marks"][0]["encode"]["enter"]["ruler"]["value"][0] == 2.5
     assert vega_dict["marks"][0]["encode"]["enter"]["ruler"]["value"][1] == 5
     assert vega_dict["marks"][0]["encode"]["enter"]["opacity"]["value"] == 1.0
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+
+    vega = vega_choroplethmap(1900, 1410, "POINT(-73.984092 40.753893)", "POINT (-73.977588 40.756342)", "blue_to_red", [2.5, 5], 1.0)
+    vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:4326"
