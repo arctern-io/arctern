@@ -1,0 +1,491 @@
+************* Module wkt_to_geojson
+tests/wkt_to_geojson.py:16:9: E0602: Undefined variable 'geojson' undefined-variable)
+tests/wkt_to_geojson.py:21:39: W0621: Redefining name 'f' from outer scope (line 38) redefined-outer-name)
+tests/wkt_to_geojson.py:22:8: W0621: Redefining name 'lines' from outer scope (line 39) redefined-outer-name)
+tests/wkt_to_geojson.py:51:4: R1722: Consider using sys.exit() consider-using-sys-exit)
+tests/wkt_to_geojson.py:56:20: E0602: Undefined variable 'arr' undefined-variable)
+************* Module get_data
+tests/get_data.py:12:0: C0325: Unnecessary parens after 'if' keyword superfluous-parens)
+************* Module postgis_data
+tests/postgis_data.py:27:23: W0621: Redefining name 'function_name' from outer scope (line 75) redefined-outer-name)
+tests/postgis_data.py:27:38: W0621: Redefining name 'file_path' from outer scope (line 76) redefined-outer-name)
+tests/postgis_data.py:35:20: W0621: Redefining name 'sql' from outer scope (line 8) redefined-outer-name)
+tests/postgis_data.py:55:16: W0621: Redefining name 'sql' from outer scope (line 8) redefined-outer-name)
+tests/postgis_data.py:61:11: W0703: Catching too general exception Exception broad-except)
+tests/postgis_data.py:58:0: R1721: Unnecessary use of a comprehension unnecessary-comprehension)
+tests/postgis_data.py:61:4: W0612: Unused variable 'e' unused-variable)
+tests/postgis_data.py:67:23: W0621: Redefining name 'sqls' from outer scope (line 81) redefined-outer-name)
+tests/postgis_data.py:67:29: W0621: Redefining name 'result_path' from outer scope (line 77) redefined-outer-name)
+tests/postgis_data.py:2:0: C0411: standard import "import sys" should be placed before "import psycopg2" wrong-import-order)
+************* Module collect_results
+tests/collect_results.py:7:0: W0401: Wildcard import util wildcard-import)
+tests/collect_results.py:16:4: W0621: Redefining name 'base_dir' from outer scope (line 37) redefined-outer-name)
+tests/collect_results.py:14:24: W0612: Unused variable 'expects' unused-variable)
+tests/collect_results.py:1:0: W0611: Unused import random unused-import)
+tests/collect_results.py:3:0: W0611: Unused import inspect unused-import)
+tests/collect_results.py:4:0: W0611: Unused import sys unused-import)
+tests/collect_results.py:7:0: W0614: Unused import shapely from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import EPOCH from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import geo_types from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import geo_collection_types from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_empty from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_point from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_linestring from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_polygon from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_geometry from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import is_geometrycollection from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import line_to_points from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import polygon_to_points from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import geometrycollection_tolist from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import point_distance from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import linestring_distance from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import polygon_distance from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import geometry_distance from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import arc_distance from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import get_config from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import config from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import expected_result from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import wkt from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import ogr from wildcard import unused-wildcard-import)
+tests/collect_results.py:7:0: W0614: Unused import full_load from wildcard import unused-wildcard-import)
+************* Module split_data
+tests/split_data.py:15:33: W0621: Redefining name 'f' from outer scope (line 107) redefined-outer-name)
+tests/split_data.py:17:16: W0621: Redefining name 'line' from outer scope (line 110) redefined-outer-name)
+tests/split_data.py:24:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/split_data.py:41:33: W0621: Redefining name 'f' from outer scope (line 107) redefined-outer-name)
+tests/split_data.py:42:8: W0621: Redefining name 'lines' from outer scope (line 108) redefined-outer-name)
+tests/split_data.py:44:12: W0621: Redefining name 'line' from outer scope (line 110) redefined-outer-name)
+tests/split_data.py:32:0: R0912: Too many branches (13/12) too-many-branches)
+tests/split_data.py:76:8: W0621: Redefining name 'f' from outer scope (line 107) redefined-outer-name)
+tests/split_data.py:1:0: W0611: Unused import random unused-import)
+tests/split_data.py:3:0: W0611: Unused import inspect unused-import)
+tests/split_data.py:5:0: W0611: Unused import shutil unused-import)
+************* Module util
+tests/util.py:5:0: W0401: Wildcard import ogr wildcard-import)
+tests/util.py:19:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/util.py:19:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:28:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/util.py:28:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:37:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/util.py:37:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:46:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/util.py:46:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:56:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:68:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/util.py:76:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:84:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:95:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:101:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:108:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:116:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:159:15: W1114: Positional arguments appear to be out of order arguments-out-of-order)
+tests/util.py:137:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/util.py:1:0: W0611: Unused import shapely unused-import)
+tests/util.py:2:0: W0611: Unused import sys unused-import)
+tests/util.py:4:0: W0611: Unused ogr imported from osgeo unused-import)
+tests/util.py:2:0: C0411: standard import "import sys" should be placed before "import shapely" wrong-import-order)
+tests/util.py:7:0: C0411: standard import "import os" should be placed before "import shapely" wrong-import-order)
+************* Module compare
+tests/compare.py:210:0: C0325: Unnecessary parens after 'return' keyword superfluous-parens)
+tests/compare.py:247:56: C0326: Exactly one space required after comma
+           compare2float_relative(x_base, z_intersection,relative_error) and \
+                                                        ^ bad-whitespace)
+tests/compare.py:10:0: W0401: Wildcard import ogr wildcard-import)
+tests/compare.py:11:0: W0401: Wildcard import util wildcard-import)
+tests/compare.py:40:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:52:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:60:0: E0102: function already defined line 11 function-redefined)
+tests/compare.py:64:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:82:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:90:0: E0102: function already defined line 11 function-redefined)
+tests/compare.py:92:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/compare.py:92:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:102:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:114:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:134:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:135:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:137:26: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:137:42: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:138:18: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:139:18: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:149:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:150:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:152:24: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:152:38: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:153:16: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:154:16: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:173:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:188:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:204:8: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/compare.py:204:8: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:208:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:214:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/compare.py:214:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:226:4: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
+tests/compare.py:226:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:237:4: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:252:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:253:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:255:26: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:255:42: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:256:18: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:257:18: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:265:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:266:11: E0602: Undefined variable 'CreateGeometryFromWkt' undefined-variable)
+tests/compare.py:268:24: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:268:38: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:269:16: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:270:16: E0602: Undefined variable 'Geometry' undefined-variable)
+tests/compare.py:279:4: R1705: Unnecessary "elif" after "return" no-else-return)
+tests/compare.py:287:4: W0702: No exception type(s) specified bare-except)
+tests/compare.py:293:16: W0621: Redefining name 'config' from outer scope (line 11) redefined-outer-name)
+tests/compare.py:357:11: W0703: Catching too general exception Exception broad-except)
+tests/compare.py:315:12: R1705: Unnecessary "elif" after "return" no-else-return)
+tests/compare.py:352:11: R1701: Consider merging these isinstance calls to isinstance(x, (float, int)) consider-merging-isinstance)
+tests/compare.py:357:4: W0612: Unused variable 'e' unused-variable)
+tests/compare.py:293:0: R0911: Too many return statements (8/6) too-many-return-statements)
+tests/compare.py:293:0: R0912: Too many branches (14/12) too-many-branches)
+tests/compare.py:362:20: W0621: Redefining name 'config' from outer scope (line 11) redefined-outer-name)
+tests/compare.py:398:10: W0621: Redefining name 'config_file' from outer scope (line 13) redefined-outer-name)
+tests/compare.py:438:11: C0121: Comparison to True should be just 'expr' singleton-comparison)
+tests/compare.py:414:11: W0612: Unused variable 'table_names' unused-variable)
+tests/compare.py:461:11: W0612: Unused variable 'table_names' unused-variable)
+tests/compare.py:461:24: W0612: Unused variable 'expects' unused-variable)
+tests/compare.py:1:0: W0611: Unused import random unused-import)
+tests/compare.py:3:0: W0611: Unused import inspect unused-import)
+tests/compare.py:4:0: W0611: Unused import sys unused-import)
+tests/compare.py:5:0: W0611: Unused import shutil unused-import)
+tests/compare.py:6:0: W0611: Unused import glob unused-import)
+tests/compare.py:7:0: W0611: Unused import shapely unused-import)
+tests/compare.py:9:0: W0611: Unused ogr imported from osgeo unused-import)
+tests/compare.py:11:0: W0614: Unused import is_point from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import is_linestring from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import is_polygon from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import line_to_points from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import polygon_to_points from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import geometrycollection_tolist from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import point_distance from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import linestring_distance from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import polygon_distance from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import geometry_distance from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import get_config from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import config from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import spark_result from wildcard import unused-wildcard-import)
+tests/compare.py:11:0: W0614: Unused import full_load from wildcard import unused-wildcard-import)
+************* Module spark_test
+tests/spark_test.py:32:71: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:34:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:69:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:75:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:82:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:86:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:90:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:97:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:101:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:105:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:112:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:116:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:121:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:126:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:128:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:137:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:144:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:153:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:194:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:199:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:210:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:215:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:225:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:230:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:241:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:246:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:256:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:262:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:272:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:278:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:288:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:294:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:304:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:310:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:320:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:326:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:336:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:342:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:352:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:358:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:368:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:374:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:384:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:390:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:400:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:405:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:415:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:420:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:430:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:435:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:445:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:450:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:460:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:465:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:475:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:480:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:490:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:495:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:505:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:510:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:520:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:525:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:535:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:540:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:550:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:555:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:565:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:570:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:580:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:585:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:595:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:600:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:611:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:616:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:627:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:632:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:636:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:669:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:672:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:676:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:681:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:688:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:692:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:697:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:704:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:708:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:713:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:720:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:724:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:729:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:736:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:740:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:745:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:752:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:756:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:761:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:768:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:772:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:777:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:784:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:788:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:793:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:800:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:804:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:809:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:819:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:824:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:831:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:835:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:840:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:847:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:851:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:856:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:863:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:867:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:872:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:879:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:883:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:888:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:898:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:903:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:913:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:918:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:928:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:933:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:943:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:948:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:958:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:963:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:974:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:979:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:990:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:995:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:1129:0: C0303: Trailing whitespace trailing-whitespace)
+tests/spark_test.py:1:0: C0302: Too many lines in module (1199/1000) too-many-lines)
+tests/spark_test.py:17:0: W0401: Wildcard import pyspark.sql.types wildcard-import)
+tests/spark_test.py:36:13: W0621: Redefining name 'base_dir' from outer scope (line 26) redefined-outer-name)
+tests/spark_test.py:39:21: W0621: Redefining name 'base_dir' from outer scope (line 26) redefined-outer-name)
+tests/spark_test.py:41:4: R1705: Unnecessary "elif" after "return" no-else-return)
+tests/spark_test.py:39:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
+tests/spark_test.py:20:0: W0611: Unused import random unused-import)
+tests/spark_test.py:24:0: W0611: Unused import sys unused-import)
+tests/spark_test.py:20:0: C0411: standard import "import random" should be placed before "from pyspark.sql import SparkSession" wrong-import-order)
+tests/spark_test.py:21:0: C0411: standard import "import shutil" should be placed before "from pyspark.sql import SparkSession" wrong-import-order)
+tests/spark_test.py:22:0: C0411: standard import "import os" should be placed before "from pyspark.sql import SparkSession" wrong-import-order)
+tests/spark_test.py:23:0: C0411: standard import "import json" should be placed before "from pyspark.sql import SparkSession" wrong-import-order)
+tests/spark_test.py:24:0: C0411: standard import "import sys" should be placed before "from pyspark.sql import SparkSession" wrong-import-order)
+tests/spark_test.py:17:0: C0412: Imports from package pyspark are not grouped ungrouped-imports)
+
+
+Report
+======
+1515 statements analysed.
+
+Statistics by type
+------------------
+
++---------+-------+-----------+-----------+------------+---------+
+|type     |number |old number |difference |%documented |%badname |
++=========+=======+===========+===========+============+=========+
+|module   |8      |NC         |NC         |0.00        |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|class    |0      |NC         |NC         |0           |0        |
++---------+-------+-----------+-----------+------------+---------+
+|method   |0      |NC         |NC         |0           |0        |
++---------+-------+-----------+-----------+------------+---------+
+|function |126    |NC         |NC         |0.00        |2.38     |
++---------+-------+-----------+-----------+------------+---------+
+
+
+
+External dependencies
+---------------------
+::
+
+    psycopg2 (postgis_data)
+    util (compare)
+    yaml (util)
+
+
+
+Raw metrics
+-----------
+
++----------+-------+------+---------+-----------+
+|type      |number |%     |previous |difference |
++==========+=======+======+=========+===========+
+|code      |1591   |72.45 |NC       |NC         |
++----------+-------+------+---------+-----------+
+|docstring |16     |0.73  |NC       |NC         |
++----------+-------+------+---------+-----------+
+|comment   |114    |5.19  |NC       |NC         |
++----------+-------+------+---------+-----------+
+|empty     |475    |21.63 |NC       |NC         |
++----------+-------+------+---------+-----------+
+
+
+
+Duplication
+-----------
+
++-------------------------+------+---------+-----------+
+|                         |now   |previous |difference |
++=========================+======+=========+===========+
+|nb duplicated lines      |0     |NC       |NC         |
++-------------------------+------+---------+-----------+
+|percent duplicated lines |0.000 |NC       |NC         |
++-------------------------+------+---------+-----------+
+
+
+
+Messages by category
+--------------------
+
++-----------+-------+---------+-----------+
+|type       |number |previous |difference |
++===========+=======+=========+===========+
+|convention |148    |NC       |NC         |
++-----------+-------+---------+-----------+
+|refactor   |46     |NC       |NC         |
++-----------+-------+---------+-----------+
+|warning    |91     |NC       |NC         |
++-----------+-------+---------+-----------+
+|error      |28     |NC       |NC         |
++-----------+-------+---------+-----------+
+
+
+
+% errors / warnings by module
+-----------------------------
+
++----------------+------+--------+---------+-----------+
+|module          |error |warning |refactor |convention |
++================+======+========+=========+===========+
+|compare         |92.86 |35.16   |50.00    |2.03       |
++----------------+------+--------+---------+-----------+
+|wkt_to_geojson  |7.14  |2.20    |2.17     |0.00       |
++----------------+------+--------+---------+-----------+
+|collect_results |0.00  |32.97   |0.00     |0.00       |
++----------------+------+--------+---------+-----------+
+|split_data      |0.00  |9.89    |4.35     |0.00       |
++----------------+------+--------+---------+-----------+
+|postgis_data    |0.00  |8.79    |2.17     |0.68       |
++----------------+------+--------+---------+-----------+
+|util            |0.00  |5.49    |36.96    |1.35       |
++----------------+------+--------+---------+-----------+
+|spark_test      |0.00  |5.49    |4.35     |95.27      |
++----------------+------+--------+---------+-----------+
+|get_data        |0.00  |0.00    |0.00     |0.68       |
++----------------+------+--------+---------+-----------+
+
+
+
+Messages
+--------
+
++-------------------------------+------------+
+|message id                     |occurrences |
++===============================+============+
+|trailing-whitespace            |134         |
++-------------------------------+------------+
+|unused-wildcard-import         |38          |
++-------------------------------+------------+
+|undefined-variable             |26          |
++-------------------------------+------------+
+|no-else-return                 |24          |
++-------------------------------+------------+
+|redefined-outer-name           |20          |
++-------------------------------+------------+
+|unused-import                  |18          |
++-------------------------------+------------+
+|wrong-import-order             |8           |
++-------------------------------+------------+
+|simplifiable-if-statement      |8           |
++-------------------------------+------------+
+|inconsistent-return-statements |8           |
++-------------------------------+------------+
+|unused-variable                |6           |
++-------------------------------+------------+
+|wildcard-import                |5           |
++-------------------------------+------------+
+|too-many-branches              |2           |
++-------------------------------+------------+
+|superfluous-parens             |2           |
++-------------------------------+------------+
+|function-redefined             |2           |
++-------------------------------+------------+
+|broad-except                   |2           |
++-------------------------------+------------+
+|unnecessary-comprehension      |1           |
++-------------------------------+------------+
+|ungrouped-imports              |1           |
++-------------------------------+------------+
+|too-many-return-statements     |1           |
++-------------------------------+------------+
+|too-many-lines                 |1           |
++-------------------------------+------------+
+|singleton-comparison           |1           |
++-------------------------------+------------+
+|consider-using-sys-exit        |1           |
++-------------------------------+------------+
+|consider-merging-isinstance    |1           |
++-------------------------------+------------+
+|bare-except                    |1           |
++-------------------------------+------------+
+|bad-whitespace                 |1           |
++-------------------------------+------------+
+|arguments-out-of-order         |1           |
++-------------------------------+------------+
+
+
+
+
+-----------------------------------
+Your code has been rated at 7.19/10
+

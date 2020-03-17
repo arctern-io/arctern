@@ -2,3 +2,382 @@ path:
   spark_result: /tmp/results
   arctern_result: /tmp/arctern_results
   expected_result: expected/results
+
+tests:
+  -
+    case:
+      name: run_test_st_makevalid
+      spark_result_name: test_makevalid
+      expected_name: st_makevalid
+
+  -
+    case:
+      name: run_test_st_envelope
+      spark_result_name: test_envelope
+      expected_name: st_envelope
+
+  -
+    case:
+      name: run_test_st_envelope_curve
+      spark_result_name: test_envelope_curve
+      expected_name: st_envelope_curve
+
+  -
+    case:
+      name: run_test_st_intersection
+      spark_result_name: test_intersection
+      expected_name: st_intersection
+
+  -
+    case:
+      name: run_test_st_intersection_curve
+      spark_result_name: test_intersection_curve
+      expected_name: st_intersection_curve
+
+  -
+    case:
+      name: run_test_st_length
+      spark_result_name: test_length
+      expected_name: st_length
+
+  -
+    case:
+      name: run_test_st_length_curve
+      spark_result_name: test_length_curve
+      expected_name: st_length_curve
+
+  -
+    case:
+      name: run_test_st_polygonfromenvelope
+      spark_result_name: test_polygonfromenvelope
+      expected_name: st_makeenvelope
+
+  -
+    case:
+      name: run_test_st_npoints
+      spark_result_name: test_npoints
+      expected_name: st_npoints
+
+  -
+    case:
+      name: run_test_st_simplifypreservetopology
+      spark_result_name: test_simplifypreservetopology
+      expected_name: st_simplifypreservetopology
+
+  -
+    case:
+      name: run_test_st_simplifypreservetopology_curve
+      spark_result_name: test_simplifypreservetopology_curve
+      expected_name: st_simplifypreservetopology_curve
+
+  -
+    case:
+      name: run_test_st_transform
+      spark_result_name: test_transform
+      expected_name: st_transform
+
+  -
+    case:
+      name: run_test_st_transform1
+      spark_result_name: test_transform1
+      expected_name: st_transform1
+
+  -
+    case:
+      name: run_test_st_area
+      spark_result_name: test_area
+      expected_name: st_area
+
+  -
+    case:
+      name: run_test_st_area_curve
+      spark_result_name: test_area_curve
+      expected_name: st_area_curve
+
+  -
+    case:
+      name: run_test_st_buffer
+      spark_result_name: test_buffer
+      expected_name: st_buffer
+
+  -
+    case:
+      name: run_test_st_buffer1
+      spark_result_name: test_buffer1
+      expected_name: st_buffer1
+
+  -
+    case:
+      name: run_test_st_buffer2
+      spark_result_name: test_buffer2
+      expected_name: st_buffer2
+
+  -
+    case:
+      name: run_test_st_buffer3
+      spark_result_name: test_buffer3
+      expected_name: st_buffer3
+
+  -
+    case:
+      name: run_test_st_buffer4
+      spark_result_name: test_buffer4
+      expected_name: st_buffer4
+
+  -
+    case:
+      name: run_test_st_buffer5
+      spark_result_name: test_buffer5
+      expected_name: st_buffer5
+
+  -
+    case:
+      name: run_test_st_buffer6
+      spark_result_name: test_buffer6
+      expected_name: st_buffer6
+
+  -
+    case:
+      name: run_test_st_buffer_curve
+      spark_result_name: test_buffer_curve
+      expected_name: st_buffer_curve
+
+  -
+    case:
+      name: run_test_st_buffer_curve1
+      spark_result_name: test_buffer_curve1
+      expected_name: st_buffer_curve1
+
+  -
+    case:
+      name: run_test_st_centroid
+      spark_result_name: test_centroid
+      expected_name: st_centroid
+
+  -
+    case:
+      name: run_test_st_centroid_curve
+      spark_result_name: test_centroid_curve
+      expected_name: st_centroid_curve
+
+  -
+    case:
+      name: run_test_st_convexhull
+      spark_result_name: test_convexhull
+      expected_name: st_convexhull
+
+  -
+    case:
+      name: run_test_st_convexhull_curve
+      spark_result_name: test_convexhull_curve
+      expected_name: st_convexhull_curve
+
+  -
+    case:
+      name: run_test_st_issimple
+      spark_result_name: test_issimple
+      expected_name: st_issimple
+
+  -
+    case:
+      name: run_test_st_issimple_curve
+      spark_result_name: test_issimple_curve
+      expected_name: st_issimple_curve
+
+  -
+    case:
+      name: run_test_st_point
+      spark_result_name: test_points
+      expected_name: st_point
+
+  -
+    case:
+      name: run_test_st_isvalid_1
+      spark_result_name: test_isvalid
+      expected_name: st_isvalid
+
+  -
+    case:
+      name: run_test_st_isvalid_curve
+      spark_result_name: test_isvalid_curve
+      expected_name: st_isvalid_curve
+
+  -
+    case:
+      name: run_test_st_geometrytype
+      spark_result_name: test_gt
+      expected_name: st_geometrytype
+
+  -
+    case:
+      name: run_test_st_geometrytype_curve
+      spark_result_name: test_gt_curve
+      expected_name: st_geometrytype_curve
+
+  -
+    case:
+      name: run_test_st_equals_1
+      spark_result_name: test_equals
+      expected_name: st_equals
+
+  -
+    case:
+      name: run_test_st_equals_2
+      spark_result_name: test_equals_2
+      expected_name: st_equals_2
+
+  -
+    case:
+      name: run_test_st_distance
+      spark_result_name: test_distance
+      expected_name: st_distance
+
+  -
+    case:
+      name: run_test_st_distance_curve
+      spark_result_name: test_distance_curve
+      expected_name: st_distance_curve
+
+  -
+    case:
+      name: run_test_st_intersects
+      spark_result_name: test_intersects
+      expected_name: st_intersects
+
+  -
+    case:
+      name: run_test_st_intersects_curve
+      spark_result_name: test_intersects_curve
+      expected_name: st_intersects_curve
+
+  -
+    case:
+      name: run_test_st_contains
+      spark_result_name: test_contains
+      expected_name: st_contains
+
+  -
+    case:
+      name: run_test_st_contains_curve
+      spark_result_name: test_contains_curve
+      expected_name: st_contains_curve
+
+  -
+    case:
+      name: run_test_st_within
+      spark_result_name: test_within
+      expected_name: st_within
+
+  -
+    case:
+      name: run_test_st_within_curve
+      spark_result_name: test_within_curve
+      expected_name: st_within_curve
+
+  -
+    case:
+      name: run_test_st_crosses
+      spark_result_name: test_crosses
+      expected_name: st_crosses
+
+  -
+    case:
+      name: run_test_st_crosses_curve
+      spark_result_name: test_crosses_curve
+      expected_name: st_crosses_curve
+
+  -
+    case:
+      name: run_test_st_overlaps
+      spark_result_name: test_overlaps
+      expected_name: st_overlaps
+
+  -
+    case:
+      name: run_test_st_overlaps_curve
+      spark_result_name: test_overlaps_curve
+      expected_name: st_overlaps_curve
+
+  -
+    case:
+      name: run_test_st_touches
+      spark_result_name: test_touches
+      expected_name: st_touches
+
+  -
+    case:
+      name: run_test_st_touches_curve
+      spark_result_name: test_touches_curve
+      expected_name: st_touches_curve
+
+  -
+    case:
+      name: run_test_union_aggr_2
+      spark_result_name: test_union_aggr_2
+      expected_name: st_union
+
+  -
+    case:
+      name: run_test_union_aggr_curve
+      spark_result_name: test_union_aggr_curve
+      expected_name: st_union_aggr_curve
+
+  -
+    case:
+      name: run_test_envelope_aggr_1
+      spark_result_name: test_envelope_aggr_1
+      expected_name: st_envelope_aggr
+
+  -
+    case:
+      name: run_test_envelope_aggr_curve
+      spark_result_name: test_envelope_aggr_curve
+      expected_name: st_envelope_aggr_curve
+
+  -
+    case:
+      name: run_test_envelope_aggr_2
+      spark_result_name: envelope_aggr_2
+      expected_name: st_envelope_aggr2
+
+  -
+    case:
+      name: run_test_st_geomfromgeojson
+      spark_result_name: test_geomfromjson
+      expected_name: st_geomfromgeojson
+
+  -
+    case:
+      name: run_test_st_hausdorffdistance
+      spark_result_name: test_hausdorffdistance
+      expected_name: st_hausdorffdistance
+
+  -
+    case:
+      name: run_test_st_hausdorffdistance_curve
+      spark_result_name: test_hausdorffdistance_curve
+      expected_name: st_hausdorffdistance_curve
+
+  -
+    case:
+      name: run_test_st_curvetoline
+      spark_result_name: test_curvetoline
+      expected_name: st_curvetoline
+
+  -
+    case:
+      name: run_test_st_pointfromtext
+      spark_result_name: test_pointfromtext
+      expected_name: st_pointfromtext
+
+  -
+    case:
+      name: run_test_st_linestringfromtext
+      spark_result_name: test_linestringfromtext
+      expected_name: st_linestringfromtext
+
+  -
+    case:
+      name: run_test_st_polygonfromtext
+      spark_result_name: test_polygonfromtext
+      expected_name: st_polygonfromtext

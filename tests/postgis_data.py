@@ -15,12 +15,14 @@ sql_template_5 = "select st_astext(%s('%s'::geometry))"
 sql_template_6 = "select st_astext(%s(st_geomfromtext('%s',3857),4326))"
 sql_template_7 = "select st_astext(%s('%s'::geometry, 1))"
 
-
 st_buffer = ['st_buffer']
 intersection = ['st_intersection']
-convexhull = ['st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline', 'st_centroid']
+convexhull = [
+    'st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline', 'st_centroid'
+]
 transform = ['st_transform']
 simplifypreservetopology = ['st_simplifypreservetopology']
+
 
 def get_sqls_from_data(function_name, file_path):
     sql_arr = []
@@ -39,13 +41,13 @@ def get_sqls_from_data(function_name, file_path):
                     sql = sql_template_3 % (function_name, line[0])
                 else:
                     sql = sql_template_1 % (function_name, line[0])
-                    
+
             if len(line) == 2:
                 if function_name in intersection:
                     sql = sql_template_4 % (function_name, line[0], line[1])
                 else:
                     sql = sql_template_2 % (function_name, line[0], line[1])
-            
+
             sql_arr.append(sql)
     return sql_arr
 
