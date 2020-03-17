@@ -30,7 +30,7 @@ struct TokenInfo {
 
 bool NextToken(const char* src, TokenInfo* token);
 
-bool IsValidWkt(const char *src);
+bool IsValidWkt(const char* src);
 
 bool IsWhiteSpace(const char c);
 
@@ -38,7 +38,7 @@ bool IsAlphabet(const char c);
 
 bool IsNumber(const char c);
 
-void SetIfEmpty(TokenInfo *token);
+void SetIfEmpty(TokenInfo* token);
 
 }  // namespace parser
 }  // namespace gis

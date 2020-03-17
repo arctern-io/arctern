@@ -37,15 +37,15 @@ bool IsNumber(const char c) {
   return false;
 }
 
-void SetIfEmpty(TokenInfo *token){
-    static auto empty=(const char*)"empty";
-    static auto Empty=(const char*)"EMPTY";
-    if(token->type!=TokenType::WktKey) return;
-    if(token->len!=5) return;
-    for(int i=0;i<token->len;++i){
-        if((token->start[i]!=empty[i]) && (token->start[i]!=Empty[i])) return;
-    }
-    token->type=TokenType::Empty;
+void SetIfEmpty(TokenInfo* token) {
+  static auto empty = (const char*)"empty";
+  static auto Empty = (const char*)"EMPTY";
+  if (token->type != TokenType::WktKey) return;
+  if (token->len != 5) return;
+  for (int i = 0; i < token->len; ++i) {
+    if ((token->start[i] != empty[i]) && (token->start[i] != Empty[i])) return;
+  }
+  token->type = TokenType::Empty;
 }
 
 bool NextToken(const char* src, TokenInfo* token) {
@@ -57,53 +57,53 @@ bool NextToken(const char* src, TokenInfo* token) {
     char input = *(src);
     switch (token->type) {
       case TokenType::WktKey: {
-          if(IsWhiteSpace(input) || input=='('){
-              SetIfEmpty(token);
-              return true;
-          }else if(IsAlphabet(input)){
-              token->len++;
-              break;
-          }else{
-              token->type=TokenType::Unknown;
-              return true;
-          }
+        if (IsWhiteSpace(input) || input == '(') {
+          SetIfEmpty(token);
+          return true;
+        } else if (IsAlphabet(input)) {
+          token->len++;
+          break;
+        } else {
+          token->type = TokenType::Unknown;
+          return true;
+        }
       }
       case TokenType::Number: {
-          if(IsWhiteSpace(input) || input==',' || input==')'){
-              return true;
-          }else if(IsNumber(input)){
-              token->len++;
-              break;
-          }else{
-              token->type=TokenType::Unknown;
-              return true;
-          }
+        if (IsWhiteSpace(input) || input == ',' || input == ')') {
+          return true;
+        } else if (IsNumber(input)) {
+          token->len++;
+          break;
+        } else {
+          token->type = TokenType::Unknown;
+          return true;
+        }
       }
       case TokenType::Unknown: {
         if (IsWhiteSpace(input)) {
           break;
         } else if (IsAlphabet(input)) {
-          token->start=src;
+          token->start = src;
           token->type = TokenType::WktKey;
           token->len++;
           break;
         } else if (IsNumber(input)) {
-          token->start=src;
+          token->start = src;
           token->type = TokenType::Number;
           token->len++;
           break;
         } else if (input == '(') {
-          token->start=src;
+          token->start = src;
           token->type = TokenType::LeftBracket;
           token->len++;
           return true;
         } else if (input == ')') {
-          token->start=src;
+          token->start = src;
           token->type = TokenType::RightBracket;
           token->len++;
           return true;
         } else if (input == ',') {
-          token->start=src;
+          token->start = src;
           token->type = TokenType::Comma;
           token->len++;
           return true;
@@ -111,26 +111,110 @@ bool NextToken(const char* src, TokenInfo* token) {
           return true;
         }
       }
-      default:{
-          return true;
-      }
+      default: { return true; }
     }
     src++;
   }
   return false;
 }
 
-bool IsValidWkt(const char *src){
-    if(src==nullptr) return false;
-    TokenInfo token;
-    int bracet_nest = 0;
-    int wkt_nest = 0;
-    while(NextToken(src,&token)){
+bool IsValidWkt(const char* src) {
+  if (src == nullptr) return false;
+  TokenInfo token;
+  int bracet_nest = 0;
+  int num_cnt = 0;
+  auto pre_type = TokenType::Unknown;
 
-        src = token.start + token.len;
+  while (NextToken(src, &token)) {
+    if (token.type == TokenType::Unknown) return false;
+    switch (pre_type) {
+      case TokenType::Unknown: {
+        if (token.type != TokenType::WktKey) return false;
+        break;
+      }
+      case TokenType::WktKey: {
+        switch (token.type) {
+          case TokenType::Empty: {
+            break;
+          }
+          case TokenType::LeftBracket: {
+            ++bracet_nest;
+            break;
+          }
+          default: { return false; }
+        }
+        break;
+      }
+      case TokenType::LeftBracket: {
+        switch (token.type) {
+          case TokenType::Number: {
+            num_cnt = 1;
+            break;
+          }
+          case TokenType::LeftBracket: {
+            ++bracet_nest;
+            break;
+          }
+          case TokenType::WktKey: {
+            break;
+          }
+          default: { return false; }
+        }
+        break;
+      }
+      case TokenType::Number: {
+        switch (token.type) {
+          case TokenType::Number: {
+            ++num_cnt;
+            break;
+          }
+          case TokenType::Comma: {
+            if ((num_cnt != 2) && (num_cnt != 3)) return false;
+            break;
+          }
+          case TokenType::RightBracket: {
+            --bracet_nest;
+            if (bracet_nest < 0) return false;
+          }
+          default: { return false; }
+        }
+        break;
+      }
+      case TokenType::Comma: {
+        switch (token.type) {
+          case TokenType::WktKey: {
+            break;
+          }
+          case TokenType::Number: {
+            num_cnt = 1;
+            break;
+          }
+          case TokenType::RightBracket: {
+            --bracet_nest;
+            if (bracet_nest < 0) return false;
+          }
+          default: { return false; }
+        }
+        break;
+      }
+      case TokenType::RightBracket: {
+        switch (token.type) {
+          case TokenType::WktKey: {
+            break;
+          }
+          case TokenType::RightBracket: {
+            --bracet_nest;
+            if (bracet_nest < 0) return false;
+          }
+          default: { return false; }
+        }
+        break;
+      }
     }
-    if(wkt_nest==1) return true;
-    return false;
+
+    pre_type = token.type;
+    src = token.start + token.len;
+  }
 }
 
 }  // namespace parser

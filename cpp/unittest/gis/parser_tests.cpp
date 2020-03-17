@@ -17,29 +17,29 @@
 #include <gtest/gtest.h>
 #include "gis/parser.h"
 
-TEST(parser_test, next_token){
-    auto point=(const char*)"point ( 2.3  2.89 ) ";
-    arctern::gis::parser::TokenInfo token;
+TEST(parser_test, next_token) {
+  auto point = (const char*)"point ( 2.3  2.89 ) ";
+  arctern::gis::parser::TokenInfo token;
 
-    arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::WktKey);
-    point = token.start + token.len;
+  arctern::gis::parser::NextToken(point, &token);
+  ASSERT_EQ(token.type, arctern::gis::parser::TokenType::WktKey);
+  point = token.start + token.len;
 
-    arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::LeftBracket);
-    point = token.start + token.len;
+  arctern::gis::parser::NextToken(point, &token);
+  ASSERT_EQ(token.type, arctern::gis::parser::TokenType::LeftBracket);
+  point = token.start + token.len;
 
-    arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::Number);
-    point = token.start + token.len;
+  arctern::gis::parser::NextToken(point, &token);
+  ASSERT_EQ(token.type, arctern::gis::parser::TokenType::Number);
+  point = token.start + token.len;
 
-    arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::Number);
-    point = token.start + token.len;
+  arctern::gis::parser::NextToken(point, &token);
+  ASSERT_EQ(token.type, arctern::gis::parser::TokenType::Number);
+  point = token.start + token.len;
 
-    arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::RightBracket);
-    point = token.start + token.len;
+  arctern::gis::parser::NextToken(point, &token);
+  ASSERT_EQ(token.type, arctern::gis::parser::TokenType::RightBracket);
+  point = token.start + token.len;
 
-    ASSERT_FALSE(arctern::gis::parser::NextToken(point,&token));
+  ASSERT_FALSE(arctern::gis::parser::NextToken(point, &token));
 }
