@@ -15,9 +15,7 @@
 import pandas
 import arctern
 
-from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
-from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
-from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern.util.vega.vega_builder import *
 from arctern.util import save_png
 
 def test_point_map():

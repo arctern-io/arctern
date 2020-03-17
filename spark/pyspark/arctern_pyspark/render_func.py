@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# import json
+# import pyarrow as pa
+#
+# from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
+# from pyspark.sql.types import *
+#
+# def save_png_2D(hex_data, file_name):
+#     import binascii
+#     binary_string = binascii.unhexlify(str(hex_data))
+#     with open(file_name, 'wb') as png:
+#         png.write(binary_string)
+
 __all__ = [
     "pointmap",
     "heatmap",
@@ -64,6 +76,7 @@ def heatmap(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
+<<<<<<< HEAD
  
     @pandas_udf("double", PandasUDFType.GROUPED_AGG)
     def sum_udf(v):
@@ -78,6 +91,22 @@ def heatmap(df, vega):
     agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
     agg_df.show(20, False)
     hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
+=======
+
+    from arctern import transform_and_projection
+    import json
+    vega_dict = json.loads(vega)
+    bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
+    bounding_box_max = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"]
+    width = vega_dict["width"]
+    height = vega_dict["height"]
+    from ._wrapper_func import TransformAndProjection
+    trans_projec_df = df.select(TransformAndProjection(col('wkt'), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
+
+    first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
+    final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
+    hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
+>>>>>>> 7b2c271546c6a9010cd18e13cc1544b85a966f32
     return hex_data
 
 def choroplethmap(df, vega):
