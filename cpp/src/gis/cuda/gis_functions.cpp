@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "gis/cuda/gis_functions.h"
+#include "gis_functions.h"
 
 #include <assert.h>
 #include <stdio.h>

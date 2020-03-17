@@ -24,7 +24,7 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "gis/type_scan.h"
+#include "gis/dispatch/type_scanner.h"
 
 namespace arctern {
 namespace gis {

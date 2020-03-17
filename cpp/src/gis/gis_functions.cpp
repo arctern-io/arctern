@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "gis/gdal/type_scan.h"
 #include "gis/wkb_types.h"
+#include "src/gis/dispatch/wkt_type_scanner.h"
 #ifdef USE_GPU
-#include "gis/cuda/gis_functions.h"
+#include "src/gis/cuda/gis_functions.h"
+#include "src/gis/dispatch/dispatch.h"
 #endif
 #include <assert.h>
 #include <stdio.h>
@@ -36,11 +37,11 @@ namespace gis {
 
 std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
                                        const std::shared_ptr<arrow::Array>& y_values) {
-  // #if defined(USE_GPU)
-  // return cuda::ST_Point(x_values, y_values);
-  // #else
+#if defined(USE_GPU)
+  return cuda::ST_Point(x_values, y_values);
+#else
   return gdal::ST_Point(x_values, y_values);
-  // #endif
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
@@ -81,21 +82,22 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-  // #if defined(USE_GPU)
-  //   // currently support ST_Point, ST_LineString, ST_Polygon
-  //   gdal::TypeScannerForWkt scanner(geometries);
-  //   GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
-  //                                      WkbTypes::kPolygon};
-  //   scanner.mutable_types().push_back(supported_types);
-  //   auto type_masks = scanner.Scan();
-  //   if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
-  //     return cuda::ST_Envelope(geometries);
-  //   } else {
-  //     return gdal::ST_Envelope(geometries);
-  //   }
-  // #else
+#if defined(USE_GPU) && false
+  // currently support ST_Point, ST_LineString, ST_Polygon
+  gdal::TypeScannerForWkt scanner(geometries);
+  GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
+                                     WkbTypes::kPolygon, WkbTypes::kMultiPolygon};
+  scanner.mutable_types().push_back(supported_types);
+  auto type_masks = scanner.Scan();
+  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
+    return cuda::ST_Envelope(geometries);
+  } else {
+    return gdal::ST_Envelope(geometries);
+  }
+
+#else
   return gdal::ST_Envelope(geometries);
-  // #endif
+#endif
 }
 
 /**************************** GEOMETRY PROCESSING ****************************/

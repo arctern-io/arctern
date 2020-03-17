@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include "gis/gdal/type_scan.h"
-
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
@@ -26,6 +24,7 @@
 #include <vector>
 
 #include "gis/wkb_types.h"
+#include "src/gis/dispatch/wkt_type_scanner.h"
 #include "utils/check_status.h"
 #include "utils/function_wrapper.h"
 
@@ -37,6 +36,8 @@ TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geomet
     : geometries_(geometries) {}
 
 std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
+  static_assert(std::is_same<arrow::DoubleArray::TypeClass, arrow::DoubleType>::value, "fuck");
+  static_assert(std::is_same<arrow::StringArray::TypeClass, arrow::StringType>::value, "fuck");
   auto len = geometries_->length();
 
   if (types().empty()) {
@@ -170,17 +171,19 @@ std::array<std::shared_ptr<arrow::Array>, 2> WktArraySplit(
   return results;
 }
 
+
+template<typename TypedArrowArray, typename TypedArrowBuilder>
 // merge [false_array, true_array]
-std::shared_ptr<arrow::Array> WktArrayMerge(
+std::shared_ptr<TypedArrowArray> ArrayMergeImpl(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
     const std::vector<bool>& mask) {
-  std::array<std::shared_ptr<arrow::StringArray>, 2> inputs;
+  std::array<std::shared_ptr<TypedArrowArray>, 2> inputs;
   for (int i = 0; i < inputs.size(); ++i) {
-    inputs[i] = std::static_pointer_cast<arrow::StringArray>(inputs_raw[i]);
+    inputs[i] = std::static_pointer_cast<TypedArrowArray>(inputs_raw[i]);
   }
   assert(inputs[0]->length() + inputs[1]->length() == mask.size());
   std::array<int, 2> indexes{0, 0};
-  arrow::StringBuilder builder;
+  TypedArrowBuilder builder;
   for (auto i = 0; i < mask.size(); ++i) {
     int array_index = mask[i] ? 1 : 0;
     auto& input = inputs[array_index];
@@ -191,35 +194,27 @@ std::shared_ptr<arrow::Array> WktArrayMerge(
       CHECK_ARROW(builder.Append(input->GetView(index)));
     }
   }
-  std::shared_ptr<arrow::Array> result;
+  std::shared_ptr<TypedArrowArray> result;
   CHECK_ARROW(builder.Finish(&result));
   return result;
 }
 
+// split into [false_array, true_array]
+std::array<std::shared_ptr<arrow::Array>, 2> WktArraySplit(
+    const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask);
+
+// merge [false_array, true_array]
+std::shared_ptr<arrow::Array> WktArrayMerge(
+    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
+    const std::vector<bool>& mask) {
+  return ArrayMergeImpl<arrow::StringArray, arrow::StringBuilder>(inputs, mask);
+}
+
 // merge [false_array, true_array]
 std::shared_ptr<arrow::Array> DoubleArrayMerge(
-    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
+    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask) {
-  std::array<std::shared_ptr<arrow::DoubleArray>, 2> inputs;
-  for (int i = 0; i < inputs.size(); ++i) {
-    inputs[i] = std::static_pointer_cast<arrow::DoubleArray>(inputs_raw[i]);
-  }
-  assert(inputs[0]->length() + inputs[1]->length() == mask.size());
-  std::array<int, 2> indexes{0, 0};
-  arrow::DoubleBuilder builder;
-  for (auto i = 0; i < mask.size(); ++i) {
-    int array_index = mask[i] ? 1 : 0;
-    auto& input = inputs[array_index];
-    auto index = indexes[array_index]++;
-    if (input->IsNull(index)) {
-      CHECK_ARROW(builder.AppendNull());
-    } else {
-      CHECK_ARROW(builder.Append(input->GetView(index)));
-    }
-  }
-  std::shared_ptr<arrow::Array> result;
-  CHECK_ARROW(builder.Finish(&result));
-  return result;
+  return ArrayMergeImpl<arrow::DoubleArray, arrow::DoubleBuilder>(inputs, mask);
 }
 
 }  // namespace gdal

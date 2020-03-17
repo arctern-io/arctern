@@ -24,8 +24,8 @@
 #include <random>
 
 #include "arrow/gis_api.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
-#include "gis/gdal/type_scan.h"
 #include "utils/check_status.h"
 
 using WkbTypes = arctern::gis::WkbTypes;
