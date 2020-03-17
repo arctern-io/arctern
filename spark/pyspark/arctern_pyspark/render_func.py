@@ -12,17 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-import pyarrow as pa
+# import json
+# import pyarrow as pa
+#
+# from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
+# from pyspark.sql.types import *
+#
+# def save_png_2D(hex_data, file_name):
+#     import binascii
+#     binary_string = binascii.unhexlify(str(hex_data))
+#     with open(file_name, 'wb') as png:
+#         png.write(binary_string)
 
-from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
-from pyspark.sql.types import *
-
-def save_png_2D(hex_data, file_name):
-    import binascii
-    binary_string = binascii.unhexlify(str(hex_data))
-    with open(file_name, 'wb') as png:
-        png.write(binary_string)
+__all__ = [
+    "pointmap",
+    "heatmap",
+    "choroplethmap",
+]
 
 def print_partitions(df):
     numPartitions = df.rdd.getNumPartitions()
@@ -39,20 +45,24 @@ def print_partitions(df):
             j = j + 1
         i = i + 1
 
-def pointmap_2D(df, vega):
+
+
+def pointmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType
+
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
-        arr_point = pa.array(point, type='string')
         from arctern import point_map_wkt
-        png = point_map_wkt(arr_point, conf.encode('utf-8'))
-        buffer = png.buffers()[1].hex()
-        return buffer
+        return point_map_wkt(point, conf.encode('utf-8'))
 
     df = df.coalesce(1)
     hex_data = df.agg(pointmap_wkt(df['point'])).collect()[0][0]
     return hex_data
 
-def heatmap_2D(df, vega):
+def heatmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
+    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+
     agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -66,27 +76,28 @@ def heatmap_2D(df, vega):
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def heatmap_wkt(point, w, conf=vega):
-        arr_point = pa.array(point, type='string')
-        arr_c = pa.array(w, type='int64')
         from arctern import heat_map_wkt
-        png = heat_map_wkt(arr_point, arr_c, conf.encode('utf-8'))
-        buffer = png.buffers()[1].hex()
-        return buffer
+        return heat_map_wkt(point, w, conf.encode('utf-8'))
 
     from arctern import transform_and_projection
+    import json
     vega_dict = json.loads(vega)
     bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
     bounding_box_max = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"]
     width = vega_dict["width"]
     height = vega_dict["height"]
-    trans_projec_df = df.select(transform_and_projection(col('wkt'), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
+    from ._wrapper_func import TransformAndProjection
+    trans_projec_df = df.select(TransformAndProjection(col('wkt'), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
 
     first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
     return hex_data
 
-def choroplethmap_2D(df, vega):
+def choroplethmap(df, vega):
+    from pyspark.sql.functions import pandas_udf, PandasUDFType
+    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+
     agg_schema = StructType([StructField('wkt', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -100,12 +111,8 @@ def choroplethmap_2D(df, vega):
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def choroplethmap_wkt(wkt, w, conf=vega):
-        arr_wkt = pa.array(wkt, type='string')
-        arr_c = pa.array(w, type='int64')
         from arctern import choropleth_map
-        png = choropleth_map(arr_wkt, arr_c, conf.encode('utf-8'))
-        buffer = png.buffers()[1].hex()
-        return buffer
+        return choropleth_map(wkt, w, conf.encode('utf-8'))
 
     first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
