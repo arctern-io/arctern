@@ -65,6 +65,8 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
   pointXY_from_wkt(top_left, top_left_x, top_left_y);
   pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
+  auto coordinate_width = bottom_right_x - top_left_x;
+  auto coordinate_height = top_left_y - bottom_right_y;
   uint32_t output_x, output_y;
 
   for (int32_t i = 0; i < len; i++) {
@@ -80,15 +82,29 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
       CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
 
       // 2. projection
-      output_x =
-          (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) / (bottom_right_x - top_left_x));
-      output_y =
-          (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) / (top_left_y - bottom_right_y));
-      OGRPoint point(output_x, output_y);
+      auto type = wkbFlatten(geo->getGeometryType());
+      if (type == wkbPoint) {
+        output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) / coordinate_width);
+        output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) / coordinate_height);
+        geo->toPoint()->setX(output_x);
+        geo->toPoint()->setY(output_y);
+      } else if (type == wkbPolygon) {
+        auto ring = geo->toPolygon()->getExteriorRing();
+        auto ring_size = ring->getNumPoints();
+        for (int j = 0; j < ring_size; j++) {
+          output_x = (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
+          output_y = (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
+          ring->setPoint(j, output_x, output_y);
+        }
+      } else {
+        std::string err_msg =
+            "unsupported geometry type, type = " + std::to_string(type);
+        throw std::runtime_error(err_msg);
+      }
 
       // 3. export to wkt
       char* str;
-      err_code = OGR_G_ExportToWkt(&point, &str);
+      err_code = OGR_G_ExportToWkt(&geo, &str);
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);
