@@ -19,6 +19,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <utility>
@@ -49,10 +50,17 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // we redirect WkbTypes::kUnknown to idx=0
   std::vector<int> type_to_idx(int(WkbTypes::kMaxTypeNumber), 0);
   int num_scan_classes = 1;
+  auto get_type_index = [](WkbTypes type) {
+    auto index = int(type);
+    if (index >= int(WkbTypes::kMaxTypeNumber)) {
+      index = int(WkbTypes::kUnknown);
+    }
+    return index;
+  };
 
   for (auto& grouped_type : types()) {
     for (auto& type : grouped_type) {
-      type_to_idx[int(type)] = num_scan_classes;
+      type_to_idx[get_type_index(type)] = num_scan_classes;
     }
     num_scan_classes++;
   }
@@ -87,11 +95,14 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       if (error_code != OGRERR_NONE) {
         return WkbTypes::kUnknown;
       }
+      assert(geo_ != nullptr);
       Holder holder(geo_);
-      return (WkbTypes)OGR_G_GetGeometryType(holder.get());
+      auto type = (WkbTypes)wkbFlatten(geo_->getGeometryType());
+      return type;
     }();
 
-    auto idx = type_to_idx[(int)type];
+    auto idx = type_to_idx[get_type_index(type)];
+
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
     encode_uids[i] = idx;
