@@ -28,13 +28,13 @@
 #include "gis/gdal/geometry_cases.h"
 #include "utils/check_status.h"
 
+using GroupedWkbTypes = arctern::gis::dispatch::GroupedWkbTypes;
 using WkbTypes = arctern::gis::WkbTypes;
-using GroupedWkbTypes = arctern::gis::GroupedWkbTypes;
 
 TEST(type_scan, single_type_scan) {
   XYSpaceWktCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
   scanner.mutable_types().push_back({WkbTypes::kPoint});
   scanner.mutable_types().push_back({WkbTypes::kLineString});
   scanner.mutable_types().push_back({WkbTypes::kPolygon});
@@ -73,7 +73,7 @@ TEST(type_scan, single_type_scan) {
 TEST(type_scan, unknown_type) {
   XYSpaceWktCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
   scanner.mutable_types().push_back({WkbTypes::kLineString});
   scanner.mutable_types().push_back({WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
@@ -104,7 +104,7 @@ TEST(type_scan, unique_type) {
   XYSpaceWktCases cases;
   auto geo_cases = cases.GetAllCases();
   {
-    arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kUnknown};
     ASSERT_EQ(type_masks->is_unique_type, true);
@@ -112,7 +112,7 @@ TEST(type_scan, unique_type) {
   }
 
   {
-    arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
     scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kMultiPolygon};
@@ -120,7 +120,7 @@ TEST(type_scan, unique_type) {
   }
   {
     auto geo_cases2 = cases.GetCases({WkbTypes::kLineString});
-    arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases2);
+    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases2);
     scanner.mutable_types().push_back({WkbTypes::kLineString});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kLineString};
@@ -133,7 +133,7 @@ TEST(type_scan, unique_type) {
 TEST(type_scan, grouped_type) {
   XYSpaceWktCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
   GroupedWkbTypes type1({WkbTypes::kPoint, WkbTypes::kLineString});
   GroupedWkbTypes type2({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back(type1);
@@ -180,7 +180,7 @@ TEST(type_scan, unique_grouped_type) {
   XYSpaceWktCases cases;
   auto geo_cases = cases.GetCases({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
 
-  arctern::gis::gdal::TypeScannerForWkt scanner(geo_cases);
+  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
   GroupedWkbTypes type({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back(type);
   auto type_masks = scanner.Scan();
@@ -191,8 +191,8 @@ TEST(type_scan, unique_grouped_type) {
 }
 
 TEST(type_scan, merge_and_split) {
-  using arctern::gis::gdal::WktArrayMerge;
-  using arctern::gis::gdal::WktArraySplit;
+  using arctern::gis::dispatch::WktArrayMerge;
+  using arctern::gis::dispatch::WktArraySplit;
   using std::string;
   using std::vector;
   std::vector<std::string> strs{"one", "two",  "",   "$a", "four",

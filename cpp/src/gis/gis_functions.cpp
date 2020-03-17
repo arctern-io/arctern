@@ -84,7 +84,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
 #if defined(USE_GPU) && false
   // currently support ST_Point, ST_LineString, ST_Polygon
-  gdal::TypeScannerForWkt scanner(geometries);
+  dispatch::TypeScannerForWkt scanner(geometries);
   GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
                                      WkbTypes::kPolygon, WkbTypes::kMultiPolygon};
   scanner.mutable_types().push_back(supported_types);
@@ -158,7 +158,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   // TODO: NOT ENABLED
   auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
   auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
-    gdal::TypeScannerForWkt scanner(geometries);
+    dispatch::TypeScannerForWkt scanner(geometries);
     scanner.mutable_types().emplace_back(groupped_type);
     return scanner.Scan();
   };
@@ -191,7 +191,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   bool lhs_ok = false;
   //   bool rhs_ok = false;
   //   //  {
-  //   //    gdal::TypeScannerForWkt lhs_scanner(geometries_1);
+  //   //    dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
   //   //    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
   //   //    lhs_scanner.mutable_types().push_back(lhs_supported_types);
   //   //    auto lhs_type_masks = lhs_scanner.Scan();
@@ -199,7 +199,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   //             (lhs_type_masks->unique_group == lhs_supported_types);
   //   //  }
   //   //  {
-  //   //    gdal::TypeScannerForWkt rhs_scanner(geometries_2);
+  //   //    dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
   //   //    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
   //   //    rhs_scanner.mutable_types().push_back(rhs_supported_types);
   //   //    auto rhs_type_masks = rhs_scanner.Scan();
@@ -215,7 +215,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
   //   #if defined(USE_GPU)
   //     // currently support ST_Polygon
-  //     gdal::TypeScannerForWkt scanner(geometries);
+  //     dispatch::TypeScannerForWkt scanner(geometries);
   //     GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
   //     scanner.mutable_types().push_back(supported_types);
   //     auto type_masks = scanner.Scan();
@@ -305,12 +305,12 @@ std::shared_ptr<arrow::Array> ST_Within(
     const std::shared_ptr<arrow::Array>& geometries_2) {
   // #if defined(USE_GPU)
   //   // currently support ST_Point within ST_Polygon
-  //   gdal::TypeScannerForWkt lhs_scanner(geometries_1);
+  //   dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
   //   GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
   //   lhs_scanner.mutable_types().push_back(lhs_supported_types);
   //   auto lhs_type_masks = lhs_scanner.Scan();
 
-  //   gdal::TypeScannerForWkt rhs_scanner(geometries_2);
+  //   dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
   //   GroupedWkbTypes rhs_supported_types = {WkbTypes::kPolygon};
   //   rhs_scanner.mutable_types().push_back(rhs_supported_types);
   //   auto rhs_type_masks = rhs_scanner.Scan();
