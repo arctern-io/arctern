@@ -18,25 +18,26 @@
 
 namespace arctern {
 namespace gis {
-namespace parser{
+namespace parser {
 
-enum class TokenType{
-    WktKey,
-    Number,
-    LeftBracket,
-    RightBracket,
-    Comma,
-    Unknown
+enum class TokenType { WktKey, Number, LeftBracket, RightBracket, Comma, Unknown };
+
+struct TokenInfo {
+  TokenType type = TokenType::Unknown;
+  const char* start = nullptr;
+  int len = 0;
 };
 
-struct TokenInfo{
-    TokenType type;
-    const char* start;
-    int len;
-};
+bool NextToken(const char* src, TokenInfo* token);
 
-bool NextToken(const char*src, TokenInfo* token);
+bool IsValidWkt(const char *src);
 
-}
-}
-}
+bool IsWhiteSpace(const char c);
+
+bool IsAlphabet(const char c);
+
+bool IsNumber(const char c);
+
+}  // namespace parser
+}  // namespace gis
+}  // namespace arctern
