@@ -184,7 +184,7 @@ updating index in: /path/to/channel/label/cuda10.0/linux-64
   执行以下命令在 Conda 环境中安装 Arctern CPU 版本：
 
 ```shell
-$ conda install -c file:///path/to/channel -n arctern arctern-spark
+$ conda install -c file:///path/to/channel -n arctern arctern-spark --offline --override-channels
 ```
 
 例如:
@@ -198,15 +198,15 @@ $ conda install -c file:///tmp/arctern-dependencies/channel -n arctern arctern-s
   执行以下命令在 Conda 环境中安装 Arctern CPU 版本：  
 
 ```shell
-    conda install -c file:///path/to/channel/label/cuda10.0 -n arctern libarctern
-    conda install -c file:///path/to/channel -n arctern arctern arctern-spark
+    conda install -c file:///path/to/channel/label/cuda10.0 -n arctern libarctern --offline --override-channels
+    conda install -c file:///path/to/channel -n arctern arctern arctern-spark --offline --override-channels
 ```
 
 例如:
 
 ```shell
-    conda install -c file:///tmp/arctern-dependencies/channel/label/cuda10.0 -n arctern libarctern
-    conda install -c file:///tmp/arctern-dependencies/channel -n arctern arctern arctern-spark
+    conda install -c file:///tmp/arctern-dependencies/channel/label/cuda10.0 -n arctern libarctern --offline --override-channels
+    conda install -c file:///tmp/arctern-dependencies/channel -n arctern arctern arctern-spark --offline --override-channels
 ```
 
 
