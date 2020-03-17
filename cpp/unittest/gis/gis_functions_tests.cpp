@@ -2803,7 +2803,7 @@ TEST(geometry_test, test_ST_Centroid) {
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,-1 0,0 -1,0 0)) )";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2823,17 +2823,13 @@ TEST(geometry_test, test_ST_Centroid) {
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
   ASSERT_EQ(res_str->GetString(1), "POINT (0.25 0.75)");
-  ASSERT_EQ(res_str->GetString(2),
-            "POINT (0.646446609406726 0.353553390593274)");  // geospark:POINT
-                                                             // (0.6464466094067263
-                                                             // 0.3535533905932737)
+  ASSERT_EQ(res_str->GetString(2),"POINT (0.646446609406726 0.353553390593274)"); 
   ASSERT_EQ(res_str->GetString(3), "POINT (0.5 0.5)");
   ASSERT_EQ(res_str->GetString(4), "POINT (0.75 1.0)");
   ASSERT_EQ(res_str->GetString(5), "POINT (2.6444665557806 41.5285902625069)");
   ASSERT_EQ(res_str->GetString(6), "POINT (0.666666666666667 1.33333333333333)");
   ASSERT_EQ(res_str->GetString(7), "POINT (2.0 1.7)");
-  // ASSERT_EQ(res_str->GetString(8),"POINT
-  // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
+  ASSERT_EQ(res_str->GetString(8),"POINT (0.466666666666667 1.0)");
 }
 
 TEST(geometry_test, test_ST_Lenght3) {
