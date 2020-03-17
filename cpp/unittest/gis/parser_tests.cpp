@@ -100,3 +100,9 @@ TEST(parser_test, next_token6) {
   ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::LeftBracket);
   ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::Unknown);
 }
+
+TEST(parser_test, isvalidwkt) {
+    auto p1 = (const char*)"point ( 12 )";
+    ASSERT_FALSE(arctern::gis::parser::IsValidWkt(p1));
+}
+
