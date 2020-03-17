@@ -48,7 +48,7 @@ __all__ = [
     "heat_map",
     "heat_map_wkt",
     "choropleth_map",
-    "coordinate_projection",
+    # "coordinate_projection",
     "transform_and_projection",
 ]
 
@@ -264,12 +264,12 @@ def choropleth_map(wkt_data, count_data, conf):
     rs = arctern_core_.choropleth_map(arr_wkt, arr_count, conf)
     return rs.buffers()[1].to_pybytes().hex()
 
-def coordinate_projection(geos, top_left, bottom_right, height, width):
-    arr_geos = pa.array(geos, type='string')
-    src_rs1 = bytes(top_left, encoding="utf8")
-    dst_rs1 = bytes(bottom_right, encoding="utf8")
-    rs = arctern_core_.coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
-    return rs.to_pandas()
+# def coordinate_projection(geos, top_left, bottom_right, height, width):
+#     arr_geos = pa.array(geos, type='string')
+#     src_rs1 = bytes(top_left, encoding="utf8")
+#     dst_rs1 = bytes(bottom_right, encoding="utf8")
+#     rs = arctern_core_.coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
+#     return rs.to_pandas()
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     arr_geos = pa.array(geos, type='string')

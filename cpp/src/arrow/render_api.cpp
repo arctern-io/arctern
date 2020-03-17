@@ -59,33 +59,33 @@ std::shared_ptr<arrow::Array> transform_and_projection(const std::shared_ptr<arr
   return TransformAndProjection(geos, src_rs, dst_rs, bottom_right, top_left, height, width);
 }
 
-std::shared_ptr<arrow::Array> coordinate_projection(
-    const std::shared_ptr<arrow::Array>& input_point, const std::string top_left,
-    const std::string bottom_right, const int height, const int width) {
-  auto arr_wkt_length = input_point->length();
-  auto wkt_type = input_point->type_id();
-  assert(wkt_type == arrow::Type::STRING);
-
-  auto string_array = std::static_pointer_cast<arrow::StringArray>(input_point);
-  std::vector<std::string> input_wkt(arr_wkt_length);
-  for (int i = 0; i < arr_wkt_length; i++) {
-    input_wkt[i] = string_array->GetString(i);
-  }
-
-  auto output_point =
-      coordinate_projection(input_wkt, top_left, bottom_right, height, width);
-  //  assert(arr_wkt_length == output_point.size());
-
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> points;
-  for (int i = 0; i < arr_wkt_length; i++) {
-    string_builder.Append(output_point[i]);
-  }
-  std::vector<std::string>().swap(input_wkt);
-  std::vector<std::string>().swap(output_point);
-  string_builder.Finish(&points);
-  return points;
-}
+//std::shared_ptr<arrow::Array> coordinate_projection(
+//    const std::shared_ptr<arrow::Array>& input_point, const std::string top_left,
+//    const std::string bottom_right, const int height, const int width) {
+//  auto arr_wkt_length = input_point->length();
+//  auto wkt_type = input_point->type_id();
+//  assert(wkt_type == arrow::Type::STRING);
+//
+//  auto string_array = std::static_pointer_cast<arrow::StringArray>(input_point);
+//  std::vector<std::string> input_wkt(arr_wkt_length);
+//  for (int i = 0; i < arr_wkt_length; i++) {
+//    input_wkt[i] = string_array->GetString(i);
+//  }
+//
+//  auto output_point =
+//      coordinate_projection(input_wkt, top_left, bottom_right, height, width);
+//  //  assert(arr_wkt_length == output_point.size());
+//
+//  arrow::StringBuilder string_builder;
+//  std::shared_ptr<arrow::Array> points;
+//  for (int i = 0; i < arr_wkt_length; i++) {
+//    string_builder.Append(output_point[i]);
+//  }
+//  std::vector<std::string>().swap(input_wkt);
+//  std::vector<std::string>().swap(output_point);
+//  string_builder.Finish(&points);
+//  return points;
+//}
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
                                         const std::string& conf) {

@@ -26,9 +26,10 @@
 namespace arctern {
 namespace render {
 
-void pointXY_from_wkt(const std::string& wkt, double& x, double& y) {
+void pointXY_from_wkt(const std::string& wkt, double& x, double& y, void* poCT) {
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
+  CHECK_GDAL(OGR_G_Transform(res_geo, (OGRCoordinateTransformation*)poCT));
   auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
   x = rst_pointer->getX();
   y = rst_pointer->getY();
@@ -63,13 +64,15 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
 
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
-  pointXY_from_wkt(top_left, top_left_x, top_left_y);
-  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
+  pointXY_from_wkt(top_left, top_left_x, top_left_y, poCT);
+  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y, poCT);
   auto coordinate_width = bottom_right_x - top_left_x;
   auto coordinate_height = top_left_y - bottom_right_y;
   uint32_t output_x, output_y;
+  std::cout << top_left_x << "," << top_left_y << "," << bottom_right_x << "," << bottom_right_y << std::endl;
 
   for (int32_t i = 0; i < len; i++) {
+    std::cout << wkt_geometries->GetString(i).c_str() << std::endl;
     if (wkt_geometries->IsNull(i)) continue;
     OGRGeometry* geo = nullptr;
     auto err_code =
@@ -86,9 +89,11 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
       if (type == wkbPoint) {
         output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) / coordinate_width);
         output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) / coordinate_height);
+        std::cout << "get here1" << output_x << std::endl;
         geo->toPoint()->setX(output_x);
         geo->toPoint()->setY(output_y);
       } else if (type == wkbPolygon) {
+        std::cout << "get here2" << std::endl;
         auto ring = geo->toPolygon()->getExteriorRing();
         auto ring_size = ring->getNumPoints();
         for (int j = 0; j < ring_size; j++) {
@@ -102,9 +107,13 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
         throw std::runtime_error(err_msg);
       }
 
+      std::cout << "get here3" << std::endl;
+      std::cout << geo->toPoint()->getX() << std::endl;
+      std::cout << geo->toPoint()->getY() << std::endl;
       // 3. export to wkt
       char* str;
-      err_code = OGR_G_ExportToWkt(&geo, &str);
+      err_code = OGR_G_ExportToWkt(geo, &str);
+      std::cout << str << std::endl;
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);
@@ -124,32 +133,32 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   return results;
 }
 
-std::vector<std::string> coordinate_projection(const std::vector<std::string>& point_wkt,
-                                               const std::string top_left,
-                                               const std::string bottom_right,
-                                               const int height, const int width) {
-  double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
-  pointXY_from_wkt(top_left, top_left_x, top_left_y);
-  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
-
-  int size = point_wkt.size();
-  std::vector<std::string> output_point(size);
-  double input_x, input_y;
-  uint32_t output_x, output_y;
-  for (int i = 0; i < size; i++) {
-    pointXY_from_wkt(point_wkt[i], input_x, input_y);
-    output_x =
-        (uint32_t)(((input_x - top_left_x) * width) / (bottom_right_x - top_left_x));
-    output_y =
-        (uint32_t)(((input_y - bottom_right_y) * height) / (top_left_y - bottom_right_y));
-    OGRPoint point(output_x, output_y);
-    char* point_str = nullptr;
-    CHECK_GDAL(point.exportToWkt(&point_str));
-    std::string out_wkt(point_str);
-    output_point[i] = out_wkt;
-  }
-  return output_point;
-}
+//std::vector<std::string> coordinate_projection(const std::vector<std::string>& point_wkt,
+//                                               const std::string top_left,
+//                                               const std::string bottom_right,
+//                                               const int height, const int width) {
+//  double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
+//  pointXY_from_wkt(top_left, top_left_x, top_left_y);
+//  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
+//
+//  int size = point_wkt.size();
+//  std::vector<std::string> output_point(size);
+//  double input_x, input_y;
+//  uint32_t output_x, output_y;
+//  for (int i = 0; i < size; i++) {
+//    pointXY_from_wkt(point_wkt[i], input_x, input_y);
+//    output_x =
+//        (uint32_t)(((input_x - top_left_x) * width) / (bottom_right_x - top_left_x));
+//    output_y =
+//        (uint32_t)(((input_y - bottom_right_y) * height) / (top_left_y - bottom_right_y));
+//    OGRPoint point(output_x, output_y);
+//    char* point_str = nullptr;
+//    CHECK_GDAL(point.exportToWkt(&point_str));
+//    std::string out_wkt(point_str);
+//    output_point[i] = out_wkt;
+//  }
+//  return output_point;
+//}
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {

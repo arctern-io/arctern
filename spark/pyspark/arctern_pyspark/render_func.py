@@ -12,18 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# import json
-# import pyarrow as pa
-#
-# from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
-# from pyspark.sql.types import *
-#
-# def save_png_2D(hex_data, file_name):
-#     import binascii
-#     binary_string = binascii.unhexlify(str(hex_data))
-#     with open(file_name, 'wb') as png:
-#         png.write(binary_string)
-
 __all__ = [
     "pointmap",
     "heatmap",
@@ -78,8 +66,11 @@ def heatmap(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
+# <<<<<<< HEAD
+    @pandas_udf("double", PandasUDFType.GROUPED_AGG)
+    def sum_udf(v):
+        return v.sum()
 
-    from arctern import transform_and_projection
     import json
     vega_dict = json.loads(vega)
     bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
@@ -88,11 +79,36 @@ def heatmap(df, vega):
     height = vega_dict["height"]
     from ._wrapper_func import TransformAndProjection
     from ._wrapper_func import ST_Point
-    trans_projec_df = df.select(TransformAndProjection(ST_Point(col('x'), col('y')), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
+    trans_projec_df = df.select(TransformAndProjection(col('point'), lit('EPSG:4326'), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))))
+    trans_projec_df.show(20)
 
-    first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
-    final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
-    hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
+    agg_df = trans_projec_df.mapInPandas(render_agg_UDF)
+    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
+    # agg_df.show(20, False)
+    hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
+
+    # first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
+    # final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
+    # hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
+# =======
+#
+#     @pandas_udf("double", PandasUDFType.GROUPED_AGG)
+#     def sum_udf(v):
+#         return v.sum()
+#
+#     from arctern.util.vega import heat_map
+#     vega
+#     from ._wrapper_func import ST_Transform, Projection
+#     res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
+#     res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))
+#
+#     agg_df = df.mapInPandas(render_agg_UDF)
+#     agg_df = agg_df.coalesce(1)
+#     agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
+#     agg_df.show(20, False)
+#     hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
+# >>>>>>> afd1b8dd6099464bf93057a130566df8fe8c025e
     return hex_data
 
 def choroplethmap(df, vega):
