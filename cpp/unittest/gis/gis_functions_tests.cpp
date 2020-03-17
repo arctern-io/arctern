@@ -2762,7 +2762,7 @@ TEST(geometry_test, test_ST_Area) {
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,-1 0,0 -1,0 0)) )";
   auto p10 = "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)";
 
   arrow::StringBuilder builder;
@@ -2790,7 +2790,7 @@ TEST(geometry_test, test_ST_Area) {
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
-  // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(8), 2.5);
   EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
 }
 
