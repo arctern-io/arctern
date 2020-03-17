@@ -113,8 +113,8 @@ bool IsValidWkt(const char *src){
     if(src==nullptr) return false;
     TokenInfo token;
     int bracet_cnt = 0;
-    while(NextToken(src+token.len,&token)){
-
+    while(NextToken(src,&token)){
+        src+=token.len;
     }
     return false;
 }
