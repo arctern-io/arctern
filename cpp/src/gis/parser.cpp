@@ -123,7 +123,7 @@ bool NextToken(const char* src, TokenInfo* token) {
 bool IsValidWkt(const char* src) {
   if (src == nullptr) return false;
   TokenInfo token;
-  int bracet_nest = 0;
+  int bracket_nest = 0;
   int num_cnt = 0;
   auto pre_type = TokenType::Unknown;
 
@@ -140,7 +140,7 @@ bool IsValidWkt(const char* src) {
             break;
           }
           case TokenType::LeftBracket: {
-            ++bracet_nest;
+            ++bracket_nest;
             break;
           }
           default: { return false; }
@@ -154,7 +154,7 @@ bool IsValidWkt(const char* src) {
             break;
           }
           case TokenType::LeftBracket: {
-            ++bracet_nest;
+            ++bracket_nest;
             break;
           }
           case TokenType::WktKey: {
@@ -172,12 +172,14 @@ bool IsValidWkt(const char* src) {
           }
           case TokenType::Comma: {
             if ((num_cnt != 2) && (num_cnt != 3)) return false;
+            num_cnt = 0;
             break;
           }
           case TokenType::RightBracket: {
-            --bracet_nest;
-            if (bracet_nest < 0) return false;
+            --bracket_nest;
+            if (bracket_nest < 0) return false;
             if ((num_cnt != 2) && (num_cnt != 3)) return false;
+            num_cnt = 0;
             break;
           }
           default: { return false; }
@@ -194,8 +196,8 @@ bool IsValidWkt(const char* src) {
             break;
           }
           case TokenType::RightBracket: {
-            --bracet_nest;
-            if (bracet_nest < 0) return false;
+            --bracket_nest;
+            if (bracket_nest < 0) return false;
             break;
           }
           default: { return false; }
@@ -208,8 +210,8 @@ bool IsValidWkt(const char* src) {
             break;
           }
           case TokenType::RightBracket: {
-            --bracet_nest;
-            if (bracet_nest < 0) return false;
+            --bracket_nest;
+            if (bracket_nest < 0) return false;
             break;
           }
           default: { return false; }
@@ -224,7 +226,7 @@ bool IsValidWkt(const char* src) {
     pre_type = token.type;
     src = token.start + token.len;
   }
-  if (bracet_nest != 0) return false;
+  if (bracket_nest != 0) return false;
   if ((pre_type == TokenType::RightBracket) || (pre_type == TokenType::Empty)) {
     return true;
   }
