@@ -1103,10 +1103,14 @@ TEST(geometry_test, test_ST_Touches) {
   auto l57 = "POLYGON ((0 1, 2 3, 1 1, 1 0, 0 1))";
   auto l58 = "POLYGON ((0 1, 2 3, 1 1, 1 0, 0 1))";
 
-  auto l59 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l60 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l62 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto l59 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l60 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l61 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l62 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
 
   arrow::StringBuilder builder1;
   std::shared_ptr<arrow::Array> input1;
@@ -1188,8 +1192,9 @@ TEST(geometry_test, test_ST_Touches) {
   auto r12 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 0 1, 0 1) )";
   auto r13 = "MULTIPOLYGON ( ((0 0, 1 1, 0 2,0 0)) )";
   auto r14 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r16 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)), ((0 1, 0 1, 0 1,0 1)) )";
+  auto r15 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r16 = "MULTIPOLYGON ( ((0 0, 0 1, 1 1,0 0)) )";
 
   auto r17 = "MULTIPOINT (0 1, 1 0, 1 8, 1 2)";
   auto r18 = "MULTIPOINT (0 1, 0 2)";
@@ -1203,7 +1208,8 @@ TEST(geometry_test, test_ST_Touches) {
   auto r26 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r27 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r28 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r29 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r31 = "LINESTRING (0 0, 1 0, 1 8)";
@@ -1216,7 +1222,8 @@ TEST(geometry_test, test_ST_Touches) {
   auto r38 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r39 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r40 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r41 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r42 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r43 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -1226,7 +1233,8 @@ TEST(geometry_test, test_ST_Touches) {
   auto r47 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 1 1) )";
   auto r48 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r49 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r50 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r51 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r52 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -1234,12 +1242,14 @@ TEST(geometry_test, test_ST_Touches) {
   auto r54 = "POLYGON ((0 0, 1 0, 1 8, 0 0.5, 0 0))";
   auto r55 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r56 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r57 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r58 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r59 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r60 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r61 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r62 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   arrow::StringBuilder builder2;
@@ -1311,23 +1321,22 @@ TEST(geometry_test, test_ST_Touches) {
   auto res = arctern::gis::ST_Touches(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // ASSERT_EQ(res_bool->Value(0 ), true);
+  ASSERT_EQ(res_bool->Value(0), false);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
-  // ASSERT_EQ(res_bool->Value(3 ), true);
+  ASSERT_EQ(res_bool->Value(3), false);
   ASSERT_EQ(res_bool->Value(4), false);
-  // ASSERT_EQ(res_bool->Value(5 ), true);
+  ASSERT_EQ(res_bool->Value(5), false);
   ASSERT_EQ(res_bool->Value(6), false);
   ASSERT_EQ(res_bool->Value(7), true);
   ASSERT_EQ(res_bool->Value(8), true);
   ASSERT_EQ(res_bool->Value(9), false);
   ASSERT_EQ(res_bool->Value(10), false);
-  // ASSERT_EQ(res_bool->Value(11), true);
-  // ASSERT_EQ(res_bool->Value(12), false);
+  ASSERT_EQ(res_bool->Value(11), false);
+  ASSERT_EQ(res_bool->Value(12), true);
   ASSERT_EQ(res_bool->Value(13), true);
-  // ASSERT_EQ(res_bool->Value(14), false);
-  // ASSERT_EQ(res_bool->Value(15), true);
-  // TODO : need verify against geospark result below
+  ASSERT_EQ(res_bool->Value(14), true);
+  ASSERT_EQ(res_bool->Value(15), true);
   ASSERT_EQ(res_bool->Value(16), false);
   ASSERT_EQ(res_bool->Value(17), false);
   ASSERT_EQ(res_bool->Value(18), true);
@@ -1340,7 +1349,7 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(25), false);
   ASSERT_EQ(res_bool->Value(26), true);
   ASSERT_EQ(res_bool->Value(27), false);
-  ASSERT_EQ(res_bool->Value(28), true);
+  ASSERT_EQ(res_bool->Value(28), false);
   ASSERT_EQ(res_bool->Value(29), true);
   ASSERT_EQ(res_bool->Value(30), false);
   ASSERT_EQ(res_bool->Value(31), false);
@@ -1352,7 +1361,7 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(37), false);
   ASSERT_EQ(res_bool->Value(38), true);
   ASSERT_EQ(res_bool->Value(39), false);
-  ASSERT_EQ(res_bool->Value(40), true);
+  ASSERT_EQ(res_bool->Value(40), false);
   ASSERT_EQ(res_bool->Value(41), true);
   ASSERT_EQ(res_bool->Value(42), true);
   ASSERT_EQ(res_bool->Value(43), true);
@@ -1361,19 +1370,19 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(46), false);
   ASSERT_EQ(res_bool->Value(47), false);
   ASSERT_EQ(res_bool->Value(48), false);
-  ASSERT_EQ(res_bool->Value(49), true);
+  ASSERT_EQ(res_bool->Value(49), false);
   ASSERT_EQ(res_bool->Value(50), false);
   ASSERT_EQ(res_bool->Value(51), true);
   ASSERT_EQ(res_bool->Value(52), false);
   ASSERT_EQ(res_bool->Value(53), false);
   ASSERT_EQ(res_bool->Value(54), false);
   ASSERT_EQ(res_bool->Value(55), false);
-  ASSERT_EQ(res_bool->Value(56), true);
+  ASSERT_EQ(res_bool->Value(56), false);
   ASSERT_EQ(res_bool->Value(57), false);
-  ASSERT_EQ(res_bool->Value(58), true);
-  ASSERT_EQ(res_bool->Value(59), true);
-  ASSERT_EQ(res_bool->Value(60), true);
-  ASSERT_EQ(res_bool->Value(61), true);
+  ASSERT_EQ(res_bool->Value(58), false);
+  ASSERT_EQ(res_bool->Value(59), false);
+  ASSERT_EQ(res_bool->Value(60), false);
+  ASSERT_EQ(res_bool->Value(61), false);
 }
 
 TEST(geometry_test, test_ST_Overlaps) {
@@ -1418,11 +1427,11 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder1.Append(std::string(l10));
   builder1.Append(std::string(l11));
   builder1.Append(std::string(l12));
-  // builder1.Append(std::string(l13));
-  // builder1.Append(std::string(l14));
-  // builder1.Append(std::string(l15));
-  // builder1.Append(std::string(l16));
-  // builder1.Append(std::string(l17));
+  builder1.Append(std::string(l13));
+  builder1.Append(std::string(l14));
+  builder1.Append(std::string(l15));
+  builder1.Append(std::string(l16));
+  builder1.Append(std::string(l17));
   builder1.Append(std::string(l18));
   builder1.Append(std::string(l19));
   builder1.Append(std::string(l20));
@@ -1476,11 +1485,11 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder2.Append(std::string(r10));
   builder2.Append(std::string(r11));
   builder2.Append(std::string(r12));
-  // builder2.Append(std::string(r13));
-  // builder2.Append(std::string(r14));
-  // builder2.Append(std::string(r15));
-  // builder2.Append(std::string(r16));
-  // builder2.Append(std::string(r17));
+  builder2.Append(std::string(r13));
+  builder2.Append(std::string(r14));
+  builder2.Append(std::string(r15));
+  builder2.Append(std::string(r16));
+  builder2.Append(std::string(r17));
   builder2.Append(std::string(r18));
   builder2.Append(std::string(r19));
   builder2.Append(std::string(r20));
@@ -1504,17 +1513,17 @@ TEST(geometry_test, test_ST_Overlaps) {
   ASSERT_EQ(res_bool->Value(9), false);
   ASSERT_EQ(res_bool->Value(10), false);
   ASSERT_EQ(res_bool->Value(11), false);
-  // ASSERT_EQ(res_bool->Value(12), false); // true
-  // ASSERT_EQ(res_bool->Value(13), false); // gis error
-  // ASSERT_EQ(res_bool->Value(14), true);  // gis error
-  // ASSERT_EQ(res_bool->Value(15), false); // gis error
-  // ASSERT_EQ(res_bool->Value(16), false); // gis error
-  // ASSERT_EQ(res_bool->Value(17), true);  // gis error
+  ASSERT_EQ(res_bool->Value(12), false);
   ASSERT_EQ(res_bool->Value(13), false);
   ASSERT_EQ(res_bool->Value(14), true);
-  ASSERT_EQ(res_bool->Value(15), true);
-  ASSERT_EQ(res_bool->Value(16), true);
-  ASSERT_EQ(res_bool->Value(17), true);  // geospark error
+  ASSERT_EQ(res_bool->Value(15), false);
+  ASSERT_EQ(res_bool->Value(16), false);
+  ASSERT_EQ(res_bool->Value(17), true);
+  ASSERT_EQ(res_bool->Value(18), false);
+  ASSERT_EQ(res_bool->Value(19), true);
+  ASSERT_EQ(res_bool->Value(20), true);
+  ASSERT_EQ(res_bool->Value(21), true);
+  ASSERT_EQ(res_bool->Value(22), true);
 }
 
 TEST(geometry_test, test_ST_Crosses) {
@@ -1751,11 +1760,10 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,1 0,1 1,0 1,0 0))");
   ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (0 0,1 0,1 2,1 2)");
   ASSERT_EQ(res_str->GetString(5),
-            "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))");  //?
+            "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))");
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 1,1 0,0 0))");
-  // ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 4,4 4,4 0,0 0)),((0 0,4 0,4
-  // 1,0 1,0 0)))"); //MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0
-  // 0)))
+  ASSERT_EQ(res_str->GetString(7),
+            "MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))");
 }
 
 TEST(geometry_test, test_ST_Contains) {
@@ -1882,7 +1890,7 @@ TEST(geometry_test, test_ST_Contains) {
   ASSERT_EQ(res_bool->Value(15), true);
   ASSERT_EQ(res_bool->Value(16), true);
   ASSERT_EQ(res_bool->Value(17), true);
-  // ASSERT_EQ(res_bool->Value(18), true); // false
+  ASSERT_EQ(res_bool->Value(18), false);
   ASSERT_EQ(res_bool->Value(19), false);
   ASSERT_EQ(res_bool->Value(20), true);
   ASSERT_EQ(res_bool->Value(21), false);
@@ -2038,8 +2046,9 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r12 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto r13 = "MULTIPOLYGON ( ((0 0, 1 1, 0 2,0 0)) )";
   auto r14 = "MULTIPOLYGON ( ((0 0, 1 1, 2 0,0 0)) )";
-  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r16 = "MULTIPOLYGON ( ((0 0, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 0)) )";
+  auto r15 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r16 = "MULTIPOLYGON ( ((0 0, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 0)) )";
 
   auto r17 = "MULTIPOINT (0 1, 1 0, 1 8, 1 2)";
   auto r18 = "MULTIPOINT (0 1, 0 2)";
@@ -2053,8 +2062,9 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r26 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r27 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r28 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
+  auto r29 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 -1, 0 -1, 0 -1, 0 -1)) )";
 
   auto r31 = "LINESTRING (0 0, 1 0, 1 8)";
   auto r32 = "LINESTRING (0 0, 1 1, 0 1)";
@@ -2066,7 +2076,8 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r38 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r39 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r40 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r41 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r42 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r43 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -2076,7 +2087,8 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r47 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 1 1) )";
   auto r48 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r49 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r50 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r51 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r52 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -2084,12 +2096,14 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r54 = "POLYGON ((0 0, 1 0, 1 8, 0 0.5, 0 0))";
   auto r55 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r56 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r57 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r58 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r59 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r60 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r61 =
+      "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r62 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   arrow::StringBuilder builder2;
@@ -2164,20 +2178,19 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
-  // ASSERT_EQ(res_bool->Value(3), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(3), false);
   ASSERT_EQ(res_bool->Value(4), true);
   ASSERT_EQ(res_bool->Value(5), true);
-  // ASSERT_EQ(res_bool->Value(6), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(6), false);
   ASSERT_EQ(res_bool->Value(7), true);
   ASSERT_EQ(res_bool->Value(8), true);
-  // ASSERT_EQ(res_bool->Value(9), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(9), false);
   ASSERT_EQ(res_bool->Value(10), true);
-  // ASSERT_EQ(res_bool->Value(11), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(11), false);
   ASSERT_EQ(res_bool->Value(12), true);
-  // ASSERT_EQ(res_bool->Value(13), false); // POINT EMPTY
-  // ASSERT_EQ(res_bool->Value(14), true); // error
-  // ASSERT_EQ(res_bool->Value(15), false); // error
-  // TODO : need verify against geospark result below.
+  ASSERT_EQ(res_bool->Value(13), false);
+  ASSERT_EQ(res_bool->Value(14), true);
+  ASSERT_EQ(res_bool->Value(15), false);
   ASSERT_EQ(res_bool->Value(16), true);
   ASSERT_EQ(res_bool->Value(17), false);
   ASSERT_EQ(res_bool->Value(18), true);
@@ -2338,7 +2351,7 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(15), true);
   ASSERT_EQ(res_bool->Value(16), true);
   ASSERT_EQ(res_bool->Value(17), true);
-  // ASSERT_EQ(res_bool->Value(18), true); // false
+  ASSERT_EQ(res_bool->Value(18), false);
   ASSERT_EQ(res_bool->Value(19), false);
   ASSERT_EQ(res_bool->Value(20), true);
   ASSERT_EQ(res_bool->Value(21), false);
@@ -2793,7 +2806,7 @@ TEST(geometry_test, test_ST_Area) {
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,-1 0,0 -1,0 0)) )";
   auto p10 = "LINESTRING (77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)";
 
   arrow::StringBuilder builder;
@@ -2821,7 +2834,7 @@ TEST(geometry_test, test_ST_Area) {
   EXPECT_DOUBLE_EQ(res_double->Value(5), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(6), 2);
   EXPECT_DOUBLE_EQ(res_double->Value(7), 20);
-  // EXPECT_DOUBLE_EQ(res_double->Value(8), 1.5);
+  EXPECT_DOUBLE_EQ(res_double->Value(8), 2.5);
   EXPECT_DOUBLE_EQ(res_double->Value(9), 0);
 }
 
@@ -2834,7 +2847,7 @@ TEST(geometry_test, test_ST_Centroid) {
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,-1 0,0 -1,0 0)) )";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -2854,17 +2867,13 @@ TEST(geometry_test, test_ST_Centroid) {
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
   ASSERT_EQ(res_str->GetString(1), "POINT (0.25 0.75)");
-  ASSERT_EQ(res_str->GetString(2),
-            "POINT (0.646446609406726 0.353553390593274)");  // geospark:POINT
-                                                             // (0.6464466094067263
-                                                             // 0.3535533905932737)
+  ASSERT_EQ(res_str->GetString(2), "POINT (0.646446609406726 0.353553390593274)");
   ASSERT_EQ(res_str->GetString(3), "POINT (0.5 0.5)");
   ASSERT_EQ(res_str->GetString(4), "POINT (0.75 1.0)");
   ASSERT_EQ(res_str->GetString(5), "POINT (2.6444665557806 41.5285902625069)");
   ASSERT_EQ(res_str->GetString(6), "POINT (0.666666666666667 1.33333333333333)");
   ASSERT_EQ(res_str->GetString(7), "POINT (2.0 1.7)");
-  // ASSERT_EQ(res_str->GetString(8),"POINT
-  // (0.7777777777777778 1.6666666666666667)");//POINT (0.6 1.13333333333333)
+  ASSERT_EQ(res_str->GetString(8), "POINT (0.466666666666667 1.0)");
 }
 
 TEST(geometry_test, test_ST_Lenght3) {
@@ -3036,7 +3045,6 @@ TEST(geometry_test, test_ST_NPoints2) {
   ASSERT_EQ(res_int->IsNull(6), true);
 }
 
-// TODO : geospark ST_NPoints can not work.
 TEST(geometry_test, test_ST_NPoints) {
   auto p1 = "POINT (0 1)";
   auto p2 = "LINESTRING (0 0, 0 1, 1 1)";
@@ -3159,7 +3167,7 @@ TEST(geometry_test, test_ST_Buffer) {
   auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
   auto p8 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 0 1, 4 1, 4 0, 0 0)) )";
-  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,1 0,0 1,0 0)) )";
+  auto p9 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)), ((0 0,-1 0,0 -1,0 0)) )";
 
   arrow::StringBuilder builder;
   std::shared_ptr<arrow::Array> input;
@@ -3176,17 +3184,85 @@ TEST(geometry_test, test_ST_Buffer) {
 
   auto res = arctern::gis::ST_Buffer(input, 0);
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  auto res1 = arctern::gis::ST_Buffer(input, 1, 2);
+  auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
-  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");  // geospark :MULTIPOLYGON EMPTY
+  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))");
-  // ASSERT_EQ(res_str->GetString(8), "POLYGON ((0.2 0.8, 1 4, 1 0, 0.2 0.8))"); //POLYGON
-  // ((0 0,0 1,0.2 0.8,1 4,1 0,0 0))
+  ASSERT_EQ(res_str->GetString(8),
+            "MULTIPOLYGON (((0 0,1 4,1 0,0 0)),((0 0,0 -1,-1 0,0 0)))");
+
+  ASSERT_EQ(res1_str->GetString(0),
+            "POLYGON ((1 1,0.707106781186548 0.292893218813453,0.0 "
+            "0.0,-0.707106781186546 0.292893218813451,-1.0 1.0,-0.70710678118655 "
+            "1.70710678118654,-0.0 2.0,0.707106781186544 1.70710678118655,1 1))");
+  ASSERT_EQ(
+      res1_str->GetString(1),
+      "POLYGON ((-1 1,-0.707106781186547 1.70710678118655,0 2,1 2,1.70710678118655 "
+      "1.70710678118655,2 1,1.70710678118655 0.292893218813453,1 0,0.707106781186547 "
+      "-0.707106781186548,0.0 -1.0,-0.707106781186547 -0.707106781186548,-1 0,-1 1))");
+  ASSERT_EQ(res1_str->GetString(2),
+            "POLYGON ((-1.0 -0.0,-1.0 0.0,-0.707106781186548 "
+            "0.707106781186547,-0.707106781186548 0.707106781186547,-0.707106781186547 "
+            "0.707106781186547,0.292893218813453 1.70710678118655,1 2,1.70710678118655 "
+            "1.70710678118655,2 1,2 0,1.70710678118655 -0.707106781186547,1 -1,0 -1,-0.0 "
+            "-1.0,-0.0 -1.0,-0.707106781186547 -0.707106781186548,-0.707106781186548 "
+            "-0.707106781186547,-0.707106781186548 -0.707106781186547,-0.853553390593274 "
+            "-0.353553390593274,-1.0 -0.0,-1.0 -0.0))");
+  ASSERT_EQ(res1_str->GetString(3),
+            "POLYGON ((-1 0,-1 1,-0.707106781186547 1.70710678118655,0 2,1 "
+            "2,1.70710678118655 1.70710678118655,2 1,2 0,1.70710678118655 "
+            "-0.707106781186547,1 -1,0 -1,-0.707106781186545 -0.70710678118655,-1 0))");
+  ASSERT_EQ(res1_str->GetString(4),
+            "MULTIPOLYGON (((0.0 2.0,0.29289321881345 2.70710678118654,1.0 "
+            "3.0,1.70710678118654 2.70710678118655,2 2,1.70710678118655 "
+            "1.29289321881345,1.0 1.0,0.292893218813454 1.29289321881345,0.0 2.0)),((0.5 "
+            "-0.792893218813453,0.0 -1.0,-0.707106781186546 -0.707106781186549,-1.0 "
+            "-0.0,-0.70710678118655 0.707106781186545,-0.0 1.0,0.5 0.792893218813453,1.0 "
+            "1.0,1.70710678118654 0.707106781186551,2 0,1.70710678118655 "
+            "-0.707106781186547,1.0 -1.0,0.5 -0.792893218813453)))");
+  ASSERT_EQ(res1_str->GetString(5),
+            "POLYGON ((-0.937016024448821 -0.152056767987832,-1.0 0.0,-0.910927207563347 "
+            "0.215040743539011,-0.894427190999916 0.447213595499958,-0.565706692550045 "
+            "1.1046545923997,-1.31622776601684 1.05131670194949,-1.89442719099992 "
+            "1.55278640450004,-1.94868329805051 2.31622776601684,-1.44721359549996 "
+            "2.89442719099992,2.55278640450004 4.89442719099992,3.19794522583525 "
+            "4.98021308273713,3.7592566023653 4.65079137345597,7.590594004515 "
+            "0.180897737614646,-4.99212897897888 99.8747798376046,-4.79008515481871 "
+            "100.612997102877,-4.12522016239539 100.992128978979,-3.38700289712341 "
+            "100.790085154819,-3.00787102102112 100.125220162395,9.99212897897888 "
+            "-2.87477983760461,9.74697956593102 -3.66484699599345,8.99066878694214 "
+            "-3.99995646328371,8.2407433976347 -3.65079137345597,2.74886594752065 "
+            "2.75639898501043,1.92443668016085 2.34418435133053,1.94868329805051 "
+            "2.31622776601684,1.89442719099992 1.55278640450004,1.82693813706432 "
+            "1.41780829662886,2 1,2 0,1.70710678118655 -0.707106781186547,1 -1,0 "
+            "-1,-0.21504074353901 -0.910927207563347,-0.447213595499958 "
+            "-0.894427190999916,-0.555050013198716 -0.770090756737726,-0.707106781186548 "
+            "-0.707106781186547,-0.7961795736232 -0.492066037647537,-0.948683298050514 "
+            "-0.316227766016839,-0.937016024448821 -0.152056767987832))");
+  ASSERT_EQ(res1_str->GetString(6),
+            "POLYGON ((0 -1,-0.788205438016111 -0.615412209402633,-0.970142500145332 "
+            "0.242535625036333,0.029857499854668 4.24253562503633,0.433984813600836 "
+            "4.82439481364545,1.1221832636957 4.9925075566829,1.74906049945772 "
+            "4.66250159860347,2 4,2 0,1.70710678118655 -0.707106781186547,1 -1,0 -1))");
+  ASSERT_EQ(res1_str->GetString(7),
+            "POLYGON ((-1 0,-1 1,-1 4,-0.707106781186547 4.70710678118655,0 5,4 "
+            "5,4.70710678118655 4.70710678118655,5 4,5 1,5 0,4.70710678118655 "
+            "-0.707106781186547,4 -1,0 -1,-0.70710678118655 -0.707106781186545,-1 0))");
+  ASSERT_EQ(res1_str->GetString(8),
+            "POLYGON ((-0.780776406404415 1.0,0.029857499854668 "
+            "4.24253562503633,0.433984813600836 4.82439481364545,1.1221832636957 "
+            "4.9925075566829,1.74906049945772 4.66250159860347,2 4,2 0,1.70710678118655 "
+            "-0.707106781186547,1 -1,0.707106781186548 -1.70710678118655,0.0 "
+            "-2.0,-0.707106781186547 -1.70710678118655,-1.70710678118655 "
+            "-0.707106781186547,-2.0 -0.0,-1.70710678118655 0.707106781186545,-1 "
+            "1,-0.780776406404415 1.0))");
 }
 
 TEST(geometry_test, test_ST_PolygonFromEnvelope) {
