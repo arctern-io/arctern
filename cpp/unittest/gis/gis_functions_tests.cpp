@@ -1161,8 +1161,8 @@ TEST(geometry_test, test_ST_Touches) {
   auto r12 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 0 1, 0 1) )";
   auto r13 = "MULTIPOLYGON ( ((0 0, 1 1, 0 2,0 0)) )";
   auto r14 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r16 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)), ((0 1, 0 1, 0 1,0 1)) )";
+  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r16 = "MULTIPOLYGON ( ((0 0, 0 1, 1 1,0 0)) )";
 
   auto r17 = "MULTIPOINT (0 1, 1 0, 1 8, 1 2)";
   auto r18 = "MULTIPOINT (0 1, 0 2)";
@@ -1284,23 +1284,22 @@ TEST(geometry_test, test_ST_Touches) {
   auto res = arctern::gis::ST_Touches(input1, input2);
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  // ASSERT_EQ(res_bool->Value(0 ), true);
+  ASSERT_EQ(res_bool->Value(0), false);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), false);
-  // ASSERT_EQ(res_bool->Value(3 ), true);
+  ASSERT_EQ(res_bool->Value(3), false);
   ASSERT_EQ(res_bool->Value(4), false);
-  // ASSERT_EQ(res_bool->Value(5 ), true);
+  ASSERT_EQ(res_bool->Value(5), false);
   ASSERT_EQ(res_bool->Value(6), false);
   ASSERT_EQ(res_bool->Value(7), true);
   ASSERT_EQ(res_bool->Value(8), true);
   ASSERT_EQ(res_bool->Value(9), false);
   ASSERT_EQ(res_bool->Value(10), false);
-  // ASSERT_EQ(res_bool->Value(11), true);
-  // ASSERT_EQ(res_bool->Value(12), false);
+  ASSERT_EQ(res_bool->Value(11), false);
+  ASSERT_EQ(res_bool->Value(12), true);
   ASSERT_EQ(res_bool->Value(13), true);
-  // ASSERT_EQ(res_bool->Value(14), false);
-  // ASSERT_EQ(res_bool->Value(15), true);
-  // TODO : need verify against geospark result below
+  ASSERT_EQ(res_bool->Value(14), true);
+  ASSERT_EQ(res_bool->Value(15), true);
   ASSERT_EQ(res_bool->Value(16), false);
   ASSERT_EQ(res_bool->Value(17), false);
   ASSERT_EQ(res_bool->Value(18), true);
@@ -1391,11 +1390,11 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder1.Append(std::string(l10));
   builder1.Append(std::string(l11));
   builder1.Append(std::string(l12));
-  // builder1.Append(std::string(l13));
-  // builder1.Append(std::string(l14));
-  // builder1.Append(std::string(l15));
-  // builder1.Append(std::string(l16));
-  // builder1.Append(std::string(l17));
+  builder1.Append(std::string(l13));
+  builder1.Append(std::string(l14));
+  builder1.Append(std::string(l15));
+  builder1.Append(std::string(l16));
+  builder1.Append(std::string(l17));
   builder1.Append(std::string(l18));
   builder1.Append(std::string(l19));
   builder1.Append(std::string(l20));
@@ -1449,11 +1448,11 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder2.Append(std::string(r10));
   builder2.Append(std::string(r11));
   builder2.Append(std::string(r12));
-  // builder2.Append(std::string(r13));
-  // builder2.Append(std::string(r14));
-  // builder2.Append(std::string(r15));
-  // builder2.Append(std::string(r16));
-  // builder2.Append(std::string(r17));
+  builder2.Append(std::string(r13));
+  builder2.Append(std::string(r14));
+  builder2.Append(std::string(r15));
+  builder2.Append(std::string(r16));
+  builder2.Append(std::string(r17));
   builder2.Append(std::string(r18));
   builder2.Append(std::string(r19));
   builder2.Append(std::string(r20));
@@ -1477,17 +1476,17 @@ TEST(geometry_test, test_ST_Overlaps) {
   ASSERT_EQ(res_bool->Value(9), false);
   ASSERT_EQ(res_bool->Value(10), false);
   ASSERT_EQ(res_bool->Value(11), false);
-  // ASSERT_EQ(res_bool->Value(12), false); // true
-  // ASSERT_EQ(res_bool->Value(13), false); // gis error
-  // ASSERT_EQ(res_bool->Value(14), true);  // gis error
-  // ASSERT_EQ(res_bool->Value(15), false); // gis error
-  // ASSERT_EQ(res_bool->Value(16), false); // gis error
-  // ASSERT_EQ(res_bool->Value(17), true);  // gis error
-  ASSERT_EQ(res_bool->Value(13), false);
+  ASSERT_EQ(res_bool->Value(12), false);
+  ASSERT_EQ(res_bool->Value(13), false); 
   ASSERT_EQ(res_bool->Value(14), true);
-  ASSERT_EQ(res_bool->Value(15), true);
-  ASSERT_EQ(res_bool->Value(16), true);
-  ASSERT_EQ(res_bool->Value(17), true);  // geospark error
+  ASSERT_EQ(res_bool->Value(15), false);
+  ASSERT_EQ(res_bool->Value(16), false);
+  ASSERT_EQ(res_bool->Value(17), true);
+  ASSERT_EQ(res_bool->Value(18), false);
+  ASSERT_EQ(res_bool->Value(19), true);
+  ASSERT_EQ(res_bool->Value(20), true);  
+  ASSERT_EQ(res_bool->Value(21), true);  
+  ASSERT_EQ(res_bool->Value(22), true);  
 }
 
 TEST(geometry_test, test_ST_Crosses) {
