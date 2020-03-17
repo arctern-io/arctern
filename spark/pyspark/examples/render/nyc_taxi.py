@@ -60,7 +60,7 @@ def draw_heat_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_build.csv").cache()
-    df.show(20, False)
+    # df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
     # df.createOrReplaceGlobalTempView("nyc_taxi")
 
@@ -71,12 +71,12 @@ def draw_heat_map(spark):
     register_funcs(spark)
     res = spark.sql(
         "select ST_Transform(ST_Point(x, y), 'EPSG:4326','EPSG:3857' ) as pickup_point, w from pickup")
-    res.show(20, False)
+    # res.show(20, False)
     res.createOrReplaceTempView("project")
 
     res = spark.sql(
         "select Projection(pickup_point, 'POINT (4534000 -12510000)', 'POINT (4538000 -12513000)', 1024, 896) as point, w from project")
-    res.show(20, False)
+    # res.show(20, False)
 
     vega_heat_map = VegaHeatMap(300, 200, 10.0)
     vega = vega_heat_map.build()
@@ -116,6 +116,6 @@ if __name__ == "__main__":
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
     draw_heat_map(spark_session)
-    draw_point_map(spark_session)
-    draw_choropleth_map(spark_session)
+#    draw_point_map(spark_session)
+#    draw_choropleth_map(spark_session)
     spark_session.stop()

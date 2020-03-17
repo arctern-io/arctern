@@ -14,6 +14,7 @@
 
 import pyarrow as pa
 from pyspark.sql.functions import pandas_udf, PandasUDFType
+from pyspark.sql.functions import col, lit
 
 from pyspark.sql.types import *
 
@@ -71,6 +72,11 @@ def heatmap_2D(df, vega):
         png = heat_map_wkt(arr_point, arr_c, conf.encode('utf-8'))
         buffer = png.buffers()[1].hex()
         return buffer
+    
+    df.createOrReplaceTempView("records")
+    from ._wrapper_func import ST_Transform
+    point = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')))
+    point.show()
 
     first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
