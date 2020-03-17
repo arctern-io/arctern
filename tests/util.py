@@ -3,6 +3,8 @@ import sys
 from shapely import wkt
 from osgeo import ogr
 from ogr import *
+import yaml
+import os
 
 EPOCH = 1e-6
 
@@ -142,12 +144,18 @@ def arc_distance(geox, geoy):
         return geometry_distance(geox, geoy)
     
 
-# arc_path = sys.argv[1] 
-# pgs_path = sys.argv[2]
+def get_config():
 
-# with open(arc_path, 'r') as arc, open(pgs_path, 'r') as pgs:
-#     arcs = arc.readlines()[1:]
-#     pgss = pgs.readlines()[1:]
-#     for x, y in zip(arcs, pgss):
-#         # print(x)
-#         print(arc_distance(x, y))
+    # cwd = os.path.abspath(__file__)
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(cwd, 'config.yml')
+    print(config_path)
+
+    with open(config_path, 'r') as f:
+        content = f.read()
+    
+    return yaml.safe_load(content)
+
+if __name__ == '__main__':
+    config = get_config()
+    print(config)

@@ -1,0 +1,4 @@
+path:
+  spark_result: /tmp/results
+  arctern_result: /tmp/arctern_results
+  expected_result: expected/results
