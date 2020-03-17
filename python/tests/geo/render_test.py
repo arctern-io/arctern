@@ -122,7 +122,6 @@ def test_heat_map():
     save_png(heat_map2, "../../../tests/expected/draw_map/test_heat_map2.png")
     save_png(heat_map3, "../../../tests/expected/draw_map/test_heat_map3.png")
     baseline_png = "../../../tests/expected/draw_map/heat_map.png"
-
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map1.png") == True
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map2.png") == True
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map3.png") == True
