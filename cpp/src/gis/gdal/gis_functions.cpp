@@ -212,7 +212,7 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
-  if(parser::IsValidWkt(array->GetString(idx).c_str())==false) return nullptr;
+  if (parser::IsValidWkt(array->GetString(idx).c_str()) == false) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code =
       OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);

@@ -22,6 +22,14 @@
   ASSERT_EQ((token_ptr)->type, (expect_type));           \
   str_ptr = (token_ptr)->start + (token_ptr)->len;
 
+#define ISValid_TRUE(str)   \
+  ptr = (const char*)(str); \
+  ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
+
+#define ISValid_FALSE(str)  \
+  ptr = (const char*)(str); \
+  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
+
 TEST(parser_test, next_token) {
   auto point = (const char*)"point ( 2.3  2.89 ) ";
   arctern::gis::parser::TokenInfo token;
@@ -104,33 +112,14 @@ TEST(parser_test, next_token6) {
 TEST(parser_test, isvalidwkt) {
   const char* ptr;
 
-  ptr = (const char*)"point ( 12 12) ";
-  ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 12 12) ";
-  ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 )";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12, 12 )";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 12, )";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 12 12, )";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 12abc)";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"point ( 12 12) abc";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))";
-  ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
-
-  ptr = (const char*)"MULTILINESTRING ( (0 0, 1 2), (0 0, 0 2, 1 1),(-1 2,3 4,9 -3,-4 100) )";
-  ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
+  ISValid_TRUE("point ( 12 12) ");
+  ISValid_TRUE("point ( 12 12 12) ");
+  ISValid_FALSE("point ( 12 )");
+  ISValid_FALSE("point ( 12, 12 )");
+  ISValid_FALSE("point ( 12 12, )");
+  ISValid_FALSE("point ( 12 12 12, )");
+  ISValid_FALSE("point ( 12 12abc)");
+  ISValid_FALSE("point ( 12 12) abc");
+  ISValid_FALSE("POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))");
+  ISValid_TRUE("MULTILINESTRING ( (0 0, 1 2), (0 0, 0 2, 1 1),(-1 2,3 4,9 -3,-4 100) )");
 }
