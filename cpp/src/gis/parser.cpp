@@ -210,11 +210,18 @@ bool IsValidWkt(const char* src) {
         }
         break;
       }
+      case TokenType::Empty: {
+        return false;
+      }
+      default: { return false; }
     }
-
     pre_type = token.type;
     src = token.start + token.len;
   }
+  if (bracet_nest != 0) return false;
+  if ((pre_type == TokenType::RightBracket) || (pre_type == TokenType::Empty))
+    return true;
+  return false;
 }
 
 }  // namespace parser
