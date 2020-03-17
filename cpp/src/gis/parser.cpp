@@ -115,8 +115,10 @@ bool NextToken(const char* src, TokenInfo* token) {
     }
     src++;
   }
-  SetIfEmpty(token);
-  if (token->type == TokenType::Empty) return true;
+  if(token->type==TokenType::WktKey){
+    SetIfEmpty(token);
+    return true;
+  }
   return false;
 }
 
