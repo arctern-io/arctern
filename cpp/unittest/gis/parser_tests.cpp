@@ -18,9 +18,15 @@
 #include "gis/parser.h"
 
 TEST(parser_test, next_token){
-    char *point="point(2 2)"
+    auto point=(const char*)"point(2 2)";
     arctern::gis::parser::TokenInfo token;
 
     arctern::gis::parser::NextToken(point,&token);
-    ASSERT_EQ(token,arctern::gis::parser::TokenType)
+    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::WktKey);
+    point += token.len;
+
+    arctern::gis::parser::NextToken(point,&token);
+    ASSERT_EQ(token.type,arctern::gis::parser::TokenType::LeftBracket);
+    point += token.len;
+
 }

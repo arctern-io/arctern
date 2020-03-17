@@ -38,19 +38,17 @@ bool IsNumber(const char c) {
 }
 
 bool NextToken(const char* src, TokenInfo* token) {
-  if (src == '\0') return false;
+  if (*src == '\0') return false;
   token->start = src;
   token->len = 0;
+  token->type = TokenType::Unknown;
 
-  while (src != '\0') {
+  while (*src != '\0') {
     char input = *(src);
     src++;
     switch (token->type) {
       case TokenType::WktKey: {
-          if(IsWhiteSpace(input)){
-              return true;
-          }else if(input=='('){
-              --src;
+          if(IsWhiteSpace(input) || input=='('){
               return true;
           }else if(IsAlphabet(input)){
               token->len++;
@@ -61,16 +59,13 @@ bool NextToken(const char* src, TokenInfo* token) {
           }
       }
       case TokenType::Number: {
-          if(IsWhiteSpace(input)){
-              return true;
-          }else if(input==',' || input==')'){
-              --src;
+          if(IsWhiteSpace(input) || input==',' || input==')'){
               return true;
           }else if(IsNumber(input)){
               token->len++;
               break;
           }else{
-              token->type==TokenType::Unknown;
+              token->type=TokenType::Unknown;
               return true;
           }
       }
@@ -90,11 +85,11 @@ bool NextToken(const char* src, TokenInfo* token) {
           token->len++;
           return true;
         } else if (input == ')') {
-          token->type == TokenType::RightBracket;
+          token->type = TokenType::RightBracket;
           token->len++;
           return true;
         } else if (input == ',') {
-          token->type == TokenType::Comma;
+          token->type = TokenType::Comma;
           token->len++;
           return true;
         } else {  // return unkonwn tokentype
