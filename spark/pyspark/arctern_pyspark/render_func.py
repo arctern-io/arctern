@@ -69,8 +69,6 @@ def heatmap(df, vega):
     def sum_udf(v):
         return v.sum()
 
-    from arctern.util.vega import heat_map
-    vega
     from ._wrapper_func import ST_Transform, Projection
     res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
     res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))

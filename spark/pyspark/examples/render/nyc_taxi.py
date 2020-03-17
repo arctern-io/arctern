@@ -83,7 +83,7 @@ def draw_choropleth_map(spark):
     res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
     res.printSchema()
     res.createOrReplaceTempView("pickup")
-    vega_choropleth_map = VegaChoroplethMap(1900, 1410, [-73.984092, 40.753893, -73.977588, 40.756342], "blue_to_red", [2.5, 5], 1.0)
+    vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.984092, 40.753893, -73.977588, 40.756342], "blue_to_red", [2.5, 5], 1.0)
     vega = vega_choropleth_map.build()
     res = choroplethmap(res, vega)
     save_png(res, '/tmp/choroplethmap.png')
