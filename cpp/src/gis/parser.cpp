@@ -115,6 +115,8 @@ bool NextToken(const char* src, TokenInfo* token) {
     }
     src++;
   }
+  SetIfEmpty(token);
+  if (token->type == TokenType::Empty) return true;
   return false;
 }
 
@@ -219,8 +221,9 @@ bool IsValidWkt(const char* src) {
     src = token.start + token.len;
   }
   if (bracet_nest != 0) return false;
-  if ((pre_type == TokenType::RightBracket) || (pre_type == TokenType::Empty))
+  if ((pre_type == TokenType::RightBracket) || (pre_type == TokenType::Empty)) {
     return true;
+  }
   return false;
 }
 
