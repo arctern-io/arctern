@@ -106,6 +106,9 @@ TEST(parser_test, isvalidwkt) {
 
     ptr = (const char*)"point ( 12 12) ";
     ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
+
+    ptr = (const char*)"point ( 12 12 12) ";
+    ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
     
     ptr = (const char*)"point ( 12 )";
     ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
@@ -113,7 +116,10 @@ TEST(parser_test, isvalidwkt) {
     ptr = (const char*)"point ( 12, 12 )";
     ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
 
-    ptr = (const char*)"point ( 12, 12, )";
+    ptr = (const char*)"point ( 12 12, )";
+    ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
+
+    ptr = (const char*)"point ( 12 12 12, )";
     ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
 
     ptr = (const char*)"point ( 12 12abc)";

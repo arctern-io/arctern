@@ -174,7 +174,6 @@ bool IsValidWkt(const char* src) {
           }
           case TokenType::Comma: {
             if ((num_cnt != 2) && (num_cnt != 3)) return false;
-            num_cnt = 0;
             break;
           }
           case TokenType::RightBracket: {
@@ -200,6 +199,7 @@ bool IsValidWkt(const char* src) {
           case TokenType::RightBracket: {
             --bracket_nest;
             if (bracket_nest < 0) return false;
+            if(num_cnt!=0) return false;
             break;
           }
           default: { return false; }
