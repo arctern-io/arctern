@@ -102,7 +102,11 @@ TEST(parser_test, next_token6) {
 }
 
 TEST(parser_test, isvalidwkt) {
-    auto p1 = (const char*)"point ( 12 )";
-    ASSERT_FALSE(arctern::gis::parser::IsValidWkt(p1));
+    const char* ptr;
+    
+    ptr = (const char*)"point ( 12 )";
+    ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
+
+
 }
 
