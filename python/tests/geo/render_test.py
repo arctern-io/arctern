@@ -14,11 +14,50 @@
 
 import pandas
 import arctern
+import cv2
 
 from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 from arctern.util import save_png
+
+def _diffPNG(baseline_png, compared_png, precision=0.00005):
+    baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
+    compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
+    baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
+    baseline_size = baseline_info.size
+
+    compared_y, compared_x = compared_info.shape[0], compared_info.shape[1]
+    compared_size = compared_info.size
+    if compared_y != baseline_y or compared_x != baseline_x or compared_size != baseline_size:
+        return False
+
+    diff_point_num = 0
+    for i in range(baseline_y):
+        for j in range(baseline_x):
+            baseline_rgba = baseline_info[i][j]
+            compared_rgba = compared_info[i][j]
+
+            baseline_rgba_len = len(baseline_rgba)
+            compared_rgba_len = len(compared_rgba)
+            if baseline_rgba_len != compared_rgba_len or baseline_rgba_len != 4:
+                return False
+            if compared_rgba[3] == baseline_rgba[3] and baseline_rgba[3] == 0:
+                continue
+
+            is_point_equal = True
+            for k in range(3):
+                tmp_diff = abs((int)(compared_rgba[k]) - (int)(baseline_rgba[k]))
+                if tmp_diff > 1:
+                    is_point_equal = False
+
+            if is_point_equal == False:
+                diff_point_num += 1
+
+    if ((float)(diff_point_num) / (float)(baseline_size)) <= precision:
+        return True
+    else:
+        return False
 
 def test_point_map():
     x_data = []
@@ -45,8 +84,19 @@ def test_point_map():
     vega_circle2d = VegaCircle2d(300, 200, 30, "#ff0000", 0.5)
     vega_json = vega_circle2d.build()
 
-    curve_z = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
-    save_png(curve_z, "/tmp/curve_z.png")
+    curve_z1 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    curve_z2 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    curve_z3 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+
+    save_png(curve_z1, "../../../tests/expected/draw_map/test_curve_z1.png")
+    save_png(curve_z2, "../../../tests/expected/draw_map/test_curve_z2.png")
+    save_png(curve_z3, "../../../tests/expected/draw_map/test_curve_z3.png")
+
+    baseline_png = baseline_png = "../../../tests/expected/draw_map/curve_z.png"
+
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_curve_z1.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_curve_z2.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_curve_z3.png") == True
 
 def test_heat_map():
     x_data = []
@@ -65,8 +115,19 @@ def test_heat_map():
     vega_heat_map = VegaHeatMap(300, 200, 10.0)
     vega_json = vega_heat_map.build()
 
-    heat_map = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-    save_png(heat_map, "/tmp/test_heat_map.png")
+    heat_map1 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+    heat_map2 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+    heat_map3 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+
+    save_png(heat_map1, "../../../tests/expected/draw_map/test_heat_map1.png")
+    save_png(heat_map2, "../../../tests/expected/draw_map/test_heat_map2.png")
+    save_png(heat_map3, "../../../tests/expected/draw_map/test_heat_map3.png")
+
+    baseline_png = "../../../tests/expected/draw_map/heat_map.png"
+
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map1.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map2.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map3.png") == True
 
 def test_choropleth_map():
     wkt_data = []
@@ -88,5 +149,16 @@ def test_choropleth_map():
                                             "blue_to_red", [2.5, 5], 1.0)
     vega_json = vega_choropleth_map.build()
 
-    choropleth_map = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    save_png(choropleth_map, "/tmp/test_choropleth_map.png")
+    choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+
+    save_png(choropleth_map1, "../../../tests/expected/draw_map/test_choropleth_map1.png")
+    save_png(choropleth_map2, "../../../tests/expected/draw_map/test_choropleth_map2.png")
+    save_png(choropleth_map3, "../../../tests/expected/draw_map/test_choropleth_map3.png")
+
+    baseline_png = baseline_png = "../../../tests/expected/draw_map/choropleth_map.png"
+
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_choropleth_map1.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_choropleth_map2.png") == True
+    assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_choropleth_map3.png") == True
