@@ -15,10 +15,10 @@
  */
 
 #include "gis/wkb_types.h"
-#include "src/gis/dispatch/wkt_type_scanner.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 #ifdef USE_GPU
-#include "src/gis/cuda/gis_functions.h"
-#include "src/gis/dispatch/dispatch.h"
+#include "gis/cuda/gis_functions.h"
+#include "gis/dispatch/dispatch.h"
 #endif
 #include <assert.h>
 #include <stdio.h>
@@ -233,8 +233,8 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
 #if defined(USE_GPU)
   // currently support ST_LineString
-  gdal::TypeScannerForWkt scanner(geometries);
-  GroupedWkbTypes supported_types = {WkbTypes::kLineString};
+  dispatch::TypeScannerForWkt scanner(geometries);
+  dispatch::GroupedWkbTypes supported_types = {WkbTypes::kLineString};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
   if (type_masks->is_unique_type) {  // UNIQUE METHOD
@@ -245,11 +245,11 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
     }
   } else {  // MIXED METHOD
     auto mask = type_masks->get_masks(supported_types);
-    auto split_inputs = gdal::WktArraySplit(geometries, mask);
+    auto split_inputs = dispatch::WktArraySplit(geometries, mask);
     assert(split_inputs[1]->null_count() == 0);
     auto gdal_output = gdal::ST_Length(split_inputs[0]);
     auto cuda_output = cuda::ST_Length(split_inputs[1]);
-    return gdal::DoubleArrayMerge({gdal_output, cuda_output}, mask);
+    return dispatch::DoubleArrayMerge({gdal_output, cuda_output}, mask);
   }
 #else
   return gdal::ST_Length(geometries);

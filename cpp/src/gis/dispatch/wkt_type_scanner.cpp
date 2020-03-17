@@ -24,13 +24,13 @@
 #include <vector>
 
 #include "gis/wkb_types.h"
-#include "src/gis/dispatch/wkt_type_scanner.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 #include "utils/check_status.h"
 #include "utils/function_wrapper.h"
 
 namespace arctern {
 namespace gis {
-namespace gdal {
+namespace dispatch {
 
 TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries)
     : geometries_(geometries) {}

@@ -26,6 +26,7 @@
 
 namespace arctern {
 namespace gis {
+namespace dispatch {
 
 using GroupedWkbTypes = std::set<WkbTypes>;
 
@@ -91,5 +92,6 @@ class GeometryTypeScanner {
   std::vector<GroupedWkbTypes> types_;
 };
 
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

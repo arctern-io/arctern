@@ -28,7 +28,7 @@
 
 namespace arctern {
 namespace gis {
-namespace gdal {
+namespace dispatch {
 
 class TypeScannerForWkt : public GeometryTypeScanner {
  public:
