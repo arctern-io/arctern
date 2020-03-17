@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import pyarrow as pa
-from pyspark.sql.functions import pandas_udf, PandasUDFType
 
+from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
 from pyspark.sql.types import *
 
 def save_png_2D(hex_data, file_name):
@@ -72,7 +73,15 @@ def heatmap_2D(df, vega):
         buffer = png.buffers()[1].hex()
         return buffer
 
-    first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
+    from arctern import transform_and_projection
+    vega_dict = json.loads(vega)
+    bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
+    bounding_box_max = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"]
+    width = vega_dict["width"]
+    height = vega_dict["height"]
+    trans_projec_df = df.select(transform_and_projection(col('wkt'), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
+
+    first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
     return hex_data
