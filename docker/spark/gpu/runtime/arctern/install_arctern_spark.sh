@@ -30,4 +30,6 @@ conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL}/label/cuda10
 conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 fi
 
+conda install -y -q -n arctern -c conda-forge opencv
+
 conda clean --all -y
