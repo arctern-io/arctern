@@ -1723,11 +1723,9 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,1 0,1 1,0 1,0 0))");
   ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (0 0,1 0,1 2,1 2)");
   ASSERT_EQ(res_str->GetString(5),
-            "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))");  //?
+            "MULTILINESTRING ((0 0,1 2),(0 0,1 1),(-1 2,3 4,9 -3,-4 100))");  
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 1,1 0,0 0))");
-  // ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 4,4 4,4 0,0 0)),((0 0,4 0,4
-  // 1,0 1,0 0)))"); //MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0
-  // 0)))
+  ASSERT_EQ(res_str->GetString(7), "MULTIPOLYGON (((0 0,0 2,0 4,4 4,4 3,4 0,0 0)),((0 0,4 0,4 1,0 1,0 0)))"); 
 }
 
 TEST(geometry_test, test_ST_Contains) {
