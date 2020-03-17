@@ -130,4 +130,7 @@ TEST(parser_test, isvalidwkt) {
 
   ptr = (const char*)"POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))";
   ASSERT_FALSE(arctern::gis::parser::IsValidWkt(ptr));
+
+  ptr = (const char*)"MULTILINESTRING ( (0 0, 1 2), (0 0, 0 2, 1 1),(-1 2,3 4,9 -3,-4 100) )";
+  ASSERT_TRUE(arctern::gis::parser::IsValidWkt(ptr));
 }
