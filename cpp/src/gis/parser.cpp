@@ -34,6 +34,8 @@ bool IsAlphabet(const char c) {
 bool IsNumber(const char c) {
   if (c >= '0' && c <= '9') return true;
   if (c == '.') return true;
+  if (c == '-') return true;
+  if (c == '+') return true;
   return false;
 }
 
@@ -196,6 +198,11 @@ bool IsValidWkt(const char* src) {
             num_cnt = 1;
             break;
           }
+          case TokenType::LeftBracket:{
+            ++bracket_nest;
+            if (num_cnt != 0) return false;
+            break;
+          }
           case TokenType::RightBracket: {
             --bracket_nest;
             if (bracket_nest < 0) return false;
@@ -208,6 +215,7 @@ bool IsValidWkt(const char* src) {
       }
       case TokenType::RightBracket: {
         switch (token.type) {
+          case TokenType::Comma:
           case TokenType::WktKey: {
             break;
           }
