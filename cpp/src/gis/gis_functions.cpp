@@ -229,7 +229,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 }
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // currently support ST_LineString
   gdal::TypeScannerForWkt scanner(geometries);
   GroupedWkbTypes supported_types = {WkbTypes::kLineString};
@@ -238,7 +238,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   if (type_masks->is_unique_type) {
     // UNIQUE METHOD
     if (type_masks->unique_type == supported_types) {
-      return cuda::ST_Length(geometries);
+      return gdal::ST_Length(geometries);
     } else {
       return gdal::ST_Length(geometries);
     }
@@ -248,7 +248,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   auto split_inputs = gdal::WktArraySplit(geometries, mask);
   assert(split_inputs[1]->null_count() == 0);
   auto gdal_output = gdal::ST_Length(split_inputs[0]);
-  auto cuda_output = cuda::ST_Length(split_inputs[1]);
+  auto cuda_output = gdal::ST_Length(split_inputs[1]);
   return gdal::DoubleArrayMerge({gdal_output, cuda_output}, mask);
 #else
   return gdal::ST_Length(geometries);
