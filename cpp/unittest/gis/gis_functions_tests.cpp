@@ -2134,20 +2134,19 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(0), true);
   ASSERT_EQ(res_bool->Value(1), false);
   ASSERT_EQ(res_bool->Value(2), true);
-  // ASSERT_EQ(res_bool->Value(3), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(3), false);
   ASSERT_EQ(res_bool->Value(4), true);
   ASSERT_EQ(res_bool->Value(5), true);
-  // ASSERT_EQ(res_bool->Value(6), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(6), false); 
   ASSERT_EQ(res_bool->Value(7), true);
   ASSERT_EQ(res_bool->Value(8), true);
-  // ASSERT_EQ(res_bool->Value(9), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(9), false); 
   ASSERT_EQ(res_bool->Value(10), true);
-  // ASSERT_EQ(res_bool->Value(11), false); // POINT EMPTY
+  ASSERT_EQ(res_bool->Value(11), false);
   ASSERT_EQ(res_bool->Value(12), true);
-  // ASSERT_EQ(res_bool->Value(13), false); // POINT EMPTY
-  // ASSERT_EQ(res_bool->Value(14), true); // error
-  // ASSERT_EQ(res_bool->Value(15), false); // error
-  // TODO : need verify against geospark result below.
+  ASSERT_EQ(res_bool->Value(13), false);
+  ASSERT_EQ(res_bool->Value(14), true);
+  ASSERT_EQ(res_bool->Value(15), false);
   ASSERT_EQ(res_bool->Value(16), true);
   ASSERT_EQ(res_bool->Value(17), false);
   ASSERT_EQ(res_bool->Value(18), true);
