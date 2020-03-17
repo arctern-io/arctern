@@ -2008,8 +2008,8 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r12 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,9 -3,-4 100) )";
   auto r13 = "MULTIPOLYGON ( ((0 0, 1 1, 0 2,0 0)) )";
   auto r14 = "MULTIPOLYGON ( ((0 0, 1 1, 2 0,0 0)) )";
-  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r16 = "MULTIPOLYGON ( ((0 0, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 0)) )";
+  auto r15 = "MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r16 = "MULTIPOLYGON ( ((0 0, 4 4, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 0)) )";
 
   auto r17 = "MULTIPOINT (0 1, 1 0, 1 8, 1 2)";
   auto r18 = "MULTIPOINT (0 1, 0 2)";
@@ -2023,8 +2023,8 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r26 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r27 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r28 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
+  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 -1, 0 -1, 0 -1, 0 -1)) )";
 
   auto r31 = "LINESTRING (0 0, 1 0, 1 8)";
   auto r32 = "LINESTRING (0 0, 1 1, 0 1)";
@@ -2036,7 +2036,7 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r38 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r39 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r40 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r42 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r43 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -2046,7 +2046,7 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r47 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 1 1) )";
   auto r48 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r49 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r51 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r52 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -2054,12 +2054,12 @@ TEST(geometry_test, test_ST_Intersects) {
   auto r54 = "POLYGON ((0 0, 1 0, 1 8, 0 0.5, 0 0))";
   auto r55 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r56 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r58 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r59 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r60 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r62 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   arrow::StringBuilder builder2;
