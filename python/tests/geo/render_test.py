@@ -91,8 +91,7 @@ def test_point_map():
     save_png(curve_z1, "../../../tests/expected/draw_map/test_curve_z1.png")
     save_png(curve_z2, "../../../tests/expected/draw_map/test_curve_z2.png")
     save_png(curve_z3, "../../../tests/expected/draw_map/test_curve_z3.png")
-
-    baseline_png = baseline_png = "../../../tests/expected/draw_map/curve_z.png"
+    baseline_png = "../../../tests/expected/draw_map/curve_z.png"
 
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_curve_z1.png") == True
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_curve_z2.png") == True
@@ -122,7 +121,6 @@ def test_heat_map():
     save_png(heat_map1, "../../../tests/expected/draw_map/test_heat_map1.png")
     save_png(heat_map2, "../../../tests/expected/draw_map/test_heat_map2.png")
     save_png(heat_map3, "../../../tests/expected/draw_map/test_heat_map3.png")
-
     baseline_png = "../../../tests/expected/draw_map/heat_map.png"
 
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_heat_map1.png") == True
@@ -156,8 +154,7 @@ def test_choropleth_map():
     save_png(choropleth_map1, "../../../tests/expected/draw_map/test_choropleth_map1.png")
     save_png(choropleth_map2, "../../../tests/expected/draw_map/test_choropleth_map2.png")
     save_png(choropleth_map3, "../../../tests/expected/draw_map/test_choropleth_map3.png")
-
-    baseline_png = baseline_png = "../../../tests/expected/draw_map/choropleth_map.png"
+    baseline_png = "../../../tests/expected/draw_map/choropleth_map.png"
 
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_choropleth_map1.png") == True
     assert _diffPNG(baseline_png, "../../../tests/expected/draw_map/test_choropleth_map2.png") == True
