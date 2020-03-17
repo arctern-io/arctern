@@ -1076,10 +1076,10 @@ TEST(geometry_test, test_ST_Touches) {
   auto l57 = "POLYGON ((0 1, 2 3, 1 1, 1 0, 0 1))";
   auto l58 = "POLYGON ((0 1, 2 3, 1 1, 1 0, 0 1))";
 
-  auto l59 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l60 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
-  auto l62 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto l59 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l60 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
+  auto l62 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
 
   arrow::StringBuilder builder1;
   std::shared_ptr<arrow::Array> input1;
@@ -1176,7 +1176,7 @@ TEST(geometry_test, test_ST_Touches) {
   auto r26 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r27 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r28 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r29 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r30 = "MULTIPOLYGON ( ((0 1, 2 3, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r31 = "LINESTRING (0 0, 1 0, 1 8)";
@@ -1189,7 +1189,7 @@ TEST(geometry_test, test_ST_Touches) {
   auto r38 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 0 1) )";
   auto r39 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r40 = "MULTIPOLYGON ( ((0 1, 0 1, 0 1,0 1)) )";
-  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r41 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r42 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r43 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -1199,7 +1199,7 @@ TEST(geometry_test, test_ST_Touches) {
   auto r47 = "MULTILINESTRING ( (0 1, 0 1), (0 1, 2 3, 1 1) )";
   auto r48 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r49 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r50 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r51 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r52 = "POLYGON ((0 0, 0 1, 0 1, 0 1, 0 0))";
@@ -1207,12 +1207,12 @@ TEST(geometry_test, test_ST_Touches) {
   auto r54 = "POLYGON ((0 0, 1 0, 1 8, 0 0.5, 0 0))";
   auto r55 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r56 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r57 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r58 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   auto r59 = "MULTIPOLYGON ( ((0 0, 1 8, 0 2,0 0)) )";
   auto r60 = "MULTIPOLYGON ( ((0 1, 2 3, 3 0, 0 0, 0 1)) )";
-  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )";
+  auto r61 = "MULTIPOLYGON ( ((0 0, 0 4, 1 8, 4 0, 0 0)), ((0 0, -4 0, -4 -1, 0 -1, 0 0)) )";
   auto r62 = "MULTIPOLYGON ( ((0 1, 1 8, 0 1,0 1)), ((0 1, 0 1, 0 1, 0 1)) )";
 
   arrow::StringBuilder builder2;
@@ -1312,7 +1312,7 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(25), false);
   ASSERT_EQ(res_bool->Value(26), true);
   ASSERT_EQ(res_bool->Value(27), false);
-  ASSERT_EQ(res_bool->Value(28), true);
+  ASSERT_EQ(res_bool->Value(28), false);
   ASSERT_EQ(res_bool->Value(29), true);
   ASSERT_EQ(res_bool->Value(30), false);
   ASSERT_EQ(res_bool->Value(31), false);
@@ -1324,7 +1324,7 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(37), false);
   ASSERT_EQ(res_bool->Value(38), true);
   ASSERT_EQ(res_bool->Value(39), false);
-  ASSERT_EQ(res_bool->Value(40), true);
+  ASSERT_EQ(res_bool->Value(40), false);
   ASSERT_EQ(res_bool->Value(41), true);
   ASSERT_EQ(res_bool->Value(42), true);
   ASSERT_EQ(res_bool->Value(43), true);
@@ -1333,19 +1333,19 @@ TEST(geometry_test, test_ST_Touches) {
   ASSERT_EQ(res_bool->Value(46), false);
   ASSERT_EQ(res_bool->Value(47), false);
   ASSERT_EQ(res_bool->Value(48), false);
-  ASSERT_EQ(res_bool->Value(49), true);
+  ASSERT_EQ(res_bool->Value(49), false);
   ASSERT_EQ(res_bool->Value(50), false);
   ASSERT_EQ(res_bool->Value(51), true);
   ASSERT_EQ(res_bool->Value(52), false);
   ASSERT_EQ(res_bool->Value(53), false);
   ASSERT_EQ(res_bool->Value(54), false);
   ASSERT_EQ(res_bool->Value(55), false);
-  ASSERT_EQ(res_bool->Value(56), true);
+  ASSERT_EQ(res_bool->Value(56), false);
   ASSERT_EQ(res_bool->Value(57), false);
-  ASSERT_EQ(res_bool->Value(58), true);
-  ASSERT_EQ(res_bool->Value(59), true);
-  ASSERT_EQ(res_bool->Value(60), true);
-  ASSERT_EQ(res_bool->Value(61), true);
+  ASSERT_EQ(res_bool->Value(58), false);
+  ASSERT_EQ(res_bool->Value(59), false);
+  ASSERT_EQ(res_bool->Value(60), false);
+  ASSERT_EQ(res_bool->Value(61), false);
 }
 
 TEST(geometry_test, test_ST_Overlaps) {
