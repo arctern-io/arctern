@@ -150,9 +150,41 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
-  // #if defined(USE_GPU)
+    const std::shared_ptr<arrow::Array>& geo_left,
+    const std::shared_ptr<arrow::Array>& geo_right) {
+#if defined(USE_GPU) && false
+  // TODO: NOT ENABLED
+  auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
+  auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
+    gdal::TypeScannerForWkt scanner(geometries);
+    scanner.mutable_types().emplace_back(groupped_type);
+    return scanner.Scan();
+  };
+  auto lhs_record = scan(geo_left);
+  auto rhs_record = scan(geo_right);
+  enum class Stategy { GDAL_ONLY = 0, MIXED = 1, CUDA_ONLY = 2 };
+  auto get_stategy = [&groupped_type](const GeometryTypeMasks& record) {
+    if (record.is_unique_type) {
+      if (record.unique_type == groupped_type) {
+        return Stategy::CUDA_ONLY;
+      } else {
+        return Stategy::GDAL_ONLY;
+      }
+    } else {
+      return Stategy::MIXED;
+    }
+  };
+  auto lhs_stategy = get_stategy(*lhs_record);
+  auto rhs_stategy = get_stategy(*rhs_record);
+  auto stategy = (Stategy)std::min((int)lhs_stategy, (int)rhs_stategy);
+  if (stategy == Stategy::CUDA_ONLY) {
+    return cuda::ST_Distance(geo_left, geo_right);
+  } else if (stategy == Stategy::GDAL_ONLY) {
+    return gdal::ST_Distance(geo_left, geo_right);
+  }
+  assert(stategy == Stategy::MIXED);
+  // TODO: MIXED DISPATCH
+  return gdal::ST_Distance(geo_left, geo_right);
   //   // currently support ST_Point
   //   bool lhs_ok = false;
   //   bool rhs_ok = false;
@@ -173,48 +205,53 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   //             (rhs_type_masks->unique_group == rhs_supported_types);
   //   //  }
 
-  //   if (lhs_ok && rhs_ok) {
-  //     return cuda::ST_Distance(geometries_1, geometries_2);
-  //   } else {
-  //     return gdal::ST_Distance(geometries_1, geometries_2);
-  //   }
-  // #else
-  return gdal::ST_Distance(geometries_1, geometries_2);
-  // #endif
+#else
+  return gdal::ST_Distance(geo_left, geo_right);
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
-  // #if defined(USE_GPU)
-  //   // currently support ST_Polygon
-  //   gdal::TypeScannerForWkt scanner(geometries);
-  //   GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
-  //   scanner.mutable_types().push_back(supported_types);
-  //   auto type_masks = scanner.Scan();
-  //   if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
-  //     return cuda::ST_Area(geometries);
-  //   } else {
-  //     return gdal::ST_Area(geometries);
-  //   }
-  // #else
+  //   #if defined(USE_GPU)
+  //     // currently support ST_Polygon
+  //     gdal::TypeScannerForWkt scanner(geometries);
+  //     GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
+  //     scanner.mutable_types().push_back(supported_types);
+  //     auto type_masks = scanner.Scan();
+  //     if (type_masks->is_unique_group && (type_masks->unique_group == supported_types))
+  //     {
+  //       return cuda::ST_Area(geometries);
+  //     } else {
+  //       return gdal::ST_Area(geometries);
+  //     }
+  //   #else
   return gdal::ST_Area(geometries);
   // #endif
 }
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
-  // #if defined(USE_GPU)
-  //   // currently support ST_LineString
-  //   gdal::TypeScannerForWkt scanner(geometries);
-  //   GroupedWkbTypes supported_types = {WkbTypes::kLineString};
-  //   scanner.mutable_types().push_back(supported_types);
-  //   auto type_masks = scanner.Scan();
-  //   if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
-  //     return cuda::ST_Length(geometries);
-  //   } else {
-  //     return gdal::ST_Length(geometries);
-  //   }
-  // #else
+#if defined(USE_GPU)
+  // currently support ST_LineString
+  gdal::TypeScannerForWkt scanner(geometries);
+  GroupedWkbTypes supported_types = {WkbTypes::kLineString};
+  scanner.mutable_types().push_back(supported_types);
+  auto type_masks = scanner.Scan();
+  if (type_masks->is_unique_type) {  // UNIQUE METHOD
+    if (type_masks->unique_type == supported_types) {
+      return cuda::ST_Length(geometries);
+    } else {
+      return gdal::ST_Length(geometries);
+    }
+  } else {  // MIXED METHOD
+    auto mask = type_masks->get_masks(supported_types);
+    auto split_inputs = gdal::WktArraySplit(geometries, mask);
+    assert(split_inputs[1]->null_count() == 0);
+    auto gdal_output = gdal::ST_Length(split_inputs[0]);
+    auto cuda_output = cuda::ST_Length(split_inputs[1]);
+    return gdal::DoubleArrayMerge({gdal_output, cuda_output}, mask);
+  }
+#else
   return gdal::ST_Length(geometries);
-  // #endif
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_HausdorffDistance(
