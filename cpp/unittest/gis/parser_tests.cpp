@@ -91,3 +91,12 @@ TEST(parser_test, next_token5) {
 
   ASSERT_FALSE(arctern::gis::parser::NextToken(point, &token));
 }
+
+TEST(parser_test, next_token6) {
+  auto point = (const char*)"point ( 2.3abc  2.89 )";
+  arctern::gis::parser::TokenInfo token;
+
+  ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::WktKey);
+  ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::LeftBracket);
+  ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::Unknown);
+}
