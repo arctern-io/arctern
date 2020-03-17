@@ -96,3 +96,4 @@ class VegaHeatMap():
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
+    

@@ -45,8 +45,6 @@ def print_partitions(df):
             j = j + 1
         i = i + 1
 
-
-
 def pointmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType
 
@@ -63,10 +61,10 @@ def heatmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
 
-    agg_schema = StructType([StructField('point', StringType(), True),
+    schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
-    @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
+    @pandas_udf(schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
             dd = pdf.groupby(['point'])
@@ -78,6 +76,22 @@ def heatmap(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
+<<<<<<< HEAD
+ 
+    @pandas_udf("double", PandasUDFType.GROUPED_AGG)
+    def sum_udf(v):
+        return v.sum()
+
+    from ._wrapper_func import ST_Transform, Projection
+    res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
+    res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))
+
+    agg_df = df.mapInPandas(render_agg_UDF)
+    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
+    agg_df.show(20, False)
+    hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
+=======
 
     import json
     vega_dict = json.loads(vega)
@@ -93,6 +107,7 @@ def heatmap(df, vega):
     first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
+>>>>>>> 7b2c271546c6a9010cd18e13cc1544b85a966f32
     return hex_data
 
 def choroplethmap(df, vega):
