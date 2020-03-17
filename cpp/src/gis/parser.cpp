@@ -198,7 +198,7 @@ bool IsValidWkt(const char* src) {
             num_cnt = 1;
             break;
           }
-          case TokenType::LeftBracket:{
+          case TokenType::LeftBracket: {
             ++bracket_nest;
             if (num_cnt != 0) return false;
             break;
