@@ -35,8 +35,6 @@ def draw_point_map(spark):
     res.printSchema()
     res.createOrReplaceTempView("pickup")
 
-
-
     vega = vega_circle2d(1900, 1410, "POINT (4534000 -12510000)", "POINT (4538000 -12513000)", 3, "#2DEF4A", 0.5, "EPSG:3857")
     res = pointmap(res, vega)
     save_png(res, '/tmp/pointmap.png')
@@ -50,15 +48,10 @@ def draw_heat_map(spark):
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
     # df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
-    # df.createOrReplaceGlobalTempView("nyc_taxi")
-
     res = spark.sql("select pickup_latitude as x, pickup_longitude as y, passenger_count as w from nyc_taxi")
-    res.printSchema()
     res.createOrReplaceTempView("pickup")
     
     register_funcs(spark)
-    # res = spark.sql(
-    #     "select ST_Transform(ST_Point(x, y), 'EPSG:4326','EPSG:3857' ) as point, w from pickup")
     res = spark.sql(
         "select ST_Point(x, y) as point, w from pickup")
     res.show(20, False)
