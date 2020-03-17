@@ -79,7 +79,6 @@ def heatmap(df, vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
 
-    from arctern import transform_and_projection
     import json
     vega_dict = json.loads(vega)
     bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
@@ -87,8 +86,10 @@ def heatmap(df, vega):
     width = vega_dict["width"]
     height = vega_dict["height"]
     from ._wrapper_func import TransformAndProjection
-    trans_projec_df = df.select(TransformAndProjection(col('wkt'), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
+    from ._wrapper_func import ST_Point
+    trans_projec_df = df.select(TransformAndProjection(ST_Point(col('x'), col('y')), lit('EPSG:4326'), lit('EPSG:3857'), lit(bounding_box_min), lit(bounding_box_max), lit(int(height)), lit(int(width))))
 
+    trans_projec_df.show(20)
     first_agg_df = trans_projec_df.mapInPandas(render_agg_UDF).coalesce(1)
     final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
     hex_data = final_agg_df.agg(heatmap_wkt(final_agg_df['point'], final_agg_df['w'])).collect()[0][0]
