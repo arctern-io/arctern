@@ -49,10 +49,10 @@ def heatmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
 
-    schema = StructType([StructField('point', StringType(), True),
+    agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
-    @pandas_udf(schema, PandasUDFType.MAP_ITER)
+    @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
             dd = pdf.groupby(['point'])
@@ -64,19 +64,34 @@ def heatmap(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
- 
+
     @pandas_udf("double", PandasUDFType.GROUPED_AGG)
     def sum_udf(v):
         return v.sum()
 
-    from ._wrapper_func import ST_Transform, Projection
-    res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
-    res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))
-    
-    agg_df = df.mapInPandas(render_agg_UDF)
+    # from ._wrapper_func import ST_Transform, Projection
+    # res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
+    # res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))
+    # agg_df = df.mapInPandas(render_agg_UDF)
+
+#    import json
+#    vega_dict = json.loads(vega)
+#    bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
+#    bounding_box_max = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"]
+#    width = vega_dict["width"]
+#    height = vega_dict["height"]
+    from ._wrapper_func import TransformAndProjection
+    coor = vega.coor()
+    if (coor != 'EPSG:3857'):
+#    from ._wrapper_func import ST_Point
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))))
+
+    trans_projec_df.show(20)
+
+    agg_df = trans_projec_df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
     agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
-    agg_df.show(20, False)
+    # agg_df.show(20, False)
     hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
     return hex_data
 

@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from arctern.util.vega.vega_builder import *
+#from arctern.util.vega.vega_builder import *
 from arctern.util import save_png
+from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
+from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
+from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+
+
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
@@ -52,20 +57,12 @@ def draw_heat_map(spark):
     res.createOrReplaceTempView("pickup")
     
     register_funcs(spark)
-    res = spark.sql(
-        "select ST_Point(x, y) as point, w from pickup")
+    # res = spark.sql(
+    #     "select ST_Point(x, y) as point, w from pickup")
+    res = spark.sql("select ST_Point(x, y) as point, w from pickup where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, 40.780816 -73.998427, 40.780816 -73.954348, 40.730309 -73.998427))')")
     res.show(20, False)
 
-    # register_funcs(spark)
-    # res = spark.sql(
-    #     "select ST_Transform(ST_Point(x, y), 'EPSG:4326','EPSG:3857' ) as pickup_point, w from pickup")
-    # res.show(20, False)
-    # res.createOrReplaceTempView("project")
-    # res = spark.sql(
-    #     "select Projection(pickup_point, 'POINT (4534000 -12510000)', 'POINT (4538000 -12513000)', 1024, 896) as point, w from project")
-    # res.show(20, False)
-
-    vega = vega_heatmap(300, 200, "POINT (4534000 -12510000)", "POINT (4538000 -12513000)", 10.0, "EPSG:3857")
+    vega = VegaHeatMap(1024, 896, 10.0, 'POINT (40.730309 -73.954348)', 'POINT (40.780816 -73.998427)', 'EPSG:4326')
     res = heatmap(res, vega)
     save_png(res, '/tmp/heatmap.png')
 

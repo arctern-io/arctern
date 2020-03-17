@@ -69,8 +69,8 @@ class Marks(RootMarks):
         return dic
 
 class VegaHeatMap():
-    def __init__(self, width: int, height: int, bounding_box_min: str, bounding_box_max: str,
-                 map_scale: float, coordinate_system: str):
+    def __init__(self, width: int, height: int, map_scale: float, bounding_box_min: str, 
+                 bounding_box_max: str, coordinate_system: str):
         self._width = width
         self._height = height
         self._bounding_box_min = bounding_box_min
@@ -97,3 +97,5 @@ class VegaHeatMap():
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
     
+    def coor(self):
+        return self._coordinate_system
