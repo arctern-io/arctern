@@ -12,15 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(.)
-set(unittest_srcs ${CMAKE_CURRENT_SOURCE_DIR}/unittest_entry.cpp)
+set(utils_tests_src
+        ${unittest_srcs}
+        utils_tests.cpp)
 
-set(unittest_libs
+add_executable(utils_tests ${utils_tests_src})
+
+#add_dependencies(gis_tests googletest_ep)
+
+target_link_libraries(utils_tests
         arctern
+        arrow
         gtest
         pthread
+        gdal
         )
 
-add_subdirectory(render)
-add_subdirectory(gis)
+install(TARGETS utils_tests DESTINATION unittest)
+
+add_subdirectory(gdal)
+if(BUILD_WITH_GPU)
+    add_subdirectory(cuda)
+endif()
