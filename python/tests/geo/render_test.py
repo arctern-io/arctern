@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+import sys
 import pandas
 import arctern
 import cv2
@@ -22,7 +22,7 @@ from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
 from arctern.util import save_png
 
-map_path = os.getcwd() + "/../../../tests/expected/draw_map/"
+map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
 
 def _diffPNG(baseline_png, compared_png, precision=0.00005):
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
