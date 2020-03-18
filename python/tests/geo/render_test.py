@@ -125,7 +125,6 @@ def test_heat_map():
     save_png(heat_map2, map_path + "test_heat_map2.png")
     save_png(heat_map3, map_path + "test_heat_map3.png")
     baseline_png = map_path + "heat_map.png"
-
     # assert _diffPNG(baseline_png, map_path + "test_heat_map1.png") == True
     # assert _diffPNG(baseline_png, map_path + "test_heat_map2.png") == True
     # assert _diffPNG(baseline_png, map_path + "test_heat_map3.png") == True
