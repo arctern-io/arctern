@@ -24,19 +24,33 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
+// deprecated
 // split into [false_array, true_array]
 std::array<std::shared_ptr<arrow::StringArray>, 2> WktArraySplit(
     const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask);
 
+// deprecated
 // merge [false_array, true_array]
 std::shared_ptr<arrow::StringArray> WktArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask);
 
+// deprecated
 // merge [false_array, true_array]
 std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask);
+
+// merge [false_array, true_array]
+template <typename TypedArrowArray>
+auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
+                       const std::vector<bool>& mask) -> std::shared_ptr<TypedArrowArray>;
+
+// return [false_array, true_array]
+template <typename TypedArrowArray>
+auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
+                       const std::vector<bool>& mask)
+    -> std::array<std::shared_ptr<TypedArrowArray>, 2>;
 
 }  // namespace dispatch
 }  // namespace gis
