@@ -52,15 +52,15 @@ def get_sqls_from_data(function_name, file_path):
 
 
 def execute_sql(sql):
-    try:
-        cur.execute(sql)
-        rows = [row for row in cur.fetchall()]
-        for r in rows:
-            return r[0]
-    except Exception as e:
-        print(sql)
+    # try:
+    cur.execute(sql)
+    rows = cur.fetchall()
+    return rows[0][0]
+    # except Exception as e:
+    #     print(sql)
+    #     print(e)
         # print('sql failed')
-        pass
+        # pass
 
 
 def get_postgis_result(sqls, result_path):
@@ -69,10 +69,10 @@ def get_postgis_result(sqls, result_path):
         for r in results:
             f.writelines(str(r) + '\n')
 
-function_name = sys.argv[1]
-file_path = sys.argv[2]
-result_path = sys.argv[3]
+xfunction_name = sys.argv[1]
+xfile_path = sys.argv[2]
+xresult_path = sys.argv[3]
 
 if __name__ == '__main__':
-    sqls = get_sqls_from_data(function_name, file_path)
-    get_postgis_result(sqls, result_path)
+    xsqls = get_sqls_from_data(xfunction_name, xfile_path)
+    get_postgis_result(xsqls, xresult_path)

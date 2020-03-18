@@ -36,8 +36,9 @@ def is_polygon(geo):
 
 def is_geometry(geo):
 	geo = geo.strip().upper()
-
+    
     for x in geo_types:
+
         if geo.startswith(x) and len(geo) != len(x):
             return True
 

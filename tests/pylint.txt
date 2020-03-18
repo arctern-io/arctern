@@ -1,8 +1,8 @@
+************* Module util
+tests/util.py:40:24: E0001: unindent does not match any outer indentation level (<unknown>, line 40) syntax-error)
 ************* Module postgis_data
 tests/postgis_data.py:26:23: W0621: Redefining name 'function_name' from outer scope (line 72) redefined-outer-name)
 tests/postgis_data.py:26:38: W0621: Redefining name 'file_path' from outer scope (line 73) redefined-outer-name)
-tests/postgis_data.py:34:20: W0621: Redefining name 'sql' from outer scope (line 9) redefined-outer-name)
-tests/postgis_data.py:54:16: W0621: Redefining name 'sql' from outer scope (line 9) redefined-outer-name)
 tests/postgis_data.py:60:11: W0703: Catching too general exception Exception broad-except)
 tests/postgis_data.py:57:0: R1721: Unnecessary use of a comprehension unnecessary-comprehension)
 tests/postgis_data.py:63:8: W0107: Unnecessary pass statement unnecessary-pass)
@@ -19,105 +19,10 @@ tests/split_data.py:41:12: W0621: Redefining name 'line' from outer scope (line 
 tests/split_data.py:29:0: R0912: Too many branches (13/12) too-many-branches)
 tests/split_data.py:73:8: W0621: Redefining name 'f' from outer scope (line 104) redefined-outer-name)
 ************* Module collect_results
+tests/collect_results.py:6:0: E0001: Cannot import 'util' due to syntax error 'unindent does not match any outer indentation level (<unknown>, line 40)' syntax-error)
+tests/collect_results.py:7:0: E0001: Cannot import 'util' due to syntax error 'unindent does not match any outer indentation level (<unknown>, line 40)' syntax-error)
+tests/collect_results.py:8:0: E0001: Cannot import 'util' due to syntax error 'unindent does not match any outer indentation level (<unknown>, line 40)' syntax-error)
 tests/collect_results.py:15:24: W0612: Unused variable 'expects' unused-variable)
-************* Module util
-tests/util.py:19:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:20:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:23:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:24:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:28:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:29:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:33:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:34:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:38:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:40:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:41:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:42:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:43:0: C0303: Trailing whitespace trailing-whitespace)
-tests/util.py:44:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:46:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:50:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:52:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:53:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:54:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:55:0: C0303: Trailing whitespace trailing-whitespace)
-tests/util.py:56:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:58:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:62:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:63:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:64:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:65:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:66:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:70:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:71:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:72:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:73:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:74:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:78:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:79:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:80:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:84:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:85:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:86:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:87:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:91:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:92:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:93:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:95:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:99:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:100:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:101:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:103:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:107:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:108:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:110:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:111:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:113:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:114:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:116:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:120:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:121:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:123:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:124:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:125:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:127:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:128:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:129:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:130:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:132:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:134:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:135:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:136:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:138:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:140:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:141:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:143:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:144:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:148:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:149:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:150:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:154:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:155:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:156:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:157:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:159:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:163:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:164:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:166:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:167:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:169:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
-tests/util.py:7:0: W0401: Wildcard import ogr wildcard-import)
-tests/util.py:61:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:69:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:77:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:83:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:90:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:98:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:141:9: W1114: Positional arguments appear to be out of order arguments-out-of-order)
-tests/util.py:119:0: R1710: Either all return statements in a function should return an expression, or none of them should. inconsistent-return-statements)
-tests/util.py:149:6: E0602: Undefined variable 'geojson' undefined-variable)
-tests/util.py:1:0: W0611: Unused import sys unused-import)
-tests/util.py:6:0: W0611: Unused ogr imported from osgeo unused-import)
 ************* Module compare
 tests/compare.py:30:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
 tests/compare.py:32:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
@@ -352,13 +257,18 @@ tests/compare.py:389:0: C0303: Trailing whitespace trailing-whitespace)
 tests/compare.py:392:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
 tests/compare.py:396:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
 tests/compare.py:397:0: C0305: Trailing newlines trailing-newlines)
+tests/compare.py:5:0: E0001: Cannot import 'util' due to syntax error 'unindent does not match any outer indentation level (<unknown>, line 40)' syntax-error)
 tests/compare.py:5:0: W0401: Wildcard import util wildcard-import)
 tests/compare.py:45:2: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:63:2: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:75:2: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:87:2: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:142:2: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:142:5: E0602: Undefined variable 'arc_distance' undefined-variable)
+tests/compare.py:145:34: E0602: Undefined variable 'arc_distance' undefined-variable)
 tests/compare.py:157:2: R1705: Unnecessary "else" after "return" no-else-return)
+tests/compare.py:157:5: E0602: Undefined variable 'arc_distance' undefined-variable)
+tests/compare.py:160:34: E0602: Undefined variable 'arc_distance' undefined-variable)
 tests/compare.py:173:2: R1703: The if statement can be replaced with 'return bool(test)' simplifiable-if-statement)
 tests/compare.py:173:2: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:177:1: R1705: Unnecessary "else" after "return" no-else-return)
@@ -369,37 +279,34 @@ tests/compare.py:195:1: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:206:1: R1705: Unnecessary "else" after "return" no-else-return)
 tests/compare.py:246:1: R1705: Unnecessary "elif" after "return" no-else-return)
 tests/compare.py:254:1: W0702: No exception type(s) specified bare-except)
-tests/compare.py:260:16: W0621: Redefining name 'config' from outer scope (line 5) redefined-outer-name)
 tests/compare.py:309:8: W0703: Catching too general exception Exception broad-except)
 tests/compare.py:280:3: R1705: Unnecessary "elif" after "return" no-else-return)
+tests/compare.py:280:7: E0602: Undefined variable 'is_empty' undefined-variable)
+tests/compare.py:280:23: E0602: Undefined variable 'is_empty' undefined-variable)
+tests/compare.py:283:8: E0602: Undefined variable 'is_geometry' undefined-variable)
+tests/compare.py:283:27: E0602: Undefined variable 'is_geometry' undefined-variable)
+tests/compare.py:289:8: E0602: Undefined variable 'is_geometrycollection' undefined-variable)
+tests/compare.py:289:37: E0602: Undefined variable 'is_geometrycollection' undefined-variable)
 tests/compare.py:304:5: R1701: Consider merging these isinstance calls to isinstance(x, (float, int)) consider-merging-isinstance)
 tests/compare.py:263:1: W0612: Unused variable 'c' unused-variable)
 tests/compare.py:309:1: W0612: Unused variable 'e' unused-variable)
 tests/compare.py:260:0: R0911: Too many return statements (8/6) too-many-return-statements)
 tests/compare.py:260:0: R0912: Too many branches (14/12) too-many-branches)
-tests/compare.py:314:20: W0621: Redefining name 'config' from outer scope (line 5) redefined-outer-name)
+tests/compare.py:344:31: E0602: Undefined variable 'get_tests' undefined-variable)
+tests/compare.py:348:16: E0602: Undefined variable 'os' undefined-variable)
+tests/compare.py:348:29: E0602: Undefined variable 'arctern_result' undefined-variable)
+tests/compare.py:349:16: E0602: Undefined variable 'os' undefined-variable)
+tests/compare.py:349:29: E0602: Undefined variable 'expected_result' undefined-variable)
+tests/compare.py:352:9: E0602: Undefined variable 'os' undefined-variable)
+tests/compare.py:356:9: E0602: Undefined variable 'os' undefined-variable)
 tests/compare.py:361:5: C0121: Comparison to True should be just 'expr' singleton-comparison)
 tests/compare.py:344:8: W0612: Unused variable 'table_names' unused-variable)
+tests/compare.py:382:31: E0602: Undefined variable 'get_tests' undefined-variable)
+tests/compare.py:385:17: E0602: Undefined variable 'os' undefined-variable)
+tests/compare.py:385:30: E0602: Undefined variable 'arctern_result' undefined-variable)
 tests/compare.py:382:8: W0612: Unused variable 'table_names' unused-variable)
 tests/compare.py:382:21: W0612: Unused variable 'expects' unused-variable)
 tests/compare.py:1:0: W0611: Unused import glob unused-import)
-tests/compare.py:5:0: W0614: Unused import sys from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import is_point from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import is_linestring from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import is_polygon from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import line_to_points from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import polygon_to_points from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import geometrycollection_tolist from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import point_distance from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import linestring_distance from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import polygon_distance from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import geometry_distance from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import to_geojson from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import get_config from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import config from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import spark_result from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import full_load from wildcard import unused-wildcard-import)
-tests/compare.py:5:0: W0614: Unused import ogr from wildcard import unused-wildcard-import)
 ************* Module spark_test
 tests/spark_test.py:28:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
 tests/spark_test.py:29:0: W0312: Found indentation with tabs instead of spaces mixed-indentation)
@@ -1380,7 +1287,7 @@ tests/spark_test.py:19:0: C0412: Imports from package pyspark are not grouped un
 
 Report
 ======
-1442 statements analysed.
+1328 statements analysed.
 
 Statistics by type
 ------------------
@@ -1388,13 +1295,13 @@ Statistics by type
 +---------+-------+-----------+-----------+------------+---------+
 |type     |number |old number |difference |%documented |%badname |
 +=========+=======+===========+===========+============+=========+
-|module   |7      |NC         |NC         |0.00        |0.00     |
+|module   |6      |NC         |NC         |0.00        |0.00     |
 +---------+-------+-----------+-----------+------------+---------+
 |class    |0      |NC         |NC         |0           |0        |
 +---------+-------+-----------+-----------+------------+---------+
 |method   |0      |NC         |NC         |0           |0        |
 +---------+-------+-----------+-----------+------------+---------+
-|function |121    |NC         |NC         |0.00        |2.48     |
+|function |104    |NC         |NC         |0.00        |2.88     |
 +---------+-------+-----------+-----------+------------+---------+
 
 
@@ -1406,8 +1313,6 @@ External dependencies
     arctern_pyspark (spark_test)
     shapely 
       \-wkt (compare)
-    util (compare)
-    yaml (util)
 
 
 
@@ -1417,13 +1322,13 @@ Raw metrics
 +----------+-------+------+---------+-----------+
 |type      |number |%     |previous |difference |
 +==========+=======+======+=========+===========+
-|code      |1492   |71.59 |NC       |NC         |
+|code      |1376   |72.27 |NC       |NC         |
 +----------+-------+------+---------+-----------+
-|docstring |13     |0.62  |NC       |NC         |
+|docstring |12     |0.63  |NC       |NC         |
 +----------+-------+------+---------+-----------+
-|comment   |71     |3.41  |NC       |NC         |
+|comment   |69     |3.62  |NC       |NC         |
 +----------+-------+------+---------+-----------+
-|empty     |508    |24.38 |NC       |NC         |
+|empty     |447    |23.48 |NC       |NC         |
 +----------+-------+------+---------+-----------+
 
 
@@ -1447,13 +1352,13 @@ Messages by category
 +-----------+-------+---------+-----------+
 |type       |number |previous |difference |
 +===========+=======+=========+===========+
-|convention |143    |NC       |NC         |
+|convention |141    |NC       |NC         |
 +-----------+-------+---------+-----------+
-|refactor   |31     |NC       |NC         |
+|refactor   |24     |NC       |NC         |
 +-----------+-------+---------+-----------+
-|warning    |1197   |NC       |NC         |
+|warning    |1089   |NC       |NC         |
 +-----------+-------+---------+-----------+
-|error      |1      |NC       |NC         |
+|error      |25     |NC       |NC         |
 +-----------+-------+---------+-----------+
 
 
@@ -1461,21 +1366,21 @@ Messages by category
 % errors / warnings by module
 -----------------------------
 
-+----------------+-------+--------+---------+-----------+
-|module          |error  |warning |refactor |convention |
-+================+=======+========+=========+===========+
-|util            |100.00 |7.27    |22.58    |1.40       |
-+----------------+-------+--------+---------+-----------+
-|spark_test      |0.00   |70.09   |6.45     |93.71      |
-+----------------+-------+--------+---------+-----------+
-|compare         |0.00   |21.30   |61.29    |4.90       |
-+----------------+-------+--------+---------+-----------+
-|postgis_data    |0.00   |0.75    |3.23     |0.00       |
-+----------------+-------+--------+---------+-----------+
-|split_data      |0.00   |0.50    |6.45     |0.00       |
-+----------------+-------+--------+---------+-----------+
-|collect_results |0.00   |0.08    |0.00     |0.00       |
-+----------------+-------+--------+---------+-----------+
++----------------+------+--------+---------+-----------+
+|module          |error |warning |refactor |convention |
++================+======+========+=========+===========+
+|compare         |84.00 |21.67   |79.17    |4.96       |
++----------------+------+--------+---------+-----------+
+|collect_results |12.00 |0.09    |0.00     |0.00       |
++----------------+------+--------+---------+-----------+
+|util            |4.00  |0.00    |0.00     |0.00       |
++----------------+------+--------+---------+-----------+
+|spark_test      |0.00  |77.04   |8.33     |95.04      |
++----------------+------+--------+---------+-----------+
+|postgis_data    |0.00  |0.64    |4.17     |0.00       |
++----------------+------+--------+---------+-----------+
+|split_data      |0.00  |0.55    |8.33     |0.00       |
++----------------+------+--------+---------+-----------+
 
 
 
@@ -1485,25 +1390,23 @@ Messages
 +-------------------------------+------------+
 |message id                     |occurrences |
 +===============================+============+
-|mixed-indentation              |1146        |
+|mixed-indentation              |1063        |
 +-------------------------------+------------+
-|trailing-whitespace            |138         |
+|trailing-whitespace            |136         |
 +-------------------------------+------------+
-|unused-wildcard-import         |17          |
-+-------------------------------+------------+
-|redefined-outer-name           |16          |
+|undefined-variable             |20          |
 +-------------------------------+------------+
 |no-else-return                 |15          |
 +-------------------------------+------------+
-|inconsistent-return-statements |8           |
+|redefined-outer-name           |12          |
 +-------------------------------+------------+
 |unused-variable                |7           |
 +-------------------------------+------------+
-|wildcard-import                |3           |
-+-------------------------------+------------+
-|unused-import                  |3           |
+|syntax-error                   |5           |
 +-------------------------------+------------+
 |simplifiable-if-statement      |3           |
++-------------------------------+------------+
+|wildcard-import                |2           |
 +-------------------------------+------------+
 |trailing-newlines              |2           |
 +-------------------------------+------------+
@@ -1511,13 +1414,13 @@ Messages
 +-------------------------------+------------+
 |broad-except                   |2           |
 +-------------------------------+------------+
+|unused-import                  |1           |
++-------------------------------+------------+
 |unnecessary-pass               |1           |
 +-------------------------------+------------+
 |unnecessary-comprehension      |1           |
 +-------------------------------+------------+
 |ungrouped-imports              |1           |
-+-------------------------------+------------+
-|undefined-variable             |1           |
 +-------------------------------+------------+
 |too-many-return-statements     |1           |
 +-------------------------------+------------+
@@ -1525,16 +1428,16 @@ Messages
 +-------------------------------+------------+
 |singleton-comparison           |1           |
 +-------------------------------+------------+
+|inconsistent-return-statements |1           |
++-------------------------------+------------+
 |consider-merging-isinstance    |1           |
 +-------------------------------+------------+
 |bare-except                    |1           |
 +-------------------------------+------------+
-|arguments-out-of-order         |1           |
-+-------------------------------+------------+
 
 
 
 
------------------------------------
-Your code has been rated at 0.46/10
+------------------------------------
+Your code has been rated at -0.38/10
 
