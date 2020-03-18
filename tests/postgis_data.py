@@ -58,7 +58,7 @@ def execute_sql(sql):
         for r in rows:
             return r[0]
     except Exception as e:
-        # print(sql)
+        print(sql)
         # print('sql failed')
         pass
 
@@ -69,13 +69,10 @@ def get_postgis_result(sqls, result_path):
         for r in results:
             f.writelines(str(r) + '\n')
 
+function_name = sys.argv[1]
+file_path = sys.argv[2]
+result_path = sys.argv[3]
 
 if __name__ == '__main__':
-    function_name = sys.argv[1]
-    file_path = sys.argv[2]
-    result_path = sys.argv[3]
-    # print(function_name)
-    # print(file_path)
-    # print(result_path)
     sqls = get_sqls_from_data(function_name, file_path)
     get_postgis_result(sqls, result_path)
