@@ -2,7 +2,7 @@ import sys
 import os
 from yaml import full_load
 from shapely import wkt
-# from osgeo import ogr
+from osgeo import ogr
 from ogr import *
 
 

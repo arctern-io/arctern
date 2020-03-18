@@ -4,6 +4,7 @@ import inspect
 import shutil
 import glob
 from util import arctern_result
+from util import spark_result
 from util import get_tests
 
 
