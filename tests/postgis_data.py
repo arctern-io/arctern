@@ -6,7 +6,7 @@ conn_config = "dbname='postgres' host='192.168.2.36' port=5432 user='postgres'"
 conn = psycopg2.connect(conn_config)
 
 cur = conn.cursor()
-sql = r"select datname from pg_database;"
+# sql = r"select datname from pg_database;"
 
 sql_template_1 = "select %s('%s'::geometry)"
 sql_template_2 = "select %s('%s'::geometry, '%s'::geometry)"

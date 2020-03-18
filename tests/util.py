@@ -40,7 +40,7 @@ def is_geometry(geo):
     for x in geo_types:
         if geo.startswith(x) and len(geo) != len(x):
             return True
-        
+
         continue
 
     return False
@@ -52,7 +52,6 @@ def is_geometrycollection(geo):
     for x in geo_collection_types:
         if geo.startswith(x):
             return True
-        
         continue
 
     return False
