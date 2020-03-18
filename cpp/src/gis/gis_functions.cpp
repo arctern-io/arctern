@@ -27,7 +27,6 @@
 
 #include "common/version.h"
 #include "gis/api.h"
-#include "gis/dispatch/dispatch.h"
 #include "gis/gdal/gis_functions.h"
 #include "utils/check_status.h"
 
