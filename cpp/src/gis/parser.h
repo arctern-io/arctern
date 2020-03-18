@@ -16,29 +16,30 @@
 
 #pragma once
 
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
-#include <memory>
-
-#include "arrow/api.h"
-#include "arrow/array.h"
-
-#include "gis/type_scan.h"
-
 namespace arctern {
 namespace gis {
-namespace gdal {
+namespace parser {
 
-class TypeScannerForWkt : public GeometryTypeScanner {
- public:
-  explicit TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries);
+enum class TokenType { WktKey, Number, Empty, LeftBracket, RightBracket, Comma, Unknown };
 
-  std::shared_ptr<GeometryTypeMasks> Scan() final;
-
- private:
-  const std::shared_ptr<arrow::Array> geometries_;
+struct TokenInfo {
+  TokenType type = TokenType::Unknown;
+  const char* start = nullptr;
+  int len = 0;
 };
 
-}  // namespace gdal
+bool NextToken(const char* src, TokenInfo* token);
+
+bool IsValidWkt(const char* src);
+
+bool IsWhiteSpace(const char c);
+
+bool IsAlphabet(const char c);
+
+bool IsNumber(const char c);
+
+void SetIfEmpty(TokenInfo* token);
+
+}  // namespace parser
 }  // namespace gis
 }  // namespace arctern

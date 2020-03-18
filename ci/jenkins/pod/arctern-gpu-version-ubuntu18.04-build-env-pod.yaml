@@ -10,6 +10,11 @@ spec:
   - name: arctern-gpu-build-env
     image: registry.zilliz.com/arctern/arctern-gpu-build-env:v0.1.0-ubuntu18.04
     imagePullPolicy: Always
+    env:
+    - name: OS_NAME
+      value: "ubuntu18.04"
+    - name: BUILD_ENV_IMAGE_ID
+      value: "41afc32c7a6591abcde69ae01d545ac1853ad9355b991ae332508c5542e1ef6b"
     command:
     - cat
     tty: true

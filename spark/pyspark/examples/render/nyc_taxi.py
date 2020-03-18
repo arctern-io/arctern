@@ -15,15 +15,14 @@
 from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
+from arctern.util import save_png
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
-from arctern_pyspark import save_png
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import *
 
 def draw_point_map(spark):
     # file 0_5M_nyc_taxi_and_building.csv could be obtained from arctern-turoial warehouse under zilliztech account. The link on github is https://github.com/zilliztech/arctern-tutorial
@@ -97,7 +96,6 @@ def draw_choropleth_map(spark):
     res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
     res.printSchema()
     res.createOrReplaceTempView("pickup")
-        
     vega_choropleth_map = VegaChoroplethMap(1900, 1410, [-73.984092, 40.753893, -73.977588, 40.756342], "blue_to_red", [2.5, 5], 1.0)
     vega = vega_choropleth_map.build()
     res = choroplethmap(res, vega)
