@@ -338,16 +338,39 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
   int len = json_geo->length();
   arrow::StringBuilder builder;
   for (int i = 0; i < len; ++i) {
-    auto str = json_geo->GetString(i);
-    auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
+    auto geo = Wrapper_createFromWkt(json_geo, i);
     if (geo != nullptr) {
       char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
       CHECK_ARROW(builder.Append(wkt));
       CPLFree(wkt);
       OGRGeometryFactory::destroyGeometry(geo);
     } else {
-      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+      builder.AppendNull();
     }
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
+std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+  auto geo = std::static_pointer_cast<arrow::StringArray>(text);
+  int len = geo->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto ogr = Wrapper_createFromWkt(geo, i);
+    if (ogr == nullptr) {
+      builder.AppendNull();
+    } else {
+      if (parser::IsValidWkt(geo->GetString(i).c_str()) == false) {
+        builder.AppendNull();
+      } else {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(ogr);
+        CHECK_ARROW(builder.Append(wkt));
+        CPLFree(wkt);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(ogr);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
