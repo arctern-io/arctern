@@ -33,7 +33,7 @@ $ wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_6
 $ /bin/bash ~/miniconda.sh -b -p /opt/conda
 $ rm ~/miniconda.sh
 
-# 配置conda
+# 配置conda 
 $ ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 $ echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
 $ echo "conda activate base" >> ~/.bashrc
