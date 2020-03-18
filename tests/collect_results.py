@@ -27,4 +27,3 @@ def collect_results():
 
 if __name__ == '__main__':
     collect_results()
-
