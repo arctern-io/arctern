@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY docker/build_env/cpu/build_cpu_env.yml /tmp/build_cpu_env.yml
+COPY build_cpu_env.yml /tmp/build_cpu_env.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
@@ -24,7 +24,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-COPY docker/build_env/cpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
+COPY docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
 # use login shell to activate environment un the RUN commands

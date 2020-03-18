@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget curl \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY docker/build_env/gpu/build_gpu_env.yml /tmp/build_gpu_env.yml
+COPY build_gpu_env.yml /tmp/build_gpu_env.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
@@ -25,7 +25,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-COPY docker/build_env/gpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
+COPY docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
 # use login shell to activate environment un the RUN commands
