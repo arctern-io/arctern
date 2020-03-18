@@ -3,7 +3,8 @@ import os
 import inspect
 import shutil
 import glob
-from util import arctern_result， get_tests
+from util import arctern_result
+from util import get_tests
 
 
 def collect_results():
@@ -25,3 +26,4 @@ def collect_results():
 
 if __name__ == '__main__':
     collect_results()
+

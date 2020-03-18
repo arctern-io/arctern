@@ -35,6 +35,7 @@ def clear_result_dir(dir_name):
 def get_data(base_dir, fname):
     return os.path.join(base_dir, fname)
 
+
 def read_data(spark, base_dir, data):
     ext = os.path.splitext(data)[1][1:]
     if ext == 'json':
@@ -43,18 +44,22 @@ def read_data(spark, base_dir, data):
         # return spark.read.csv(get_data(base_dir, data)).cache()
         return spark.read.format('csv').options(header='true', sep='|').load(get_data(base_dir, data)).cache()
 
+
 def to_txt(file_dir, df):
     df.write.text(file_dir)
+
 
 def save_result(file_dir, df):
     tmp = '/tmp'
     df.write.csv(os.path.join(tmp, file_dir))
     # df.write.json(os.path.join(tmp, file_dir))
 
+
 def get_test_config(config_file):
     with open(config_file, 'r') as f:
         configs = json.load(f)
     return configs
+
 
 # ------------------------------------ test part ------------------------------------
 def run_test_st_point(spark):
@@ -77,6 +82,7 @@ def run_test_st_point(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_envelope_aggr_1(spark):
     
     data = "envelope_aggr.csv"
@@ -91,6 +97,7 @@ def run_test_envelope_aggr_1(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_envelope_aggr_curve(spark):
     
@@ -107,6 +114,7 @@ def run_test_envelope_aggr_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_envelope_aggr_2(spark):
     
     data = "points.csv"
@@ -122,7 +130,8 @@ def run_test_envelope_aggr_2(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
-    
+
+
 def run_test_st_isvalid_1(spark):
     
     data = "isvalid.csv"
@@ -138,6 +147,7 @@ def run_test_st_isvalid_1(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_isvalid_curve(spark):
     
@@ -155,6 +165,7 @@ def run_test_st_isvalid_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_union_aggr_2(spark):
     data = 'union_aggr.csv'
     table_name = 'test_union_aggr_2'
@@ -170,6 +181,7 @@ def run_test_union_aggr_2(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_union_aggr_curve(spark):
     data = 'union_aggr_curve.csv'
     table_name = 'test_union_aggr_curve'
@@ -184,6 +196,7 @@ def run_test_union_aggr_curve(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_intersection(spark):
 
@@ -201,6 +214,7 @@ def run_test_st_intersection(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_intersection_curve(spark):
 
     data = "intersection_curve.csv"
@@ -217,6 +231,7 @@ def run_test_st_intersection_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_convexhull(spark):
     data = "convexhull.csv"
     table_name = 'test_convexhull'
@@ -231,6 +246,7 @@ def run_test_st_convexhull(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_convexhull_curve(spark):
     # this test is to test convexhull's result is curve, which not support in postgis, we need to convert arctern result to basic types, then compare
@@ -248,6 +264,7 @@ def run_test_st_convexhull_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_buffer(spark):
     data = "buffer.csv"
     table_name = 'test_buffer'
@@ -263,6 +280,7 @@ def run_test_st_buffer(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_buffer1(spark):
     data = "buffer.csv"
@@ -280,6 +298,7 @@ def run_test_st_buffer1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_buffer2(spark):
     data = "buffer.csv"
     table_name = 'test_buffer2'
@@ -295,6 +314,7 @@ def run_test_st_buffer2(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_buffer3(spark):
     data = "buffer.csv"
@@ -312,6 +332,7 @@ def run_test_st_buffer3(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_buffer4(spark):
     data = "buffer.csv"
     table_name = 'test_buffer4'
@@ -327,6 +348,7 @@ def run_test_st_buffer4(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_buffer5(spark):
     data = "buffer.csv"
@@ -344,6 +366,7 @@ def run_test_st_buffer5(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_buffer6(spark):
     data = "buffer.csv"
     table_name = 'test_buffer6'
@@ -359,6 +382,7 @@ def run_test_st_buffer6(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_buffer_curve(spark):
     data = "buffer_curve.csv"
@@ -376,6 +400,7 @@ def run_test_st_buffer_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_buffer_curve1(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve1'
@@ -392,6 +417,7 @@ def run_test_st_buffer_curve1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_envelope(spark):
     data = "envelope.csv"
     table_name = 'test_envelope'
@@ -406,6 +432,7 @@ def run_test_st_envelope(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_envelope_curve(spark):
     data = "envelope_curve.csv"
@@ -422,6 +449,7 @@ def run_test_st_envelope_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_centroid(spark):
     data = "centroid.csv"
     table_name = 'test_centroid'
@@ -436,6 +464,7 @@ def run_test_st_centroid(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_centroid_curve(spark):
     data = "centroid_curve.csv"
@@ -452,6 +481,7 @@ def run_test_st_centroid_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_length(spark):
     data = "length.csv"
     table_name = 'test_length'
@@ -466,6 +496,7 @@ def run_test_st_length(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_length_curve(spark):
     data = "length_curve.csv"
@@ -482,6 +513,7 @@ def run_test_st_length_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_area(spark):
     data = "area.csv"
     table_name = 'test_area'
@@ -496,6 +528,7 @@ def run_test_st_area(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_area_curve(spark):
     data = "area_curve.csv"
@@ -512,6 +545,7 @@ def run_test_st_area_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_distance(spark):
     data = "distance.csv"
     table_name = 'test_distance'
@@ -526,6 +560,7 @@ def run_test_st_distance(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_distance_curve(spark):
     data = "distance_curve.csv"
@@ -542,6 +577,7 @@ def run_test_st_distance_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_issimple(spark):
     data = "issimple.csv"
     table_name = 'test_issimple'
@@ -556,6 +592,7 @@ def run_test_st_issimple(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_issimple_curve(spark):
     data = "issimple_curve.csv"
@@ -572,6 +609,7 @@ def run_test_st_issimple_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_npoints(spark):
     data = "npoints.csv"
     table_name = 'test_npoints'
@@ -586,6 +624,7 @@ def run_test_st_npoints(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_geometrytype(spark):
     data = "geometrytype.csv"
@@ -603,6 +642,7 @@ def run_test_st_geometrytype(spark):
 
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_geometrytype_curve(spark):
     data = "geometrytype_curve.csv"
     table_name = 'test_gt_curve'
@@ -618,6 +658,7 @@ def run_test_st_geometrytype_curve(spark):
     rs.show()
 
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_transform(spark):
     data = "transform.csv"
@@ -635,6 +676,7 @@ def run_test_st_transform(spark):
     
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_transform1(spark):
     data = "transform.csv"
     table_name = 'test_transform1'
@@ -650,6 +692,7 @@ def run_test_st_transform1(spark):
     rs.show()
 
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_precisionreduce(spark):
     data = "precisionreduce.csv"
@@ -667,8 +710,8 @@ def run_test_st_precisionreduce(spark):
     save_result("results/%s" % table_name, rs)
     
 
-def run_test_st_intersects(spark):
-    
+
+def run_test_st_intersects(spark):    
     data = "intersects.csv"
     table_name = 'test_intersects'
     sql = "select st_intersects(left, right) as geos from test_intersects"
@@ -683,8 +726,8 @@ def run_test_st_intersects(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_intersects_curve(spark):
-    
+
+def run_test_st_intersects_curve(spark):    
     data = "intersects_curve.csv"
     table_name = 'test_intersects_curve'
     sql = "select st_intersects(left, right) as geos from test_intersects_curve"
@@ -699,8 +742,8 @@ def run_test_st_intersects_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_contains(spark):
-    
     data = "contains.csv"
     table_name = 'test_contains'
     sql = "select st_contains(left, right) as geos from test_contains"
@@ -715,8 +758,8 @@ def run_test_st_contains(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_contains_curve(spark):
-    
+
+def run_test_st_contains_curve(spark):    
     data = "contains_curve.csv"
     table_name = 'test_contains_curve'
     sql = "select st_contains(left, right) as geos from test_contains_curve"
@@ -731,8 +774,8 @@ def run_test_st_contains_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_within(spark):
-    
+
+def run_test_st_within(spark):    
     data = "within.csv"
     table_name = 'test_within'
     sql = "select st_within(left, right) as geos from test_within"
@@ -747,8 +790,8 @@ def run_test_st_within(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_within_curve(spark):
-    
+
+def run_test_st_within_curve(spark):    
     data = "within_curve.csv"
     table_name = 'test_within_curve'
     sql = "select st_within(left, right) as geos from test_within_curve"
@@ -763,8 +806,8 @@ def run_test_st_within_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_equals_1(spark):
-    
     data = "equals.csv"
     table_name = 'test_equals'
     sql = "select st_equals(left, right) as geos from test_equals"
@@ -779,8 +822,8 @@ def run_test_st_equals_1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_equals_2(spark):
-    
+
+def run_test_st_equals_2(spark):    
     data = "equals2.csv"
     table_name = 'test_equals_2'
     sql = "select st_equals(st_envelope(left), right) as geos from test_equals_2"
@@ -795,8 +838,8 @@ def run_test_st_equals_2(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_crosses(spark):
-    
+
+def run_test_st_crosses(spark):    
     data = "crosses.csv"
     table_name = 'test_crosses'
     sql = "select st_crosses(left, right) as geos from test_crosses"
@@ -810,6 +853,7 @@ def run_test_st_crosses(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_crosses_curve(spark):
     data = "crosses_curve.csv"
@@ -826,8 +870,8 @@ def run_test_st_crosses_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_overlaps(spark):
-    
+
+def run_test_st_overlaps(spark):    
     data = "overlaps.csv"
     table_name = 'test_overlaps'
     sql = "select st_overlaps(left, right) as geos from test_overlaps"
@@ -842,8 +886,8 @@ def run_test_st_overlaps(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_overlaps_curve(spark):
-    
+
+def run_test_st_overlaps_curve(spark):    
     data = "overlaps_curve.csv"
     table_name = 'test_overlaps_curve'
     sql = "select st_overlaps(left, right) as geos from test_overlaps_curve"
@@ -858,8 +902,8 @@ def run_test_st_overlaps_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_touches(spark):
-    
+
+def run_test_st_touches(spark):    
     data = "touches.csv"
     table_name = 'test_touches'
     sql = "select st_touches(left, right) as geos from test_touches"
@@ -874,8 +918,8 @@ def run_test_st_touches(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_touches_curve(spark):
-    
+
+def run_test_st_touches_curve(spark):    
     data = "touches_curve.csv"
     table_name = 'test_touches_curve'
     sql = "select st_touches(left, right) as geos from test_touches_curve"
@@ -889,6 +933,7 @@ def run_test_st_touches_curve(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_makevalid(spark):
     data = "makevalid.csv"
@@ -905,6 +950,7 @@ def run_test_st_makevalid(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_polygonfromenvelope(spark):
     data = "polygonfromenvelope.json"
     table_name = 'test_polygonfromenvelope'
@@ -919,6 +965,7 @@ def run_test_st_polygonfromenvelope(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_simplifypreservetopology(spark):
     data = "simplifypreservetopology.csv"
@@ -935,6 +982,7 @@ def run_test_st_simplifypreservetopology(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_simplifypreservetopology_curve(spark):
     data = "simplifypreservetopology_curve.csv"
     table_name = 'test_simplifypreservetopology_curve'
@@ -949,6 +997,7 @@ def run_test_st_simplifypreservetopology_curve(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_curvetoline(spark):
     data = "curvetoline.csv"
@@ -965,8 +1014,8 @@ def run_test_st_curvetoline(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_geomfromgeojson(spark):
 
+def run_test_st_geomfromgeojson(spark):
     data = "geojson.csv"
     table_name = 'test_geomfromjson'
     sql = "select st_geomfromgeojson(geos) as geos from test_geomfromjson"
@@ -980,6 +1029,7 @@ def run_test_st_geomfromgeojson(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_geomfromgeojson2(spark):
     # this test is only test that arctern can handle empty geojsons, which postgis cannot, do not need to compare with postgis
@@ -997,6 +1047,7 @@ def run_test_st_geomfromgeojson2(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_hausdorffdistance(spark):
     data = "hausdorffdistance.csv"
     table_name = 'test_hausdorffdistance'
@@ -1011,6 +1062,7 @@ def run_test_st_hausdorffdistance(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_hausdorffdistance_curve(spark):
     data = "hausdorffdistance_curve.csv"
@@ -1027,6 +1079,7 @@ def run_test_st_hausdorffdistance_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_pointfromtext(spark):
     data = "pointfromtext.csv"
     table_name = 'test_pointfromtext'
@@ -1041,6 +1094,7 @@ def run_test_st_pointfromtext(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_polygonfromtext(spark):
     data = "polygonfromtext.csv"
@@ -1057,6 +1111,7 @@ def run_test_st_polygonfromtext(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_linestringfromtext(spark):
     data = "linestringfromtext.csv"
     table_name = 'test_linestringfromtext'
@@ -1071,6 +1126,7 @@ def run_test_st_linestringfromtext(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_geomfromtext(spark):
     data = "geomfromtext.csv"
@@ -1087,6 +1143,7 @@ def run_test_st_geomfromtext(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+
 def run_test_st_geomfromwkt(spark):
     data = "geomfromtext.csv"
     table_name = 'test_geomfromwkt'
@@ -1101,6 +1158,7 @@ def run_test_st_geomfromwkt(spark):
     rs.printSchema()
     rs.show()
     save_result("results/%s" % table_name, rs)
+
 
 def run_test_st_astext(spark):
     data = "geomfromtext.csv"
@@ -1117,8 +1175,8 @@ def run_test_st_astext(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     url = 'local'
     spark_session = SparkSession.builder.appName("Python zgis sample").master(url).getOrCreate()
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
@@ -1196,3 +1254,4 @@ if __name__ == "__main__":
     run_test_st_astext(spark_session)
 
     spark_session.stop()
+
