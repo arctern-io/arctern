@@ -74,7 +74,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   for (int32_t i = 0; i < len; i++) {
 //    std::cout << wkt_geometries->GetString(i).c_str() << std::endl;
     if (wkt_geometries->IsNull(i)) {
-      std::string nullstr = " ";
+      std::string nullstr = "";
       CHECK_ARROW(builder.Append(nullstr));	    
       continue;
     }

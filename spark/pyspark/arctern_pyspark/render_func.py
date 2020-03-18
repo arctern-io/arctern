@@ -108,7 +108,7 @@ def choroplethmap(df, vega):
     width = vega.width()
     if (coor != 'EPSG:3857'):
         df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("wkt"), col('w'))
-    df.show(20, False)
+#    df.show(20, False)
 
     vega = vega.build()
     agg_schema = StructType([StructField('wkt', StringType(), True),
@@ -133,8 +133,11 @@ def choroplethmap(df, vega):
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
-    agg_df = agg_df.groupby("wkt").agg(sum_udf(agg_df['w']).alias("w")) 
+    # agg_df.where(agg_df.wkt.isNotNull()).show()
+    agg_df = agg_df.where("wkt != ''")
+    agg_df.show(20, False)
+    agg_df = agg_df.groupby("wkt").agg(sum_udf(agg_df['w']).alias("w"))
     agg_df.show(20,False)
-    agg_df.printSchema()
+    # agg_df.printSchema()
     hex_data = agg_df.agg(choroplethmap_wkt(agg_df['wkt'], agg_df['w'])).collect()[0][0]
     return hex_data
