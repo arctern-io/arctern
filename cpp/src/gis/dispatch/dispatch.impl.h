@@ -33,6 +33,8 @@ auto ArraySplitImpl(const std::shared_ptr<arrow::Array>& geometries_raw,
   return results;
 }
 
+
+
 // merge [false_array, true_array]
 template <typename TypedArrowArray>
 auto ArrayMergeImpl(const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,

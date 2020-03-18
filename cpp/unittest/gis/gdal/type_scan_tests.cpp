@@ -227,6 +227,6 @@ TEST(type_scan, merge_and_split) {
   };
   checker(tmps[0], false_strs);
   checker(tmps[1], true_strs);
-  auto output = WktArrayMerge(tmps, masks);
+  auto output = WktArrayMerge({tmps[0], tmps[1]}, masks);
   checker(output, strs);
 }
