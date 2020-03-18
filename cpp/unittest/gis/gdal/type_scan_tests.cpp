@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <arrow/api.h>
 #include <arrow/array.h>
 #include <gtest/gtest.h>
@@ -24,6 +23,7 @@
 #include <random>
 
 #include "arrow/gis_api.h"
+#include "gis/dispatch/dispatch.h"
 #include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
 #include "utils/check_status.h"

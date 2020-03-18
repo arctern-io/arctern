@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "gis/wkb_types.h"
 #include "gis/dispatch/wkt_type_scanner.h"
+#include "gis/wkb_types.h"
 #ifdef USE_GPU
 #include "gis/cuda/gis_functions.h"
 #include "gis/dispatch/dispatch.h"
@@ -27,6 +27,7 @@
 
 #include "common/version.h"
 #include "gis/api.h"
+#include "gis/dispatch/dispatch.h"
 #include "gis/gdal/gis_functions.h"
 #include "utils/check_status.h"
 
