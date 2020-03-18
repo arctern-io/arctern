@@ -397,6 +397,5 @@ if __name__ == '__main__':
     update_result()
 
     flag = compare_all()
-    flag = False
     if not flag:
         exit(1)
