@@ -61,23 +61,23 @@ def Projection(geos, top_left, bottom_right, height, width):
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):
-    return geo
+    return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PolygonFromText(geo):
-    return geo
+    return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_LineStringFromText(geo):
-    return geo
+    return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_GeomFromWKT(geo):
-    return geo
+    return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_GeomFromText(geo):
-    return geo
+    return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_AsText(geo):
