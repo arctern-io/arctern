@@ -20,7 +20,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 #include "utils/check_status.h"
 

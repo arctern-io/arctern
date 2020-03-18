@@ -18,7 +18,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 #include "render/2d/choropleth_map/choropleth_map.h"
 #include "render/2d/heatmap/heatmap.h"
