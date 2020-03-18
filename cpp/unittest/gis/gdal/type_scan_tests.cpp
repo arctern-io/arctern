@@ -45,7 +45,7 @@ TEST(type_scan, single_type_scan) {
   ASSERT_EQ(type_masks->is_unique_type, false);
 
   for (auto type : scanner.types()) {
-    auto& mask = type_masks->get_masks(type);
+    auto& mask = type_masks->get_mask(type);
     auto uid = type_masks->get_encode_uid(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
     auto encode_uids = type_masks->encode_uids;
@@ -58,12 +58,12 @@ TEST(type_scan, single_type_scan) {
         ASSERT_NE(encode_uids[i], uid);
       }
     }
-    auto count = type_masks->get_counts(type);
+    auto count = type_masks->get_count(type);
     ASSERT_EQ(count, range.second - range.first);
   }
   {
     GroupedWkbTypes type = {WkbTypes::kUnknown};
-    auto& mask = type_masks->get_masks(type);
+    auto& mask = type_masks->get_mask(type);
     for (int i = 0; i < mask.size(); i++) {
       ASSERT_EQ(mask[i], false);
     }
@@ -86,7 +86,7 @@ TEST(type_scan, unknown_type) {
   auto range2 = cases.GetCaseIndexRange(WkbTypes::kMultiLineString);
   auto& encode_uids = type_masks->encode_uids;
   auto uid = type_masks->get_encode_uid(type);
-  auto& mask = type_masks->get_masks(type);
+  auto& mask = type_masks->get_mask(type);
   for (int i = 0; i < mask.size(); i++) {
     if ((i >= range0.first && i < range0.second) ||
         (i >= range1.first && i < range1.second) ||
@@ -143,7 +143,7 @@ TEST(type_scan, grouped_type) {
   auto& encode_uids = type_masks->encode_uids;
 
   {
-    const auto& mask = type_masks->get_masks(type1);
+    const auto& mask = type_masks->get_mask(type1);
     auto uid = type_masks->get_encode_uid(type1);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kLineString);
@@ -159,7 +159,7 @@ TEST(type_scan, grouped_type) {
     }
   }
   {
-    const auto& mask = type_masks->get_masks(type2);
+    const auto& mask = type_masks->get_mask(type2);
     auto uid = type_masks->get_encode_uid(type2);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPolygon);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kMultiPoint);

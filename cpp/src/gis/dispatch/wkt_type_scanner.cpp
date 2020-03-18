@@ -70,7 +70,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   using Info = GeometryTypeMasks::Info;
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
-    mapping[i].masks.resize(len, false);
+    mapping[i].mask.resize(len, false);
     mapping[i].encode_uid = i;
   }
 
@@ -79,7 +79,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   bool is_unique_type = true;
   int last_idx = -1;
 
-  // fill type masks
+  // fill type mask
   for (int i = 0; i < len; i++) {
     using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
     auto type = [&] {
@@ -103,8 +103,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
     auto idx = type_to_idx[get_type_index(type)];
 
-    mapping[idx].masks[i] = true;
-    mapping[idx].mask_counts++;
+    mapping[idx].mask[i] = true;
+    mapping[idx].mask_count++;
     encode_uids[i] = idx;
 
     if (last_idx != -1 && last_idx != idx) {
@@ -119,14 +119,14 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   if (is_unique_type) {
     int encode_uid = 0;
-    if (mapping[encode_uid].masks.front() == true) {
+    if (mapping[encode_uid].mask.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
       return ret;
     } else {
       encode_uid++;
       for (auto& grouped_type : types()) {
-        if (mapping[encode_uid].masks.front() == true) {
+        if (mapping[encode_uid].mask.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
           return ret;

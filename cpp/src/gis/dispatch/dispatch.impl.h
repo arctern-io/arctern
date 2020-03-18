@@ -27,10 +27,9 @@ namespace dispatch {
 
 // return [false_array, true_array]
 template <typename TypedArrowArray>
-auto ArraySplitImpl(const std::shared_ptr<arrow::Array>& geometries_raw,
-                    const std::vector<bool>& mask)
+auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
+                       const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
-  auto geometries = std::static_pointer_cast<TypedArrowArray>(geometries_raw);
   using Builder = GetArrowBuilderType<TypedArrowArray>;
   std::array<Builder, 2> builders;
   assert(mask.size() == geometries->length());
@@ -50,14 +49,20 @@ auto ArraySplitImpl(const std::shared_ptr<arrow::Array>& geometries_raw,
   return results;
 }
 
+// return [false_array, true_array]
+template <typename TypedArrowArray>
+auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geometries_raw,
+                              const std::vector<bool>& mask)
+    -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
+  auto geometries = std::static_pointer_cast<TypedArrowArray>(geometries_raw);
+  return GenericArraySplit(geometries, mask);
+}
+
 // merge [false_array, true_array]
 template <typename TypedArrowArray>
-auto ArrayMergeImpl(const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
-                    const std::vector<bool>& mask) -> std::shared_ptr<TypedArrowArray> {
-  std::array<std::shared_ptr<TypedArrowArray>, 2> inputs;
-  for (int i = 0; i < inputs.size(); ++i) {
-    inputs[i] = std::static_pointer_cast<TypedArrowArray>(inputs_raw[i]);
-  }
+auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
+                       const std::vector<bool>& mask)
+    -> std::shared_ptr<TypedArrowArray> {
   assert(inputs[0]->length() + inputs[1]->length() == mask.size());
   std::array<int, 2> indexes{0, 0};
   using Builder = GetArrowBuilderType<TypedArrowArray>;
@@ -77,24 +82,36 @@ auto ArrayMergeImpl(const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_r
   return result;
 }
 
+// merge [false_array, true_array]
+template <typename TypedArrowArray>
+auto GenericArrayMergeWrapper(
+    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
+    const std::vector<bool>& mask) {
+  std::array<std::shared_ptr<TypedArrowArray>, 2> inputs;
+  for (int i = 0; i < inputs.size(); ++i) {
+    inputs[i] = std::static_pointer_cast<TypedArrowArray>(inputs_raw[i]);
+  }
+  return GenericArrayMerge(inputs, mask);
+}
+
 // split into [false_array, true_array]
 std::array<std::shared_ptr<arrow::StringArray>, 2> WktArraySplit(
     const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask) {
-  return ArraySplitImpl<arrow::StringArray>(geometries, mask);
+  return GenericArraySplitWrapper<arrow::StringArray>(geometries, mask);
 }
 
 // merge [false_array, true_array]
 std::shared_ptr<arrow::StringArray> WktArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask) {
-  return ArrayMergeImpl<arrow::StringArray>(inputs, mask);
+  return GenericArrayMergeWrapper<arrow::StringArray>(inputs, mask);
 }
 
 // merge [false_array, true_array]
 std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask) {
-  return ArrayMergeImpl<arrow::DoubleArray>(inputs, mask);
+  return GenericArrayMergeWrapper<arrow::DoubleArray>(inputs, mask);
 }
 
 }  // namespace dispatch
