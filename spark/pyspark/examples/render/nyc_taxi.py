@@ -32,15 +32,17 @@ def draw_point_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
-    df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
-    # df.createOrReplaceGlobalTempView("nyc_taxi")
 
     res = spark.sql("select pickup_latitude as x, pickup_longitude as y  from nyc_taxi")
     res.printSchema()
     res.createOrReplaceTempView("pickup")
 
-    vega = vega_circle2d(1900, 1410, "POINT (4534000 -12510000)", "POINT (4538000 -12513000)", 3, "#2DEF4A", 0.5, "EPSG:3857")
+    register_funcs(spark)
+    res = spark.sql("select ST_Point(x, y) as point from pickup where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, 40.780816 -73.998427, 40.780816 -73.954348, 40.730309 -73.998427))')")
+    res.show(20, False)
+
+    vega = VegaCircle2d(1024, 896, 'POINT (40.730309 -73.954348)', 'POINT (40.780816 -73.998427)', 3, "#2DEF4A", 0.5, "EPSG:4326")
     res = pointmap(res, vega)
     save_png(res, '/tmp/pointmap.png')
 
@@ -57,8 +59,6 @@ def draw_heat_map(spark):
     res.createOrReplaceTempView("pickup")
     
     register_funcs(spark)
-    # res = spark.sql(
-    #     "select ST_Point(x, y) as point, w from pickup")
     res = spark.sql("select ST_Point(x, y) as point, w from pickup where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, 40.780816 -73.998427, 40.780816 -73.954348, 40.730309 -73.998427))')")
     res.show(20, False)
 
@@ -73,15 +73,11 @@ def draw_choropleth_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
-    df.show(20, False)
     df.createOrReplaceTempView("nyc_taxi")
-    # df.createOrReplaceGlobalTempView("nyc_taxi")
 
     res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
-    res.printSchema()
     res.createOrReplaceTempView("pickup")
-    vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.984092, 40.753893, -73.977588, 40.756342], "blue_to_red", [2.5, 5], 1.0)
-    vega = vega_choropleth_map.build()
+    vega = VegaChoroplethMap(1900, 1410, 'POINT (40.753893 -73.977588)', 'POINT ( 40.756342 -73.984092)', "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     res = choroplethmap(res, vega)
     save_png(res, '/tmp/choroplethmap.png')
 
@@ -97,8 +93,8 @@ if __name__ == "__main__":
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    draw_heat_map(spark_session)
+#    draw_heat_map(spark_session)
 #    draw_point_map(spark_session)
-#    draw_choropleth_map(spark_session)
+    draw_choropleth_map(spark_session)
 
     spark_session.stop()

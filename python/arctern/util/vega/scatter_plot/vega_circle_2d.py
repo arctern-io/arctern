@@ -110,3 +110,15 @@ class VegaCircle2d(VegaScatterPlot):
         return root_json
     def coor(self):
         return self._coordinate_system
+    
+    def bounding_box_min(self):
+        return self._bounding_box_min
+    
+    def bounding_box_max(self):
+        return self._bounding_box_max
+
+    def height(self):
+        return self._height
+
+    def width(self):
+        return self._width

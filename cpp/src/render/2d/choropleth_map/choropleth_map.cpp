@@ -111,14 +111,18 @@ void ChoroplethMap<T>::Transform() {
       buildings_x_[i].resize(ring_size);
       buildings_y_[i].resize(ring_size);
       for (int j = 0; j < ring_size; j++) {
-        double x_pos = ring->getX(j) * 111319.490778;
-        int ret_x = (int)(((x_pos - x_left) / (x_right - x_left)) * width - 1E-9);
-        buildings_x_[i][j] = ret_x;
+//        double x_pos = ring->getX(j) * 111319.490778;
+//        int ret_x = (int)(((x_pos - x_left) / (x_right - x_left)) * width - 1E-9);
+//        buildings_x_[i][j] = ret_x;
 
-        double y_pos =
-            6378136.99911 * log(tan(.00872664626 * ring->getY(j) + .785398163397));
-        int ret_y = (int)(((y_pos - y_left) / (y_right - y_left)) * height - 1E-9);
-        buildings_y_[i][j] = ret_y;
+//        double y_pos =
+//            6378136.99911 * log(tan(.00872664626 * ring->getY(j) + .785398163397));
+//        int ret_y = (int)(((y_pos - y_left) / (y_right - y_left)) * height - 1E-9);
+//        buildings_y_[i][j] = ret_y;
+        double x_pos = ring->getX(j);
+        buildings_x_[i][j] = x_pos;
+	double y_pos = ring->getY(j);
+        buildings_x_[i][j] = y_pos;
       }
 
     } else {

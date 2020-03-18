@@ -69,11 +69,15 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   auto coordinate_width = bottom_right_x - top_left_x;
   auto coordinate_height = top_left_y - bottom_right_y;
   uint32_t output_x, output_y;
-  std::cout << top_left_x << "," << top_left_y << "," << bottom_right_x << "," << bottom_right_y << std::endl;
+//  std::cout << top_left_x << "," << top_left_y << "," << bottom_right_x << "," << bottom_right_y << std::endl;
 
   for (int32_t i = 0; i < len; i++) {
-    std::cout << wkt_geometries->GetString(i).c_str() << std::endl;
-    if (wkt_geometries->IsNull(i)) continue;
+//    std::cout << wkt_geometries->GetString(i).c_str() << std::endl;
+    if (wkt_geometries->IsNull(i)) {
+      std::string nullstr = " ";
+      CHECK_ARROW(builder.Append(nullstr));	    
+      continue;
+    }
     OGRGeometry* geo = nullptr;
     auto err_code =
         OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(), nullptr, &geo);
@@ -89,11 +93,11 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
       if (type == wkbPoint) {
         output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) / coordinate_width);
         output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) / coordinate_height);
-        std::cout << "get here1" << output_x << std::endl;
+//        std::cout << "get here1" << output_x << std::endl;
         geo->toPoint()->setX(output_x);
         geo->toPoint()->setY(output_y);
       } else if (type == wkbPolygon) {
-        std::cout << "get here2" << std::endl;
+//        std::cout << "get here2" << std::endl;
         auto ring = geo->toPolygon()->getExteriorRing();
         auto ring_size = ring->getNumPoints();
         for (int j = 0; j < ring_size; j++) {
@@ -107,13 +111,13 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
         throw std::runtime_error(err_msg);
       }
 
-      std::cout << "get here3" << std::endl;
-      std::cout << geo->toPoint()->getX() << std::endl;
-      std::cout << geo->toPoint()->getY() << std::endl;
+//      std::cout << "get here3" << std::endl;
+//      std::cout << geo->toPoint()->getX() << std::endl;
+//      std::cout << geo->toPoint()->getY() << std::endl;
       // 3. export to wkt
       char* str;
       err_code = OGR_G_ExportToWkt(geo, &str);
-      std::cout << str << std::endl;
+//      std::cout << str << std::endl;
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);

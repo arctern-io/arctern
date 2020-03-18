@@ -34,7 +34,19 @@ def print_partitions(df):
         i = i + 1
 
 def pointmap(df, vega):
-    from pyspark.sql.functions import pandas_udf, PandasUDFType
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
+    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+    from ._wrapper_func import TransformAndProjection
+    coor = vega.coor()
+    bounding_box_max = vega.bounding_box_max()
+    bounding_box_min = vega.bounding_box_min()
+    height = vega.height()
+    width = vega.width()
+    if (coor != 'EPSG:3857'):
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("point"))
+    df.show(20,False)
+
+    vega = vega.build()
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
@@ -48,7 +60,16 @@ def pointmap(df, vega):
 def heatmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+    from ._wrapper_func import TransformAndProjection
+    coor = vega.coor()
+    bounding_box_max = vega.bounding_box_max()
+    bounding_box_min = vega.bounding_box_min()
+    height = vega.height()
+    width = vega.width()
+    if (coor != 'EPSG:3857'):
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("point"), col('w'))
 
+    vega = vega.build()
     agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -69,36 +90,27 @@ def heatmap(df, vega):
     def sum_udf(v):
         return v.sum()
 
-    # from ._wrapper_func import ST_Transform, Projection
-    # res = df.select(ST_Transform(col('point'), lit('EPSG:4326'), lit('EPSG:3857')).alias("point"), col('w'))
-    # res = res.select(Projection(col('point'), lit('POINT (4534000 -12510000)'), lit('POINT (4538000 -12513000)'), lit(1024), lit(896)) .alias("point"), col('w'))
-    # agg_df = df.mapInPandas(render_agg_UDF)
 
-#    import json
-#    vega_dict = json.loads(vega)
-#    bounding_box_min = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_min"]["value"]
-#    bounding_box_max = vega_dict["marks"][0]["encode"]["enter"]["bounding_box_max"]["value"]
-#    width = vega_dict["width"]
-#    height = vega_dict["height"]
-    from ._wrapper_func import TransformAndProjection
-    coor = vega.coor()
-    if (coor != 'EPSG:3857'):
-#    from ._wrapper_func import ST_Point
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))))
-
-    trans_projec_df.show(20)
-
-    agg_df = trans_projec_df.mapInPandas(render_agg_UDF)
+    agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
     agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
-    # agg_df.show(20, False)
     hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
     return hex_data
 
 def choroplethmap(df, vega):
-    from pyspark.sql.functions import pandas_udf, PandasUDFType
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+    from ._wrapper_func import TransformAndProjection
+    coor = vega.coor()
+    bounding_box_max = vega.bounding_box_max()
+    bounding_box_min = vega.bounding_box_min()
+    height = vega.height()
+    width = vega.width()
+    if (coor != 'EPSG:3857'):
+        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("wkt"), col('w'))
+    df.show(20, False)
 
+    vega = vega.build()
     agg_schema = StructType([StructField('wkt', StringType(), True),
                              StructField('w', IntegerType(), True)])
 
@@ -115,7 +127,14 @@ def choroplethmap(df, vega):
         from arctern import choropleth_map
         return choropleth_map(wkt, w, conf.encode('utf-8'))
 
-    first_agg_df = df.mapInPandas(render_agg_UDF).coalesce(1)
-    final_agg_df = first_agg_df.mapInPandas(render_agg_UDF).coalesce(1)
-    hex_data = final_agg_df.agg(choroplethmap_wkt(final_agg_df['wkt'], final_agg_df['w'])).collect()[0][0]
+    @pandas_udf("double", PandasUDFType.GROUPED_AGG)
+    def sum_udf(v):
+        return v.sum()
+
+    agg_df = df.mapInPandas(render_agg_UDF)
+    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.groupby("wkt").agg(sum_udf(agg_df['w']).alias("w")) 
+    agg_df.show(20,False)
+    agg_df.printSchema()
+    hex_data = agg_df.agg(choroplethmap_wkt(agg_df['wkt'], agg_df['w'])).collect()[0][0]
     return hex_data
