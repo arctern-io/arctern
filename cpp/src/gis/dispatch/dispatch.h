@@ -16,7 +16,9 @@
 // under the License.
 
 #pragma once
+#include <memory>
 #include <set>
+#include <vector>
 
 #include "utils/arrow_alias.h"
 
