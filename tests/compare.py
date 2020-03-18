@@ -341,31 +341,32 @@ def compare_results(config, arctern_results, postgis_results):
 
 
 def compare_all():
-	names, table_names, expects = get_tests()
-
     flag = True
-	for name, expect in zip(names, expects):
-		
-		arct_result = os.path.join(arctern_result, name + '.csv')
-		pgis_result = os.path.join(expected_result, expect + '.out')
-		print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (name, arct_result, pgis_result))
-		
-		if not os.path.isfile(arct_result):
-			print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'test result not found [%s]' % arct_result))
-			continue
+    names, table_names, expects = get_tests()   
 
-		if not os.path.isfile(pgis_result):
-			print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'expected result not found [%s]' % pgis_result))
-			continue
+    for name, expect in zip(names, expects):
+        
+        arct_result = os.path.join(arctern_result, name + '.csv')
+        pgis_result = os.path.join(expected_result, expect + '.out')
+        print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (name, arct_result, pgis_result))
+        
+        if not os.path.isfile(arct_result):
+            print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'test result not found [%s]' % arct_result))
+            continue
 
-		res = compare_results(name, arct_result, pgis_result)
-		if res == True:
-			print('Arctern test: %s, result: PASSED' % name)
-		else:
-			print('Arctern test: %s, result: FAILED' % name)
+        if not os.path.isfile(pgis_result):
+            print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'expected result not found [%s]' % pgis_result))
+            continue
+
+        res = compare_results(name, arct_result, pgis_result)
+        if res == True:
+            print('Arctern test: %s, result: PASSED' % name)
+        else:
+            print('Arctern test: %s, result: FAILED' % name)
         
         flag = flag and res
-        return flag
+
+    return flag
 
 
 def update_quote(file_path):
@@ -393,9 +394,9 @@ def update_result():
 		
 
 if __name__ == '__main__':
-	update_result()
-	
-	flag = compare_all()
+    update_result()
+
+    flag = compare_all()
     flag = False
     if not flag:
         exit(1)
