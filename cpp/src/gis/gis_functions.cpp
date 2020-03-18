@@ -249,11 +249,10 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
     }
   } else {  // MIXED METHOD
     auto mask = type_masks->get_mask(supported_types);
-    auto split_inputs = dispatch::WktArraySplit(geometries, mask);
-    assert(split_inputs[1]->null_count() == 0);
-    auto gdal_output = gdal::ST_Length(split_inputs[0]);
-    auto cuda_output = cuda::ST_Length(split_inputs[1]);
-    return dispatch::DoubleArrayMerge({gdal_output, cuda_output}, mask);
+    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
+    auto result = dispatch::UnaryMixedExecute<arrow::DoubleArray>(
+        mask, gdal::ST_Length, cuda::ST_Length, typed_geo);
+    return result;
   }
 #else
   return gdal::ST_Length(geometries);
