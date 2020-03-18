@@ -3374,6 +3374,7 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   builder.Append(std::string(j0));
   builder.Append(std::string(j1));
   builder.Append(std::string(j2));
+  builder.AppendNull();
   builder.Finish(&input);
 
   auto res = arctern::gis::ST_GeomFromGeoJSON(input);
@@ -3381,6 +3382,26 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
   ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+  ASSERT_TRUE(res_str->IsNull(3));
+}
+
+TEST(geometry_test, test_ST_GeomFromText) {
+  auto p0 = "POINT (0 0)";
+  auto p1 = "abc ( 0 0)";
+  auto p2 = "POINT (0 0) abc";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+
+  builder.Finish(&input);
+  auto res = arctern::gis::ST_GeomFromText(input);
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+  ASSERT_EQ(res_str->GetString(0), "POINT (0 0)");
+  ASSERT_TRUE(res_str->IsNull(1));
+  ASSERT_TRUE(res_str->IsNull(2));
 }
 
 TEST(geometry_test, test_ST_Union_Aggr3) {

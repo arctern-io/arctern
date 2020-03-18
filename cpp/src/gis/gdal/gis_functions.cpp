@@ -338,14 +338,19 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
   int len = json_geo->length();
   arrow::StringBuilder builder;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(json_geo, i);
-    if (geo != nullptr) {
-      char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
-      CHECK_ARROW(builder.Append(wkt));
-      CPLFree(wkt);
-      OGRGeometryFactory::destroyGeometry(geo);
-    } else {
+    if (json_geo->IsNull(i)) {
       builder.AppendNull();
+    } else {
+      auto str = json_geo->GetString(i);
+      auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
+      if (geo != nullptr) {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
+        CHECK_ARROW(builder.Append(wkt));
+        CPLFree(wkt);
+        OGRGeometryFactory::destroyGeometry(geo);
+      } else {
+        builder.AppendNull();
+      }
     }
   }
   std::shared_ptr<arrow::Array> results;
