@@ -230,6 +230,25 @@ std::shared_ptr<arrow::Array> build_linestrings() {
   return line_strings;
 }
 
+TEST(geometry_test, test_ST_IsValid2) {
+  auto p0 = "POINT (1 8 2 4 )kdjff,";
+  auto p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))";
+
+  arrow::StringBuilder string_builder;
+  std::shared_ptr<arrow::Array> line_strings;
+
+  string_builder.Append(p0);
+  string_builder.Append(p1);
+
+  string_builder.Finish(&line_strings);
+
+  auto res = arctern::gis::ST_IsValid(line_strings);
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), false);
+  ASSERT_EQ(res_bool->Value(1), false);
+}
+
 TEST(geometry_test, test_ST_IsValid) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
