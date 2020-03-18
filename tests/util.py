@@ -3,8 +3,8 @@ import os
 from yaml import full_load
 from shapely import wkt
 # import geojson
-from osgeo import ogr
-from ogr import *
+# from osgeo import ogr
+from osgeo.ogr import *
 
 
 EPOCH = 1e-6
@@ -142,10 +142,10 @@ def arc_distance(geox, geoy):
         return geometry_distance(geox, geoy)
 
 
-def to_geojson(wkt_str):
-    g1 = wkt.loads(wkt_str)
-    g2 = geojson.Feature(geometry=g1, properties={})
-    return g2.geometry
+# def to_geojson(wkt_str):
+# 	g1 = wkt.loads(wkt_str)
+# 	g2 = geojson.Feature(geometry=g1, properties={})
+# 	return g2.geometry
 
 
 def get_tests():
