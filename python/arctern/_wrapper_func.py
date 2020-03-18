@@ -68,9 +68,9 @@ def ST_GeomFromGeoJSON(json):
     rs = arctern_core_.ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
 
-def ST_GeomFromGeoText(text):
-    geo = pa.array(json, type='string')
-    rs = arctern_core_.ST_GeomFromText(text)
+def ST_GeomFromText(text):
+    geo = pa.array(text, type='string')
+    rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
 
 def ST_Intersection(left, right):
