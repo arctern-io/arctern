@@ -8,16 +8,16 @@ namespace gis {
 namespace dispatch {
 
 // split into [false_array, true_array]
-std::array<std::shared_ptr<arrow::Array>, 2> WktArraySplit(
+std::array<std::shared_ptr<arrow::StringArray>, 2> WktArraySplit(
     const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask);
 
 // merge [false_array, true_array]
-std::shared_ptr<arrow::Array> WktArrayMerge(
+std::shared_ptr<arrow::StringArray> WktArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask);
 
 // merge [false_array, true_array]
-std::shared_ptr<arrow::Array> DoubleArrayMerge(
+std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask);
 
