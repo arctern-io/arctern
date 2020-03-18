@@ -50,8 +50,8 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
                                                       bool skip_write) {
   auto tag = input.get_tag(index);
   assert(tag.get_space_type() == WkbSpaceType::XY);
-  auto values_beg = input.get_value_ptr(index);
-  auto values_end = input.get_value_ptr(index + 1);
+  auto values_beg = (const double2*)input.get_value_ptr(index);
+  auto values_end = (const double2*)input.get_value_ptr(index + 1);
   // generate bound from all values
   // instead of switching by tags
   MinMax final_x{+inf, -inf};
@@ -75,15 +75,24 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
     return OutputInfo{tag, meta_size, value_size};
   }
 
-  for (auto iter = values_beg; iter < values_end; iter += 2) {
-    final_x.update(iter[0]);
-    final_y.update(iter[1]);
+  for (auto iter = values_beg; iter < values_end; iter++) {
+    final_x.update(iter->x);
+    final_y.update(iter->y);
+  }
+
+  if(final_x.is_trivial() && final_y.is_trivial()) {
+    // just point
+    if(!skip_write) {
+      value2_output[0].x = final_x.min;
+      value2_output[0].y = final_y.min;
+    }
+    return OutputInfo{WkbTypes::kPoint, 0, 2};
   }
 
   if (final_x.is_trivial()) {
     if (!skip_write) {
       // points of line
-      meta_output[0] = 1;
+      meta_output[0] = 2;
       value2_output[0] = {final_x.min, final_y.min};
       value2_output[1] = {final_x.min, final_y.max};
     }
@@ -93,7 +102,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
   if (final_y.is_trivial()) {
     if (!skip_write) {
       // points of line
-      meta_output[0] = 1;
+      meta_output[0] = 2;
       value2_output[0] = {final_x.min, final_y.min};
       value2_output[1] = {final_x.max, final_y.min};
     }
@@ -108,9 +117,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
     meta_output[1] = 5;
     // fill value
     value2_output[0] = {final_x.min, final_y.min};
-    value2_output[1] = {final_x.max, final_y.min};
+    value2_output[1] = {final_x.min, final_y.max};
     value2_output[2] = {final_x.max, final_y.max};
-    value2_output[3] = {final_x.min, final_y.max};
+    value2_output[3] = {final_x.max, final_y.min};
     value2_output[4] = {final_x.min, final_y.min};
   }
   return OutputInfo{WkbTypes::kPolygon, 2, 2 * 5};

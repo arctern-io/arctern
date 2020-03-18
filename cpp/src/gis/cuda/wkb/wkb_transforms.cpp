@@ -19,11 +19,14 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <src/gis/gdal/format_conversion.h>
 
 #include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "gis/gdal/gis_functions.h"
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -45,16 +48,15 @@ std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
 }
 
 std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
-  arrow::BinaryBuilder builder;
+  arrow::StringBuilder builder;
   for (const auto& wkt : wkt_vec) {
-    auto wkb = Wkt2Wkb(wkt);
-    auto st = builder.Append(wkb.data(), wkb.size());
+    auto st = builder.Append(wkt.data(), wkt.size());
     assert(st.ok());
   }
   std::shared_ptr<arrow::Array> result;
   auto st = builder.Finish(&result);
   assert(st.ok());
-  return result;
+  return gdal::WktToWkb(result);
 }
 
 }  // namespace cuda

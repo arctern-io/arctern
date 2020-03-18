@@ -103,7 +103,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
     auto mask = type_masks->get_mask(supported_types);
     auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
     auto result = dispatch::UnaryMixedExecute<arrow::StringArray>(
-        mask, gdal::ST_Envelope, gdal::ST_Envelope, typed_geo);
+        mask, gdal::ST_Envelope, cuda::ST_Envelope, typed_geo);
     return result;
   }
 #else
