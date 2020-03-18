@@ -43,6 +43,7 @@ set(gpu_render_src
 set(gis_src
         gis/gis_functions.cpp
         gis/gdal/gis_functions.cpp
+        gis/parser.cpp
         gis/gdal/geometry_visitor.cpp
         gis/dispatch/wkt_type_scanner.cpp
         gis/gdal/format_conversion.cpp
