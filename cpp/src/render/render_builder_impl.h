@@ -15,11 +15,12 @@
  */
 #pragma once
 
-#include <ogrsf_frmts.h>
 #include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "utils/check_status.h"
 
@@ -36,13 +37,10 @@ void pointXY_from_wkt(const std::string& wkt, double& x, double& y, void* poCT) 
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
-std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow::Array> &geos,
-                                                     const std::string &src_rs,
-                                                     const std::string &dst_rs,
-                                                     const std::string &bottom_right,
-                                                     const std::string &top_left,
-                                                     const int &height,
-                                                     const int &width) {
+std::shared_ptr<arrow::Array> TransformAndProjection(
+    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
+    const std::string& dst_rs, const std::string& bottom_right,
+    const std::string& top_left, const int& height, const int& width) {
   OGRSpatialReference oSrcSRS;
   oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oSrcSRS.SetFromUserInput(src_rs.c_str()) != OGRERR_NONE) {
@@ -69,18 +67,16 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
   auto coordinate_width = bottom_right_x - top_left_x;
   auto coordinate_height = top_left_y - bottom_right_y;
   uint32_t output_x, output_y;
-//  std::cout << top_left_x << "," << top_left_y << "," << bottom_right_x << "," << bottom_right_y << std::endl;
 
   for (int32_t i = 0; i < len; i++) {
-//    std::cout << wkt_geometries->GetString(i).c_str() << std::endl;
     if (wkt_geometries->IsNull(i)) {
       std::string nullstr = "";
-      CHECK_ARROW(builder.Append(nullstr));	    
+      CHECK_ARROW(builder.Append(nullstr));
       continue;
     }
     OGRGeometry* geo = nullptr;
-    auto err_code =
-        OGRGeometryFactory::createFromWkt(wkt_geometries->GetString(i).c_str(), nullptr, &geo);
+    auto err_code = OGRGeometryFactory::createFromWkt(
+        wkt_geometries->GetString(i).c_str(), nullptr, &geo);
     if (err_code) continue;
     if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull());
@@ -91,33 +87,29 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
       // 2. projection
       auto type = wkbFlatten(geo->getGeometryType());
       if (type == wkbPoint) {
-        output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) / coordinate_width);
-        output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) / coordinate_height);
-//        std::cout << "get here1" << output_x << std::endl;
+        output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) /
+                              coordinate_width);
+        output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) /
+                              coordinate_height);
         geo->toPoint()->setX(output_x);
         geo->toPoint()->setY(output_y);
       } else if (type == wkbPolygon) {
-//        std::cout << "get here2" << std::endl;
         auto ring = geo->toPolygon()->getExteriorRing();
         auto ring_size = ring->getNumPoints();
         for (int j = 0; j < ring_size; j++) {
-          output_x = (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
-          output_y = (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
+          output_x =
+              (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
+          output_y =
+              (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
           ring->setPoint(j, output_x, output_y);
         }
       } else {
-        std::string err_msg =
-            "unsupported geometry type, type = " + std::to_string(type);
+        std::string err_msg = "unsupported geometry type, type = " + std::to_string(type);
         throw std::runtime_error(err_msg);
       }
 
-//      std::cout << "get here3" << std::endl;
-//      std::cout << geo->toPoint()->getX() << std::endl;
-//      std::cout << geo->toPoint()->getY() << std::endl;
-      // 3. export to wkt
       char* str;
       err_code = OGR_G_ExportToWkt(geo, &str);
-//      std::cout << str << std::endl;
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);
@@ -136,33 +128,6 @@ std::shared_ptr<arrow::Array> TransformAndProjection(const std::shared_ptr<arrow
 
   return results;
 }
-
-//std::vector<std::string> coordinate_projection(const std::vector<std::string>& point_wkt,
-//                                               const std::string top_left,
-//                                               const std::string bottom_right,
-//                                               const int height, const int width) {
-//  double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
-//  pointXY_from_wkt(top_left, top_left_x, top_left_y);
-//  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
-//
-//  int size = point_wkt.size();
-//  std::vector<std::string> output_point(size);
-//  double input_x, input_y;
-//  uint32_t output_x, output_y;
-//  for (int i = 0; i < size; i++) {
-//    pointXY_from_wkt(point_wkt[i], input_x, input_y);
-//    output_x =
-//        (uint32_t)(((input_x - top_left_x) * width) / (bottom_right_x - top_left_x));
-//    output_y =
-//        (uint32_t)(((input_y - bottom_right_y) * height) / (top_left_y - bottom_right_y));
-//    OGRPoint point(output_x, output_y);
-//    char* point_str = nullptr;
-//    CHECK_GDAL(point.exportToWkt(&point_str));
-//    std::string out_wkt(point_str);
-//    output_point[i] = out_wkt;
-//  }
-//  return output_point;
-//}
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
