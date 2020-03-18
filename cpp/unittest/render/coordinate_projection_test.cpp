@@ -42,13 +42,14 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   // param5: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.753893)";
 
-  auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs, bottom_right, top_left, 200, 300);
+  auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs,
+                                                       bottom_right, top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::StringArray>(arr);
   auto res1 = str_arr->GetString(0);
   auto res2 = str_arr->GetString(1);
-//  assert(res1 == "POINT (129 128)");
-//  assert(res2 == "POINT (180 61)");
+  //  assert(res1 == "POINT (129 128)");
+  //  assert(res2 == "POINT (180 61)");
   std::cout << res1 << std::endl;
   std::cout << res2 << std::endl;
 }
