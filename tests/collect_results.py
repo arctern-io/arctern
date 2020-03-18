@@ -1,6 +1,6 @@
-import random
+# import random
 import os
-import inspect
+# import inspect
 import shutil
 import glob
 from util import arctern_result
@@ -27,4 +27,3 @@ def collect_results():
 
 if __name__ == '__main__':
     collect_results()
-
