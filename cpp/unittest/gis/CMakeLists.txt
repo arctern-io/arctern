@@ -14,7 +14,8 @@
 
 set(gis_tests_src
         ${unittest_srcs}
-        gis_functions_tests.cpp)
+        gis_functions_tests.cpp
+        parser_tests.cpp)
 
 add_executable(gis_tests ${gis_tests_src})
 

@@ -19,6 +19,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <utility>
@@ -49,10 +50,17 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // we redirect WkbTypes::kUnknown to idx=0
   std::vector<int> type_to_idx(int(WkbTypes::kMaxTypeNumber), 0);
   int num_scan_classes = 1;
+  auto get_type_index = [](WkbTypes type) {
+    auto index = int(type);
+    if (index >= int(WkbTypes::kMaxTypeNumber)) {
+      index = int(WkbTypes::kUnknown);
+    }
+    return index;
+  };
 
   for (auto& grouped_type : types()) {
     for (auto& type : grouped_type) {
-      type_to_idx[int(type)] = num_scan_classes;
+      type_to_idx[get_type_index(type)] = num_scan_classes;
     }
     num_scan_classes++;
   }
@@ -73,13 +81,28 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   // fill type masks
   for (int i = 0; i < len; i++) {
-    auto geo = [str = wkt_geometries->GetString(i)] {
+    using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
+    auto type = [&] {
+      if (wkt_geometries->IsNull(i)) {
+        return WkbTypes::kUnknown;
+      }
+      auto str = wkt_geometries->GetString(i);
+      if (str.size() == 0) {
+        return WkbTypes::kUnknown;
+      }
       OGRGeometry* geo_;
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
-      return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
+      auto error_code = OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_);
+      if (error_code != OGRERR_NONE) {
+        return WkbTypes::kUnknown;
+      }
+      assert(geo_ != nullptr);
+      Holder holder(geo_);
+      auto type = (WkbTypes)wkbFlatten(geo_->getGeometryType());
+      return type;
     }();
-    auto type = OGR_G_GetGeometryType(geo.get());
-    auto idx = type_to_idx[type];
+
+    auto idx = type_to_idx[get_type_index(type)];
+
     mapping[idx].masks[i] = true;
     mapping[idx].mask_counts++;
     encode_uids[i] = idx;
@@ -123,6 +146,80 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     }
   }
   return ret;
+}  // namespace gdal
+
+// return [false_array, true_array]
+std::array<std::shared_ptr<arrow::Array>, 2> WktArraySplit(
+    const std::shared_ptr<arrow::Array>& geometries_raw, const std::vector<bool>& mask) {
+  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
+  std::array<arrow::StringBuilder, 2> builders;
+  assert(mask.size() == geometries->length());
+  for (auto i = 0; i < mask.size(); ++i) {
+    int array_index = mask[i] ? 1 : 0;
+    auto& builder = builders[array_index];
+    if (geometries->IsNull(i)) {
+      CHECK_ARROW(builder.AppendNull());
+    } else {
+      CHECK_ARROW(builder.Append(geometries->GetView(i)));
+    }
+  }
+  std::array<std::shared_ptr<arrow::Array>, 2> results;
+  for (auto i = 0; i < results.size(); ++i) {
+    CHECK_ARROW(builders[i].Finish(&results[i]));
+  }
+  return results;
+}
+
+// merge [false_array, true_array]
+std::shared_ptr<arrow::Array> WktArrayMerge(
+    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
+    const std::vector<bool>& mask) {
+  std::array<std::shared_ptr<arrow::StringArray>, 2> inputs;
+  for (int i = 0; i < inputs.size(); ++i) {
+    inputs[i] = std::static_pointer_cast<arrow::StringArray>(inputs_raw[i]);
+  }
+  assert(inputs[0]->length() + inputs[1]->length() == mask.size());
+  std::array<int, 2> indexes{0, 0};
+  arrow::StringBuilder builder;
+  for (auto i = 0; i < mask.size(); ++i) {
+    int array_index = mask[i] ? 1 : 0;
+    auto& input = inputs[array_index];
+    auto index = indexes[array_index]++;
+    if (input->IsNull(index)) {
+      CHECK_ARROW(builder.AppendNull());
+    } else {
+      CHECK_ARROW(builder.Append(input->GetView(index)));
+    }
+  }
+  std::shared_ptr<arrow::Array> result;
+  CHECK_ARROW(builder.Finish(&result));
+  return result;
+}
+
+// merge [false_array, true_array]
+std::shared_ptr<arrow::Array> DoubleArrayMerge(
+    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
+    const std::vector<bool>& mask) {
+  std::array<std::shared_ptr<arrow::DoubleArray>, 2> inputs;
+  for (int i = 0; i < inputs.size(); ++i) {
+    inputs[i] = std::static_pointer_cast<arrow::DoubleArray>(inputs_raw[i]);
+  }
+  assert(inputs[0]->length() + inputs[1]->length() == mask.size());
+  std::array<int, 2> indexes{0, 0};
+  arrow::DoubleBuilder builder;
+  for (auto i = 0; i < mask.size(); ++i) {
+    int array_index = mask[i] ? 1 : 0;
+    auto& input = inputs[array_index];
+    auto index = indexes[array_index]++;
+    if (input->IsNull(index)) {
+      CHECK_ARROW(builder.AppendNull());
+    } else {
+      CHECK_ARROW(builder.Append(input->GetView(index)));
+    }
+  }
+  std::shared_ptr<arrow::Array> result;
+  CHECK_ARROW(builder.Finish(&result));
+  return result;
 }
 
 }  // namespace gdal

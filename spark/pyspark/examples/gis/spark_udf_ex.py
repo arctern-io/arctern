@@ -50,19 +50,19 @@ def run_st_pointfromtext(spark):
 
 def run_st_polygonfromtext(spark):
     test_data = []
-    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
     data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_PolygonFromText(data) from data").collect()
-    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
 def run_st_astext(spark):
     test_data = []
-    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
     data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_AsText(ST_PolygonFromText(data)) from data").collect()
-    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
 def run_st_precision_reduce(spark):
     test_data = []
@@ -78,23 +78,23 @@ def run_st_linestringfromtext(spark):
     data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_LineStringFromText(data) from data").collect()
-    assert rs[0][0] == 'LINESTRING (0 0, 0 1, 1 1, 1 0)'
+    assert rs[0][0] == 'LINESTRING (0 0,0 1,1 1,1 0)'
 
 def run_st_geomfromwkt(spark):
     test_data = []
-    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
     data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_GeomFromWKT(data) from data").collect()
-    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
 def run_st_geomfromtext(spark):
     test_data = []
-    test_data.extend([('POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))',)])
+    test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
     data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_GeomFromText(data) from data").collect()
-    assert rs[0][0] == 'POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))'
+    assert rs[0][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
 def run_st_intersection(spark):
     test_data = []

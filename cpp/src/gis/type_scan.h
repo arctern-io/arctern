@@ -47,7 +47,9 @@ struct GeometryTypeMasks {
   };
   const auto& get_info(const GroupedWkbTypes& grouped_types) const {
     auto iter = dict.find(grouped_types);
-    assert(iter != dict.end());
+    if (iter == dict.end()) {
+      throw std::runtime_error("check is_unique first");
+    }
     return iter->second;
   }
 

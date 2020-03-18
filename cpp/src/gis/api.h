@@ -42,6 +42,8 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
 std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json);
 
+std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);
@@ -91,9 +93,8 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_left,
+                                          const std::shared_ptr<arrow::Array>& geo_right);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
 
