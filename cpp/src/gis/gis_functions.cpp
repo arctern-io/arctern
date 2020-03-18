@@ -86,19 +86,26 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
   dispatch::TypeScannerForWkt scanner(geometries);
-  GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
-                                     WkbTypes::kPolygon, WkbTypes::kMultiPolygon};
+  dispatch::GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
+                                               WkbTypes::kPolygon};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
-    return cuda::ST_Envelope(geometries);
+  if (type_masks->is_unique_type) {
+    if (type_masks->unique_type == supported_types) {
+      return cuda::ST_Envelope(geometries);
+    } else {
+      return gdal::ST_Envelope(geometries);
+    }
   } else {
-    return gdal::ST_Envelope(geometries);
+    auto mask = type_masks->get_mask(supported_types);
+    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
+    auto result = dispatch::UnaryMixedExecute<arrow::StringArray>(
+        mask, gdal::ST_Envelope, cuda::ST_Envelope, typed_geo);
+    return result;
   }
-
 #else
   return gdal::ST_Envelope(geometries);
 #endif

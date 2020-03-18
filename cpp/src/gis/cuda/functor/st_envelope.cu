@@ -42,63 +42,78 @@ struct MinMax {
       max = x;
     }
   }
-  // etol is error tolerance defined by implementation
-  DEVICE_RUNNABLE void adjust_by_error(double etol) {
-    if (min > max) {
-      min = max = 0xcccc;
-    }
-    if (max == min) {
-      max += etol;
-      min -= etol;
-    }
-  }
+  DEVICE_RUNNABLE bool is_trivial() { return min == max; }
 };
 
 __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& input,
                                                       int index, GpuContext& results,
                                                       bool skip_write) {
-  assert(input.get_tag(index).get_space_type() == WkbSpaceType::XY);
-  if (!skip_write) {
-    auto values_beg = input.get_value_ptr(index);
-    auto values_end = input.get_value_ptr(index + 1);
-    // generate bound from all values
-    // instead of switching by tags
-    MinMax final_x{+inf, -inf};
-    MinMax final_y{+inf, -inf};
+  auto tag = input.get_tag(index);
+  assert(tag.get_space_type() == WkbSpaceType::XY);
+  auto values_beg = input.get_value_ptr(index);
+  auto values_end = input.get_value_ptr(index + 1);
+  // generate bound from all values
+  // instead of switching by tags
+  MinMax final_x{+inf, -inf};
+  MinMax final_y{+inf, -inf};
 
-    for (auto iter = values_beg; iter < values_end; iter += 2) {
-      final_x.update(iter[0]);
-      final_y.update(iter[1]);
+  auto meta_output = results.get_meta_ptr(index);
+  auto value2_output = reinterpret_cast<double2*>(results.get_value_ptr(index));
+
+  if (values_beg == values_end) {
+    auto meta_size = input.get_meta_size(index);
+    int value_size = input.get_value_size(index);
+    assert(value_size == 0);
+    // return MultiPoint Empty
+    if (!skip_write) {
+      // fill multipoint size
+      auto metas = input.get_meta_ptr(index);
+      for(int i = 0; i < meta_size; ++i) {
+        meta_output[i] = metas[i];
+      }
     }
-    double etol = 1e-8;
-    final_x.adjust_by_error(etol);
-    final_y.adjust_by_error(etol);
-
-    // fill meta
-    auto meta_output = results.get_meta_ptr(index);
-    meta_output[0] = 1;
-    meta_output[1] = 5;
-
-    // fill value
-    auto value_output = results.get_value_ptr(index);
-    value_output[0 * 2 + 0] = final_x.min;
-    value_output[0 * 2 + 1] = final_y.min;
-
-    value_output[1 * 2 + 0] = final_x.max;
-    value_output[1 * 2 + 1] = final_y.min;
-
-    value_output[2 * 2 + 0] = final_x.max;
-    value_output[2 * 2 + 1] = final_y.max;
-
-    value_output[3 * 2 + 0] = final_x.min;
-    value_output[3 * 2 + 1] = final_y.max;
-
-    value_output[4 * 2 + 0] = final_x.min;
-    value_output[4 * 2 + 1] = final_y.min;
+    return OutputInfo{tag, meta_size, value_size};
   }
 
-  auto result_tag = WkbTag(WkbCategory::kPolygon, WkbSpaceType::XY);
-  return OutputInfo{result_tag, 1 + 1, 2 * 5};
+  for (auto iter = values_beg; iter < values_end; iter += 2) {
+    final_x.update(iter[0]);
+    final_y.update(iter[1]);
+  }
+
+  if (final_x.is_trivial()) {
+    if (!skip_write) {
+      // points of line
+      meta_output[0] = 1;
+      value2_output[0] = {final_x.min, final_y.min};
+      value2_output[1] = {final_x.min, final_y.max};
+    }
+    return OutputInfo{WkbTypes::kLineString, 1, 2 * 2};
+  }
+
+  if (final_y.is_trivial()) {
+    if (!skip_write) {
+      // points of line
+      meta_output[0] = 1;
+      value2_output[0] = {final_x.min, final_y.min};
+      value2_output[1] = {final_x.max, final_y.min};
+    }
+    return OutputInfo{WkbTypes::kLineString, 1, 2 * 2};
+  }
+
+  // then the normal cases
+  if (!skip_write) {
+    // count of polygon shapes
+    meta_output[0] = 1;
+    // points of polygon
+    meta_output[1] = 5;
+    // fill value
+    value2_output[0] = {final_x.min, final_y.min};
+    value2_output[1] = {final_x.max, final_y.min};
+    value2_output[2] = {final_x.max, final_y.max};
+    value2_output[3] = {final_x.min, final_y.max};
+    value2_output[4] = {final_x.min, final_y.min};
+  }
+  return OutputInfo{WkbTypes::kPolygon, 2, 2 * 5};
 }
 }  // namespace
 
