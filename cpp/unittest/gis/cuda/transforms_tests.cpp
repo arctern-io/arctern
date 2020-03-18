@@ -45,6 +45,7 @@ TEST(Transform, Naive) {
 
 TEST(Transform, Arrow) {
   vector<std::string> wkt_vec = {
+      "Point empty",
       "Point(1 2)",
       "Point(2 3)",
       "LineString(3 4,4 5)",
