@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "gis/dispatch/wkt_type_scanner.h"
+
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
@@ -24,10 +26,8 @@
 #include <vector>
 
 #include "gis/wkb_types.h"
-#include "gis/dispatch/wkt_type_scanner.h"
 #include "utils/check_status.h"
 #include "utils/function_wrapper.h"
-
 
 namespace arctern {
 namespace gis {
@@ -37,8 +37,6 @@ TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geomet
     : geometries_(geometries) {}
 
 std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
-  static_assert(std::is_same<arrow::DoubleArray::TypeClass, arrow::DoubleType>::value, "fuck");
-  static_assert(std::is_same<arrow::StringArray::TypeClass, arrow::StringType>::value, "fuck");
   auto len = geometries_->length();
 
   if (types().empty()) {
@@ -150,8 +148,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   return ret;
 }  // namespace gdal
 
-
-
-}  // namespace gdal
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

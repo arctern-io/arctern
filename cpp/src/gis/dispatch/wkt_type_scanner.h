@@ -26,7 +26,6 @@
 #include "arrow/array.h"
 #include "gis/dispatch/type_scanner.h"
 
-
 namespace arctern {
 namespace gis {
 namespace dispatch {
@@ -41,7 +40,6 @@ class TypeScannerForWkt : public GeometryTypeScanner {
   const std::shared_ptr<arrow::Array> geometries_;
 };
 
-
-}  // namespace gdal
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern
