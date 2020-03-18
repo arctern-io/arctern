@@ -343,6 +343,7 @@ def compare_results(config, arctern_results, postgis_results):
 def compare_all():
 	names, table_names, expects = get_tests()
 
+    flag = True
 	for name, expect in zip(names, expects):
 		
 		arct_result = os.path.join(arctern_result, name + '.csv')
@@ -362,6 +363,9 @@ def compare_all():
 			print('Arctern test: %s, result: PASSED' % name)
 		else:
 			print('Arctern test: %s, result: FAILED' % name)
+        
+        flag = flag and res
+        return flag
 
 
 def update_quote(file_path):
@@ -390,8 +394,8 @@ def update_result():
 
 if __name__ == '__main__':
 	update_result()
-	# r = compare_results(('run_test_st_intersection_curve', ''), '/tmp/arctern_results/run_test_st_intersection_curve.csv', './expected/results/st_intersection_curve.out')
-	# exit(0)
-
-	compare_all()
-
+	
+	flag = compare_all()
+    flag = False
+    if not flag:
+        exit(1)
