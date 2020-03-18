@@ -56,6 +56,8 @@ endmacro()
 #----------------------------------------------------------------------
 set_option_category("ARCTERN Build")
 
+define_option(USE_CCACHE "Use ccache when compiling (if available)" ON)
+
 define_option(BUILD_WITH_GPU "Build GPU version" OFF)
 
 #----------------------------------------------------------------------
