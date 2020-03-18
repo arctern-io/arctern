@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget \
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
-    conda create -n zgis_dev python=3.7 && \
+    conda create -n arctern python=3.7 && \
     conda clean --all -y && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
