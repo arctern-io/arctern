@@ -43,6 +43,7 @@ __all__ = [
     "ST_Transform",
     "ST_CurveToLine",
     "ST_GeomFromGeoJSON",
+    "ST_GeomFromText",
     "point_map",
     "point_map_wkt",
     "heat_map",
@@ -65,6 +66,11 @@ def ST_Point(x, y):
 def ST_GeomFromGeoJSON(json):
     geo = pa.array(json, type='string')
     rs = arctern_core_.ST_GeomFromGeoJSON(geo)
+    return rs.to_pandas()
+
+def ST_GeomFromText(text):
+    geo = pa.array(text, type='string')
+    rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
 
 def ST_Intersection(left, right):
