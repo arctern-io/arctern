@@ -1,8 +1,5 @@
-import random
 import os
-import inspect
 import sys
-import shutil
 
 curves = [
     'CIRCULARSTRING', 'COMPOUNDCURVE', 'MULTICURVE', 'CURVEPOLYGON',

@@ -1,10 +1,10 @@
-import shapely
 import sys
+import os
 from shapely import wkt
-from osgeo import ogr
+# from osgeo import ogr
 from ogr import *
 from yaml import full_load
-import os
+
 
 EPOCH = 1e-6
 
@@ -16,37 +16,21 @@ geo_collection_types = [
 
 def is_empty(geo):
     geo = geo.strip().upper()
-    if geo.endswith('EMPTY'):
-        return True
-    else:
-        return False
-
+    return geo.endswith('EMPTY')
 
 def is_point(geo):
     geo = geo.strip().upper()
-
-    if geo.startswith('POINT'):
-        return True
-    else:
-        return False
+    return geo.startswith('POINT')
 
 
 def is_linestring(geo):
     geo = geo.strip().upper()
-
-    if geo.startswith('LINESTRING'):
-        return True
-    else:
-        return False
+    return geo.startswith('LINESTRING')
 
 
 def is_polygon(geo):
     geo = geo.strip().upper()
-
-    if geo.startswith('POLYGON'):
-        return True
-    else:
-        return False
+    return geo.startswith('POLYGON')
 
 
 def is_geometry(geo):
@@ -55,8 +39,8 @@ def is_geometry(geo):
     for x in geo_types:
         if geo.startswith(x) and len(geo) != len(x):
             return True
-        else:
-            continue
+        
+        continue
 
     return False
 
@@ -67,8 +51,8 @@ def is_geometrycollection(geo):
     for x in geo_collection_types:
         if geo.startswith(x):
             return True
-        else:
-            continue
+        
+        continue
 
     return False
 
@@ -85,10 +69,7 @@ def polygon_to_points(geom):
     if geom.strip().upper().startswith('POLYGON'):
         points = geom.split('((')[1].split('))')[0]
         arr = points.split(',')
-        xs = [
-            'POINT (%s)' % x.strip().replace('(', '').replace(')', '')
-            for x in arr
-        ]
+        xs = ['POINT (%s)' % x.strip().replace('(', '').replace(')', '') for x in arr]
         return xs
 
 
@@ -174,7 +155,6 @@ def get_tests():
 def get_config():
     cwd = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(cwd, 'config.yml')
-    # print(config_path)
 
     with open(config_path, 'r') as f:
         content = f.read()
@@ -187,6 +167,5 @@ spark_result = config['path']['spark_result']
 arctern_result = config['path']['arctern_result']
 expected_result = config['path']['expected_result']
 
-if __name__ == '__main__':
-    config = get_config()
-    # print(config['tests'])
+# if __name__ == '__main__':
+#     config = get_config()

@@ -9,5 +9,5 @@ with open(result, 'r') as f:
 
 with open(data, 'r') as f:
     for (num, value) in enumerate(f, 1):
-        if (num - 1) in nums:
+        if num - 1 in nums:
             print(value.strip())

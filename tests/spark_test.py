@@ -11,17 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import shutil
+import os
+import json
 from pyspark.sql import SparkSession
 from arctern_pyspark import register_funcs
 from pyspark.sql.types import *
 from pyspark.sql.functions import col
 
-import random
-import shutil
-import os
-import json
-import sys
+# import random
+# import sys
 
 base_dir = './data/'
 

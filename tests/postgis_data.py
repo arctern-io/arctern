@@ -1,5 +1,6 @@
-import psycopg2
 import sys
+import psycopg2
+
 
 conn_config = "dbname='postgres' host='192.168.2.36' port=5432 user='postgres'"
 conn = psycopg2.connect(conn_config)
@@ -17,9 +18,7 @@ sql_template_7 = "select st_astext(%s('%s'::geometry, 1))"
 
 st_buffer = ['st_buffer']
 intersection = ['st_intersection']
-convexhull = [
-    'st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline', 'st_centroid'
-]
+convexhull = ['st_convexhull', 'st_envelope', 'st_union', 'st_curvetoline', 'st_centroid']
 transform = ['st_transform']
 simplifypreservetopology = ['st_simplifypreservetopology']
 

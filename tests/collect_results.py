@@ -1,10 +1,9 @@
 import random
 import os
 import inspect
-import sys
 import shutil
 import glob
-from util import *
+from util import arctern_result， get_tests
 
 
 def collect_results():
@@ -19,21 +18,10 @@ def collect_results():
         target = os.path.join(base_dir, x, '*.csv')
         file_name = glob.glob(target)
         if os.path.isfile(file_name[0]):
-            shutil.copyfile(file_name[0],
-                            os.path.join(arctern_result, y + '.csv'))
+            shutil.copyfile(file_name[0], os.path.join(arctern_result, y + '.csv'))
         else:
             print('file [%s] not exist' % file_name[0])
 
 
-# def get_sort_zgis(file_path):
-#     with open(file_path, 'r') as f:
-#         lines = f.readlines()
-#         run_funcs = [x.strip().lower() for x in lines]
-#         run_funcs.sort()
-#         for x in run_funcs:
-#             print(x)
-
 if __name__ == '__main__':
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    # collect_results(os.path.join(base_dir, './config.txt'), arctern_result)
     collect_results()
