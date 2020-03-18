@@ -82,21 +82,54 @@ void ChoroplethMap<T>::Draw() {
 
 template <typename T>
 void ChoroplethMap<T>::Transform() {
+//  buildings_x_.resize(num_buildings_);
+//  buildings_y_.resize(num_buildings_);
+//
+//  auto bounding_box = choropleth_vega_.bounding_box();
+//
+//  auto x_left = bounding_box.longitude_left * 111319.490778;
+//  auto x_right = bounding_box.longitude_right * 111319.490778;
+//
+//  auto y_left =
+//      6378136.99911 * log(tan(.00872664626 * bounding_box.latitude_left + .785398163397));
+//  auto y_right = 6378136.99911 *
+//                 log(tan(.00872664626 * bounding_box.latitude_right + .785398163397));
+//
+//  auto width = window_->window_params().width();
+//  auto height = window_->window_params().height();
+//
+//  for (int i = 0; i < num_buildings_; i++) {
+//    OGRGeometry* geometry;
+//    OGRGeometryFactory::createFromWkt(choropleth_wkt_[i].c_str(), nullptr, &geometry);
+//
+//    auto type = geometry->getGeometryType();
+//
+//    if (type == OGRwkbGeometryType::wkbPolygon) {
+//      auto ring = geometry->toPolygon()->getExteriorRing();
+//
+//      auto ring_size = ring->getNumPoints();
+//      buildings_x_[i].resize(ring_size);
+//      buildings_y_[i].resize(ring_size);
+//      for (int j = 0; j < ring_size; j++) {
+//        double x_pos = ring->getX(j) * 111319.490778;
+//        int ret_x = (int)(((x_pos - x_left) / (x_right - x_left)) * width - 1E-9);
+//        buildings_x_[i][j] = ret_x;
+//
+//        double y_pos =
+//            6378136.99911 * log(tan(.00872664626 * ring->getY(j) + .785398163397));
+//        int ret_y = (int)(((y_pos - y_left) / (y_right - y_left)) * height - 1E-9);
+//        buildings_y_[i][j] = ret_y;
+//      }
+//
+//    } else {
+//      // TODO: add log here
+//      std::cout << "Unknown geometry type." << std::endl;
+//    }
+//
+//    OGRGeometryFactory::destroyGeometry(geometry);
+//  }
   buildings_x_.resize(num_buildings_);
   buildings_y_.resize(num_buildings_);
-
-  auto bounding_box = choropleth_vega_.bounding_box();
-
-  auto x_left = bounding_box.longitude_left * 111319.490778;
-  auto x_right = bounding_box.longitude_right * 111319.490778;
-
-  auto y_left =
-      6378136.99911 * log(tan(.00872664626 * bounding_box.latitude_left + .785398163397));
-  auto y_right = 6378136.99911 *
-                 log(tan(.00872664626 * bounding_box.latitude_right + .785398163397));
-
-  auto width = window_->window_params().width();
-  auto height = window_->window_params().height();
 
   for (int i = 0; i < num_buildings_; i++) {
     OGRGeometry* geometry;
@@ -111,14 +144,8 @@ void ChoroplethMap<T>::Transform() {
       buildings_x_[i].resize(ring_size);
       buildings_y_[i].resize(ring_size);
       for (int j = 0; j < ring_size; j++) {
-        double x_pos = ring->getX(j) * 111319.490778;
-        int ret_x = (int)(((x_pos - x_left) / (x_right - x_left)) * width - 1E-9);
-        buildings_x_[i][j] = ret_x;
-
-        double y_pos =
-            6378136.99911 * log(tan(.00872664626 * ring->getY(j) + .785398163397));
-        int ret_y = (int)(((y_pos - y_left) / (y_right - y_left)) * height - 1E-9);
-        buildings_y_[i][j] = ret_y;
+        buildings_x_[i][j] = ring->getX(j);
+        buildings_y_[i][j] = ring->getY(j);
       }
 
     } else {

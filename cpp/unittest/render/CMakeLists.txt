@@ -16,8 +16,8 @@ set(render_tests_src
         ${unittest_srcs}
 #		pointmap_test.cpp
 #        heatmap_test.cpp
-#		choropleth_map_test.cpp
-		coordinate_projection_test.cpp
+		choropleth_map_test.cpp
+#		coordinate_projection_test.cpp
 #		vega_test.cpp
 		)
 
