@@ -12,16 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(gis_tests_src
+set(utils_tests_src
         ${unittest_srcs}
-        gis_functions_tests.cpp
-        parser_tests.cpp)
+        utils_tests.cpp)
 
-add_executable(gis_tests ${gis_tests_src})
+add_executable(utils_tests ${utils_tests_src})
 
 #add_dependencies(gis_tests googletest_ep)
 
-target_link_libraries(gis_tests
+target_link_libraries(utils_tests
         arctern
         arrow
         gtest
@@ -29,7 +28,7 @@ target_link_libraries(gis_tests
         gdal
         )
 
-install(TARGETS gis_tests DESTINATION unittest)
+install(TARGETS utils_tests DESTINATION unittest)
 
 add_subdirectory(gdal)
 if(BUILD_WITH_GPU)

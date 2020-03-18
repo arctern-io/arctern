@@ -42,6 +42,9 @@ def ST_Point(object arr_x,object arr_y):
 def ST_GeomFromGeoJSON(object json):
     return pyarrow_wrap_array(arctern_core_pxd.ST_GeomFromGeoJSON(pyarrow_unwrap_array(json)))
 
+def ST_GeomFromText(object text):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_GeomFromText(pyarrow_unwrap_array(text)))
+
 def ST_Intersection(object left_geometries,object right_geometries):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Intersection(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
 

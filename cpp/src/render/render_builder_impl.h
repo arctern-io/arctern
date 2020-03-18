@@ -17,10 +17,10 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 #include "utils/check_status.h"
 

@@ -26,6 +26,7 @@
 
 namespace arctern {
 namespace gis {
+namespace dispatch {
 
 using GroupedWkbTypes = std::set<WkbTypes>;
 
@@ -34,29 +35,31 @@ struct GeometryTypeMasks {
   using EncodeUid = uint32_t;
   struct Info {
    public:
-    // TODO(dog): remove masks since encode_uids contains all the info
+    // TODO(dog): remove mask since encode_uids contains all the info
     // TODO(dog): now make unittest happy
-    // This field contains masks[i] = is_matched(data[i]);
-    std::vector<bool> masks;
+    // This field contains mask[i] = is_matched(data[i]);
+    std::vector<bool> mask;
     // TODO(dog): remove later since mask_count === indexes.size()
     // TODO(dog): now make unittest happy
-    // This field contains counts of true in masks, or size of indexes
-    int64_t mask_counts = 0;
+    // This field contains counts of true in mask, or size of indexes
+    int64_t mask_count = 0;
     // This field contains unique id(uid) for each class
     EncodeUid encode_uid;
   };
   const auto& get_info(const GroupedWkbTypes& grouped_types) const {
     auto iter = dict.find(grouped_types);
-    assert(iter != dict.end());
+    if (iter == dict.end()) {
+      throw std::runtime_error("check is_unique first");
+    }
     return iter->second;
   }
 
   // helper function
-  const auto& get_masks(const GroupedWkbTypes& grouped_types) const {
-    return get_info(grouped_types).masks;
+  const auto& get_mask(const GroupedWkbTypes& grouped_types) const {
+    return get_info(grouped_types).mask;
   }
-  const auto& get_counts(const GroupedWkbTypes& grouped_types) const {
-    return get_info(grouped_types).mask_counts;
+  const auto& get_count(const GroupedWkbTypes& grouped_types) const {
+    return get_info(grouped_types).mask_count;
   }
 
   EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) {
@@ -89,5 +92,6 @@ class GeometryTypeScanner {
   std::vector<GroupedWkbTypes> types_;
 };
 
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern
