@@ -24,11 +24,11 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "gis/type_scan.h"
+#include "gis/dispatch/type_scanner.h"
 
 namespace arctern {
 namespace gis {
-namespace gdal {
+namespace dispatch {
 
 class TypeScannerForWkt : public GeometryTypeScanner {
  public:
@@ -40,20 +40,6 @@ class TypeScannerForWkt : public GeometryTypeScanner {
   const std::shared_ptr<arrow::Array> geometries_;
 };
 
-// split into [false_array, true_array]
-std::array<std::shared_ptr<arrow::Array>, 2> WktArraySplit(
-    const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask);
-
-// merge [false_array, true_array]
-std::shared_ptr<arrow::Array> WktArrayMerge(
-    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
-    const std::vector<bool>& mask);
-
-// merge [false_array, true_array]
-std::shared_ptr<arrow::Array> DoubleArrayMerge(
-    const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
-    const std::vector<bool>& mask);
-
-}  // namespace gdal
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

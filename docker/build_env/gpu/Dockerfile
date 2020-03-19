@@ -4,7 +4,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility,graphics
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends wget \
+RUN apt-get update && apt-get install -y --no-install-recommends wget curl \
     git ccache lcov clang-6.0 clang-format-6.0 clang-tidy-6.0  && \
     wget -qO- "https://cmake.org/files/v3.14/cmake-3.14.3-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local && \
     wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -14,18 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
-COPY docker/build_env/gpu/zgis.yml /tmp/zgis.yml
+COPY build_gpu_env.yml /tmp/build_gpu_env.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
-    conda env create -f /tmp/zgis.yml && \
+    conda env create -f /tmp/build_gpu_env.yml && \
     conda clean --all -y && \
-    rm /tmp/zgis.yml && \
+    rm /tmp/build_gpu_env.yml && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-COPY docker/build_env/gpu/docker-entrypoint.sh /opt/docker-entrypoint.sh
+COPY docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
 # use login shell to activate environment un the RUN commands

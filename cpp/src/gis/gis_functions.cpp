@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "gis/gdal/type_scan.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/wkb_types.h"
 #ifdef USE_GPU
 #include "gis/cuda/gis_functions.h"
+#include "gis/dispatch/dispatch.h"
 #endif
 #include <assert.h>
 #include <stdio.h>
@@ -36,11 +37,11 @@ namespace gis {
 
 std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
                                        const std::shared_ptr<arrow::Array>& y_values) {
-  // #if defined(USE_GPU)
-  // return cuda::ST_Point(x_values, y_values);
-  // #else
+#if defined(USE_GPU)
+  return cuda::ST_Point(x_values, y_values);
+#else
   return gdal::ST_Point(x_values, y_values);
-  // #endif
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
@@ -85,21 +86,22 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-  // #if defined(USE_GPU)
-  //   // currently support ST_Point, ST_LineString, ST_Polygon
-  //   gdal::TypeScannerForWkt scanner(geometries);
-  //   GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
-  //                                      WkbTypes::kPolygon};
-  //   scanner.mutable_types().push_back(supported_types);
-  //   auto type_masks = scanner.Scan();
-  //   if (type_masks->is_unique_group && (type_masks->unique_group == supported_types)) {
-  //     return cuda::ST_Envelope(geometries);
-  //   } else {
-  //     return gdal::ST_Envelope(geometries);
-  //   }
-  // #else
+#if defined(USE_GPU) && false
+  // currently support ST_Point, ST_LineString, ST_Polygon
+  dispatch::TypeScannerForWkt scanner(geometries);
+  GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
+                                     WkbTypes::kPolygon, WkbTypes::kMultiPolygon};
+  scanner.mutable_types().push_back(supported_types);
+  auto type_masks = scanner.Scan();
+  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
+    return cuda::ST_Envelope(geometries);
+  } else {
+    return gdal::ST_Envelope(geometries);
+  }
+
+#else
   return gdal::ST_Envelope(geometries);
-  // #endif
+#endif
 }
 
 /**************************** GEOMETRY PROCESSING ****************************/
@@ -160,7 +162,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   // TODO: NOT ENABLED
   auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
   auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
-    gdal::TypeScannerForWkt scanner(geometries);
+    dispatch::TypeScannerForWkt scanner(geometries);
     scanner.mutable_types().emplace_back(groupped_type);
     return scanner.Scan();
   };
@@ -193,7 +195,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   bool lhs_ok = false;
   //   bool rhs_ok = false;
   //   //  {
-  //   //    gdal::TypeScannerForWkt lhs_scanner(geometries_1);
+  //   //    dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
   //   //    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
   //   //    lhs_scanner.mutable_types().push_back(lhs_supported_types);
   //   //    auto lhs_type_masks = lhs_scanner.Scan();
@@ -201,7 +203,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   //             (lhs_type_masks->unique_group == lhs_supported_types);
   //   //  }
   //   //  {
-  //   //    gdal::TypeScannerForWkt rhs_scanner(geometries_2);
+  //   //    dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
   //   //    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
   //   //    rhs_scanner.mutable_types().push_back(rhs_supported_types);
   //   //    auto rhs_type_masks = rhs_scanner.Scan();
@@ -217,7 +219,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
   //   #if defined(USE_GPU)
   //     // currently support ST_Polygon
-  //     gdal::TypeScannerForWkt scanner(geometries);
+  //     dispatch::TypeScannerForWkt scanner(geometries);
   //     GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
   //     scanner.mutable_types().push_back(supported_types);
   //     auto type_masks = scanner.Scan();
@@ -235,8 +237,8 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
 #if defined(USE_GPU)
   // currently support ST_LineString
-  gdal::TypeScannerForWkt scanner(geometries);
-  GroupedWkbTypes supported_types = {WkbTypes::kLineString};
+  dispatch::TypeScannerForWkt scanner(geometries);
+  dispatch::GroupedWkbTypes supported_types = {WkbTypes::kLineString};
   scanner.mutable_types().push_back(supported_types);
   auto type_masks = scanner.Scan();
   if (type_masks->is_unique_type) {  // UNIQUE METHOD
@@ -246,12 +248,12 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
       return gdal::ST_Length(geometries);
     }
   } else {  // MIXED METHOD
-    auto mask = type_masks->get_masks(supported_types);
-    auto split_inputs = gdal::WktArraySplit(geometries, mask);
+    auto mask = type_masks->get_mask(supported_types);
+    auto split_inputs = dispatch::WktArraySplit(geometries, mask);
     assert(split_inputs[1]->null_count() == 0);
     auto gdal_output = gdal::ST_Length(split_inputs[0]);
     auto cuda_output = cuda::ST_Length(split_inputs[1]);
-    return gdal::DoubleArrayMerge({gdal_output, cuda_output}, mask);
+    return dispatch::DoubleArrayMerge({gdal_output, cuda_output}, mask);
   }
 #else
   return gdal::ST_Length(geometries);
@@ -307,12 +309,12 @@ std::shared_ptr<arrow::Array> ST_Within(
     const std::shared_ptr<arrow::Array>& geometries_2) {
   // #if defined(USE_GPU)
   //   // currently support ST_Point within ST_Polygon
-  //   gdal::TypeScannerForWkt lhs_scanner(geometries_1);
+  //   dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
   //   GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
   //   lhs_scanner.mutable_types().push_back(lhs_supported_types);
   //   auto lhs_type_masks = lhs_scanner.Scan();
 
-  //   gdal::TypeScannerForWkt rhs_scanner(geometries_2);
+  //   dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
   //   GroupedWkbTypes rhs_supported_types = {WkbTypes::kPolygon};
   //   rhs_scanner.mutable_types().push_back(rhs_supported_types);
   //   auto rhs_type_masks = rhs_scanner.Scan();
