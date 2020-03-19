@@ -18,56 +18,56 @@ include_directories(${ARCTERN_THIRDPARTY_SRC})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(render_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/scatter_plot/pointmap.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/choropleth_map/choropleth_map.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/general_2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/heatmap.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/heatmap/set_color.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/vega/vega_heatmap/vega_heatmap.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/utils/color/color_gradient.cpp
-	)
+        render/2d/scatter_plot/pointmap.cpp
+        render/2d/choropleth_map/choropleth_map.cpp
+        render/2d/general_2d.cpp
+        render/2d/heatmap/heatmap.cpp
+        render/2d/heatmap/set_color.cpp
+        render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
+        render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
+        render/utils/vega/vega.cpp
+        render/utils/vega/vega_heatmap/vega_heatmap.cpp
+        render/utils/color/color.cpp
+        render/utils/color/color_gradient.cpp
+        )
 
 set(cpu_render_src
-	${CMAKE_CURRENT_SOURCE_DIR}/render/window/window_osmesa/window_cpu_2d.cpp
-	)
+        render/window/window_osmesa/window_cpu_2d.cpp
+        )
 
 set(gpu_render_src
-	${CMAKE_CURRENT_SOURCE_DIR}/render/window/window_egl/window_gpu_2d.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/render/2d/cuda/heatmap.cu
-	)
+        render/window/window_egl/window_gpu_2d.cpp
+        render/2d/cuda/heatmap.cu
+        )
 
 set(gis_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gis_functions.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/parser.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/gis_functions.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/geometry_visitor.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/type_scan.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/gdal/format_conversion.cpp
+        gis/gis_functions.cpp
+        gis/gdal/gis_functions.cpp
+        gis/parser.cpp
+        gis/gdal/geometry_visitor.cpp
+        gis/dispatch/wkt_type_scanner.cpp
+        gis/gdal/format_conversion.cpp
         )
 
 set(cuda_gis_src
-	${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/wkb/wkb_transforms.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_decode.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/conversion/arrow_encode.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/common/gis_definitions.cu
-	${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_distance.cu
-	${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_within.cu
-	${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_length.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_area.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_envelope.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/functor/st_point.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/gis/cuda/gis_functions.cpp
+        gis/cuda/wkb/wkb_transforms.cpp
+        gis/cuda/conversion/arrow_decode.cu
+        gis/cuda/conversion/arrow_decode.cpp
+        gis/cuda/conversion/arrow_encode.cu
+        gis/cuda/conversion/arrow_encode.cpp
+        gis/cuda/common/gis_definitions.cpp
+        gis/cuda/common/gis_definitions.cu
+        gis/cuda/functor/st_distance.cu
+        gis/cuda/functor/st_within.cu
+        gis/cuda/functor/st_length.cu
+        gis/cuda/functor/st_area.cu
+        gis/cuda/functor/st_envelope.cu
+        gis/cuda/functor/st_point.cu
+        gis/cuda/gis_functions.cpp
         )
 
 set(arrow_src
-        ${CMAKE_CURRENT_SOURCE_DIR}/arrow/render_api.cpp
+        arrow/render_api.cpp
         )
 
 set(LIBRARY_TYPE SHARED)
@@ -77,21 +77,21 @@ endif (STATIC_LIB_SWITCH)
 
 if (BUILD_WITH_GPU)
     add_library(
-        arctern ${LIBRARY_TYPE}
-        ${gis_src}
-        ${cuda_gis_src}
-        ${render_src}
-        ${gpu_render_src}
-	${arrow_src}
-	)
+            arctern ${LIBRARY_TYPE}
+            ${gis_src}
+            ${cuda_gis_src}
+            ${render_src}
+            ${gpu_render_src}
+            ${arrow_src}
+    )
 else ()
     add_library(
-        arctern ${LIBRARY_TYPE}
-	${gis_src}
-	${render_src}
-	${cpu_render_src}
-	${arrow_src}
-	)
+            arctern ${LIBRARY_TYPE}
+            ${gis_src}
+            ${render_src}
+            ${cpu_render_src}
+            ${arrow_src}
+    )
 endif ()
 
 set(third_party_libs
@@ -117,9 +117,9 @@ else ()
 endif ()
 
 target_link_libraries(arctern
-            pthread
-            ${third_party_libs}
-)
+        pthread
+        ${third_party_libs}
+        )
 
 
 install(TARGETS arctern

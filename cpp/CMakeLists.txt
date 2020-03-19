@@ -146,6 +146,18 @@ message(STATUS "conda_prefix = " ${CONDA_PREFIX})
 include_directories(${CONDA_PREFIX}/include)
 link_directories(${CONDA_PREFIX}/lib)
 
+if (USE_CCACHE)
+    find_program(CCACHE_FOUND ccache)
+    if (CCACHE_FOUND)
+        message(STATUS "Using ccache: ${CCACHE_FOUND}")
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_FOUND})
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_FOUND})
+        # let ccache preserve C++ comments, because some of them may be
+        # meaningful to the compiler
+        set(ENV{CCACHE_COMMENTS} "1")
+    endif (CCACHE_FOUND)
+endif ()
+
 if (BUILD_UNITTEST STREQUAL "ON")
     if (BUILD_COVERAGE STREQUAL "ON")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
