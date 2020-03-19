@@ -12,22 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyarrow
+import pandas
 import arctern
 
 from arctern.util.vega.scatter_plot.vega_circle_2d import VegaCircle2d
 from arctern.util.vega.heat_map.vega_heat_map import VegaHeatMap
 from arctern.util.vega.choropleth_map.choropleth_map import VegaChoroplethMap
-
-def _savePNG(data, png_name):
-    try:
-        imageData = data
-    except BaseException as e:
-        print(e)
-    # save result png as fixed png
-    else:
-        with open(png_name, "wb") as tmp_file:
-            tmp_file.write(imageData)
+from arctern.util import save_png
 
 def test_point_map():
     x_data = []
@@ -48,16 +39,14 @@ def test_point_map():
         x_data.append(i)
         y_data.append(50)
 
-    arr_x = pyarrow.array(x_data, type='uint32')
-    arr_y = pyarrow.array(y_data, type='uint32')
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
 
     vega_circle2d = VegaCircle2d(300, 200, 30, "#ff0000", 0.5)
     vega_json = vega_circle2d.build()
 
     curve_z = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
-    curve_z = curve_z.buffers()[1].to_pybytes()
-
-    _savePNG(curve_z, "/tmp/curve_z.png")
+    save_png(curve_z, "/tmp/curve_z.png")
 
 def test_heat_map():
     x_data = []
@@ -69,17 +58,15 @@ def test_heat_map():
         y_data.append(i + 50)
         c_data.append(i + 50)
 
-    arr_x = pyarrow.array(x_data, type='uint32')
-    arr_y = pyarrow.array(y_data, type='uint32')
-    arr_c = pyarrow.array(y_data, type='uint32')
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    arr_c = pandas.Series(y_data)
 
     vega_heat_map = VegaHeatMap(300, 200, 10.0)
     vega_json = vega_heat_map.build()
 
     heat_map = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-    heat_map = heat_map.buffers()[1].to_pybytes()
-
-    _savePNG(heat_map, "/tmp/test_heat_map.png")
+    save_png(heat_map, "/tmp/test_heat_map.png")
 
 def test_choropleth_map():
     wkt_data = []
@@ -93,8 +80,8 @@ def test_choropleth_map():
                     "-73.98128 40.754771))")
     count_data.append(5.0)
 
-    arr_wkt = pyarrow.array(wkt_data, type='string')
-    arr_count = pyarrow.array(count_data, type='double')
+    arr_wkt = pandas.Series(wkt_data)
+    arr_count = pandas.Series(count_data)
 
     vega_choropleth_map = VegaChoroplethMap(1900, 1410,
                                             [-73.984092, 40.753893, -73.977588, 40.756342],
@@ -102,6 +89,4 @@ def test_choropleth_map():
     vega_json = vega_choropleth_map.build()
 
     choropleth_map = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map = choropleth_map.buffers()[1].to_pybytes()
-
-    _savePNG(choropleth_map, "/tmp/test_choropleth_map.png")
+    save_png(choropleth_map, "/tmp/test_choropleth_map.png")
