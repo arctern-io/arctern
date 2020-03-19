@@ -22,7 +22,7 @@ from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
 
 map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
 
-def _diffPNG(baseline_png, compared_png, precision=0.00005):
+def _diffPNG(baseline_png, compared_png, precision=0.0025):
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
     compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
     baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
@@ -115,7 +115,6 @@ def test_heat_map():
     vega_heat_map = vega_heatmap(1024, 896, 10.0, 'POINT (-73.998427 40.780816)', 'POINT (-73.954348 40.730309)', 'EPSG:4326')
     vega_json = vega_heat_map.build()
 
-    baseline = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
     heat_map1 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
     heat_map2 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
     heat_map3 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
@@ -147,7 +146,6 @@ def test_choropleth_map():
     vega_choropleth_map = vega_choroplethmap(1900, 1410, 'POINT (-73.994092 40.759642)', 'POINT (-73.977588 40.753893)', "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     vega_json = vega_choropleth_map.build()
 
-    baseline = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
     choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
     choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
     choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
