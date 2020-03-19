@@ -89,8 +89,8 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 #if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
   dispatch::TypeScannerForWkt scanner(geometries);
-  dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
-                                               WkbTypes::kPolygon};
+  dispatch::GroupedWkbTypes gpu_supported_types = {
+      WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
   scanner.mutable_types().push_back(gpu_supported_types);
   auto type_masks = scanner.Scan();
   if (type_masks->is_unique_type) {
@@ -230,7 +230,8 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
   //     GroupedWkbTypes gpu_supported_types = {WkbTypes::kPolygon};
   //     scanner.mutable_types().push_back(gpu_supported_types);
   //     auto type_masks = scanner.Scan();
-  //     if (type_masks->is_unique_group && (type_masks->unique_group == gpu_supported_types))
+  //     if (type_masks->is_unique_group && (type_masks->unique_group ==
+  //     gpu_supported_types))
   //     {
   //       return cuda::ST_Area(geometries);
   //     } else {
