@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <arrow/api.h>
-
 #include <string>
 
 #define CHECK_GDAL(action)                                                     \
