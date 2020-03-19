@@ -85,20 +85,18 @@ def test_point_map():
     vega_circle2d = vega_pointmap(1024, 896, 'POINT (-73.998427 40.780816)', 'POINT (-73.954348 40.730309)', 3, "#2DEF4A", 0.5, "EPSG:43")
     vega_json = vega_circle2d.build()
 
-    baseline = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
     curve_z1 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
     curve_z2 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
     curve_z3 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
 
-    # baseline_png = map_path + "curve_z.png"
-    save_png(baseline, map_path + "curve_z.png")
+    baseline_png = map_path + "curve_z.png"
     save_png(curve_z1, map_path + "test_curve_z1.png")
     save_png(curve_z2, map_path + "test_curve_z2.png")
     save_png(curve_z3, map_path + "test_curve_z3.png")
 
-    assert _diffPNG(map_path + "curve_z.png", map_path + "test_curve_z1.png") == True
-    assert _diffPNG(map_path + "curve_z.png", map_path + "test_curve_z2.png") == True
-    assert _diffPNG(map_path + "curve_z.png", map_path + "test_curve_z3.png") == True
+    assert _diffPNG(baseline_png, map_path + "test_curve_z1.png") == True
+    assert _diffPNG(baseline_png, map_path + "test_curve_z2.png") == True
+    assert _diffPNG(baseline_png, map_path + "test_curve_z3.png") == True
 
 def test_heat_map():
     x_data = []
@@ -123,7 +121,6 @@ def test_heat_map():
     heat_map3 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
 
     baseline_png = map_path + "heat_map.png"
-    save_png(baseline, baseline_png)
     save_png(heat_map1, map_path + "test_heat_map1.png")
     save_png(heat_map2, map_path + "test_heat_map2.png")
     save_png(heat_map3, map_path + "test_heat_map3.png")
@@ -156,7 +153,6 @@ def test_choropleth_map():
     choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
 
     baseline_png = map_path + "choropleth_map.png"
-    save_png(baseline, baseline_png)
     save_png(choropleth_map1, map_path + "test_choropleth_map1.png")
     save_png(choropleth_map2, map_path + "test_choropleth_map2.png")
     save_png(choropleth_map3, map_path + "test_choropleth_map3.png")
