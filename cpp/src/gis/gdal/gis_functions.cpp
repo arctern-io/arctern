@@ -18,6 +18,7 @@
 #include "common/version.h"
 #include "gis/gdal/arctern_geos.h"
 #include "gis/gdal/geometry_visitor.h"
+#include "gis/parser.h"
 #include "utils/check_status.h"
 
 #include <assert.h>
@@ -196,6 +197,7 @@ inline void* Wrapper_OGR_G_Centroid(void* geo) {
 
 inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
   void* geo = nullptr;
+  if (parser::IsValidWkt(geo_wkt) == false) return false;
   bool is_valid = false;
   auto err_code =
       OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, (OGRGeometry**)(&geo));
@@ -211,6 +213,7 @@ inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
+  // if (parser::IsValidWkt(array->GetString(idx).c_str()) == false) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code =
       OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
@@ -225,6 +228,19 @@ inline OGRGeometry* Wrapper_createFromWkt(const char* geo_wkt) {
     std::string err_msg =
         "failed to create geometry from \"" + std::string(geo_wkt) + "\"";
     throw std::runtime_error(err_msg);
+  }
+  return geo;
+}
+
+inline OGRGeometry* Wrapper_CurveToLine(OGRGeometry* geo, HasCurveVisitor* has_curve) {
+  if (geo != nullptr) {
+    has_curve->reset();
+    geo->accept(has_curve);
+    if (has_curve->has_curve()) {
+      auto linear = geo->getLinearGeometry();
+      OGRGeometryFactory::destroyGeometry(geo);
+      return linear;
+    }
   }
   return geo;
 }
@@ -322,16 +338,44 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
   int len = json_geo->length();
   arrow::StringBuilder builder;
   for (int i = 0; i < len; ++i) {
-    auto str = json_geo->GetString(i);
-    auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
-    if (geo != nullptr) {
-      char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
-      CHECK_ARROW(builder.Append(wkt));
-      CPLFree(wkt);
-      OGRGeometryFactory::destroyGeometry(geo);
+    if (json_geo->IsNull(i)) {
+      builder.AppendNull();
     } else {
-      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+      auto str = json_geo->GetString(i);
+      auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
+      if (geo != nullptr) {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
+        CHECK_ARROW(builder.Append(wkt));
+        CPLFree(wkt);
+        OGRGeometryFactory::destroyGeometry(geo);
+      } else {
+        builder.AppendNull();
+      }
     }
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
+std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+  auto geo = std::static_pointer_cast<arrow::StringArray>(text);
+  int len = geo->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto ogr = Wrapper_createFromWkt(geo, i);
+    if (ogr == nullptr) {
+      builder.AppendNull();
+    } else {
+      if (parser::IsValidWkt(geo->GetString(i).c_str()) == false) {
+        builder.AppendNull();
+      } else {
+        char* wkt = Wrapper_OGR_G_ExportToWkt(ogr);
+        CHECK_ARROW(builder.Append(wkt));
+        CPLFree(wkt);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(ogr);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -490,9 +534,14 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
   auto len = wkt1->length();
   arrow::StringBuilder builder;
+  auto has_curve = new HasCurveVisitor;
+
   for (int i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkt(wkt1, i);
     auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    ogr1 = Wrapper_CurveToLine(ogr1, has_curve);
+    ogr2 = Wrapper_CurveToLine(ogr2, has_curve);
+
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
@@ -513,6 +562,9 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
     OGRGeometryFactory::destroyGeometry(ogr1);
     OGRGeometryFactory::destroyGeometry(ogr2);
   }
+
+  delete has_curve;
+
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
 
@@ -783,24 +835,19 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
   for (int i = 0; i <= len / 2; i++) {
     if ((i * 2) < len) {
       g0 = Wrapper_createFromWkt(wkt, 2 * i);
+      g0 = Wrapper_CurveToLine(g0, has_curve);
     } else {
       g0 = nullptr;
     }
 
     if ((i * 2 + 1) < len) {
       g1 = Wrapper_createFromWkt(wkt, 2 * i + 1);
+      g1 = Wrapper_CurveToLine(g1, has_curve);
     } else {
       g1 = nullptr;
     }
 
     if (g0 != nullptr) {
-      has_curve->reset();
-      g0->accept(has_curve);
-      if (has_curve->has_curve()) {
-        auto linear = g0->getLinearGeometry();
-        OGRGeometryFactory::destroyGeometry(g0);
-        g0 = linear;
-      }
       auto type = wkbFlatten(g0->getGeometryType());
       if (type == wkbMultiPolygon) {
         u0 = g0->UnionCascaded();
@@ -813,13 +860,6 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     }
 
     if (g1 != nullptr) {
-      has_curve->reset();
-      g1->accept(has_curve);
-      if (has_curve->has_curve()) {
-        auto linear = g1->getLinearGeometry();
-        OGRGeometryFactory::destroyGeometry(g1);
-        g1 = linear;
-      }
       auto type = wkbFlatten(g1->getGeometryType());
       if (type == wkbMultiPolygon) {
         u1 = g1->UnionCascaded();

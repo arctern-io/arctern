@@ -43,7 +43,7 @@ env
 
 logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
-conda activate zgis_dev
+conda activate arctern
 
 if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
     conda config --add channels ${CONDA_CUSTOM_CHANNEL}

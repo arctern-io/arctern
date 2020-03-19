@@ -17,7 +17,7 @@ from libcpp.string cimport *
 
 
 cdef extern from "render.h" namespace "arctern::render":
-    shared_ptr[CArray] coordinate_projection(const shared_ptr[CArray] &points,const string &top_left,const string &bottom_right,const int &height, const int &width)
+    shared_ptr[CArray] transform_and_projection(const shared_ptr[CArray] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width)
     shared_ptr[CArray] point_map(const shared_ptr[CArray] &points,const string &conf)
     shared_ptr[CArray] point_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const string &conf)
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y,const shared_ptr[CArray] &ptr_c,const string &conf)
@@ -28,6 +28,7 @@ cdef extern from "render.h" namespace "arctern::render":
 cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y)
     shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json)
+    shared_ptr[CArray] ST_GeomFromText(const shared_ptr[CArray] &text)
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries)
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries)
     shared_ptr[CArray] ST_Equals(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries)
