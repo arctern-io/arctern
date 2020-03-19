@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-#include "gis/gdal/type_scan.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <utility>
@@ -30,7 +31,7 @@
 
 namespace arctern {
 namespace gis {
-namespace gdal {
+namespace dispatch {
 
 TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries)
     : geometries_(geometries) {}
@@ -49,10 +50,17 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   // we redirect WkbTypes::kUnknown to idx=0
   std::vector<int> type_to_idx(int(WkbTypes::kMaxTypeNumber), 0);
   int num_scan_classes = 1;
+  auto get_type_index = [](WkbTypes type) {
+    auto index = int(type);
+    if (index >= int(WkbTypes::kMaxTypeNumber)) {
+      index = int(WkbTypes::kUnknown);
+    }
+    return index;
+  };
 
   for (auto& grouped_type : types()) {
     for (auto& type : grouped_type) {
-      type_to_idx[int(type)] = num_scan_classes;
+      type_to_idx[get_type_index(type)] = num_scan_classes;
     }
     num_scan_classes++;
   }
@@ -62,7 +70,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   using Info = GeometryTypeMasks::Info;
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
-    mapping[i].masks.resize(len, false);
+    mapping[i].mask.resize(len, false);
     mapping[i].encode_uid = i;
   }
 
@@ -71,17 +79,32 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   bool is_unique_type = true;
   int last_idx = -1;
 
-  // fill type masks
+  // fill type mask
   for (int i = 0; i < len; i++) {
-    auto geo = [str = wkt_geometries->GetString(i)] {
+    using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
+    auto type = [&] {
+      if (wkt_geometries->IsNull(i)) {
+        return WkbTypes::kUnknown;
+      }
+      auto str = wkt_geometries->GetString(i);
+      if (str.size() == 0) {
+        return WkbTypes::kUnknown;
+      }
       OGRGeometry* geo_;
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_));
-      return UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>(geo_);
+      auto error_code = OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo_);
+      if (error_code != OGRERR_NONE) {
+        return WkbTypes::kUnknown;
+      }
+      assert(geo_ != nullptr);
+      Holder holder(geo_);
+      auto type = (WkbTypes)wkbFlatten(geo_->getGeometryType());
+      return type;
     }();
-    auto type = OGR_G_GetGeometryType(geo.get());
-    auto idx = type_to_idx[type];
-    mapping[idx].masks[i] = true;
-    mapping[idx].mask_counts++;
+
+    auto idx = type_to_idx[get_type_index(type)];
+
+    mapping[idx].mask[i] = true;
+    mapping[idx].mask_count++;
     encode_uids[i] = idx;
 
     if (last_idx != -1 && last_idx != idx) {
@@ -96,14 +119,14 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
 
   if (is_unique_type) {
     int encode_uid = 0;
-    if (mapping[encode_uid].masks.front() == true) {
+    if (mapping[encode_uid].mask.front() == true) {
       ret->is_unique_type = true;
       ret->unique_type = {WkbTypes::kUnknown};
       return ret;
     } else {
       encode_uid++;
       for (auto& grouped_type : types()) {
-        if (mapping[encode_uid].masks.front() == true) {
+        if (mapping[encode_uid].mask.front() == true) {
           ret->is_unique_type = true;
           ret->unique_type = grouped_type;
           return ret;
@@ -123,8 +146,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     }
   }
   return ret;
-}
-
 }  // namespace gdal
+
+}  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

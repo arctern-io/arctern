@@ -1,8 +1,8 @@
 # remove a conda env
-conda env remove -n zgis_dev
+conda env remove -n arctern
 
-# install conda env for arctern test: env name is 'zgis_dev'
-conda create -n zgis_dev -c arctern-dev -c conda-forge arctern-spark
+# install conda env for arctern test: env name is 'arctern'
+conda create -n arctern -c arctern-dev -c conda-forge arctern-spark
 
 # install shapely
 conda install -y shapely

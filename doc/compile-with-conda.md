@@ -33,7 +33,7 @@ $ wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_6
 $ /bin/bash ~/miniconda.sh -b -p /opt/conda
 $ rm ~/miniconda.sh
 
-# 配置conda
+# 配置conda 
 $ ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 $ echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
 $ echo "conda activate base" >> ~/.bashrc
@@ -44,17 +44,17 @@ $ conda activate base
 ## 创建并使用gis-dev开发环境以及第三方库
 1. 首先查看当前conda环境的所有环境名:  
 `conda env list`  
-如果之前有名称为zgis_dev的conda环境，需要先移除  
-`conda env remove -n zgis_dev`  
-2. 根据zgis.yml文件安装新的conda环境，名称为zgis_dev  
+如果之前有名称为arctern的conda环境，需要先移除  
+`conda env remove -n arctern`  
+2. 根据zgis.yml文件安装新的conda环境，名称为arctern  
 `conda env create -f zgis.yml`  
 运行之后安装了conda环境一些必要的库，但是还需要通过apt安装一些系统必要的库  
 `sudo apt-get install libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev  libosmesa6-dev`
 3. 安装好之后激活conda环境，并在此环境中进行下一步的代码编译  
-`conda activate zgis_dev`
+`conda activate arctern`
 
 # cpp代码编译以及单元测试的运行
-此部分所有工作均在conda中的zgis_dev环境中运行：
+此部分所有工作均在conda中的arctern环境中运行：
 首先切换到工程中的GIS目录然后运行下面的命令：
 
 CPU Version
@@ -129,8 +129,8 @@ cd GIS/spark/pyspark
 
 修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
 ```
-spark.driver.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/zgis_dev/lib:/usr/local/cuda/lib64
-spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/zgis_dev/lib:/usr/local/cuda/lib64
+spark.driver.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
+spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
 ```
 
 `/home/xxx/gis/GIS/cpp/build/thirdparty/lib`对应你编译cpp部分时，生成的库安装的地方
@@ -138,9 +138,9 @@ spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home
 ## 修改环境变量  
 在`spark-env.sh` 增加如下配置
 ```
-export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/zgis_dev/bin/python
-export GDAL_DATA=/home/xxx/miniconda3/envs/zgis_dev/share/gdal
-export PROJ_LIB=/home/xxx/miniconda3/envs/zgis_dev/share/proj
+export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/arctern/bin/python
+export GDAL_DATA=/home/xxx/miniconda3/envs/arctern/share/gdal
+export PROJ_LIB=/home/xxx/miniconda3/envs/arctern/share/proj
 ```
 
 ## 检查`pyspark`是否使用`$PYSPARK_PYTHON`指定的python

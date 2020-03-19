@@ -25,36 +25,8 @@
 namespace arctern {
 namespace render {
 
-PointMap::PointMap() : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {}
-
 PointMap::PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices)
     : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices) {}
-
-void PointMap::InputInit() {
-  array_vector_ = input().array_vector;
-  VegaCircle2d vega_circle_2d(input().vega);
-  point_vega_ = vega_circle_2d;
-}
-
-void PointMap::DataInit() {
-  // set point_value
-  auto input_data = array_vector();
-  auto x_array = input_data[0];
-  auto y_array = input_data[1];
-
-  auto x_length = x_array->length();
-  auto y_length = y_array->length();
-  auto x_type = x_array->type_id();
-  auto y_type = y_array->type_id();
-  assert(x_length == y_length);
-  assert(x_type == arrow::Type::UINT32);
-  assert(y_type == arrow::Type::UINT32);
-  num_vertices_ = x_length / sizeof(uint32_t);
-
-  // array{ArrayData{vector<Buffer{uint8_t*}>}}
-  vertices_x_ = (uint32_t*)x_array->data()->GetValues<uint8_t>(1);
-  vertices_y_ = (uint32_t*)y_array->data()->GetValues<uint8_t>(1);
-}
 
 void PointMap::Draw() {
   glClear(GL_COLOR_BUFFER_BIT);
@@ -97,6 +69,7 @@ void PointMap::Draw() {
 #endif
 }
 
+#ifdef USE_GPU
 void PointMap::Shader() {
   const char* vertex_shader_source =
       "#version 430 core\n"
@@ -127,29 +100,35 @@ void PointMap::Shader() {
   glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
   glCompileShader(vertex_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "vertex shader compile failed.";
   }
+#endif
 
   int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
   glCompileShader(fragment_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "fragment shader compile failed.";
   }
+#endif
 
   int shader_program = glCreateProgram();
   glAttachShader(shader_program, vertex_shader);
   glAttachShader(shader_program, fragment_shader);
   glLinkProgram(shader_program);
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
     // TODO: add log here
     std::cout << "shader program link failed.";
   }
+#endif
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
@@ -180,11 +159,10 @@ void PointMap::Shader() {
   glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b,
               point_format.color.a);
 }
+#endif
 
 uint8_t* PointMap::Render() {
-  //    InputInit();
   WindowsInit(point_vega_.window_params());
-//    DataInit();
 #ifdef USE_GPU
   Shader();
 #endif

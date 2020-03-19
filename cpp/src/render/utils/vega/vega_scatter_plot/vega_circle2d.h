@@ -28,7 +28,8 @@ class VegaCircle2d : public VegaScatterPlot {
 
   explicit VegaCircle2d(const std::string& json);
 
-  std::string Build() final;
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
   const CircleParams circle_params() const { return circle_params_; }
 

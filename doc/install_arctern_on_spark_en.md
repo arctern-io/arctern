@@ -5,8 +5,6 @@ This topic introduces how to install Arctern in Spark.
 ## TOC
 
 <!-- TOC -->
-
-- [TOC](#toc)
 - [Prerequisites](#prerequisites)
 - [Installing dependencies](#installing-dependencies)
 - [Setting up Arctern Conda environment](#setting-up-arctern-conda-environment)
@@ -17,9 +15,10 @@ This topic introduces how to install Arctern in Spark.
 - [Uninstalling Arctern](#uninstalling-arctern)
 - [FAQ](#faq)
     - [Support for Spark](#support-for-spark)
-
 <!-- /TOC -->
+
 ## Prerequisites
+
 - CPU version
 
 | Component     | Version              |

@@ -1,4 +1,4 @@
-name: zgis_dev
+name: arctern
 channels:
   - conda-forge
 dependencies:

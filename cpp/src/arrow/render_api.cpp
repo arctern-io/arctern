@@ -27,6 +27,11 @@ namespace arctern {
 namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
+  if (output.first == nullptr || output.second < 0) {
+    // TODO: add log here
+    return nullptr;
+  }
+
   auto output_length = output.second;
   auto output_data = output.first;
   auto bit_map = (uint8_t*)malloc(output_length);
@@ -44,32 +49,12 @@ std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
   return array;
 }
 
-std::shared_ptr<arrow::Array> coordinate_projection(
-    const std::shared_ptr<arrow::Array>& input_point, const std::string top_left,
-    const std::string bottom_right, const int height, const int width) {
-  auto arr_wkt_length = input_point->length();
-  auto wkt_type = input_point->type_id();
-  assert(wkt_type == arrow::Type::STRING);
-
-  auto string_array = std::static_pointer_cast<arrow::StringArray>(input_point);
-  std::vector<std::string> input_wkt(arr_wkt_length);
-  for (int i = 0; i < arr_wkt_length; i++) {
-    input_wkt[i] = string_array->GetString(i);
-  }
-
-  auto output_point =
-      coordinate_projection(input_wkt, top_left, bottom_right, height, width);
-  //  assert(arr_wkt_length == output_point.size());
-
-  arrow::StringBuilder string_builder;
-  std::shared_ptr<arrow::Array> points;
-  for (int i = 0; i < arr_wkt_length; i++) {
-    string_builder.Append(output_point[i]);
-  }
-  std::vector<std::string>().swap(input_wkt);
-  std::vector<std::string>().swap(output_point);
-  string_builder.Finish(&points);
-  return points;
+std::shared_ptr<arrow::Array> transform_and_projection(
+    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
+    const std::string& dst_rs, const std::string& bottom_right,
+    const std::string& top_left, const int& height, const int& width) {
+  return TransformAndProjection(geos, src_rs, dst_rs, bottom_right, top_left, height,
+                                width);
 }
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
@@ -192,7 +177,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
     }
     default:
       // TODO: add log here
-      std::cout << "type error! ";
+      std::cout << "type error! " << std::endl;
   }
 
   free(input_x);
@@ -236,8 +221,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     case arrow::Type::INT64: {
       auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          output = heatmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
+      return out_pic(heatmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
     }
     case arrow::Type::UINT8: {
       auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
@@ -265,7 +249,7 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
     }
     default:
       // TODO: add log here
-      std::cout << "type error! hjahj hjh heatmap1";
+      std::cout << "type error! heatmap" << std::endl;
   }
   return nullptr;
 }
@@ -340,7 +324,7 @@ std::shared_ptr<arrow::Array> choropleth_map(
     }
     default:
       // TODO: add log here
-      std::cout << "type error!";
+      std::cout << "type error!" << std::endl;
   }
   return nullptr;
 }
