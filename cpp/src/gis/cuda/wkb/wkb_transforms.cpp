@@ -19,7 +19,7 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <src/gis/gdal/format_conversion.h>
+#include "src/gis/gdal/format_conversion.h"
 
 #include <cassert>
 #include <iostream>
