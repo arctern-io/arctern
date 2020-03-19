@@ -68,7 +68,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
     if (!skip_write) {
       // fill multipoint size
       auto metas = input.get_meta_ptr(index);
-      for(int i = 0; i < meta_size; ++i) {
+      for (int i = 0; i < meta_size; ++i) {
         meta_output[i] = metas[i];
       }
     }
@@ -80,9 +80,9 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
     final_y.update(iter->y);
   }
 
-  if(final_x.is_trivial() && final_y.is_trivial()) {
+  if (final_x.is_trivial() && final_y.is_trivial()) {
     // just point
-    if(!skip_write) {
+    if (!skip_write) {
       value2_output[0].x = final_x.min;
       value2_output[0].y = final_y.min;
     }
