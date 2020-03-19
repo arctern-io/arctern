@@ -33,18 +33,16 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box_min: Value, bounding_box_max: Value,
-                     color_style: Value, ruler: Value, opacity: Value, coordinate_system: Value):
-            if not (isinstance(bounding_box_min.v, str)
-                    and isinstance(bounding_box_max.v, str)
+        def __init__(self, bounding_box: Value, color_style: Value,
+                     ruler: Value, opacity: Value, coordinate_system: Value):
+            if not (isinstance(bounding_box.v, list)
                     and isinstance(color_style.v, str)
                     and isinstance(ruler.v, list)
                     and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
-            self._bounding_box_min = bounding_box_min
-            self._bounding_box_max = bounding_box_max
+            self._bounding_box = bounding_box
             self._color_style = color_style
             self._ruler = ruler
             self._opacity = opacity
@@ -53,8 +51,7 @@ class Marks(RootMarks):
         def to_dict(self):
             dic = {
                 "enter": {
-                    "bounding_box_min": self._bounding_box_min.to_dict(),
-                    "bounding_box_max": self._bounding_box_max.to_dict(),
+                    "bounding_box": self._bounding_box.to_dict(),
                     "color_style": self._color_style.to_dict(),
                     "ruler": self._ruler.to_dict(),
                     "opacity": self._opacity.to_dict(),
@@ -73,12 +70,11 @@ class Marks(RootMarks):
         return dic
 
 class VegaChoroplethMap:
-    def __init__(self, width: int, height: int, bounding_box_min: str, bounding_box_max: str,
+    def __init__(self, width: int, height: int, bounding_box: list,
                  color_style: str, ruler: list, opacity: float, coordinate_system: str):
         self._width = width
         self._height = height
-        self._bounding_box_min = bounding_box_min
-        self._bounding_box_max = bounding_box_max
+        self._bounding_box = bounding_box
         self._color_style = color_style
         self._ruler = ruler
         self._opacity = opacity
@@ -90,8 +86,7 @@ class VegaChoroplethMap:
         domain = Scales.Scale.Domain("data", "c0")
         scale = Scales.Scale("building", "linear", domain)
         scales = Scales([scale])
-        encode = Marks.Encode(bounding_box_min=Marks.Encode.Value(self._bounding_box_min),
-                              bounding_box_max=Marks.Encode.Value(self._bounding_box_max),
+        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               color_style=Marks.Encode.Value(self._color_style),
                               ruler=Marks.Encode.Value(self._ruler),
                               opacity=Marks.Encode.Value(self._opacity),
@@ -105,12 +100,9 @@ class VegaChoroplethMap:
     def coor(self):
         return self._coordinate_system
     
-    def bounding_box_min(self):
-        return self._bounding_box_min
+    def bounding_box(self):
+        return self._bounding_box
     
-    def bounding_box_max(self):
-        return self._bounding_box_max
-
     def height(self):
         return self._height
 
