@@ -92,13 +92,13 @@ def test_point_map():
     curve_z2 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
     curve_z3 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
 
-    save_png(curve_z, map_path + "test_curve_z.png")
+    save_png(curve_z, map_path + "curve_z.png")
     save_png(curve_z1, map_path + "test_curve_z1.png")
     save_png(curve_z2, map_path + "test_curve_z2.png")
     save_png(curve_z3, map_path + "test_curve_z3.png")
     baseline_png = map_path + "curve_z.png"
 
-    assert _diffPNG(baseline_png, map_path + "test_curve_z.png") == True
+    assert _diffPNG(baseline_png, map_path + "curve_z.png") == True
     assert _diffPNG(baseline_png, map_path + "test_curve_z2.png") == True
     assert _diffPNG(baseline_png, map_path + "test_curve_z3.png") == True
 
