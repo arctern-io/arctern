@@ -41,6 +41,8 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
 std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json);
 
+std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);

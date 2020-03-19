@@ -93,6 +93,21 @@ def run_test_envelope_aggr_1(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_envelope_aggr_curve(spark):
+    
+    data = "envelope_aggr_curve.csv"
+    table_name = 'test_envelope_aggr_curve'
+    sql = "select st_envelope_aggr(geos) as my_envelope from test_envelope_aggr_curve"
+    
+    df = read_data(spark, base_dir, data)
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 def run_test_envelope_aggr_2(spark):
     
     data = "points.csv"
@@ -191,7 +206,7 @@ def run_test_st_intersection_curve(spark):
 
     data = "intersection_curve.csv"
     table_name = 'test_intersection_curve'
-    sql = "select st_intersection(left, right) from test_intersection_curve"
+    sql = "select st_curvetoline(st_intersection(left, right)) from test_intersection_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -218,11 +233,11 @@ def run_test_st_convexhull(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
-def run_test_st_convexhull2(spark):
+def run_test_st_convexhull_curve(spark):
     # this test is to test convexhull's result is curve, which not support in postgis, we need to convert arctern result to basic types, then compare
-    data = "convexhull2.csv"
-    table_name = 'test_convexhull2'
-    sql = "select st_curvetoline(st_convexhull(geos)) as geos from test_convexhull2"
+    data = "convexhull_curve.csv"
+    table_name = 'test_convexhull_curve'
+    sql = "select st_curvetoline(st_convexhull(geos)) as geos from test_convexhull_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -349,7 +364,7 @@ def run_test_st_buffer6(spark):
 def run_test_st_buffer_curve(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve'
-    sql = "select st_buffer(geos, 0) as geos from test_buffer_curve"
+    sql = "select st_curvetoline(st_buffer(geos, 0)) as geos from test_buffer_curve"
     
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -365,7 +380,7 @@ def run_test_st_buffer_curve(spark):
 def run_test_st_buffer_curve1(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve1'
-    sql = "select st_buffer(geos, 1) as geos from test_buffer_curve1"
+    sql = "select st_curvetoline(st_buffer(geos, 1)) as geos from test_buffer_curve1"
     
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -412,6 +427,21 @@ def run_test_st_centroid(spark):
     data = "centroid.csv"
     table_name = 'test_centroid'
     sql = "select st_centroid(geos) as my_centroid from test_centroid"
+    
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+    
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_centroid_curve(spark):
+    data = "centroid_curve.csv"
+    table_name = 'test_centroid_curve'
+    sql = "select st_centroid(geos) as my_centroid from test_centroid_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -634,7 +664,6 @@ def run_test_st_precisionreduce(spark):
 
     rs = spark.sql(sql).cache()
     rs.printSchema()
-    #rs.show()
 
     save_result("results/%s" % table_name, rs)
     
@@ -910,7 +939,7 @@ def run_test_st_simplifypreservetopology(spark):
 def run_test_st_simplifypreservetopology_curve(spark):
     data = "simplifypreservetopology_curve.csv"
     table_name = 'test_simplifypreservetopology_curve'
-    sql = "select st_simplifypreservetopology(geos, 1) as geos from test_simplifypreservetopology_curve"
+    sql = "select st_curvetoline(st_simplifypreservetopology(geos, 1)) as geos from test_simplifypreservetopology_curve"
     
     df = read_data(spark, base_dir, data)
     df.printSchema()
@@ -999,6 +1028,96 @@ def run_test_st_hausdorffdistance_curve(spark):
     rs.show()
     save_result("results/%s" % table_name, rs)
 
+def run_test_st_pointfromtext(spark):
+    data = "pointfromtext.csv"
+    table_name = 'test_pointfromtext'
+    sql = "select st_pointfromtext(geos) as geos from test_pointfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_polygonfromtext(spark):
+    data = "polygonfromtext.csv"
+    table_name = 'test_polygonfromtext'
+    sql = "select st_polygonfromtext(geos) as geos from test_polygonfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_linestringfromtext(spark):
+    data = "linestringfromtext.csv"
+    table_name = 'test_linestringfromtext'
+    sql = "select st_linestringfromtext(geos) as geos from test_linestringfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_geomfromtext(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_geomfromtext'
+    sql = "select st_geomfromtext(geos) as geos from test_geomfromtext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_geomfromwkt(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_geomfromwkt'
+    sql = "select st_geomfromwkt(geos) as geos from test_geomfromwkt"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
+def run_test_st_astext(spark):
+    data = "geomfromtext.csv"
+    table_name = 'test_astext'
+    sql = "select st_astext(geos) as geos from test_astext"
+
+    df = read_data(spark, base_dir, data)
+    df.printSchema()
+    df.show()
+    df.createOrReplaceTempView(table_name)
+
+    rs = spark.sql(sql).cache()
+    rs.printSchema()
+    rs.show()
+    save_result("results/%s" % table_name, rs)
+
 if __name__ == "__main__":
 
     url = 'local'
@@ -1013,6 +1132,7 @@ if __name__ == "__main__":
     run_test_st_curvetoline(spark_session)
     run_test_st_point(spark_session)
     run_test_envelope_aggr_1(spark_session)
+    run_test_envelope_aggr_curve(spark_session)
     run_test_envelope_aggr_2(spark_session)
     run_test_union_aggr_2(spark_session)
     run_test_union_aggr_curve(spark_session)
@@ -1021,7 +1141,7 @@ if __name__ == "__main__":
     run_test_st_intersection(spark_session)
     run_test_st_intersection_curve(spark_session)
     run_test_st_convexhull(spark_session)
-    run_test_st_convexhull2(spark_session)
+    run_test_st_convexhull_curve(spark_session)
     run_test_st_buffer(spark_session)
     run_test_st_buffer1(spark_session)
     run_test_st_buffer2(spark_session)
@@ -1034,6 +1154,7 @@ if __name__ == "__main__":
     run_test_st_envelope(spark_session)
     run_test_st_envelope_curve(spark_session)
     run_test_st_centroid(spark_session)
+    run_test_st_centroid_curve(spark_session)
     run_test_st_length(spark_session)
     run_test_st_length_curve(spark_session)
     run_test_st_area(spark_session)
@@ -1062,11 +1183,17 @@ if __name__ == "__main__":
     run_test_st_touches(spark_session)
     run_test_st_touches_curve(spark_session)
     run_test_st_makevalid(spark_session)
-    # run_test_st_precisionreduce(spark_session)
+    run_test_st_precisionreduce(spark_session)
     run_test_st_polygonfromenvelope(spark_session)
     run_test_st_simplifypreservetopology(spark_session)
     run_test_st_simplifypreservetopology_curve(spark_session)
     run_test_st_hausdorffdistance(spark_session)
     run_test_st_hausdorffdistance_curve(spark_session)
+    run_test_st_pointfromtext(spark_session)
+    run_test_st_polygonfromtext(spark_session)
+    run_test_st_linestringfromtext(spark_session)
+    run_test_st_geomfromtext(spark_session)
+    run_test_st_geomfromwkt(spark_session)
+    run_test_st_astext(spark_session)
 
     spark_session.stop()
