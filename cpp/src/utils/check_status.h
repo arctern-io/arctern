@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+#include <arrow/api.h>
+
 #include <string>
 
 #define CHECK_GDAL(action)                                                     \
-  {                                                                            \
+  do {                                                                         \
     auto check = action;                                                       \
     if (!!check) {                                                             \
       std::string err_msg = "gdal error code = " + std::to_string((int)check); \
       throw std::runtime_error(err_msg);                                       \
     }                                                                          \
-  }
+  } while (false)
 
 #define CHECK_ARROW(action)                                      \
-  {                                                              \
+  do {                                                           \
     arrow::Status status = action;                               \
     if (!status.ok()) {                                          \
       std::string err_msg = "arrow error: " + status.ToString(); \
       throw std::runtime_error(err_msg);                         \
     }                                                            \
-  }
+  } while (false)
