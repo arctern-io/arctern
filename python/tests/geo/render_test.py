@@ -98,7 +98,7 @@ def test_point_map():
     save_png(curve_z3, map_path + "test_curve_z3.png")
     baseline_png = map_path + "curve_z.png"
 
-    assert _diffPNG(baseline_png, map_path + "test_curve_z1.png") == True
+    assert _diffPNG(baseline_png, map_path + "test_curve_z.png") == True
     assert _diffPNG(baseline_png, map_path + "test_curve_z2.png") == True
     assert _diffPNG(baseline_png, map_path + "test_curve_z3.png") == True
 
