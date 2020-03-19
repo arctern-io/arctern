@@ -99,7 +99,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
       Holder holder(geo_);
       auto type = (WkbTypes)wkbFlatten(holder->getGeometryType());
       // fix Point Empty
-      if(type == WkbTypes::kPoint && holder->IsEmpty()) {
+      if (type == WkbTypes::kPoint && holder->IsEmpty()) {
         return WkbTypes::kUnknown;
       }
       return type;
