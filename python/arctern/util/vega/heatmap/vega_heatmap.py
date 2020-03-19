@@ -33,16 +33,26 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, map_scale: Value):
-            if not isinstance(map_scale.v, float):
+        def __init__(self, bounding_box_min: Value, bounding_box_max: Value,
+                     map_scale: Value, coordinate_system: Value):
+            if not (isinstance(bounding_box_min.v, str)
+                    and isinstance(bounding_box_max.v, str)
+                    and isinstance(map_scale.v, float)
+                    and isinstance(coordinate_system.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
+            self._bounding_box_min = bounding_box_min
+            self._bounding_box_max = bounding_box_max
             self._map_scale = map_scale
+            self._coordinate_system = coordinate_system
 
         def to_dict(self):
             dic = {
                 "enter": {
-                    "map_scale": self._map_scale.to_dict()
+                    "bounding_box_min": self._bounding_box_min.to_dict(),
+                    "bounding_box_max": self._bounding_box_max.to_dict(),
+                    "map_scale": self._map_scale.to_dict(),
+                    "coordinate_system": self._coordinate_system.to_dict()
                 }
             }
             return dic
@@ -57,10 +67,14 @@ class Marks(RootMarks):
         return dic
 
 class VegaHeatMap():
-    def __init__(self, width: int, height: int, map_scale: float):
+    def __init__(self, width: int, height: int, map_scale: float, bounding_box_min: str, 
+                 bounding_box_max: str, coordinate_system: str):
         self._width = width
         self._height = height
+        self._bounding_box_min = bounding_box_min
+        self._bounding_box_max = bounding_box_max
         self._map_scale = map_scale
+        self._coordinate_system = coordinate_system
 
     def build(self):
         description = Description(desc="heat_map_2d")
@@ -70,10 +84,28 @@ class VegaHeatMap():
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
-        encode = Marks.Encode(map_scale=Marks.Encode.Value(self._map_scale))
+        encode = Marks.Encode(bounding_box_min=Marks.Encode.Value(self._bounding_box_min),
+                              bounding_box_max=Marks.Encode.Value(self._bounding_box_max),
+                              map_scale=Marks.Encode.Value(self._map_scale),
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
+    
+    def coor(self):
+        return self._coordinate_system
+
+    def bounding_box_min(self):
+        return self._bounding_box_min
+    
+    def bounding_box_max(self):
+        return self._bounding_box_max
+
+    def height(self):
+        return self._height
+
+    def width(self):
+        return self._width

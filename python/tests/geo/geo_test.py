@@ -102,6 +102,16 @@ def test_ST_GeomFromGeoJSON():
     assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
     assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
+def test_ST_GeomFromText():
+    p0 = "POINT (1 2)"
+    p1 = "LINESTRING (1 2,4 5,7 8)"
+    p2 = "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+    data = pandas.Series([p0, p1, p2])
+    str_ptr = arctern.ST_GeomFromText(data)
+    assert str_ptr[0] == "POINT (1 2)"
+    assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
+    assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+
 def test_ST_Contains():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
     p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
