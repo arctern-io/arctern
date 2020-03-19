@@ -12,6 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .register import register_funcs
-# from ._wrapper_func import TransformAndProjection
-from .render_func import *
+set(utils_tests_src
+        ${unittest_srcs}
+        utils_tests.cpp)
+
+add_executable(utils_tests ${utils_tests_src})
+
+#add_dependencies(gis_tests googletest_ep)
+
+target_link_libraries(utils_tests
+        arctern
+        arrow
+        gtest
+        pthread
+        gdal
+        )
+
+install(TARGETS utils_tests DESTINATION unittest)
+
+add_subdirectory(gdal)
+if(BUILD_WITH_GPU)
+    add_subdirectory(cuda)
+endif()

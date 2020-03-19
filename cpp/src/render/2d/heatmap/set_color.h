@@ -70,6 +70,7 @@ void set_colors_cpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
   guassiankernel2d(kernel, kernel_size, kernel_size, kernel_size, kernel_size);
 
   float* heat_count = (float*)malloc(window_size * sizeof(float));
+  memset(heat_count, 0, window_size * sizeof(float));
   HeatMapArray_cpu(pix_count, heat_count, kernel, kernel_size, width, height);
 
   float* color_count = (float*)malloc(window_size * sizeof(float));
