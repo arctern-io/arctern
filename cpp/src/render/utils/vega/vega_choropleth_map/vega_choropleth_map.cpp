@@ -54,22 +54,23 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   mark_enter = document["marks"][0]["encode"]["enter"];
 
   // parse bounding box
-  if (!JsonLabelCheck(mark_enter, "bounding_box") ||
-      !JsonLabelCheck(mark_enter["bounding_box"], "value") ||
-      !JsonTypeCheck(mark_enter["bounding_box"]["value"], rapidjson::Type::kArrayType) ||
-      !JsonSizeCheck(mark_enter["bounding_box"]["value"], "bounding_box.value", 4)) {
-    return;
-  }
-  for (int i = 0; i < 4; i++) {
-    if (!JsonTypeCheck(mark_enter["bounding_box"]["value"][i],
-                       rapidjson::Type::kNumberType)) {
-      return;
-    }
-  }
-  bounding_box_.longitude_left = mark_enter["bounding_box"]["value"][0].GetDouble();
-  bounding_box_.latitude_left = mark_enter["bounding_box"]["value"][1].GetDouble();
-  bounding_box_.longitude_right = mark_enter["bounding_box"]["value"][2].GetDouble();
-  bounding_box_.latitude_right = mark_enter["bounding_box"]["value"][3].GetDouble();
+  //  if (!JsonLabelCheck(mark_enter, "bounding_box") ||
+  //      !JsonLabelCheck(mark_enter["bounding_box"], "value") ||
+  //      !JsonTypeCheck(mark_enter["bounding_box"]["value"], rapidjson::Type::kArrayType)
+  //      || !JsonSizeCheck(mark_enter["bounding_box"]["value"], "bounding_box.value", 4))
+  //      {
+  //    return;
+  //  }
+  //  for (int i = 0; i < 4; i++) {
+  //    if (!JsonTypeCheck(mark_enter["bounding_box"]["value"][i],
+  //                       rapidjson::Type::kNumberType)) {
+  //      return;
+  //    }
+  //  }
+  //  bounding_box_.longitude_left = mark_enter["bounding_box"]["value"][0].GetDouble();
+  //  bounding_box_.latitude_left = mark_enter["bounding_box"]["value"][1].GetDouble();
+  //  bounding_box_.longitude_right = mark_enter["bounding_box"]["value"][2].GetDouble();
+  //  bounding_box_.latitude_right = mark_enter["bounding_box"]["value"][3].GetDouble();
 
   // parse color style
   if (!JsonLabelCheck(mark_enter, "color_style") ||
