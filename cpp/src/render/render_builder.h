@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,10 +27,10 @@
 namespace arctern {
 namespace render {
 
-std::vector<std::string> coordinate_projection(const std::vector<std::string>& point_wkt,
-                                               const std::string top_left,
-                                               const std::string bottom_right,
-                                               const int height, const int width);
+std::shared_ptr<arrow::Array> TransformAndProjection(
+    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
+    const std::string& dst_rs, const std::string& bottom_right,
+    const std::string& top_left, const int& height, const int& width);
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                       int64_t num_vertices, const std::string& conf);
