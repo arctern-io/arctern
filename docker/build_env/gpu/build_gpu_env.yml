@@ -7,3 +7,4 @@ dependencies:
 - conda-forge::Cython
 - conda-forge::pytest
 - conda-forge::pylint
+- conda-forge::opencv=4.2
