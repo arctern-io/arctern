@@ -1029,7 +1029,7 @@ def run_test_st_hausdorffdistance_curve(spark):
     save_result("results/%s" % table_name, rs)
 
 def run_test_st_pointfromtext(spark):
-    data = "pointfromtext.csv"
+    data = "pointfromtext_illegal.csv"
     table_name = 'test_pointfromtext'
     sql = "select st_pointfromtext(geos) as geos from test_pointfromtext"
 
