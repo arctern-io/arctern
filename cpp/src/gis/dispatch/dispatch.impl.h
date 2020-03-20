@@ -117,6 +117,17 @@ std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
   return GenericArrayMergeWrapper<arrow::DoubleArray>(inputs, mask);
 }
 
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
+auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+                       TrueFunc true_func, const std::shared_ptr<Arg1>& arg1_ptr)
+    -> std::shared_ptr<RetType> {
+  auto split_inputs = GenericArraySplit(arg1_ptr, mask);
+  assert(split_inputs[1]->null_count() == 0);
+  auto false_output = false_func(split_inputs[0]);
+  auto true_output = true_func(split_inputs[1]);
+  return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
+}
+
 }  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

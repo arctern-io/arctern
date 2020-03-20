@@ -54,6 +54,11 @@ auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
                        const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2>;
 
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
+auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+                       TrueFunc true_func, const std::shared_ptr<Arg1>& arg1_ptr)
+    -> std::shared_ptr<RetType>;
+
 }  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

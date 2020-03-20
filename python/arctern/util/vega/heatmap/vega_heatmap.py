@@ -33,24 +33,20 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box_min: Value, bounding_box_max: Value,
-                     map_scale: Value, coordinate_system: Value):
-            if not (isinstance(bounding_box_min.v, str)
-                    and isinstance(bounding_box_max.v, str)
+        def __init__(self, bounding_box: Value, map_scale: Value, coordinate_system: Value):
+            if not (isinstance(bounding_box.v, list)
                     and isinstance(map_scale.v, float)
                     and isinstance(coordinate_system.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
-            self._bounding_box_min = bounding_box_min
-            self._bounding_box_max = bounding_box_max
+            self._bounding_box = bounding_box
             self._map_scale = map_scale
             self._coordinate_system = coordinate_system
 
         def to_dict(self):
             dic = {
                 "enter": {
-                    "bounding_box_min": self._bounding_box_min.to_dict(),
-                    "bounding_box_max": self._bounding_box_max.to_dict(),
+                    "bounding_box": self._bounding_box.to_dict(),
                     "map_scale": self._map_scale.to_dict(),
                     "coordinate_system": self._coordinate_system.to_dict()
                 }
@@ -66,13 +62,12 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaHeatMap():
-    def __init__(self, width: int, height: int, map_scale: float, bounding_box_min: str, 
-                 bounding_box_max: str, coordinate_system: str):
+class VegaHeatMap:
+    def __init__(self, width: int, height: int, map_scale: float,
+                 bounding_box: list, coordinate_system: str):
         self._width = width
         self._height = height
-        self._bounding_box_min = bounding_box_min
-        self._bounding_box_max = bounding_box_max
+        self._bounding_box = bounding_box
         self._map_scale = map_scale
         self._coordinate_system = coordinate_system
 
@@ -84,8 +79,7 @@ class VegaHeatMap():
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
-        encode = Marks.Encode(bounding_box_min=Marks.Encode.Value(self._bounding_box_min),
-                              bounding_box_max=Marks.Encode.Value(self._bounding_box_max),
+        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               map_scale=Marks.Encode.Value(self._map_scale),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)
@@ -98,11 +92,8 @@ class VegaHeatMap():
     def coor(self):
         return self._coordinate_system
 
-    def bounding_box_min(self):
-        return self._bounding_box_min
-    
-    def bounding_box_max(self):
-        return self._bounding_box_max
+    def bounding_box(self):
+        return self._bounding_box
 
     def height(self):
         return self._height

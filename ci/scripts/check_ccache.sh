@@ -55,11 +55,6 @@ if [[ -z "${ARTIFACTORY_URL}" || "${ARTIFACTORY_URL}" == "" ]];then
     exit 1
 fi
 
-if [[ ! -d ${CCACHE_DIR} ]]; then
-    echo "\"${CCACHE_DIR}\" directory does not exist !"
-    exit 1
-fi
-
 function check_ccache() {
     BRANCH=$1
     echo "fetching ${BRANCH}/${PACKAGE_FILE}"
