@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
+#include "render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.h"
 
 namespace arctern {
 namespace render {
 
-VegaPointmap::VegaPointmap(const std::string& json) { Parse(json); }
+VegaWeightedPointmap::VegaWeightedPointmap(const std::string& json) { Parse(json); }
 
-void VegaPointmap::Parse(const std::string& json) {
+void VegaWeightedPointmap::Parse(const std::string& json) {
   rapidjson::Document document;
   document.Parse(json.c_str());
 

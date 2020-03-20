@@ -39,6 +39,9 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
  private:
   CircleParams circle_params_;
+  std::pair<double, double> ruler_;
+  ColorStyle color_style_;
+  double opacity_;
 };
 
 }  // namespace render
