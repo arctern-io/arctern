@@ -1,0 +1,6 @@
+Flask==1.1.1
+waitress==1.4.3
+numpy==1.18.1
+pandas==1.0.1
+pyarrow==0.16.0
+Flask-HTTPAuth==3.3.0
