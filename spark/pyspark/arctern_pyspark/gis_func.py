@@ -40,9 +40,9 @@ def _agg_func_template(df, col_name, st_agg_func):
     return ret
 
 def union_aggr(df, col_name):
-    from arctern import ST_Union_Aggr as st_agg_func
-    return _agg_func_template(df, col_name, st_agg_func)
+    from arctern import ST_Union_Aggr
+    return _agg_func_template(df, col_name, ST_Union_Aggr)
 
 def envelope_aggr(df, col_name):
-    from arctern import ST_Envelope_Aggr as st_agg_func
-    return _agg_func_template(df, col_name, st_agg_func)
+    from arctern import ST_Envelope_Aggr
+    return _agg_func_template(df, col_name, ST_Envelope_Aggr)
