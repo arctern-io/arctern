@@ -99,10 +99,10 @@ class VegaChoroplethMap:
         return root_json
     def coor(self):
         return self._coordinate_system
-    
+
     def bounding_box(self):
         return self._bounding_box
-    
+
     def height(self):
         return self._height
 

@@ -19,11 +19,13 @@ include_directories(${ARCTERN_THIRDPARTY_SRC})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(render_src
         render/2d/scatter_plot/pointmap.cpp
+        render/2d/scatter_plot/weighted_pointmap.cpp
         render/2d/choropleth_map/choropleth_map.cpp
         render/2d/general_2d.cpp
         render/2d/heatmap/heatmap.cpp
         render/2d/heatmap/set_color.cpp
-        render/utils/vega/vega_scatter_plot/vega_circle2d.cpp
+        render/utils/vega/vega_scatter_plot/vega_pointmap.cpp
+        render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.cpp
         render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
         render/utils/vega/vega.cpp
         render/utils/vega/vega_heatmap/vega_heatmap.cpp

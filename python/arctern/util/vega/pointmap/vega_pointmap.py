@@ -103,10 +103,10 @@ class VegaPointMap(VegaScatterPlot):
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
-        
+
     def coor(self):
         return self._coordinate_system
-    
+
     def bounding_box(self):
         return self._bounding_box
 

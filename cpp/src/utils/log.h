@@ -16,17 +16,18 @@
 
 #pragma once
 
-#include <memory>
-#include <ostream>
+#include <stdio.h>
 #include <string>
 
-namespace arctern {
-namespace gis {
+#define SOURCE_CODE_INFO                                                             \
+  std::string("[") + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "][" + \
+      std::string(__FUNCTION__) + "]"
 
-enum class LogLevel : int { DEBUG = -1, INFO = 0, WARNNING = 1, ERROR = 2, FATAL = 3 };
-
-#define GIS_LOG_INTERNAL(level) ::arctern::GIS::GisLog(__FILE__, __LINE__, level)
-#define GIS_LOG(level) GIS_LOG_INTERNAL(::arctern::GIS::LogLevel::##level)
-
-}  // namespace gis
-}  // namespace arctern
+#define ARCTERN_THROW_ERROR(err_code, err_msg)                            \
+  do {                                                                    \
+    std::string total_msg = SOURCE_CODE_INFO;                             \
+    std::string code_str = std::to_string(err_code);                      \
+    total_msg += std::string("error code: ") + code_str;                  \
+    total_msg += std::string(",  reason: ") + err_msg + std::string("."); \
+    throw std::runtime_error(total_msg);                                  \
+  } while (false);
