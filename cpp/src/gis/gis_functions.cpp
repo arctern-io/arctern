@@ -85,9 +85,10 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 }
 
 std::shared_ptr<arrow::Array> ST_Envelope(
-    const std::shared_ptr<arrow::Array>& geometries) {
+    const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
+  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
   dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
@@ -101,9 +102,8 @@ std::shared_ptr<arrow::Array> ST_Envelope(
     }
   } else {
     auto mask = type_masks->get_mask(gpu_supported_types);
-    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
     auto result = dispatch::UnaryMixedExecute<arrow::StringArray>(
-        mask, gdal::ST_Envelope, cuda::ST_Envelope, typed_geo);
+        mask, gdal::ST_Envelope, cuda::ST_Envelope, geometries);
     return result;
   }
 #else
@@ -165,7 +165,7 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left,
     const std::shared_ptr<arrow::Array>& geo_right) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && false
   // TODO: NOT ENABLED
   auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
   auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
@@ -223,9 +223,11 @@ std::shared_ptr<arrow::Array> ST_Distance(
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
+std::shared_ptr<arrow::Array> ST_Area(
+    const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_Polygon
+  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
   dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kPolygon};
   scanner.mutable_types().push_back(gpu_supported_types);
@@ -238,35 +240,28 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
     }
   } else {
     auto mask = type_masks->get_mask(gpu_supported_types);
-    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
     return dispatch::UnaryMixedExecute<arrow::DoubleArray>(mask, gdal::ST_Area,
-                                                           cuda::ST_Area, typed_geo);
+                                                           cuda::ST_Area, geometries);
   }
 #else
   return gdal::ST_Area(geometries);
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
+std::shared_ptr<arrow::Array> ST_Length(
+    const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_LineString
+  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
   dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
   scanner.mutable_types().push_back(gpu_supported_types);
-  auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_type) {  // UNIQUE METHOD
-    if (type_masks->unique_type == gpu_supported_types) {
-      return cuda::ST_Length(geometries);
-    } else {
-      return gdal::ST_Length(geometries);
-    }
-  } else {  // MIXED METHOD
-    auto mask = type_masks->get_mask(gpu_supported_types);
-    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
-    auto result = dispatch::UnaryMixedExecute<arrow::DoubleArray>(
-        mask, gdal::ST_Length, cuda::ST_Length, typed_geo);
-    return result;
-  }
+  dispatch::MaskResult result_mask;
+  result_mask.AppendRequire(scanner, gpu_supported_types);
+
+  auto result = dispatch::UnaryExecute<arrow::DoubleArray>(result_mask, gdal::ST_Length,
+                                                           cuda::ST_Length, geometries);
+  return result;
 #else
   return gdal::ST_Length(geometries);
 #endif

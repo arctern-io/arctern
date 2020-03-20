@@ -134,14 +134,18 @@ auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc 
   using Status = MaskResult::Status;
   switch (mask_result.get_status()) {
     case Status::kOnlyFalse: {
-      return false_func(std::forward<Arg1>(arg1_ptr));
+      return std::static_pointer_cast<RetType>(false_func(std::forward<Arg1>(arg1_ptr)));
     }
     case Status::kOnlyTrue: {
-      return true_func(std::forward<Arg1>(arg1_ptr));
+      return std::static_pointer_cast<RetType>(true_func(std::forward<Arg1>(arg1_ptr)));
     }
     case Status::kMixed: {
       return UnaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
                                         std::forward<Arg1>(arg1_ptr));
+    }
+    default: {
+      __builtin_unreachable();
+      throw std::runtime_error("unreachable code");
     }
   }
 }
@@ -170,10 +174,12 @@ auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
   using Status = MaskResult::Status;
   switch (mask_result.get_status()) {
     case Status::kOnlyFalse: {
-      return false_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr));
+      return std::static_pointer_cast<RetType>(
+          false_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr)));
     }
     case Status::kOnlyTrue: {
-      return true_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr));
+      return std::static_pointer_cast<RetType>(
+          true_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr)));
     }
     case Status::kMixed: {
       return BinaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,

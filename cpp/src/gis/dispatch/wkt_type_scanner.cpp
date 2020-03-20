@@ -33,10 +33,11 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
-TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries)
+TypeScannerForWkt::TypeScannerForWkt(
+    const std::shared_ptr<arrow::StringArray>& geometries)
     : geometries_(geometries) {}
 
-std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const{
+std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
   auto len = geometries_->length();
 
   if (types().empty()) {
@@ -74,7 +75,7 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const{
     mapping[i].encode_uid = i;
   }
 
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
+  auto wkt_geometries = geometries_;
   std::vector<GeometryTypeMasks::EncodeUid> encode_uids(len);
   bool is_unique_type = true;
   int last_idx = -1;
