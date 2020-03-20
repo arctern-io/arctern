@@ -128,6 +128,24 @@ auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
   return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
 }
 
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
+auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
+                  Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+  using Status = MaskResult::Status;
+  switch (mask_result.get_status()) {
+    case Status::kOnlyFalse: {
+      return false_func(std::forward<Arg1>(arg1_ptr));
+    }
+    case Status::kOnlyTrue: {
+      return true_func(std::forward<Arg1>(arg1_ptr));
+    }
+    case Status::kMixed: {
+      return UnaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
+                                        std::forward<Arg1>(arg1_ptr));
+    }
+  }
+}
+
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
           typename Arg2>
 auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
@@ -142,6 +160,27 @@ auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
   auto true_output =
       true_func(std::get<0>(split_inputs)[true], std::get<1>(split_inputs)[true]);
   return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
+}
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
+          typename Arg2>
+auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
+                   TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+    -> std::shared_ptr<RetType> {
+  using Status = MaskResult::Status;
+  switch (mask_result.get_status()) {
+    case Status::kOnlyFalse: {
+      return false_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr));
+    }
+    case Status::kOnlyTrue: {
+      return true_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr));
+    }
+    case Status::kMixed: {
+      return BinaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
+                                         std::forward<Arg1>(arg1_ptr),
+                                         std::forward<Arg2>(arg2_ptr));
+    }
+  }
 }
 
 }  // namespace dispatch
