@@ -29,14 +29,15 @@ base                  *  /home/xxx/miniconda3
 如未成功配置Conda，请按照以下命令安装并配置Conda
 ```shell
 # 安装conda
-$ wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-$ /bin/bash ~/miniconda.sh -b
-$ rm ~/miniconda.sh
+wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+bash ~/miniconda.sh -b
+echo "source $HOME/miniconda3/etc/profile.d/conda.sh" >> ~/.bashrc
 
 安装过程中选择默认选项即可
+安装完成之后，重启当前terminal
 ```
 
-## 创建并使用gis-dev开发环境以及第三方库
+## 创建并使用arctern开发环境以及第三方库
 1. 首先查看当前conda环境的所有环境名:  
 `conda env list`  
 如果之前有名称为arctern的conda环境，需要先移除  
