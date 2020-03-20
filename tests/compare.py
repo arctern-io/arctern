@@ -1,4 +1,4 @@
-import glob
+# import glob
 from shapely import wkt
 from ogr import Geometry
 from ogr import CreateGeometryFromWkt
@@ -27,6 +27,7 @@ BLIST = [
 
 
 def is_length_types(geo):
+	"""Determine whether a geometry is point/linestring/multipoint/multilinestring."""
     geo = geo.strip().upper()
 
     for x in GEO_LENGTH_TYPES:
@@ -39,6 +40,7 @@ def is_length_types(geo):
 
 
 def is_area_types(geo):
+	"""Determine whether a geometry is polygon/multipolygon."""
     geo = geo.strip().upper()
 
     for x in GEO_AREA_TYPES:
@@ -51,6 +53,7 @@ def is_area_types(geo):
 
 
 def is_geometrytype(geo):
+	"""Determine whether a given string is to describe a geometry type, like 'point' for example."""
     geo = geo.strip().upper()
 
     arr = []
@@ -69,6 +72,7 @@ def is_geometrytype(geo):
 
 
 def is_curve(geo):
+	"""Determine whether a geometry is curve types, like circularstring/MULTICURVE/COMPOUNDCURVE."""
     geo = geo.strip().upper()
 
     for x in CURVE_TYPES:
@@ -81,6 +85,7 @@ def is_curve(geo):
 
 
 def is_surface(geo):
+	"""Determine whether a geometry is curve types, like CURVEPOLYGON/MULTISURFACE/SURFACE."""
     geo = geo.strip().upper()
 
     for x in SURFACE_TYPES:
@@ -96,14 +101,12 @@ UNIT = 1e-4
 EPOCH = 1e-8
 EPOCH_CURVE = 1e-2
 EPOCH_SURFACE = 1e-2
-# EPOCH_CURVE_RELATIVE = 2e-4
-# EPOCH_SURFACE_RELATIVE = 3e-6
-# EPOCH_CURVE_RELATIVE = 1e-3
 EPOCH_CURVE_RELATIVE = 1e-2
-EPOCH_SURFACE_RELATIVE = 1e-1
+EPOCH_SURFACE_RELATIVE = 1e-2
 
 
 def compare_length(x, y):
+	"""Compare length of 2 geometry types."""
     arct = CreateGeometryFromWkt(x)
     pgis = CreateGeometryFromWkt(y)
 
@@ -120,6 +123,7 @@ def compare_length(x, y):
 
 
 def compare_area(x, y):
+	"""Compare area of 2 geometry types."""
     arct = CreateGeometryFromWkt(x)
     pgis = CreateGeometryFromWkt(y)
 
@@ -136,6 +140,7 @@ def compare_area(x, y):
 
 
 def compare_geometry(c, x, y):
+	"""Compare whether 2 geometries is 'equal'."""
 
     if x.upper().endswith('EMPTY') and y.upper().endswith('EMPTY'):
         return True
@@ -154,7 +159,7 @@ def compare_geometry(c, x, y):
 
 
 def compare_geometrycollection(c, x, y):
-
+	"""Compare whether 2 geometrycollections is 'equal'."""
     if c in BLIST:
         if arc_distance(x, y) < EPOCH_CURVE_RELATIVE:
             return True
@@ -169,6 +174,7 @@ def compare_geometrycollection(c, x, y):
 
 
 def compare_floats(c, x, y):
+	"""Compare whether 2 float values is 'equal'."""
     x = float(x)
     y = float(y)
     if x == 0:
@@ -190,6 +196,7 @@ def compare_floats(c, x, y):
 
 
 def compare_float(x, y, z, precision_error):
+	"""Compare whether 2 geometries and their intersection is 'equal'."""
 
     x = float(x)
     y = float(y)
@@ -203,6 +210,7 @@ def compare_float(x, y, z, precision_error):
 
 
 def compare2float_relative(x_base, y_check, relative_error):
+	"""Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
     x = float(x_base)
     y = float(y_check)
     if ((abs(x_base - y_check)) / (abs(x_base))) <= relative_error:
@@ -214,12 +222,14 @@ def compare2float_relative(x_base, y_check, relative_error):
 
 
 def compare3float_relative(x_base, y_check, z_intersection, relative_error):
+	"""Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
     return compare2float_relative(x_base, y_check, relative_error) and \
         compare2float_relative(x_base, z_intersection, relative_error) and \
         compare2float_relative(y_check, z_intersection, relative_error)
 
 
 def compare_curve(x, y):
+	"""Compare whether 2 curve geometries is 'equal'."""
     arct = CreateGeometryFromWkt(x)
     pgis = CreateGeometryFromWkt(y)
 
@@ -233,6 +243,7 @@ def compare_curve(x, y):
 
 
 def compare_surface(x, y):
+	"""Compare whether 2 surface geometries is 'equal'."""
     arct = CreateGeometryFromWkt(x)
     pgis = CreateGeometryFromWkt(y)
 
@@ -247,6 +258,7 @@ def compare_surface(x, y):
 
 
 def convert_str(strr):
+	"""Convert a string to float, if it's not a float value, return string to represent itself."""
     if strr.lower() == 'true' or strr.lower() == 't':
         return True
     elif strr.lower() == 'false' or strr.lower() == 'f':
@@ -263,6 +275,7 @@ def convert_str(strr):
 
 
 def compare_one(config, result, expect):
+	"""Compare 1 line of arctern result and expected."""
     x = result[1]
     y = expect[1]
     # c = config
@@ -317,7 +330,7 @@ def compare_one(config, result, expect):
 
 
 def compare_results(config, arctern_results, postgis_results):
-
+	"""Compare the result of arctern function and expected."""
     with open(arctern_results, 'r') as f:
         arct_arr = []
         for (num, value) in enumerate(f, 1):
@@ -346,6 +359,7 @@ def compare_results(config, arctern_results, postgis_results):
 
 
 def compare_all():
+	"""Compare all the results of arctern functions and expected."""
     flag = True
     names, table_names, expects = get_tests()
 
@@ -378,36 +392,37 @@ def compare_all():
 
 
 def update_quote(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read()
+	"""Update quotes of the original spark results."""
+    with open(file_path, 'r') as the_result_file_from_spark:
+        content = the_result_file_from_spark.read()
         update = content.replace(r'"', '')
-    with open(file_path, 'w') as f:
-        f.write(update)
+    with open(file_path, 'w') as the_result_file_from_spark:
+        the_result_file_from_spark.write(update)
 
 
 def update_bool(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read()
+	"""Update bool values of the original spark results file."""
+    with open(file_path, 'r') as the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint:
+        content = the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint.read()
         update = content.replace('true', 'True').replace('false', 'False')
-    with open(file_path, 'w') as f:
-        f.write(update)
+    with open(file_path, 'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed_by_pylint:
+        the_result_file_from_spark_for_write_and_abbr_not_allowed_by_pylint.write(update)
 
 
 def update_result():
+	"""Update the original spark results."""
     names, table_names, expects = get_tests()
 
-    for x in names:
-        arctern_file = os.path.join(arctern_result, x + '.csv')
+    for name in names:
+        arctern_file = os.path.join(arctern_result, name + '.csv')
 
         update_quote(arctern_file)
         update_bool(arctern_file)
 
 
 if __name__ == '__main__':
-    # update_result()
+    update_result()
 
-    # flag = compare_all()
-    # if not flag:
-    #     exit(1)
-
-    convert_str('er4')
+    flag = compare_all()
+    if not flag:
+        exit(1)
