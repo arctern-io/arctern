@@ -255,9 +255,9 @@ def convert_str(strr):
     try:
         x = float(strr)
         return x
-    except Exception as e:
-        print(e)
-        # pass
+    except ValueError as e:
+        # print(repr(e))
+        pass
 
     return strr
 
