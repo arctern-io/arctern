@@ -26,6 +26,7 @@ namespace cuda {
 
 struct WkbTag {
   WkbTag() = default;
+  constexpr DEVICE_RUNNABLE WkbTag(WkbTypes type) : data((uint32_t)type) {}
   constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
       : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
 

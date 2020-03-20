@@ -15,13 +15,15 @@
  */
 
 #include "gis/gdal/format_conversion.h"
-#include "utils/check_status.h"
 
 #include <assert.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <string>
+
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace gis {
