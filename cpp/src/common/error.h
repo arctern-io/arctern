@@ -31,4 +31,4 @@ constexpr ErrorCode INVAILD_COLOR_FORMAT = 9;
 constexpr ErrorCode LABEL_NOT_FOUND = 10;
 constexpr ErrorCode FAILED_INIT_OSMESA = 11;
 
-} // namespace arctern
+}  // namespace arctern
