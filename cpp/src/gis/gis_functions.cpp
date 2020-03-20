@@ -93,19 +93,11 @@ std::shared_ptr<arrow::Array> ST_Envelope(
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
   scanner.mutable_types().push_back(gpu_supported_types);
-  auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_type) {
-    if (type_masks->unique_type == gpu_supported_types) {
-      return cuda::ST_Envelope(geometries);
-    } else {
-      return gdal::ST_Envelope(geometries);
-    }
-  } else {
-    auto mask = type_masks->get_mask(gpu_supported_types);
-    auto result = dispatch::UnaryMixedExecute<arrow::StringArray>(
-        mask, gdal::ST_Envelope, cuda::ST_Envelope, geometries);
-    return result;
-  }
+  dispatch::MaskResult mask_result;
+  mask_result.AppendRequire(scanner, gpu_supported_types);
+  auto result = dispatch::UnaryExecute<arrow::StringArray>(mask_result, gdal::ST_Envelope,
+                                                           cuda::ST_Envelope, geometries);
+  return result;
 #else
   return gdal::ST_Envelope(geometries);
 #endif

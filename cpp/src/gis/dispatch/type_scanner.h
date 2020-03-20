@@ -96,7 +96,7 @@ class GeometryTypeScanner {
  public:
   virtual std::shared_ptr<GeometryTypeMasks> Scan() const = 0;
 
-  const std::vector<GroupedWkbTypes>& types() const{ return types_; }
+  const std::vector<GroupedWkbTypes>& types() const { return types_; }
 
   std::vector<GroupedWkbTypes>& mutable_types() { return types_; }
 
@@ -113,6 +113,9 @@ class MaskResult {
   };
 
   MaskResult() = default;
+  MaskResult(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported) {
+    this->AppendRequire(scanner, supported);
+  }
   // bitwise append
   void AppendRequire(const GeometryTypeScanner& scanner,
                      const GroupedWkbTypes& supported);

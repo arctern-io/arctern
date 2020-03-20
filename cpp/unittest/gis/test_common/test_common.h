@@ -15,23 +15,36 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "gis/cuda/test_common/test_common.h"
+#pragma once
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include <cstdlib>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "common/version.h"
+#include "gis/api.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/wkb/wkb_transforms.h"
+#include "test_common.h"
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
-// only for testing
-// create Geometry from WktArray
-namespace GeometryVectorFactory {
 
-GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
+namespace GeometryVectorFactory {
+inline GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
   auto input = WktsToArrowWkb(wkt_vec);
   return ArrowWkbToGeometryVector(input);
 }
 
-GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
+inline GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
   arrow::BinaryBuilder builder;
   for (const auto& wkb : wkb_vec) {
     auto st = builder.Append(wkb.data(), wkb.size());
@@ -45,6 +58,19 @@ GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
 }
 
 }  // namespace GeometryVectorFactory
+
+inline std::vector<char> hexstring_to_binary(const std::string& str) {
+  std::vector<char> vec;
+  assert(str.size() % 2 == 0);
+  for (size_t index = 0; index < str.size(); index += 2) {
+    auto byte_str = str.substr(index, 2);
+    char* tmp;
+    auto data = strtoul(byte_str.c_str(), &tmp, 16);
+    assert(*tmp == 0);
+    vec.push_back((char)data);
+  }
+  return vec;
+}
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

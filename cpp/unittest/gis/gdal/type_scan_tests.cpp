@@ -28,6 +28,7 @@
 #include "gis/gdal/geometry_cases.h"
 #include "utils/check_status.h"
 
+namespace dispatch =  arctern::gis::dispatch;
 using GroupedWkbTypes = arctern::gis::dispatch::GroupedWkbTypes;
 using WkbTypes = arctern::gis::WkbTypes;
 
@@ -229,4 +230,17 @@ TEST(type_scan, merge_and_split) {
   checker(tmps[1], true_strs);
   auto output = WktArrayMerge({tmps[0], tmps[1]}, masks);
   checker(output, strs);
+}
+
+TEST(type_scan, dispatch) {
+  using std::string;
+  using std::vector;
+  vector<string> cases = {
+    "Point(0, 0)",
+    "MultiPoint Empty",
+    "LineString(0 0, 0 1)",
+    "MultiLineString Empty",
+  };
+
+//  dispatch::TypeScannerForWkt scanner1(cases);
 }

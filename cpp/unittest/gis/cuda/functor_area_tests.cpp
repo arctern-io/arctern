@@ -25,7 +25,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_area.h"
-#include "gis/cuda/test_common/test_common.h"
+#include "gis/test_common/test_common.h"
 
 using std::string;
 using std::vector;
