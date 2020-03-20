@@ -30,7 +30,7 @@ def vega_pointmap(width, height,
                         bounding_box,
                         stroke, stroke_width, opacity,
                         coordinate_system)
-    
+
 
 def vega_heatmap(width, height, map_scale,
                  bounding_box,
