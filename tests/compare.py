@@ -276,8 +276,8 @@ def convert_str(strr):
         float_value = float(strr)
         return float_value
     except ValueError as ex:
-        print(repr(ex))
-        # pass
+        # print(repr(ex))
+        pass
 
     return strr
 
