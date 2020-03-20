@@ -160,7 +160,6 @@ def compare_area(geometry_x, geometry_y):
 
 def compare_geometry(config, geometry_x, geometry_y):
     """Compare whether 2 geometries is 'equal'."""
-
     if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith('EMPTY'):
         return True
 
@@ -330,11 +329,11 @@ def compare_one(config, result, expect):
                 print(result[0], newvalue_x, expect[0], newvalue_y)
                 return False
 
-        if isinstance(newvalue_x, int) or isinstance(newvalue_x, float):
-            one_result_flag = compare_floats(config, newvalue_x, newvalue_y)
-            if not one_result_flag:
-                print(result[0], newvalue_x, expect[0], newvalue_y)
-            return one_result_flag
+        if isinstance(newvalue_x, (int, float)):
+            return compare_floats(config, newvalue_x, newvalue_y)
+            # if not one_result_flag:
+            #     print(result[0], newvalue_x, expect[0], newvalue_y)
+            # return one_result_flag
     except ValueError as ex:
         print(repr(ex))
         one_result_flag = False
@@ -371,7 +370,8 @@ def compare_results(config, arctern_results, postgis_results):
 def compare_all():
     """Compare all the results of arctern functions and expected."""
     compare_result_flag = True
-    names, table_names, expects = get_tests()
+    names = get_tests()[0]
+    expects = get_tests()[2]
 
     for name, expect in zip(names, expects):
 
@@ -391,7 +391,7 @@ def compare_all():
             continue
 
         res = compare_results(name, arct_result, pgis_result)
-        if res == True:
+        if res:
             print('Arctern test: %s, result: PASSED' % name)
         else:
             print('Arctern test: %s, result: FAILED' % name)
@@ -433,6 +433,6 @@ def update_result():
 if __name__ == '__main__':
     update_result()
 
-    flag = compare_all()
-    if not flag:
+    FLAG = compare_all()
+    if not FLAG:
         sys.exit(1)
