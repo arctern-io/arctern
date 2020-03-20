@@ -712,7 +712,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
   arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 }
 
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_COLOR_STYLE_TEST) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_COLOR_STYLE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -770,7 +770,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_JSON_TEST) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_JSON_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -828,7 +828,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT8) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT8) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -886,7 +886,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT16) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT16) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -944,7 +944,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT32) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT32) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1002,7 +1002,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT64) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INT64) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1060,7 +1060,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT8) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT8) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1118,7 +1118,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT16) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT16) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1176,7 +1176,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT32) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT32) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1234,7 +1234,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT64) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, UINT64) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1292,7 +1292,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, FLOAT) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, FLOAT) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1350,7 +1350,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, DOUBLE) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1408,7 +1408,7 @@ TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_DATA_TYPE_TEST) {
+// TEST(WEIGHTED_POINTMAP_RAW_POINT_TEST, INVALID_DATA_TYPE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2123,7 +2123,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
   arctern::render::weighted_point_map(string_array, c_array, vega);
 }
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_COLOR_STYLE_TEST) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_COLOR_STYLE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2181,7 +2181,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_JSON_TEST) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_JSON_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2239,7 +2239,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INT8) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INT8) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2297,7 +2297,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INT16) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INT16) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2355,7 +2355,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INT32) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INT32) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2413,7 +2413,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INT64) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INT64) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2471,7 +2471,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT8) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT8) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2529,7 +2529,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT16) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT16) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2587,7 +2587,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT32) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT32) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2645,7 +2645,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT64) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, UINT64) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2703,7 +2703,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, FLOAT) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, FLOAT) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2761,7 +2761,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, DOUBLE) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, DOUBLE) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -2819,7 +2819,7 @@ TEST(WEIGHTED_POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(string_array, color_array, vega);
 //}
 //
-//TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_DATA_TYPE_TEST) {
+// TEST(WEIGHTED_POINTMAP_WKT_TEST, INVALID_DATA_TYPE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("

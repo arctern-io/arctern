@@ -412,76 +412,76 @@ TEST(VEGA_CHOROPLETH_MAP, JSON_CHECK_TEST) {
   arctern::render::VegaChoroplethMap vega3(str);
   assert(!vega3.is_valid());
 
-//  // 4. invalid bounding box label test
-//  str =
-//      "{\n"
-//      "  \"width\": 1900,\n"
-//      "  \"height\": 1410,\n"
-//      "  \"description\": \"choropleth_map\",\n"
-//      "  \"data\": [\n"
-//      "    {\n"
-//      "      \"name\": \"nyc_taxi\",\n"
-//      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
-//      "    }\n"
-//      "  ],\n"
-//      "  \"scales\": [\n"
-//      "    {\n"
-//      "      \"name\": \"building\",\n"
-//      "      \"type\": \"linear\",\n"
-//      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
-//      "    }\n"
-//      "  ],\n"
-//      "  \"marks\": [\n"
-//      "    {\n"
-//      "      \"encode\": {\n"
-//      "        \"enter\": {\n"
-//      "          \"bounding_box\": {\"value\": \"INVALID\"},\n"
-//      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-//      "          \"ruler\": {\"value\": [2.5, 5]},\n"
-//      "          \"opacity\": {\"value\": 1.0}\n"
-//      "        }\n"
-//      "      }\n"
-//      "    }\n"
-//      "  ]\n"
-//      "}";
-//  arctern::render::VegaChoroplethMap vega4(str);
-//  assert(!vega4.is_valid());
-//
-//  // 5. invalid bounding box type test
-//  str =
-//      "{\n"
-//      "  \"width\": 1900,\n"
-//      "  \"height\": 1410,\n"
-//      "  \"description\": \"choropleth_map\",\n"
-//      "  \"data\": [\n"
-//      "    {\n"
-//      "      \"name\": \"nyc_taxi\",\n"
-//      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
-//      "    }\n"
-//      "  ],\n"
-//      "  \"scales\": [\n"
-//      "    {\n"
-//      "      \"name\": \"building\",\n"
-//      "      \"type\": \"linear\",\n"
-//      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
-//      "    }\n"
-//      "  ],\n"
-//      "  \"marks\": [\n"
-//      "    {\n"
-//      "      \"encode\": {\n"
-//      "        \"enter\": {\n"
-//      "          \"bounding_box\": {\"value\": "
-//      "[-73.984092,40.753893,-73.977588,\"40.756342\"]},\n"
-//      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-//      "          \"ruler\": {\"value\": [2.5, 5]},\n"
-//      "          \"opacity\": {\"value\": 1.0}\n"
-//      "        }\n"
-//      "      }\n"
-//      "    }\n"
-//      "  ]\n"
-//      "}";
-//  arctern::render::VegaChoroplethMap vega5(str);
-//  assert(!vega5.is_valid());
+  //  // 4. invalid bounding box label test
+  //  str =
+  //      "{\n"
+  //      "  \"width\": 1900,\n"
+  //      "  \"height\": 1410,\n"
+  //      "  \"description\": \"choropleth_map\",\n"
+  //      "  \"data\": [\n"
+  //      "    {\n"
+  //      "      \"name\": \"nyc_taxi\",\n"
+  //      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+  //      "    }\n"
+  //      "  ],\n"
+  //      "  \"scales\": [\n"
+  //      "    {\n"
+  //      "      \"name\": \"building\",\n"
+  //      "      \"type\": \"linear\",\n"
+  //      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
+  //      "    }\n"
+  //      "  ],\n"
+  //      "  \"marks\": [\n"
+  //      "    {\n"
+  //      "      \"encode\": {\n"
+  //      "        \"enter\": {\n"
+  //      "          \"bounding_box\": {\"value\": \"INVALID\"},\n"
+  //      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
+  //      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+  //      "          \"opacity\": {\"value\": 1.0}\n"
+  //      "        }\n"
+  //      "      }\n"
+  //      "    }\n"
+  //      "  ]\n"
+  //      "}";
+  //  arctern::render::VegaChoroplethMap vega4(str);
+  //  assert(!vega4.is_valid());
+  //
+  //  // 5. invalid bounding box type test
+  //  str =
+  //      "{\n"
+  //      "  \"width\": 1900,\n"
+  //      "  \"height\": 1410,\n"
+  //      "  \"description\": \"choropleth_map\",\n"
+  //      "  \"data\": [\n"
+  //      "    {\n"
+  //      "      \"name\": \"nyc_taxi\",\n"
+  //      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+  //      "    }\n"
+  //      "  ],\n"
+  //      "  \"scales\": [\n"
+  //      "    {\n"
+  //      "      \"name\": \"building\",\n"
+  //      "      \"type\": \"linear\",\n"
+  //      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
+  //      "    }\n"
+  //      "  ],\n"
+  //      "  \"marks\": [\n"
+  //      "    {\n"
+  //      "      \"encode\": {\n"
+  //      "        \"enter\": {\n"
+  //      "          \"bounding_box\": {\"value\": "
+  //      "[-73.984092,40.753893,-73.977588,\"40.756342\"]},\n"
+  //      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
+  //      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+  //      "          \"opacity\": {\"value\": 1.0}\n"
+  //      "        }\n"
+  //      "      }\n"
+  //      "    }\n"
+  //      "  ]\n"
+  //      "}";
+  //  arctern::render::VegaChoroplethMap vega5(str);
+  //  assert(!vega5.is_valid());
 
   // 6. invalid color style label test
   str =

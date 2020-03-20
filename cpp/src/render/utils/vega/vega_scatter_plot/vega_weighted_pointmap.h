@@ -16,6 +16,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 #include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <string>
+#include <utility>
+
 #include "render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.h"
 
 namespace arctern {
