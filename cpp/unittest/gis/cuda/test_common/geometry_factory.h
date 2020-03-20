@@ -59,7 +59,6 @@ inline GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_v
 
 }  // namespace GeometryVectorFactory
 
-
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

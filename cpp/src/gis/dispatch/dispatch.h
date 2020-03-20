@@ -20,8 +20,8 @@
 #include <set>
 #include <vector>
 
-#include "utils/arrow_alias.h"
 #include "gis/dispatch/type_scanner.h"
+#include "utils/arrow_alias.h"
 
 namespace arctern {
 namespace gis {
