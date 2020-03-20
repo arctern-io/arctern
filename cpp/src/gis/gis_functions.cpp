@@ -167,12 +167,11 @@ std::shared_ptr<arrow::Array> ST_Distance(
 
   auto type_right = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
   dispatch::TypeScannerForWkt scanner_right(geo_right);
-  scanner_left.mutable_types().emplace_back(type_right);
+  scanner_right.mutable_types().emplace_back(type_right);
 
   dispatch::MaskResult mask_result;
   mask_result.AppendRequire(scanner_left, type_left);
   mask_result.AppendRequire(scanner_right, type_right);
-  printf("<%d>", (int)mask_result.get_status());
   auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
       mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
   return result;
