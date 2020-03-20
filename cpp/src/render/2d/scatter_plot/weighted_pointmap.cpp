@@ -95,7 +95,8 @@ void WeightedPointMap<T>::Draw() {
 }
 
 #ifdef USE_GPU
-void PointMap::Shader() {
+template <typename T>
+void WeightedPointMap<T>::Shader() {
   const char* vertex_shader_source =
       "#version 430 core\n"
       "layout (location = 0) in uint posX;\n"
@@ -179,7 +180,7 @@ void PointMap::Shader() {
   glUseProgram(shader_program);
   auto window_params = window()->window_params();
   glUniform2f(2, window_params.width(), window_params.height());
-  auto point_format = point_vega_.circle_params();
+  auto point_format = weighted_point_vega_.circle_params();
   glUniform1f(3, point_format.radius);
   glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b,
               point_format.color.a);
