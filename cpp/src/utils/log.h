@@ -23,11 +23,11 @@
   std::string("[") + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "][" + \
       std::string(__FUNCTION__) + "]"
 
-#define ARCTERN_THROW_ERROR(err_code, err_msg)           \
-  do {                                                   \
-    std::string total_msg = SOURCE_CODE_INFO;            \
-    std::string code_str = std::to_string(err_code);     \
-    total_msg += std::string("error code: ") + code_str; \
-    total_msg += std::string(",  reason: ") + err_msg + std::string(".");    \
-    throw std::runtime_error(total_msg);                 \
+#define ARCTERN_THROW_ERROR(err_code, err_msg)                            \
+  do {                                                                    \
+    std::string total_msg = SOURCE_CODE_INFO;                             \
+    std::string code_str = std::to_string(err_code);                      \
+    total_msg += std::string("error code: ") + code_str;                  \
+    total_msg += std::string(",  reason: ") + err_msg + std::string("."); \
+    throw std::runtime_error(total_msg);                                  \
   } while (false);
