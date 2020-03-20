@@ -1226,7 +1226,7 @@ def run_test_st_geomfromwkt(spark):
 
 
 def run_test_st_geomfromwkt1(spark):
-        data = "geomfromtext_illeagl.csv"
+        data = "geomfromtext_illegal.csv"
         table_name = 'test_geomfromwkt1'
         sql = "select st_geomfromwkt(geos) as geos from test_geomfromwkt1"
 
