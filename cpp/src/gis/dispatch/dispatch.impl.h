@@ -158,7 +158,8 @@ auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
   auto split_inputs =
       std::make_tuple(GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask),
                       GenericArraySplit(std::forward<Arg2>(arg2_ptr), mask));
-  assert(split_inputs[1]->null_count() == 0);
+  assert(std::get<0>(split_inputs)[true]->null_count() == 0);
+  assert(std::get<1>(split_inputs)[true]->null_count() == 0);
   auto false_output =
       false_func(std::get<0>(split_inputs)[false], std::get<1>(split_inputs)[false]);
   auto true_output =
@@ -185,6 +186,10 @@ auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
       return BinaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
                                          std::forward<Arg1>(arg1_ptr),
                                          std::forward<Arg2>(arg2_ptr));
+    }
+    default: {
+      __builtin_unreachable();
+      throw std::runtime_error("invalid enum");
     }
   }
 }
