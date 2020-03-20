@@ -46,7 +46,7 @@ struct GeometryTypeMasks {
     // This field contains unique id(uid) for each class
     EncodeUid encode_uid;
   };
-  const auto& get_info(const GroupedWkbTypes& grouped_types) const {
+  const auto& get_info(const GroupedWkbTypes& grouped_types) const& {
     auto iter = dict.find(grouped_types);
     if (iter == dict.end()) {
       throw std::runtime_error("check is_unique first");
@@ -54,15 +54,27 @@ struct GeometryTypeMasks {
     return iter->second;
   }
 
+  auto&& get_info(const GroupedWkbTypes& grouped_types) && {
+    auto iter = dict.find(grouped_types);
+    if (iter == dict.end()) {
+      throw std::runtime_error("check is_unique first");
+    }
+    return std::move(iter->second);
+  }
+
   // helper function
-  const auto& get_mask(const GroupedWkbTypes& grouped_types) const {
+  const auto& get_mask(const GroupedWkbTypes& grouped_types) const& {
     return get_info(grouped_types).mask;
   }
-  const auto& get_count(const GroupedWkbTypes& grouped_types) const {
+  auto&& get_mask(const GroupedWkbTypes& grouped_types) && {
+    return std::move(std::move(*this).get_info(grouped_types).mask);
+  }
+
+  auto get_count(const GroupedWkbTypes& grouped_types) const {
     return get_info(grouped_types).mask_count;
   }
 
-  EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) {
+  EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) const {
     return get_info(grouped_types).encode_uid;
   }
 
@@ -82,9 +94,9 @@ struct GeometryTypeMasks {
 
 class GeometryTypeScanner {
  public:
-  virtual std::shared_ptr<GeometryTypeMasks> Scan() = 0;
+  virtual std::shared_ptr<GeometryTypeMasks> Scan() const = 0;
 
-  const std::vector<GroupedWkbTypes>& types() { return types_; }
+  const std::vector<GroupedWkbTypes>& types() const{ return types_; }
 
   std::vector<GroupedWkbTypes>& mutable_types() { return types_; }
 
@@ -102,7 +114,7 @@ class MaskResult {
 
   MaskResult() = default;
   // bitwise append
-  void AppendRequire(const GeometryTypeMasks& type_masks,
+  void AppendRequire(const GeometryTypeScanner& scanner,
                      const GroupedWkbTypes& supported);
 
   Status get_status() const { return status_; }

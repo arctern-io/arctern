@@ -36,7 +36,7 @@ namespace dispatch {
 TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries)
     : geometries_(geometries) {}
 
-std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
+std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const{
   auto len = geometries_->length();
 
   if (types().empty()) {
