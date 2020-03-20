@@ -22,7 +22,7 @@
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_area.h"
 #include "gis/cuda/functor/st_envelope.h"
-#include "gis/test_common/test_common.h"
+#include "gis/cuda/test_common/test_common.h"
 
 namespace arctern {
 namespace gis {
