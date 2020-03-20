@@ -17,6 +17,7 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <src/render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -131,17 +132,53 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
-  VegaPointmap vega_circle_2d(conf);
-  if (!vega_circle_2d.is_valid()) {
+  VegaPointmap vega_pointmap(conf);
+  if (!vega_pointmap.is_valid()) {
     // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
   PointMap point_map(arr_x, arr_y, num);
-  point_map.mutable_point_vega() = vega_circle_2d;
+  point_map.mutable_point_vega() = vega_pointmap;
 
   const auto& render = point_map.Render();
   const auto& ret_size = point_map.output_image_size();
+  return std::make_pair(render, ret_size);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+                                               int64_t num_vertices,
+                                               const std::string& conf) {
+  VegaWeightedPointmap vega_weighted_pointmap(conf);
+  if (!vega_weighted_pointmap.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, num_vertices);
+  weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
+
+  const auto& render = weighted_pointmap.Render();
+  const auto& ret_size = weighted_pointmap.output_image_size();
+  return std::make_pair(render, ret_size);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c, T* arr_pc,
+                                               int64_t num_vertices,
+                                               const std::string& conf) {
+  VegaWeightedPointmap vega_weighted_pointmap(conf);
+  if (!vega_weighted_pointmap.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, arr_pc, num_vertices);
+  weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
+
+  const auto& render = weighted_pointmap.Render();
+  const auto& ret_size = weighted_pointmap.output_image_size();
   return std::make_pair(render, ret_size);
 }
 

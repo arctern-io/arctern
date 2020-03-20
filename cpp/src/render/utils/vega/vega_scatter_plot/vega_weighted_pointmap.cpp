@@ -50,7 +50,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  // parse color style
+  // parse stroke and opacity
   if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
       !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||

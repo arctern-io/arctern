@@ -65,9 +65,9 @@
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
-          "strokeWidth": {"value": 3},
-          "color_style": {"value": "blue_to_red"},
-          "ruler": {"value": [2.5, 5]},
+          "color": {"value": "blue_to_red"}, //{"value": "#EE113D"},
+          "color_ruler": {"value": [2.5, 5]},
+          "stroke_ruler": {"value": [2.5, 5]},
           "opacity": {"value": 1.0},
           "coordinate_system": {"value": "EPSG:3857"}
         }

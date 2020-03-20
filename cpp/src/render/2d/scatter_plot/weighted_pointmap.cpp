@@ -21,14 +21,41 @@
 #include <GL/glext.h>
 
 #include "render/2d/scatter_plot/weighted_pointmap.h"
+#include "render/utils/color/color_gradient.h"
 
 namespace arctern {
 namespace render {
 
-PointMap::PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices)
-    : vertices_x_(input_x), vertices_y_(input_y), num_vertices_(num_vertices) {}
+template class WeightedPointMap<int8_t>;
 
-void PointMap::Draw() {
+template class WeightedPointMap<int16_t>;
+
+template class WeightedPointMap<int32_t>;
+
+template class WeightedPointMap<int64_t>;
+
+template class WeightedPointMap<uint8_t>;
+
+template class WeightedPointMap<uint16_t>;
+
+template class WeightedPointMap<uint32_t>;
+
+template class WeightedPointMap<uint64_t>;
+
+template class WeightedPointMap<float>;
+
+template class WeightedPointMap<double>;
+
+template <typename T>
+WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y,
+                                      T* count, size_t num_vertices)
+    : vertices_x_(vertices_x),
+      vertices_y_(vertices_y),
+      count_(count),
+      num_vertices_(num_vertices) {}
+
+template <typename T>
+void WeightedPointMap<T>::Draw() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glEnable(GL_BLEND);
@@ -39,24 +66,23 @@ void PointMap::Draw() {
   glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
           1);
 
-  glPointSize(point_vega_.circle_params().radius);
 
-  auto& color = point_vega_.circle_params().color;
-  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+  glPointSize(weighted_point_vega_.circle_params().radius);
 
   glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
 
   int offset = 0;
   std::vector<int32_t> vertices(num_vertices_ * 2);
-
   for (auto i = 0; i < num_vertices_; i++) {
     vertices[offset++] = vertices_x_[i];
     vertices[offset++] = vertices_y_[i];
   }
+  glColorPointer(4, GL_FLOAT, 0, &colors_[0]);
   glVertexPointer(2, GL_INT, 0, &vertices[0]);
 
   glDrawArrays(GL_POINTS, 0, num_vertices_);
-  glFinish();
+  glFlush();
 
 #else
   glEnable(GL_PROGRAM_POINT_SIZE);
@@ -161,8 +187,32 @@ void PointMap::Shader() {
 }
 #endif
 
-uint8_t* PointMap::Render() {
-  WindowsInit(point_vega_.window_params());
+template <typename T>
+void WeightedPointMap<T>::SetColor() {
+  colors_.resize(num_vertices_ * 4);
+
+  auto count_start = weighted_point_vega_.ruler().first;
+  auto count_end = weighted_point_vega_.ruler().second;
+  auto count_range = count_end - count_start;
+
+  size_t c_offset = 0;
+  for (auto i = 0; i < num_vertices_; i++) {
+    auto count = count_[i] >= count_start ? count_[i] : count_start;
+    count = count_[i] <= count_end ? count : count_end;
+    auto ratio = (count - count_start) / count_range;
+    auto circle_params_2d =
+        ColorGradient::GetCircleParams(weighted_point_vega_.color_style(), ratio);
+    colors_[c_offset++] = circle_params_2d.color.r;
+    colors_[c_offset++] = circle_params_2d.color.g;
+    colors_[c_offset++] = circle_params_2d.color.b;
+    colors_[c_offset++] = circle_params_2d.color.a;
+  }
+}
+
+template <typename T>
+uint8_t* WeightedPointMap<T>::Render() {
+  WindowsInit(weighted_point_vega_.window_params());
+  SetColor();
 #ifdef USE_GPU
   Shader();
 #endif

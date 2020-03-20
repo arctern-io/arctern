@@ -33,6 +33,12 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const CircleParams circle_params() const { return circle_params_; }
 
+  const std::pair<double, double>& ruler() const { return ruler_; }
+
+  const ColorStyle& color_style() const { return color_style_; }
+
+  const double& opacity() const { return opacity_; }
+
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
