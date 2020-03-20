@@ -16,6 +16,7 @@ import cv2
 
 __all__ = [
     "save_png",
+    "diff_png"
 ]
 
 def save_png(hex_str, file_name):
