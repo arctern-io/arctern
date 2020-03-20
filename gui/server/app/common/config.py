@@ -19,24 +19,8 @@ import os
 
 #import traceback
 
+INSTANCE = configparser.ConfigParser()
+INSTANCE.read(os.path.split(os.path.realpath(__file__))[0]
+              + '/../../config.ini')
 
-class Config:
-    """
-    manage all configuration items by load config.ini
-    """
-    __config = configparser.ConfigParser()
-
-    def __init__(self):
-        path = os.path.split(os.path.realpath(__file__))[
-            0] + '/../../config.ini'
-        self.__config.read(path)
-
-    def get(self, section, key):
-        """
-        get value of config item
-        """
-        return self.__config.get(section, key)
-
-
-INSTANCE = Config()
 # traceback.print_stack()
