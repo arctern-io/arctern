@@ -32,8 +32,8 @@ class WeightedPointMap : public General2D {
   WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count,
                    size_t num_vertices);
 
-    WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count, T* ps,
-                     size_t num_vertices);
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count, T* ps,
+                   size_t num_vertices);
 
   uint8_t* Render() final;
 

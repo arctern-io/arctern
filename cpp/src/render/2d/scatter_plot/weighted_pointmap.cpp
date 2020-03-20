@@ -66,7 +66,6 @@ void WeightedPointMap<T>::Draw() {
   glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
           1);
 
-
   glPointSize(weighted_point_vega_.circle_params().radius);
 
   glEnableClientState(GL_VERTEX_ARRAY);
