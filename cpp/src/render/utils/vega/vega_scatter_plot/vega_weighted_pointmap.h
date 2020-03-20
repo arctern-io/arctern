@@ -15,43 +15,30 @@
  */
 #pragma once
 
-#include "render/2d/general_2d.h"
-#include "render/2d/input.h"
-#include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
+#include <string>
+
+#include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
 namespace arctern {
 namespace render {
 
-class PointMap : public General2D {
+class VegaWeightedPointmap : public VegaScatterPlot {
  public:
-  PointMap() = delete;
+  VegaWeightedPointmap() = default;
 
-  PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
+  explicit VegaWeightedPointmap(const std::string& json);
 
-  uint8_t* Render() final;
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
-  void Shader();
-
-  void Draw() final;
-
- public:
-  uint32_t* mutable_vertices_x() { return vertices_x_; }
-
-  uint32_t* mutable_vertices_y() { return vertices_y_; }
-
-  VegaPointmap& mutable_point_vega() { return point_vega_; }
-
-  const size_t num_vertices() const { return num_vertices_; }
+  const CircleParams circle_params() const { return circle_params_; }
 
  private:
-#ifdef USE_GPU
-  unsigned int VAO_;
-  unsigned int VBO_[2];
-#endif
-  uint32_t* vertices_x_;
-  uint32_t* vertices_y_;
-  size_t num_vertices_;
-  VegaPointmap point_vega_;
+  // vega json to vega struct
+  void Parse(const std::string& json) final;
+
+ private:
+  CircleParams circle_params_;
 };
 
 }  // namespace render

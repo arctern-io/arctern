@@ -1,7 +1,7 @@
 {
   "width": 300,
   "height": 200,
-  "description": "circle_2d",
+  "description": "pointmap",
   "data": [
     {
       "name": "nyc_taxi",
@@ -41,7 +41,48 @@
 {
   "width": 300,
   "height": 200,
-  "description": "circle_2d",
+  "description": "weighted_pointmap",
+  "data": [
+    {
+      "name": "nyc_taxi",
+      "url": "data/nyc_taxi_0_5m.csv"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "longitude_pickup"}
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "latitude_pickup"}
+    }
+  ],
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "bounding_box_min": {"value": "POINT (-73.984092 40.753893)"},
+          "bounding_box_max": {"value": "POINT (-73.977588 40.756342)"},
+          "shape": {"value": "circle"},
+          "strokeWidth": {"value": 3},
+          "color_style": {"value": "blue_to_red"},
+          "ruler": {"value": [2.5, 5]},
+          "opacity": {"value": 1.0},
+          "coordinate_system": {"value": "EPSG:3857"}
+        }
+      }
+    }
+  ]
+}
+
+
+{
+  "width": 300,
+  "height": 200,
+  "description": "heatmap",
   "data": [
     {
       "name": "nyc_taxi",

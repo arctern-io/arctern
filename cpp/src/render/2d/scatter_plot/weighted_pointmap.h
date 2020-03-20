@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "render/2d/general_2d.h"
 #include "render/2d/input.h"
 #include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
@@ -22,11 +24,12 @@
 namespace arctern {
 namespace render {
 
-class PointMap : public General2D {
+template <typename T>
+class WeightedPointMap : public General2D {
  public:
-  PointMap() = delete;
+  WeightedPointMap() = delete;
 
-  PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
+  WeightedPointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
 
   uint8_t* Render() final;
 
@@ -35,9 +38,9 @@ class PointMap : public General2D {
   void Draw() final;
 
  public:
-  uint32_t* mutable_vertices_x() { return vertices_x_; }
+  std::vector<uint32_t> mutable_vertices_x() { return vertices_x_; }
 
-  uint32_t* mutable_vertices_y() { return vertices_y_; }
+  std::vector<uint32_t> mutable_vertices_y() { return vertices_y_; }
 
   VegaPointmap& mutable_point_vega() { return point_vega_; }
 
@@ -48,8 +51,9 @@ class PointMap : public General2D {
   unsigned int VAO_;
   unsigned int VBO_[2];
 #endif
-  uint32_t* vertices_x_;
-  uint32_t* vertices_y_;
+  std::vector<uint32_t> vertices_x_;
+  std::vector<uint32_t> vertices_y_;
+  std::vector<T> count_;
   size_t num_vertices_;
   VegaPointmap point_vega_;
 };

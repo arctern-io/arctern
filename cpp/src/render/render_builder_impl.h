@@ -131,7 +131,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
-  VegaCircle2d vega_circle_2d(conf);
+  VegaPointmap vega_circle_2d(conf);
   if (!vega_circle_2d.is_valid()) {
     // TODO: add log here
     return std::make_pair(nullptr, -1);
