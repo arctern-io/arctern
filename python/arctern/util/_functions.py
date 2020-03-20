@@ -25,7 +25,7 @@ def save_png(hex_str, file_name):
     with open(file_name, 'wb') as png:
         png.write(binary_string)
 
-def diff_png(baseline_png, compared_png, precision=0.00005):
+def diff_png(baseline_png, compared_png, precision=0.0005):
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
     compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
     baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
