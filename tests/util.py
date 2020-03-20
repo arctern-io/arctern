@@ -153,7 +153,7 @@ def arc_distance(geox, geoy):
 def get_tests():
     tests = get_config()['tests']
     names = [x['case']['name'] for x in tests]
-    table_names = [x['case']['SPARK_RESULT_name'] for x in tests]
+    table_names = [x['case']['spark_result_name'] for x in tests]
     expects = [x['case']['expected_name'] for x in tests]
 
     return names, table_names, expects
@@ -170,7 +170,7 @@ def get_config():
 
 
 CONFIG = get_config()
-SPARK_RESULT = CONFIG['path']['SPARK_RESULT']
+SPARK_RESULT = CONFIG['path']['spark_result']
 ARCTERN_RESULT = CONFIG['path']['arctern_result']
 EXPECTED_RESULT = CONFIG['path']['expected_result']
 

@@ -423,7 +423,7 @@ def update_bool(file_path):
 
 def update_result():
     """Update the original spark results."""
-    names, table_names, expects = get_tests()
+    names = get_tests()[0]
 
     for name in names:
         arctern_file = os.path.join(ARCTERN_RESULT, name + '.csv')
