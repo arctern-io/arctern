@@ -165,12 +165,12 @@ def compare_geometry(config, geometry_x, geometry_y):
         return True
 
     if config in BLIST:
-        if arc_distance(geometry_x, geometry_y) < EPOCH_CURVE_RELATIVE:
-            return True
-        else:
-            print('arc distance: %s' %
-                  str(arc_distance(geometry_x, geometry_y)))
-            return False
+        return arc_distance(geometry_x, geometry_y) < EPOCH_CURVE_RELATIVE
+        #     return True
+        # else:
+        #     print('arc distance: %s' %
+        #           str(arc_distance(geometry_x, geometry_y)))
+        #     return False
     else:
         arct = wkt.loads(geometry_x)
         pgis = wkt.loads(geometry_y)
@@ -273,10 +273,10 @@ def convert_str(strr):
         return False
 
     try:
-        x = float(strr)
-        return x
-    except ValueError as e:
-        print(repr(e))
+        float_value = float(strr)
+        return float_value
+    except ValueError as ex:
+        print(repr(ex))
         # pass
 
     return strr
@@ -354,20 +354,20 @@ def compare_results(config, arctern_results, postgis_results):
             if value.strip() != '':
                 pgis_arr.append((num, value.strip()))
 
-    flag = True
+    case_result_flag = True
 
     if len(arct_arr) != len(pgis_arr):
-        print(
-            'test result size: %s and expected result size: %s, NOT equal, check the two result files'
-            % (len(arct_arr), len(pgis_arr)))
+        # print(
+        #     'test result size: %s and expected result size: %s, NOT equal, check the two result files'
+        #     % (len(arct_arr), len(pgis_arr)))
         return False
 
     for a_line_in_arctern_result_file, a_line_in_postgis_result_file in zip(arct_arr, pgis_arr):
         res = compare_one(config, a_line_in_arctern_result_file,
                           a_line_in_postgis_result_file)
-        flag = flag and res
+        case_result_flag = case_result_flag and res
 
-    return flag
+    return case_result_flag
 
 
 def compare_all():
@@ -417,9 +417,8 @@ def update_bool(file_path):
     with open(file_path, 'r') as the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint:
         content = the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint.read()
         update = content.replace('true', 'True').replace('false', 'False')
-    with open(file_path, 'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed_by_pylint:
-        the_result_file_from_spark_for_write_and_abbr_not_allowed_by_pylint.write(
-            update)
+    with open(file_path, 'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed:
+        the_result_file_from_spark_for_write_and_abbr_not_allowed.write(update)
 
 
 def update_result():
@@ -434,8 +433,10 @@ def update_result():
 
 
 if __name__ == '__main__':
-    update_result()
+    # update_result()
 
-    flag = compare_all()
-    if not flag:
-        sys.exit(1)
+    # flag = compare_all()
+    # if not flag:
+    #     sys.exit(1)
+
+    print(type(get_tests()))
