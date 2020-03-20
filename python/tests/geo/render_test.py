@@ -85,9 +85,9 @@ def test_heat_map():
     save_png(heat_map2, map_path + "test_heat_map2.png")
     save_png(heat_map3, map_path + "test_heat_map3.png")
 
-    assert diff_png(baseline_png, map_path + "test_heat_map1.png")
-    assert diff_png(baseline_png, map_path + "test_heat_map2.png")
-    assert diff_png(baseline_png, map_path + "test_heat_map3.png")
+    assert diff_png(baseline_png, map_path + "test_heat_map1.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map2.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map3.png", 0.0025)
 
 def test_choropleth_map():
     wkt_data = []
