@@ -55,57 +55,54 @@ $ conda activate base
 
 # cpp代码编译以及单元测试的运行
 此部分所有工作均在conda中的arctern环境中运行：
-首先切换到工程中的GIS目录然后运行下面的命令：
+首先切换到工程中的arctern/cpp目录然后运行下面的命令：
 
 CPU Version
 ```
-cd ci/scripts
-./cpp_build.sh -t Release -o ${CMAKE_INSTALL_PREFIX} -u
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} -DBUILD_UNITTEST=ON
+make && make install
 ```
 
 GPU Version
 ```
-cd ci/scripts
-./cpp_build.sh -t Release -o ${CMAKE_INSTALL_PREFIX} -g -u
+mkdir cpp/build && cd cpp/build
+cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} -DBUILD_UNITTEST=ON -DBUILD_WITH_GPU=ON
+make && make install
 ```
 
-cpp_build.sh具体参数设置可运行下面命令:
+cmake参数可选如下:
 ```
-./cpp_build.sh -h
+CMAKE_BUILD_TYPE     Release   [default]
+BUILD_WITH_GPU       OFF       [default]
+BUILD_UNITTEST       OFF       [default]
 ```
 
 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
 ```
-source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
-./ci/scripts/run_unittest.sh -i ${CMAKE_INSTALL_PREFIX}
+./unittest/gis/gis_tests
+./unittest/render/render_tests
 ```
-其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
 
 运行完之后无错误输出就证明cpp编译和单元测试全部成功了。
 
 # python封装以及单元测试的运行
 上一步编译测试成功后
 ## Python包 arctern的编译和安装
-- 加载GIS环境
+- 进入conda环境
 ```
-source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
+conda activate arctern
 ```
-其中CMAKE_INSTALL_PREFIX为cmake编译时指定的路径
-- 运行ci/scripts目录下的python_build.sh  
-`./python_build.sh`
+- 切换到工程中的arctern/python目录然后编译和安装arctern
+```
+rm build -rf
+python setup.py build && python setup.py install
+```
 
-python_build.sh具体参数设置可运行下面命令:
-```
-./python_build.sh -h
-```
+
 
 ## 运行Python包 arctern的单元测试
-1. 需要保证`LD_LIBRARY_PATH`中加入`CMAKE_INSTALL_PREFIX/lib`这个路径以及`cuda`的`lib`路径
-```
-source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
-```
-
-2. 到`GIS/python/test/geo`目录运行：
+到`arctern/python/test/geo`目录运行：
 `py.test`
 看到单元测试正确输出就代表结果正确！
 
@@ -117,8 +114,8 @@ source ${CMAKE_INSTALL_PREFIX}/scripts/arctern_env.sh
 
 ## 编译arctern_pyspark包
 
-```sh
-cd GIS/spark/pyspark
+```
+cd arctern/spark/pyspark
 ./build.sh
 ```
 
@@ -129,12 +126,8 @@ cd GIS/spark/pyspark
 
 修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
 ```
-spark.driver.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
-spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
 spark.executorEnv.PROJ_LIB /home/xxx/miniconda3/envs/arctern_dev/share/proj
 ```
-
-`/home/xxx/gis/GIS/cpp/build/thirdparty/lib`对应你编译cpp部分时，生成的库安装的地方
 
 ## 修改环境变量  
 在`spark-env.sh` 增加如下配置
@@ -148,11 +141,11 @@ export GDAL_DATA=/home/xxx/miniconda3/envs/arctern/share/gdal
 ./bin/pyspark
 >>> import sys
 >>> print(sys.prefix)
-/home/xxx/miniconda3/envs/gis2
+/home/xxx/miniconda3/envs/arctern
 ```
 
 ## 运行单元测试
    
 ```
-./bin/spark-submit /home/xxx/gis/GIS/spark/pyspark/example/gis/spark_udf_ex.py
+./bin/spark-submit /home/xxx/arctern/spark/pyspark/example/gis/spark_udf_ex.py
 ```
