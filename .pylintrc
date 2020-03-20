@@ -90,7 +90,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 [BASIC]
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,ex,Run,_
+good-names=i,j,k,ex,Run,_,df,f,res,ret,rs
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata
@@ -341,7 +341,7 @@ analyse-fallback-blocks=no
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=7
+max-args=10
 
 # Argument names that match this expression will be ignored. Default to name
 # with leading underscore

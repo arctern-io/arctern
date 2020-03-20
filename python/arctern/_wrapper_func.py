@@ -55,9 +55,9 @@ __all__ = [
 
 
 
+import base64
 import pyarrow as pa
 from . import arctern_core_
-import base64
 
 def ST_Point(x, y):
     arr_x = pa.array(x, type='double')

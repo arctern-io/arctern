@@ -55,10 +55,7 @@ def diff_png(baseline_png, compared_png, precision=0.0005):
                 if tmp_diff > 1:
                     is_point_equal = False
 
-            if is_point_equal == False:
+            if not is_point_equal:
                 diff_point_num += 1
 
-    if ((float)(diff_point_num) / (float)(baseline_size)) <= precision:
-        return True
-    else:
-        return False
+    return ((float)(diff_point_num) / (float)(baseline_size)) <= precision
