@@ -34,6 +34,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
     return;
   }
 
+  // 1. parse image width and height
   if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
       !JsonNullCheck(document["width"]) || !JsonNullCheck(document["height"]) ||
       !JsonTypeCheck(document["width"], rapidjson::Type::kNumberType) ||
@@ -43,6 +44,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   window_params_.mutable_width() = document["width"].GetInt();
   window_params_.mutable_height() = document["height"].GetInt();
 
+  // 2. parse marks root
   if (!JsonLabelCheck(document, "marks") ||
       !JsonTypeCheck(document["marks"], rapidjson::Type::kArrayType) ||
       !JsonSizeCheck(document["marks"], "marks", 1) ||
@@ -53,7 +55,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  // parse stroke and opacity
+  // 3. parse stroke and opacity
   if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
       !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
@@ -107,8 +109,8 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
       return;
     }
   }
-  ruler_ = std::make_pair(mark_enter["ruler"]["value"][0].GetDouble(),
-                          mark_enter["ruler"]["value"][1].GetDouble());
+  color_ruler_ = std::make_pair(mark_enter["ruler"]["value"][0].GetDouble(),
+                                mark_enter["ruler"]["value"][1].GetDouble());
 }
 
 }  // namespace render
