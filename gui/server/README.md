@@ -10,7 +10,7 @@ conf/config.init为配置文件，可以根据情况自行修改，其中：
 
 ```bash
 [http]
-port = 8080         # http服务器的监听端口
+port = 8080          # http服务器的监听端口
 
 [spark]
 # lcoal[*]  local mode
