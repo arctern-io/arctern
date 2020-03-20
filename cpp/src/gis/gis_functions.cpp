@@ -165,7 +165,7 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left,
     const std::shared_ptr<arrow::Array>& geo_right) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // TODO: NOT ENABLED
   auto groupped_type = std::set<WkbTypes>({WkbTypes::kPoint});
   auto scan = [&groupped_type](const std::shared_ptr<arrow::Array>& geometries) {
@@ -176,7 +176,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
   auto lhs_record = scan(geo_left);
   auto rhs_record = scan(geo_right);
   enum class Stategy { GDAL_ONLY = 0, MIXED = 1, CUDA_ONLY = 2 };
-  auto get_stategy = [&groupped_type](const GeometryTypeMasks& record) {
+  auto get_stategy = [&groupped_type](const dispatch::GeometryTypeMasks& record) {
     if (record.is_unique_type) {
       if (record.unique_type == groupped_type) {
         return Stategy::CUDA_ONLY;

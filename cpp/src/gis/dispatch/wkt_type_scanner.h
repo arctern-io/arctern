@@ -40,6 +40,8 @@ class TypeScannerForWkt : public GeometryTypeScanner {
   const std::shared_ptr<arrow::Array> geometries_;
 };
 
+
+
 }  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern

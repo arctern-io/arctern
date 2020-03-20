@@ -92,6 +92,28 @@ class GeometryTypeScanner {
   std::vector<GroupedWkbTypes> types_;
 };
 
+class MaskResult {
+ private:
+  enum class Status {
+    kOnlyFalse,
+    kMixed,
+    kOnlyTrue,
+  };
+
+  MaskResult() = default;
+  // bitwise append
+  void AppendRequire(const GeometryTypeMasks& type_masks,
+                     const GroupedWkbTypes& supported);
+
+  Status get_status() const { return status_; }
+  const std::vector<bool>& get_mask() const { return mask_; }
+
+ private:
+  Status status_ = Status::kOnlyTrue;
+  // valid only when status = kMixed
+  std::vector<bool> mask_;
+};
+
 }  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern
