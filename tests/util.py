@@ -9,8 +9,8 @@ from osgeo.ogr import *
 
 EPOCH = 1e-6
 
-geo_types = ['POLYGON', 'POINT', 'LINESTRING']
-geo_collection_types = [
+GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
+GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
 ]
 
@@ -18,6 +18,7 @@ geo_collection_types = [
 def is_empty(geo):
     geo = geo.strip().upper()
     return geo.endswith('EMPTY')
+
 
 def is_point(geo):
     geo = geo.strip().upper()
@@ -36,7 +37,7 @@ def is_polygon(geo):
 
 def is_geometry(geo):
     geo = geo.strip().upper()
-    for x in geo_types:
+    for x in GEO_TYPES:
 
         if geo.startswith(x) and len(geo) != len(x):
             return True
@@ -48,7 +49,7 @@ def is_geometry(geo):
 
 def is_geometrycollection(geo):
     geo = geo.strip().upper()
-    for x in geo_collection_types:
+    for x in GEO_COLLECTION_TYPES:
         if geo.startswith(x):
             return True
         continue
@@ -68,7 +69,8 @@ def polygon_to_points(geom):
     if geom.strip().upper().startswith('POLYGON'):
         points = geom.split('((')[1].split('))')[0]
         arr = points.split(',')
-        xs = ['POINT (%s)' % x.strip().replace('(', '').replace(')', '') for x in arr]
+        xs = ['POINT (%s)' % x.strip().replace(
+            '(', '').replace(')', '') for x in arr]
         return xs
 
 
@@ -151,7 +153,7 @@ def arc_distance(geox, geoy):
 def get_tests():
     tests = get_config()['tests']
     names = [x['case']['name'] for x in tests]
-    table_names = [x['case']['spark_result_name'] for x in tests]
+    table_names = [x['case']['SPARK_RESULT_name'] for x in tests]
     expects = [x['case']['expected_name'] for x in tests]
 
     return names, table_names, expects
@@ -167,10 +169,10 @@ def get_config():
     return full_load(content)
 
 
-config = get_config()
-spark_result = config['path']['spark_result']
-arctern_result = config['path']['arctern_result']
-expected_result = config['path']['expected_result']
+CONFIG = get_config()
+SPARK_RESULT = CONFIG['path']['SPARK_RESULT']
+ARCTERN_RESULT = CONFIG['path']['arctern_result']
+EXPECTED_RESULT = CONFIG['path']['expected_result']
 
 # if __name__ == '__main__':
 #     config = get_config()

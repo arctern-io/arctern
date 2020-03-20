@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# import glob
+import os
+import sys
 from shapely import wkt
 from ogr import Geometry
 from ogr import CreateGeometryFromWkt
-# from util import *
+from util import get_tests, is_empty, is_geometry, is_geometrycollection
+from util import arc_distance
+from util import ARCTERN_RESULT, EXPECTED_RESULT
 
 
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
@@ -62,7 +65,7 @@ def is_area_types(geo):
         if geo.startswith(a_geo_type_in_geo_area_types_list) and \
                 len(geo) != len(a_geo_type_in_geo_area_types_list):
             return True
-        # else:
+
         continue
 
     return False
@@ -81,7 +84,7 @@ def is_geometrytype(geo):
     for a_geo_type_in_all_geo_types_list in arr:
         if a_geo_type_in_all_geo_types_list in geo:
             return True
-        # else:
+
         continue
 
     return False
@@ -94,7 +97,7 @@ def is_curve(geo):
     for a_geo_type_in_curve_geo_types_list in CURVE_TYPES:
         if geo.startswith(a_geo_type_in_curve_geo_types_list):
             return True
-        # else:
+
         continue
 
     return False
@@ -227,10 +230,10 @@ def compare2float_relative(x_base, y_check, relative_error):
 
 
 def compare3float_relative(x_base, y_check, z_intersection, relative_error):
-	"""Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
-	return compare2float_relative(x_base, y_check, relative_error) and \
-		compare2float_relative(x_base, z_intersection, relative_error) and \
-			compare2float_relative(y_check, z_intersection, relative_error)
+    """Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
+    return compare2float_relative(x_base, y_check, relative_error) and \
+        compare2float_relative(x_base, z_intersection, relative_error) and \
+        compare2float_relative(y_check, z_intersection, relative_error)
 
 
 def compare_curve(geometry_x, geometry_y):
@@ -290,10 +293,10 @@ def compare_one(config, result, expect):
 
     try:
         if isinstance(newvalue_x, bool):
-            flag = (newvalue_x == newvalue_y)
-            if not flag:
+            one_result_flag = (newvalue_x == newvalue_y)
+            if not one_result_flag:
                 print(result[0], newvalue_x, expect[0], newvalue_y)
-            return flag
+            return one_result_flag
 
         if isinstance(newvalue_x, str):
             newvalue_x = newvalue_x.strip().upper()
@@ -304,36 +307,37 @@ def compare_one(config, result, expect):
                 return True
 
             elif is_geometry(newvalue_x) and is_geometry(newvalue_y):
-                flag = compare_geometry(config, newvalue_x, newvalue_y)
-                if not flag:
+                one_result_flag = compare_geometry(
+                    config, newvalue_x, newvalue_y)
+                if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
-                return flag
+                return one_result_flag
 
             elif is_geometrycollection(newvalue_x) and is_geometrycollection(newvalue_y):
-                flag = compare_geometrycollection(
+                one_result_flag = compare_geometrycollection(
                     config, newvalue_x, newvalue_y)
-                if not flag:
+                if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
-                return flag
+                return one_result_flag
             else:
                 if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
-                    flag = (newvalue_x == newvalue_y)
-                    if not flag:
+                    one_result_flag = (newvalue_x == newvalue_y)
+                    if not one_result_flag:
                         print(result[0], newvalue_x, expect[0], newvalue_y)
-                    return flag
+                    return one_result_flag
 
                 print(result[0], newvalue_x, expect[0], newvalue_y)
                 return False
 
         if isinstance(newvalue_x, int) or isinstance(newvalue_x, float):
-            flag = compare_floats(config, newvalue_x, newvalue_y)
-            if not flag:
+            one_result_flag = compare_floats(config, newvalue_x, newvalue_y)
+            if not one_result_flag:
                 print(result[0], newvalue_x, expect[0], newvalue_y)
-            return flag
+            return one_result_flag
     except ValueError as e:
         print(repr(e))
-        flag = False
-    return flag
+        one_result_flag = False
+    return one_result_flag
 
 
 def compare_results(config, arctern_results, postgis_results):
@@ -359,7 +363,8 @@ def compare_results(config, arctern_results, postgis_results):
         return False
 
     for a_line_in_arctern_result_file, a_line_in_postgis_result_file in zip(arct_arr, pgis_arr):
-        res = compare_one(config, a_line_in_arctern_result_file, a_line_in_postgis_result_file)
+        res = compare_one(config, a_line_in_arctern_result_file,
+                          a_line_in_postgis_result_file)
         flag = flag and res
 
     return flag
@@ -367,13 +372,13 @@ def compare_results(config, arctern_results, postgis_results):
 
 def compare_all():
     """Compare all the results of arctern functions and expected."""
-    flag = True
+    compare_result_flag = True
     names, table_names, expects = get_tests()
 
     for name, expect in zip(names, expects):
 
-        arct_result = os.path.join(arctern_result, name + '.csv')
-        pgis_result = os.path.join(expected_result, expect + '.out')
+        arct_result = os.path.join(ARCTERN_RESULT, name + '.csv')
+        pgis_result = os.path.join(EXPECTED_RESULT, expect + '.out')
         print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (
             name, arct_result, pgis_result))
 
@@ -393,9 +398,9 @@ def compare_all():
         else:
             print('Arctern test: %s, result: FAILED' % name)
 
-        flag = flag and res
+        compare_result_flag = compare_result_flag and res
 
-    return flag
+    return compare_result_flag
 
 
 def update_quote(file_path):
@@ -422,7 +427,7 @@ def update_result():
     names, table_names, expects = get_tests()
 
     for name in names:
-        arctern_file = os.path.join(arctern_result, name + '.csv')
+        arctern_file = os.path.join(ARCTERN_RESULT, name + '.csv')
 
         update_quote(arctern_file)
         update_bool(arctern_file)
@@ -433,4 +438,4 @@ if __name__ == '__main__':
 
     flag = compare_all()
     if not flag:
-        exit(1)
+        sys.exit(1)
