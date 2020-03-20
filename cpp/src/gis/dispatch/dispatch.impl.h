@@ -17,8 +17,8 @@
 
 #pragma once
 #include <memory>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "gis/dispatch/dispatch.h"
 #include "utils/arrow_alias.h"
