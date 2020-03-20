@@ -24,8 +24,7 @@
     {
       "encode": {
         "enter": {
-          "bounding_box_min": {"value": "POINT (-73.984092 40.753893)"},
-          "bounding_box_max": {"value": "POINT (-73.977588 40.756342)"},
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
           "stroke": {"value": "#EE113D"},
           "strokeWidth": {"value": 3},
@@ -64,8 +63,7 @@
     {
       "encode": {
         "enter": {
-          "bounding_box_min": {"value": "POINT (-73.984092 40.753893)"},
-          "bounding_box_max": {"value": "POINT (-73.977588 40.756342)"},
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
           "strokeWidth": {"value": 3},
           "color_style": {"value": "blue_to_red"},
@@ -105,8 +103,7 @@
     {
       "encode": {
         "enter": {
-          "bounding_box_min": {"value": "POINT (-73.984092 40.753893)"},
-          "bounding_box_max": {"value": "POINT (-73.977588 40.756342)"},
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "map_scale": {"value": 10},
           "coordinate_system": {"value": "EPSG:3857"}
         }
@@ -137,8 +134,7 @@
     {
       "encode": {
         "enter": {
-          "bounding_box_min": {"value": "POINT (-73.984092 40.753893)"},
-          "bounding_box_max": {"value": "POINT (-73.977588 40.756342)"},
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "color_style": {"value": "blue_to_red"},
           "ruler": {"value": [2.5, 5]},
           "opacity": {"value": 1.0},
