@@ -171,7 +171,8 @@ def compare_geometry(config, geometry_x, geometry_y):
         #     print('arc distance: %s' %
         #           str(arc_distance(geometry_x, geometry_y)))
         #     return False
-    else:
+
+    if not config in BLIST:
         arct = wkt.loads(geometry_x)
         pgis = wkt.loads(geometry_y)
         result = arct.equals_exact(pgis, EPOCH)
@@ -334,8 +335,8 @@ def compare_one(config, result, expect):
             if not one_result_flag:
                 print(result[0], newvalue_x, expect[0], newvalue_y)
             return one_result_flag
-    except ValueError as e:
-        print(repr(e))
+    except ValueError as ex:
+        print(repr(ex))
         one_result_flag = False
     return one_result_flag
 
@@ -357,9 +358,6 @@ def compare_results(config, arctern_results, postgis_results):
     case_result_flag = True
 
     if len(arct_arr) != len(pgis_arr):
-        # print(
-        #     'test result size: %s and expected result size: %s, NOT equal, check the two result files'
-        #     % (len(arct_arr), len(pgis_arr)))
         return False
 
     for a_line_in_arctern_result_file, a_line_in_postgis_result_file in zip(arct_arr, pgis_arr):
@@ -433,10 +431,8 @@ def update_result():
 
 
 if __name__ == '__main__':
-    # update_result()
+    update_result()
 
-    # flag = compare_all()
-    # if not flag:
-    #     sys.exit(1)
-
-    print(type(get_tests()))
+    flag = compare_all()
+    if not flag:
+        sys.exit(1)
