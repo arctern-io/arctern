@@ -224,22 +224,27 @@ std::shared_ptr<arrow::Array> ST_Distance(
 }
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
-  //   #if defined(USE_GPU)
-  //     // currently support ST_Polygon
-  //     dispatch::TypeScannerForWkt scanner(geometries);
-  //     GroupedWkbTypes gpu_supported_types = {WkbTypes::kPolygon};
-  //     scanner.mutable_types().push_back(gpu_supported_types);
-  //     auto type_masks = scanner.Scan();
-  //     if (type_masks->is_unique_group && (type_masks->unique_group ==
-  //     gpu_supported_types))
-  //     {
-  //       return cuda::ST_Area(geometries);
-  //     } else {
-  //       return gdal::ST_Area(geometries);
-  //     }
-  //   #else
+#if defined(USE_GPU)
+  // currently support ST_Polygon
+  dispatch::TypeScannerForWkt scanner(geometries);
+  dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kPolygon};
+  scanner.mutable_types().push_back(gpu_supported_types);
+  auto type_masks = scanner.Scan();
+  if (type_masks->is_unique_type) {
+    if (type_masks->unique_type == gpu_supported_types) {
+      return cuda::ST_Area(geometries);
+    } else {
+      return gdal::ST_Area(geometries);
+    }
+  } else {
+    auto mask = type_masks->get_mask(gpu_supported_types);
+    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
+    return dispatch::UnaryMixedExecute<arrow::DoubleArray>(mask, gdal::ST_Area,
+                                                           cuda::ST_Area, typed_geo);
+  }
+#else
   return gdal::ST_Area(geometries);
-  // #endif
+#endif
 }
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
