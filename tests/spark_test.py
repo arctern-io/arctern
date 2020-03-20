@@ -1096,6 +1096,22 @@ def run_test_st_pointfromtext(spark):
 	save_result("results/%s" % table_name, rs)
 
 
+def run_test_st_pointfromtext1(spark):
+        data = "pointfromtext_illegal.csv"
+        table_name = 'test_pointfromtext1'
+        sql = "select st_pointfromtext(geos) as geos from test_pointfromtext1"
+
+        df = read_data(spark, base_dir, data)
+        df.printSchema()
+        df.show()
+        df.createOrReplaceTempView(table_name)
+
+        rs = spark.sql(sql).cache()
+        rs.printSchema()
+        rs.show()
+        save_result("results/%s" % table_name, rs)
+
+
 def run_test_st_polygonfromtext(spark):
 	data = "polygonfromtext.csv"
 	table_name = 'test_polygonfromtext'
@@ -1110,6 +1126,22 @@ def run_test_st_polygonfromtext(spark):
 	rs.printSchema()
 	rs.show()
 	save_result("results/%s" % table_name, rs)
+
+
+def run_test_st_polygonfromtext1(spark):
+        data = "polygonfromtext_illegal.csv"
+        table_name = 'test_polygonfromtext1'
+        sql = "select st_polygonfromtext(geos) as geos from test_polygonfromtext1"
+
+        df = read_data(spark, base_dir, data)
+        df.printSchema()
+        df.show()
+        df.createOrReplaceTempView(table_name)
+
+        rs = spark.sql(sql).cache()
+        rs.printSchema()
+        rs.show()
+        save_result("results/%s" % table_name, rs)
 
 
 def run_test_st_linestringfromtext(spark):
@@ -1128,6 +1160,22 @@ def run_test_st_linestringfromtext(spark):
 	save_result("results/%s" % table_name, rs)
 
 
+def run_test_st_linestringfromtext1(spark):
+        data = "linestringfromtext_illegal.csv"
+        table_name = 'test_linestringfromtext1'
+        sql = "select st_linestringfromtext(geos) as geos from test_linestringfromtext1"
+
+        df = read_data(spark, base_dir, data)
+        df.printSchema()
+        df.show()
+        df.createOrReplaceTempView(table_name)
+
+        rs = spark.sql(sql).cache()
+        rs.printSchema()
+        rs.show()
+        save_result("results/%s" % table_name, rs)
+
+
 def run_test_st_geomfromtext(spark):
 	data = "geomfromtext.csv"
 	table_name = 'test_geomfromtext'
@@ -1144,6 +1192,23 @@ def run_test_st_geomfromtext(spark):
 	save_result("results/%s" % table_name, rs)
 
 
+def run_test_st_geomfromtext1(spark):
+        data = "geomfromtext_illegal.csv"
+        table_name = 'test_geomfromtext1'
+        sql = "select st_geomfromtext(geos) as geos from test_geomfromtext1"
+
+        df = read_data(spark, base_dir, data)
+        df.printSchema()
+        df.show()
+        df.createOrReplaceTempView(table_name)
+
+        rs = spark.sql(sql).cache()
+        rs.printSchema()
+        rs.show()
+        save_result("results/%s" % table_name, rs)
+
+
+
 def run_test_st_geomfromwkt(spark):
 	data = "geomfromtext.csv"
 	table_name = 'test_geomfromwkt'
@@ -1158,6 +1223,22 @@ def run_test_st_geomfromwkt(spark):
 	rs.printSchema()
 	rs.show()
 	save_result("results/%s" % table_name, rs)
+
+
+def run_test_st_geomfromwkt1(spark):
+        data = "geomfromtext_illegal.csv"
+        table_name = 'test_geomfromwkt1'
+        sql = "select st_geomfromwkt(geos) as geos from test_geomfromwkt1"
+
+        df = read_data(spark, base_dir, data)
+        df.printSchema()
+        df.show()
+        df.createOrReplaceTempView(table_name)
+
+        rs = spark.sql(sql).cache()
+        rs.printSchema()
+        rs.show()
+        save_result("results/%s" % table_name, rs)
 
 
 def run_test_st_astext(spark):
@@ -1247,10 +1328,15 @@ if __name__ == "__main__":
 	run_test_st_hausdorffdistance(spark_session)
 	run_test_st_hausdorffdistance_curve(spark_session)
 	run_test_st_pointfromtext(spark_session)
+	run_test_st_pointfromtext1(spark_session)
 	run_test_st_polygonfromtext(spark_session)
+	run_test_st_polygonfromtext1(spark_session)
 	run_test_st_linestringfromtext(spark_session)
+	run_test_st_linestringfromtext1(spark_session)
 	run_test_st_geomfromtext(spark_session)
+	run_test_st_geomfromtext1(spark_session)
 	run_test_st_geomfromwkt(spark_session)
+	run_test_st_geomfromwkt1(spark_session)
 	run_test_st_astext(spark_session)
 
 	spark_session.stop()

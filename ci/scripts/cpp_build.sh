@@ -115,7 +115,7 @@ done
 ARCTERN_INSTALL_PREFIX=${ARCTERN_INSTALL_PREFIX:=${PREFIX:=${CONDA_PREFIX}}}
 
 echo -e "===\n=== ccache statistics before build\n==="
-ccache --show-stats
+#ccache --show-stats
 
 if [[ ! -d ${CPP_BUILD_DIR} ]]; then
     mkdir ${CPP_BUILD_DIR}
