@@ -27,11 +27,11 @@
 #include <vector>
 
 #include "common/version.h"
+#include "geometry_factory.h"
 #include "gis/api.h"
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/test_common/transforms.h"
-#include "test_common.h"
 #include "utils/check_status.h"
 
 namespace arctern {
@@ -40,7 +40,7 @@ namespace cuda {
 
 namespace GeometryVectorFactory {
 inline GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
-  auto input = WktsToArrowWkb(wkt_vec);
+  auto input = StrsToWkb(wkt_vec);
   return ArrowWkbToGeometryVector(input);
 }
 
@@ -59,18 +59,7 @@ inline GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_v
 
 }  // namespace GeometryVectorFactory
 
-inline std::vector<char> hexstring_to_binary(const std::string& str) {
-  std::vector<char> vec;
-  assert(str.size() % 2 == 0);
-  for (size_t index = 0; index < str.size(); index += 2) {
-    auto byte_str = str.substr(index, 2);
-    char* tmp;
-    auto data = strtoul(byte_str.c_str(), &tmp, 16);
-    assert(*tmp == 0);
-    vec.push_back((char)data);
-  }
-  return vec;
-}
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

@@ -28,7 +28,7 @@
 #include "gis/gdal/gis_functions.h"
 namespace arctern {
 namespace gis {
-inline std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
+inline std::vector<char> SingleStrToWkb(const std::string& geo_wkt) {
   OGRGeometry* geo = nullptr;
   {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt.c_str(), nullptr, &geo);
@@ -44,7 +44,7 @@ inline std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
   return result;
 }
 
-inline std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
+inline std::shared_ptr<arrow::Array> StrsToWkb(const std::vector<std::string>& wkt_vec) {
   arrow::StringBuilder builder;
   for (const auto& wkt : wkt_vec) {
     auto st = builder.Append(wkt.data(), wkt.size());
@@ -54,6 +54,19 @@ inline std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::strin
   auto st = builder.Finish(&result);
   assert(st.ok());
   return gdal::WktToWkb(result);
+}
+
+inline std::vector<char> HexStringToWkb(const std::string& str) {
+  std::vector<char> vec;
+  assert(str.size() % 2 == 0);
+  for (size_t index = 0; index < str.size(); index += 2) {
+    auto byte_str = str.substr(index, 2);
+    char* tmp;
+    auto data = strtoul(byte_str.c_str(), &tmp, 16);
+    assert(*tmp == 0);
+    vec.push_back((char)data);
+  }
+  return vec;
 }
 
 }  // namespace gis
