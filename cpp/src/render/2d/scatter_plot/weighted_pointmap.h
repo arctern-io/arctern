@@ -15,18 +15,25 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "render/2d/general_2d.h"
 #include "render/2d/input.h"
-#include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
+#include "render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.h"
 
 namespace arctern {
 namespace render {
 
-class PointMap : public General2D {
+template <typename T>
+class WeightedPointMap : public General2D {
  public:
-  PointMap() = delete;
+  WeightedPointMap() = delete;
 
-  PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count,
+                   size_t num_vertices);
+
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count, T* ps,
+                   size_t num_vertices);
 
   uint8_t* Render() final;
 
@@ -39,9 +46,12 @@ class PointMap : public General2D {
 
   uint32_t* mutable_vertices_y() { return vertices_y_; }
 
-  VegaPointmap& mutable_point_vega() { return point_vega_; }
+  VegaWeightedPointmap& mutable_weighted_point_vega() { return weighted_point_vega_; }
 
   const size_t num_vertices() const { return num_vertices_; }
+
+ private:
+  void SetColor();
 
  private:
 #ifdef USE_GPU
@@ -50,8 +60,11 @@ class PointMap : public General2D {
 #endif
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
+  T* count_;
+  T* point_size_;
   size_t num_vertices_;
-  VegaPointmap point_vega_;
+  std::vector<float> colors_;
+  VegaWeightedPointmap weighted_point_vega_;
 };
 
 }  // namespace render
