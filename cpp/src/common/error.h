@@ -19,16 +19,19 @@ namespace arctern {
 
 using ErrorCode = unsigned int;
 
-constexpr ErrorCode ILLEGAL_VEGA_FORMAT = 1;
-constexpr ErrorCode NULL_RENDER_OUTPUT = 2;
-constexpr ErrorCode VALUE_TYPE_NOT_FOUND = 3;
-constexpr ErrorCode INVALID_VEGA_DATA = 4;
-constexpr ErrorCode UNKNOW_GEOMETYR_TYPE = 5;
-constexpr ErrorCode FAILED_COMPILE_SHADER = 6;
-constexpr ErrorCode FAILED_LINK_SHADER = 7;
-constexpr ErrorCode COLOR_STYLE_NOT_FOUND = 8;
-constexpr ErrorCode INVAILD_COLOR_FORMAT = 9;
-constexpr ErrorCode LABEL_NOT_FOUND = 10;
-constexpr ErrorCode FAILED_INIT_OSMESA = 11;
+constexpr ErrorCode ILLEGAL_VEGA_FORMAT = 5001;
+constexpr ErrorCode NULL_RENDER_OUTPUT = 5002;
+constexpr ErrorCode VALUE_TYPE_NOT_FOUND = 5003;
+constexpr ErrorCode INVALID_VEGA_DATA = 5004;
+constexpr ErrorCode UNKNOW_GEOMETYR_TYPE = 5005;
+constexpr ErrorCode FAILED_COMPILE_SHADER = 5006;
+constexpr ErrorCode FAILED_LINK_SHADER = 5007;
+constexpr ErrorCode COLOR_STYLE_NOT_FOUND = 5008;
+constexpr ErrorCode INVAILD_COLOR_FORMAT = 5009;
+constexpr ErrorCode LABEL_NOT_FOUND = 5010;
+constexpr ErrorCode FAILED_INIT_OSMESA = 5011;
+
+constexpr ErrorCode ILLEGAL_WKT_FORMAT = 6001;
+constexpr ErrorCode ILLEGAL_WKB_FORMAT = 6002;
 
 }  // namespace arctern

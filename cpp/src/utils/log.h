@@ -28,6 +28,6 @@
     std::string total_msg = SOURCE_CODE_INFO;            \
     std::string code_str = std::to_string(err_code);     \
     total_msg += std::string("error code: ") + code_str; \
-    total_msg += std::string(", reason: ") + err_msg;    \
+    total_msg += std::string(",  reason: ") + err_msg + std::string(".");    \
     throw std::runtime_error(total_msg);                 \
   } while (false);
