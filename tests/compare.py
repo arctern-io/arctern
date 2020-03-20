@@ -227,11 +227,7 @@ def compare2float_relative(x_base, y_check, relative_error):
 
 def compare3float_relative(x_base, y_check, z_intersection, relative_error):
     """Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
-    return compare2float_relative(x_base, y_check, relative_error) and \
-        compare2float_relative(x_base, z_intersection, relative_error) and \
-        compare2float_relative(y_check, z_intersection, relative_error)
-
-
+    return compare2float_relative(x_base, y_check, relative_error) and compare2float_relative(x_base, z_intersection, relative_error) and compare2float_relative(y_check, z_intersection, relative_error)
 def compare_curve(x, y):
     """Compare whether 2 curve geometries is 'equal'."""
     arct = CreateGeometryFromWkt(x)
