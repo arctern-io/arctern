@@ -116,7 +116,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 Add the following content to `conf/spark-default.conf`. `[path/to/your/conda]` is the installation path of Conda.
 
 ```bash
-spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern_dev/share/proj
+spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA [path/to/your/conda]/envs/arctern/share/gdal
 ```
 

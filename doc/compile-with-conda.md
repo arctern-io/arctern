@@ -127,7 +127,7 @@ python setup.py build && python setup.py install
 
 修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
 ```
-spark.executorEnv.PROJ_LIB /home/xxx/miniconda3/envs/arctern_dev/share/proj
+spark.executorEnv.PROJ_LIB /home/xxx/miniconda3/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA /home/xxx/miniconda3/envs/arctern/share/gdal
 ```
 

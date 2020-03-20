@@ -121,7 +121,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 在文件 `conf/spark-default.conf` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
 
 ```bash
-spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern_dev/share/proj
+spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA [path/to/your/conda]/envs/arctern/share/gdal
 ```
 
