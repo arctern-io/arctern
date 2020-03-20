@@ -114,10 +114,11 @@ python setup.py build && python setup.py install
 注意事项：spark请使用最新的spark-3.0.0-preview2.
 
 ## 编译arctern_pyspark包
+- 切换到工程中的arctern/spark/pyspark目录然后编译和安装arctern
 
 ```
-cd arctern/spark/pyspark
-./build.sh
+rm build -rf
+python setup.py build && python setup.py install
 ```
 
 ## 确认是否安装成功  
@@ -128,13 +129,13 @@ cd arctern/spark/pyspark
 修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
 ```
 spark.executorEnv.PROJ_LIB /home/xxx/miniconda3/envs/arctern_dev/share/proj
+spark.executorEnv.GDAL_DATA /home/xxx/miniconda3/envs/arctern/share/gdal
 ```
 
 ## 修改环境变量  
 在`spark-env.sh` 增加如下配置
 ```
 export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/arctern/bin/python
-export GDAL_DATA=/home/xxx/miniconda3/envs/arctern/share/gdal
 ```
 
 ## 检查`pyspark`是否使用`$PYSPARK_PYTHON`指定的python
