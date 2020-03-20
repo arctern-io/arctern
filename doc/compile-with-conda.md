@@ -114,8 +114,7 @@ python setup.py build && python setup.py install
 注意事项：spark请使用最新的spark-3.0.0-preview2.
 
 ## 编译arctern_pyspark包
-- 切换到工程中的arctern/spark/pyspark目录然后编译和安装arctern
-
+- 切换到工程中的arctern/spark/pyspark目录然后编译和安装arctern_pyspark
 ```
 rm build -rf
 python setup.py build && python setup.py install
