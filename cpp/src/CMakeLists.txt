@@ -51,7 +51,6 @@ set(gis_src
         )
 
 set(cuda_gis_src
-        gis/cuda/wkb/wkb_transforms.cpp
         gis/cuda/conversion/arrow_decode.cu
         gis/cuda/conversion/arrow_decode.cpp
         gis/cuda/conversion/arrow_encode.cu

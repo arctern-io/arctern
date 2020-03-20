@@ -15,23 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "gis/cuda/wkb/wkb_transforms.h"
-
+#pragma once
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-#include <cassert>
-#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "gis/cuda/mock/arrow/api.h"
 #include "gis/gdal/format_conversion.h"
 #include "gis/gdal/gis_functions.h"
 namespace arctern {
 namespace gis {
-namespace cuda {
-
-std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
+inline std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
   OGRGeometry* geo = nullptr;
   {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt.c_str(), nullptr, &geo);
@@ -47,7 +44,7 @@ std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
   return result;
 }
 
-std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
+inline std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
   arrow::StringBuilder builder;
   for (const auto& wkt : wkt_vec) {
     auto st = builder.Append(wkt.data(), wkt.size());
@@ -59,6 +56,5 @@ std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt
   return gdal::WktToWkb(result);
 }
 
-}  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

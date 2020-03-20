@@ -22,7 +22,7 @@
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/test_common/test_common.h"
-#include "gis/cuda/wkb/wkb_transforms.h"
+#include "gis/test_common/transforms.h"
 
 namespace arctern {
 namespace gis {

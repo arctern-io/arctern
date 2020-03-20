@@ -23,7 +23,6 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/conversion/conversions.h"
-#include "gis/cuda/wkb/wkb_transforms.h"
 
 namespace arctern {
 namespace gis {

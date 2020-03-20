@@ -30,7 +30,7 @@
 #include "gis/api.h"
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
-#include "gis/cuda/wkb/wkb_transforms.h"
+#include "gis/test_common/transforms.h"
 #include "test_common.h"
 #include "utils/check_status.h"
 
