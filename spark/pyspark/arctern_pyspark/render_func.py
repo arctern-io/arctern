@@ -69,7 +69,6 @@ def heatmap(df, vega):
     if (coor != 'EPSG:3857'):
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
 
-    print(vega)
     vega = vega.build()
     agg_schema = StructType([StructField('point', StringType(), True),
                              StructField('w', IntegerType(), True)])
@@ -86,10 +85,6 @@ def heatmap(df, vega):
     def heatmap_wkt(point, w, conf=vega):
         from arctern import heat_map_wkt
         return heat_map_wkt(point, w, conf.encode('utf-8'))
-
-    @pandas_udf("double", PandasUDFType.GROUPED_AGG)
-    def sum_udf(v):
-        return v.sum()
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
