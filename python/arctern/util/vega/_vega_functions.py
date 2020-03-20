@@ -23,26 +23,26 @@ from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
 from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 
 def vega_pointmap(width, height,
-                  bounding_box_min, bounding_box_max,
+                  bounding_box,
                   stroke, stroke_width, opacity,
                   coordinate_system="EPSG:4326"):
     return VegaPointMap(width, height,
-                        bounding_box_min, bounding_box_max,
+                        bounding_box,
                         stroke, stroke_width, opacity,
                         coordinate_system)
     
 
 def vega_heatmap(width, height, map_scale,
-                 bounding_box_min, bounding_box_max,
+                 bounding_box,
                  coordinate_system="EPSG:4326"):
     return VegaHeatMap(width, height, map_scale,
-                       bounding_box_min, bounding_box_max,
+                       bounding_box,
                        coordinate_system)
 
 def vega_choroplethmap(width, height,
-                       bounding_box_min, bounding_box_max,
+                       bounding_box,
                        color_style, ruler, opacity,
                        coordinate_system="EPSG:4326"):
     return VegaChoroplethMap(width, height,
-                             bounding_box_min, bounding_box_max, color_style, ruler, opacity,
+                             bounding_box, color_style, ruler, opacity,
                              coordinate_system)
