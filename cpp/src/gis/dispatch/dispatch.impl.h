@@ -119,12 +119,27 @@ std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
 auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
-                       TrueFunc true_func, const std::shared_ptr<Arg1>& arg1_ptr)
-    -> std::shared_ptr<RetType> {
-  auto split_inputs = GenericArraySplit(arg1_ptr, mask);
+                       TrueFunc true_func, Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+  auto split_inputs = GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask);
   assert(split_inputs[1]->null_count() == 0);
-  auto false_output = false_func(split_inputs[0]);
-  auto true_output = true_func(split_inputs[1]);
+  auto false_output = false_func(split_inputs[false]);
+  auto true_output = true_func(split_inputs[true]);
+  return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
+}
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
+          typename Arg2>
+auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+                        TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+    -> std::shared_ptr<RetType> {
+  auto split_inputs =
+      std::make_tuple(GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask),
+                      GenericArraySplit(std::forward<Arg2>(arg2_ptr), mask));
+  assert(split_inputs[1]->null_count() == 0);
+  auto false_output =
+      false_func(std::get<0>(split_inputs)[false], std::get<1>(split_inputs)[false]);
+  auto true_output =
+      true_func(std::get<0>(split_inputs)[true], std::get<1>(split_inputs)[true]);
   return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
 }
 
