@@ -50,19 +50,62 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
+  // parse color style
   if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
-      !JsonLabelCheck(mark_enter, "stroke") || !JsonLabelCheck(mark_enter, "opacity") ||
+      !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
-      !JsonLabelCheck(mark_enter["stroke"], "value") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
       !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType) ||
-      !JsonTypeCheck(mark_enter["stroke"]["value"], rapidjson::Type::kStringType) ||
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
   circle_params_.radius = mark_enter["strokeWidth"]["value"].GetInt();
-  circle_params_.color = ColorParser(mark_enter["stroke"]["value"].GetString()).color();
   circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
+
+  // parse color style
+  if (!JsonLabelCheck(mark_enter, "color_style") ||
+      !JsonLabelCheck(mark_enter["color_style"], "value") ||
+      !JsonTypeCheck(mark_enter["color_style"]["value"], rapidjson::Type::kStringType)) {
+    return;
+  }
+  auto color_style_string = std::string(mark_enter["color_style"]["value"].GetString());
+  if (color_style_string == "blue_to_red") {
+    color_style_ = ColorStyle::kBlueToRed;
+  } else if (color_style_string == "skyblue_to_white") {
+    color_style_ = ColorStyle::kSkyBlueToWhite;
+  } else if (color_style_string == "purple_to_yellow") {
+    color_style_ = ColorStyle::kPurpleToYellow;
+  } else if (color_style_string == "red_transparency") {
+    color_style_ = ColorStyle::kRedTransParency;
+  } else if (color_style_string == "blue_transparency") {
+    color_style_ = ColorStyle::kBlueTransParency;
+  } else if (color_style_string == "blue_green_yellow") {
+    color_style_ = ColorStyle::kBlueGreenYellow;
+  } else if (color_style_string == "white_blue") {
+    color_style_ = ColorStyle::kWhiteToBlue;
+  } else if (color_style_string == "blue_white_red") {
+    color_style_ = ColorStyle::kBlueWhiteRed;
+  } else if (color_style_string == "green_yellow_red") {
+    color_style_ = ColorStyle::kGreenYellowRed;
+  } else {
+    std::string msg = "unsupported color style '" + color_style_string + "'.";
+    // TODO: add log here
+  }
+
+  // parse ruler
+  if (!JsonLabelCheck(mark_enter, "ruler") ||
+      !JsonLabelCheck(mark_enter["ruler"], "value") ||
+      !JsonTypeCheck(mark_enter["ruler"]["value"], rapidjson::Type::kArrayType) ||
+      !JsonSizeCheck(mark_enter["ruler"]["value"], "ruler.value", 2)) {
+    return;
+  }
+  for (int i = 0; i < 2; i++) {
+    if (!JsonTypeCheck(mark_enter["ruler"]["value"][i], rapidjson::Type::kNumberType)) {
+      return;
+    }
+  }
+  ruler_ = std::make_pair(mark_enter["ruler"]["value"][0].GetDouble(),
+                          mark_enter["ruler"]["value"][1].GetDouble());
 }
 
 }  // namespace render
