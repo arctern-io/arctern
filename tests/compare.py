@@ -330,7 +330,7 @@ def compare_one(config, result, expect):
                 print(result[0], newvalue_x, expect[0], newvalue_y)
             return flag
     except ValueError as e:
-		print(repr(e))
+        print(repr(e))
         flag = False
     return flag
 
