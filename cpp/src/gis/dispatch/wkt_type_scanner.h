@@ -37,7 +37,7 @@ class TypeScannerForWkt : public GeometryTypeScanner {
   std::shared_ptr<GeometryTypeMasks> Scan() const final;
 
  private:
-  const std::shared_ptr<arrow::Array> geometries_;
+  const std::shared_ptr<arrow::Array>& geometries_;
 };
 
 
