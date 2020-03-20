@@ -107,6 +107,7 @@ class GeometryTypeScanner {
 class MaskResult {
  public:
   enum class Status {
+    kInvalid,
     kOnlyFalse,
     kMixed,
     kOnlyTrue,

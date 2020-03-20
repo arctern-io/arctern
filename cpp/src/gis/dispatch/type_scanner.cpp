@@ -38,7 +38,7 @@ void MaskResult::AppendRequire(const GeometryTypeScanner& scanner,
     }
 
     // downgrade to last
-    if (has_true) {
+    if (!has_true) {
       this->status_ = Status::kOnlyFalse;
       this->mask_.clear();
       this->mask_.shrink_to_fit();
