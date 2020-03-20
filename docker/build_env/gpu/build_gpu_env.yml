@@ -1,4 +1,4 @@
-name: zgis_dev
+name: arctern
 dependencies:
 - conda-forge::gdal=3.0.4
 - conda-forge::pyarrow
@@ -7,3 +7,4 @@ dependencies:
 - conda-forge::Cython
 - conda-forge::pytest
 - conda-forge::pylint
+- conda-forge::opencv=4.2

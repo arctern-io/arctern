@@ -16,30 +16,22 @@
 // under the License.
 
 #pragma once
-#include <cstdint>
-
-#include "gis/cuda/common/common.h"
-#include "gis/wkb_types.h"
+#ifdef USE_GPU
+#include "gis/cuda/mock/arrow/api.h"
+#else
+#include <arrow/api.h>
+#endif
+#include <memory>
 namespace arctern {
-namespace gis {
-namespace cuda {
 
-struct WkbTag {
-  WkbTag() = default;
-  constexpr DEVICE_RUNNABLE WkbTag(WkbTypes type) : data((uint32_t)type) {}
-  constexpr DEVICE_RUNNABLE WkbTag(WkbCategory category, WkbSpaceType group)
-      : data((uint32_t)category + (uint32_t)group * kWkbSpaceTypeEncodeBase) {}
+using ArrayPtr = std::shared_ptr<arrow::Array>;
+using WktArrayPtr = std::shared_ptr<arrow::StringArray>;
+using WkbArrayPtr = std::shared_ptr<arrow::BinaryArray>;
+using DoubleArrayPtr = std::shared_ptr<arrow::DoubleArray>;
+using Int32ArrayPtr = std::shared_ptr<arrow::Int32Array>;
 
-  constexpr explicit DEVICE_RUNNABLE WkbTag(uint32_t data) : data(data) {}
-  constexpr DEVICE_RUNNABLE WkbCategory get_category() {
-    return static_cast<WkbCategory>(data % kWkbSpaceTypeEncodeBase);
-  }
-  constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
-    return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
-  }
-  uint32_t data;
-};
+template <typename ArrowArrayType>
+using GetArrowBuilderType =
+    typename arrow::TypeTraits<typename ArrowArrayType::TypeClass>::BuilderType;
 
-}  // namespace cuda
-}  // namespace gis
 }  // namespace arctern

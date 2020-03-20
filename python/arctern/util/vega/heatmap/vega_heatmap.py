@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega.scatter_plot.vega_scatter_plot import VegaScatterPlot
-from arctern.util.vega.vega_node import (RootMarks, Root, Description, Data,
-                                            Width, Height, Scales)
+from arctern.util.vega.vega_node import (Width, Height, Description, Data,
+                                            Scales, RootMarks, Root)
+
 
 class Marks(RootMarks):
     """
@@ -33,24 +33,22 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, shape: Value, stroke: Value, strokeWidth: Value, opacity: Value):
-            if not (isinstance(shape.v, str) and isinstance(strokeWidth.v, int) and
-                    isinstance(stroke.v, str) and isinstance(opacity.v, float)):
+        def __init__(self, bounding_box: Value, map_scale: Value, coordinate_system: Value):
+            if not (isinstance(bounding_box.v, list)
+                    and isinstance(map_scale.v, float)
+                    and isinstance(coordinate_system.v, str)):
                 # TODO error log here
-                print("illegal")
-                assert 0
-            self._shape = shape
-            self._stroke = stroke
-            self._strokeWidth = strokeWidth
-            self._opacity = opacity
+                assert 0, "illegal"
+            self._bounding_box = bounding_box
+            self._map_scale = map_scale
+            self._coordinate_system = coordinate_system
 
         def to_dict(self):
             dic = {
                 "enter": {
-                    "shape": self._shape.to_dict(),
-                    "stroke": self._stroke.to_dict(),
-                    "strokeWidth": self._strokeWidth.to_dict(),
-                    "opacity": self._opacity.to_dict()
+                    "bounding_box": self._bounding_box.to_dict(),
+                    "map_scale": self._map_scale.to_dict(),
+                    "coordinate_system": self._coordinate_system.to_dict()
                 }
             }
             return dic
@@ -64,28 +62,41 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaCircle2d(VegaScatterPlot):
-    def __init__(self, width: int, height: int, mark_size: int, mark_color: str, opacity: float):
-        VegaScatterPlot.__init__(self, width, height)
-        self._mark_size = mark_size
-        self._mark_color = mark_color
-        self._opacity = opacity
+class VegaHeatMap:
+    def __init__(self, width: int, height: int, map_scale: float,
+                 bounding_box: list, coordinate_system: str):
+        self._width = width
+        self._height = height
+        self._bounding_box = bounding_box
+        self._map_scale = map_scale
+        self._coordinate_system = coordinate_system
 
     def build(self):
-        description = Description(desc="circle_2d")
+        description = Description(desc="heat_map_2d")
         data = Data(name="data", url="/data/data.csv")
-        domain1 = Scales.Scale.Domain(data="data", field="c0")
-        domain2 = Scales.Scale.Domain(data="data", field="c1")
+        domain1 = Scales.Scale.Domain("data", "c0")
+        domain2 = Scales.Scale.Domain("data", "c1")
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
-        encode = Marks.Encode(shape=Marks.Encode.Value("circle"),
-                              stroke=Marks.Encode.Value(self._mark_color),
-                              strokeWidth=Marks.Encode.Value(self._mark_size),
-                              opacity=Marks.Encode.Value(self._opacity))
+        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
+                              map_scale=Marks.Encode.Value(self._map_scale),
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
+    
+    def coor(self):
+        return self._coordinate_system
+
+    def bounding_box(self):
+        return self._bounding_box
+
+    def height(self):
+        return self._height
+
+    def width(self):
+        return self._width

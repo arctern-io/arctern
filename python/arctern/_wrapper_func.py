@@ -49,13 +49,15 @@ __all__ = [
     "heat_map",
     "heat_map_wkt",
     "choropleth_map",
-    "coordinate_projection",
+    # "coordinate_projection",
+    "transform_and_projection",
 ]
 
 
 
 import pyarrow as pa
 from . import arctern_core_
+import base64
 
 def ST_Point(x, y):
     arr_x = pa.array(x, type='double')
@@ -234,19 +236,19 @@ def point_map(xs, ys, conf):
     arr_x = pa.array(xs, type='uint32')
     arr_y = pa.array(ys, type='uint32')
     rs = arctern_core_.point_map(arr_x, arr_y, conf)
-    return rs.buffers()[1].to_pybytes().hex()
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def point_map_wkt(points, conf):
     array_points = pa.array(points, type='string')
     rs = arctern_core_.point_map_wkt(array_points, conf)
-    return rs.buffers()[1].to_pybytes().hex()
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def heat_map(x_data, y_data, c_data, conf):
     arr_x = pa.array(x_data, type='uint32')
     arr_y = pa.array(y_data, type='uint32')
     arr_c = pa.array(c_data, type='uint32')
     rs = arctern_core_.heat_map(arr_x, arr_y, arr_c, conf)
-    return rs.buffers()[1].to_pybytes().hex()
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 
 def heat_map_wkt(points, c_data, conf):
@@ -258,7 +260,7 @@ def heat_map_wkt(points, c_data, conf):
         arr_c = pa.array(c_data, type='int64')
 
     rs = arctern_core_.heat_map_wkt(array_points, arr_c, conf)
-    return rs.buffers()[1].to_pybytes().hex()
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def choropleth_map(wkt_data, count_data, conf):
     arr_wkt = pa.array(wkt_data, type='string')
@@ -267,11 +269,20 @@ def choropleth_map(wkt_data, count_data, conf):
     else:
         arr_count = pa.array(count_data, type='int64')
     rs = arctern_core_.choropleth_map(arr_wkt, arr_count, conf)
-    return rs.buffers()[1].to_pybytes().hex()
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def coordinate_projection(geos, top_left, bottom_right, height, width):
+# def coordinate_projection(geos, top_left, bottom_right, height, width):
+#     arr_geos = pa.array(geos, type='string')
+#     src_rs1 = bytes(top_left, encoding="utf8")
+#     dst_rs1 = bytes(bottom_right, encoding="utf8")
+#     rs = arctern_core_.coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
+#     return rs.to_pandas()
+
+def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     arr_geos = pa.array(geos, type='string')
-    src_rs1 = bytes(top_left, encoding="utf8")
-    dst_rs1 = bytes(bottom_right, encoding="utf8")
-    rs = arctern_core_.coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
+    src = bytes(src_rs, encoding="utf8")
+    dst = bytes(dst_rs, encoding="utf8")
+    bounding_box_min = bytes(bottom_right, encoding="utf8")
+    bounding_box_max = bytes(top_left, encoding="utf8")
+    rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_min, bounding_box_max, height, width)
     return rs.to_pandas()
