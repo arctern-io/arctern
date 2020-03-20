@@ -22,7 +22,7 @@ from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
 
 map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
 
-def _diffPNG(baseline_png, compared_png, precision=0.0025):
+def _diffPNG(baseline_png, compared_png, precision=0.00005):
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
     compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
     baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
@@ -124,9 +124,9 @@ def test_heat_map():
     save_png(heat_map2, map_path + "test_heat_map2.png")
     save_png(heat_map3, map_path + "test_heat_map3.png")
 
-    assert _diffPNG(baseline_png, map_path + "test_heat_map1.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_heat_map2.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_heat_map3.png") == True
+    assert _diffPNG(baseline_png, map_path + "test_heat_map1.png", 0.0025) == True
+    assert _diffPNG(baseline_png, map_path + "test_heat_map2.png", 0.0025) == True
+    assert _diffPNG(baseline_png, map_path + "test_heat_map3.png", 0.0025) == True
 
 def test_choropleth_map():
     wkt_data = []
