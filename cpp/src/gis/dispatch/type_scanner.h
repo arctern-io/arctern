@@ -21,6 +21,7 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <utility>
 
 #include "gis/wkb_types.h"
 

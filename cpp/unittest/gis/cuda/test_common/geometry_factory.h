@@ -27,7 +27,6 @@
 #include <vector>
 
 #include "common/version.h"
-#include "geometry_factory.h"
 #include "gis/api.h"
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
