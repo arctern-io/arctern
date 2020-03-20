@@ -86,19 +86,26 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-#if defined(USE_GPU) && false
+#if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
   dispatch::TypeScannerForWkt scanner(geometries);
-  GroupedWkbTypes supported_types = {WkbTypes::kPoint, WkbTypes::kLineString,
-                                     WkbTypes::kPolygon, WkbTypes::kMultiPolygon};
-  scanner.mutable_types().push_back(supported_types);
+  dispatch::GroupedWkbTypes gpu_supported_types = {
+      WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
+  scanner.mutable_types().push_back(gpu_supported_types);
   auto type_masks = scanner.Scan();
-  if (type_masks->is_unique_type && (type_masks->unique_type == supported_types)) {
-    return cuda::ST_Envelope(geometries);
+  if (type_masks->is_unique_type) {
+    if (type_masks->unique_type == gpu_supported_types) {
+      return cuda::ST_Envelope(geometries);
+    } else {
+      return gdal::ST_Envelope(geometries);
+    }
   } else {
-    return gdal::ST_Envelope(geometries);
+    auto mask = type_masks->get_mask(gpu_supported_types);
+    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
+    auto result = dispatch::UnaryMixedExecute<arrow::StringArray>(
+        mask, gdal::ST_Envelope, cuda::ST_Envelope, typed_geo);
+    return result;
   }
-
 #else
   return gdal::ST_Envelope(geometries);
 #endif
@@ -196,19 +203,19 @@ std::shared_ptr<arrow::Array> ST_Distance(
   //   bool rhs_ok = false;
   //   //  {
   //   //    dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
-  //   //    GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
-  //   //    lhs_scanner.mutable_types().push_back(lhs_supported_types);
+  //   //    GroupedWkbTypes lhs_gpu_supported_types = {WkbTypes::kPoint};
+  //   //    lhs_scanner.mutable_types().push_back(lhs_gpu_supported_types);
   //   //    auto lhs_type_masks = lhs_scanner.Scan();
   //   //    lhs_ok = lhs_type_masks->is_unique_group &&
-  //   //             (lhs_type_masks->unique_group == lhs_supported_types);
+  //   //             (lhs_type_masks->unique_group == lhs_gpu_supported_types);
   //   //  }
   //   //  {
   //   //    dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
-  //   //    GroupedWkbTypes rhs_supported_types = {WkbTypes::kPoint};
-  //   //    rhs_scanner.mutable_types().push_back(rhs_supported_types);
+  //   //    GroupedWkbTypes rhs_gpu_supported_types = {WkbTypes::kPoint};
+  //   //    rhs_scanner.mutable_types().push_back(rhs_gpu_supported_types);
   //   //    auto rhs_type_masks = rhs_scanner.Scan();
   //   //    rhs_ok = rhs_type_masks->is_unique_group &&
-  //   //             (rhs_type_masks->unique_group == rhs_supported_types);
+  //   //             (rhs_type_masks->unique_group == rhs_gpu_supported_types);
   //   //  }
 
 #else
@@ -220,10 +227,11 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
   //   #if defined(USE_GPU)
   //     // currently support ST_Polygon
   //     dispatch::TypeScannerForWkt scanner(geometries);
-  //     GroupedWkbTypes supported_types = {WkbTypes::kPolygon};
-  //     scanner.mutable_types().push_back(supported_types);
+  //     GroupedWkbTypes gpu_supported_types = {WkbTypes::kPolygon};
+  //     scanner.mutable_types().push_back(gpu_supported_types);
   //     auto type_masks = scanner.Scan();
-  //     if (type_masks->is_unique_group && (type_masks->unique_group == supported_types))
+  //     if (type_masks->is_unique_group && (type_masks->unique_group ==
+  //     gpu_supported_types))
   //     {
   //       return cuda::ST_Area(geometries);
   //     } else {
@@ -238,22 +246,21 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
 #if defined(USE_GPU)
   // currently support ST_LineString
   dispatch::TypeScannerForWkt scanner(geometries);
-  dispatch::GroupedWkbTypes supported_types = {WkbTypes::kLineString};
-  scanner.mutable_types().push_back(supported_types);
+  dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
+  scanner.mutable_types().push_back(gpu_supported_types);
   auto type_masks = scanner.Scan();
   if (type_masks->is_unique_type) {  // UNIQUE METHOD
-    if (type_masks->unique_type == supported_types) {
+    if (type_masks->unique_type == gpu_supported_types) {
       return cuda::ST_Length(geometries);
     } else {
       return gdal::ST_Length(geometries);
     }
   } else {  // MIXED METHOD
-    auto mask = type_masks->get_mask(supported_types);
-    auto split_inputs = dispatch::WktArraySplit(geometries, mask);
-    assert(split_inputs[1]->null_count() == 0);
-    auto gdal_output = gdal::ST_Length(split_inputs[0]);
-    auto cuda_output = cuda::ST_Length(split_inputs[1]);
-    return dispatch::DoubleArrayMerge({gdal_output, cuda_output}, mask);
+    auto mask = type_masks->get_mask(gpu_supported_types);
+    auto typed_geo = std::static_pointer_cast<arrow::StringArray>(geometries);
+    auto result = dispatch::UnaryMixedExecute<arrow::DoubleArray>(
+        mask, gdal::ST_Length, cuda::ST_Length, typed_geo);
+    return result;
   }
 #else
   return gdal::ST_Length(geometries);
@@ -310,19 +317,19 @@ std::shared_ptr<arrow::Array> ST_Within(
   // #if defined(USE_GPU)
   //   // currently support ST_Point within ST_Polygon
   //   dispatch::TypeScannerForWkt lhs_scanner(geometries_1);
-  //   GroupedWkbTypes lhs_supported_types = {WkbTypes::kPoint};
-  //   lhs_scanner.mutable_types().push_back(lhs_supported_types);
+  //   GroupedWkbTypes lhs_gpu_supported_types = {WkbTypes::kPoint};
+  //   lhs_scanner.mutable_types().push_back(lhs_gpu_supported_types);
   //   auto lhs_type_masks = lhs_scanner.Scan();
 
   //   dispatch::TypeScannerForWkt rhs_scanner(geometries_2);
-  //   GroupedWkbTypes rhs_supported_types = {WkbTypes::kPolygon};
-  //   rhs_scanner.mutable_types().push_back(rhs_supported_types);
+  //   GroupedWkbTypes rhs_gpu_supported_types = {WkbTypes::kPolygon};
+  //   rhs_scanner.mutable_types().push_back(rhs_gpu_supported_types);
   //   auto rhs_type_masks = rhs_scanner.Scan();
 
   //   if (lhs_type_masks->is_unique_group &&
-  //       (lhs_type_masks->unique_group == lhs_supported_types) &&
+  //       (lhs_type_masks->unique_group == lhs_gpu_supported_types) &&
   //       rhs_type_masks->is_unique_group &&
-  //       (rhs_type_masks->unique_group == rhs_supported_types)) {
+  //       (rhs_type_masks->unique_group == rhs_gpu_supported_types)) {
   //     return cuda::ST_Within(geometries_1, geometries_2);
   //   } else {
   //     return gdal::ST_Within(geometries_1, geometries_2);

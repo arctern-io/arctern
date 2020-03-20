@@ -125,12 +125,13 @@ cd GIS/spark/pyspark
 ## 确认是否安装成功  
 在`python`命令行里输入`import arctern_pyspark`，看是否报错
 
-## 设置链接选项  
+## 设置链接选项和增加环境变量
 
 修改`spark-defaults.conf`，只需要修改master节点配置即可，添加如下配置
 ```
 spark.driver.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
 spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home/xxx/miniconda3/envs/arctern/lib:/usr/local/cuda/lib64
+spark.executorEnv.PROJ_LIB /home/xxx/miniconda3/envs/arctern_dev/share/proj
 ```
 
 `/home/xxx/gis/GIS/cpp/build/thirdparty/lib`对应你编译cpp部分时，生成的库安装的地方
@@ -140,7 +141,6 @@ spark.executor.extraLibraryPath /home/xxx/gis/GIS/cpp/build/thirdparty/lib:/home
 ```
 export PYSPARK_PYTHON=/home/xxx/miniconda3/envs/arctern/bin/python
 export GDAL_DATA=/home/xxx/miniconda3/envs/arctern/share/gdal
-export PROJ_LIB=/home/xxx/miniconda3/envs/arctern/share/proj
 ```
 
 ## 检查`pyspark`是否使用`$PYSPARK_PYTHON`指定的python

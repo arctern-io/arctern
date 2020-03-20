@@ -38,13 +38,14 @@ def pointmap(df, vega):
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection
     coor = vega.coor()
-    bounding_box_max = vega.bounding_box_max()
-    bounding_box_min = vega.bounding_box_min()
+    bounding_box = vega.bounding_box()
     height = vega.height()
     width = vega.width()
+    top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("point"))
-
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+    df.show(20,False)
     vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):
@@ -60,12 +61,13 @@ def heatmap(df, vega):
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection
     coor = vega.coor()
-    bounding_box_max = vega.bounding_box_max()
-    bounding_box_min = vega.bounding_box_min()
+    bounding_box = vega.bounding_box()
     height = vega.height()
     width = vega.width()
+    top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
 
     print(vega)
     vega = vega.build()
@@ -99,12 +101,13 @@ def choroplethmap(df, vega):
     from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection
     coor = vega.coor()
-    bounding_box_max = vega.bounding_box_max()
-    bounding_box_min = vega.bounding_box_min()
+    bounding_box = vega.bounding_box()
     height = vega.height()
     width = vega.width()
+    top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
-        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(str(bounding_box_min)), lit(str(bounding_box_max)), lit(int(height)), lit(int(width))).alias("wkt"), col('w'))
+        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkt"), col('w'))
 
     vega = vega.build()
     agg_schema = StructType([StructField('wkt', StringType(), True),

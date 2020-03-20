@@ -33,10 +33,9 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box_min: Value, bounding_box_max: Value, shape: Value, stroke: Value,
+        def __init__(self, bounding_box: Value, shape: Value, stroke: Value,
                      stroke_width: Value, opacity: Value, coordinate_system: Value):
-            if not (isinstance(bounding_box_min.v, str)
-                    and isinstance(bounding_box_max.v, str)
+            if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
                     and isinstance(stroke_width.v, int)
                     and isinstance(stroke.v, str)
@@ -45,8 +44,7 @@ class Marks(RootMarks):
                 # TODO error log here
                 print("illegal")
                 assert 0
-            self._bounding_box_min = bounding_box_min
-            self._bounding_box_max = bounding_box_max
+            self._bounding_box = bounding_box
             self._shape = shape
             self._stroke = stroke
             self._stroke_width = stroke_width
@@ -56,8 +54,7 @@ class Marks(RootMarks):
         def to_dict(self):
             dic = {
                 "enter": {
-                    "bounding_box_min": self._bounding_box_min.to_dict(),
-                    "bounding_box_max": self._bounding_box_max.to_dict(),
+                    "bounding_box": self._bounding_box.to_dict(),
                     "shape": self._shape.to_dict(),
                     "stroke": self._stroke.to_dict(),
                     "strokeWidth": self._stroke_width.to_dict(),
@@ -77,11 +74,10 @@ class Marks(RootMarks):
         return dic
 
 class VegaPointMap(VegaScatterPlot):
-    def __init__(self, width: int, height: int, bounding_box_min: str, bounding_box_max: str,
+    def __init__(self, width: int, height: int, bounding_box: list,
                  mark_size: int, mark_color: str, opacity: float, coordinate_system: str):
         VegaScatterPlot.__init__(self, width, height)
-        self._bounding_box_min = bounding_box_min
-        self._bounding_box_max = bounding_box_max
+        self._bounding_box = bounding_box
         self._mark_size = mark_size
         self._mark_color = mark_color
         self._opacity = opacity
@@ -95,8 +91,7 @@ class VegaPointMap(VegaScatterPlot):
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
-        encode = Marks.Encode(bounding_box_min=Marks.Encode.Value(self._bounding_box_min),
-                              bounding_box_max=Marks.Encode.Value(self._bounding_box_max),
+        encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               shape=Marks.Encode.Value("circle"),
                               stroke=Marks.Encode.Value(self._mark_color),
                               stroke_width=Marks.Encode.Value(self._mark_size),
@@ -108,14 +103,12 @@ class VegaPointMap(VegaScatterPlot):
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
+        
     def coor(self):
         return self._coordinate_system
     
-    def bounding_box_min(self):
-        return self._bounding_box_min
-    
-    def bounding_box_max(self):
-        return self._bounding_box_max
+    def bounding_box(self):
+        return self._bounding_box
 
     def height(self):
         return self._height
