@@ -133,8 +133,8 @@ def compare_length(geometry_x, geometry_y):
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
 
-    print('arctern length: %s, postgis length: %s, intersection length: %s' %
-          (str(arct_length), str(pgis_length), str(intersection_length)))
+    # print('arctern length: %s, postgis length: %s, intersection length: %s' %
+    #       (str(arct_length), str(pgis_length), str(intersection_length)))
     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
     result = compare3float_relative(
         pgis_length, arct_length, intersection_length, EPOCH_CURVE_RELATIVE)
@@ -150,8 +150,8 @@ def compare_area(geometry_x, geometry_y):
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
 
-    print('arctern area: %s, postgis area: %s, intersection area: %s' %
-          (str(arct_area), str(pgis_area), str(intersection_area)))
+    # print('arctern area: %s, postgis area: %s, intersection area: %s' %
+    #       (str(arct_area), str(pgis_area), str(intersection_area)))
     # result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     result = compare3float_relative(
         pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
@@ -326,7 +326,7 @@ def compare_one(config, result, expect):
                         print(result[0], newvalue_x, expect[0], newvalue_y)
                     return one_result_flag
 
-                print(result[0], newvalue_x, expect[0], newvalue_y)
+                # print(result[0], newvalue_x, expect[0], newvalue_y)
                 return False
 
         if isinstance(newvalue_x, (int, float)):
