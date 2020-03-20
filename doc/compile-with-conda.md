@@ -22,7 +22,7 @@ $ conda env list
 
 # conda environments: 
 #
-base                  *  /opt/conda
+base                  *  /home/xxx/miniconda3
 ...
 ```
 
@@ -30,15 +30,10 @@ base                  *  /opt/conda
 ```shell
 # 安装conda
 $ wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-$ /bin/bash ~/miniconda.sh -b -p /opt/conda
+$ /bin/bash ~/miniconda.sh -b
 $ rm ~/miniconda.sh
 
-# 配置conda 
-$ ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
-$ echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
-$ echo "conda activate base" >> ~/.bashrc
-$ . /opt/conda/etc/profile.d/conda.sh
-$ conda activate base
+安装过程中选择默认选项即可
 ```
 
 ## 创建并使用gis-dev开发环境以及第三方库
@@ -54,8 +49,14 @@ $ conda activate base
 `conda activate arctern`
 
 # cpp代码编译以及单元测试的运行
-此部分所有工作均在conda中的arctern环境中运行：
-首先切换到工程中的arctern/cpp目录然后运行下面的命令：
+
+#### 1. 克隆arctern项目至本地  
+```
+git clone https://github.com/zilliztech/arctern.git
+```
+注意：此后的所有工作均在conda中的arctern环境中运行。
+
+#### 2. 切换到工程中的arctern/cpp目录然后运行下面的命令  
 
 CPU Version
 ```
@@ -78,12 +79,11 @@ BUILD_WITH_GPU       OFF       [default]
 BUILD_UNITTEST       OFF       [default]
 ```
 
-运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
+#### 3. 运行上述代码之后无错误，整个工程就编译成功了，然后运行下面的命令运行单元测试：  
 ```
 ./unittest/gis/gis_tests
 ./unittest/render/render_tests
 ```
-
 运行完之后无错误输出就证明cpp编译和单元测试全部成功了。
 
 # python封装以及单元测试的运行
