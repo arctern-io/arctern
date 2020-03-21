@@ -94,7 +94,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
       WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
   scanner.mutable_types().push_back(gpu_supported_types);
   dispatch::MaskResult mask_result;
-  mask_result.AppendRequire(scanner, gpu_supported_types);
+  mask_result.AppendFilter(scanner, gpu_supported_types);
   auto result = dispatch::UnaryExecute<arrow::StringArray>(mask_result, gdal::ST_Envelope,
                                                            cuda::ST_Envelope, geometries);
   return result;
@@ -170,8 +170,8 @@ std::shared_ptr<arrow::Array> ST_Distance(
   scanner_right.mutable_types().emplace_back(gpu_type_right);
 
   dispatch::MaskResult mask_result;
-  mask_result.AppendRequire(scanner_left, gpu_type_left);
-  mask_result.AppendRequire(scanner_right, gpu_type_right);
+  mask_result.AppendFilter(scanner_left, gpu_type_left);
+  mask_result.AppendFilter(scanner_right, gpu_type_right);
   auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
       mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
   return result;
@@ -208,7 +208,7 @@ std::shared_ptr<arrow::Array> ST_Length(
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
   scanner.mutable_types().push_back(gpu_supported_types);
   dispatch::MaskResult result_mask;
-  result_mask.AppendRequire(scanner, gpu_supported_types);
+  result_mask.AppendFilter(scanner, gpu_supported_types);
 
   auto result = dispatch::UnaryExecute<arrow::DoubleArray>(result_mask, gdal::ST_Length,
                                                            cuda::ST_Length, geometries);
@@ -278,8 +278,8 @@ std::shared_ptr<arrow::Array> ST_Within(
   scanner_right.mutable_types().emplace_back(gpu_type_right);
 
   dispatch::MaskResult mask_result;
-  mask_result.AppendRequire(scanner_left, gpu_type_left);
-  mask_result.AppendRequire(scanner_right, gpu_type_right);
+  mask_result.AppendFilter(scanner_left, gpu_type_left);
+  mask_result.AppendFilter(scanner_right, gpu_type_right);
   auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
       mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
   return result;
