@@ -269,3 +269,4 @@ TEST(type_scan, dispatch) {
   dispatch::UnaryExecute<arrow::StringArray>(mask_result, false_checker, true_checker,
                                              cases);
 }
+
