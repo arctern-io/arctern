@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import pandas
 import arctern
 
-from arctern.util import save_png
+from arctern.util import save_png, diff_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
+
+map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
 
 def test_point_map():
     x_data = []
@@ -40,11 +43,21 @@ def test_point_map():
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
 
-    vega_circle2d = vega_pointmap(1024, 896, 'POINT (-73.998427 40.780816)', 'POINT (-73.954348 40.730309)', 3, "#2DEF4A", 0.5, "EPSG:43")
+    vega_circle2d = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:43")
     vega_json = vega_circle2d.build()
 
-    curve_z = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
-    save_png(curve_z, "/tmp/curve_z.png")
+    curve_z1 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    curve_z2 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    curve_z3 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+
+    baseline_png = map_path + "curve_z.png"
+    save_png(curve_z1, map_path + "test_curve_z1.png")
+    save_png(curve_z2, map_path + "test_curve_z2.png")
+    save_png(curve_z3, map_path + "test_curve_z3.png")
+
+    assert diff_png(baseline_png, map_path + "test_curve_z1.png")
+    assert diff_png(baseline_png, map_path + "test_curve_z2.png")
+    assert diff_png(baseline_png, map_path + "test_curve_z3.png")
 
 def test_heat_map():
     x_data = []
@@ -60,11 +73,21 @@ def test_heat_map():
     arr_y = pandas.Series(y_data)
     arr_c = pandas.Series(y_data)
 
-    vega_heat_map = vega_heatmap(1024, 896, 10.0, 'POINT (-73.998427 40.780816)', 'POINT (-73.954348 40.730309)', 'EPSG:4326')
+    vega_heat_map = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
     vega_json = vega_heat_map.build()
 
-    heat_map = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-    save_png(heat_map, "/tmp/test_heat_map.png")
+    heat_map1 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+    heat_map2 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+    heat_map3 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
+
+    baseline_png = map_path + "heat_map.png"
+    save_png(heat_map1, map_path + "test_heat_map1.png")
+    save_png(heat_map2, map_path + "test_heat_map2.png")
+    save_png(heat_map3, map_path + "test_heat_map3.png")
+
+    assert diff_png(baseline_png, map_path + "test_heat_map1.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map2.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map3.png", 0.0025)
 
 def test_choropleth_map():
     wkt_data = []
@@ -75,14 +98,24 @@ def test_choropleth_map():
       "200 300, "
       "300 300, "
       "300 200, "
-      "200 200))");
+      "200 200))")
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
     arr_count = pandas.Series(count_data)
 
-    vega_choropleth_map = vega_choroplethmap(1900, 1410, 'POINT (-73.994092 40.759642)', 'POINT (-73.977588 40.753893)', "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
+    vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     vega_json = vega_choropleth_map.build()
 
-    choropleth_map = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    save_png(choropleth_map, "/tmp/test_choropleth_map.png")
+    choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+
+    baseline_png = map_path + "choropleth_map.png"
+    save_png(choropleth_map1, map_path + "test_choropleth_map1.png")
+    save_png(choropleth_map2, map_path + "test_choropleth_map2.png")
+    save_png(choropleth_map3, map_path + "test_choropleth_map3.png")
+
+    assert diff_png(baseline_png, map_path + "test_choropleth_map1.png")
+    assert diff_png(baseline_png, map_path + "test_choropleth_map2.png")
+    assert diff_png(baseline_png, map_path + "test_choropleth_map3.png")

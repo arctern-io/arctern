@@ -225,12 +225,17 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## <span id = "pathconfiguration">配置 Spark 的 Python 路径</span>
 
+在文件 `conf/spark-default.conf` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
+
+```bash
+spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern/share/proj
+spark.executorEnv.GDAL_DATA [path/to/your/conda]/envs/arctern/share/gdal
+```
+
 在文件 `conf/spark-env.sh` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
 
 ```bash
 export PYSPARK_PYTHON=[path/to/your/conda]/envs/arctern/bin/python
-export GDAL_DATA=[path/to/your/conda]/envs/arctern/share/gdal
-export PROJ_LIB=[path/to/your/conda]/envs/arctern/share/proj
 ```
 
 通过如下方式，检查 PySpark 是否使用 $PYSPARK_PYTHON 指定的 Python 路径。其中 `[path/to/your/spark]` 为 Spark 的安装路径。

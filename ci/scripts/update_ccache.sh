@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 HELP="
 Usage:
   $0 [flags] [Arguments]
@@ -17,7 +15,7 @@ Usage:
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "l:f:u:p:h" -l "cache_dir::,file::,help" -n "$0" -- "$@"`
+ARGS=$(getopt -o "l:f:u:p:h" -l "cache_dir::,file::,help" -n "$0" -- "$@")
 
 eval set -- "${ARGS}"
 
@@ -59,7 +57,7 @@ done
 
 # Set defaults for vars modified by flags to this script
 CCACHE_DIR=${CCACHE_DIR:="${HOME}/.ccache"}
-PACKAGE_FILE=${PACKAGE_FILE:="ccache-${OS_NAME}-${BUILD_ENV_DOCKER_IMAGE_ID}.tar.gz"}
+PACKAGE_FILE=${PACKAGE_FILE:="ccache-${OS_NAME}-${BUILD_ENV_IMAGE_ID}.tar.gz"}
 BRANCH_NAME=$(git log --decorate | head -n 1 | sed 's/.*(\(.*\))/\1/' | sed 's/.*, //' | sed 's=[a-zA-Z]*\/==g')
 
 if [[ -z "${ARTIFACTORY_URL}" || "${ARTIFACTORY_URL}" == "" ]];then
@@ -67,36 +65,33 @@ if [[ -z "${ARTIFACTORY_URL}" || "${ARTIFACTORY_URL}" == "" ]];then
     exit 1
 fi
 
-if [[ ! -d ${CCACHE_DIR} ]]; then
+if [[ ! -d "${CCACHE_DIR}" ]]; then
     echo "\"${CCACHE_DIR}\" directory does not exist !"
     exit 1
 fi
 
 function check_ccache() {
     BRANCH=$1
-    echo "fetching ${BRANCH}/${PACKAGE_FILE}"
     wget -q --spider "${ARTIFACTORY_URL}/${BRANCH}/${PACKAGE_FILE}"
     return $?
 }
 
 if [[ -n "${CHANGE_TARGET}" && "${BRANCH_NAME}" =~ "PR-" ]]; then
-    REMOTE_PACKAGE_PATH="${ARTIFACTORY_URL}/${BRANCH_NAME}"
     check_ccache ${CHANGE_TARGET}
     if [[ $? == 0 ]];then
         echo "Skip Update ccache package ..." && exit 0
     fi
 fi
 
-REMOTE_PACKAGE_PATH="${ARTIFACTORY_URL}/${BRANCH_NAME}"
-
 echo -e "===\n=== ccache statistics after build\n==="
 ccache --show-stats
 
 if [[ "${BRANCH_NAME}" != "HEAD" ]];then
+    REMOTE_PACKAGE_PATH="${ARTIFACTORY_URL}/${BRANCH_NAME}"
     echo "Updating ccache package file: ${PACKAGE_FILE}"
-    tar zcf ./${PACKAGE_FILE} -C ${CCACHE_DIR} .
+    tar zcf ./"${PACKAGE_FILE}" -C "${CCACHE_DIR}" .
     echo "Uploading ccache package file ${PACKAGE_FILE} to ${REMOTE_PACKAGE_PATH}"
-    curl -u${USERNAME}:${PASSWORD} -T ${PACKAGE_FILE} ${REMOTE_PACKAGE_PATH}/${PACKAGE_FILE}
+    curl -u"${USERNAME}":"${PASSWORD}" -T "${PACKAGE_FILE}" "${REMOTE_PACKAGE_PATH}"/"${PACKAGE_FILE}"
     if [[ $? == 0 ]];then
         echo "Uploading ccache package file success !"
         exit 0
@@ -105,3 +100,5 @@ if [[ "${BRANCH_NAME}" != "HEAD" ]];then
         exit 1
     fi
 fi
+
+echo "Skip Update ccache package ..."
