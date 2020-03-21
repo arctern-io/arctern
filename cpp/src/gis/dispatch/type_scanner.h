@@ -116,11 +116,10 @@ class MaskResult {
 
   MaskResult() = default;
   MaskResult(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported) {
-    this->AppendRequire(scanner, supported);
+    this->AppendFilter(scanner, supported);
   }
   // bitwise append
-  void AppendRequire(const GeometryTypeScanner& scanner,
-                     const GroupedWkbTypes& supported);
+  void AppendFilter(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported);
 
   Status get_status() const { return status_; }
   const std::vector<bool>& get_mask() const { return mask_; }

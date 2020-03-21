@@ -254,7 +254,7 @@ TEST(type_scan, dispatch) {
   scanner2.mutable_types().push_back(type2);
 
   dispatch::MaskResult mask_result(scanner1, type1);
-  mask_result.AppendRequire(scanner2, type2);
+  mask_result.AppendFilter(scanner2, type2);
 
   auto true_checker = [&](std::shared_ptr<arrow::StringArray> wkt) {
     EXPECT_EQ(wkt->length(), 1);
@@ -269,3 +269,4 @@ TEST(type_scan, dispatch) {
   dispatch::UnaryExecute<arrow::StringArray>(mask_result, false_checker, true_checker,
                                              cases);
 }
+
