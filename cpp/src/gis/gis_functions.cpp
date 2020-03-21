@@ -99,7 +99,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
                                                            cuda::ST_Envelope, geometries);
   return result;
 #else
-  return gdal::ST_Envelope(geometries);
+  return gdal::ST_Envelope(geometries_raw);
 #endif
 }
 
@@ -176,7 +176,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
       mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
   return result;
 #else
-  return gdal::ST_Distance(geo_left, geo_right);
+  return gdal::ST_Distance(geo_left_raw, geo_right_raw);
 #endif
 }
 
@@ -195,7 +195,7 @@ std::shared_ptr<arrow::Array> ST_Area(
   return dispatch::UnaryExecute<arrow::DoubleArray>(mask_result, gdal::ST_Area,
                                                     cuda::ST_Area, geometries);
 #else
-  return gdal::ST_Area(geometries);
+  return gdal::ST_Area(geometries_raw);
 #endif
 }
 
@@ -214,7 +214,7 @@ std::shared_ptr<arrow::Array> ST_Length(
                                                            cuda::ST_Length, geometries);
   return result;
 #else
-  return gdal::ST_Length(geometries);
+  return gdal::ST_Length(geometries_raw);
 #endif
 }
 
@@ -284,7 +284,7 @@ std::shared_ptr<arrow::Array> ST_Within(
       mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
   return result;
 #else
-  return gdal::ST_Within(geo_left, geo_right);
+  return gdal::ST_Within(geo_left_raw, geo_right_raw);
 #endif
 }
 
