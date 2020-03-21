@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 HELP="
 Usage:
   $0 [flags] [Arguments]
@@ -15,7 +13,7 @@ Usage:
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "l:f:h" -l "cache_dir::,file::,help" -n "$0" -- "$@"`
+ARGS=$(getopt -o "l:f:h" -l "cache_dir::,file::,help" -n "$0" -- "$@")
 
 eval set -- "${ARGS}"
 
@@ -47,7 +45,7 @@ done
 
 # Set defaults for vars modified by flags to this script
 CCACHE_DIR=${CCACHE_DIR:="${HOME}/.ccache"}
-PACKAGE_FILE=${PACKAGE_FILE:="ccache-${OS_NAME}-${BUILD_ENV_DOCKER_IMAGE_ID}.tar.gz"}
+PACKAGE_FILE=${PACKAGE_FILE:="ccache-${OS_NAME}-${BUILD_ENV_IMAGE_ID}.tar.gz"}
 BRANCH_NAMES=$(git log --decorate | head -n 1 | sed 's/.*(\(.*\))/\1/' | sed 's=[a-zA-Z]*\/==g' | awk -F", " '{$1=""; print $0}')
 
 if [[ -z "${ARTIFACTORY_URL}" || "${ARTIFACTORY_URL}" == "" ]];then
@@ -65,8 +63,8 @@ function check_ccache() {
 function download_file() {
     BRANCH=$1
     wget -q "${ARTIFACTORY_URL}/${BRANCH}/${PACKAGE_FILE}" && \
-    mkdir -p ${CCACHE_DIR} && \
-    tar zxf ${PACKAGE_FILE} -C ${CCACHE_DIR} && \
+    mkdir -p "${CCACHE_DIR}" && \
+    tar zxf "${PACKAGE_FILE}" -C "${CCACHE_DIR}" && \
     rm ${PACKAGE_FILE}
     return $?
 }

@@ -22,11 +22,11 @@
 namespace arctern {
 namespace render {
 
-class VegaCircle2d : public VegaScatterPlot {
+class VegaPointmap : public VegaScatterPlot {
  public:
-  VegaCircle2d() = default;
+  VegaPointmap() = default;
 
-  explicit VegaCircle2d(const std::string& json);
+  explicit VegaPointmap(const std::string& json);
 
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;

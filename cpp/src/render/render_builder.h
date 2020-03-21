@@ -23,6 +23,7 @@
 #include "render/2d/choropleth_map/choropleth_map.h"
 #include "render/2d/heatmap/heatmap.h"
 #include "render/2d/scatter_plot/pointmap.h"
+#include "render/2d/scatter_plot/weighted_pointmap.h"
 
 namespace arctern {
 namespace render {
@@ -34,6 +35,11 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                       int64_t num_vertices, const std::string& conf);
+
+template <typename T>
+std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+                                               int64_t num_vertices,
+                                               const std::string& conf);
 
 template <typename T>
 std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
