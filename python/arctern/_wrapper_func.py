@@ -252,7 +252,8 @@ def heat_map(x_data, y_data, c_data, conf):
 
 
 def heat_map_wkt(points, c_data, conf):
-    array_points = pa.array(points, type='string')
+    array_points = pa.array(points, type='binary')
+#    array_points = pa.array(points, type='string')
 
     if isinstance(c_data[0], float):
         arr_c = pa.array(c_data, type='double')
@@ -261,6 +262,7 @@ def heat_map_wkt(points, c_data, conf):
 
     rs = arctern_core_.heat_map_wkt(array_points, arr_c, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+#    return base64.b64encode(arr_c.buffers()[1].to_pybytes())
 
 def choropleth_map(wkt_data, count_data, conf):
     arr_wkt = pa.array(wkt_data, type='string')

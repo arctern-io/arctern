@@ -48,6 +48,7 @@ def draw_heat_map(spark):
     register_funcs(spark)
     res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
+    res.show()
     vega = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
     res = heatmap(res, vega)
     save_png(res, '/tmp/heatmap.png')
@@ -80,7 +81,7 @@ if __name__ == "__main__":
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
     draw_heat_map(spark_session)
-    draw_point_map(spark_session)
-    draw_choropleth_map(spark_session)
+#    draw_point_map(spark_session)
+#    draw_choropleth_map(spark_session)
 
     spark_session.stop()

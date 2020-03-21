@@ -58,7 +58,7 @@ def pointmap(df, vega):
 
 def heatmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
-    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
+    from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection
     coor = vega.coor()
     bounding_box = vega.bounding_box()
@@ -68,10 +68,10 @@ def heatmap(df, vega):
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
-
-    print(vega)
+#    df.show(20,False)
     vega = vega.build()
-    agg_schema = StructType([StructField('point', StringType(), True),
+#    agg_schema = StructType([StructField('point', StringType(), True),
+    agg_schema = StructType([StructField('point', BinaryType(), True),
                              StructField('w', IntegerType(), True)])
 
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
@@ -93,6 +93,7 @@ def heatmap(df, vega):
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
+#    agg_df = agg_df.groupby("point").agg(sum_udf(agg_df['w']).alias("w"))
     hex_data = agg_df.agg(heatmap_wkt(agg_df['point'], agg_df['w'])).collect()[0][0]
     return hex_data
 

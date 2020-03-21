@@ -56,7 +56,8 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-  arrow::StringBuilder builder;
+// arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
 
   auto len = geos->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
@@ -108,17 +109,21 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         throw std::runtime_error(err_msg);
       }
 
-      char* str;
-      err_code = OGR_G_ExportToWkt(geo, &str);
+//     char* str;
+//      err_code = OGR_G_ExportToWkt(geo, &str);
+      auto sz = geo->WkbSize();
+      std::vector<char> str(sz);
+      err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);
         throw std::runtime_error(err_msg);
       }
 
-      CHECK_ARROW(builder.Append(str));
+      CHECK_ARROW(builder.Append(str.data(), str.size()));
+//      CHECK_ARROW(builder.Append(str));
       OGRGeometryFactory::destroyGeometry(geo);
-      CPLFree(str);
+//      CPLFree(str);
     }
   }
 
@@ -126,6 +131,32 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   CHECK_ARROW(builder.Finish(&results));
   OCTDestroyCoordinateTransformation(poCT);
 
+  return results;
+}
+
+template<typename T>
+std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(const std::shared_ptr<arrow::Array>& geos,
+                                               const std::shared_ptr<arrow::Array>& arr_c){
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
+  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
+  auto geos_size = geos->length();
+  auto geo_type = geos->type_id();
+  auto c_size = arr_c->length();
+  assert(geo_type == arrow::Type::Binary);
+  assert(geos_size == c_size);
+
+  std::unordered_map<OGRGeometry*, T, hash_func> results;
+  for (size_t i = 0; i < geos_size; i++) {
+    std::string geo_wkb = geo_arr->GetString(i);
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    auto type = wkbFlatten(res_geo->getGeometryType());
+    if(results.find(res_geo)==results.end()) {
+      results[res_geo] = c_arr[i];
+    } else {
+      results[res_geo] = c_arr[i];
+    }
+  }
   return results;
 }
 
