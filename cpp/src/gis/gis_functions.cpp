@@ -176,7 +176,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
       mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
   return result;
 #else
-  return gdal::ST_Envelope(geometries);
+  return gdal::ST_Distance(geo_left, geo_right);
 #endif
 }
 
@@ -284,7 +284,7 @@ std::shared_ptr<arrow::Array> ST_Within(
       mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
   return result;
 #else
-  return gdal::ST_Within(geometries_1, geometries_2);
+  return gdal::ST_Within(geo_left, geo_right);
 #endif
 }
 
