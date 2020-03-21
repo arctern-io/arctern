@@ -20,8 +20,8 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "gis/wkb_types.h"
 

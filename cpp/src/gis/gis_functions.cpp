@@ -35,7 +35,6 @@ namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-
 std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
                                        const std::shared_ptr<arrow::Array>& y_values) {
 #if defined(USE_GPU)

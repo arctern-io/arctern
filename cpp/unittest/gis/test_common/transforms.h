@@ -44,7 +44,8 @@ inline std::vector<char> SingleStrToWkb(const std::string& geo_wkt) {
   return result;
 }
 
-inline std::shared_ptr<arrow::StringArray> StrsToWkt(const std::vector<std::string>& wkt_vec) {
+inline std::shared_ptr<arrow::StringArray> StrsToWkt(
+    const std::vector<std::string>& wkt_vec) {
   arrow::StringBuilder builder;
   for (const auto& wkt : wkt_vec) {
     auto st = builder.Append(wkt.data(), wkt.size());
