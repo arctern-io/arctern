@@ -22,7 +22,7 @@ namespace gis {
 namespace dispatch {
 
 void MaskResult::AppendFilter(const GeometryTypeScanner& scanner,
-                               const GroupedWkbTypes& supported) {
+                              const GroupedWkbTypes& supported) {
   auto type_masks = scanner.Scan();
   auto status =
       !type_masks->is_unique_type
