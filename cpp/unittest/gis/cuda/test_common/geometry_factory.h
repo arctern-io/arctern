@@ -16,16 +16,47 @@
 // under the License.
 
 #pragma once
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "gis/cuda/mock/arrow/api.h"
+#include "common/version.h"
+#include "gis/api.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/conversion/conversions.h"
+#include "gis/test_common/transforms.h"
+#include "utils/check_status.h"
+
 namespace arctern {
 namespace gis {
 namespace cuda {
-std::vector<char> Wkt2Wkb(const std::string& geo_wkt);
-std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec);
+
+namespace GeometryVectorFactory {
+inline GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec) {
+  auto input = StrsToWkb(wkt_vec);
+  return ArrowWkbToGeometryVector(input);
+}
+
+inline GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec) {
+  arrow::BinaryBuilder builder;
+  for (const auto& wkb : wkb_vec) {
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::Array> arrow_wkb;
+  auto st = builder.Finish(&arrow_wkb);
+  assert(st.ok());
+  auto result = ArrowWkbToGeometryVector(arrow_wkb);
+  return result;
+}
+
+}  // namespace GeometryVectorFactory
 
 }  // namespace cuda
 }  // namespace gis

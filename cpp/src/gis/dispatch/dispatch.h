@@ -20,6 +20,7 @@
 #include <set>
 #include <vector>
 
+#include "gis/dispatch/type_scanner.h"
 #include "utils/arrow_alias.h"
 
 namespace arctern {
@@ -57,6 +58,16 @@ auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
 auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
                        TrueFunc true_func, const std::shared_ptr<Arg1>& arg1_ptr)
+    -> std::shared_ptr<RetType>;
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
+auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
+                  Arg1&& arg1_ptr) -> std::shared_ptr<RetType>;
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
+          typename Arg2>
+auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
+                   TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
     -> std::shared_ptr<RetType>;
 
 }  // namespace dispatch

@@ -21,7 +21,7 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_distance.h"
-#include "gis/cuda/test_common/test_common.h"
+#include "gis/cuda/test_common/geometry_factory.h"
 
 using std::vector;
 namespace arctern {
@@ -36,7 +36,7 @@ TEST(FunctorDistance, naive) {
   //    uint8_t data_left[] = {0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
   //                           0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00, 0x00, 0x00,
   //                           0x00, 0x00, 0x00, 0xf0, 0x3f};
-  auto vec_left = hexstring_to_binary("01010000000000000000000840000000000000f03f");
+  auto vec_left = HexStringToWkb("01010000000000000000000840000000000000f03f");
   vector<char> vec_right(1 + 4 + 16);
   //  char data[1 + 4 + 16];
   int num = 5;
