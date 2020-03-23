@@ -15,8 +15,8 @@
  */
 #include <iostream>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
