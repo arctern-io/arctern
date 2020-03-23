@@ -91,7 +91,6 @@ class VegaPointMap(VegaScatterPlot):
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
-        print(type(self._opacity))
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               shape=Marks.Encode.Value("circle"),
                               stroke=Marks.Encode.Value(self._mark_color),
