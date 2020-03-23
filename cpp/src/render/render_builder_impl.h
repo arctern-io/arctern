@@ -19,9 +19,9 @@
 #include <ogrsf_frmts.h>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include "utils/check_status.h"
 
