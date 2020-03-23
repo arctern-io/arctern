@@ -40,21 +40,17 @@ void PointMap::Draw() {
           1);
 
   glPointSize(point_vega_.circle_params().radius);
-
   auto& color = point_vega_.circle_params().color;
-  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
-
+  glColor4f(color.r, color.g, color.b, color.a);
   glEnableClientState(GL_VERTEX_ARRAY);
 
   int offset = 0;
   std::vector<int32_t> vertices(num_vertices_ * 2);
-
   for (auto i = 0; i < num_vertices_; i++) {
     vertices[offset++] = vertices_x_[i];
     vertices[offset++] = vertices_y_[i];
   }
   glVertexPointer(2, GL_INT, 0, &vertices[0]);
-
   glDrawArrays(GL_POINTS, 0, num_vertices_);
   glFinish();
 
