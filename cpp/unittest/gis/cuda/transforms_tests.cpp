@@ -21,8 +21,8 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/conversion/conversions.h"
-#include "gis/cuda/test_common/test_common.h"
-#include "gis/cuda/wkb/wkb_transforms.h"
+#include "gis/cuda/test_common/geometry_factory.h"
+#include "gis/test_common/transforms.h"
 
 namespace arctern {
 namespace gis {
@@ -30,21 +30,22 @@ namespace cuda {
 using std::vector;
 
 TEST(Transform, Naive) {
-  auto std_data = hexstring_to_binary(
+  auto std_data = HexStringToWkb(
       "01030000000100000004000000000000000000084000000000000008400000000000000840000000"
       "00000010400000000000001040000000000000104000000000000010400000000000000840");
-  auto output_data = Wkt2Wkb("POLYGON((3 3,3 4,4 4,4 3))");
+  auto output_data = SingleStrToWkb("POLYGON((3 3,3 4,4 4,4 3))");
   ASSERT_TRUE(std_data.size() == output_data.size());
   for (int i = 0; i < std_data.size(); ++i) {
     EXPECT_EQ(std_data[i], output_data[i]) << "at " << i;
   }
   ASSERT_TRUE(true);
-  auto pnt = Wkt2Wkb("POINT(1 1)");
+  auto pnt = SingleStrToWkb("POINT(1 1)");
   ASSERT_TRUE(pnt.size() == 1 + 4 + 16);
 }
 
 TEST(Transform, Arrow) {
   vector<std::string> wkt_vec = {
+      "Point empty",
       "Point(1 2)",
       "Point(2 3)",
       "LineString(3 4,4 5)",
@@ -60,7 +61,7 @@ TEST(Transform, Arrow) {
       "MultiPOLYGON(((10 12, -12 -12, 22 -22, 10 12),(30 31, -31 -31, 31 -31, 30 31)), "
       "((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1)))",
   };
-  auto std_arrow_wkb = WktsToArrowWkb(wkt_vec);
+  auto std_arrow_wkb = StrsToWkb(wkt_vec);
   auto geo_vec = ArrowWkbToGeometryVector(std_arrow_wkb);
   auto arrow_wkb = GeometryVectorToArrowWkb(geo_vec);
   auto is_equal = arrow_wkb->Equals(std_arrow_wkb);

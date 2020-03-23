@@ -38,9 +38,18 @@ struct GeometryVector::ConstGpuContext {
     auto offset = meta_offsets[index];
     return metas + offset;
   }
+
   DEVICE_RUNNABLE const double* get_value_ptr(int index) const {
     auto offset = value_offsets[index];
     return values + offset;
+  }
+
+  DEVICE_RUNNABLE int get_meta_size(int index) const {
+    return meta_offsets[index + 1] - meta_offsets[index];
+  }
+
+  DEVICE_RUNNABLE int get_value_size(int index) const {
+    return value_offsets[index + 1] - value_offsets[index];
   }
 
   struct ConstIter {
@@ -73,6 +82,14 @@ struct GeometryVector::GpuContext {
   DEVICE_RUNNABLE double* get_value_ptr(int index) const {
     auto offset = value_offsets[index];
     return values + offset;
+  }
+
+  DEVICE_RUNNABLE int get_meta_size(int index) const {
+    return meta_offsets[index + 1] - meta_offsets[index];
+  }
+
+  DEVICE_RUNNABLE int get_value_size(int index) const {
+    return value_offsets[index + 1] - value_offsets[index];
   }
 
   using ConstIter = ConstGpuContext::ConstIter;

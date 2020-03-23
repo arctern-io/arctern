@@ -35,7 +35,6 @@ def print_partitions(df):
 
 def pointmap(df, vega):
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
-    from pyspark.sql.types import (StructType, StructField, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection
     coor = vega.coor()
     bounding_box = vega.bounding_box()
@@ -43,7 +42,7 @@ def pointmap(df, vega):
     width = vega.width()
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
-    if (coor != 'EPSG:3857'):
+    if coor != 'EPSG:3857':
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
     
     vega = vega.build()
@@ -66,7 +65,7 @@ def heatmap(df, vega):
     width = vega.width()
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
-    if (coor != 'EPSG:3857'):
+    if coor != 'EPSG:3857':
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
     
     vega = vega.build()
@@ -86,10 +85,6 @@ def heatmap(df, vega):
         from arctern import heat_map_wkb
         return heat_map_wkb(point, w, conf.encode('utf-8'))
 
-    @pandas_udf("double", PandasUDFType.GROUPED_AGG)
-    def sum_udf(v):
-        return v.sum()
-
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
     hex_data = agg_df.agg(heatmap_wkb(agg_df['point'], agg_df['w'])).collect()[0][0]
@@ -108,7 +103,6 @@ def choroplethmap(df, vega):
     if (coor != 'EPSG:3857'):
         df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
     
-    df.show()
     vega = vega.build()
     agg_schema = StructType([StructField('wkb', BinaryType(), True),
                              StructField('w', IntegerType(), True)])

@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 __all__ = [
-    "save_png",
+    "save_png"
 ]
 
 def save_png(hex_str, file_name):

@@ -17,7 +17,7 @@
 
 #include "arrow/render_api.h"
 
-TEST(TWOD_TEST, RAW_POINT_TEST) {
+TEST(POINTMAP_TEST, RAW_POINT_TEST) {
   auto bit_map = new uint8_t{0xff};
 
   auto data_type = arrow::uint32();
@@ -90,7 +90,7 @@ TEST(TWOD_TEST, RAW_POINT_TEST) {
   arctern::render::point_map(array1, array2, vega);
 }
 
-TEST(POINT_TEST, INVALID_COLOR_TEST) {
+TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
   auto bit_map = new uint8_t{0xff};
 
   auto data_type = arrow::uint32();
@@ -163,7 +163,7 @@ TEST(POINT_TEST, INVALID_COLOR_TEST) {
   arctern::render::point_map(array1, array2, vega);
 }
 
-TEST(POINT_TEST, RAW_POINT_INVALID_JSON_TEST) {
+TEST(POINTMAP_TEST, RAW_POINT_INVALID_JSON_TEST) {
   auto bit_map = new uint8_t{0xff};
 
   auto data_type = arrow::uint32();
@@ -236,7 +236,7 @@ TEST(POINT_TEST, RAW_POINT_INVALID_JSON_TEST) {
   assert(arctern::render::point_map(array1, array2, vega) == nullptr);
 }
 
-TEST(POINT_TEST, WKT_POINT_TEST) {
+TEST(POINTMAP_TEST, WKT_POINT_TEST) {
   // param1: wkt string
   std::string wkt1 = "POINT (10 10)";
   std::string wkt2 = "POINT (20 20)";
@@ -295,7 +295,7 @@ TEST(POINT_TEST, WKT_POINT_TEST) {
   arctern::render::point_map(wkb, vega);
 }
 
-TEST(POINT_TEST, WKT_POINT_INVALID_JSON_TEST) {
+TEST(POINTMAP_TEST, WKT_POINT_INVALID_JSON_TEST) {
   // param1: wkt string
   std::string wkt1 = "POINT (10 10)";
   std::string wkt2 = "POINT (20 20)";

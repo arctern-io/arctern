@@ -78,9 +78,9 @@ class VegaPointMap(VegaScatterPlot):
                  mark_size: int, mark_color: str, opacity: float, coordinate_system: str):
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
-        self._mark_size = mark_size
+        self._mark_size = int(mark_size)
         self._mark_color = mark_color
-        self._opacity = opacity
+        self._opacity = float(opacity)
         self._coordinate_system = coordinate_system
 
     def build(self):
@@ -103,10 +103,10 @@ class VegaPointMap(VegaScatterPlot):
 
         root_json = json.dumps(root.to_dict(), indent=2)
         return root_json
-        
+
     def coor(self):
         return self._coordinate_system
-    
+
     def bounding_box(self):
         return self._bounding_box
 

@@ -167,6 +167,177 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
   return out_pic(pointmap(input_x, input_y, x_length, conf));
 }
 
+std::shared_ptr<arrow::Array> weighted_point_map(
+    const std::shared_ptr<arrow::Array>& arr_x,
+    const std::shared_ptr<arrow::Array>& arr_y,
+    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
+  auto x_length = arr_x->length();
+  auto y_length = arr_y->length();
+  auto c_length = arr_c->length();
+
+  auto x_type = arr_x->type_id();
+  auto y_type = arr_y->type_id();
+  auto c_type = arr_c->type_id();
+
+  assert(x_length == y_length);
+  assert(x_length == c_length);
+  assert(x_type == arrow::Type::UINT32);
+  assert(y_type == arrow::Type::UINT32);
+
+  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
+  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
+
+  switch (c_type) {
+    case arrow::Type::INT8: {
+      auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<int8_t>(input_x, input_y, input_c_int8, x_length, conf));
+    }
+    case arrow::Type::INT16: {
+      auto input_c_int16 = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<int16_t>(input_x, input_y, input_c_int16, x_length, conf));
+    }
+    case arrow::Type::INT32: {
+      auto input_c_int32 = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<int32_t>(input_x, input_y, input_c_int32, x_length, conf));
+    }
+    case arrow::Type::INT64: {
+      auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
+    }
+    case arrow::Type::UINT8: {
+      auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<uint8_t>(input_x, input_y, input_c_uint8, x_length, conf));
+    }
+    case arrow::Type::UINT16: {
+      auto input_c_uint16 = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<uint16_t>(input_x, input_y, input_c_uint16, x_length, conf));
+    }
+    case arrow::Type::UINT32: {
+      auto input_c_uint32 = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<uint32_t>(input_x, input_y, input_c_uint32, x_length, conf));
+    }
+    case arrow::Type::UINT64: {
+      auto input_c_uint64 = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<uint64_t>(input_x, input_y, input_c_uint64, x_length, conf));
+    }
+    case arrow::Type::FLOAT: {
+      auto input_c_float = (float*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<float>(input_x, input_y, input_c_float, x_length, conf));
+    }
+    case arrow::Type::DOUBLE: {
+      auto input_c_double = (double*)arr_c->data()->GetValues<uint8_t>(1);
+      return out_pic(
+          weighted_pointmap<double>(input_x, input_y, input_c_double, x_length, conf));
+    }
+    default:
+      // TODO: add log here
+      std::cout << "type error! weighted_pointmap" << std::endl;
+  }
+  return nullptr;
+}
+
+std::shared_ptr<arrow::Array> weighted_point_map(
+    const std::shared_ptr<arrow::Array>& points,
+    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
+  auto points_arr = std::static_pointer_cast<arrow::StringArray>(points);
+  auto points_size = points->length();
+  auto wkt_type = points->type_id();
+  assert(wkt_type == arrow::Type::STRING);
+
+  uint32_t *input_x, *input_y;
+  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  OGRGeometry* res_geo = nullptr;
+  for (size_t i = 0; i < points_size; i++) {
+    std::string point_wkt = points_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
+    auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+    input_x[i] = (uint32_t)rst_pointer->getX();
+    input_y[i] = (uint32_t)rst_pointer->getY();
+  }
+
+  std::pair<uint8_t*, int64_t> result;
+  auto c_type = arr_c->type_id();
+  switch (c_type) {
+    case arrow::Type::INT8: {
+      auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<int8_t>(input_x, input_y, input_c_int8, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT16: {
+      auto input_c_int16 = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<int16_t>(input_x, input_y, input_c_int16, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT32: {
+      auto input_c_int32 = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<int32_t>(input_x, input_y, input_c_int32, points_size, conf);
+      break;
+    }
+    case arrow::Type::INT64: {
+      auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<int64_t>(input_x, input_y, input_c_int64, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT8: {
+      auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<uint8_t>(input_x, input_y, input_c_uint8, points_size, conf);
+      break;
+    }
+    case arrow::Type::UINT16: {
+      auto input_c_uint16 = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = weighted_pointmap<uint16_t>(input_x, input_y, input_c_uint16, points_size,
+                                           conf);
+      break;
+    }
+    case arrow::Type::UINT32: {
+      auto input_c_uint32 = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = weighted_pointmap<uint32_t>(input_x, input_y, input_c_uint32, points_size,
+                                           conf);
+      break;
+    }
+    case arrow::Type::UINT64: {
+      auto input_c_uint64 = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
+      result = weighted_pointmap<uint64_t>(input_x, input_y, input_c_uint64, points_size,
+                                           conf);
+      break;
+    }
+    case arrow::Type::FLOAT: {
+      auto input_c_float = (float*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<float>(input_x, input_y, input_c_float, points_size, conf);
+      break;
+    }
+    case arrow::Type::DOUBLE: {
+      auto input_c_double = (double*)arr_c->data()->GetValues<uint8_t>(1);
+      result =
+          weighted_pointmap<double>(input_x, input_y, input_c_double, points_size, conf);
+      break;
+    }
+    default:
+      // TODO: add log here
+      std::cout << "type error! weighted_pointmap" << std::endl;
+  }
+
+  free(input_x);
+  free(input_y);
+  return out_pic(result);
+}
+
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
                                        const std::shared_ptr<arrow::Array>& arr_c,
                                        const std::string& conf) {
@@ -244,7 +415,6 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
   auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
   auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
 
-  std::pair<uint8_t*, int64_t> output;
   switch (c_type) {
     case arrow::Type::INT8: {
       auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);

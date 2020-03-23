@@ -17,7 +17,7 @@
 
 #include "render/2d/general_2d.h"
 #include "render/2d/input.h"
-#include "render/utils/vega/vega_scatter_plot/vega_circle2d.h"
+#include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
 
 namespace arctern {
 namespace render {
@@ -39,7 +39,7 @@ class PointMap : public General2D {
 
   uint32_t* mutable_vertices_y() { return vertices_y_; }
 
-  VegaCircle2d& mutable_point_vega() { return point_vega_; }
+  VegaPointmap& mutable_point_vega() { return point_vega_; }
 
   const size_t num_vertices() const { return num_vertices_; }
 
@@ -51,7 +51,7 @@ class PointMap : public General2D {
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
   size_t num_vertices_;
-  VegaCircle2d point_vega_;
+  VegaPointmap point_vega_;
 };
 
 }  // namespace render

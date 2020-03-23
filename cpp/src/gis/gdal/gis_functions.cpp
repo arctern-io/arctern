@@ -617,7 +617,7 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
     if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull());
     } else {
-      CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT))
+      CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
       auto wkt = Wrapper_OGR_G_ExportToWkt(geo);
       CHECK_ARROW(builder.Append(wkt));
       OGRGeometryFactory::destroyGeometry(geo);

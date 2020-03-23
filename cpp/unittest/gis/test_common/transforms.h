@@ -15,20 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "gis/cuda/wkb/wkb_transforms.h"
-
+#pragma once
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-#include <cassert>
-#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "gis/cuda/mock/arrow/api.h"
+#include "gis/gdal/format_conversion.h"
+#include "gis/gdal/gis_functions.h"
 namespace arctern {
 namespace gis {
-namespace cuda {
-
-std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
+inline std::vector<char> SingleStrToWkb(const std::string& geo_wkt) {
   OGRGeometry* geo = nullptr;
   {
     auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt.c_str(), nullptr, &geo);
@@ -44,19 +44,35 @@ std::vector<char> Wkt2Wkb(const std::string& geo_wkt) {
   return result;
 }
 
-std::shared_ptr<arrow::Array> WktsToArrowWkb(const std::vector<std::string>& wkt_vec) {
-  arrow::BinaryBuilder builder;
+inline std::shared_ptr<arrow::StringArray> StrsToWkt(
+    const std::vector<std::string>& wkt_vec) {
+  arrow::StringBuilder builder;
   for (const auto& wkt : wkt_vec) {
-    auto wkb = Wkt2Wkb(wkt);
-    auto st = builder.Append(wkb.data(), wkb.size());
+    auto st = builder.Append(wkt.data(), wkt.size());
     assert(st.ok());
   }
-  std::shared_ptr<arrow::Array> result;
+  std::shared_ptr<arrow::StringArray> result;
   auto st = builder.Finish(&result);
   assert(st.ok());
   return result;
 }
 
-}  // namespace cuda
+inline std::shared_ptr<arrow::Array> StrsToWkb(const std::vector<std::string>& wkt_vec) {
+  return gdal::WktToWkb(StrsToWkt(wkt_vec));
+}
+
+inline std::vector<char> HexStringToWkb(const std::string& str) {
+  std::vector<char> vec;
+  assert(str.size() % 2 == 0);
+  for (size_t index = 0; index < str.size(); index += 2) {
+    auto byte_str = str.substr(index, 2);
+    char* tmp;
+    auto data = strtoul(byte_str.c_str(), &tmp, 16);
+    assert(*tmp == 0);
+    vec.push_back((char)data);
+  }
+  return vec;
+}
+
 }  // namespace gis
 }  // namespace arctern
