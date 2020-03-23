@@ -127,6 +127,5 @@ def choroplethmap(df, vega):
     agg_df = df.where("wkb != ''")
     agg_df = agg_df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
-    agg_df.show(20, False)
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df['wkb'], agg_df['w'])).collect()[0][0]
     return hex_data
