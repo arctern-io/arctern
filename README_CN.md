@@ -37,57 +37,31 @@ Arctern是一个面向大规模数据的地理信息分析引擎。定位如下�
 
 ```python
 # 在pyspark上调用Arctern API
-
 from pyspark.sql import SparkSession
-from arctern_pyspark import register_funcs, heatmap, save_png
-from arctern import vega_heatmap
+from arctern_pyspark import register_funcs, heatmap
+from arctern.util import save_png
+from arctern.util.vega import vega_heatmap 
 
-if __name__ == "__main__":
+if __name__== "__main__":
     spark = SparkSession \
-        .builder \
-        .appName("Arctern-PySpark example") \
-        .getOrCreate()
+            .builder \
+            .appName("Arctern-PySpark example") \
+            .getOrCreate()
 
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
     register_funcs(spark)
 
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
-        "passenger_count long, pickup_longitude double, pickup_latitude double").load(
-        "file:///nyc.csv").cache()
+        "passenger_count long,  pickup_longitude double, pickup_latitude double").load"file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
     df.createOrReplaceTempView("nyc_taxi")
-    
-    df = spark.sql("select pickup_latitude as x, pickup_longitude as y, passenger_count as w from nyc_taxi")
-    df.createOrReplaceTempView("records")
-
-    filtered = spark.sql(
-        "select x, y, w \
-        from records \
-        where ST_Within(ST_Point(x, y), 'POLYGON ((40.730309 -73.998427, \
-                                                   40.780816 -73.998427, \
-                                                   40.780816 -73.954348, \
-                                                   40.730309 -73.998427))')")
-    filtered.createOrReplaceTempView("pickup")
-
-    res = spark.sql(
-        "select ST_Transform(ST_Point(x, y), 'EPSG:4326','EPSG:3857' ) as pickup_point, w from pickup")
-    res.createOrReplaceTempView("project")
-
-    res = spark.sql(
-        "select Projection(pickup_point, \
-                           'POINT (40.730309 -73.998427)', \
-                           'POINT (40.780816 -73.954348)', \
-                           'EPSG:4326', \
-                           'EPSG:3857', \
-                           1024, \
-                           896) \
-        as point, w \
-        from project")
         
-    res.cache()
+    res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
-    vega = vega_heatmap(1024, 896, 10.0)
+    vega = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
     res = heatmap(res, vega)
     save_png(res, '/tmp/heatmap.png')
+
+    spark.catalog.dropGlobalTempView("nyc_taxi")
 
     spark.stop()
 ```
