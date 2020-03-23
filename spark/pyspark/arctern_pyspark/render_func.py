@@ -44,7 +44,6 @@ def pointmap(df, vega):
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if coor != 'EPSG:3857':
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
-    df.show(20, False)
     vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkt(point, conf=vega):

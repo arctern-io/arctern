@@ -152,3 +152,4 @@ spark-warehouse/
 tests/results
 tests/rundocker.sh
 tests/runlocal.sh
+tests/expected/draw_map/*.png
