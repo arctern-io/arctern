@@ -20,9 +20,9 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include "render/2d/choropleth_map/choropleth_map.h"
 #include "render/2d/heatmap/heatmap.h"
