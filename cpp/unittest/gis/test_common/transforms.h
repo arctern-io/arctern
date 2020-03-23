@@ -16,33 +16,52 @@
 // under the License.
 
 #pragma once
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 
-#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "common/version.h"
-#include "gis/api.h"
-#include "gis/cuda/common/gis_definitions.h"
-#include "gis/cuda/conversion/conversions.h"
-#include "utils/check_status.h"
-
+#include "gis/cuda/mock/arrow/api.h"
+#include "gis/gdal/format_conversion.h"
+#include "gis/gdal/gis_functions.h"
 namespace arctern {
 namespace gis {
-namespace cuda {
+inline std::vector<char> SingleStrToWkb(const std::string& geo_wkt) {
+  OGRGeometry* geo = nullptr;
+  {
+    auto err_code = OGRGeometryFactory::createFromWkt(geo_wkt.c_str(), nullptr, &geo);
+    assert(err_code == OGRERR_NONE);
+  }
+  auto sz = geo->WkbSize();
+  std::vector<char> result(sz);
+  {
+    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)result.data());
+    assert(err_code == OGRERR_NONE);
+  }
+  OGRGeometryFactory::destroyGeometry(geo);
+  return result;
+}
 
-namespace GeometryVectorFactory {
-GeometryVector CreateFromWkts(const std::vector<std::string>& wkt_vec);
-GeometryVector CreateFromWkbs(const std::vector<std::vector<char>>& wkb_vec);
+inline std::shared_ptr<arrow::StringArray> StrsToWkt(
+    const std::vector<std::string>& wkt_vec) {
+  arrow::StringBuilder builder;
+  for (const auto& wkt : wkt_vec) {
+    auto st = builder.Append(wkt.data(), wkt.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::StringArray> result;
+  auto st = builder.Finish(&result);
+  assert(st.ok());
+  return result;
+}
 
-}  // namespace GeometryVectorFactory
+inline std::shared_ptr<arrow::Array> StrsToWkb(const std::vector<std::string>& wkt_vec) {
+  return gdal::WktToWkb(StrsToWkt(wkt_vec));
+}
 
-inline std::vector<char> hexstring_to_binary(const std::string& str) {
+inline std::vector<char> HexStringToWkb(const std::string& str) {
   std::vector<char> vec;
   assert(str.size() % 2 == 0);
   for (size_t index = 0; index < str.size(); index += 2) {
@@ -54,6 +73,6 @@ inline std::vector<char> hexstring_to_binary(const std::string& str) {
   }
   return vec;
 }
-}  // namespace cuda
+
 }  // namespace gis
 }  // namespace arctern
