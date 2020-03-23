@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyarrow.lib cimport *
-from libcpp.string cimport *
+from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
+from libcpp.string cimport (string)
 
 
 cdef extern from "render.h" namespace "arctern::render":
