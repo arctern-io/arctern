@@ -1,9 +1,8 @@
+# pylint: disable=redefined-outer-name
+
 import pytest
 from flask import Flask
 from flask_cors import CORS
-
-import sys, os
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 
 from app import service as app_service
 from app.nyctaxi import data as nyctaxi_data

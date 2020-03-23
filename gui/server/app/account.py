@@ -17,7 +17,7 @@ limitations under the License.
 import sqlite3
 from pathlib import Path
 
-import os, sys
+import os
 dirpath = os.path.split(os.path.realpath(__file__))[0]
 DB = dirpath + '/../data/account.db'
 
