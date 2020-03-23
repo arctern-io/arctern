@@ -60,7 +60,7 @@ volumes:
     driver_opts:
       type: "cifs"
       o: "vers=1.0,username=${CIFS_USERNAME},password=${CIFS_PASSWORD}"
-      device: "${NETWORK_Path}"
+      device: "${NETWORK_PATH}"
 
 networks:
   default:
