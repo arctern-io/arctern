@@ -32,6 +32,9 @@ def init():
     points_df = spark.INSTANCE.session.createDataFrame(df_pd)
     points_df.createGlobalTempView("points")
 
+    import sys, os
+    dirpath = os.path.split(os.path.realpath(__file__))[0]
+    csvpath = dirpath + '/../../data/0_5M_nyc_taxi_and_building.csv'
     old_nyctaix_df = spark.INSTANCE.session.read.format("csv") \
         .option("header", True) \
         .option("delimiter", ",") \
@@ -51,7 +54,7 @@ def init():
             buildingid_dropoff long, \
             buildingtext_pickup string, \
             buildingtext_dropoff string") \
-        .load("./data/0_5M_nyc_taxi_and_building.csv")
+        .load(csvpath)
     old_nyctaix_df.createOrReplaceGlobalTempView("old_nyc_taxi")
 
     nyctaix_df = spark.INSTANCE.session.sql("select VendorID, \
