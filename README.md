@@ -57,7 +57,7 @@ if __name__== "__main__":
         from nyc_taxi \
         where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, \
                                                                                 -73.954348 40.730309, \
-                                                                                -73.954348 40.780816 , \
+                                                                                -73.954348 40.780816, \
                                                                                 -73.998427 40.780816, \
                                                                                 -73.998427 40.730309))')")
 

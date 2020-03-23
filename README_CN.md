@@ -36,7 +36,8 @@ Arctern是一个面向大规模数据的地理信息分析引擎。定位如下�
 #### 代码示例：
 
 ```python
-# 在pyspark上调用Arctern API
+# Invoke Arctern API in PySpark
+
 from pyspark.sql import SparkSession
 from arctern_pyspark import register_funcs, heatmap
 from arctern.util import save_png
@@ -51,11 +52,22 @@ if __name__== "__main__":
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
     register_funcs(spark)
 
-    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
-        "passenger_count long,  pickup_longitude double, pickup_latitude double").load"file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
+    df = spark.read.format("csv") \
+         .option("header", True) \ 
+         .option("delimiter", ",") \
+         .schema("passenger_count long,  pickup_longitude double, pickup_latitude double") \
+         .load("file:///tmp/0_5M_nyc_taxi_and_building.csv") \
+         .cache()
     df.createOrReplaceTempView("nyc_taxi")
         
-    res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+    res = spark.sql(
+        "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w \
+        from nyc_taxi \
+        where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, \
+                                                                                -73.954348 40.730309, \
+                                                                                -73.954348 40.780816, \
+                                                                                -73.998427 40.780816, \
+                                                                                -73.998427 40.730309))')")
 
     vega = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
     res = heatmap(res, vega)
