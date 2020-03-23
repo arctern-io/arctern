@@ -291,7 +291,7 @@ TEST(POINTMAP_TEST, WKT_POINT_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::point_map(wkb, vega);
 }
 
@@ -350,6 +350,6 @@ TEST(POINTMAP_TEST, WKT_POINT_INVALID_JSON_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::point_map(wkb, vega);
 }
