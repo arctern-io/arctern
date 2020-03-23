@@ -32,12 +32,12 @@ namespace dispatch {
 
 class TypeScannerForWkt : public GeometryTypeScanner {
  public:
-  explicit TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries);
+  explicit TypeScannerForWkt(const std::shared_ptr<arrow::StringArray>& geometries);
 
-  std::shared_ptr<GeometryTypeMasks> Scan() final;
+  std::shared_ptr<GeometryTypeMasks> Scan() const final;
 
  private:
-  const std::shared_ptr<arrow::Array> geometries_;
+  const std::shared_ptr<arrow::StringArray>& geometries_;
 };
 
 }  // namespace dispatch

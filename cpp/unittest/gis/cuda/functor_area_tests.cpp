@@ -25,8 +25,9 @@
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_area.h"
-#include "gis/cuda/test_common/test_common.h"
+#include "gis/cuda/test_common/geometry_factory.h"
 
+using std::string;
 using std::vector;
 namespace arctern {
 namespace gis {
@@ -34,24 +35,33 @@ namespace cuda {
 
 TEST(FunctorArea, naive) {
   ASSERT_TRUE(true);
-  auto raw_data = hexstring_to_binary(
-      "01030000000100000004000000000000000000084000000000000008400000000000000840000000"
-      "00000010400000000000001040000000000000104000000000000010400000000000000840");
-
-  int n = 3;
-  vector<vector<char>> lists;
-  for (int i = 0; i < n; ++i) {
-    lists.push_back(raw_data);
+  vector<std::pair<string, double>> datas = {
+      {"Point Empty", 0},
+      {"Point (0 1)", 0},
+      {"LineString (0 1, 1 1)", 0},
+      {"Polygon Empty", 0},
+      {"Polygon ((0 0))", 0},
+      {"Polygon ((0 0, 1 1, 1 0, 0 0))", 0.5},
+      {"Polygon ((0 0, 3 0, 3 3, 0 3, 0 0), (1 1, 2 1, 2 2, 1 2, 1 1))", 8},
+      {"MultiPolygon Empty", 0},
+      {"MultiPolygon (((0 0, 1 1, 1 0, 0 0)))", 0.5},
+      {"MultiPolygon (((0 0, 1.5 1, 1.5 0, 0 0)), "
+       "((0 0, 3 0, 3 3, 0 3, 0 0), (1 1, 2 1, 2 2, 1 2, 1 1)))",
+       8 + 1.5 * 0.5},
+  };
+  vector<string> input;
+  vector<double> std_results;
+  for (auto& data : datas) {
+    input.push_back(data.first);
+    std_results.push_back(data.second);
   }
-
-  auto gvec = GeometryVectorFactory::CreateFromWkbs(lists);
-  vector<double> result(n);
-  ST_Area(gvec, result.data());
-  for (int i = 0; i < n; ++i) {
-    auto std = 1;
-    ASSERT_DOUBLE_EQ(result[i], std);
+  auto gvec = GeometryVectorFactory::CreateFromWkts(input);
+  vector<double> results(input.size());
+  ST_Area(gvec, results.data());
+  for (int i = 0; i < input.size(); ++i) {
+    EXPECT_DOUBLE_EQ(results[i], std_results[i]) << datas[i].first << std::endl;
   }
-}
+}  // namespace cuda
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern
