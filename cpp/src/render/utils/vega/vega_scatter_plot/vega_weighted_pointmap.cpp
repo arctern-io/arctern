@@ -55,62 +55,103 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  // 3. parse stroke and opacity
-  if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
-      !JsonLabelCheck(mark_enter, "opacity") ||
-      !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
-      !JsonLabelCheck(mark_enter["opacity"], "value") ||
-      !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType) ||
-      !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
+  // 3. parse point map color
+  if (!JsonLabelCheck(mark_enter, "color") ||
+      !JsonLabelCheck(mark_enter["color"], "value") ||
+      !JsonTypeCheck(mark_enter["color"]["value"], rapidjson::Type::kStringType)) {
     return;
   }
-  circle_params_.radius = mark_enter["strokeWidth"]["value"].GetInt();
-  circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
-
-  // parse color style
-  if (!JsonLabelCheck(mark_enter, "color_style") ||
-      !JsonLabelCheck(mark_enter["color_style"], "value") ||
-      !JsonTypeCheck(mark_enter["color_style"]["value"], rapidjson::Type::kStringType)) {
-    return;
-  }
-  auto color_style_string = std::string(mark_enter["color_style"]["value"].GetString());
-  if (color_style_string == "blue_to_red") {
+  auto color_string = std::string(mark_enter["color"]["value"].GetString());
+  ColorParser color_parser(color_string);
+  if (color_parser.is_css_hex_color()) {
+    is_multiple_color_ = false;
+    circle_params_.color = color_parser.color();
+  } else if (color_string == "blue_to_red") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kBlueToRed;
-  } else if (color_style_string == "skyblue_to_white") {
+  } else if (color_string == "skyblue_to_white") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kSkyBlueToWhite;
-  } else if (color_style_string == "purple_to_yellow") {
+  } else if (color_string == "purple_to_yellow") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kPurpleToYellow;
-  } else if (color_style_string == "red_transparency") {
+  } else if (color_string == "red_transparency") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kRedTransParency;
-  } else if (color_style_string == "blue_transparency") {
+  } else if (color_string == "blue_transparency") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kBlueTransParency;
-  } else if (color_style_string == "blue_green_yellow") {
+  } else if (color_string == "blue_green_yellow") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kBlueGreenYellow;
-  } else if (color_style_string == "white_blue") {
+  } else if (color_string == "white_blue") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kWhiteToBlue;
-  } else if (color_style_string == "blue_white_red") {
+  } else if (color_string == "blue_white_red") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kBlueWhiteRed;
-  } else if (color_style_string == "green_yellow_red") {
+  } else if (color_string == "green_yellow_red") {
+    is_multiple_color_ = true;
     color_style_ = ColorStyle::kGreenYellowRed;
   } else {
-    std::string msg = "unsupported color style '" + color_style_string + "'.";
+    is_valid_ = false;
+    std::string msg = "unsupported color '" + color_string + "'.";
     // TODO: add log here
   }
 
-  // parse ruler
-  if (!JsonLabelCheck(mark_enter, "ruler") ||
-      !JsonLabelCheck(mark_enter["ruler"], "value") ||
-      !JsonTypeCheck(mark_enter["ruler"]["value"], rapidjson::Type::kArrayType) ||
-      !JsonSizeCheck(mark_enter["ruler"]["value"], "ruler.value", 2)) {
+  // 4. parse color_ruler
+  if (!JsonLabelCheck(mark_enter, "color_ruler") ||
+      !JsonLabelCheck(mark_enter["color_ruler"], "value") ||
+      !JsonTypeCheck(mark_enter["color_ruler"]["value"], rapidjson::Type::kArrayType)) {
     return;
   }
-  for (int i = 0; i < 2; i++) {
-    if (!JsonTypeCheck(mark_enter["ruler"]["value"][i], rapidjson::Type::kNumberType)) {
-      return;
-    }
+  auto color_ruler_size = mark_enter["color_ruler"]["value"].Size();
+  if (color_ruler_size == 2 &&
+      JsonTypeCheck(mark_enter["color_ruler"]["value"][0],
+                    rapidjson::Type::kNumberType) &&
+      JsonTypeCheck(mark_enter["color_ruler"]["value"][1],
+                    rapidjson::Type::kNumberType)) {
+    color_ruler_ = std::make_pair(mark_enter["color_ruler"]["value"][0].GetDouble(),
+                                  mark_enter["color_ruler"]["value"][1].GetDouble());
+  } else {
+    // TODO: add log here
+    std::string msg = "unsupported color ruler.";
+    return;
   }
-  color_ruler_ = std::make_pair(mark_enter["ruler"]["value"][0].GetDouble(),
-                                mark_enter["ruler"]["value"][1].GetDouble());
+
+  // 5. parse stroke_ruler
+  if (!JsonLabelCheck(mark_enter, "stroke_ruler") ||
+      !JsonLabelCheck(mark_enter["stroke_ruler"], "value") ||
+      !JsonTypeCheck(mark_enter["stroke_ruler"]["value"], rapidjson::Type::kArrayType)) {
+    return;
+  }
+  auto stroke_ruler_size = mark_enter["stroke_ruler"]["value"].Size();
+  if (stroke_ruler_size == 1 && JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
+                                              rapidjson::Type::kNumberType)) {
+    is_multiple_point_size_ = false;
+    circle_params_.radius = mark_enter["stroke_ruler"]["value"][0].GetDouble();
+  } else if (stroke_ruler_size == 2 &&
+             JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
+                           rapidjson::Type::kNumberType) &&
+             JsonTypeCheck(mark_enter["stroke_ruler"]["value"][1],
+                           rapidjson::Type::kNumberType)) {
+    is_multiple_point_size_ = true;
+    stroke_ruler_ = std::make_pair(mark_enter["stroke_ruler"]["value"][0].GetDouble(),
+                                   mark_enter["stroke_ruler"]["value"][1].GetDouble());
+  } else {
+    is_valid_ = false;
+    // TODO: add log here
+    std::string msg = "unsupported color ruler.";
+    return;
+  }
+
+  // 6. parse opacity
+  if (!JsonLabelCheck(mark_enter, "opacity") ||
+      !JsonLabelCheck(mark_enter["opacity"], "value") ||
+      !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
+    return;
+  }
+  circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
 
 }  // namespace render

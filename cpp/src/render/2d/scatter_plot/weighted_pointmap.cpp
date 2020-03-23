@@ -48,10 +48,32 @@ template class WeightedPointMap<double>;
 
 template <typename T>
 WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y,
-                                      T* count, size_t num_vertices)
+                                      size_t num_vertices)
     : vertices_x_(vertices_x),
       vertices_y_(vertices_y),
+      unknown_(nullptr),
+      count_(nullptr),
+      point_size_(nullptr),
+      num_vertices_(num_vertices) {}
+
+template <typename T>
+WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y,
+                                      T* unknown, size_t num_vertices)
+    : vertices_x_(vertices_x),
+      vertices_y_(vertices_y),
+      unknown_(unknown),
+      count_(nullptr),
+      point_size_(nullptr),
+      num_vertices_(num_vertices) {}
+
+template <typename T>
+WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y,
+                                      T* count, T* point_size, size_t num_vertices)
+    : vertices_x_(vertices_x),
+      vertices_y_(vertices_y),
+      unknown_(nullptr),
       count_(count),
+      point_size_(point_size),
       num_vertices_(num_vertices) {}
 
 template <typename T>
@@ -62,36 +84,29 @@ void WeightedPointMap<T>::Draw() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_POINT_SMOOTH);
 
-#ifndef USE_GPU
-  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
-          1);
-
-  glPointSize(weighted_point_vega_.circle_params().radius);
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
-
-  int offset = 0;
-  std::vector<int32_t> vertices(num_vertices_ * 2);
-  for (auto i = 0; i < num_vertices_; i++) {
-    vertices[offset++] = vertices_x_[i];
-    vertices[offset++] = vertices_y_[i];
+  if (!mutable_weighted_point_vega().is_multiple_color() &&
+      !mutable_weighted_point_vega().is_multiple_point_size() && point_size_ == nullptr &&
+      count_ == nullptr && unknown_ == nullptr) {
+    DrawSingleColorSingleStroke();
+  } else if (mutable_weighted_point_vega().is_multiple_color() &&
+             !mutable_weighted_point_vega().is_multiple_point_size() &&
+             point_size_ == nullptr && count_ == nullptr && unknown_ != nullptr) {
+    SetColor(unknown_);
+    DrawMultipleColorSingleStroke();
+  } else if (!mutable_weighted_point_vega().is_multiple_color() &&
+             mutable_weighted_point_vega().is_multiple_point_size() &&
+             point_size_ == nullptr && count_ == nullptr && unknown_ != nullptr) {
+    DrawSingleColorMultipleStroke();
+  } else if (mutable_weighted_point_vega().is_multiple_color() &&
+             mutable_weighted_point_vega().is_multiple_point_size() &&
+             point_size_ != nullptr && count_ != nullptr && unknown_ == nullptr) {
+    SetColor(count_);
+    DrawMultipleColorMultipleStroke();
+  } else {
+    // TODO: add log here
+    std::string msg = "Invalid point map";
+    std::cout << msg << std::endl;
   }
-  glColorPointer(4, GL_FLOAT, 0, &colors_[0]);
-  glVertexPointer(2, GL_INT, 0, &vertices[0]);
-
-  glDrawArrays(GL_POINTS, 0, num_vertices_);
-  glFlush();
-
-#else
-  glEnable(GL_PROGRAM_POINT_SIZE);
-
-  glDrawArrays(GL_POINTS, 0, num_vertices_);
-  glFlush();
-
-  glDeleteVertexArrays(1, &VAO_);
-  glDeleteBuffers(2, VBO_);
-#endif
 }
 
 #ifdef USE_GPU
@@ -188,17 +203,155 @@ void WeightedPointMap<T>::Shader() {
 #endif
 
 template <typename T>
-void WeightedPointMap<T>::SetColor() {
+void WeightedPointMap<T>::DrawSingleColorSingleStroke() {
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_POINT_SMOOTH);
+
+#ifndef USE_GPU
+  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
+          1);
+
+  glPointSize(weighted_point_vega_.circle_params().radius);
+
+  auto& color = weighted_point_vega_.circle_params().color;
+  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+
+  int offset = 0;
+  std::vector<int32_t> vertices(num_vertices_ * 2);
+
+  for (auto i = 0; i < num_vertices_; i++) {
+    vertices[offset++] = vertices_x_[i];
+    vertices[offset++] = vertices_y_[i];
+  }
+  glVertexPointer(2, GL_INT, 0, &vertices[0]);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFinish();
+
+#else
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFlush();
+
+  glDeleteVertexArrays(1, &VAO_);
+  glDeleteBuffers(2, VBO_);
+#endif
+}
+
+template <typename T>
+void WeightedPointMap<T>::DrawSingleColorMultipleStroke() {
+#ifndef USE_GPU
+  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
+          1);
+
+  auto& color = weighted_point_vega_.circle_params().color;
+  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+
+  for (int i = 0; i < num_vertices_; i++) {
+    glPointSize(unknown_[i]);
+    glBegin(GL_POINTS);
+    glVertex2d(vertices_x_[i], vertices_y_[i]);
+    glEnd();
+  }
+
+  glFlush();
+
+#else
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFlush();
+
+  glDeleteVertexArrays(1, &VAO_);
+  glDeleteBuffers(2, VBO_);
+#endif
+}
+
+template <typename T>
+void WeightedPointMap<T>::DrawMultipleColorSingleStroke() {
+#ifndef USE_GPU
+  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
+          1);
+
+  glPointSize(weighted_point_vega_.circle_params().radius);
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+
+  int offset = 0;
+  std::vector<int32_t> vertices(num_vertices_ * 2);
+  for (auto i = 0; i < num_vertices_; i++) {
+    vertices[offset++] = vertices_x_[i];
+    vertices[offset++] = vertices_y_[i];
+  }
+  glColorPointer(4, GL_FLOAT, 0, &colors_[0]);
+  glVertexPointer(2, GL_INT, 0, &vertices[0]);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFlush();
+
+#else
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFlush();
+
+  glDeleteVertexArrays(1, &VAO_);
+  glDeleteBuffers(2, VBO_);
+#endif
+}
+
+template <typename T>
+void WeightedPointMap<T>::DrawMultipleColorMultipleStroke() {
+#ifndef USE_GPU
+  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
+          1);
+
+  size_t c_offset = 0;
+
+  for (int i = 0; i < num_vertices_; i++) {
+    auto r = colors_[c_offset++];
+    auto g = colors_[c_offset++];
+    auto b = colors_[c_offset++];
+    auto a = colors_[c_offset++];
+    glColor4f(r, g, b, a);
+    glPointSize(point_size_[i]);
+    glBegin(GL_POINTS);
+    glVertex2d(vertices_x_[i], vertices_y_[i]);
+    glEnd();
+  }
+
+  glFlush();
+
+#else
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
+  glDrawArrays(GL_POINTS, 0, num_vertices_);
+  glFlush();
+
+  glDeleteVertexArrays(1, &VAO_);
+  glDeleteBuffers(2, VBO_);
+#endif
+}
+
+template <typename T>
+void WeightedPointMap<T>::SetColor(T *ptr) {
   colors_.resize(num_vertices_ * 4);
 
-  auto count_start = weighted_point_vega_.ruler().first;
-  auto count_end = weighted_point_vega_.ruler().second;
+  auto count_start = weighted_point_vega_.color_ruler().first;
+  auto count_end = weighted_point_vega_.color_ruler().second;
   auto count_range = count_end - count_start;
 
   size_t c_offset = 0;
   for (auto i = 0; i < num_vertices_; i++) {
-    auto count = count_[i] >= count_start ? count_[i] : count_start;
-    count = count_[i] <= count_end ? count : count_end;
+    auto count = ptr[i] >= count_start ? ptr[i] : count_start;
+    count = ptr[i] <= count_end ? count : count_end;
     auto ratio = (count - count_start) / count_range;
     auto circle_params_2d =
         ColorGradient::GetCircleParams(weighted_point_vega_.color_style(), ratio);
@@ -212,7 +365,6 @@ void WeightedPointMap<T>::SetColor() {
 template <typename T>
 uint8_t* WeightedPointMap<T>::Render() {
   WindowsInit(weighted_point_vega_.window_params());
-  SetColor();
 #ifdef USE_GPU
   Shader();
 #endif

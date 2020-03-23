@@ -42,6 +42,10 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const double& opacity() const { return opacity_; }
 
+  const bool& is_multiple_color() const { return is_multiple_color_; }
+
+  const bool& is_multiple_point_size() const { return is_multiple_point_size_; }
+
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
@@ -52,6 +56,8 @@ class VegaWeightedPointmap : public VegaScatterPlot {
   std::pair<double, double> stroke_ruler_;
   ColorStyle color_style_;
   double opacity_;
+  bool is_multiple_color_;
+  bool is_multiple_point_size_;
 };
 
 }  // namespace render
