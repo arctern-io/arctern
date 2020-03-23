@@ -32,8 +32,7 @@ def draw_point_map(spark):
     register_funcs(spark)
     res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
-#    vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
-    vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3.0, "#2DEF4A", 0, "EPSG:4326")
+    vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
     res = pointmap(res, vega)
     save_png(res, '/tmp/pointmap.png')
 
