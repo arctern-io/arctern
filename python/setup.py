@@ -18,7 +18,17 @@ import numpy as np
 import pyarrow as pa
 
 from setuptools import setup, Extension, find_packages
+from setuptools.command.build_ext import build_ext
 from Cython.Build import cythonize
+
+# Avoid gcc warnings
+class BuildExt(build_ext):
+    def build_extensions(self):
+        # Avoid gcc warning "cc1plus: warning:command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++"
+        self.compiler.compiler_so.remove('-Wstrict-prototypes')
+        # Avoid gcc warning of unused-variable
+        self.compiler.compiler_so.append('-Wno-unused-variable')
+        super(BuildExt, self).build_extensions()
 
 
 def gen_gis_core_modules():
@@ -41,7 +51,7 @@ def gen_gis_core_modules():
     return gis_core_modules
 
 setup(
-#    name = "arctern",
+    cmdclass={'build_ext': BuildExt},
     packages=find_packages(),
     ext_modules=gen_gis_core_modules(),
 )
