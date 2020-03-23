@@ -14,11 +14,13 @@
 
 __all__ = [
     "vega_pointmap",
+    "vega_weighted_pointmap",
     "vega_heatmap",
     "vega_choroplethmap",
 ]
 
 from arctern.util.vega.pointmap.vega_pointmap import VegaPointMap
+from arctern.util.vega.pointmap.vega_weighted_pointmap import VegaWeightedPointMap
 from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
 from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 
@@ -30,7 +32,16 @@ def vega_pointmap(width, height,
                         bounding_box,
                         stroke, stroke_width, opacity,
                         coordinate_system)
-    
+
+def vega_weighted_pointmap(width, height,
+                  bounding_box,
+                  color, color_ruler, stroke_ruler, opacity,
+                  coordinate_system="EPSG:4326"):
+    return VegaWeightedPointMap(width, height,
+                        bounding_box,
+                                color, color_ruler, stroke_ruler, opacity,
+                        coordinate_system)
+
 
 def vega_heatmap(width, height, map_scale,
                  bounding_box,
