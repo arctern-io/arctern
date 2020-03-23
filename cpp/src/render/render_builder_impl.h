@@ -154,7 +154,7 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(const std::shared_ptr<
     if(results.find(res_geo)==results.end()) {
       results[res_geo] = c_arr[i];
     } else {
-      results[res_geo] = c_arr[i];
+      results[res_geo] += c_arr[i];
     }
   }
   return results;

@@ -68,7 +68,7 @@ def heatmap(df, vega):
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
-#    df.show(20,False)
+    
     vega = vega.build()
 #    agg_schema = StructType([StructField('point', StringType(), True),
     agg_schema = StructType([StructField('point', BinaryType(), True),

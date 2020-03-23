@@ -52,6 +52,31 @@ std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
   return array;
 }
 
+template <typename T>
+std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
+                                       const std::shared_ptr<arrow::Array>& arr_c,
+                                       const std::string& conf) {
+  auto data = weight_agg<T>(points, arr_c);
+  auto num_point = data.size();
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+  auto ite1 = data.begin();
+  auto ite2 = data.end();
+  std::size_t i = 0;
+  for (; ite1 != ite2;) {
+    auto geo = ite1->first;
+    auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
+    input_x[i] = rst_pointer->getX();
+    input_y[i] = rst_pointer->getY();
+    input_c[i++] = ite1->second;
+    OGRGeometryFactory::destroyGeometry(geo);
+    data.erase(ite1++);
+  }
+  data.clear();
+  return heatmap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
+}
+
 std::shared_ptr<arrow::Array> transform_and_projection(
     const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
@@ -107,23 +132,6 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
                                        const std::shared_ptr<arrow::Array>& arr_c,
                                        const std::string& conf) {
-//  auto points_arr = std::static_pointer_cast<arrow::StringArray>(points);
-//  auto points_size = points->length();
-//  auto wkt_type = points->type_id();
-//  assert(wkt_type == arrow::Type::STRING);
-//
-//  uint32_t *input_x, *input_y;
-//  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-//  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-//  OGRGeometry* res_geo = nullptr;
-//  for (size_t i = 0; i < points_size; i++) {
-//    std::string point_wkt = points_arr->GetString(i);
-//    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
-//    auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-//    input_x[i] = rst_pointer->getX();
-//    input_y[i] = rst_pointer->getY();
-//  }
- 
   auto points_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
   auto points_size = points->length();
   auto wkb_type = points->type_id();
@@ -131,244 +139,45 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
 
   std::pair<uint8_t*, int64_t> result;
   auto c_type = arr_c->type_id();
-  std::cout << "***************************ctype"<< c_type <<"****************************"<<std::endl;
   switch (c_type) {
     case arrow::Type::INT8: {
-      auto data = weight_agg<int8_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (int8_t*)calloc(num_point, sizeof(int8_t));
-      std::unordered_map<OGRGeometry*, int8_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, int8_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<int8_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<int8_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::INT16: {
-      auto data = weight_agg<int16_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (int16_t*)calloc(num_point, sizeof(int16_t));
-      std::unordered_map<OGRGeometry*, int16_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, int16_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<int16_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<int16_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::INT32: {
-      auto data = weight_agg<int32_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (int32_t*)calloc(num_point, sizeof(int32_t));
-      std::unordered_map<OGRGeometry*, int32_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, int32_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<int32_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<int32_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::INT64: {
-      std::cout << "***************************int64 ctype"<< c_type <<"****************************"<<std::endl;
-      auto data = weight_agg<int64_t>(points, arr_c);
-      auto num_point = data.size();
-      std::vector<uint32_t> input_x(num_point);
-      std::vector<uint32_t> input_y(num_point);
-      std::vector<int64_t> input_c(num_point);
-//      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-//      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-//     auto input_c = (int64_t*)calloc(num_point, sizeof(int64_t));
-      std::unordered_map<OGRGeometry*, int64_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, int64_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-	char* str;
-   	auto err_code = OGR_G_ExportToWkt(geo, &str);
-    	std::cout << "agg geometry: x :" << input_x[i] << "y : " << input_y[i] <<", value: " << input_c[i]<<std::endl;
-
-      }
-      result = heatmap<int64_t>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
-//      free(input_x);
-//      free(input_y);
-//      free(input_c);
+      result = render_heatmap<int64_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::UINT8: {
-      auto data = weight_agg<uint8_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (uint8_t*)calloc(num_point, sizeof(uint8_t));
-      std::unordered_map<OGRGeometry*, uint8_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, uint8_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<uint8_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<uint8_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::UINT16: {
-      auto data = weight_agg<uint16_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (uint16_t*)calloc(num_point, sizeof(uint16_t));
-      std::unordered_map<OGRGeometry*, uint16_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, uint16_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<uint16_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<uint16_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::UINT32: {
-      auto data = weight_agg<uint32_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      std::unordered_map<OGRGeometry*, uint32_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, uint32_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<uint32_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<uint32_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::UINT64: {
-      std::cout << "***************************uint64 ctype"<< c_type <<"****************************"<<std::endl;
-      auto data = weight_agg<uint64_t>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (uint64_t*)calloc(num_point, sizeof(uint64_t));
-      std::unordered_map<OGRGeometry*, uint64_t, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, uint64_t, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-	char* str;
-   	auto err_code = OGR_G_ExportToWkt(geo, &str);
-    	std::cout << "agg geometry: " << str <<", value: " << input_c[i]<<std::endl;
-
-      }
-      result = heatmap<uint64_t>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<uint64_t>(points, arr_c, conf);
       break;
     }
     case arrow::Type::FLOAT: {
-      std::cout << "***************************float ctype"<< c_type <<"****************************"<<std::endl;
-      auto data = weight_agg<float>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (float*)calloc(num_point, sizeof(float));
-      std::unordered_map<OGRGeometry*, float, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, float, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-    	char* str;
-   	auto err_code = OGR_G_ExportToWkt(geo, &str);
-    	std::cout << "agg geometry: " << str <<", value: " << input_c[i]<<std::endl;
-      }
-      result = heatmap<float>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<float>(points, arr_c, conf);
       break;
     }
     case arrow::Type::DOUBLE: {
-      std::cout << "***************************double ctype"<< c_type <<"****************************"<<std::endl;
-      auto data = weight_agg<double>(points, arr_c);
-      auto num_point = data.size();
-      auto input_x = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_y = (uint32_t*)calloc(num_point, sizeof(uint32_t));
-      auto input_c = (double*)calloc(num_point, sizeof(double));
-      std::unordered_map<OGRGeometry*, double, hash_func>::iterator ite1 = data.begin();
-      std::unordered_map<OGRGeometry*, double, hash_func>::iterator ite2 = data.end();
-      std::size_t i = 0;
-      for (; ite1 != ite2; ++ite1) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        input_c[i] = ite1->second;
-      }
-      result = heatmap<double>(input_x, input_y, input_c, num_point, conf);
-      free(input_x);
-      free(input_y);
-      free(input_c);
+      result = render_heatmap<double>(points, arr_c, conf);
       break;
     }
     default:

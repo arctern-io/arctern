@@ -65,6 +65,10 @@ void HeatMap<T>::DataInit() {
   int64_t height = window_params.height();
   int64_t window_size = width * height;
 
+//  for (int i = 0; i < num_vertices_; i++) {
+//    std::cout << "**********************heat data: x, y, c: " << vertices_x_[i] << vertices_y_[i] << count_[i] << std::endl;
+//  }
+
   colors_ = (float*)malloc(window_size * 4 * sizeof(float));
   set_colors(colors_, vertices_x_, vertices_y_, count_, num_vertices_, heatmap_vega_);
 
