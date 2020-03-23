@@ -55,6 +55,14 @@ class WeightedPointMap : public General2D {
   const size_t num_vertices() const { return num_vertices_; }
 
  private:
+  void ShaderSingleColorSingleStroke();
+
+  void ShaderMultipleColorSingleStroke();
+
+  void ShaderSingleColorMultipleStroke();
+
+  void ShaderMultipleColorMultipleStroke();
+
   void DrawSingleColorSingleStroke();
 
   void DrawMultipleColorSingleStroke();
@@ -68,7 +76,7 @@ class WeightedPointMap : public General2D {
  private:
 #ifdef USE_GPU
   unsigned int VAO_;
-  unsigned int VBO_[2];
+  unsigned int VBO_[4];
 #endif
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
