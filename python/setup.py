@@ -21,7 +21,7 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from Cython.Build import cythonize
 
-# Avoid a gcc warnings
+# Avoid gcc warnings
 class BuildExt(build_ext):
     def build_extensions(self):
         # Avoid gcc warning "cc1plus: warning:command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++"
