@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include "utils/check_status.h"
 
@@ -129,9 +130,10 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   return results;
 }
 
-template<typename T>
-std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(const std::shared_ptr<arrow::Array>& geos,
-                                               const std::shared_ptr<arrow::Array>& arr_c){
+template <typename T>
+std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
+    const std::shared_ptr<arrow::Array>& geos,
+    const std::shared_ptr<arrow::Array>& arr_c) {
   auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
   auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
   auto geos_size = geos->length();
@@ -146,7 +148,7 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(const std::shared_ptr<
     OGRGeometry* res_geo;
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto type = wkbFlatten(res_geo->getGeometryType());
-    if(results.find(res_geo)==results.end()) {
+    if (results.find(res_geo) == results.end()) {
       results[res_geo] = c_arr[i];
     } else {
       results[res_geo] += c_arr[i];

@@ -87,13 +87,9 @@ void ChoroplethMap<T>::Transform() {
 
   for (int i = 0; i < num_buildings_; i++) {
     OGRGeometry* geometry = choropleth_wkb_[i];
-//    OGRGeometryFactory::createFromWkt(choropleth_wkb_[i].c_str(), nullptr, &geometry);
-
     auto type = geometry->getGeometryType();
-
     if (type == OGRwkbGeometryType::wkbPolygon) {
       auto ring = geometry->toPolygon()->getExteriorRing();
-
       auto ring_size = ring->getNumPoints();
       buildings_x_[i].resize(ring_size);
       buildings_y_[i].resize(ring_size);
@@ -101,12 +97,10 @@ void ChoroplethMap<T>::Transform() {
         buildings_x_[i][j] = ring->getX(j);
         buildings_y_[i][j] = ring->getY(j);
       }
-
     } else {
       // TODO: add log here
       std::cout << "Unknown geometry type." << std::endl;
     }
-
     OGRGeometryFactory::destroyGeometry(geometry);
   }
 }

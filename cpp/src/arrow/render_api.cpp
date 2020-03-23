@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <iostream>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include "render/render_builder.h"
 
@@ -63,11 +63,9 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_
     auto wkt = wkts->GetString(i);
     OGRGeometry* geo = nullptr;
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &geo));
-    assert(err_code == OGRERR_NONE);
     auto sz = geo->WkbSize();
     std::vector<char> wkb(sz);
     CHECK_GDAL(geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data()));
-    assert(err_code == OGRERR_NONE);
     OGRGeometryFactory::destroyGeometry(geo);
     auto st = builder.Append(wkb.data(), wkb.size());
     assert(st.ok());
@@ -80,8 +78,8 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_
 
 template <typename T>
 std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
-                                       const std::string& conf) {
+                                            const std::shared_ptr<arrow::Array>& arr_c,
+                                            const std::string& conf) {
   auto data = weight_agg<T>(points, arr_c);
   auto num_point = data.size();
   std::vector<uint32_t> input_x(num_point);
@@ -104,9 +102,9 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_choroplethmap(const std::shared_ptr<arrow::Array>& arr_wkb,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
-                                       const std::string& conf) {
+std::pair<uint8_t*, int64_t> render_choroplethmap(
+    const std::shared_ptr<arrow::Array>& arr_wkb,
+    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
   auto data = weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.size();
   std::vector<OGRGeometry*> input_wkb(num_geo);
@@ -463,10 +461,9 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
   return nullptr;
 }
 
-std::shared_ptr<arrow::Array> choropleth_map(
-    const std::shared_ptr<arrow::Array>& arr_wkb,
-    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
-
+std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkb,
+                                             const std::shared_ptr<arrow::Array>& arr_c,
+                                             const std::string& conf) {
   auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(arr_wkb);
   auto geo_size = arr_wkb->length();
   auto wkb_type = arr_wkb->type_id();
