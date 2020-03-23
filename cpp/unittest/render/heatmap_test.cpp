@@ -1000,7 +1000,7 @@ TEST(HEATMAP_TEST, WKT_POINT_INT8_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1066,7 +1066,7 @@ TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1132,7 +1132,7 @@ TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1198,7 +1198,7 @@ TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1264,7 +1264,7 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1330,7 +1330,7 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1396,7 +1396,7 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1462,7 +1462,7 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1528,7 +1528,7 @@ TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1594,7 +1594,7 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1660,7 +1660,7 @@ TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
@@ -1726,6 +1726,6 @@ TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array); 
+  auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::heat_map(wkb, color_array, vega);
 }
