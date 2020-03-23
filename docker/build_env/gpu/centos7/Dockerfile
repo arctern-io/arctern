@@ -16,14 +16,14 @@ RUN yum install -y epel-release centos-release-scl-rh && yum install -y wget cur
 
 RUN echo "source scl_source enable llvm-toolset-7.0" >> /etc/profile.d/llvm-toolset-7.sh
 
-COPY build_cpu_env.yml /tmp/build_gpu_env.yml
+COPY build_gpu_env.yml /tmp/build_gpu_env.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update --all -y && \
-    conda env create -f /tmp/build_cpu_env.yml && \
+    conda env create -f /tmp/build_gpu_env.yml && \
     conda clean --all -y && \
-    rm /tmp/build_cpu_env.yml && \
+    rm /tmp/build_gpu_env.yml && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
