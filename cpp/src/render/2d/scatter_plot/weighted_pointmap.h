@@ -71,7 +71,7 @@ class WeightedPointMap : public General2D {
 
   void DrawMultipleColorMultipleStroke();
 
-  void SetColor(T *ptr);
+  void SetColor(T* ptr);
 
  private:
 #ifdef USE_GPU

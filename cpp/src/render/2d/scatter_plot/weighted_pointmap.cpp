@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <string>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -667,7 +668,7 @@ void WeightedPointMap<T>::DrawMultipleColorMultipleStroke() {
 }
 
 template <typename T>
-void WeightedPointMap<T>::SetColor(T *ptr) {
+void WeightedPointMap<T>::SetColor(T* ptr) {
   if (ptr == nullptr) {
     return;
   }

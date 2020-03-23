@@ -44,10 +44,10 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     const std::shared_ptr<arrow::Array>& arr1, const std::shared_ptr<arrow::Array>& arr2,
     const std::string& conf);
 
-// 4 args api: point_map(x, y, c, conf), point_map(x, y, s, conf), point_map(wkt, c, s, conf)
+// 4 args api: point_map(x, y, c, conf), point_map(x, y, s, conf), point_map(wkt, c, s,
+// conf)
 std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr1,
-    const std::shared_ptr<arrow::Array>& arr2,
+    const std::shared_ptr<arrow::Array>& arr1, const std::shared_ptr<arrow::Array>& arr2,
     const std::shared_ptr<arrow::Array>& arr3, const std::string& conf);
 
 // 5 args api: point_map(x, y, c, s, conf)

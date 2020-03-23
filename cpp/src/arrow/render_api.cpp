@@ -229,8 +229,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 }
 
 std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr1,
-    const std::shared_ptr<arrow::Array>& arr2,
+    const std::shared_ptr<arrow::Array>& arr1, const std::shared_ptr<arrow::Array>& arr2,
     const std::shared_ptr<arrow::Array>& arr3, const std::string& conf) {
   auto length1 = arr1->length();
   auto length2 = arr2->length();
@@ -250,8 +249,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     switch (type3) {
       case arrow::Type::INT8: {
         auto input = (int8_t*)arr3->data()->GetValues<uint8_t>(1);
-        return out_pic(
-            weighted_pointmap<int8_t>(input_x, input_y, input, length1, conf));
+        return out_pic(weighted_pointmap<int8_t>(input_x, input_y, input, length1, conf));
       }
       case arrow::Type::INT16: {
         auto input = (int16_t*)arr3->data()->GetValues<uint8_t>(1);
@@ -290,13 +288,11 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       }
       case arrow::Type::FLOAT: {
         auto input = (float*)arr3->data()->GetValues<uint8_t>(1);
-        return out_pic(
-            weighted_pointmap<float>(input_x, input_y, input, length1, conf));
+        return out_pic(weighted_pointmap<float>(input_x, input_y, input, length1, conf));
       }
       case arrow::Type::DOUBLE: {
         auto input = (double*)arr3->data()->GetValues<uint8_t>(1);
-        return out_pic(
-            weighted_pointmap<double>(input_x, input_y, input, length1, conf));
+        return out_pic(weighted_pointmap<double>(input_x, input_y, input, length1, conf));
       }
       default:
         // TODO: add log here
@@ -323,61 +319,71 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       case arrow::Type::INT8: {
         auto input_color = (int8_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (int8_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int8_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<int8_t>(input_x, input_y, input_color,
+                                           input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::INT16: {
         auto input_color = (int16_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (int16_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int16_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<int16_t>(input_x, input_y, input_color,
+                                            input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::INT32: {
         auto input_color = (int32_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (int32_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int32_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<int32_t>(input_x, input_y, input_color,
+                                            input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::INT64: {
         auto input_color = (int64_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (int64_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int64_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<int64_t>(input_x, input_y, input_color,
+                                            input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::UINT8: {
         auto input_color = (uint8_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (uint8_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint8_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<uint8_t>(input_x, input_y, input_color,
+                                            input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::UINT16: {
         auto input_color = (uint16_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (uint16_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint16_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<uint16_t>(input_x, input_y, input_color,
+                                             input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::UINT32: {
         auto input_color = (uint32_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (uint32_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint32_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<uint32_t>(input_x, input_y, input_color,
+                                             input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::UINT64: {
         auto input_color = (uint64_t*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (uint64_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint64_t>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<uint64_t>(input_x, input_y, input_color,
+                                             input_point_size, points_size, conf);
         break;
       }
       case arrow::Type::FLOAT: {
         auto input_color = (float*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (float*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<float>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<float>(input_x, input_y, input_color, input_point_size,
+                                          points_size, conf);
         break;
       }
       case arrow::Type::DOUBLE: {
         auto input_color = (double*)arr2->data()->GetValues<uint8_t>(1);
         auto input_point_size = (double*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<double>(input_x, input_y, input_color, input_point_size, points_size, conf);
+        result = weighted_pointmap<double>(input_x, input_y, input_color,
+                                           input_point_size, points_size, conf);
         break;
       }
       default:
