@@ -17,6 +17,7 @@
 
 #pragma once
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "gis/dispatch/dispatch.h"
@@ -119,13 +120,78 @@ std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
 auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
-                       TrueFunc true_func, const std::shared_ptr<Arg1>& arg1_ptr)
-    -> std::shared_ptr<RetType> {
-  auto split_inputs = GenericArraySplit(arg1_ptr, mask);
+                       TrueFunc true_func, Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+  auto split_inputs = GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask);
   assert(split_inputs[1]->null_count() == 0);
-  auto false_output = false_func(split_inputs[0]);
-  auto true_output = true_func(split_inputs[1]);
+  auto false_output = false_func(split_inputs[false]);
+  auto true_output = true_func(split_inputs[true]);
   return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
+}
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
+auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
+                  Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+  using Status = MaskResult::Status;
+  switch (mask_result.get_status()) {
+    case Status::kOnlyFalse: {
+      return std::static_pointer_cast<RetType>(false_func(std::forward<Arg1>(arg1_ptr)));
+    }
+    case Status::kOnlyTrue: {
+      return std::static_pointer_cast<RetType>(true_func(std::forward<Arg1>(arg1_ptr)));
+    }
+    case Status::kMixed: {
+      return UnaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
+                                        std::forward<Arg1>(arg1_ptr));
+    }
+    default: {
+      __builtin_unreachable();
+      throw std::runtime_error("unreachable code");
+    }
+  }
+}
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
+          typename Arg2>
+auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+                        TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+    -> std::shared_ptr<RetType> {
+  auto split_inputs =
+      std::make_tuple(GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask),
+                      GenericArraySplit(std::forward<Arg2>(arg2_ptr), mask));
+  assert(std::get<0>(split_inputs)[true]->null_count() == 0);
+  assert(std::get<1>(split_inputs)[true]->null_count() == 0);
+  auto false_output =
+      false_func(std::get<0>(split_inputs)[false], std::get<1>(split_inputs)[false]);
+  auto true_output =
+      true_func(std::get<0>(split_inputs)[true], std::get<1>(split_inputs)[true]);
+  return GenericArrayMergeWrapper<RetType>({false_output, true_output}, mask);
+}
+
+template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
+          typename Arg2>
+auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
+                   TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+    -> std::shared_ptr<RetType> {
+  using Status = MaskResult::Status;
+  switch (mask_result.get_status()) {
+    case Status::kOnlyFalse: {
+      return std::static_pointer_cast<RetType>(
+          false_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr)));
+    }
+    case Status::kOnlyTrue: {
+      return std::static_pointer_cast<RetType>(
+          true_func(std::forward<Arg1>(arg1_ptr), std::forward<Arg2>(arg2_ptr)));
+    }
+    case Status::kMixed: {
+      return BinaryMixedExecute<RetType>(mask_result.get_mask(), false_func, true_func,
+                                         std::forward<Arg1>(arg1_ptr),
+                                         std::forward<Arg2>(arg2_ptr));
+    }
+    default: {
+      __builtin_unreachable();
+      throw std::runtime_error("invalid enum");
+    }
+  }
 }
 
 }  // namespace dispatch

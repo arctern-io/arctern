@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport *
-
+from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
 cimport arctern_core__ as arctern_core_pxd
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):

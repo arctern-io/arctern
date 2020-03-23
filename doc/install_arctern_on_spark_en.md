@@ -113,12 +113,17 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## Configure Python path for Spark
 
+Add the following content to `conf/spark-default.conf`. `[path/to/your/conda]` is the installation path of Conda.
+
+```bash
+spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern/share/proj
+spark.executorEnv.GDAL_DATA [path/to/your/conda]/envs/arctern/share/gdal
+```
+
 Add the following content to `conf/spark-env.sh`. `[path/to/your/conda]` is the installation path of Conda.
 
 ```bash
 export PYSPARK_PYTHON=[path/to/your/conda]/envs/arctern/bin/python
-export GDAL_DATA=[path/to/your/conda]/envs/arctern/share/gdal
-export PROJ_LIB=[path/to/your/conda]/envs/arctern/share/proj
 ```
 
 Check whether PySpark uses the Python path determined by `$PYSPARK_PYTHON`. `[path/to/your/spark]` is the installation path of Spark.

@@ -26,8 +26,10 @@
 #include "gis/dispatch/dispatch.h"
 #include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
+#include "gis/test_common/transforms.h"
 #include "utils/check_status.h"
 
+namespace dispatch = arctern::gis::dispatch;
 using GroupedWkbTypes = arctern::gis::dispatch::GroupedWkbTypes;
 using WkbTypes = arctern::gis::WkbTypes;
 
@@ -229,4 +231,41 @@ TEST(type_scan, merge_and_split) {
   checker(tmps[1], true_strs);
   auto output = WktArrayMerge({tmps[0], tmps[1]}, masks);
   checker(output, strs);
+}
+
+TEST(type_scan, dispatch) {
+  using std::string;
+  using std::vector;
+  vector<string> cases_raw = {
+      "MultiPoint Empty",
+      "LineString(0 0, 0 1)",
+      "Point(0 0)",
+      "MultiLineString Empty",
+  };
+  vector<bool> std_masks = {true, false, false, false};
+  auto cases = arctern::gis::StrsToWkt(cases_raw);
+
+  GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
+  dispatch::TypeScannerForWkt scanner1(cases);
+  scanner1.mutable_types().push_back(type1);
+
+  GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
+  dispatch::TypeScannerForWkt scanner2(cases);
+  scanner2.mutable_types().push_back(type2);
+
+  dispatch::MaskResult mask_result(scanner1, type1);
+  mask_result.AppendFilter(scanner2, type2);
+
+  auto true_checker = [&](std::shared_ptr<arrow::StringArray> wkt) {
+    EXPECT_EQ(wkt->length(), 1);
+    EXPECT_EQ(wkt->GetView(0), cases->GetView(2));
+    return wkt;
+  };
+
+  auto false_checker = [](std::shared_ptr<arrow::StringArray> wkt) {
+    EXPECT_EQ(wkt->length(), 3);
+    return wkt;
+  };
+  dispatch::UnaryExecute<arrow::StringArray>(mask_result, false_checker, true_checker,
+                                             cases);
 }

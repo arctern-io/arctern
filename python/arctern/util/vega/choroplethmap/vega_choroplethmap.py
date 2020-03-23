@@ -77,7 +77,7 @@ class VegaChoroplethMap:
         self._bounding_box = bounding_box
         self._color_style = color_style
         self._ruler = ruler
-        self._opacity = opacity
+        self._opacity = float(opacity)
         self._coordinate_system = coordinate_system
 
     def build(self):
@@ -99,10 +99,10 @@ class VegaChoroplethMap:
         return root_json
     def coor(self):
         return self._coordinate_system
-    
+
     def bounding_box(self):
         return self._bounding_box
-    
+
     def height(self):
         return self._height
 

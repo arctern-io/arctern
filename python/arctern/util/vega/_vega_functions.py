@@ -24,13 +24,13 @@ from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 
 def vega_pointmap(width, height,
                   bounding_box,
-                  stroke, stroke_width, opacity,
+                  stroke_width, stroke, opacity,
                   coordinate_system="EPSG:4326"):
     return VegaPointMap(width, height,
                         bounding_box,
-                        stroke, stroke_width, opacity,
+                        stroke_width, stroke, opacity,
                         coordinate_system)
-    
+
 
 def vega_heatmap(width, height, map_scale,
                  bounding_box,
