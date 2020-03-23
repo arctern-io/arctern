@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -56,7 +54,6 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-// arrow::StringBuilder builder;
   arrow::BinaryBuilder builder;
 
   auto len = geos->length();
@@ -109,8 +106,6 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         throw std::runtime_error(err_msg);
       }
 
-//     char* str;
-//      err_code = OGR_G_ExportToWkt(geo, &str);
       auto sz = geo->WkbSize();
       std::vector<char> str(sz);
       err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
@@ -121,9 +116,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
       }
 
       CHECK_ARROW(builder.Append(str.data(), str.size()));
-//      CHECK_ARROW(builder.Append(str));
       OGRGeometryFactory::destroyGeometry(geo);
-//      CPLFree(str);
     }
   }
 
@@ -194,7 +187,7 @@ std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_wkt,
+std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);

@@ -81,7 +81,7 @@ if __name__ == "__main__":
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
     draw_heat_map(spark_session)
-#    draw_point_map(spark_session)
-#    draw_choropleth_map(spark_session)
+    draw_point_map(spark_session)
+    draw_choropleth_map(spark_session)
 
     spark_session.stop()

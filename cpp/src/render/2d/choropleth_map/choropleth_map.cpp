@@ -50,9 +50,9 @@ template class ChoroplethMap<float>;
 template class ChoroplethMap<double>;
 
 template <typename T>
-ChoroplethMap<T>::ChoroplethMap(std::vector<std::string> choropleth_wkt, T* count,
+ChoroplethMap<T>::ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, T* count,
                                 int64_t num_buildings)
-    : choropleth_wkt_(std::move(choropleth_wkt)),
+    : choropleth_wkb_(std::move(choropleth_wkb)),
       count_(count),
       num_buildings_(num_buildings) {}
 
@@ -86,8 +86,8 @@ void ChoroplethMap<T>::Transform() {
   buildings_y_.resize(num_buildings_);
 
   for (int i = 0; i < num_buildings_; i++) {
-    OGRGeometry* geometry;
-    OGRGeometryFactory::createFromWkt(choropleth_wkt_[i].c_str(), nullptr, &geometry);
+    OGRGeometry* geometry = choropleth_wkb_[i];
+//    OGRGeometryFactory::createFromWkt(choropleth_wkb_[i].c_str(), nullptr, &geometry);
 
     auto type = geometry->getGeometryType();
 

@@ -72,7 +72,8 @@ TEST(CHOROPLETH_MAP_TEST, BLUE_TO_RED) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, SKYBLUE_TO_WHITE) {
@@ -130,7 +131,8 @@ TEST(CHOROPLETH_MAP_TEST, SKYBLUE_TO_WHITE) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, GREEN_YELLOW_RED) {
@@ -188,7 +190,8 @@ TEST(CHOROPLETH_MAP_TEST, GREEN_YELLOW_RED) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, BLUE_WHITE_RED) {
@@ -246,7 +249,8 @@ TEST(CHOROPLETH_MAP_TEST, BLUE_WHITE_RED) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, WHITE_BLUE) {
@@ -304,7 +308,8 @@ TEST(CHOROPLETH_MAP_TEST, WHITE_BLUE) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, BLUE_GREEN_YELLOW) {
@@ -362,7 +367,8 @@ TEST(CHOROPLETH_MAP_TEST, BLUE_GREEN_YELLOW) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, BLUE_TRANSPARENCY) {
@@ -420,7 +426,8 @@ TEST(CHOROPLETH_MAP_TEST, BLUE_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, RED_TRANSPARENCY) {
@@ -478,7 +485,8 @@ TEST(CHOROPLETH_MAP_TEST, RED_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, PURPLE_TO_YELLOW) {
@@ -536,7 +544,8 @@ TEST(CHOROPLETH_MAP_TEST, PURPLE_TO_YELLOW) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INVALID_COLOR_STYLE_TEST) {
@@ -594,7 +603,8 @@ TEST(CHOROPLETH_MAP_TEST, INVALID_COLOR_STYLE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INVALID_JSON_TEST) {
@@ -652,7 +662,8 @@ TEST(CHOROPLETH_MAP_TEST, INVALID_JSON_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INT8) {
@@ -710,7 +721,8 @@ TEST(CHOROPLETH_MAP_TEST, INT8) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INT16) {
@@ -768,7 +780,8 @@ TEST(CHOROPLETH_MAP_TEST, INT16) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INT32) {
@@ -826,7 +839,8 @@ TEST(CHOROPLETH_MAP_TEST, INT32) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INT64) {
@@ -884,7 +898,8 @@ TEST(CHOROPLETH_MAP_TEST, INT64) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, UINT8) {
@@ -942,7 +957,8 @@ TEST(CHOROPLETH_MAP_TEST, UINT8) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, UINT16) {
@@ -1000,7 +1016,8 @@ TEST(CHOROPLETH_MAP_TEST, UINT16) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, UINT32) {
@@ -1058,7 +1075,8 @@ TEST(CHOROPLETH_MAP_TEST, UINT32) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, UINT64) {
@@ -1116,7 +1134,8 @@ TEST(CHOROPLETH_MAP_TEST, UINT64) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, FLOAT) {
@@ -1174,7 +1193,8 @@ TEST(CHOROPLETH_MAP_TEST, FLOAT) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, DOUBLE) {
@@ -1232,7 +1252,8 @@ TEST(CHOROPLETH_MAP_TEST, DOUBLE) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
 TEST(CHOROPLETH_MAP_TEST, INVALID_DATA_TYPE_TEST) {
@@ -1290,5 +1311,6 @@ TEST(CHOROPLETH_MAP_TEST, INVALID_DATA_TYPE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::choropleth_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array); 
+  arctern::render::choropleth_map(wkb, color_array, vega);
 }

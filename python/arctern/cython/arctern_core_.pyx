@@ -21,10 +21,10 @@ cimport arctern_core__ as arctern_core_pxd
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
     return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
 
-def point_map_wkt(points, conf):
+def point_map_wkb(points, conf):
     return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
 
-def heat_map_wkt(points, arr_c, conf):
+def heat_map_wkb(points, arr_c, conf):
     return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
 
 def point_map(arr_x, arr_y, conf):

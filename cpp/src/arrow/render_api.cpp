@@ -52,6 +52,32 @@ std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
   return array;
 }
 
+std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_wkt) {
+  auto wkts = std::static_pointer_cast<arrow::StringArray>(arr_wkt);
+  auto wkt_size = arr_wkt->length();
+  auto wkt_type = arr_wkt->type_id();
+  assert(wkt_type == arrow::Type::STRING);
+
+  arrow::BinaryBuilder builder;
+  for (int i = 0; i < wkt_size; i++) {
+    auto wkt = wkts->GetString(i);
+    OGRGeometry* geo = nullptr;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &geo));
+    assert(err_code == OGRERR_NONE);
+    auto sz = geo->WkbSize();
+    std::vector<char> wkb(sz);
+    CHECK_GDAL(geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data()));
+    assert(err_code == OGRERR_NONE);
+    OGRGeometryFactory::destroyGeometry(geo);
+    auto st = builder.Append(wkb.data(), wkb.size());
+    assert(st.ok());
+  }
+  std::shared_ptr<arrow::Array> result;
+  auto st = builder.Finish(&result);
+  assert(st.ok());
+  return result;
+}
+
 template <typename T>
 std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
                                        const std::shared_ptr<arrow::Array>& arr_c,
@@ -77,6 +103,23 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
   return heatmap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
 }
 
+template <typename T>
+std::pair<uint8_t*, int64_t> render_choroplethmap(const std::shared_ptr<arrow::Array>& arr_wkb,
+                                       const std::shared_ptr<arrow::Array>& arr_c,
+                                       const std::string& conf) {
+  auto data = weight_agg<T>(arr_wkb, arr_c);
+  auto num_geo = data.size();
+  std::vector<OGRGeometry*> input_wkb(num_geo);
+  std::vector<T> input_c(num_geo);
+  std::size_t i = 0;
+  for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
+    input_wkb[i] = ite1->first;
+    input_c[i++] = ite1->second;
+  }
+  auto result = choroplethmap<T>(input_wkb, &input_c[0], num_geo, conf);
+  return result;
+}
+
 std::shared_ptr<arrow::Array> transform_and_projection(
     const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
@@ -87,26 +130,23 @@ std::shared_ptr<arrow::Array> transform_and_projection(
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
                                         const std::string& conf) {
-  auto points_arr = std::static_pointer_cast<arrow::StringArray>(points);
-  auto points_size = points->length();
-  auto wkt_type = points->type_id();
-  assert(wkt_type == arrow::Type::STRING);
+  auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
+  auto num_point = points->length();
+  auto wkb_type = points->type_id();
+  assert(wkb_type == arrow::Type::Binary);
 
-  uint32_t *input_x, *input_y;
-  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
   OGRGeometry* res_geo = nullptr;
-  for (size_t i = 0; i < points_size; i++) {
-    std::string point_wkt = points_arr->GetString(i);
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
-    auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-    input_x[i] = rst_pointer->getX();
-    input_y[i] = rst_pointer->getY();
+  for (size_t i = 0; i < num_point; i++) {
+    std::string geo_wkb = point_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+    input_x[i] = rs_pointer->getX();
+    input_y[i] = rs_pointer->getY();
   }
+  auto result = pointmap(&input_x[0], &input_y[0], num_point, conf);
 
-  auto result = pointmap(input_x, input_y, points_size, conf);
-  free(input_x);
-  free(input_y);
   return out_pic(result);
 }
 
@@ -115,10 +155,8 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
                                         const std::string& conf) {
   auto x_length = arr_x->length();
   auto y_length = arr_y->length();
-
   auto x_type = arr_x->type_id();
   auto y_type = arr_y->type_id();
-
   assert(x_length == y_length);
   assert(x_type == arrow::Type::UINT32);
   assert(y_type == arrow::Type::UINT32);
@@ -195,11 +233,9 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
   auto x_length = arr_x->length();
   auto y_length = arr_y->length();
   auto c_length = arr_c->length();
-
   auto x_type = arr_x->type_id();
   auto y_type = arr_y->type_id();
   auto c_type = arr_c->type_id();
-
   assert(x_length == y_length);
   assert(x_length == c_length);
   assert(x_type == arrow::Type::UINT32);
@@ -258,78 +294,64 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
 }
 
 std::shared_ptr<arrow::Array> choropleth_map(
-    const std::shared_ptr<arrow::Array>& arr_wkt,
-    const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf) {
-  auto arr_wkt_length = arr_wkt->length();
-  auto arr_color_length = arr_count->length();
-  auto wkt_type = arr_wkt->type_id();
-  auto color_type = arr_count->type_id();
+    const std::shared_ptr<arrow::Array>& arr_wkb,
+    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
 
-  assert(arr_wkt_length == arr_color_length);
-  assert(wkt_type == arrow::Type::STRING);
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(arr_wkb);
+  auto geo_size = arr_wkb->length();
+  auto wkb_type = arr_wkb->type_id();
+  assert(wkb_type == arrow::Type::BINARY);
 
-  auto string_array = std::static_pointer_cast<arrow::StringArray>(arr_wkt);
-  std::vector<std::string> input_wkt(arr_wkt_length);
-  for (int i = 0; i < arr_wkt_length; i++) {
-    input_wkt[i] = string_array->GetString(i);
-  }
-
-  switch (color_type) {
+  std::pair<uint8_t*, int64_t> result;
+  auto c_size = arr_c->length();
+  auto c_type = arr_c->type_id();
+  assert(geo_size == c_size);
+  switch (c_type) {
     case arrow::Type::INT8: {
-      auto input_c_int8 = (int8_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<int8_t>(input_wkt, input_c_int8, arr_wkt_length, conf));
+      result = render_choroplethmap<int8_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::INT16: {
-      auto input_c_int16 = (int16_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<int16_t>(input_wkt, input_c_int16, arr_wkt_length, conf));
+      result = render_choroplethmap<int16_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::INT32: {
-      auto input_c_int32 = (int32_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<int32_t>(input_wkt, input_c_int32, arr_wkt_length, conf));
+      result = render_choroplethmap<int32_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::INT64: {
-      auto input_c_int64 = (int64_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<int64_t>(input_wkt, input_c_int64, arr_wkt_length, conf));
+      result = render_choroplethmap<int64_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::UINT8: {
-      auto input_c_uint8 = (uint8_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<uint8_t>(input_wkt, input_c_uint8, arr_wkt_length, conf));
+      result = render_choroplethmap<uint8_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::UINT16: {
-      auto input_c_uint16 = (uint16_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<uint16_t>(input_wkt, input_c_uint16, arr_wkt_length, conf));
+      result = render_choroplethmap<uint16_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::UINT32: {
-      auto input_c_uint32 = (uint32_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<uint32_t>(input_wkt, input_c_uint32, arr_wkt_length, conf));
+      result = render_choroplethmap<uint32_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::UINT64: {
-      auto input_c_uint64 = (uint64_t*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<uint64_t>(input_wkt, input_c_uint64, arr_wkt_length, conf));
+      result = render_choroplethmap<uint64_t>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::FLOAT: {
-      auto input_c_float = (float*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<float>(input_wkt, input_c_float, arr_wkt_length, conf));
+      result = render_choroplethmap<float>(arr_wkb, arr_c, conf);
+      break;
     }
     case arrow::Type::DOUBLE: {
-      auto input_c_double = (double*)arr_count->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          choroplethmap<double>(input_wkt, input_c_double, arr_wkt_length, conf));
+      result = render_choroplethmap<double>(arr_wkb, arr_c, conf);
+      break;
     }
     default:
       // TODO: add log here
       std::cout << "type error!" << std::endl;
   }
-  return nullptr;
+  return out_pic(result);
 }
 
 }  // namespace render
