@@ -15,14 +15,14 @@
 import sys
 import pandas
 import arctern
-import cv2
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap
 
 map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
 
 def diff_png(baseline_png, compared_png, precision=0.0005):
+    import cv2
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
     compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
     baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
@@ -94,6 +94,57 @@ def test_point_map():
     assert diff_png(baseline_png, map_path + "test_curve_z1.png")
     assert diff_png(baseline_png, map_path + "test_curve_z2.png")
     assert diff_png(baseline_png, map_path + "test_curve_z3.png")
+
+def test_weighted_point_map():
+    x_data = []
+    y_data = []
+    c_data = []
+    s_data = []
+
+    x_data.append(10)
+    x_data.append(20)
+    x_data.append(30)
+    x_data.append(40)
+    x_data.append(50)
+
+    y_data.append(10)
+    y_data.append(20)
+    y_data.append(30)
+    y_data.append(40)
+    y_data.append(50)
+
+    c_data.append(1)
+    c_data.append(2)
+    c_data.append(3)
+    c_data.append(4)
+    c_data.append(5)
+
+    s_data.append(2)
+    s_data.append(4)
+    s_data.append(6)
+    s_data.append(8)
+    s_data.append(10)
+
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    arr_c = pandas.Series(c_data)
+    arr_s = pandas.Series(s_data)
+
+    vega = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [1, 5], [1, 10], 1.0, "EPSG:3857")
+    vega_json = vega.build()
+
+    res1 = arctern.weighted_point_map(arr_x, arr_y, arr_c, arr_s, vega_json.encode('utf-8'))
+    res2 = arctern.weighted_point_map(arr_x, arr_y, arr_c, arr_s, vega_json.encode('utf-8'))
+    res3 = arctern.weighted_point_map(arr_x, arr_y, arr_c, arr_s, vega_json.encode('utf-8'))
+
+    baseline_png = map_path + "weighted.png"
+    save_png(res1, map_path + "test_weighted1.png")
+    save_png(res2, map_path + "test_weighted2.png")
+    save_png(res3, map_path + "test_weighted3.png")
+
+    assert diff_png(baseline_png, map_path + "test_weighted1.png")
+    assert diff_png(baseline_png, map_path + "test_weighted2.png")
+    assert diff_png(baseline_png, map_path + "test_weighted3.png")
 
 def test_heat_map():
     x_data = []
