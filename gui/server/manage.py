@@ -23,15 +23,14 @@ from flask_cors import CORS
 
 from app import service as app_service
 from app.nyctaxi import data as nyctaxi_data
-from app.nyctaxi import service as nyctaxi_service
 from app.common import config
 
 APP = Flask(__name__)
 
 APP.register_blueprint(app_service.API)
-APP.register_blueprint(nyctaxi_service.API)
 
 CORS(APP, resources=r'/*')
+
 
 def usage():
     """
