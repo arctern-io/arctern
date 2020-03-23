@@ -15,13 +15,14 @@ limitations under the License.
 """
 
 import json
+from flask import Blueprint, jsonify, request
+
+from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap
+from arctern_pyspark import choroplethmap, heatmap, pointmap
 
 from app import account
 from app.common import spark, token, utils
 from app.nyctaxi import data as nyctaxi_data
-from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap
-from arctern_pyspark import choroplethmap, heatmap, pointmap
-from flask import Blueprint, jsonify, request
 
 API = Blueprint('app_api', __name__)
 
