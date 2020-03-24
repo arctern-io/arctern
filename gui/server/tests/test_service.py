@@ -124,7 +124,7 @@ def test_query(client, headers):
             select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w
             from global_temp.nyc_taxi
             where ST_Within(
-                ST_Point(pickup_longitude, pickup_latitude), 
+                ST_Point(pickup_longitude, pickup_latitude),
                 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'
                 )
             ''',
@@ -164,7 +164,7 @@ def test_query(client, headers):
                     'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
                     'coordinate': 'EPSG:4326',
                     'color_style': 'blue_to_red',
-                    'rule': [2.5, 5], 
+                    'rule': [2.5, 5],
                     'opacity': 1
                 }
             }
