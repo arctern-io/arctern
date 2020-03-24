@@ -77,9 +77,9 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arrow::Array>& points,
-                                            const std::shared_ptr<arrow::Array>& arr,
-                                            const std::string& conf) {
+std::pair<uint8_t*, int64_t> render_weighted_pointmap(
+    const std::shared_ptr<arrow::Array>& points, const std::shared_ptr<arrow::Array>& arr,
+    const std::string& conf) {
   auto agg_res = weight_agg<T>(points, arr);
   auto num_point = agg_res.size();
 
@@ -88,8 +88,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arro
   std::vector<T> input(num_point);
 
   int i = 0;
-  for (auto &data : agg_res) {
-    auto &geo = data.first;
+  for (auto& data : agg_res) {
+    auto& geo = data.first;
     input_x[i] = geo->toPoint()->getX();
     input_y[i] = geo->toPoint()->getY();
     input[i++] = data.second;
@@ -100,10 +100,10 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arro
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arrow::Array>& points,
-                                                      const std::shared_ptr<arrow::Array>& arr_c,
-                                                      const std::shared_ptr<arrow::Array>& arr_s,
-                                                      const std::string& conf) {
+std::pair<uint8_t*, int64_t> render_weighted_pointmap(
+    const std::shared_ptr<arrow::Array>& points,
+    const std::shared_ptr<arrow::Array>& arr_c,
+    const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf) {
   auto agg_res = weight_agg_multiple_column<T>(points, arr_c, arr_s);
   auto num_point = agg_res.size();
 
@@ -113,8 +113,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arro
   std::vector<T> input_s(num_point);
 
   int i = 0;
-  for (auto &data : agg_res) {
-    auto &geo = data.first;
+  for (auto& data : agg_res) {
+    auto& geo = data.first;
     input_x[i] = geo->toPoint()->getX();
     input_y[i] = geo->toPoint()->getY();
     input_c[i] = data.second.first;
@@ -123,7 +123,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(const std::shared_ptr<arro
     i++;
   }
 
-  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input_c[0], &input_s[0], num_point, conf);
+  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input_c[0], &input_s[0],
+                              num_point, conf);
 }
 
 template <typename T>
@@ -256,7 +257,6 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 
     return out_pic(weighted_pointmap<int8_t>(input_x, input_y, length1, conf));
   } else if (type1 == arrow::Type::BINARY) {
-
     std::pair<uint8_t*, int64_t> result;
     switch (type2) {
       case arrow::Type::INT8: {

@@ -64,8 +64,7 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
 
 template <typename T>
 std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> weight_agg_multiple_column(
-    const std::shared_ptr<arrow::Array>& geos,
-    const std::shared_ptr<arrow::Array>& arr_c,
+    const std::shared_ptr<arrow::Array>& geos, const std::shared_ptr<arrow::Array>& arr_c,
     const std::shared_ptr<arrow::Array>& arr_s);
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
