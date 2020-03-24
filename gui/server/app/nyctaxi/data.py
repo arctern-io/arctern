@@ -32,8 +32,8 @@ def init():
         .option("header", True) \
         .option("delimiter", ",") \
         .schema("VendorID string, \
-            tpep_pickup_datetime timestamp, \
-            tpep_dropoff_datetime timestamp, \
+            tpep_pickup_datetime string, \
+            tpep_dropoff_datetime string, \
             passenger_count long, \
             trip_distance double, \
             pickup_longitude double, \
