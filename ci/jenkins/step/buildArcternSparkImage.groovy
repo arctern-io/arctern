@@ -1,5 +1,5 @@
 timeout(time: 20, unit: 'MINUTES') {
-    dir ("docker/spark/${BINARY_VERSION}/runtime") {
+    dir ("docker/spark/${BINARY_VERSION}/${OS_NAME}/runtime") {
         def channelPackage = "conda-bld.tar.gz"
         def downloadStatus = sh(returnStatus: true, script: "curl -C - -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
 
