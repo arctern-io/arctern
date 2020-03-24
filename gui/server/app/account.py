@@ -17,7 +17,9 @@ limitations under the License.
 import sqlite3
 from pathlib import Path
 
-DB = './data/account.db'
+import os
+dirpath = os.path.split(os.path.realpath(__file__))[0]
+DB = dirpath + '/../data/account.db'
 
 
 class Account:

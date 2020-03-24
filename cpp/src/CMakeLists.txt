@@ -48,11 +48,11 @@ set(gis_src
         gis/parser.cpp
         gis/gdal/geometry_visitor.cpp
         gis/dispatch/wkt_type_scanner.cpp
+        gis/dispatch/type_scanner.cpp
         gis/gdal/format_conversion.cpp
         )
 
 set(cuda_gis_src
-        gis/cuda/wkb/wkb_transforms.cpp
         gis/cuda/conversion/arrow_decode.cu
         gis/cuda/conversion/arrow_decode.cpp
         gis/cuda/conversion/arrow_encode.cu

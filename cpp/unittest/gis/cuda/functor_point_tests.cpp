@@ -22,7 +22,7 @@
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/functor/st_distance.h"
 #include "gis/cuda/functor/st_point.h"
-#include "gis/cuda/test_common/test_common.h"
+#include "gis/cuda/test_common/geometry_factory.h"
 using std::vector;
 namespace arctern {
 namespace gis {

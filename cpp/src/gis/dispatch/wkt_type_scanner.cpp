@@ -33,10 +33,11 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
-TypeScannerForWkt::TypeScannerForWkt(const std::shared_ptr<arrow::Array>& geometries)
+TypeScannerForWkt::TypeScannerForWkt(
+    const std::shared_ptr<arrow::StringArray>& geometries)
     : geometries_(geometries) {}
 
-std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
+std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
   auto len = geometries_->length();
 
   if (types().empty()) {
@@ -74,7 +75,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
     mapping[i].encode_uid = i;
   }
 
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries_);
   std::vector<GeometryTypeMasks::EncodeUid> encode_uids(len);
   bool is_unique_type = true;
   int last_idx = -1;
@@ -83,10 +83,10 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() {
   for (int i = 0; i < len; i++) {
     using Holder = UniquePtrWithDeleter<OGRGeometry, OGRGeometryFactory::destroyGeometry>;
     auto type = [&] {
-      if (wkt_geometries->IsNull(i)) {
+      if (geometries_->IsNull(i)) {
         return WkbTypes::kUnknown;
       }
-      auto str = wkt_geometries->GetString(i);
+      auto str = geometries_->GetString(i);
       if (str.size() == 0) {
         return WkbTypes::kUnknown;
       }
