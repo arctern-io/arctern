@@ -34,11 +34,17 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const CircleParams circle_params() const { return circle_params_; }
 
-  const std::pair<double, double>& ruler() const { return ruler_; }
+  const std::pair<double, double>& color_ruler() const { return color_ruler_; }
+
+  const std::pair<double, double>& stroke_ruler() const { return stroke_ruler_; }
 
   const ColorStyle& color_style() const { return color_style_; }
 
   const double& opacity() const { return opacity_; }
+
+  const bool& is_multiple_color() const { return is_multiple_color_; }
+
+  const bool& is_multiple_point_size() const { return is_multiple_point_size_; }
 
  private:
   // vega json to vega struct
@@ -46,9 +52,12 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
  private:
   CircleParams circle_params_;
-  std::pair<double, double> ruler_;
+  std::pair<double, double> color_ruler_;
+  std::pair<double, double> stroke_ruler_;
   ColorStyle color_style_;
   double opacity_;
+  bool is_multiple_color_;
+  bool is_multiple_point_size_;
 };
 
 }  // namespace render

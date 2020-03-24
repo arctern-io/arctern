@@ -46,6 +46,8 @@ class ColorParser {
 
   const Color& color() const { return color_; }
 
+  const bool& is_css_hex_color() const { return is_css_hex_color_; }
+
  private:
   void ParseHEX();
 
@@ -53,6 +55,7 @@ class ColorParser {
 
  private:
   Color color_;
+  bool is_css_hex_color_;
   std::string css_color_string_;
 };
 

@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <string>
 #include <vector>
 
@@ -29,7 +31,7 @@ class ChoroplethMap : public General2D {
  public:
   ChoroplethMap() = delete;
 
-  ChoroplethMap(std::vector<std::string> choropleth_wkt, T* count, int64_t num_vertices);
+  ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, T* count, int64_t num_vertices);
 
   uint8_t* Render() final;
 
@@ -43,7 +45,7 @@ class ChoroplethMap : public General2D {
   void SetColor();
 
  private:
-  std::vector<std::string> choropleth_wkt_;
+  std::vector<OGRGeometry*> choropleth_wkb_;
   T* count_;
   int64_t num_buildings_;
   VegaChoroplethMap choropleth_vega_;

@@ -60,7 +60,7 @@ void VegaPointmap::Parse(const std::string& json) {
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
-  circle_params_.radius = mark_enter["strokeWidth"]["value"].GetInt();
+  circle_params_.radius = mark_enter["strokeWidth"]["value"].GetDouble();
   circle_params_.color = ColorParser(mark_enter["stroke"]["value"].GetString()).color();
   circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
