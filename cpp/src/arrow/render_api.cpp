@@ -76,6 +76,31 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_
   return result;
 }
 
+std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_wkb) {
+  auto wkbs = std::static_pointer_cast<arrow::BinaryArray>(arr_wkb);
+  auto wkb_size = arr_wkb->length();
+  auto wkb_type = arr_wkb->type_id();
+  assert(wkb_type == arrow::Type::BINARY);
+
+  arrow::StringBuilder builder;
+  for (int i = 0; i < wkb_size; i++) {
+    auto wkb = wkbs->GetString(i);
+    OGRGeometry* geo = nullptr;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(wkb.c_str(), nullptr, &geo));
+    char * str;
+    CHECK_GDAL(geo->exportToWkt(&str));
+    OGRGeometryFactory::destroyGeometry(geo);
+    auto st = builder.Append(std::string(str));
+    // std::cout << "out str[ : "<< i << "] : "<<str <<std::endl;
+    assert(st.ok());
+    free(str);
+  }
+  std::shared_ptr<arrow::Array> result;
+  auto st = builder.Finish(&result);
+  assert(st.ok());
+  return result;
+}
+
 template <typename T>
 std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
                                             const std::shared_ptr<arrow::Array>& arr_c,

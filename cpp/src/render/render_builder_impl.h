@@ -55,7 +55,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
     std::string err_msg = "faild to tranform with targetCRS = " + dst_rs;
     throw std::runtime_error(err_msg);
   }
-
+  
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
   arrow::BinaryBuilder builder;
 
@@ -67,8 +67,9 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y, poCT);
   auto coordinate_width = bottom_right_x - top_left_x;
   auto coordinate_height = top_left_y - bottom_right_y;
-  uint32_t output_x, output_y;
+  int32_t output_x, output_y;
 
+  int64_t out_size = 0;
   for (int32_t i = 0; i < len; i++) {
     if (wkt_geometries->IsNull(i)) {
       std::string nullstr = "";
@@ -88,9 +89,9 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
       // 2. projection
       auto type = wkbFlatten(geo->getGeometryType());
       if (type == wkbPoint) {
-        output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) /
+        output_x = (int32_t)(((geo->toPoint()->getX() - top_left_x) * width) /
                               coordinate_width);
-        output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) /
+        output_y = (int32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) /
                               coordinate_height);
         geo->toPoint()->setX(output_x);
         geo->toPoint()->setY(output_y);
@@ -99,9 +100,9 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         auto ring_size = ring->getNumPoints();
         for (int j = 0; j < ring_size; j++) {
           output_x =
-              (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
+              (int32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
           output_y =
-              (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
+              (int32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
           ring->setPoint(j, output_x, output_y);
         }
       } else {

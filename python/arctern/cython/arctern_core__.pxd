@@ -24,6 +24,7 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &ptr_c,const string &conf) except +
     shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &ptr_wkt,const shared_ptr[CArray] &ptr_count,const string &conf) except +
     shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except + 
+    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 
 cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
