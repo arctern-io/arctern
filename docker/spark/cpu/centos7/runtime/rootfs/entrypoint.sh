@@ -12,10 +12,10 @@ set -o pipefail
 # Load Spark environment variables
 eval "$(spark_env)"
 
-if [ ! $EUID -eq 0 ] && [ -e /usr/lib/libnss_wrapper.so ]; then
+if [ ! $EUID -eq 0 ] && [ -e /usr/lib64/libnss_wrapper.so ]; then
     echo "spark:x:$(id -u):$(id -g):Spark:$SPARK_HOME:/bin/false" > "$NSS_WRAPPER_PASSWD"
     echo "spark:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
-    echo "LD_PRELOAD=/usr/lib/libnss_wrapper.so" >> "$SPARK_CONFDIR/spark-env.sh"
+    echo "LD_PRELOAD=/usr/lib64/libnss_wrapper.so" >> "$SPARK_CONFDIR/spark-env.sh"
 fi
 
 if [[ "$*" = "/run.sh" ]]; then
