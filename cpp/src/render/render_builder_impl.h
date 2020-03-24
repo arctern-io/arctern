@@ -55,10 +55,9 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
     std::string err_msg = "faild to tranform with targetCRS = " + dst_rs;
     throw std::runtime_error(err_msg);
   }
-  
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-  arrow::BinaryBuilder builder;
 
+  arrow::BinaryBuilder builder;
   auto len = geos->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
 
