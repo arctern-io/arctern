@@ -152,7 +152,6 @@ spark-warehouse/
 tests/results
 tests/rundocker.sh
 tests/runlocal.sh
-tests/draw_map/result_map/*.png
-tests/draw_map/baseline_map/*.png
+tests/draw_map/test*.png
 
 gui/server/data/0_5M_nyc_taxi_and_building.csv
