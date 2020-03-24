@@ -1000,7 +1000,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
@@ -1065,7 +1066,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
@@ -1130,7 +1132,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
@@ -1195,7 +1198,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
@@ -1260,7 +1264,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
@@ -1325,7 +1330,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
@@ -1390,7 +1396,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
@@ -1455,7 +1462,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
@@ -1520,7 +1528,8 @@ TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
@@ -1585,7 +1594,8 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
@@ -1650,7 +1660,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
@@ -1715,5 +1726,6 @@ TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
