@@ -67,7 +67,7 @@
           "shape": {"value": "circle"},
           "color": {"value": "blue_to_red"}, //{"value": "#EE113D"},
           "color_ruler": {"value": [2.5, 5]},
-          "stroke_width_ruler": {"value": [2.5, 5]},
+          "stroke_ruler": {"value": [2.5, 5]},
           "opacity": {"value": 1.0},
           "coordinate_system": {"value": "EPSG:3857"}
         }
