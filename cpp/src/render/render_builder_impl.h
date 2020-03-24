@@ -139,7 +139,7 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
   auto geos_size = geos->length();
   auto geo_type = geos->type_id();
   auto c_size = arr_c->length();
-  assert(geo_type == arrow::Type::Binary);
+  assert(geo_type == arrow::Type::BINARY);
   assert(geos_size == c_size);
 
   std::unordered_map<OGRGeometry*, T, hash_func> results;
