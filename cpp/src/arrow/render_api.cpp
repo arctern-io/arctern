@@ -131,7 +131,7 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& poi
   auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
   auto num_point = points->length();
   auto wkb_type = points->type_id();
-  assert(wkb_type == arrow::Type::Binary);
+  assert(wkb_type == arrow::Type::BINARY);
 
   std::vector<uint32_t> input_x(num_point);
   std::vector<uint32_t> input_y(num_point);
