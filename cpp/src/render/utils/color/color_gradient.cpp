@@ -17,16 +17,6 @@
 
 #include "render/utils/color/color_gradient.h"
 
-#define WHITE 0xFFFFFF;
-#define YELLOW 0xFFFF00;    //  :255,255,0
-#define ORANGE 0xFF7D00;    //  :255,125,0
-#define PURPLE 0xFF00FF;    //  :255,0,25
-#define RED 0xFF0000;       //  :255,0,0
-#define CYANBLUE 0x00FFFF;  //  :0,255,255
-#define GREEN 0x00FF00;     //  :0,255,0
-#define BLUE 0x0000FF;      //  :0,0,255
-#define SKYBLUE 0xB4E7F5;
-
 #define TRANSPARENCY 0.5f
 
 namespace arctern {
@@ -84,24 +74,24 @@ CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_st
       break;
     }
     case ColorStyle::kSkyBlueToWhite: {
-      int64_t sky_blue = SKYBLUE circle_params_2d.color.a = 1.0;
-      circle_params_2d.color.r = ((255 - (sky_blue >> 16 & 0xff)) * ratio) / 255.0f;
-      circle_params_2d.color.g = ((255 - (sky_blue >> 8 & 0xff)) * ratio) / 255.0f;
-      circle_params_2d.color.b = ((255 - (sky_blue & 0xff)) * ratio) / 255.0f;
+      circle_params_2d.color.a = 1.0;
+      circle_params_2d.color.r = (180 + ((255 - 180) * ratio)) / 255.0f;
+      circle_params_2d.color.g = (231 + ((255 - 231) * ratio)) / 255.0f;
+      circle_params_2d.color.b = (245 + ((255 - 245) * ratio)) / 255.0f;
       break;
     }
     case ColorStyle::kRedTransParency: {
-      int64_t red_lp = RED circle_params_2d.color.a = ratio + TRANSPARENCY;
-      circle_params_2d.color.r = (red_lp >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (red_lp >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (red_lp & 0xff) / 255.0f;
+      circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = 1.0f;
+      circle_params_2d.color.g = 0.0f;
+      circle_params_2d.color.b = 0.0f;
       break;
     }
     case ColorStyle::kBlueTransParency: {
-      int64_t blue_lp = BLUE circle_params_2d.color.a = ratio + TRANSPARENCY;
-      circle_params_2d.color.r = (blue_lp >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (blue_lp >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (blue_lp & 0xff) / 255.0f;
+      circle_params_2d.color.a = ratio + TRANSPARENCY;
+      circle_params_2d.color.r = 0.0f;
+      circle_params_2d.color.g = 0.0f;
+      circle_params_2d.color.b = 1.0f;
       break;
     }
     case ColorStyle::kBlueGreenYellow: {
