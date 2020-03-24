@@ -46,46 +46,46 @@ def test_point_map():
     curve_z1 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
     save_png(curve_z1, "/tmp/test_curve_z1.png")
 
-def test_weighted_point_map():
-    x_data = []
-    y_data = []
-    c_data = []
-    s_data = []
-
-    x_data.append(10)
-    x_data.append(20)
-    x_data.append(30)
-    x_data.append(40)
-    x_data.append(50)
-
-    y_data.append(10)
-    y_data.append(20)
-    y_data.append(30)
-    y_data.append(40)
-    y_data.append(50)
-
-    c_data.append(1)
-    c_data.append(2)
-    c_data.append(3)
-    c_data.append(4)
-    c_data.append(5)
-
-    s_data.append(2)
-    s_data.append(4)
-    s_data.append(6)
-    s_data.append(8)
-    s_data.append(10)
-
-    arr_x = pandas.Series(x_data)
-    arr_y = pandas.Series(y_data)
-    arr_c = pandas.Series(c_data)
-    arr_s = pandas.Series(s_data)
-
-    vega = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [1, 5], [1, 10], 1.0, "EPSG:3857")
-    vega_json = vega.build()
-
-    res1 = arctern.weighted_point_map(arr_x, arr_y, arr_c, arr_s, vega_json.encode('utf-8'))
-    save_png(res1, "/tmp/test_weighted1.png")
+# def test_weighted_point_map():
+#     x_data = []
+#     y_data = []
+#     c_data = []
+#     s_data = []
+#
+#     x_data.append(10)
+#     x_data.append(20)
+#     x_data.append(30)
+#     x_data.append(40)
+#     x_data.append(50)
+#
+#     y_data.append(10)
+#     y_data.append(20)
+#     y_data.append(30)
+#     y_data.append(40)
+#     y_data.append(50)
+#
+#     c_data.append(1)
+#     c_data.append(2)
+#     c_data.append(3)
+#     c_data.append(4)
+#     c_data.append(5)
+#
+#     s_data.append(2)
+#     s_data.append(4)
+#     s_data.append(6)
+#     s_data.append(8)
+#     s_data.append(10)
+#
+#     arr_x = pandas.Series(x_data)
+#     arr_y = pandas.Series(y_data)
+#     arr_c = pandas.Series(c_data)
+#     arr_s = pandas.Series(s_data)
+#
+#     vega = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [1, 5], [1, 10], 1.0, "EPSG:3857")
+#     vega_json = vega.build()
+#
+#     res1 = arctern.weighted_point_map(arr_x, arr_y, arr_c, arr_s, vega_json.encode('utf-8'))
+#     save_png(res1, "/tmp/test_weighted1.png")
 
 def test_heat_map():
     x_data = []
