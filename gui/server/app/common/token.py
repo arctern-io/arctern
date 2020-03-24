@@ -39,7 +39,6 @@ def verify(token):
     """
     check whether the token is valid
     """
-    # 参数为私有秘钥，跟上面方法的秘钥保持一致
     data = Serializer(secret_key='secret_key').loads(token)
 
     if not utils.check_json(data, 'user'):

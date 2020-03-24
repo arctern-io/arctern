@@ -34,12 +34,15 @@ void ColorParser::ParseHEX() {
 
   std::smatch match;
   if (std::regex_match(css_color_string_, match, pattern_rgb)) {
-    color_.r = std::stoul(match[1].str(), nullptr, 16);
-    color_.g = std::stoul(match[2].str(), nullptr, 16);
-    color_.b = std::stoul(match[3].str(), nullptr, 16);
+    color_.r = std::stoul(match[1].str(), nullptr, 16) / (float)255.0;
+    color_.g = std::stoul(match[2].str(), nullptr, 16) / (float)255.0;
+    color_.b = std::stoul(match[3].str(), nullptr, 16) / (float)255.0;
+    is_css_hex_color_ = true;
   } else {
-    // TODO: add log here
-    std::cout << css_color_string_ << " is an invalid rgb color\n";
+    // TODO: add **INFO** log here
+    // TODO: note, not throw error here, color string may also be a color_style
+    is_css_hex_color_ = false;
+    std::cout << css_color_string_ << " is not an rgb color\n";
     return;
   }
 }

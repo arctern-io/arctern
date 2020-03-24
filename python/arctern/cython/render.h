@@ -24,6 +24,9 @@
 namespace arctern {
 namespace render {
 
+std::shared_ptr<arrow::Array> 
+WktToWkb(const std::shared_ptr<arrow::Array>& arr_wkt); 
+
 std::shared_ptr<arrow::Array>
 transform_and_projection(const std::shared_ptr<arrow::Array>& geos,
                      const std::string& src_rs,

@@ -17,9 +17,9 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <src/render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.h>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -57,7 +57,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
 
   auto len = geos->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
@@ -109,17 +109,17 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         throw std::runtime_error(err_msg);
       }
 
-      char* str;
-      err_code = OGR_G_ExportToWkt(geo, &str);
+      auto sz = geo->WkbSize();
+      std::vector<char> str(sz);
+      err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
       if (err_code != OGRERR_NONE) {
         std::string err_msg =
             "failed to export to wkt, error code = " + std::to_string(err_code);
         throw std::runtime_error(err_msg);
       }
 
-      CHECK_ARROW(builder.Append(str));
+      CHECK_ARROW(builder.Append(str.data(), str.size()));
       OGRGeometryFactory::destroyGeometry(geo);
-      CPLFree(str);
     }
   }
 
@@ -127,6 +127,33 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   CHECK_ARROW(builder.Finish(&results));
   OCTDestroyCoordinateTransformation(poCT);
 
+  return results;
+}
+
+template <typename T>
+std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
+    const std::shared_ptr<arrow::Array>& geos,
+    const std::shared_ptr<arrow::Array>& arr_c) {
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
+  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
+  auto geos_size = geos->length();
+  auto geo_type = geos->type_id();
+  auto c_size = arr_c->length();
+  assert(geo_type == arrow::Type::Binary);
+  assert(geos_size == c_size);
+
+  std::unordered_map<OGRGeometry*, T, hash_func> results;
+  for (size_t i = 0; i < geos_size; i++) {
+    std::string geo_wkb = geo_arr->GetString(i);
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    auto type = wkbFlatten(res_geo->getGeometryType());
+    if (results.find(res_geo) == results.end()) {
+      results[res_geo] = c_arr[i];
+    } else {
+      results[res_geo] += c_arr[i];
+    }
+  }
   return results;
 }
 
@@ -147,7 +174,7 @@ std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t 
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
@@ -156,7 +183,25 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
     return std::make_pair(nullptr, -1);
   }
 
-  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, num_vertices);
+  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, num_vertices);
+  weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
+
+  const auto& render = weighted_pointmap.Render();
+  const auto& ret_size = weighted_pointmap.output_image_size();
+  return std::make_pair(render, ret_size);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                               int64_t num_vertices,
+                                               const std::string& conf) {
+  VegaWeightedPointmap vega_weighted_pointmap(conf);
+  if (!vega_weighted_pointmap.is_valid()) {
+    // TODO: add log here
+    return std::make_pair(nullptr, -1);
+  }
+
+  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr, num_vertices);
   weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
 
   const auto& render = weighted_pointmap.Render();
@@ -166,7 +211,7 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
 
 template <typename T>
 std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
-                                               T* arr_pc, int64_t num_vertices,
+                                               T* arr_s, int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
@@ -174,7 +219,7 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
     return std::make_pair(nullptr, -1);
   }
 
-  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, arr_pc, num_vertices);
+  WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, arr_s, num_vertices);
   weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
 
   const auto& render = weighted_pointmap.Render();
@@ -200,7 +245,7 @@ std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<std::string>& arr_wkt,
+std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);

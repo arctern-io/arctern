@@ -68,7 +68,7 @@ class VegaHeatMap:
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
-        self._map_scale = map_scale
+        self._map_scale = float(map_scale)
         self._coordinate_system = coordinate_system
 
     def build(self):

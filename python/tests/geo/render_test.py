@@ -15,11 +15,47 @@
 import sys
 import pandas
 import arctern
+import cv2
 
-from arctern.util import save_png, diff_png
+from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
 
 map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
+
+def diff_png(baseline_png, compared_png, precision=0.0005):
+    baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
+    compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
+    baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
+    baseline_size = baseline_info.size
+
+    compared_y, compared_x = compared_info.shape[0], compared_info.shape[1]
+    compared_size = compared_info.size
+    if compared_y != baseline_y or compared_x != baseline_x or compared_size != baseline_size:
+        return False
+
+    diff_point_num = 0
+    for i in range(baseline_y):
+        for j in range(baseline_x):
+            baseline_rgba = baseline_info[i][j]
+            compared_rgba = compared_info[i][j]
+
+            baseline_rgba_len = len(baseline_rgba)
+            compared_rgba_len = len(compared_rgba)
+            if baseline_rgba_len != compared_rgba_len or baseline_rgba_len != 4:
+                return False
+            if compared_rgba[3] == baseline_rgba[3] and baseline_rgba[3] == 0:
+                continue
+
+            is_point_equal = True
+            for k in range(3):
+                tmp_diff = abs((int)(compared_rgba[k]) - (int)(baseline_rgba[k]))
+                if tmp_diff > 1:
+                    is_point_equal = False
+
+            if not is_point_equal:
+                diff_point_num += 1
+
+    return ((float)(diff_point_num) / (float)(baseline_size)) <= precision
 
 def test_point_map():
     x_data = []
@@ -107,9 +143,10 @@ def test_choropleth_map():
     vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     vega_json = vega_choropleth_map.build()
 
-    choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    choropleth_map1 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
+    choropleth_map2 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
+    choropleth_map3 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
 
     baseline_png = map_path + "choropleth_map.png"
     save_png(choropleth_map1, map_path + "test_choropleth_map1.png")
