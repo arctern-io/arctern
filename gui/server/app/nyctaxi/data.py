@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import pandas as pd
-
 from app.common import spark
 
 GLOBAL_TABLE_LIST = []
@@ -27,11 +25,6 @@ def init():
     """
     print('nyctaxi.data.init')
 
-    df_pd = pd.DataFrame(data={'x': [1.1, 2.1, 3.1],
-                               'y': [1.1, 2.1, 3.1]})
-    points_df = spark.INSTANCE.session.createDataFrame(df_pd)
-    points_df.createGlobalTempView("points")
-
     import os
     dirpath = os.path.split(os.path.realpath(__file__))[0]
     csvpath = dirpath + '/../../data/0_5M_nyc_taxi_and_building.csv'
@@ -39,8 +32,8 @@ def init():
         .option("header", True) \
         .option("delimiter", ",") \
         .schema("VendorID string, \
-            tpep_pickup_datetime timestamp, \
-            tpep_dropoff_datetime timestamp, \
+            tpep_pickup_datetime string, \
+            tpep_dropoff_datetime string, \
             passenger_count long, \
             trip_distance double, \
             pickup_longitude double, \
