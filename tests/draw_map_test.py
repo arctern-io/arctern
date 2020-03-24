@@ -150,7 +150,7 @@ def draw_heat_map(spark):
         "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
     # 1 size:1024*896, map_scale: 10.0
-    vega_1 = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
+    vega_1 = vega_heatmap(200, 200, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
     baseline1 = heatmap(res, vega_1)
     heat_map1_1 = heatmap(res, vega_1)
     heat_map1_2 = heatmap(res, vega_1)
@@ -369,6 +369,19 @@ def draw_choropleth_map(spark):
     save_png(choropleth_map13_1, png_path + "choropleth_map_nyc_13-1.png")
     save_png(choropleth_map13_2, png_path + "choropleth_map_nyc_13-2.png")
 
+    # 14
+    vega_14 = vega_choroplethmap(200, 200, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+                                 [2.5, 5],
+                                 1.0, 'EPSG:4326')
+    baseline14 = choroplethmap(res, vega_14)
+    choropleth_map14_1 = choroplethmap(res, vega_14)
+    choropleth_map14_2 = choroplethmap(res, vega_14)
+
+    baseline_png14 = png_path + "choropleth_map_nyc_14.png"
+    save_png(baseline14, baseline_png14)
+    save_png(choropleth_map14_1, png_path + "choropleth_map_nyc_14-1.png")
+    save_png(choropleth_map14_2, png_path + "choropleth_map_nyc_14-2.png")
+
     spark.catalog.dropGlobalTempView("nyc_taxi")
 
     assert diff_png(baseline_png1, png_path + "choropleth_map_nyc_1-1.png", 0.00005)
@@ -397,6 +410,8 @@ def draw_choropleth_map(spark):
     assert diff_png(baseline_png12, png_path + "choropleth_map_nyc_12-2.png", 0.00005)
     assert diff_png(baseline_png13, png_path + "choropleth_map_nyc_13-1.png", 0.00005)
     assert diff_png(baseline_png13, png_path + "choropleth_map_nyc_13-2.png", 0.00005)
+    assert diff_png(baseline_png14, png_path + "choropleth_map_nyc_14-1.png", 0.00005)
+    assert diff_png(baseline_png14, png_path + "choropleth_map_nyc_14-2.png", 0.00005)
 
 
 if __name__ == "__main__":
