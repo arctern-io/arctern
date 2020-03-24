@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN yum install -y wget centos-release-scl-rh java-1.8.0-openjdk \
     mesa-libGLU-devel mesa-libOSMesa-devel  && \
-    yum --enablerepo=centos-sclo-rh-testing install nss_wrapper && \
+    yum --enablerepo=centos-sclo-rh-testing install -y nss_wrapper && \
     wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
