@@ -29,6 +29,8 @@ class WeightedPointMap : public General2D {
  public:
   WeightedPointMap() = delete;
 
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, size_t num_vertices);
+
   WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count,
                    size_t num_vertices);
 
@@ -46,20 +48,39 @@ class WeightedPointMap : public General2D {
 
   uint32_t* mutable_vertices_y() { return vertices_y_; }
 
+  T* mutable_point_size() { return point_size_; }
+
   VegaWeightedPointmap& mutable_weighted_point_vega() { return weighted_point_vega_; }
 
   const size_t num_vertices() const { return num_vertices_; }
 
  private:
-  void SetColor();
+  void ShaderSingleColorSingleStroke();
+
+  void ShaderMultipleColorSingleStroke();
+
+  void ShaderSingleColorMultipleStroke();
+
+  void ShaderMultipleColorMultipleStroke();
+
+  void DrawSingleColorSingleStroke();
+
+  void DrawMultipleColorSingleStroke();
+
+  void DrawSingleColorMultipleStroke();
+
+  void DrawMultipleColorMultipleStroke();
+
+  void SetColor(T* ptr);
 
  private:
 #ifdef USE_GPU
   unsigned int VAO_;
-  unsigned int VBO_[2];
+  unsigned int VBO_[4];
 #endif
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
+  T* unknown_;
   T* count_;
   T* point_size_;
   size_t num_vertices_;
