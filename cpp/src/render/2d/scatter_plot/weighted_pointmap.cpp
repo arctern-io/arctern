@@ -544,7 +544,7 @@ void WeightedPointMap<T>::DrawSingleColorSingleStroke() {
   glPointSize(weighted_point_vega_.circle_params().radius);
 
   auto& color = weighted_point_vega_.circle_params().color;
-  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+  glColor4f(color.r, color.g, color.b, color.a);
 
   glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -578,7 +578,7 @@ void WeightedPointMap<T>::DrawSingleColorMultipleStroke() {
           1);
 
   auto& color = weighted_point_vega_.circle_params().color;
-  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
+  glColor4f(color.r, color.g, color.b, color.a);
 
   for (int i = 0; i < num_vertices_; i++) {
     glPointSize(unknown_[i]);
