@@ -143,9 +143,10 @@ def test_choropleth_map():
     vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     vega_json = vega_choropleth_map.build()
 
-    choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
+    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    choropleth_map1 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
+    choropleth_map2 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
+    choropleth_map3 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
 
     baseline_png = map_path + "choropleth_map.png"
     save_png(choropleth_map1, map_path + "test_choropleth_map1.png")

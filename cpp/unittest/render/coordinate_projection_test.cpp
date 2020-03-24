@@ -45,7 +45,7 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs,
                                                        bottom_right, top_left, 200, 300);
 
-  auto str_arr = std::static_pointer_cast<arrow::StringArray>(arr);
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
   auto res1 = str_arr->GetString(0);
   auto res2 = str_arr->GetString(1);
   //  assert(res1 == "POINT (129 128)");
