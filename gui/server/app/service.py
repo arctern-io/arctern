@@ -26,6 +26,7 @@ from app.nyctaxi import data as nyctaxi_data
 
 API = Blueprint('app_api', __name__)
 
+
 @API.route('/login', methods=['POST'])
 def login():
     """
@@ -118,13 +119,15 @@ def db_query():
             or not utils.check_json(request.json['query'], 'sql'):
         return jsonify(status='error', code=-1, message='query format error')
 
+    query_sql = request.json['query']['sql']
+    query_type = request.json['query']['type']
+
     content = {}
-    content['sql'] = request.json['query']['sql']
+    content['sql'] = query_sql
     content['err'] = False
 
-    res = spark.Spark.run(request.json['query']['sql'])
-
-    if request.json['query']['type'] == 'sql':
+    if query_type == 'sql':
+        res = spark.Spark.run_for_json(query_sql)
         data = []
         for row in res:
             obj = json.loads(row)
@@ -134,7 +137,10 @@ def db_query():
         if not utils.check_json(request.json['query'], 'params'):
             return jsonify(status='error', code=-1, message='query format error')
         query_params = request.json['query']['params']
-        if request.json['query']['type'] == 'point':
+
+        res = spark.Spark.run(query_sql)
+
+        if query_type == 'point':
             vega = vega_pointmap(
                 int(query_params['width']),
                 int(query_params['height']),
@@ -145,7 +151,7 @@ def db_query():
                 query_params['point']['coordinate'])
             data = pointmap(res, vega)
             content['result'] = data
-        elif request.json['query']['type'] == 'heat':
+        elif query_type == 'heat':
             vega = vega_heatmap(
                 int(query_params['width']),
                 int(query_params['height']),
@@ -154,7 +160,7 @@ def db_query():
                 query_params['heat']['coordinate'])
             data = heatmap(res, vega)
             content['result'] = data
-        elif request.json['query']['type'] == 'choropleth':
+        elif query_type == 'choropleth':
             vega = vega_choroplethmap(
                 int(query_params['width']),
                 int(query_params['height']),
@@ -168,5 +174,5 @@ def db_query():
         else:
             return jsonify(status="error",
                            code=-1,
-                           message='{} not support'.format(request.json['query']['type']))
+                           message='{} not support'.format(query_type))
     return jsonify(status="success", code=200, data=content)
