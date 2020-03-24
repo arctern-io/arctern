@@ -152,3 +152,5 @@ spark-warehouse/
 tests/results
 tests/rundocker.sh
 tests/runlocal.sh
+
+gui/server/data/0_5M_nyc_taxi_and_building.csv
