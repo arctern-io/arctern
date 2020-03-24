@@ -115,6 +115,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
                                   mark_enter["color_ruler"]["value"][1].GetDouble());
   } else {
     // TODO: add log here
+    is_valid_ = false;
     std::string msg = "unsupported color ruler.";
     return;
   }
