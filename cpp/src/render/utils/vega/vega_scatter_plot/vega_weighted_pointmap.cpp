@@ -115,6 +115,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
                                   mark_enter["color_ruler"]["value"][1].GetDouble());
   } else {
     // TODO: add log here
+    is_valid_ = false;
     std::string msg = "unsupported color ruler.";
     return;
   }
@@ -128,14 +129,14 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   auto stroke_ruler_size = mark_enter["stroke_ruler"]["value"].Size();
   if (stroke_ruler_size == 1 && JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
                                               rapidjson::Type::kNumberType)) {
-    is_multiple_point_size_ = false;
+    is_multiple_stroke_width_ = false;
     circle_params_.radius = mark_enter["stroke_ruler"]["value"][0].GetDouble();
   } else if (stroke_ruler_size == 2 &&
              JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
                            rapidjson::Type::kNumberType) &&
              JsonTypeCheck(mark_enter["stroke_ruler"]["value"][1],
                            rapidjson::Type::kNumberType)) {
-    is_multiple_point_size_ = true;
+    is_multiple_stroke_width_ = true;
     stroke_ruler_ = std::make_pair(mark_enter["stroke_ruler"]["value"][0].GetDouble(),
                                    mark_enter["stroke_ruler"]["value"][1].GetDouble());
   } else {
