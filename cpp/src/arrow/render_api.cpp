@@ -102,6 +102,57 @@ std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_
 }
 
 template <typename T>
+std::pair<uint8_t*, int64_t> render_weighted_pointmap(
+    const std::shared_ptr<arrow::Array>& points, const std::shared_ptr<arrow::Array>& arr,
+    const std::string& conf) {
+  auto agg_res = weight_agg<T>(points, arr);
+  auto num_point = agg_res.size();
+
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input(num_point);
+
+  int i = 0;
+  for (auto& data : agg_res) {
+    auto& geo = data.first;
+    input_x[i] = geo->toPoint()->getX();
+    input_y[i] = geo->toPoint()->getY();
+    input[i++] = data.second;
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+
+  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input[0], num_point, conf);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> render_weighted_pointmap(
+    const std::shared_ptr<arrow::Array>& points,
+    const std::shared_ptr<arrow::Array>& arr_c,
+    const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf) {
+  auto agg_res = weight_agg_multiple_column<T>(points, arr_c, arr_s);
+  auto num_point = agg_res.size();
+
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+  std::vector<T> input_s(num_point);
+
+  int i = 0;
+  for (auto& data : agg_res) {
+    auto& geo = data.first;
+    input_x[i] = geo->toPoint()->getX();
+    input_y[i] = geo->toPoint()->getY();
+    input_c[i] = data.second.first;
+    input_s[i] = data.second.second;
+    OGRGeometryFactory::destroyGeometry(geo);
+    i++;
+  }
+
+  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input_c[0], &input_s[0],
+                              num_point, conf);
+}
+
+template <typename T>
 std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
                                             const std::shared_ptr<arrow::Array>& arr_c,
                                             const std::string& conf) {
@@ -193,28 +244,25 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
 std::shared_ptr<arrow::Array> weighted_point_map(
     const std::shared_ptr<arrow::Array>& arr1, const std::string& conf) {
   auto wkt_type = arr1->type_id();
-  assert(wkt_type == arrow::Type::STRING);
+  assert(wkt_type == arrow::Type::BINARY);
 
-  auto points_arr = std::static_pointer_cast<arrow::StringArray>(arr1);
-  auto points_size = arr1->length();
+  auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(arr1);
+  auto num_point = arr1->length();
 
-  uint32_t *input_x, *input_y;
-
-  input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-  input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
 
   OGRGeometry* res_geo = nullptr;
-  for (size_t i = 0; i < points_size; i++) {
-    std::string point_wkt = points_arr->GetString(i);
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
+  for (size_t i = 0; i < num_point; i++) {
+    std::string geo_wkb = point_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = (uint32_t)rst_pointer->getX();
     input_y[i] = (uint32_t)rst_pointer->getY();
   }
 
-  auto result = weighted_pointmap<int8_t>(input_x, input_y, points_size, conf);
-  free(input_x);
-  free(input_y);
+  auto result = weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_point, conf);
+
   return out_pic(result);
 }
 
@@ -233,72 +281,47 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     auto input_y = (uint32_t*)arr2->data()->GetValues<uint8_t>(1);
 
     return out_pic(weighted_pointmap<int8_t>(input_x, input_y, length1, conf));
-  } else if (type1 == arrow::Type::STRING) {
-    auto points_arr = std::static_pointer_cast<arrow::StringArray>(arr1);
-    auto points_size = length1;
-
-    uint32_t *input_x, *input_y;
-    input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-    input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-    OGRGeometry* res_geo = nullptr;
-    for (size_t i = 0; i < points_size; i++) {
-      std::string point_wkt = points_arr->GetString(i);
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
-      auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-      input_x[i] = (uint32_t)rst_pointer->getX();
-      input_y[i] = (uint32_t)rst_pointer->getY();
-    }
-
+  } else if (type1 == arrow::Type::BINARY) {
     std::pair<uint8_t*, int64_t> result;
     switch (type2) {
       case arrow::Type::INT8: {
-        auto input = (int8_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int8_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<int8_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::INT16: {
-        auto input = (int16_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int16_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<int16_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::INT32: {
-        auto input = (int32_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int32_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<int32_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::INT64: {
-        auto input = (int64_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int64_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<int64_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::UINT8: {
-        auto input = (uint8_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint8_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<uint8_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::UINT16: {
-        auto input = (uint16_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint16_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<uint16_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::UINT32: {
-        auto input = (uint32_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint32_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<uint32_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::UINT64: {
-        auto input = (uint64_t*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint64_t>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<uint64_t>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::FLOAT: {
-        auto input = (float*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<float>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<float>(arr1, arr2, conf);
         break;
       }
       case arrow::Type::DOUBLE: {
-        auto input = (double*)arr2->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<double>(input_x, input_y, input, points_size, conf);
+        result = render_weighted_pointmap<double>(arr1, arr2, conf);
         break;
       }
       default:
@@ -306,8 +329,6 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         std::cout << "type error! weighted_pointmap" << std::endl;
     }
 
-    free(input_x);
-    free(input_y);
     return out_pic(result);
 
   } else {
@@ -387,92 +408,48 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         // TODO: add log here
         std::cout << "type error! weighted_pointmap" << std::endl;
     }
-  } else if (type1 == arrow::Type::STRING && type2 == type3) {
-    auto points_arr = std::static_pointer_cast<arrow::StringArray>(arr1);
-    auto points_size = length1;
-
-    uint32_t *input_x, *input_y;
-    input_x = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-    input_y = (uint32_t*)calloc(points_size, sizeof(uint32_t));
-    OGRGeometry* res_geo = nullptr;
-    for (size_t i = 0; i < points_size; i++) {
-      std::string point_wkt = points_arr->GetString(i);
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(point_wkt.c_str(), nullptr, &res_geo));
-      auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-      input_x[i] = (uint32_t)rst_pointer->getX();
-      input_y[i] = (uint32_t)rst_pointer->getY();
-    }
-
+  } else if (type1 == arrow::Type::BINARY && type2 == type3) {
     std::pair<uint8_t*, int64_t> result;
+
     switch (type3) {
       case arrow::Type::INT8: {
-        auto input_color = (int8_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (int8_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int8_t>(input_x, input_y, input_color,
-                                           input_point_size, points_size, conf);
+        result = render_weighted_pointmap<int8_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::INT16: {
-        auto input_color = (int16_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (int16_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int16_t>(input_x, input_y, input_color,
-                                            input_point_size, points_size, conf);
+        result = render_weighted_pointmap<int16_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::INT32: {
-        auto input_color = (int32_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (int32_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int32_t>(input_x, input_y, input_color,
-                                            input_point_size, points_size, conf);
+        result = render_weighted_pointmap<int32_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::INT64: {
-        auto input_color = (int64_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (int64_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<int64_t>(input_x, input_y, input_color,
-                                            input_point_size, points_size, conf);
+        result = render_weighted_pointmap<int64_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::UINT8: {
-        auto input_color = (uint8_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (uint8_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint8_t>(input_x, input_y, input_color,
-                                            input_point_size, points_size, conf);
+        result = render_weighted_pointmap<uint8_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::UINT16: {
-        auto input_color = (uint16_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (uint16_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint16_t>(input_x, input_y, input_color,
-                                             input_point_size, points_size, conf);
+        result = render_weighted_pointmap<uint16_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::UINT32: {
-        auto input_color = (uint32_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (uint32_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint32_t>(input_x, input_y, input_color,
-                                             input_point_size, points_size, conf);
+        result = render_weighted_pointmap<uint32_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::UINT64: {
-        auto input_color = (uint64_t*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (uint64_t*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<uint64_t>(input_x, input_y, input_color,
-                                             input_point_size, points_size, conf);
+        result = render_weighted_pointmap<uint64_t>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::FLOAT: {
-        auto input_color = (float*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (float*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<float>(input_x, input_y, input_color, input_point_size,
-                                          points_size, conf);
+        result = render_weighted_pointmap<float>(arr1, arr2, arr3, conf);
         break;
       }
       case arrow::Type::DOUBLE: {
-        auto input_color = (double*)arr2->data()->GetValues<uint8_t>(1);
-        auto input_point_size = (double*)arr3->data()->GetValues<uint8_t>(1);
-        result = weighted_pointmap<double>(input_x, input_y, input_color,
-                                           input_point_size, points_size, conf);
+        result = render_weighted_pointmap<double>(arr1, arr2, arr3, conf);
         break;
       }
       default:
@@ -480,8 +457,6 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         std::cout << "type error! weighted_pointmap" << std::endl;
     }
 
-    free(input_x);
-    free(input_y);
     return out_pic(result);
   } else {
     // TODO: add log here
@@ -587,7 +562,6 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
                                        const std::shared_ptr<arrow::Array>& arr_c,
                                        const std::string& conf) {
   auto points_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
-  auto points_size = points->length();
   auto wkb_type = points->type_id();
   assert(wkb_type == arrow::Type::BINARY);
 

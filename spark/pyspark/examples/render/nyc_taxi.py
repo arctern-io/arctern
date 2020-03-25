@@ -13,12 +13,13 @@
 # limitations under the License.
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
+from arctern_pyspark import weighted_pointmap
 
 from pyspark.sql import SparkSession
 
@@ -35,6 +36,22 @@ def draw_point_map(spark):
     vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
     res = pointmap(res, vega)
     save_png(res, '/tmp/pointmap.png')
+
+    spark.sql("show tables").show()
+    spark.catalog.dropGlobalTempView("nyc_taxi")
+
+def draw_weighted_point_map(spark):
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
+    df.createOrReplaceTempView("nyc_taxi")
+
+    register_funcs(spark)
+    res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+
+    vega = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [0, 2], [0, 10], 1.0, "EPSG:4326")
+    res = weighted_pointmap(res, vega)
+    save_png(res, '/tmp/weighted_pointmap.png')
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
@@ -83,5 +100,6 @@ if __name__ == "__main__":
     draw_heat_map(spark_session)
     draw_point_map(spark_session)
     draw_choropleth_map(spark_session)
+    draw_weighted_point_map(spark_session)
 
     spark_session.stop()
