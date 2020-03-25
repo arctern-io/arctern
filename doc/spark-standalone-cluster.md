@@ -115,7 +115,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ----
 
 ## 安装`spark`
-只需在`node20`节点配置`spark`，然后`scp`至`node21`和`node22`
+在`node20`,`node21`,`node22`上分别下载`spark`并解压
 ```bash
 #进入home目录
 cd ~/
@@ -126,27 +126,25 @@ wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview
 tar -xvf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 ```
-编辑`spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，内容如下
-```bash
-#!/usr/bin/env bash
-export SPARK_MASTER_HOST=node20
-
-ARCTERN_PREFIX=$HOME/miniconda3/envs/arctern
-export PYSPARK_PYTHON=$ARCTERN_PREFIX/bin/python
-export PROJ_LIB=$ARCTERN_PREFIX/share/proj
-export GDAL_DATA=$ARCTERN_PREFIX/share/gdal
-```
-将`node20`配置复制到`node21`,`node22`
-```bash
-scp -r ~/spark-3.0.0-preview2-bin-hadoop2.7 node21:~/
-scp -r ~/spark-3.0.0-preview2-bin-hadoop2.7 node22:~/
-```
 在`node20`,`node21`,`node22`的`~/.bashrc`添加如下内容:
 ```bash
 export SPARK_HOME=$HOME/spark-3.0.0-preview2-bin-hadoop2.7
-export PATH=$PATH:$SPARK_HOME/bin
 ```
-在`node20`上编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/slaves`,内容如下:
+
+只需要在`node20`节点上配置`spark`,`node21`和`node22`不需要任何配置
+
+编辑`spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，内容如下
+```bash
+#!/usr/bin/env bash
+export PYSPARK_PYTHON=$HOME/miniconda3/envs/arctern/bin/python
+```
+编辑`spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-defaults.conf`，内容如下
+```txt
+spark.executorEnv.PYSPARK_PYTHON   /home/arcterner/miniconda3/envs/arctern/bin/python
+spark.executorEnv.PROJ_LIB         /home/arcterner/miniconda3/envs/arctern/share/proj
+spark.executorEnv.GDAL_DATA        /home/arcterner/miniconda3/envs/arctern/share/gdal
+```
+编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/slaves`,内容如下:
 ```txt
 node20
 node21
