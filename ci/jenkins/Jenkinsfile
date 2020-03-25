@@ -90,10 +90,10 @@ pipeline {
         }
 
         stage ('Arctern Conda') {
-            matrix {
-                agent none
-                stages {
-                    stage("Conda Build and Upload") {
+            agent none
+            stages {
+                stage("Conda Build and Upload") {
+                    matrix {
                         axes {
                             axis {
                                 name 'OS_NAME'
@@ -134,8 +134,10 @@ pipeline {
                             }
                         }
                     }
+                }
 
-                    stage('Arctern Spark Docker Images') {
+                stage('Arctern Spark Docker Images') {
+                    matrix {
                         axes {
                             axis {
                                 name 'OS_NAME'
@@ -180,8 +182,10 @@ pipeline {
                             }
                         }
                     }
+                }
 
-                    stage('Arctern Spark Regression') {
+                stage('Arctern Spark Regression') {
+                    matrix {
                         axes {
                             axis {
                                 name 'OS_NAME'
