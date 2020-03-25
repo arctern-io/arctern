@@ -118,7 +118,7 @@ pipeline {
                         }
 
                         environment {
-                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
+                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
                             CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
                         }
 
@@ -162,7 +162,7 @@ pipeline {
                         }
 
                         environment {
-                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${OS_NAME}/${BINARY_VERSION}"
+                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
                             IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
                             GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
                             ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
