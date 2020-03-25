@@ -157,6 +157,41 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
   return results;
 }
 
+template <typename T>
+std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> weight_agg_multiple_column(
+    const std::shared_ptr<arrow::Array>& geos, const std::shared_ptr<arrow::Array>& arr_c,
+    const std::shared_ptr<arrow::Array>& arr_s) {
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
+
+  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
+  auto s_arr = (T*)arr_s->data()->GetValues<T>(1);
+
+  auto geo_type = geos->type_id();
+  assert(geo_type == arrow::Type::BINARY);
+
+  auto geos_size = geos->length();
+  auto c_size = arr_c->length();
+  auto s_size = arr_s->length();
+
+  assert(geos_size == c_size);
+  assert(c_size == s_size);
+
+  std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> results;
+
+  for (size_t i = 0; i < geos_size; i++) {
+    std::string geo_wkb = geo_arr->GetString(i);
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    if (results.find(res_geo) == results.end()) {
+      results[res_geo] = std::make_pair(c_arr[i], s_arr[i]);
+    } else {
+      results[res_geo].first += c_arr[i];
+      results[res_geo].second += s_arr[i];
+    }
+  }
+  return results;
+}
+
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
   VegaPointmap vega_pointmap(conf);

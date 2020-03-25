@@ -44,7 +44,7 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const bool& is_multiple_color() const { return is_multiple_color_; }
 
-  const bool& is_multiple_point_size() const { return is_multiple_point_size_; }
+  const bool& is_multiple_stroke_width() const { return is_multiple_stroke_width_; }
 
  private:
   // vega json to vega struct
@@ -57,7 +57,7 @@ class VegaWeightedPointmap : public VegaScatterPlot {
   ColorStyle color_style_;
   double opacity_;
   bool is_multiple_color_;
-  bool is_multiple_point_size_;
+  bool is_multiple_stroke_width_;
 };
 
 }  // namespace render
