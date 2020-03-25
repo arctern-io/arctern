@@ -99,7 +99,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         for (int j = 0; j < ring_size; j++) {
           auto x = ring->getX(j);
           auto y = ring->getY(j);
-          output_x = (int32_t)(((x- min_x) * width) / coor_width);
+          output_x = (int32_t)(((x - min_x) * width) / coor_width);
           output_y = (int32_t)(((y - min_y) * height) / coor_height);
           ring->setPoint(j, output_x, output_y);
         }
