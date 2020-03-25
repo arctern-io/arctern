@@ -16,6 +16,7 @@
 import shutil
 import os
 import json
+import time
 from pyspark.sql import SparkSession
 from arctern_pyspark import register_funcs
 from pyspark.sql.types import *
@@ -1265,7 +1266,6 @@ if __name__ == "__main__":
     spark_session = SparkSession.builder.appName(
         "Python zgis sample").master(url).getOrCreate()
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-
     clear_result_dir('/tmp/results')
     register_funcs(spark_session)
 
