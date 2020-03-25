@@ -1727,5 +1727,7 @@ TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkt = arctern::render::WkbToWkt(wkb);
+  wkb = arctern::render::WktToWkb(wkt);
   arctern::render::heat_map(wkb, color_array, vega);
 }
