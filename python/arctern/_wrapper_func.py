@@ -47,7 +47,7 @@ __all__ = [
     "point_map",
     "point_map_wkb",
     "weighted_point_map",
-    "weighted_point_map_wkt",
+    "weighted_point_map_wkb",
     "heat_map",
     "heat_map_wkb",
     "choropleth_map",
@@ -275,13 +275,13 @@ def weighted_point_map(xs, ys, cs, ss, conf):
     rs = arctern_core_.weighted_point_map(arr_x, arr_y, arr_c, arr_s, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-# def weighted_point_map_wkt(points, conf):
-#     array_points = pa.array(points, type='string')
+# def weighted_point_map_wkb(points, conf):
+#     array_points = pa.array(points, type='binary')
 #     rs = arctern_core_.weighted_point_map(array_points, conf)
 #     return base64.b64encode(rs.buffers()[1].to_pybytes())
 #
-# def weighted_point_map_wkt(points, arrs, conf):
-#     array_points = pa.array(points, type='string')
+# def weighted_point_map_wkb(points, arrs, conf):
+#     array_points = pa.array(points, type='binary')
 #
 #     if isinstance(arrs[0], float):
 #         arr = pa.array(arrs, type='double')
@@ -291,8 +291,8 @@ def weighted_point_map(xs, ys, cs, ss, conf):
 #     rs = arctern_core_.weighted_point_map(array_points, arr, conf)
 #     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def weighted_point_map_wkt(points, cs, ss, conf):
-    array_points = pa.array(points, type='string')
+def weighted_point_map_wkb(points, cs, ss, conf):
+    array_points = pa.array(points, type='binary')
 
     if isinstance(cs[0], float):
         arr_c = pa.array(cs, type='double')
