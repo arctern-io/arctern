@@ -51,6 +51,7 @@ __all__ = [
     "heat_map",
     "heat_map_wkb",
     "choropleth_map",
+    "projection",
     "transform_and_projection",
     "wkt2wkb",
 ]
@@ -341,6 +342,13 @@ def choropleth_map(wkb_data, count_data, conf):
         arr_count = pa.array(count_data, type='int64')
     rs = arctern_core_.choropleth_map(arr_wkb, arr_count, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def projection(geos, bottom_right, top_left, height, width):
+    arr_geos = pa.array(geos, type='string')
+    bounding_box_min = bytes(bottom_right, encoding="utf8")
+    bounding_box_max = bytes(top_left, encoding="utf8")
+    rs = arctern_core_.projection(arr_geos, bounding_box_min, bounding_box_max, height, width)
+    return rs.to_pandas()
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     arr_geos = pa.array(geos, type='string')

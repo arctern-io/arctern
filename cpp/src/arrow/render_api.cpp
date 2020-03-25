@@ -169,9 +169,10 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   return result;
 }
 
-std::shared_ptr<arrow::Array> projection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width) {
+std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width) {
   return Projection(geos, bottom_right, top_left, height, width);
 }
 

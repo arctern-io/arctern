@@ -52,9 +52,10 @@ struct hash_func {
   }
 };
 
-std::shared_ptr<arrow::Array> Projection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width);
+std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width);
 
 std::shared_ptr<arrow::Array> TransformAndProjection(
     const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,

@@ -28,7 +28,8 @@
 namespace arctern {
 namespace render {
 
-void pointXY_from_wkt_with_transform(const std::string &wkt, double &x, double &y, void *poCT) {
+void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
+                                     void* poCT) {
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
   CHECK_GDAL(OGR_G_Transform(res_geo, (OGRCoordinateTransformation*)poCT));
@@ -38,7 +39,7 @@ void pointXY_from_wkt_with_transform(const std::string &wkt, double &x, double &
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
-void pointXY_from_wkt(const std::string &wkt, double &x, double &y) {
+void pointXY_from_wkt(const std::string& wkt, double& x, double& y) {
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
   auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
@@ -47,9 +48,10 @@ void pointXY_from_wkt(const std::string &wkt, double &x, double &y) {
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
-std::shared_ptr<arrow::Array> Projection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width) {
+std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width) {
   arrow::BinaryBuilder builder;
 
   auto len = geos->length();

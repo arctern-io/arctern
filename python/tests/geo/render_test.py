@@ -18,6 +18,24 @@ import arctern
 from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap
 
+def test_projection():
+    wkt = ["POINT (-8235193.62386326 4976211.44428777)"]
+    top_left = "POINT (-8235871.4482427 4976468.32320551)"
+    bottom_right = "POINT (-8235147.42627458 4976108.43009739)"
+
+    arr_wkt = pandas.Series(wkt)
+    arctern.projection(arr_wkt, bottom_right, top_left, 200, 300)
+
+def test_transfrom_and_projection():
+    wkt = ["POINT (-73.978003 40.754594)"]
+    top_left = "POINT (-73.984092 40.756342)"
+    bottom_right = "POINT (-73.977588 40.753893)"
+    src_ts = "EPSG:4326"
+    dst_rs = "EPSG:3857"
+
+    arr_wkt = pandas.Series(wkt)
+    arctern.transform_and_projection(arr_wkt, src_ts, dst_rs, bottom_right, top_left, 200, 300)
+
 def test_point_map():
     x_data = []
     y_data = []
