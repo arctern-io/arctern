@@ -53,9 +53,8 @@ __all__ = [
     "choropleth_map",
     "transform_and_projection",
     "wkt2wkb",
+    "wkb2wkt",
 ]
-
-
 
 import base64
 import pyarrow as pa
@@ -350,7 +349,11 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     return rs.to_pandas()
 
 def wkt2wkb(arr_wkt):
-    arr_wkb = pa.array(arr_wkt, type='string')
-    rs = arctern_core_.wkt2wkb(arr_wkb)
+    wkts = pa.array(arr_wkt, type='string')
+    rs = arctern_core_.wkt2wkb(wkts)
     return rs.to_pandas()
 
+def wkb2wkt(arr_wkb):
+    wkbs = pa.array(arr_wkb, type='binary')
+    rs = arctern_core_.wkb2wkt(wkbs)
+    return rs.to_pandas()
