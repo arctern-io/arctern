@@ -92,23 +92,23 @@ pipeline {
         stage ('Arctern Conda') {
             matrix {
                 agent none
-                axes {
-                    axis {
-                        name 'OS_NAME'
-                        values 'ubuntu18.04'
-                    }
-                    axis {
-                        name 'CPU_ARCH'
-                        values 'amd64'
-                    }
-                    axis {
-                        name 'BINARY_VERSION'
-                        values 'gpu', 'cpu'
-                    }
-                }
-
                 stages {
                     stage("Conda Build and Upload") {
+                        axes {
+                            axis {
+                                name 'OS_NAME'
+                                values 'ubuntu18.04'
+                            }
+                            axis {
+                                name 'CPU_ARCH'
+                                values 'amd64'
+                            }
+                            axis {
+                                name 'BINARY_VERSION'
+                                values 'gpu', 'cpu'
+                            }
+                        }
+
                         agent {
                             kubernetes {
                                 label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
@@ -136,6 +136,21 @@ pipeline {
                     }
 
                     stage('Arctern Spark Docker Images') {
+                        axes {
+                            axis {
+                                name 'OS_NAME'
+                                values 'ubuntu18.04', "centos7"
+                            }
+                            axis {
+                                name 'CPU_ARCH'
+                                values 'amd64'
+                            }
+                            axis {
+                                name 'BINARY_VERSION'
+                                values 'gpu', 'cpu'
+                            }
+                        }
+
                         agent {
                             kubernetes {
                                 label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${env.BUILD_NUMBER}"
@@ -167,6 +182,21 @@ pipeline {
                     }
 
                     stage('Arctern Spark Regression') {
+                        axes {
+                            axis {
+                                name 'OS_NAME'
+                                values 'ubuntu18.04', "centos7"
+                            }
+                            axis {
+                                name 'CPU_ARCH'
+                                values 'amd64'
+                            }
+                            axis {
+                                name 'BINARY_VERSION'
+                                values 'gpu', 'cpu'
+                            }
+                        }
+
                         agent {
                             label "performance"
                         }
