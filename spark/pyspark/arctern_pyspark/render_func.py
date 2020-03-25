@@ -85,7 +85,7 @@ def weighted_pointmap(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def weighted_pointmap_wkb(point, c, s, conf=vega):
         from arctern import weighted_point_map_wkb
-        return weighted_point_map_wkb(point, c, s, conf.encode('utf-8'))
+        return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c, ss=s)
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
