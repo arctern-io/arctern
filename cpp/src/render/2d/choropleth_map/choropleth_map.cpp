@@ -123,7 +123,7 @@ void ChoroplethMap<T>::SetColor() {
     colors_[c_offset++] = circle_params_2d.color.r;
     colors_[c_offset++] = circle_params_2d.color.g;
     colors_[c_offset++] = circle_params_2d.color.b;
-    colors_[c_offset++] = circle_params_2d.color.a;
+    colors_[c_offset++] = choropleth_vega_.opacity();
   }
 }
 
