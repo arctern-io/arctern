@@ -87,7 +87,7 @@ std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_
     auto wkb = wkbs->GetString(i);
     OGRGeometry* geo = nullptr;
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(wkb.c_str(), nullptr, &geo));
-    char * str;
+    char* str;
     CHECK_GDAL(geo->exportToWkt(&str));
     OGRGeometryFactory::destroyGeometry(geo);
     auto st = builder.Append(std::string(str));
