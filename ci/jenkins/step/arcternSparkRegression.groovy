@@ -1,8 +1,8 @@
 timeout(time: 10, unit: 'MINUTES') {
-    def composeProject = "${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}".replaceAll("\\.", "-").replaceAll("_", "-")
+    def composeProject = "${env.PIPELINE_NAME}-${SEMVER}-${OS_NAME}-${env.BUILD_NUMBER}".replaceAll("\\.", "-").replaceAll("_", "-")
 
     if ("${BINARY_VERSION}" == "gpu") {
-        composeProject = "${env.PIPELINE_NAME}-${SEMVER}-${BINARY_VERSION}-${env.BUILD_NUMBER}".replaceAll("\\.", "-").replaceAll("_", "-")
+        composeProject = "${env.PIPELINE_NAME}-${SEMVER}-${OS_NAME}-${BINARY_VERSION}-${env.BUILD_NUMBER}".replaceAll("\\.", "-").replaceAll("_", "-")
     }
 
     try {

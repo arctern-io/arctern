@@ -9,14 +9,14 @@ timeout(time: 20, unit: 'MINUTES') {
 
         sh "tar zxvf arctern/${channelPackage} -C ./arctern"
 
-        def baseImageName = "${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO}:${OS_NAME}-base"
+        def baseImageName = "${ARCTERN_REPO}:${OS_NAME}-base"
         sh "docker pull ${baseImageName}"
 
-        def imageName = "${ARCTERN_REPO}:${ARCTERN_TAG}"
+        def imageName = "${REPO_NAME}:${TAG_NAME}"
 
         try {
             deleteImages("${imageName}", true)
-            def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${params.DOKCER_REGISTRY_URL}/${ARCTERN_REPO} .")
+            def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${ARCTERN_REPO} .")
             deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
             docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
                 customImage.push()

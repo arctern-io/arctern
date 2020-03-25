@@ -25,7 +25,6 @@ pipeline {
     stages {
         stage ('Arctern Build and Test') {
             matrix {
-                agent none
                 axes {
                     axis {
                         name 'OS_NAME'
@@ -41,42 +40,38 @@ pipeline {
                     }
                 }
 
+                agent {
+                    kubernetes {
+                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                        defaultContainer 'jnlp'
+                        yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                    }
+                }
+
                 stages {
-                    stage('Run build') {
-                        agent {
-                            kubernetes {
-                                label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-                                defaultContainer 'jnlp'
-                                yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                    stage('Build') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
+                                }
                             }
                         }
-
-                        stages {
-                            stage('Build') {
-                                steps {
-                                    container("arctern-${BINARY_VERSION}-build-env") {
-                                        script {
-                                            load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
-                                        }
-                                    }
+                    }
+                    stage('Unit Test') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
                                 }
                             }
-                            stage('Unit Test') {
-                                steps {
-                                    container("arctern-${BINARY_VERSION}-build-env") {
-                                        script {
-                                            load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
-                                        }
-                                    }
-                                }
-                            }
-                            stage('Code Coverage') {
-                                steps {
-                                    container("arctern-${BINARY_VERSION}-build-env") {
-                                        script {
-                                            load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
-                                        }
-                                    }
+                        }
+                    }
+                    stage('Code Coverage') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
                                 }
                             }
                         }
@@ -87,7 +82,6 @@ pipeline {
 
         stage ('Arctern Conda') {
             matrix {
-                agent none
                 axes {
                     axis {
                         name 'OS_NAME'
@@ -102,21 +96,22 @@ pipeline {
                         values 'gpu', 'cpu'
                     }
                 }
+
+                agent {
+                    kubernetes {
+                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                        defaultContainer 'jnlp'
+                        yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                    }
+                }
+
+                environment {
+                    ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
+                    CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
+                }
+
                 stages {
                     stage("Conda Build and Upload") {
-                        agent {
-                            kubernetes {
-                                label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-                                defaultContainer 'jnlp'
-                                yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
-                            }
-                        }
-
-                        environment {
-                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
-                            CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
-                        }
-
                         steps {
                             container("arctern-${BINARY_VERSION}-build-env") {
                                 script {
@@ -147,6 +142,15 @@ pipeline {
                     }
                 }
 
+                environment {
+                    IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                    GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                    REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                    TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                    ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
+                    ARCTERN_TAG = "${TAG_NAME}"
+                }
+
                 stages {
                     stage('Arctern Spark Docker Images') {
                         agent {
@@ -159,10 +163,6 @@ pipeline {
 
                         environment {
                             ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
-                            IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
-                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                             CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
                         }
 
@@ -178,13 +178,6 @@ pipeline {
                     stage('Arctern Spark Regression') {
                         agent {
                             label "performance"
-                        }
-
-                        environment {
-                            IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
-                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                         }
 
                         steps {
