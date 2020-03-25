@@ -136,8 +136,9 @@ pipeline {
                     }
                 }
 
-                stage('Arctern Spark Docker Images') {
+                stage('Dev Test'){
                     matrix {
+                        agent none
                         axes {
                             axis {
                                 name 'OS_NAME'
@@ -153,70 +154,57 @@ pipeline {
                             }
                         }
 
-                        agent {
-                            kubernetes {
-                                label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-                                defaultContainer 'jnlp'
-                                yamlFile 'ci/jenkins/pod/docker-pod.yaml'
-                            }
-                        }
-
-                        environment {
-                            ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
-                            IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
-                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-                            CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
-                        }
-
                         stages {
-                            stage('Build and Publish Docker Images') {
-                                steps {
-                                    container('docker-env') {
-                                        script {
-                                            load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                            stage('Arctern Spark Docker Images') {
+                                agent {
+                                    kubernetes {
+                                        label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                                        defaultContainer 'jnlp'
+                                        yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                                    }
+                                }
+
+                                environment {
+                                    ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${env.BUILD_NUMBER}/${CPU_ARCH}/${BINARY_VERSION}"
+                                    IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                                    GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                                    ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                                    ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                                    CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
+                                }
+
+                                stages {
+                                    stage('Build and Publish Docker Images') {
+                                        steps {
+                                            container('docker-env') {
+                                                script {
+                                                    load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    }
-                }
 
-                stage('Arctern Spark Regression') {
-                    matrix {
-                        axes {
-                            axis {
-                                name 'OS_NAME'
-                                values 'ubuntu18.04', "centos7"
-                            }
-                            axis {
-                                name 'CPU_ARCH'
-                                values 'amd64'
-                            }
-                            axis {
-                                name 'BINARY_VERSION'
-                                values 'gpu', 'cpu'
-                            }
-                        }
+                            stage('Arctern Spark Regression') {
+                                agent {
+                                    label "performance"
+                                }
 
-                        agent {
-                            label "performance"
-                        }
+                                environment {
+                                    IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                                    GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
+                                    ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                                    ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                                }
 
-                        environment {
-                            IMAGE_REPOSITORY = "registry.zilliz.com/${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                            GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
-                            ARCTERN_REPO = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                            ARCTERN_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-                        }
-
-                        stages {
-                            stage('Regression') {
-                                steps {
-                                    script {
-                                        load "${env.WORKSPACE}/ci/jenkins/step/arcternSparkRegression.groovy"
+                                stages {
+                                    stage('Regression') {
+                                        steps {
+                                            script {
+                                                load "${env.WORKSPACE}/ci/jenkins/step/arcternSparkRegression.groovy"
+                                            }
+                                        }
                                     }
                                 }
                             }
