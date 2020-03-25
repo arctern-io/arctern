@@ -17,25 +17,26 @@ import os
 # import inspect
 import shutil
 import glob
-from util import arctern_result
-from util import spark_result
+from util import ARCTERN_RESULT
+from util import SPARK_RESULT
 from util import get_tests
 
 
 def collect_results():
     """Collect spark results from different dirs."""
-    if not os.path.isdir(arctern_result):
-        os.makedirs(arctern_result)
+    if not os.path.isdir(ARCTERN_RESULT):
+        os.makedirs(ARCTERN_RESULT)
 
-    names, table_names, expects = get_tests()
+    names = get_tests()[0]
+    table_names = get_tests()[1]
 
-    base_dir = spark_result
+    base_dir = SPARK_RESULT
     for table_name, name in zip(table_names, names):
         target = os.path.join(base_dir, table_name, '*.csv')
         file_name = glob.glob(target)
         if os.path.isfile(file_name[0]):
             shutil.copyfile(file_name[0], os.path.join(
-                arctern_result, name + '.csv'))
+                ARCTERN_RESULT, name + '.csv'))
         else:
             print('file [%s] not exist' % file_name[0])
 

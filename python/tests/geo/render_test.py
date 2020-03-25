@@ -15,50 +15,11 @@
 import sys
 import pandas
 import arctern
-import cv2
 
-from arctern.util import save_png
+from arctern.util import save_png, diff_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
 
 map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
-
-def _diffPNG(baseline_png, compared_png, precision=0.0025):
-    baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
-    compared_info = cv2.imread(compared_png, cv2.IMREAD_UNCHANGED)
-    baseline_y, baseline_x = baseline_info.shape[0], baseline_info.shape[1]
-    baseline_size = baseline_info.size
-
-    compared_y, compared_x = compared_info.shape[0], compared_info.shape[1]
-    compared_size = compared_info.size
-    if compared_y != baseline_y or compared_x != baseline_x or compared_size != baseline_size:
-        return False
-
-    diff_point_num = 0
-    for i in range(baseline_y):
-        for j in range(baseline_x):
-            baseline_rgba = baseline_info[i][j]
-            compared_rgba = compared_info[i][j]
-
-            baseline_rgba_len = len(baseline_rgba)
-            compared_rgba_len = len(compared_rgba)
-            if baseline_rgba_len != compared_rgba_len or baseline_rgba_len != 4:
-                return False
-            if compared_rgba[3] == baseline_rgba[3] and baseline_rgba[3] == 0:
-                continue
-
-            is_point_equal = True
-            for k in range(3):
-                tmp_diff = abs((int)(compared_rgba[k]) - (int)(baseline_rgba[k]))
-                if tmp_diff > 1:
-                    is_point_equal = False
-
-            if is_point_equal == False:
-                diff_point_num += 1
-
-    if ((float)(diff_point_num) / (float)(baseline_size)) <= precision:
-        return True
-    else:
-        return False
 
 def test_point_map():
     x_data = []
@@ -94,9 +55,9 @@ def test_point_map():
     save_png(curve_z2, map_path + "test_curve_z2.png")
     save_png(curve_z3, map_path + "test_curve_z3.png")
 
-    assert _diffPNG(baseline_png, map_path + "test_curve_z1.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_curve_z2.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_curve_z3.png") == True
+    assert diff_png(baseline_png, map_path + "test_curve_z1.png")
+    assert diff_png(baseline_png, map_path + "test_curve_z2.png")
+    assert diff_png(baseline_png, map_path + "test_curve_z3.png")
 
 def test_heat_map():
     x_data = []
@@ -124,9 +85,9 @@ def test_heat_map():
     save_png(heat_map2, map_path + "test_heat_map2.png")
     save_png(heat_map3, map_path + "test_heat_map3.png")
 
-    assert _diffPNG(baseline_png, map_path + "test_heat_map1.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_heat_map2.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_heat_map3.png") == True
+    assert diff_png(baseline_png, map_path + "test_heat_map1.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map2.png", 0.0025)
+    assert diff_png(baseline_png, map_path + "test_heat_map3.png", 0.0025)
 
 def test_choropleth_map():
     wkt_data = []
@@ -137,7 +98,7 @@ def test_choropleth_map():
       "200 300, "
       "300 300, "
       "300 200, "
-      "200 200))");
+      "200 200))")
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
@@ -155,6 +116,6 @@ def test_choropleth_map():
     save_png(choropleth_map2, map_path + "test_choropleth_map2.png")
     save_png(choropleth_map3, map_path + "test_choropleth_map3.png")
 
-    assert _diffPNG(baseline_png, map_path + "test_choropleth_map1.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_choropleth_map2.png") == True
-    assert _diffPNG(baseline_png, map_path + "test_choropleth_map3.png") == True
+    assert diff_png(baseline_png, map_path + "test_choropleth_map1.png")
+    assert diff_png(baseline_png, map_path + "test_choropleth_map2.png")
+    assert diff_png(baseline_png, map_path + "test_choropleth_map3.png")
