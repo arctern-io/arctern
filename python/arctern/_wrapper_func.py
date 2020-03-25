@@ -248,7 +248,7 @@ def weighted_point_map(xs, ys, conf, **kwargs):
     arr_y = pa.array(ys, type='uint32')
 
     if (cs is None and ss is None):
-        rs = arctern_core_.weighted_point_map(arr_x, arr_y, conf)
+        rs = arctern_core_.weighted_point_map_0_0(arr_x, arr_y, conf)
     elif (cs is not None and ss is not None):
         if isinstance(cs[0], float):
             arr_c = pa.array(cs, type='double')
@@ -259,19 +259,19 @@ def weighted_point_map(xs, ys, conf, **kwargs):
             arr_s = pa.array(ss, type='double')
         else:
             arr_s = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map(arr_x, arr_y, conf, cs=arr_c, ss=arr_s)
+        rs = arctern_core_.weighted_point_map_1_1(arr_x, arr_y, conf, arr_c, arr_s)
     elif (cs is None and ss is not None):
         if isinstance(ss[0], float):
             arr = pa.array(ss, type='double')
         else:
             arr = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map(arr_x, arr_y, conf, ss=arr)
+        rs = arctern_core_.weighted_point_map_0_1(arr_x, arr_y, conf, arr)
     else:
         if isinstance(cs[0], float):
             arr = pa.array(cs, type='double')
         else:
             arr = pa.array(cs, type='int64')
-        rs = arctern_core_.weighted_point_map(arr_x, arr_y, conf, cs=arr)
+        rs = arctern_core_.weighted_point_map_1_0(arr_x, arr_y, conf, arr)
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
@@ -282,7 +282,7 @@ def weighted_point_map_wkb(points, conf, **kwargs):
     array_points = pa.array(points, type='binary')
 
     if (cs is None and ss is None):
-        rs = arctern_core_.weighted_point_map_wkb(array_points, conf)
+        rs = arctern_core_.weighted_point_map_wkb_0_0(array_points, conf)
     elif (cs is not None and ss is not None):
         if isinstance(cs[0], float):
             arr_c = pa.array(cs, type='double')
@@ -293,19 +293,19 @@ def weighted_point_map_wkb(points, conf, **kwargs):
             arr_s = pa.array(ss, type='double')
         else:
             arr_s = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb(array_points, conf, cs=arr_c, ss=arr_s)
+        rs = arctern_core_.weighted_point_map_wkb_1_1(array_points, conf, arr_c, arr_s)
     elif (cs is None and ss is not None):
         if isinstance(ss[0], float):
             arr = pa.array(ss, type='double')
         else:
             arr = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb(array_points, conf, ss=arr)
+        rs = arctern_core_.weighted_point_map_wkb_0_1(array_points, conf, arr)
     else:
         if isinstance(cs[0], float):
             arr = pa.array(cs, type='double')
         else:
             arr = pa.array(cs, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb(array_points, conf, cs=arr)
+        rs = arctern_core_.weighted_point_map_wkb_1_0(array_points, conf, arr)
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
