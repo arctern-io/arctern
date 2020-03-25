@@ -134,7 +134,6 @@ export SPARK_MASTER_HOST=node20
 ARCTERN_PREFIX=$HOME/miniconda3/envs/arctern
 export PYSPARK_PYTHON=$ARCTERN_PREFIX/bin/python
 export PROJ_LIB=$ARCTERN_PREFIX/share/proj
-export PROJ_LIB=$ARCTERN_PREFIX/share/proj
 export GDAL_DATA=$ARCTERN_PREFIX/share/gdal
 ```
 将`node20`配置复制到`node21`,`node22`
