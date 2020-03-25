@@ -80,3 +80,100 @@ def test_table_info(client, headers):
     # TODO: check data field in response.json
 
     # TODO: check nonexistent id or table
+
+def test_query(client, headers):
+    # case 1: pointmap
+    pointmap_request_dict = {
+        'id': '1',
+        'query': {
+            'sql': '''
+            select ST_Point(pickup_longitude, pickup_latitude) as point
+            from global_temp.nyc_taxi
+            where ST_Within(
+                ST_Point(pickup_longitude, pickup_latitude),
+                "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
+                )
+            ''',
+            'type': 'point',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'point': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'stroke_width': 3,
+                    'stroke': '#2DEF4A',
+                    'opacity': 0.5
+                }
+            }
+        }
+    }
+    response = client.post(
+        '/db/query',
+        data=json.dumps(pointmap_request_dict),
+        content_type='application/json',
+        headers=headers
+    )
+    assert response.status_code == 200
+
+    # case 2: heatmap
+    heatmap_request_dict = {
+        'id': '1',
+        'query': {
+            'sql': '''
+            select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w
+            from global_temp.nyc_taxi
+            where ST_Within(
+                ST_Point(pickup_longitude, pickup_latitude),
+                'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'
+                )
+            ''',
+            'type': 'heat',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'heat': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'map_scale': 10
+                }
+            }
+        }
+    }
+    response = client.post(
+        '/db/query',
+        data=json.dumps(heatmap_request_dict),
+        content_type='application/json',
+        headers=headers
+    )
+    assert response.status_code == 200
+
+    # case 3: choropleth map
+    choropleth_map_request_dict = {
+        'id': '1',
+        'query': {
+            'sql': '''
+            select buildingtext_dropoff as wkt, passenger_count as w
+            from global_temp.nyc_taxi
+            ''',
+            'type': 'choropleth',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'choropleth': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'color_style': 'blue_to_red',
+                    'rule': [2.5, 5],
+                    'opacity': 1
+                }
+            }
+        }
+    }
+    response = client.post(
+        '/db/query',
+        data=json.dumps(choropleth_map_request_dict),
+        content_type='application/json',
+        headers=headers
+    )
+    assert response.status_code == 200

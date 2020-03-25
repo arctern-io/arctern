@@ -62,12 +62,12 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   auto len = geos->length();
   auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
 
-  double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
-  pointXY_from_wkt(top_left, top_left_x, top_left_y, poCT);
-  pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y, poCT);
-  auto coordinate_width = bottom_right_x - top_left_x;
-  auto coordinate_height = top_left_y - bottom_right_y;
-  uint32_t output_x, output_y;
+  double min_x, max_y, max_x, min_y;
+  pointXY_from_wkt(top_left, min_x, max_y, poCT);
+  pointXY_from_wkt(bottom_right, max_x, min_y, poCT);
+  auto coor_width = max_x - min_x;
+  auto coor_height = max_y - min_y;
+  int32_t output_x, output_y;
 
   for (int32_t i = 0; i < len; i++) {
     if (wkt_geometries->IsNull(i)) {
@@ -88,20 +88,20 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
       // 2. projection
       auto type = wkbFlatten(geo->getGeometryType());
       if (type == wkbPoint) {
-        output_x = (uint32_t)(((geo->toPoint()->getX() - top_left_x) * width) /
-                              coordinate_width);
-        output_y = (uint32_t)(((geo->toPoint()->getY() - bottom_right_y) * height) /
-                              coordinate_height);
+        auto x = geo->toPoint()->getX();
+        auto y = geo->toPoint()->getY();
+        output_x = (int32_t)(((x - min_x) * width) / coor_width);
+        output_y = (int32_t)(((y - min_y) * height) / coor_height);
         geo->toPoint()->setX(output_x);
         geo->toPoint()->setY(output_y);
       } else if (type == wkbPolygon) {
         auto ring = geo->toPolygon()->getExteriorRing();
         auto ring_size = ring->getNumPoints();
         for (int j = 0; j < ring_size; j++) {
-          output_x =
-              (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
-          output_y =
-              (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
+          auto x = ring->getX(j);
+          auto y = ring->getY(j);
+          output_x = (int32_t)(((x - min_x) * width) / coor_width);
+          output_y = (int32_t)(((y - min_y) * height) / coor_height);
           ring->setPoint(j, output_x, output_y);
         }
       } else {
@@ -152,6 +152,41 @@ std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
       results[res_geo] = c_arr[i];
     } else {
       results[res_geo] += c_arr[i];
+    }
+  }
+  return results;
+}
+
+template <typename T>
+std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> weight_agg_multiple_column(
+    const std::shared_ptr<arrow::Array>& geos, const std::shared_ptr<arrow::Array>& arr_c,
+    const std::shared_ptr<arrow::Array>& arr_s) {
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
+
+  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
+  auto s_arr = (T*)arr_s->data()->GetValues<T>(1);
+
+  auto geo_type = geos->type_id();
+  assert(geo_type == arrow::Type::BINARY);
+
+  auto geos_size = geos->length();
+  auto c_size = arr_c->length();
+  auto s_size = arr_s->length();
+
+  assert(geos_size == c_size);
+  assert(c_size == s_size);
+
+  std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> results;
+
+  for (size_t i = 0; i < geos_size; i++) {
+    std::string geo_wkb = geo_arr->GetString(i);
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    if (results.find(res_geo) == results.end()) {
+      results[res_geo] = std::make_pair(c_arr[i], s_arr[i]);
+    } else {
+      results[res_geo].first += c_arr[i];
+      results[res_geo].second += s_arr[i];
     }
   }
   return results;

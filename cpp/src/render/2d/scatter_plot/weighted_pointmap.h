@@ -31,11 +31,11 @@ class WeightedPointMap : public General2D {
 
   WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, size_t num_vertices);
 
-  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count,
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* unknown_count,
                    size_t num_vertices);
 
-  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* count, T* ps,
-                   size_t num_vertices);
+  WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* color_count,
+                   T* stroke_width, size_t num_vertices);
 
   uint8_t* Render() final;
 
@@ -48,7 +48,7 @@ class WeightedPointMap : public General2D {
 
   uint32_t* mutable_vertices_y() { return vertices_y_; }
 
-  T* mutable_point_size() { return point_size_; }
+  T* mutable_stroke_width() { return stroke_width_; }
 
   VegaWeightedPointmap& mutable_weighted_point_vega() { return weighted_point_vega_; }
 
@@ -81,8 +81,8 @@ class WeightedPointMap : public General2D {
   uint32_t* vertices_x_;
   uint32_t* vertices_y_;
   T* unknown_;
-  T* count_;
-  T* point_size_;
+  T* color_count_;
+  T* stroke_width_;
   size_t num_vertices_;
   std::vector<float> colors_;
   VegaWeightedPointmap weighted_point_vega_;
