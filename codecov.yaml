@@ -11,7 +11,9 @@ coverage:
     project:
       default:
         threshold: 0.2 #Allow the coverage to drop by threshold%, and posting a success status.
-    patch: yes
+    patch:
+      default:
+        enabled: no
     changes: no
 
 comment:
