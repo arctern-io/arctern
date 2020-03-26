@@ -16,12 +16,13 @@ import sys
 import cv2
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
+from arctern_pyspark import weighted_pointmap
 
 from pyspark.sql import SparkSession
 
@@ -158,6 +159,311 @@ def run_test_point_map(spark):
     assert run_diff_png(baseline_png5, png_path + "test_point_map_nyc_5-2.png")
     assert run_diff_png(baseline_png6, png_path + "test_point_map_nyc_6-1.png")
     assert run_diff_png(baseline_png6, png_path + "test_point_map_nyc_6-2.png")
+
+def run_test_weighted_point_map(spark):
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
+        "trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, "
+        "dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, "
+        "buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        file_path).cache()
+    df.createOrReplaceTempView("nyc_taxi")
+
+    register_funcs(spark)
+    # 1 single color; single point size
+    res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+
+    # 1.1 opacity = 1.0, color_ruler: [0, 2], color: #EE3814(red)
+    vega1_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE3814", [0, 2],
+                                     [10], 1.0, "EPSG:4326")
+    baseline1 = weighted_pointmap(res1, vega1_1)
+    weighted_point_map1_1_1 = weighted_pointmap(res1, vega1_1)
+    weighted_point_map1_1_2 = weighted_pointmap(res1, vega1_1)
+
+    baseline_png1_1 = png_path + "weighted_point_map_nyc_1_1.png"
+    save_png(baseline1, baseline_png1_1)
+    save_png(weighted_point_map1_1_1, png_path + "test_weighted_point_map_nyc_1_1-1.png")
+    save_png(weighted_point_map1_1_2, png_path + "test_weighted_point_map_nyc_1_1-2.png")
+
+    # 1.2 opacity = 0.0, color_ruler: [0, 2], color: #EE3814(red)
+    vega1_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE3814", [0, 2],
+                                     [10], 0.0, "EPSG:4326")
+    baseline1_2 = weighted_pointmap(res1, vega1_2)
+    weighted_point_map1_2_1 = weighted_pointmap(res1, vega1_2)
+    weighted_point_map1_2_2 = weighted_pointmap(res1, vega1_2)
+
+    baseline_png1_2 = png_path + "weighted_point_map_nyc_1_2.png"
+    save_png(baseline1_2, baseline_png1_2)
+    save_png(weighted_point_map1_2_1, png_path + "test_weighted_point_map_nyc_1_2-1.png")
+    save_png(weighted_point_map1_2_2, png_path + "test_weighted_point_map_nyc_1_2-2.png")
+
+    # 1.3 opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green)
+    vega1_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 2],
+                                     [5], 0.5, "EPSG:4326")
+    baseline1_3 = weighted_pointmap(res1, vega1_3)
+    weighted_point_map1_3_1 = weighted_pointmap(res1, vega1_3)
+    weighted_point_map1_3_2 = weighted_pointmap(res1, vega1_3)
+
+    baseline_png1_3 = png_path + "weighted_point_map_nyc_1_3.png"
+    save_png(baseline1_3, baseline_png1_3)
+    save_png(weighted_point_map1_3_1, png_path + "test_weighted_point_map_nyc_1_3-1.png")
+    save_png(weighted_point_map1_3_2, png_path + "test_weighted_point_map_nyc_1_3-2.png")
+
+    # 1.4 opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [1, 9]
+    vega1_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#1221EE", [0, 2],
+                                     [5], 0.5, "EPSG:4326")
+    baseline1_4 = weighted_pointmap(res1, vega1_4)
+    weighted_point_map1_4_1 = weighted_pointmap(res1, vega1_4)
+    weighted_point_map1_4_2 = weighted_pointmap(res1, vega1_4)
+
+    baseline_png1_4 = png_path + "weighted_point_map_nyc_1_4.png"
+    save_png(baseline1_4, baseline_png1_4)
+    save_png(weighted_point_map1_4_1, png_path + "test_weighted_point_map_nyc_1_4-1.png")
+    save_png(weighted_point_map1_4_2, png_path + "test_weighted_point_map_nyc_1_4-2.png")
+
+    # 1.5 size: 200*200, opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [5, 11]
+    vega1_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE1271", [0, 2],
+                                     [10], 0.5, "EPSG:4326")
+    baseline1_5 = weighted_pointmap(res1, vega1_5)
+    weighted_point_map1_5_1 = weighted_pointmap(res1, vega1_5)
+    weighted_point_map1_5_2 = weighted_pointmap(res1, vega1_5)
+
+    baseline_png1_5 = png_path + "weighted_point_map_nyc_1_5.png"
+    save_png(baseline1_5, baseline_png1_5)
+    save_png(weighted_point_map1_5_1, png_path + "test_weighted_point_map_nyc_1_5-1.png")
+    save_png(weighted_point_map1_5_2, png_path + "test_weighted_point_map_nyc_1_5-2.png")
+
+    # 2 multiple color; single point size
+    res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+
+    # 2.1 opacity = 1.0, color_ruler: [0, 2], color: 3574F0(blue)
+    vega2_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "red_transparency",
+                                     [0, 2], [10], 1.0, "EPSG:4326")
+    baseline2_1 = weighted_pointmap(res2, vega2_1)
+    weighted_point_map2_1_1 = weighted_pointmap(res2, vega2_1)
+    weighted_point_map2_1_2 = weighted_pointmap(res2, vega2_1)
+
+    baseline_png2_1 = png_path + "weighted_point_map_nyc_2_1.png"
+    save_png(baseline2_1, baseline_png2_1)
+    save_png(weighted_point_map2_1_1, png_path + "test_weighted_point_map_nyc_2_1-1.png")
+    save_png(weighted_point_map2_1_2, png_path + "test_weighted_point_map_nyc_2_1-2.png")
+
+    # 2.2 opacity = 0.0, color_ruler: [1, 10]
+    vega2_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "purple_to_yellow",
+                                     [1, 10], [6], 0.0, "EPSG:4326")
+    baseline2_2 = weighted_pointmap(res2, vega2_2)
+    weighted_point_map2_2_1 = weighted_pointmap(res2, vega2_2)
+    weighted_point_map2_2_2 = weighted_pointmap(res2, vega2_2)
+
+    baseline_png2_2 = png_path + "weighted_point_map_nyc_2_2.png"
+    save_png(baseline2_2, baseline_png2_2)
+    save_png(weighted_point_map2_2_1, png_path + "test_weighted_point_map_nyc_2_2-1.png")
+    save_png(weighted_point_map2_2_2, png_path + "test_weighted_point_map_nyc_2_2-2.png")
+
+    # 2.3 opacity = 0.5, color_ruler: [0, 100]
+    vega2_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_transparency",
+                                     [0, 100], [5], 0.5, "EPSG:4326")
+    baseline2_3 = weighted_pointmap(res2, vega2_3)
+    weighted_point_map2_3_1 = weighted_pointmap(res2, vega2_3)
+    weighted_point_map2_3_2 = weighted_pointmap(res2, vega2_3)
+
+    baseline_png2_3 = png_path + "weighted_point_map_nyc_2_3.png"
+    save_png(baseline2_3, baseline_png2_3)
+    save_png(weighted_point_map2_3_1, png_path + "test_weighted_point_map_nyc_2_3-1.png")
+    save_png(weighted_point_map2_3_2, png_path + "test_weighted_point_map_nyc_2_3-2.png")
+
+    # 2.4 opacity = 0.5, color_ruler: [0, 2], color: white_blue, stroke_ruler: [1, 9]
+    vega2_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "white_blue", [1, 10],
+                                     [0], 0.5, "EPSG:4326")
+    baseline2_4 = weighted_pointmap(res2, vega2_4)
+    weighted_point_map2_4_1 = weighted_pointmap(res2, vega2_4)
+    weighted_point_map2_4_2 = weighted_pointmap(res2, vega2_4)
+
+    baseline_png2_4 = png_path + "weighted_point_map_nyc_2_4.png"
+    save_png(baseline2_4, baseline_png2_4)
+    save_png(weighted_point_map2_4_1, png_path + "test_weighted_point_map_nyc_2_4-1.png")
+    save_png(weighted_point_map2_4_2, png_path + "test_weighted_point_map_nyc_2_4-2.png")
+
+    # 2.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red, stroke_ruler: [1, 9]
+    vega2_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red",
+                                     [0, 2], [1], 1.0, "EPSG:4326")
+    baseline2_5 = weighted_pointmap(res2, vega2_5)
+    weighted_point_map2_5_1 = weighted_pointmap(res2, vega2_5)
+    weighted_point_map2_5_2 = weighted_pointmap(res2, vega2_5)
+
+    baseline_png2_5 = png_path + "weighted_point_map_nyc_2_5.png"
+    save_png(baseline2_5, baseline_png2_5)
+    save_png(weighted_point_map2_5_1, png_path + "test_weighted_point_map_nyc_2_5-1.png")
+    save_png(weighted_point_map2_5_2, png_path + "test_weighted_point_map_nyc_2_5-2.png")
+
+    # 3 single color; multiple point size
+    res3 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+
+    # 3.1 opacity = 1.0, color_ruler: [0, 2], color: #900E46(red)
+    vega3_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#900E46", [0, 2],
+                                     [0, 10], 1.0, "EPSG:4326")
+    baseline3_1 = weighted_pointmap(res3, vega3_1)
+    weighted_point_map3_1_1 = weighted_pointmap(res3, vega3_1)
+    weighted_point_map3_1_2 = weighted_pointmap(res3, vega3_1)
+
+    baseline_png3_1 = png_path + "weighted_point_map_nyc_3_1.png"
+    save_png(baseline3_1, baseline_png3_1)
+    save_png(weighted_point_map3_1_1, png_path + "test_weighted_point_map_nyc_3_1-1.png")
+    save_png(weighted_point_map3_1_2, png_path + "test_weighted_point_map_nyc_3_1-2.png")
+
+    # 3.2 opacity = 0.0, color_ruler: [1, 10], color: #4A4145(black)
+    vega3_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#4A4145", [1, 10],
+                                     [0, 10], 0.0, "EPSG:4326")
+    baseline3_2 = weighted_pointmap(res3, vega3_2)
+    weighted_point_map3_2_1 = weighted_pointmap(res3, vega3_2)
+    weighted_point_map3_2_2 = weighted_pointmap(res3, vega3_2)
+
+    baseline_png3_2 = png_path + "weighted_point_map_nyc_3_2.png"
+    save_png(baseline3_2, baseline_png3_2)
+    save_png(weighted_point_map3_2_1, png_path + "test_weighted_point_map_nyc_3_2-1.png")
+    save_png(weighted_point_map3_2_2, png_path + "test_weighted_point_map_nyc_3_2-2.png")
+
+    # 3.3 opacity = 0.5, color_ruler: [0, 100], color: #14EE47(green)
+    vega3_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 100],
+                                     [2, 8], 0.5, "EPSG:4326")
+    baseline3_3 = weighted_pointmap(res3, vega3_3)
+    weighted_point_map3_3_1 = weighted_pointmap(res3, vega3_3)
+    weighted_point_map3_3_2 = weighted_pointmap(res3, vega3_3)
+
+    baseline_png3_3 = png_path + "weighted_point_map_nyc_3_3.png"
+    save_png(baseline3_3, baseline_png3_3)
+    save_png(weighted_point_map3_3_1, png_path + "test_weighted_point_map_nyc_3_3-1.png")
+    save_png(weighted_point_map3_3_2, png_path + "test_weighted_point_map_nyc_3_3-2.png")
+
+    # 3.4 opacity = 0.5, color_ruler: [0, 2], color: #3574F0(blue), stroke_ruler: [1, 9]
+    vega3_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#3574F0", [0, 2],
+                                     [1, 20], 0.5, "EPSG:4326")
+    baseline3_4 = weighted_pointmap(res3, vega3_4)
+    weighted_point_map3_4_1 = weighted_pointmap(res3, vega3_4)
+    weighted_point_map3_4_2 = weighted_pointmap(res3, vega3_4)
+
+    baseline_png3_4 = png_path + "weighted_point_map_nyc_3_4.png"
+    save_png(baseline3_4, baseline_png3_4)
+    save_png(weighted_point_map3_4_1, png_path + "test_weighted_point_map_nyc_3_4-1.png")
+    save_png(weighted_point_map3_4_2, png_path + "test_weighted_point_map_nyc_3_4-2.png")
+
+    # 3.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [5, 11]
+    vega3_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 2],
+                                     [5, 11], 1.0, "EPSG:4326")
+    baseline3_5 = weighted_pointmap(res3, vega3_5)
+    weighted_point_map3_5_1 = weighted_pointmap(res3, vega3_5)
+    weighted_point_map3_5_2 = weighted_pointmap(res3, vega3_5)
+
+    baseline_png3_5 = png_path + "weighted_point_map_nyc_3_5.png"
+    save_png(baseline3_5, baseline_png3_5)
+    save_png(weighted_point_map3_5_1, png_path + "test_weighted_point_map_nyc_3_5-1.png")
+    save_png(weighted_point_map3_5_2, png_path + "test_weighted_point_map_nyc_3_5-2.png")
+
+    # 4 multiple color; multiple point size
+    res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+
+    # 4.1 opacity = 1.0, color_ruler: [0, 2], color: #3574F0(blue)
+    vega4_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red", [0, 2],
+                                     [0, 10], 1.0, "EPSG:4326")
+    baseline4_1 = weighted_pointmap(res4, vega4_1)
+    weighted_point_map4_1_1 = weighted_pointmap(res4, vega4_1)
+    weighted_point_map4_1_2 = weighted_pointmap(res4, vega4_1)
+
+    baseline_png4_1 = png_path + "weighted_point_map_nyc_4_1.png"
+    save_png(baseline4_1, baseline_png4_1)
+    save_png(weighted_point_map4_1_1, png_path + "test_weighted_point_map_nyc_4_1-1.png")
+    save_png(weighted_point_map4_1_2, png_path + "test_weighted_point_map_nyc_4_1-2.png")
+
+    # 4.2 opacity = 0.0, color_ruler: [1, 10]
+    vega4_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "skyblue_to_white",
+                                     [1, 10], [0, 10], 0.0, "EPSG:4326")
+    baseline4_2 = weighted_pointmap(res4, vega4_2)
+    weighted_point_map4_2_1 = weighted_pointmap(res4, vega4_2)
+    weighted_point_map4_2_2 = weighted_pointmap(res4, vega4_2)
+
+    baseline_png4_2 = png_path + "weighted_point_map_nyc_4_2.png"
+    save_png(baseline4_2, baseline_png4_2)
+    save_png(weighted_point_map4_2_1, png_path + "test_weighted_point_map_nyc_4_2-1.png")
+    save_png(weighted_point_map4_2_2, png_path + "test_weighted_point_map_nyc_4_2-2.png")
+
+    # 4.3 opacity = 0.5, color_ruler: [0, 100], color: blue_green_yellow
+    vega4_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
+                                     [1, 5], [0, 10], 0.5, "EPSG:4326")
+    baseline4_3 = weighted_pointmap(res4, vega4_3)
+    weighted_point_map4_3_1 = weighted_pointmap(res4, vega4_3)
+    weighted_point_map4_3_2 = weighted_pointmap(res4, vega4_3)
+
+    baseline_png4_3 = png_path + "weighted_point_map_nyc_4_3.png"
+    save_png(baseline4_3, baseline_png4_3)
+    save_png(weighted_point_map4_3_1, png_path + "test_weighted_point_map_nyc_4_3-1.png")
+    save_png(weighted_point_map4_3_2, png_path + "test_weighted_point_map_nyc_4_3-2.png")
+
+    # 4.4 opacity = 0.5, color_ruler: [0, 5], color: blue_green_yellow, stroke_ruler: [1, 9]
+    vega4_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
+                                     [0, 5], [1, 11], 0.5, "EPSG:4326")
+    baseline4_4 = weighted_pointmap(res4, vega4_4)
+    weighted_point_map4_4_1 = weighted_pointmap(res4, vega4_4)
+    weighted_point_map4_4_2 = weighted_pointmap(res4, vega4_4)
+
+    baseline_png4_4 = png_path + "weighted_point_map_nyc_4_4.png"
+    save_png(baseline4_4, baseline_png4_4)
+    save_png(weighted_point_map4_4_1, png_path + "test_weighted_point_map_nyc_4_4-1.png")
+    save_png(weighted_point_map4_4_2, png_path + "test_weighted_point_map_nyc_4_4-2.png")
+
+    # 4.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: blue_transparency, stroke_ruler: [1, 9]
+    vega4_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_transparency",
+                                     [0, 2], [5, 15], 1.0, "EPSG:4326")
+    baseline4_5 = weighted_pointmap(res4, vega4_5)
+    weighted_point_map4_5_1 = weighted_pointmap(res4, vega4_5)
+    weighted_point_map4_5_2 = weighted_pointmap(res4, vega4_5)
+
+    baseline_png4_5 = png_path + "weighted_point_map_nyc_4_5.png"
+    save_png(baseline4_5, baseline_png4_5)
+    save_png(weighted_point_map4_5_1, png_path + "test_weighted_point_map_nyc_4_5-1.png")
+    save_png(weighted_point_map4_5_2, png_path + "test_weighted_point_map_nyc_4_5-2.png")
+
+    spark.catalog.dropGlobalTempView("nyc_taxi")
+
+    assert run_diff_png(baseline_png1_1, png_path + "test_weighted_point_map_nyc_1_1-1.png")
+    assert run_diff_png(baseline_png1_1, png_path + "test_weighted_point_map_nyc_1_1-2.png")
+    assert run_diff_png(baseline_png1_2, png_path + "test_weighted_point_map_nyc_1_2-1.png")
+    assert run_diff_png(baseline_png1_2, png_path + "test_weighted_point_map_nyc_1_2-2.png")
+    assert run_diff_png(baseline_png1_3, png_path + "test_weighted_point_map_nyc_1_3-1.png")
+    assert run_diff_png(baseline_png1_3, png_path + "test_weighted_point_map_nyc_1_3-2.png")
+    assert run_diff_png(baseline_png1_4, png_path + "test_weighted_point_map_nyc_1_4-1.png")
+    assert run_diff_png(baseline_png1_4, png_path + "test_weighted_point_map_nyc_1_4-2.png")
+    assert run_diff_png(baseline_png1_5, png_path + "test_weighted_point_map_nyc_1_5-1.png")
+    assert run_diff_png(baseline_png1_5, png_path + "test_weighted_point_map_nyc_1_5-2.png")
+    assert run_diff_png(baseline_png2_1, png_path + "test_weighted_point_map_nyc_2_1-1.png")
+    assert run_diff_png(baseline_png2_1, png_path + "test_weighted_point_map_nyc_2_1-2.png")
+    assert run_diff_png(baseline_png2_2, png_path + "test_weighted_point_map_nyc_2_2-1.png")
+    assert run_diff_png(baseline_png2_2, png_path + "test_weighted_point_map_nyc_2_2-2.png")
+    assert run_diff_png(baseline_png2_3, png_path + "test_weighted_point_map_nyc_2_3-1.png")
+    assert run_diff_png(baseline_png2_3, png_path + "test_weighted_point_map_nyc_2_3-2.png")
+    assert run_diff_png(baseline_png2_4, png_path + "test_weighted_point_map_nyc_2_4-1.png")
+    assert run_diff_png(baseline_png2_4, png_path + "test_weighted_point_map_nyc_2_4-2.png")
+    assert run_diff_png(baseline_png2_5, png_path + "test_weighted_point_map_nyc_2_5-1.png")
+    assert run_diff_png(baseline_png2_5, png_path + "test_weighted_point_map_nyc_2_5-2.png")
+    assert run_diff_png(baseline_png3_1, png_path + "test_weighted_point_map_nyc_3_1-1.png")
+    assert run_diff_png(baseline_png3_1, png_path + "test_weighted_point_map_nyc_3_1-2.png")
+    assert run_diff_png(baseline_png3_2, png_path + "test_weighted_point_map_nyc_3_2-1.png")
+    assert run_diff_png(baseline_png3_2, png_path + "test_weighted_point_map_nyc_3_2-2.png")
+    assert run_diff_png(baseline_png3_3, png_path + "test_weighted_point_map_nyc_3_3-1.png")
+    assert run_diff_png(baseline_png3_3, png_path + "test_weighted_point_map_nyc_3_3-2.png")
+    assert run_diff_png(baseline_png3_4, png_path + "test_weighted_point_map_nyc_3_4-1.png")
+    assert run_diff_png(baseline_png3_4, png_path + "test_weighted_point_map_nyc_3_4-2.png")
+    assert run_diff_png(baseline_png3_5, png_path + "test_weighted_point_map_nyc_3_5-1.png")
+    assert run_diff_png(baseline_png3_5, png_path + "test_weighted_point_map_nyc_3_5-2.png")
+    assert run_diff_png(baseline_png4_1, png_path + "test_weighted_point_map_nyc_4_1-1.png")
+    assert run_diff_png(baseline_png4_1, png_path + "test_weighted_point_map_nyc_4_1-2.png")
+    assert run_diff_png(baseline_png4_2, png_path + "test_weighted_point_map_nyc_4_2-1.png")
+    assert run_diff_png(baseline_png4_2, png_path + "test_weighted_point_map_nyc_4_2-2.png")
+    assert run_diff_png(baseline_png4_3, png_path + "test_weighted_point_map_nyc_4_3-1.png")
+    assert run_diff_png(baseline_png4_3, png_path + "test_weighted_point_map_nyc_4_3-2.png")
+    assert run_diff_png(baseline_png4_4, png_path + "test_weighted_point_map_nyc_4_4-1.png")
+    assert run_diff_png(baseline_png4_4, png_path + "test_weighted_point_map_nyc_4_4-2.png")
+    assert run_diff_png(baseline_png4_5, png_path + "test_weighted_point_map_nyc_4_5-1.png")
+    assert run_diff_png(baseline_png4_5, png_path + "test_weighted_point_map_nyc_4_5-2.png")
 
 def run_test_heat_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
@@ -533,6 +839,7 @@ if __name__ == "__main__":
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
     run_test_point_map(spark_session)
+    run_test_weighted_point_map(spark_session)
     run_test_heat_map(spark_session)
     run_test_choropleth_map(spark_session)
 
