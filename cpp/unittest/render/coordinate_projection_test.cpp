@@ -142,3 +142,47 @@ TEST(PROJECTION_TEST, POINT_TEST) {
   assert(res_geo2->toPoint()->getX() == 272);
   assert(res_geo2->toPoint()->getY() == 138);
 }
+
+TEST(PROJECTION_TEST, POLYGON_TEST) {
+  // param1: wkt string
+  std::string polygon =
+      "POLYGON (("
+      "-8235193.62386326 4976211.44428777,"
+      "-8235213.88401059 4976211.44428777,"
+      "-8235213.88401059 4976357.37067044,"
+      "-8235193.62386326 4976357.37067044,"
+      "-8235193.62386326 4976211.44428777))";
+
+  // param2: top_left
+  std::string top_left = "POINT (-8235871.4482427 4976468.32320551)";
+
+  // param3: bottom_right
+  std::string bottom_right = "POINT (-8235147.42627458 4976108.43009739)";
+
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(polygon);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  auto arr = arctern::render::projection(string_array, bottom_right, top_left, 200, 300);
+
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+
+  auto res = str_arr->GetString(0);
+
+  OGRGeometry* res_geo = nullptr;
+
+  OGRGeometryFactory::createFromWkb(res.c_str(), nullptr, &res_geo);
+
+  assert(res_geo->toPolygon()->getExteriorRing()->getX(0) == 280);
+  assert(res_geo->toPolygon()->getExteriorRing()->getY(0) == 57);
+  assert(res_geo->toPolygon()->getExteriorRing()->getX(1) == 272);
+  assert(res_geo->toPolygon()->getExteriorRing()->getY(1) == 57);
+  assert(res_geo->toPolygon()->getExteriorRing()->getX(2) == 272);
+  assert(res_geo->toPolygon()->getExteriorRing()->getY(2) == 138);
+  assert(res_geo->toPolygon()->getExteriorRing()->getX(3) == 280);
+  assert(res_geo->toPolygon()->getExteriorRing()->getY(3) == 138);
+  assert(res_geo->toPolygon()->getExteriorRing()->getX(4) == 280);
+  assert(res_geo->toPolygon()->getExteriorRing()->getY(4) == 57);
+}
