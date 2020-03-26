@@ -63,10 +63,24 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   assert(res_geo2->toPoint()->getY() == 138);
 }
 
-TEST(PROJECTION_TEST, POINT_TEST) {
-  // param1: wkt string
-  std::string wkt1 = "POINT (-8235193.62386326 4976211.44428777)";
-  std::string wkt2 = "POINT (-8235213.88401059 4976357.37067044)";
+TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
+  // param1: wkt string    -73.984092,40.753893,-73.977588,40.756342
+  std::string wkt1 =
+      "POLYGON (("
+      "-73.989754263774 40.7677468202825,-73.9899519048903 40.7678302792556,"
+      "-73.989912476786 40.7678842519974,-73.9899105593281 40.7678834422768,"
+      "-73.9899028933374 40.7678939333729,-73.9897724980032 40.7678388704833,"
+      "-73.989737963688 40.7678242873584,-73.9897071707312 40.7678112849412,"
+      "-73.9897080734511 40.7678100513318,-73.9897150393223 40.7678005156204,"
+      "-73.989754263774 40.7677468202825))";
+  std::string wkt2 =
+      "POLYGON (("
+      "-73.9870535105538 40.7601363221624,-73.9871923522742 40.7599470020734,"
+      "-73.9874629426019 40.7600617372231,-73.9875093817809 40.7600814281999,"
+      "-73.9874059754083 40.7602224305671,-73.9873933701613 40.7602396189215,"
+      "-73.9873705406814 40.7602707486673,-73.9873691883338 40.7602701748976,"
+      "-73.9870535105538 40.7601363221624))";
+
   arrow::StringBuilder string_builder;
   auto status = string_builder.Append(wkt1);
   status = string_builder.Append(wkt2);
@@ -74,11 +88,41 @@ TEST(PROJECTION_TEST, POINT_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
+  // param2: src_rs
+  std::string src_ts = "EPSG:4326";
+
+  // param3: dst_rs
+  std::string dst_rs = "EPSG:3857";
+
+  // param4: top_left
+  std::string top_left = "POINT (-73.984092 40.756342)";
+
+  // param5: bottom_right
+  std::string bottom_right = "POINT (-73.977588 40.753893)";
+
+  auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs,
+                                                       bottom_right, top_left, 200, 300);
+
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+}
+
+TEST(PROJECTION_TEST, POINT_TEST) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (-8235193.62386326 4976211.44428777)";
+  std::string wkt2 = "POINT (-8235213.88401059 4976357.37067044)";
+
   // param2: top_left
   std::string top_left = "POINT (-8235871.4482427 4976468.32320551)";
 
   // param3: bottom_right
   std::string bottom_right = "POINT (-8235147.42627458 4976108.43009739)";
+
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
 
   auto arr = arctern::render::projection(string_array, bottom_right, top_left, 200, 300);
 

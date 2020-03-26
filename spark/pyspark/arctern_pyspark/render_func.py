@@ -47,6 +47,7 @@ def pointmap(df, vega):
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
     else:
         df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+
     vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkb(point, conf=vega):
@@ -231,6 +232,7 @@ def heatmap(df, vega):
         df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
     else:
         df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+
     vega = vega.build()
     agg_schema = StructType([StructField('point', BinaryType(), True),
                              StructField('w', IntegerType(), True)])
@@ -267,10 +269,11 @@ def choroplethmap(df, vega):
         df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
     else:
         df = df.select(Projection(col('wkt'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
+
     vega = vega.build()
     agg_schema = StructType([StructField('wkb', BinaryType(), True),
                              StructField('w', IntegerType(), True)])
-
+    
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
