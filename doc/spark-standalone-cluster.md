@@ -131,7 +131,7 @@ rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 export SPARK_HOME=$HOME/spark-3.0.0-preview2-bin-hadoop2.7
 ```
 
-在`node20`,`node21`,`node22`上编辑`～/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，设置每个`worker`使用2个cpu，4G内存，内容如下
+在`node20`,`node21`,`node22`上编辑`～/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，内容如下
 ```bash
 #!/usr/bin/env bash
 export PYSPARK_PYTHON=$HOME/miniconda3/envs/arctern/bin/python
@@ -143,7 +143,11 @@ SPARK_WORKER_MEMORY=4g
 ```txt
 spark.executorEnv.PROJ_LIB         /home/arcterner/miniconda3/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA        /home/arcterner/miniconda3/envs/arctern/share/gdal
+spark.executor.memory              2g
+spark.executor.cores               1
 ```
+结合`spark-env.sh`和`spark.defaults.conf`可知，当前`spark`集群一共有`2×3=6`个`cpu`，`4g×3=12g`内存，并且每个`executor`使用`1`个`cpu`，`2g`内存，一共有`6`个`executor`
+
 在`node20`节点上编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/slaves`,内容如下
 ```txt
 node20
