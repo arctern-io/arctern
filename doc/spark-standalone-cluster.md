@@ -131,20 +131,20 @@ rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 export SPARK_HOME=$HOME/spark-3.0.0-preview2-bin-hadoop2.7
 ```
 
-只需要在`node20`节点上配置`spark`,`node21`和`node22`不需要任何配置
-
-编辑`spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，内容如下
+在`node20`,`node21`,`node22`上编辑`～/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，设置每个`worker`使用2个cpu，4G内存，内容如下
 ```bash
 #!/usr/bin/env bash
 export PYSPARK_PYTHON=$HOME/miniconda3/envs/arctern/bin/python
+SPARK_WORKER_CORES=2
+SPARK_WORKER_MEMORY=4g
 ```
-编辑`spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-defaults.conf`，内容如下
+
+在`node20`节点上编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-defaults.conf`，内容如下
 ```txt
-spark.executorEnv.PYSPARK_PYTHON   /home/arcterner/miniconda3/envs/arctern/bin/python
 spark.executorEnv.PROJ_LIB         /home/arcterner/miniconda3/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA        /home/arcterner/miniconda3/envs/arctern/share/gdal
 ```
-编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/slaves`,内容如下:
+在`node20`节点上编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/slaves`,内容如下
 ```txt
 node20
 node21
