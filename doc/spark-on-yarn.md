@@ -361,9 +361,9 @@ rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 ```
 将`spark`的`jar`包上传到`hdfs`
 ```
-~/hadoop-2.7.7/bin/hdfs dfs -mkdir hdfs://node20:9000/spark
-~/hadoop-2.7.7/bin/hdfs dfs -put ~/spark-3.0.0-preview2-bin-hadoop2.7/jars hdfs://node20:9000/spark
-~/hadoop-2.7.7/bin/hdfs dfs -ls hdfs://node20:9000/spark
+~/hadoop-2.7.7/bin/hdfs dfs -mkdir hdfs:///spark
+~/hadoop-2.7.7/bin/hdfs dfs -put ~/spark-3.0.0-preview2-bin-hadoop2.7/jars hdfs:///spark/
+~/hadoop-2.7.7/bin/hdfs dfs -ls hdfs:///spark
 ```
 
 编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，添加如下内容
@@ -377,7 +377,7 @@ export PYSPARK_PYTHON=/home/hadoop/miniconda3/envs/arctern/bin/python
 spark.executorEnv.PROJ_LIB         /home/hadoop/miniconda3/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA        /home/hadoop/miniconda3/envs/arctern/share/gdal
 spark.executorEnv.PYSPARK_PYTHON   /home/hadoop/miniconda3/envs/arctern/bin/python
-spark.yarn.archive                 hdfs://node20:9000/spark/jars
+spark.yarn.archive                 hdfs:///spark/jars
 ```
 跑官方示例，检查`spark`是否安装成功
 ```bash
