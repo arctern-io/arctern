@@ -28,10 +28,9 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   document.Parse(json.c_str());
 
   if (document.Parse(json.c_str()).HasParseError()) {
-    // TODO: add log here
-    printf("json format error\n");
     is_valid_ = false;
-    return;
+    std::string err_msg = "json format error";
+    throw std::runtime_error(err_msg);
   }
 
   // 1. parse image width and height
@@ -95,8 +94,8 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
     color_style_ = ColorStyle::kGreenYellowRed;
   } else {
     is_valid_ = false;
-    std::string msg = "unsupported color '" + color_string + "'.";
-    // TODO: add log here
+    std::string err_msg = "unsupported color '" + color_string + "'.";
+    throw std::runtime_error(err_msg);
   }
 
   // 4. parse color_ruler
@@ -114,10 +113,9 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
     color_ruler_ = std::make_pair(mark_enter["color_ruler"]["value"][0].GetDouble(),
                                   mark_enter["color_ruler"]["value"][1].GetDouble());
   } else {
-    // TODO: add log here
     is_valid_ = false;
-    std::string msg = "unsupported color ruler.";
-    return;
+    std::string err_msg = "unsupported color ruler";
+    throw std::runtime_error(err_msg);
   }
 
   // 5. parse stroke_ruler
@@ -141,9 +139,8 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
                                    mark_enter["stroke_ruler"]["value"][1].GetDouble());
   } else {
     is_valid_ = false;
-    // TODO: add log here
-    std::string msg = "unsupported color ruler.";
-    return;
+    std::string err_msg = "unsupported stroke ruler";
+    throw std::runtime_error(err_msg);
   }
 
   // 6. parse opacity
