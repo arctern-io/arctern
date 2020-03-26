@@ -197,9 +197,9 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_2_1, png_path + "test_weighted_point_map_nyc_1_2-1.png")
     save_png(weighted_point_map1_2_2, png_path + "test_weighted_point_map_nyc_1_2-2.png")
 
-    # 1.3 opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green)
-    vega1_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 2],
-                                     [5], 0.5, "EPSG:4326")
+    # 1.3 opacity = 1.0, color_ruler: [0, 100], color: #14EE47(green)
+    vega1_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 100],
+                                     [5], 1.0, "EPSG:4326")
     baseline1_3 = weighted_pointmap(res1, vega1_3)
     weighted_point_map1_3_1 = weighted_pointmap(res1, vega1_3)
     weighted_point_map1_3_2 = weighted_pointmap(res1, vega1_3)
@@ -209,7 +209,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_3_1, png_path + "test_weighted_point_map_nyc_1_3-1.png")
     save_png(weighted_point_map1_3_2, png_path + "test_weighted_point_map_nyc_1_3-2.png")
 
-    # 1.4 opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [1, 9]
+    # 1.4 opacity = 0.5, color_ruler: [0, 2], color: #1221EE, stroke_ruler: [5]
     vega1_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#1221EE", [0, 2],
                                      [5], 0.5, "EPSG:4326")
     baseline1_4 = weighted_pointmap(res1, vega1_4)
@@ -221,7 +221,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_4_1, png_path + "test_weighted_point_map_nyc_1_4-1.png")
     save_png(weighted_point_map1_4_2, png_path + "test_weighted_point_map_nyc_1_4-2.png")
 
-    # 1.5 size: 200*200, opacity = 0.5, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [5, 11]
+    # 1.5 size: 200*200, opacity = 0.5, color_ruler: [0, 2], color: #EE1271, stroke_ruler: [10]
     vega1_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE1271", [0, 2],
                                      [10], 0.5, "EPSG:4326")
     baseline1_5 = weighted_pointmap(res1, vega1_5)
@@ -236,7 +236,7 @@ def run_test_weighted_point_map(spark):
     # 2 multiple color; single point size
     res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
-    # 2.1 opacity = 1.0, color_ruler: [0, 2], color: 3574F0(blue)
+    # 2.1 opacity = 1.0, color_ruler: [0, 2], color: red_transparency
     vega2_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "red_transparency",
                                      [0, 2], [10], 1.0, "EPSG:4326")
     baseline2_1 = weighted_pointmap(res2, vega2_1)
@@ -272,7 +272,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_3_1, png_path + "test_weighted_point_map_nyc_2_3-1.png")
     save_png(weighted_point_map2_3_2, png_path + "test_weighted_point_map_nyc_2_3-2.png")
 
-    # 2.4 opacity = 0.5, color_ruler: [0, 2], color: white_blue, stroke_ruler: [1, 9]
+    # 2.4 opacity = 0.5, color_ruler: [0, 2], color: white_blue, stroke_ruler: [0]
     vega2_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "white_blue", [1, 10],
                                      [0], 0.5, "EPSG:4326")
     baseline2_4 = weighted_pointmap(res2, vega2_4)
@@ -284,7 +284,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_4_1, png_path + "test_weighted_point_map_nyc_2_4-1.png")
     save_png(weighted_point_map2_4_2, png_path + "test_weighted_point_map_nyc_2_4-2.png")
 
-    # 2.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red, stroke_ruler: [1, 9]
+    # 2.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red, stroke_ruler: [1]
     vega2_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red",
                                      [0, 2], [1], 1.0, "EPSG:4326")
     baseline2_5 = weighted_pointmap(res2, vega2_5)
@@ -323,8 +323,8 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_2_1, png_path + "test_weighted_point_map_nyc_3_2-1.png")
     save_png(weighted_point_map3_2_2, png_path + "test_weighted_point_map_nyc_3_2-2.png")
 
-    # 3.3 opacity = 0.5, color_ruler: [0, 100], color: #14EE47(green)
-    vega3_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 100],
+    # 3.3 opacity = 0.5, color_ruler: [0, 100], color: #4A4145(black)
+    vega3_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#4A4145", [0, 100],
                                      [2, 8], 0.5, "EPSG:4326")
     baseline3_3 = weighted_pointmap(res3, vega3_3)
     weighted_point_map3_3_1 = weighted_pointmap(res3, vega3_3)
@@ -335,7 +335,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_3_1, png_path + "test_weighted_point_map_nyc_3_3-1.png")
     save_png(weighted_point_map3_3_2, png_path + "test_weighted_point_map_nyc_3_3-2.png")
 
-    # 3.4 opacity = 0.5, color_ruler: [0, 2], color: #3574F0(blue), stroke_ruler: [1, 9]
+    # 3.4 opacity = 0.5, color_ruler: [0, 2], color: #3574F0(blue), stroke_ruler: [1, 20]
     vega3_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#3574F0", [0, 2],
                                      [1, 20], 0.5, "EPSG:4326")
     baseline3_4 = weighted_pointmap(res3, vega3_4)
@@ -362,7 +362,7 @@ def run_test_weighted_point_map(spark):
     # 4 multiple color; multiple point size
     res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
-    # 4.1 opacity = 1.0, color_ruler: [0, 2], color: #3574F0(blue)
+    # 4.1 opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red
     vega4_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red", [0, 2],
                                      [0, 10], 1.0, "EPSG:4326")
     baseline4_1 = weighted_pointmap(res4, vega4_1)
@@ -386,7 +386,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_2_1, png_path + "test_weighted_point_map_nyc_4_2-1.png")
     save_png(weighted_point_map4_2_2, png_path + "test_weighted_point_map_nyc_4_2-2.png")
 
-    # 4.3 opacity = 0.5, color_ruler: [0, 100], color: blue_green_yellow
+    # 4.3 opacity = 0.5, color_ruler: [1, 5], color: blue_green_yellow
     vega4_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
                                      [1, 5], [0, 10], 0.5, "EPSG:4326")
     baseline4_3 = weighted_pointmap(res4, vega4_3)
@@ -398,7 +398,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_3_1, png_path + "test_weighted_point_map_nyc_4_3-1.png")
     save_png(weighted_point_map4_3_2, png_path + "test_weighted_point_map_nyc_4_3-2.png")
 
-    # 4.4 opacity = 0.5, color_ruler: [0, 5], color: blue_green_yellow, stroke_ruler: [1, 9]
+    # 4.4 opacity = 0.5, color_ruler: [0, 5], color: blue_green_yellow, stroke_ruler: [1, 11]
     vega4_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
                                      [0, 5], [1, 11], 0.5, "EPSG:4326")
     baseline4_4 = weighted_pointmap(res4, vega4_4)
@@ -410,7 +410,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_4_1, png_path + "test_weighted_point_map_nyc_4_4-1.png")
     save_png(weighted_point_map4_4_2, png_path + "test_weighted_point_map_nyc_4_4-2.png")
 
-    # 4.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: blue_transparency, stroke_ruler: [1, 9]
+    # 4.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: blue_transparency, stroke_ruler: [5, 15]
     vega4_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_transparency",
                                      [0, 2], [5, 15], 1.0, "EPSG:4326")
     baseline4_5 = weighted_pointmap(res4, vega4_5)
