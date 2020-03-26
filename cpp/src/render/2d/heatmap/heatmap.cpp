@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <iostream>
+#include <string>
 #include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -149,8 +150,8 @@ void HeatMap<T>::Shader() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -159,8 +160,8 @@ void HeatMap<T>::Shader() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int shaderProgram = glCreateProgram();
@@ -170,8 +171,8 @@ void HeatMap<T>::Shader() {
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   glDeleteShader(vertexShader);

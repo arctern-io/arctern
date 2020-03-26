@@ -28,10 +28,9 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   document.Parse(json.c_str());
 
   if (document.Parse(json.c_str()).HasParseError()) {
-    // TODO: add log here
-    printf("json format error\n");
     is_valid_ = false;
-    return;
+    std::string err_msg = "json format error";
+    throw std::runtime_error(err_msg);
   }
 
   if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
@@ -98,8 +97,8 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   } else if (color_style_string == "green_yellow_red") {
     color_style_ = ColorStyle::kGreenYellowRed;
   } else {
-    std::string msg = "unsupported color style '" + color_style_string + "'.";
-    // TODO: add log here
+    std::string err_msg = "unsupported color style '" + color_style_string + "'.";
+    throw std::runtime_error(err_msg);
   }
 
   // parse ruler

@@ -278,7 +278,6 @@ std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t 
                                       const std::string& conf) {
   VegaPointmap vega_pointmap(conf);
   if (!vega_pointmap.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
@@ -296,7 +295,6 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
@@ -314,7 +312,6 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
@@ -332,7 +329,6 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
@@ -349,7 +345,6 @@ std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                      int64_t num_vertices, const std::string& conf) {
   VegaHeatMap vega_heat_map(conf);
   if (!vega_heat_map.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 
@@ -367,7 +362,6 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
                                            const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
-    // TODO: add log here
     return std::make_pair(nullptr, -1);
   }
 

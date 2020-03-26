@@ -109,9 +109,8 @@ void WeightedPointMap<T>::Draw() {
 #endif
     DrawMultipleColorMultipleStroke();
   } else {
-    // TODO: add log here
-    std::string msg = "Draw failed, invalid point map";
-    std::cout << msg << std::endl;
+    std::string err_msg = "Draw failed, invalid point map";
+    throw std::runtime_error(err_msg);
   }
 }
 
@@ -137,9 +136,8 @@ void WeightedPointMap<T>::Shader() {
     SetColor(color_count_);
     ShaderMultipleColorMultipleStroke();
   } else {
-    // TODO: add log here
-    std::string msg = "Shader failed, invalid point map";
-    std::cout << msg << std::endl;
+    std::string err_msg = "Shader failed, invalid point map";
+    throw std::runtime_error(err_msg);
   }
 }
 
@@ -176,8 +174,8 @@ void WeightedPointMap<T>::ShaderSingleColorSingleStroke() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -187,8 +185,8 @@ void WeightedPointMap<T>::ShaderSingleColorSingleStroke() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -199,8 +197,8 @@ void WeightedPointMap<T>::ShaderSingleColorSingleStroke() {
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -270,8 +268,8 @@ void WeightedPointMap<T>::ShaderMultipleColorSingleStroke() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -280,8 +278,8 @@ void WeightedPointMap<T>::ShaderMultipleColorSingleStroke() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int shaderProgram = glCreateProgram();
@@ -291,8 +289,8 @@ void WeightedPointMap<T>::ShaderMultipleColorSingleStroke() {
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   glDeleteShader(vertexShader);
@@ -360,8 +358,8 @@ void WeightedPointMap<T>::ShaderSingleColorMultipleStroke() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -371,8 +369,8 @@ void WeightedPointMap<T>::ShaderSingleColorMultipleStroke() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -383,8 +381,8 @@ void WeightedPointMap<T>::ShaderSingleColorMultipleStroke() {
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -463,8 +461,8 @@ void WeightedPointMap<T>::ShaderMultipleColorMultipleStroke() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -473,8 +471,8 @@ void WeightedPointMap<T>::ShaderMultipleColorMultipleStroke() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   int shaderProgram = glCreateProgram();
@@ -484,8 +482,8 @@ void WeightedPointMap<T>::ShaderMultipleColorMultipleStroke() {
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
   glDeleteShader(vertexShader);
