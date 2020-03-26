@@ -163,7 +163,7 @@ TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
   arctern::render::point_map(array1, array2, vega);
 }
 
-//TEST(POINTMAP_TEST, RAW_POINT_INVALID_JSON_TEST) {
+// TEST(POINTMAP_TEST, RAW_POINT_INVALID_JSON_TEST) {
 //  auto bit_map = new uint8_t{0xff};
 //
 //  auto data_type = arrow::uint32();
@@ -295,7 +295,7 @@ TEST(POINTMAP_TEST, WKT_POINT_TEST) {
   arctern::render::point_map(wkb, vega);
 }
 
-//TEST(POINTMAP_TEST, WKT_POINT_INVALID_JSON_TEST) {
+// TEST(POINTMAP_TEST, WKT_POINT_INVALID_JSON_TEST) {
 //  // param1: wkt string
 //  std::string wkt1 = "POINT (10 10)";
 //  std::string wkt2 = "POINT (20 20)";

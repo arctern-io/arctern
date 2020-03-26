@@ -24,8 +24,7 @@ namespace render {
 bool Vega::JsonLabelCheck(rapidjson::Value& value, const std::string& label) {
   if (!value.HasMember(label.c_str())) {
     is_valid_ = false;
-    std::string err_msg =
-        "Cannot find label [" + label + "] !";
+    std::string err_msg = "Cannot find label [" + label + "] !";
     throw std::runtime_error(err_msg);
   }
   return true;
@@ -34,8 +33,9 @@ bool Vega::JsonLabelCheck(rapidjson::Value& value, const std::string& label) {
 bool Vega::JsonSizeCheck(rapidjson::Value& value, const std::string& label, size_t size) {
   if (value.Size() != size) {
     is_valid_ = false;
-    std::string err_msg =
-        "Member [" + label + "].size should be " + std::to_string(size) + ", but get " + std::to_string(value.Size());
+    std::string err_msg = "Member [" + label + "].size should be " +
+                          std::to_string(size) + ", but get " +
+                          std::to_string(value.Size());
     throw std::runtime_error(err_msg);
   }
   return true;

@@ -867,7 +867,7 @@ TEST(HEATMAP_TEST, RAW_POINT_DOUBLE_TEST) {
   arctern::render::heat_map(array1, array2, array3, vega);
 }
 
-//TEST(HEATMAP_TEST, RAW_POINT_INVALID_DATA_TYPE_TEST) {
+// TEST(HEATMAP_TEST, RAW_POINT_INVALID_DATA_TYPE_TEST) {
 //  // param1: x
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(50);
@@ -1598,7 +1598,7 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
   arctern::render::heat_map(wkb, color_array, vega);
 }
 
-//TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
+// TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
 //  // param1: wkt string
 //  std::string wkt1 = "POINT (50 50)";
 //  std::string wkt2 = "POINT (51 51)";
@@ -1664,7 +1664,7 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
 //  arctern::render::heat_map(wkb, color_array, vega);
 //}
 
-//TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
+// TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
 //  // param1: wkt string
 //  std::string wkt1 = "POINT (50 50)";
 //  std::string wkt2 = "POINT (51 51)";

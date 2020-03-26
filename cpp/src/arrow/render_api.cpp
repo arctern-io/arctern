@@ -334,7 +334,8 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       }
       default:
         std::string err_msg =
-            "type error of count while running weighted_point map, type = " + std::to_string(type2);
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type2);
         throw std::runtime_error(err_msg);
     }
 
@@ -342,7 +343,8 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 
   } else {
     std::string err_msg =
-        "type error of arrow::Array while running weighted_point map, type = " + std::to_string(type1);
+        "type error of arrow::Array while running weighted_point map, type = " +
+        std::to_string(type1);
     throw std::runtime_error(err_msg);
   }
 }
@@ -415,7 +417,8 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       }
       default:
         std::string err_msg =
-            "type error of count while running weighted_point map, type = " + std::to_string(type3);
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type3);
         throw std::runtime_error(err_msg);
     }
   } else if (type1 == arrow::Type::BINARY && type2 == type3) {
@@ -464,13 +467,15 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       }
       default:
         std::string err_msg =
-            "type error of count while running weighted_point map, type = " + std::to_string(type3);
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type3);
         throw std::runtime_error(err_msg);
     }
     return out_pic(result);
   } else {
     std::string err_msg =
-        "type error of arrow::Array while running weighted_point map, type = " + std::to_string(type1);
+        "type error of arrow::Array while running weighted_point map, type = " +
+        std::to_string(type1);
     throw std::runtime_error(err_msg);
   }
 }
@@ -563,7 +568,8 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     }
     default:
       std::string err_msg =
-          "type error of count while running weighted_point map, type = " + std::to_string(c_type);
+          "type error of count while running weighted_point map, type = " +
+          std::to_string(c_type);
       throw std::runtime_error(err_msg);
   }
 }
@@ -747,8 +753,8 @@ std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>
       break;
     }
     default:
-      std::string err_msg =
-          "type error of count while running choropleth map, type = " + std::to_string(c_type);
+      std::string err_msg = "type error of count while running choropleth map, type = " +
+                            std::to_string(c_type);
       throw std::runtime_error(err_msg);
   }
   return out_pic(result);

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <iostream>
+#include <string>
 #include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>

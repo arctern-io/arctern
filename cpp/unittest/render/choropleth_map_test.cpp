@@ -548,7 +548,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
   arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
-//TEST(CHOROPLETHMAP_TEST, INVALID_COLOR_STYLE_TEST) {
+// TEST(CHOROPLETHMAP_TEST, INVALID_COLOR_STYLE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -607,7 +607,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
 
-//TEST(CHOROPLETHMAP_TEST, INVALID_JSON_TEST) {
+// TEST(CHOROPLETHMAP_TEST, INVALID_JSON_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -1256,7 +1256,7 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
   arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
-//TEST(CHOROPLETHMAP_TEST, INVALID_DATA_TYPE_TEST) {
+// TEST(CHOROPLETHMAP_TEST, INVALID_DATA_TYPE_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
