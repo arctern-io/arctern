@@ -355,7 +355,6 @@ cd ~/
 wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz
 
 #解压 spark
-#解压hadoop
 tar -xvf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 ```
