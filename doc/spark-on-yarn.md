@@ -346,7 +346,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ----
 
 ## 安装`spark`
-与`hadoop`一样，只需在`master`节点配置`spark`，然后`scp`至`slave1`和`slave2`
+只需要在`master`节点安装`spark`,`slave1`和`slave2`无需安装
 ```bash
 #进入home目录
 cd ~/
@@ -355,10 +355,16 @@ cd ~/
 wget https://downloads.apache.org/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz
 
 #解压 spark
-#解压hadoop
 tar -xvf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 rm -rf spark-3.0.0-preview2-bin-hadoop2.7.tgz
 ```
+将`spark`的`jar`包上传到`hdfs`
+```
+~/hadoop-2.7.7/bin/hdfs dfs -mkdir hdfs:///spark
+~/hadoop-2.7.7/bin/hdfs dfs -put ~/spark-3.0.0-preview2-bin-hadoop2.7/jars hdfs:///spark/
+~/hadoop-2.7.7/bin/hdfs dfs -ls hdfs:///spark
+```
+
 编辑`~/spark-3.0.0-preview2-bin-hadoop2.7/conf/spark-env.sh`，添加如下内容
 ```bash
 export HADOOP_CONF_DIR=/home/hadoop/hadoop-2.7.7/etc/hadoop
@@ -369,11 +375,8 @@ export PYSPARK_PYTHON=/home/hadoop/miniconda3/envs/arctern/bin/python
 ```txt
 spark.executorEnv.PROJ_LIB         /home/hadoop/miniconda3/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA        /home/hadoop/miniconda3/envs/arctern/share/gdal
-```
-将`master`配置复制到`slave1`,`slave2`
-```bash
-scp -r ~/spark-3.0.0-preview2-bin-hadoop2.7 slave1:~/
-scp -r ~/spark-3.0.0-preview2-bin-hadoop2.7 slave2:~/
+spark.executorEnv.PYSPARK_PYTHON   /home/hadoop/miniconda3/envs/arctern/bin/python
+spark.yarn.archive                 hdfs:///spark/jars
 ```
 跑官方示例，检查`spark`是否安装成功
 ```bash

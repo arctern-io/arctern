@@ -31,8 +31,9 @@ namespace render {
 
 std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
   if (output.first == nullptr || output.second < 0) {
-    // TODO: add log here
-    return nullptr;
+    std::string err_msg =
+        "Null image buffer, in most cases, it was caused by incorrect vega json";
+    throw std::runtime_error(err_msg);
   }
 
   auto output_length = output.second;
@@ -194,6 +195,13 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   return result;
 }
 
+std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width) {
+  return Projection(geos, bottom_right, top_left, height, width);
+}
+
 std::shared_ptr<arrow::Array> transform_and_projection(
     const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
@@ -325,16 +333,19 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         break;
       }
       default:
-        // TODO: add log here
-        std::cout << "type error! weighted_pointmap" << std::endl;
+        std::string err_msg =
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type2);
+        throw std::runtime_error(err_msg);
     }
 
     return out_pic(result);
 
   } else {
-    // TODO: add log here
-    std::cout << "illegal input" << std::endl;
-    return nullptr;
+    std::string err_msg =
+        "type error of arrow::Array while running weighted_point map, type = " +
+        std::to_string(type1);
+    throw std::runtime_error(err_msg);
   }
 }
 
@@ -405,8 +416,10 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         return out_pic(weighted_pointmap<double>(input_x, input_y, input, length1, conf));
       }
       default:
-        // TODO: add log here
-        std::cout << "type error! weighted_pointmap" << std::endl;
+        std::string err_msg =
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type3);
+        throw std::runtime_error(err_msg);
     }
   } else if (type1 == arrow::Type::BINARY && type2 == type3) {
     std::pair<uint8_t*, int64_t> result;
@@ -453,16 +466,18 @@ std::shared_ptr<arrow::Array> weighted_point_map(
         break;
       }
       default:
-        // TODO: add log here
-        std::cout << "type error! weighted_pointmap" << std::endl;
+        std::string err_msg =
+            "type error of count while running weighted_point map, type = " +
+            std::to_string(type3);
+        throw std::runtime_error(err_msg);
     }
-
     return out_pic(result);
   } else {
-    // TODO: add log here
-    std::cout << "illegal input" << std::endl;
+    std::string err_msg =
+        "type error of arrow::Array while running weighted_point map, type = " +
+        std::to_string(type1);
+    throw std::runtime_error(err_msg);
   }
-  return nullptr;
 }
 
 std::shared_ptr<arrow::Array> weighted_point_map(
@@ -552,10 +567,11 @@ std::shared_ptr<arrow::Array> weighted_point_map(
           weighted_pointmap<double>(input_x, input_y, input_c, input_s, x_length, conf));
     }
     default:
-      // TODO: add log here
-      std::cout << "type error! weighted_pointmap" << std::endl;
+      std::string err_msg =
+          "type error of count while running weighted_point map, type = " +
+          std::to_string(c_type);
+      throw std::runtime_error(err_msg);
   }
-  return nullptr;
 }
 
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
@@ -609,8 +625,9 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& poin
       break;
     }
     default:
-      // TODO: add log here
-      std::cout << "type error! " << std::endl;
+      std::string err_msg =
+          "type error of count while running heat map, type = " + std::to_string(c_type);
+      throw std::runtime_error(err_msg);
   }
 
   return out_pic(result);
@@ -676,10 +693,10 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
       return out_pic(heatmap<double>(input_x, input_y, input_c_double, x_length, conf));
     }
     default:
-      // TODO: add log here
-      std::cout << "type error! heatmap" << std::endl;
+      std::string err_msg =
+          "type error of count while running heat map, type = " + std::to_string(c_type);
+      throw std::runtime_error(err_msg);
   }
-  return nullptr;
 }
 
 std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkb,
@@ -736,8 +753,9 @@ std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>
       break;
     }
     default:
-      // TODO: add log here
-      std::cout << "type error!" << std::endl;
+      std::string err_msg = "type error of count while running choropleth map, type = " +
+                            std::to_string(c_type);
+      throw std::runtime_error(err_msg);
   }
   return out_pic(result);
 }

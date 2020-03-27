@@ -18,7 +18,6 @@ set(render_tests_src
 	    heatmap_test.cpp
 		choropleth_map_test.cpp
 		coordinate_projection_test.cpp
-		vega_test.cpp
 		weighted_pointmap_test.cpp
 		)
 

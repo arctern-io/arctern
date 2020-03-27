@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <string>
+
 #include "render/window/window_osmesa/window_cpu_2d.h"
 
 namespace arctern {
@@ -27,9 +29,8 @@ void WindowCPU2D::Init() {
   ctx = OSMesaCreateContext(OSMESA_RGBA, NULL);
 #endif
   if (!context_) {
-    // TODO: Add log here.
-    printf("OSMesaCreateContext failed!\n");
-    return;
+    std::string err_msg = "OSMesaCreateContext failed";
+    throw std::runtime_error(err_msg);
   }
 
   GLsizei screen_width = (GLsizei)window_params().width();
@@ -41,9 +42,8 @@ void WindowCPU2D::Init() {
   // Bind the buffer to the context and make it current.
   if (!OSMesaMakeCurrent(context_, buffer_, GL_UNSIGNED_BYTE, screen_width,
                          screen_height)) {
-    // TODO: Add log here.
-    printf("OSMesaMakeCurrent failed!\n");
-    return;
+    std::string err_msg = "OSMesaMakeCurrent failed";
+    throw std::runtime_error(err_msg);
   }
 }
 

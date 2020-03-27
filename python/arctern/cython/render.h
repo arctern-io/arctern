@@ -30,6 +30,10 @@ WktToWkb(const std::shared_ptr<arrow::Array>& arr_wkt);
 std::shared_ptr<arrow::Array> 
 WkbToWkt(const std::shared_ptr<arrow::Array>& arr_wkb); 
 
+std::shared_ptr<arrow::Array> projection(
+    const std::shared_ptr<arrow::Array>& geos, const std::string& bottom_right,
+    const std::string& top_left, const int& height, const int& width);
+
 std::shared_ptr<arrow::Array> transform_and_projection(
     const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
