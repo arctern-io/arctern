@@ -26,16 +26,30 @@ class Spark:
     """
 
     def __init__(self):
+        print("init spark instance")
+        self._setup_driver_envs()
         self.session = SparkSession.builder \
             .appName("Arctern") \
             .master(config.INSTANCE.get("spark", "master-addr")) \
-            .config("spark.executorEnv.PYSPARK_PYTHON",
-                    config.INSTANCE.get("spark", "executor-python")
-                    ) \
+            .config("spark.executorEnv.PROJ_LIB", config.INSTANCE.get("spark", "proj-lib")) \
+            .config("spark.executorEnv.PYSPARK_PYTHON", config.INSTANCE.get("spark", "executor-python")) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
             .config("spark.databricks.session.share", "false") \
             .getOrCreate()
+        print("init spark instance done")
         register_funcs(self.session)
+
+    def _setup_driver_envs(self):
+        import os
+
+        keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
+                'HADOOP_CONF_DIR', 'YARN_CONF_DIR'
+                )
+
+        for key in keys:
+            value = config.INSTANCE.get("env", key, fallback=None)
+            if value:
+                os.environ[key] = value
 
     def create_session(self):
         """

@@ -17,10 +17,11 @@ limitations under the License.
 import configparser
 import os
 
-#import traceback
+class MyConf(configparser.ConfigParser):
+    #preserve case for letters
+    def optionxform(self, optionstr):
+        return optionstr
 
-INSTANCE = configparser.ConfigParser()
+INSTANCE = MyConf()
 INSTANCE.read(os.path.split(os.path.realpath(__file__))[0]
               + '/../../config.ini')
-
-# traceback.print_stack()

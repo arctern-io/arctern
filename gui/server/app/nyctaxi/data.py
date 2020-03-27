@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from app.common import spark
+from app.common import spark, config
 
 GLOBAL_TABLE_LIST = []
 
@@ -24,10 +24,9 @@ def init():
     load nyc taxi data to spark memory
     """
     print('nyctaxi.data.init')
-
-    import os
-    dirpath = os.path.split(os.path.realpath(__file__))[0]
-    csvpath = dirpath + '/../../data/0_5M_nyc_taxi_and_building.csv'
+    config_ = config.INSTANCE
+    nyc_taxi_path = config_.get("data", "nyc_taxi")
+    assert nyc_taxi_path, "do not find nyc_taxi data file path in config.ini"
     old_nyctaix_df = spark.INSTANCE.session.read.format("csv") \
         .option("header", True) \
         .option("delimiter", ",") \
@@ -47,7 +46,7 @@ def init():
             buildingid_dropoff long, \
             buildingtext_pickup string, \
             buildingtext_dropoff string") \
-        .load(csvpath)
+        .load(nyc_taxi_path)
     old_nyctaix_df.createOrReplaceGlobalTempView("old_nyc_taxi")
 
     nyctaix_df = spark.INSTANCE.session.sql("select VendorID, \
