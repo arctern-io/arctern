@@ -68,7 +68,6 @@ uint8_t* General2D::Output() {
   ExportImage();
 
 #ifdef DEBUG_RENDER
-  // TODO: add log here
   std::cout << "******************" << output_image_size_ << "******************"
             << std::endl;
   FILE* f = fopen("/tmp/offscreen.png", "wb");

@@ -17,6 +17,7 @@ from libcpp.string cimport (string)
 
 
 cdef extern from "render.h" namespace "arctern::render":
+    shared_ptr[CArray] projection(const shared_ptr[CArray] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     shared_ptr[CArray] transform_and_projection(const shared_ptr[CArray] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     shared_ptr[CArray] point_map(const shared_ptr[CArray] &points,const string &conf) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const string &conf) except +
@@ -28,6 +29,7 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &ptr_c,const string &conf) except +
     shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &ptr_wkt,const shared_ptr[CArray] &ptr_count,const string &conf) except +
     shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except + 
+    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 
 cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
