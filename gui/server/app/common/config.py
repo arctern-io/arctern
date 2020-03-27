@@ -17,7 +17,7 @@ limitations under the License.
 import configparser
 import os
 
-class MyConf(configparser.ConfigParser):
+class MyConf(configparser.ConfigParser):# pylint: disable=too-many-ancestors
     #preserve case for letters
     def optionxform(self, optionstr):
         return optionstr
