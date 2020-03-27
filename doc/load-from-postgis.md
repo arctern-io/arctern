@@ -81,10 +81,44 @@ if __name__ == "__main__":
 ---
 
 ## 使用JDBC
-
-
+假设`postgis`数据库信息如下：
+|配置|值|
+|---|---|
+|ip address | 172.17.0.2
+|port | 5432
+|database name | test
+|user name | acterner
+|password | acterner
+使用如下命令测试能否连接`postgis`
+```bash
+psql test -h 172.17.0.2  -p 5432 -U arcterner
+```
+`arctern`使用`jdbc`加载`postgis`，`jdbc_postgis.py`示例代码如下:
+```python
+from pyspark.sql import SparkSession
+from arctern_pyspark import register_funcs
+if __name__ == "__main__":
+    spark = SparkSession \
+        .builder \
+        .appName("polygon test") \
+        .getOrCreate()
+    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+    register_funcs(spark)
+    spark.read.format("jdbc") \
+              .option("url", "jdbc:postgresql://172.17.0.2:5432/test?user=arcterner&password=arcterner") \
+              .option("query", "select idx,st_astext(geos) as geos from polygon") \
+              .load() \
+              .createOrReplaceTempView("polygon")
+    spark.sql("select idx, geos from polygon").show(20,0)
+    spark.stop()
+```
+从[postgres官网](https://jdbc.postgresql.org/download.html)下载最新的`JDBC`驱动，这里下载的驱动为`postgresql-42.2.11.jar`，在提交`spark`任务时，需要指定`jdbc`驱动
+```bash
+./bin/spark-submit  --driver-class-path ~/postgresql-42.2.11.jar --jars ~/postgresql-42.2.11.jar ~/query_postgis.py
+```
 
 ---
 
 ## 参考
 - [postgis](https://postgis.net)
+- [postgres jdbc](https://jdbc.postgresql.org/download.html)
