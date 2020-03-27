@@ -9,7 +9,6 @@ spec:
   containers:
   - name: arctern-cpu-build-env
     image: registry.zilliz.com/arctern/arctern-cpu-build-env:v0.1.0-ubuntu18.04
-    imagePullPolicy: Always
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
