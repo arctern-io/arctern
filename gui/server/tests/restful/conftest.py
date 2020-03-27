@@ -19,10 +19,27 @@ limitations under the License.
 import pytest
 import requests
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--host', action='store', default='127.0.0.1', help='the ip address of web server'
+    )
+    parser.addoption(
+        '--port', action='store', default='8080', help='the port of web sever'
+    )
+
 @pytest.fixture
-def token():
+def host(request):
+    return request.config.getoption('--host')
+
+@pytest.fixture
+def port(request):
+    return request.config.getoption('--port')
+
+@pytest.fixture
+def token(host, port):
+    url = 'http://' + host + ':' + port + '/login'
     response = requests.post(
-        url='http://192.168.2.29:8080/login',
+        url=url,
         json={'username':'zilliz', 'password':'123456'}
     )
     return response.json()['data']['token']

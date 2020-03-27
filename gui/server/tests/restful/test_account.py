@@ -16,14 +16,15 @@ limitations under the License.
 
 import requests
 
-def test_login():
+def test_login(host, port):
+    url = 'http://' + host + ':' + port + '/login'
     # case 1: invalid username or password
     invalid_params = {
         'username': 'invaliduser',
         'password': 'invalidpassword'
     }
     response = requests.post(
-        url='http://192.168.2.29:8080/login',
+        url=url,
         json=invalid_params
     )
     print(response.json())
@@ -37,7 +38,7 @@ def test_login():
         'password': '123456'
     }
     response = requests.post(
-        url='http://192.168.2.29:8080/login',
+        url=url,
         json=correct_params
     )
     assert response.status_code == 200

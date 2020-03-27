@@ -16,12 +16,162 @@ limitations under the License.
 
 import requests
 
-def test_dbs(headers):
+def test_dbs(host, port, headers):
+    url = 'http://' + host + ':' + port + '/dbs'
     response = requests.get(
-         url='http://192.168.2.29:8080/dbs',
-         headers=headers
+         url=url,
+         headers=headers,
     )
     assert response.status_code == 200
     assert response.json()['data'][0]['id'] == '1'
     assert response.json()['data'][0]['name'] == 'nyc taxi'
     assert response.json()['data'][0]['type'] == 'spark'
+
+def test_tables(host, port, headers):
+    url = 'http://' + host + ':' + port + '/db/tables'
+    # case 1: no id keyword in request.json
+    response = requests.post(
+         url=url,
+         headers=headers,
+    )
+    assert response.json()['code'] == - 1
+    assert response.json()['message'] == 'json error: id is not exist'
+    assert response.json()['status'] == 'error'
+
+    # case 2: invalid keyword in request.json
+    response = requests.post(
+         url=url,
+         json={'invalidarg': 3},
+         headers=headers,
+    )
+    assert response.json()['code'] == - 1
+    assert response.json()['message'] == 'json error: id is not exist'
+    assert response.json()['status'] == 'error'
+
+    # case 3: corrent query format
+    response = requests.post(
+         url=url,
+         json={'id': 1},
+         headers=headers,
+    )
+    assert response.status_code == 200
+    assert response.json()['data'][0] == 'global_temp.nyc_taxi'
+
+    # TODO: check nonexistent id
+
+def test_table_info(host, port, headers):
+    url = 'http://' + host + ':' + port + '/db/table/info'
+    # case 1: no id and table keyword in request.json
+    response = requests.post(
+         url=url,
+         headers=headers,
+    )
+    assert response.json()['status'] == 'error'
+    assert response.json()['code'] == -1
+    assert response.json()['message'] == 'query format error'
+
+    # case 2: corrent query format
+    response = requests.post(
+         url=url,
+         json={'id': 1, 'table': 'global_temp.nyc_taxi'},
+         headers=headers,
+    )
+    assert response.status_code == 200
+    # TODO: check data field in response.json
+
+    # TODO: check nonexistent id or table
+
+def test_query(host, port, headers):
+    url = 'http://' + host + ':' + port + '/db/query'
+    # case 1: pointmap
+    pointmap_request_dict = {
+        'id': '1',
+        'query': {
+             'sql': '''
+                    select ST_Point(pickup_longitude, pickup_latitude) as point
+                    from global_temp.nyc_taxi
+                    where ST_Within(
+                        ST_Point(pickup_longitude, pickup_latitude),
+                        "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
+                        )
+             ''',
+             'type': 'point',
+             'params': {
+                  'width': 1024,
+                  'height': 896,
+                  'point': {
+                       'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                       'coordinate': 'EPSG:4326',
+                       'stroke_width': 3,
+                       'stroke': '#2DEF4A',
+                       'opacity': 0.5
+                  }
+             }
+        }
+    }
+    response = requests.post(
+         url=url,
+         json=pointmap_request_dict,
+         headers=headers,
+    )
+    assert response.status_code == 200
+
+    # case 2: heatmap
+    heatmap_request_dict = {
+        'id': '1',
+        'query': {
+            'sql': '''
+            select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w
+            from global_temp.nyc_taxi
+            where ST_Within(
+                ST_Point(pickup_longitude, pickup_latitude),
+                'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'
+                )
+            ''',
+            'type': 'heat',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'heat': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'map_scale': 10
+                }
+            }
+        }
+    }
+    response = requests.post(
+         url=url,
+         json=heatmap_request_dict,
+         headers=headers,
+    )
+    assert response.status_code == 200
+
+    # case 3: choropleth map
+    choropleth_map_request_dict = {
+        'id': '1',
+        'query': {
+            'sql': '''
+            select buildingtext_dropoff as wkt, passenger_count as w
+            from global_temp.nyc_taxi
+            ''',
+            'type': 'choropleth',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'choropleth': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'color_style': 'blue_to_red',
+                    'rule': [2.5, 5],
+                    'opacity': 1
+                }
+            }
+        }
+    }
+    response = requests.post(
+         url=url,
+         json=choropleth_map_request_dict,
+         headers=headers,
+    )
+    assert response.status_code == 200
