@@ -5,6 +5,7 @@ pipeline {
 
     options {
         timestamps()
+        timeout(time: 1, unit: 'HOURS')
     }
 
     parameters{
@@ -183,6 +184,12 @@ pipeline {
                         steps {
                             script {
                                 load "${env.WORKSPACE}/ci/jenkins/step/arcternSparkRegression.groovy"
+                            }
+                        }
+
+                        post {
+                            cleanup {
+                                deleteDir() /* clean up our workspace */
                             }
                         }
                     }
