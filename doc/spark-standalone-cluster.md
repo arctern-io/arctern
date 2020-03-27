@@ -15,7 +15,7 @@ docker network create --subnet=172.18.0.0/16 arcternet
 ----
 
 ## 创建集群间的共享目录
-创建一个名为`arcternas`的目录作为集群间的贡献目录
+创建一个名为`arcternas`的目录作为集群间的共享目录
 ```bash
 mkdir $HOME/arcternas
 ```
