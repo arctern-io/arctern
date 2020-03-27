@@ -115,7 +115,7 @@ if __name__ == "__main__":
 ```
 从[postgres官网](https://jdbc.postgresql.org/download.html)下载最新的`JDBC`驱动，这里下载的驱动为`postgresql-42.2.11.jar`，在提交`spark`任务时，需要指定`jdbc`驱动
 ```bash
-./bin/spark-submit  --driver-class-path ~/postgresql-42.2.11.jar --jars ~/postgresql-42.2.11.jar ~/query_postgis.py
+./bin/spark-submit  --driver-class-path ~/postgresql-42.2.11.jar --jars ~/postgresql-42.2.11.jar ~/query_postgis.py 
 ```
 
 ---
