@@ -84,11 +84,12 @@ if __name__ == "__main__":
 假设`postgis`数据库信息如下：
 |配置|值|
 |---|---|
-|ip address | 172.17.0.2
-|port | 5432
-|database name | test
-|user name | acterner
-|password | acterner
+|ip address | 172.17.0.2 |
+|port | 5432 |
+|database name | test |
+|user name | acterner |
+|password | acterner |
+
 使用如下命令测试能否连接`postgis`
 ```bash
 psql test -h 172.17.0.2  -p 5432 -U arcterner
