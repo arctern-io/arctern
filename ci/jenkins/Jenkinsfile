@@ -186,14 +186,15 @@ pipeline {
                                 load "${env.WORKSPACE}/ci/jenkins/step/arcternSparkRegression.groovy"
                             }
                         }
+
+                        post {
+                            cleanup {
+                                deleteDir() /* clean up our workspace */
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
-    post {
-        cleanup {
-            deleteDir() /* clean up our workspace */
         }
     }
 }
