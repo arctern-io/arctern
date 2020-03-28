@@ -233,7 +233,7 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
     );
   }
   transform.push(xFilterExpr);
-  console.info(transform);
+  // console.info(transform);
   return transform;
 };
 
