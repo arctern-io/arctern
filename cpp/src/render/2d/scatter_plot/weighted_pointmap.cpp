@@ -670,10 +670,6 @@ void WeightedPointMap<T>::DrawMultipleColorMultipleStroke() {
 
 template <typename T>
 void WeightedPointMap<T>::SetColor(T* ptr) {
-  if (ptr == nullptr) {
-    return;
-  }
-
   colors_.resize(num_vertices_ * 4);
 
   auto count_start = weighted_point_vega_.color_ruler().first;
@@ -696,11 +692,6 @@ void WeightedPointMap<T>::SetColor(T* ptr) {
 
 template <typename T>
 void WeightedPointMap<T>::SetStroke(T* ptr) {
-  if (ptr == nullptr) {
-    std::string err_msg = "Error, nullptr while setting stroke";
-    throw std::runtime_error(err_msg);
-  }
-
   auto count_start = weighted_point_vega_.stroke_ruler().first;
   auto count_end = weighted_point_vega_.stroke_ruler().second;
 
