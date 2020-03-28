@@ -22,10 +22,36 @@ from arctern_pyspark import choroplethmap, heatmap, pointmap
 
 from app import account
 from app.common import spark, token, utils
-from app.nyctaxi import data as nyctaxi_data
 
 API = Blueprint('app_api', __name__)
 
+DB_MAP = {}
+
+@API.route('/load', methods=['POST'])
+@token.AUTH.login_required
+def load():
+    """
+    use this function to load data
+    """
+    if not utils.check_json(request.json, 'db_name') \
+        or not utils.check_json(request.json, 'type'):
+        return jsonify(status='error', code=-1, message='no db_name or type field!')
+
+    db_name = request.json['db_name']
+    db_type = request.json['type']
+
+    if db_name in DB_MAP:
+        db_instance = DB_MAP[db_name]
+        table_meta = request.json['tables']
+        db_instance.load(table_meta)
+        return jsonify(status='success', code=200, message='load data succeed!')
+    elif db_type == 'spark':
+        DB_MAP[db_name] = spark.Spark(request.json)
+        table_meta = request.json['tables']
+        DB_MAP[db_name].load(table_meta)
+        return jsonify(status='success', code=200, message='load data succeed!')
+    else:
+        return jsonify(status='error', code=-1, message='sorry, but unsupported db type!')
 
 @API.route('/login', methods=['POST'])
 def login():
@@ -63,12 +89,12 @@ def dbs():
     """
     content = []
 
-    info = {}
-    info['id'] = '1'
-    info['name'] = 'nyc taxi'
-    info['type'] = 'spark'
-
-    content.append(info)
+    for _, db_instance in DB_MAP.items():
+        info = {}
+        info['id'] = db_instance.id()
+        info['name'] = db_instance.name()
+        info['type'] = db_instance.dbtype()
+        content.append(info)
 
     return jsonify(status='success', code=200, data=content)
 
@@ -81,8 +107,13 @@ def db_tables():
     """
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
-    content = nyctaxi_data.GLOBAL_TABLE_LIST
-    return jsonify(status="success", code=200, data=content)
+
+    for _, instance in DB_MAP.items():
+        if instance.id() == int(request.json['id']):
+            content = instance.table_list()
+            return jsonify(status="success", code=200, data=content)
+
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
 
 
 @API.route("/db/table/info", methods=['POST'])
@@ -97,14 +128,18 @@ def db_table_info():
 
     content = []
 
-    result = spark.Spark.run_for_json(
-        "desc table {}".format(request.json['table']))
+    for _, instance in DB_MAP.items():
+        if instance.id() == int(request.json['id']):
+            if request.json['table'] not in instance.table_list():
+                return jsonify(status="error", code=-1, message='the table {} is not in this db!'.format(request.json['table']))
+            result = instance.get_table_info(request.json['table'])
 
-    for row in result:
-        obj = json.loads(row)
-        content.append(obj)
+        for row in result:
+            obj = json.loads(row)
+            content.append(obj)
+        return jsonify(status="success", code=200, data=content)
 
-    return jsonify(status="success", code=200, data=content)
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
 
 
 @API.route("/db/query", methods=['POST'])
@@ -126,8 +161,16 @@ def db_query():
     content['sql'] = query_sql
     content['err'] = False
 
+    db_instance = None
+
+    for _, instance in DB_MAP.items():
+        if instance.id() == int(request.json['id']):
+            db_instance = instance
+    if db_instance is None:
+        return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+
     if query_type == 'sql':
-        res = spark.Spark.run_for_json(query_sql)
+        res = db_instance.run_for_json(query_sql)
         data = []
         for row in res:
             obj = json.loads(row)
@@ -138,7 +181,7 @@ def db_query():
             return jsonify(status='error', code=-1, message='query format error')
         query_params = request.json['query']['params']
 
-        res = spark.Spark.run(query_sql)
+        res = db_instance.run(query_sql)
 
         if query_type == 'point':
             vega = vega_pointmap(
