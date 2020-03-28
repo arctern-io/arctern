@@ -170,10 +170,11 @@ const MapboxGl: FC<MapChartProps> = props => {
       const overlayName = 'overlaySource';
       const imageSrc = map.getSource(overlayName);
       const coordinates = mapboxCoordinatesGetter(bounds);
-      imageSrc.updateImage({
-        url: d,
-        coordinates: coordinates,
-      });
+      imageSrc &&
+        imageSrc.updateImage({
+          url: d,
+          coordinates: coordinates,
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, mapLoaded]);

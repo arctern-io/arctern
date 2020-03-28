@@ -23,13 +23,18 @@ import {
   WidgetSettings,
 } from '../types';
 // define a dataNode type
-type dataNode = {id: string; type: string; config: WidgetConfig; node: InfiniNode<Transform>};
+type dataNode = {
+  id: string;
+  type: string;
+  config: WidgetConfig;
+  node: InfiniNode<Transform>;
+};
 
 const _getDataType = (dataNodeType: string): QueryType => {
   switch (dataNodeType) {
     case 'PointMap':
       return QueryType.point;
-    case 'HeatMap':
+    case 'GeoHeatMap':
       return QueryType.heat;
     case 'ChoroplethMap':
       return QueryType.choropleth;
@@ -39,7 +44,7 @@ const _getDataType = (dataNodeType: string): QueryType => {
 };
 const _getQueryParams = (dataNode: dataNode) => {
   const {type, config} = dataNode;
-  const {width, height, pointSize, colorKey, bounds = {}} = config;
+  const {width, height, pointSize, colorKey, bounds = {}, zoom = 5.36} = config;
   const {_sw = {}, _ne = {}} = bounds;
   const bounding_box = [_sw.lng, _sw.lat, _ne.lng, _ne.lat];
   let res = {
@@ -65,7 +70,7 @@ const _getQueryParams = (dataNode: dataNode) => {
         heat: {
           bounding_box,
           coordinate: 'EPSG:4326',
-          map_scale: 10,
+          map_scale: zoom,
         },
       };
     case QueryType.choropleth:
