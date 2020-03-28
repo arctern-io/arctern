@@ -44,7 +44,7 @@ void MaskResult::AppendFilter(const GeometryTypeScanner& scanner,
     if (status != Status::kMixed) {
       return;
     }
-    auto& mask = type_masks->get_mask(supported);
+    const auto& mask = type_masks->get_mask(supported);
     assert(mask.size() == this->mask_.size());
     bool has_true = false;
     for (auto i = 0; i < mask.size(); ++i) {
