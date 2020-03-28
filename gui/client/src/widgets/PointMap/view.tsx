@@ -218,7 +218,7 @@ const PointMapNormal: FC<PointMapProps> = props => {
         {...props}
         onMapUpdate={onMapUpdate}
         onDrawUpdate={onDrawUpdate}
-        // onMouseMove={onMouseMove}
+        onMouseMove={onMouseMove}
         onMouseOut={onMouseOut}
         draws={config.draws || []}
         allowPopUp={allowPopUp}

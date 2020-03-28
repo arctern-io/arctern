@@ -80,6 +80,7 @@ export const checkIsDraw = (filter: any) => {
   return ['st_distance', 'st_within'].some((t: string) => t === filter.expr.type);
 };
 
+//TODO: useless method, delete later
 export const drawsGlGetter = (config: any) => {
   const filterKeys = Object.keys(config.filter || {});
   const draws: any = [];
