@@ -138,6 +138,78 @@ for example:
 curl -X POST -H "Content-Type: application/json" -d '{"username":"zilliz", "password":"123456"}' http://127.0.0.1:8080/login
 ```
 
+### /load加载表数据
+
+method: POST
+token: yes
+
+`request.json`:
+
+```json
+{
+    "db_name": "db1",
+    "type": "spark",
+    "spark": {
+        "app_name": "arctern",
+        "master-addr": "local[*]",
+        "executor-python": "/home/ljq/miniconda3/envs/zgis_dev/bin/python",
+        "envs": {
+        }
+    },
+    "tables": [
+        {
+            "name": "old_nyc_taxi",
+            "format": "csv",
+            "path": "/home/ljq/work/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "options": {
+                "header": "True",
+                "delimiter": ","
+            },
+            "schema": [
+                {"VendorID": "string"},
+                {"tpep_pickup_datetime": "string"},
+                {"tpep_dropoff_datetime": "string"},
+                {"passenger_count": "long"},
+                {"trip_distance": "double"},
+                {"pickup_longitude": "double"},
+                {"pickup_latitude": "double"},
+                {"dropoff_longitude": "double"},
+                {"dropoff_latitude": "double"},
+                {"fare_amount": "double"},
+                {"tip_amount": "double"},
+                {"total_amount": "double"},
+                {"buildingid_pickup": "long"},
+                {"buildingid_dropoff": "long"},
+                {"buildingtext_pickup": "string"},
+                {"buildingtext_dropoff": "string"}
+            ],
+            "visibility": "False"
+        },
+        {
+            "name": "nyc_taxi",
+            "sql": "select VendorID, to_timestamp(tpep_pickup_datetime,'yyyy-MM-dd HH:mm:ss XXXXX') as tpep_pickup_datetime, to_timestamp(tpep_dropoff_datetime,'yyyy-MM-dd HH:mm:ss XXXXX') as tpep_dropoff_datetime, passenger_count, trip_distance, pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, fare_amount, tip_amount, total_amount, buildingid_pickup, buildingid_dropoff, buildingtext_pickup, buildingtext_dropoff from global_temp.old_nyc_taxi where (pickup_longitude between -180 and 180) and (pickup_latitude between -90 and 90) and (dropoff_longitude between -180 and 180) and  (dropoff_latitude between -90 and 90)",
+            "visibility": "True"
+        }
+    ]
+}
+```
+
+`response.json`:
+
+```json
+{
+    "code":200,
+    "message":"load data succeed!",
+    "status":"success"
+}
+```
+
+举个例子：
+
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YourToken" -d @./arctern/gui/server/db.json http://127.0.0.1:8080/load
+```
+
 ### /dbs 获取数据库列表
 
 method: GET

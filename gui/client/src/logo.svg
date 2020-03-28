@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="60 0 200 220" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 62 (91390) - https://sketch.com -->
+    <title>stack-white</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#4FC4F9" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#4FC4F9" offset="100%"></stop>
+        </linearGradient>
+        <polygon id="path-2" points="120 88 120 128 160 208 200 128 200 88 160 168"></polygon>
+    </defs>
+    <g id="stack-white" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon id="Path-2" fill="#FFFFFF" points="160 48 128 80 160 144 192 80"></polygon>
+        <g id="Path-3">
+            <use fill="#FFFFFF" xlink:href="#path-2"></use>
+            <use fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+        </g>
+        <text id="Arctern" font-family="NotoSansCJKsc-Medium, Noto Sans CJK SC" font-size="40" font-weight="400" letter-spacing="0.5" fill="#FFFFFF">
+            <tspan x="88" y="262">Arctern</tspan>
+        </text>
+    </g>
+</svg>

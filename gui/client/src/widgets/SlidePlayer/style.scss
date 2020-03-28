@@ -1,0 +1,46 @@
+.slide-player {
+  position: relative;
+
+  .status-wrapper {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  .content {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .control-wrapper {
+      width: 40px;
+      box-sizing: border-box;
+
+      .control-icon {
+        display: block;
+        margin-left: 20px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .tick line {
+    visibility: hidden;
+  }
+  .axis--x .domain {
+    display: none;
+  }
+
+  .brush {
+    .selection {
+      fill: #2196f3;
+      stroke: #2196f3;
+    }
+  }
+}
