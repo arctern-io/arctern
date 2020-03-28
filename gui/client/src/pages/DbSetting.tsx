@@ -123,7 +123,7 @@ const DbSetting: FC<RouteComponentProps> = props => {
     return <Spinner />;
   }
   const curr = localDb || dbs[0];
-  const cdds: DB[] = dbs.filter((d: any) => d.type === curr.type);
+  const cdds: DB_TYPE[] = dbs.filter((d: DB_TYPE) => d.type === curr.type);
   return (
     <div className={classes.dataBaseConfiger}>
       <div className={classes.title}>
