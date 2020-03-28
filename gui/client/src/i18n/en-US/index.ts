@@ -1,4 +1,4 @@
-import { WIDGET } from '../../utils/Consts';
+import {WIDGET} from '../../utils/Consts';
 const base = {
   label_x_axis: 'x axis',
   label_y_axis: 'y axis',
@@ -47,7 +47,9 @@ const nls = {
   label_name: 'Name',
   label_bi_reqfail_title: 'db connect faild',
   label_bi_reqfail_content: 'database config seems not valid ,please set an useful config',
-
+  // DB Setting
+  label_db_dbname: 'Database Name',
+  label_db_dbtype: 'Database Type',
   label_db_title: 'Database Config',
   label_db_ip: 'Database IP',
   label_dabasese_type: 'Database type',

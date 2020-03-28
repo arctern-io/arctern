@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import {FormControl, InputLabel} from '@material-ui/core';
 import Spinner from '../components/common/Spinner';
 import {authContext} from '../contexts/AuthContext';
 import {I18nContext} from '../contexts/I18nContext';
@@ -14,7 +15,7 @@ import {queryContext} from '../contexts/QueryContext';
 import {rootContext} from '../contexts/RootContext';
 import {DB_TYPE} from '../types';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: any) => ({
   dataBaseConfiger: {
     flexGrow: 1,
     display: 'flex',
@@ -25,7 +26,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
   },
   title: {
-    paddingLeft: '20px',
+    paddingLeft: theme.spacing(4),
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
@@ -33,10 +34,10 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
   },
   customDivider: {
-    marginBottom: '20px',
+    marginBottom: theme.spacing(4),
   },
   link: {
-    color: 'white',
+    color: '#fff',
     textDecoration: 'none',
   },
   paper: {
@@ -44,20 +45,20 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
   },
   form: {
-    paddingTop: '20px',
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'start',
-    alignItems: 'left',
+  },
+  control: {
+    margin: theme.spacing(0, 0, 3, 0),
   },
   buttonList: {
-    margin: '16px 0 20px 0',
+    margin: theme.spacing(3, 0, 0, 0),
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  submit: {},
 }));
 
 const DbSetting: FC<RouteComponentProps> = props => {
@@ -134,20 +135,26 @@ const DbSetting: FC<RouteComponentProps> = props => {
         <CssBaseline />
         <div className={classes.paper}>
           <div className={classes.form}>
-            <Select label={'DbType'} value={curr.type} onChange={onTypeChange}>
-              {dbs.map((db: DB) => (
-                <MenuItem value={db.type} key={db.type}>
-                  {db.type}
-                </MenuItem>
-              ))}
-            </Select>
-            <Select value={curr.id} onChange={onDBChange}>
-              {cdds.map((cdd: DB) => (
-                <MenuItem value={cdd.id} key={cdd.id}>
-                  {cdd.name}
-                </MenuItem>
-              ))}
-            </Select>
+            <FormControl classes={{root: classes.control}}>
+              <InputLabel shrink>{nls.label_db_dbtype}</InputLabel>
+              <Select value={curr.type} onChange={onTypeChange}>
+                {dbs.map((db: DB_TYPE) => (
+                  <MenuItem value={db.type} key={db.type}>
+                    {db.type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel shrink>{nls.label_db_dbname}</InputLabel>
+              <Select value={curr.id} onChange={onDBChange}>
+                {cdds.map((cdd: DB_TYPE) => (
+                  <MenuItem value={cdd.id} key={cdd.id}>
+                    {cdd.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <div className={classes.buttonList}>
               <Button
                 size="medium"
