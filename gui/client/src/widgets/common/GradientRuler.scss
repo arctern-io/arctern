@@ -1,0 +1,25 @@
+.gradient-ruler {
+  .ruler-minmax-text-hide {
+    visibility: hidden;
+  }
+  .fade {
+    .color {
+      opacity: 0.5;
+    }
+    .text {
+      visibility: hidden;
+    }
+    .show-item {
+      .color {
+        opacity: 1;
+        border: .2px solid #999
+      }
+      .text {
+        position:relative;
+        top:5px;
+        visibility: visible;
+        font-size: 14px;
+      }
+    }
+  }
+}

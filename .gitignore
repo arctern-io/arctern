@@ -154,3 +154,5 @@ tests/rundocker.sh
 tests/runlocal.sh
 tests/draw_map/test*.png
 
+#/gui/client
+node_modules
