@@ -450,3 +450,33 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
     }
 }
 ```
+
+权重图
+
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d @~/json/weighted_pointmap.json http://127.0.0.1:8080/db/query
+```
+
+其中`~/json/weighted_pointmap.json`的内容如下，sql语句中polygon只是样例，不是固定的，可根据需求构造。
+
+```json
+{
+    "id": "1",
+    "query": {
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "type": "weighted",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "weighted": {
+                "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+                "color": "blue_to_red",
+                "color_ruler": [0, 2],
+                "stroke_ruler": [0, 10],
+                "opacity": 1.0,
+                "coordinate": "EPSG:4326"
+            }
+        }
+    }
+}
+```

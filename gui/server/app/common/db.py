@@ -20,14 +20,15 @@ class DB(metaclass=ABCMeta):
     def dbtype(self):
         return self._db_type
 
-    def table_list(self):
-        return self._table_list
-
     def id(self):
-        return self._dbid
+        return self._db_id
 
     def name(self):
-        return self._dbname
+        return self._db_name
+
+    @abstractmethod
+    def table_list(self):
+        return self._table_list
 
     @abstractmethod
     def run(self, sqlstr):
