@@ -159,7 +159,6 @@ const DbSetting: FC<RouteComponentProps> = props => {
               <Button
                 size="medium"
                 variant="outlined"
-                className={classes.submit}
                 onClick={onSubmit}
               >
                 {nls.label_db_save}

@@ -77,10 +77,7 @@ export enum KEY {
 }
 
 export const checkIsDraw = (filter: any) => {
-  const {data} = filter;
-  const {isGeoJson, expr = {}} = data || filter;
-  const {geoJson} = expr;
-  return isGeoJson || geoJson;
+  return ['st_distance', 'st_within'].some((t: string) => t === filter.expr.type);
 };
 
 export const drawsGlGetter = (config: any) => {

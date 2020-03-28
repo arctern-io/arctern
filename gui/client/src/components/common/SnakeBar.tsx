@@ -97,8 +97,8 @@ const SnakeBar: FC<any> = (props: ISankeBarProps) => {
   return (
     <Snackbar
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: 'top',
+        horizontal: 'center',
       }}
       open={open}
       autoHideDuration={duration}
