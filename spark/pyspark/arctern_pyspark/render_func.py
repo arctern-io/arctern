@@ -44,9 +44,9 @@ def pointmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if coor != 'EPSG:3857':
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
     else:
-        df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
 
     vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -74,7 +74,7 @@ def weighted_pointmap(df, vega):
 
     if coor == 'EPSG:3857':
         if ("c" in df.schema.names and "s" in df.schema.names):
-            df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
+            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
             agg_schema = StructType([StructField('point', BinaryType(), True),
                                      StructField('c', IntegerType(), True),
                                      StructField('s', IntegerType(), True)])
@@ -95,7 +95,7 @@ def weighted_pointmap(df, vega):
             agg_df = agg_df.coalesce(1)
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'], agg_df['s'])).collect()[0][0]
         elif ("c" in df.schema.names and "s" not in df.schema.names):
-            df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('c'))
+            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'))
             agg_schema = StructType([StructField('point', BinaryType(), True),
                                      StructField('c', IntegerType(), True)])
             @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
@@ -115,7 +115,7 @@ def weighted_pointmap(df, vega):
             agg_df = agg_df.coalesce(1)
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'])).collect()[0][0]
         elif ("s" in df.schema.names and "c" not in df.schema.names):
-            df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('s'))
+            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('s'))
             agg_schema = StructType([StructField('point', BinaryType(), True),
                                      StructField('s', IntegerType(), True)])
             @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
@@ -135,7 +135,7 @@ def weighted_pointmap(df, vega):
             agg_df = agg_df.coalesce(1)
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['s'])).collect()[0][0]
         else:
-            df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
             def weighted_pointmap_wkb(point, conf=vega):
                 from arctern import weighted_point_map_wkb
@@ -147,7 +147,7 @@ def weighted_pointmap(df, vega):
 
 
     if ("c" in df.schema.names and "s" in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
         agg_schema = StructType([StructField('point', BinaryType(), True),
                                  StructField('c', IntegerType(), True),
                                  StructField('s', IntegerType(), True)])
@@ -168,7 +168,7 @@ def weighted_pointmap(df, vega):
         agg_df = agg_df.coalesce(1)
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'], agg_df['s'])).collect()[0][0]
     elif ("c" in df.schema.names and "s" not in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('c'))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'))
         agg_schema = StructType([StructField('point', BinaryType(), True),
                                  StructField('c', IntegerType(), True)])
         @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
@@ -188,7 +188,7 @@ def weighted_pointmap(df, vega):
         agg_df = agg_df.coalesce(1)
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'])).collect()[0][0]
     elif ("s" in df.schema.names and "c" not in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('s'))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('s'))
         agg_schema = StructType([StructField('point', BinaryType(), True),
                                  StructField('s', IntegerType(), True)])
         @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
@@ -208,7 +208,7 @@ def weighted_pointmap(df, vega):
         agg_df = agg_df.coalesce(1)
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['s'])).collect()[0][0]
     else:
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
         def weighted_pointmap_wkb(point, conf=vega):
             from arctern import weighted_point_map_wkb
@@ -229,9 +229,9 @@ def heatmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if coor != 'EPSG:3857':
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('w'))
     else:
-        df = df.select(Projection(col('point'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+        df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('w'))
 
     vega = vega.build()
     agg_schema = StructType([StructField('point', BinaryType(), True),
@@ -266,9 +266,9 @@ def choroplethmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
-        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
+        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
     else:
-        df = df.select(Projection(col('wkt'), lit(top_left), lit(bottom_right), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
+        df = df.select(Projection(col('wkt'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
 
     vega = vega.build()
     agg_schema = StructType([StructField('wkb', BinaryType(), True),

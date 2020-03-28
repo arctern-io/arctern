@@ -22,7 +22,6 @@ from flask import Flask
 from flask_cors import CORS
 
 from app import service as app_service
-from app.nyctaxi import data as nyctaxi_data
 from app.common import config
 
 APP = Flask(__name__)
@@ -66,8 +65,6 @@ if __name__ == '__main__':
             IP = arg
         elif opt == "-p":
             PORT = arg
-
-    nyctaxi_data.init()
 
     if not IS_DEBUG:
         from waitress import serve
