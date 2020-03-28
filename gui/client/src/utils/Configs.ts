@@ -130,7 +130,6 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   }
 
   // agg
-  console.info(config.measures)
   let measures: any[] = config.measures.map(m => {
     return {
       ...m,

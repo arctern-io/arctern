@@ -80,18 +80,6 @@ export const checkIsDraw = (filter: any) => {
   return ['st_distance', 'st_within'].some((t: string) => t === filter.expr.type);
 };
 
-//TODO: useless method, delete later
-export const drawsGlGetter = (config: any) => {
-  const filterKeys = Object.keys(config.filter || {});
-  const draws: any = [];
-  filterKeys.forEach((f: any) => {
-    if (checkIsDraw(config.filter[f])) {
-      draws.push({data: config.filter[f]});
-    }
-  });
-  return draws;
-};
-
 // Map related helpers
 export const mapboxCoordinatesGetter = (bounds: any) => {
   let northEast = [bounds._ne.lng, bounds._ne.lat];
