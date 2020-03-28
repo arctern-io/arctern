@@ -1,21 +1,23 @@
 import {cloneObj} from '../../utils/Helpers';
+import {orFilterGetter} from '../../utils/Filters';
 import {makeSetting} from '../../utils/Setting';
 import {CONFIG, COLUMN_TYPE, RequiredType} from '../../utils/Consts';
-import {KEY as MAPKEY, polygonFilterGetter, shapeFileGetter} from '../Utils/Map';
+import {KEY as MAPKEY} from '../Utils/Map';
 import {measureGetter, dimensionGetter, getExpression} from '../../utils/WidgetHelpers';
 import {ChoroplethMapConfig} from './types';
 import {MapMeasure} from '../common/MapChart.type';
 import {MeasureParams} from '../Utils/settingHelper';
 const onAddChoroplethMapColor = async ({measure, config, setConfig, reqContext}: MeasureParams) => {
-  const buildDimension = dimensionGetter(config, 'build');
+  const buildDimension = dimensionGetter(config, 'wkt');
   if (buildDimension) {
     const {as} = measure;
     let expression = getExpression(measure);
     // cause megawise is not working for text group subQuery at the moment, change to one Query when it's ready;
     const minSql = `SELECT ${expression} FROM ${config.source} GROUP BY ${buildDimension.value} ORDER BY ${as} ASC LIMIT 1`;
     const maxSql = `SELECT ${expression} FROM ${config.source} GROUP BY ${buildDimension.value} ORDER BY ${as} DESC LIMIT 1`;
-    const rulerBaseMin = await reqContext.generalRequest({sql: minSql, id: 'ruler-min'});
-    const rulerBaseMax = await reqContext.generalRequest({sql: maxSql, id: 'ruler-max'});
+    const rulerBaseMin = await reqContext.generalRequest(minSql);
+    const rulerBaseMax = await reqContext.generalRequest(maxSql);
+    console.info(rulerBaseMin, rulerBaseMax);
     const ruler = {min: rulerBaseMin[0][as], max: rulerBaseMax[0][as]};
     const rulerBase = {min: rulerBaseMin[0][as], max: rulerBaseMax[0][as]};
     setConfig({type: CONFIG.ADD_RULER, payload: ruler});
@@ -28,80 +30,48 @@ const choroplethMapConfigHandler = <ChoroplethMapConfig>(config: ChoroplethMapCo
   let newConfig = cloneObj(config);
   // Start: handle map bound
   if (!newConfig.bounds) {
-    return newConfig;
+    newConfig.bounds = {
+      _sw: {
+        lng: -73.5,
+        lat: 40.1,
+      },
+      _ne: {
+        lng: -70.5,
+        lat: 41.1,
+      },
+    };
   }
-
   let lon = measureGetter(newConfig, MAPKEY.LONGTITUDE) as MapMeasure;
   let lat = measureGetter(newConfig, MAPKEY.LATITUDE) as MapMeasure;
-  let colorM = measureGetter(newConfig, 'color');
-
+  let wkt = dimensionGetter(newConfig, 'wkt')!;
+  const {value, as, expression} = wkt;
+  let wktM = {
+    value,
+    as,
+    expression,
+  };
   if (!lon || !lat) {
     return newConfig;
   }
+  const {_sw, _ne} = newConfig.bounds;
+  let colorM = measureGetter(newConfig, 'color');
 
-  lon.domainStart = newConfig.bounds._sw.lng;
-  lon.domainEnd = newConfig.bounds._ne.lng;
-  lon.range = newConfig.width;
-  lat.domainStart = newConfig.bounds._sw.lat;
-  lat.domainEnd = newConfig.bounds._ne.lat;
-  lat.range = newConfig.height;
-
-  newConfig.selfFilter.xBounds = {
+  newConfig.selfFilter.bounds = {
     type: 'filter',
     expr: {
-      type: 'between',
-      field: lon.value,
-      left: lon.domainStart > lon.domainEnd ? lon.domainEnd : lon.domainStart,
-      right: lon.domainStart > lon.domainEnd ? lon.domainStart : lon.domainEnd,
+      type: 'st_within',
+      x: lon.value,
+      y: lat.value,
+      px: [_sw.lng, _sw.lng, _ne.lng, _ne.lng, _sw.lng],
+      py: [_sw.lat, _ne.lat, _ne.lat, _sw.lat, _sw.lat],
     },
   };
 
-  newConfig.selfFilter.yBounds = {
-    type: 'filter',
-    expr: {
-      type: 'between',
-      field: lat.value,
-      left: lat.domainStart > lat.domainEnd ? lat.domainEnd : lat.domainStart,
-      right: lat.domainStart > lat.domainEnd ? lat.domainStart : lat.domainEnd,
-    },
-  };
-
-  newConfig.filter = polygonFilterGetter(newConfig.filter);
-  //  End: handle map bound
+  newConfig.filter = orFilterGetter(newConfig.filter);
 
   // gen vega
-  newConfig.renderSelect = `plot_line_2d(pointers, color, '${vegaChoroplethMapGen(newConfig)}')`;
-  newConfig.renderAs = `vv(pointers, color)`;
-  newConfig.measures = [colorM];
+  newConfig.measures = [colorM, wktM];
   return newConfig;
-};
-
-const vegaChoroplethMapGen = (config: ChoroplethMapConfig) => {
-  const {width, height, colorKey, selfFilter, ruler} = config;
-  const geo_type_value = shapeFileGetter(config);
-  const {xBounds, yBounds} = selfFilter;
-
-  let vega: any = {
-    data: [
-      {name: 'render_type', values: ['building_weighted_2d']},
-      {
-        name: 'color_style',
-        values: [{style: colorKey, ruler: [ruler.min, ruler.max]}],
-      },
-      {
-        name: 'geo_type',
-        values: [geo_type_value],
-      },
-      {
-        name: 'bound_box',
-        values: [xBounds.expr.left, yBounds.expr.left, xBounds.expr.right, yBounds.expr.right],
-      },
-      {name: 'image_format', values: ['png']},
-    ],
-    height: Math.floor(height),
-    width: Math.floor(width),
-  };
-  return JSON.stringify(vega);
 };
 
 const settings = makeSetting<ChoroplethMapConfig>({
@@ -109,7 +79,7 @@ const settings = makeSetting<ChoroplethMapConfig>({
   dimensions: [
     {
       type: RequiredType.REQUIRED,
-      key: 'build',
+      key: 'wkt',
       short: 'building',
       isNotUseBin: true,
       columnTypes: [COLUMN_TYPE.NUMBER, COLUMN_TYPE.TEXT],
@@ -120,12 +90,14 @@ const settings = makeSetting<ChoroplethMapConfig>({
       type: RequiredType.REQUIRED,
       key: MAPKEY.LONGTITUDE,
       short: 'longtitude',
+      expressions: ['project'],
       columnTypes: [COLUMN_TYPE.NUMBER],
     },
     {
       type: RequiredType.REQUIRED,
       key: MAPKEY.LATITUDE,
       short: 'latitude',
+      expressions: ['project'],
       columnTypes: [COLUMN_TYPE.NUMBER],
     },
     {
@@ -133,6 +105,7 @@ const settings = makeSetting<ChoroplethMapConfig>({
       key: 'color',
       short: 'color',
       onAdd: onAddChoroplethMapColor,
+      expressions: ['project'],
       columnTypes: [COLUMN_TYPE.NUMBER],
     },
   ],

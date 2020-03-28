@@ -226,14 +226,8 @@ const QueryProvider: FC<{children: ReactNode}> = ({children}) => {
       });
   };
 
-  const generalRequest = ({id, sql}: any) => {
-    let url = URL.Query;
-    return axiosInstance
-      .post(url, {id: getConnId(), query: [{id, sql}]}, getAxiosConfig())
-      .then((res: any) => {
-        return res && res.data && res.data.data[0] && res.data.data[0].result;
-      })
-      .catch(errorParser);
+  const generalRequest = (sql: string) => {
+    return getData({sql, type: QueryType.sql});
   };
 
   // check if the browser is firefox

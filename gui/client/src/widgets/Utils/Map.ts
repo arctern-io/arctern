@@ -1,4 +1,4 @@
-import {parseExpression, measureGetter, dimensionGetter} from '../../utils/WidgetHelpers';
+import {measureGetter, dimensionGetter} from '../../utils/WidgetHelpers';
 import {MapChartConfig} from '../common/MapChart.type';
 
 // Map related consts
@@ -104,37 +104,6 @@ export const mapboxCoordinatesGetter = (bounds: any) => {
     [northEast[0], southWest[1]],
     [southWest[0], southWest[1]],
   ];
-};
-
-export const polygonFilterGetter = (filters: any = {}) => {
-  let newFilters: any = {},
-    mapDraws: any = [],
-    colorItems: any = [];
-
-  Object.keys(filters).forEach((f: any) => {
-    checkIsDraw(filters[f])
-      ? mapDraws.push(parseExpression(filters[f].expr))
-      : colorItems.push(parseExpression(filters[f].expr));
-  });
-  if (mapDraws.length > 0 && colorItems.length === 0) {
-    newFilters.polygon = {
-      type: 'filter',
-      expr: mapDraws.join(` OR `),
-    };
-  }
-  if (mapDraws.length === 0 && colorItems.length > 0) {
-    newFilters.polygon = {
-      type: 'filter',
-      expr: colorItems.join(` OR `),
-    };
-  }
-  if (mapDraws.length > 0 && colorItems.length > 0) {
-    newFilters.polygon = {
-      type: 'filter',
-      expr: `(${colorItems.join(` OR `)}) AND (${mapDraws.join(` OR `)})`,
-    };
-  }
-  return newFilters;
 };
 
 // used to create a center point
