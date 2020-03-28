@@ -123,9 +123,8 @@ CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_st
       break;
     }
     default: {
-      std::string msg = "cannot find color style";
-      // TODO: add log here
-      break;
+      std::string err_msg = "cannot find color style";
+      throw std::runtime_error(err_msg);
     }
   }
   return circle_params_2d;

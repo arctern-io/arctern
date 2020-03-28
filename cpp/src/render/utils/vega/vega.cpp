@@ -23,21 +23,20 @@ namespace render {
 
 bool Vega::JsonLabelCheck(rapidjson::Value& value, const std::string& label) {
   if (!value.HasMember(label.c_str())) {
-    // TODO: add log here
-    std::cout << "Cannot find label [" << label << "] !" << std::endl;
     is_valid_ = false;
-    return false;
+    std::string err_msg = "Cannot find label [" + label + "] !";
+    throw std::runtime_error(err_msg);
   }
   return true;
 }
 
 bool Vega::JsonSizeCheck(rapidjson::Value& value, const std::string& label, size_t size) {
   if (value.Size() != size) {
-    // TODO: add log here
-    std::cout << "Member [" << label << "].size should be " << size << ", but get "
-              << value.Size() << std::endl;
     is_valid_ = false;
-    return false;
+    std::string err_msg = "Member [" + label + "].size should be " +
+                          std::to_string(size) + ", but get " +
+                          std::to_string(value.Size());
+    throw std::runtime_error(err_msg);
   }
   return true;
 }
@@ -45,24 +44,21 @@ bool Vega::JsonSizeCheck(rapidjson::Value& value, const std::string& label, size
 bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
   if (type == rapidjson::Type::kNumberType) {
     if (!value.IsNumber()) {
-      // TODO: add log here
-      std::cout << "not number type" << std::endl;
       is_valid_ = false;
-      return false;
+      std::string err_msg = "not number type";
+      throw std::runtime_error(err_msg);
     }
   } else if (type == rapidjson::Type::kArrayType) {
     if (!value.IsArray()) {
-      // TODO: add log here
-      std::cout << "not array type" << std::endl;
       is_valid_ = false;
-      return false;
+      std::string err_msg = "not array type";
+      throw std::runtime_error(err_msg);
     }
   } else if (type == rapidjson::Type::kStringType) {
     if (!value.IsString()) {
-      // TODO: add log here
-      std::cout << "not string type" << std::endl;
       is_valid_ = false;
-      return false;
+      std::string err_msg = "not string type";
+      throw std::runtime_error(err_msg);
     }
   }
   return true;
@@ -70,10 +66,9 @@ bool Vega::JsonTypeCheck(rapidjson::Value& value, rapidjson::Type type) {
 
 bool Vega::JsonNullCheck(rapidjson::Value& value) {
   if (value.IsNull()) {
-    // TODO: add log here
-    std::cout << "null json value" << std::endl;
     is_valid_ = false;
-    return false;
+    std::string err_msg = "null json value";
+    throw std::runtime_error(err_msg);
   }
   return true;
 }

@@ -98,8 +98,8 @@ void ChoroplethMap<T>::Transform() {
         buildings_y_[i][j] = ring->getY(j);
       }
     } else {
-      // TODO: add log here
-      std::cout << "Unknown geometry type." << std::endl;
+      std::string err_msg = "Unknown geometry type";
+      throw std::runtime_error(err_msg);
     }
     OGRGeometryFactory::destroyGeometry(geometry);
   }
