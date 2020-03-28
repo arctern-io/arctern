@@ -1,7 +1,10 @@
-### Infini Client
+### Arctern GUI/Client
 > An Interactive Dashboard built with D3, React, Typescript
-
 ## Quick Start
+```
+vim src/utils/Endpoints.ts
+```
+* change endpoint to your server address
 ```
 npm/yarn install
 npm/yarn start
