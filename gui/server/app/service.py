@@ -15,8 +15,8 @@ limitations under the License.
 """
 
 import json
-from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap
-from arctern_pyspark import choroplethmap, heatmap, pointmap
+from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
+from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
 
 from flask import Blueprint, jsonify, request
 
@@ -39,16 +39,17 @@ def load():
 
     db_name = request.json['db_name']
     db_type = request.json['type']
+    table_meta = request.json['tables']
 
-    if db_name in DB_MAP:
-        db_instance = DB_MAP[db_name]
-        table_meta = request.json['tables']
+    for _, db_instance in DB_MAP.items():
+        if db_name == db_instance.name():
+            db_instance.load(table_meta)
+            return jsonify(status='success', code=200, message='load data succeed!')
+
+    if db_type == 'spark':
+        db_instance = spark.Spark(request.json)
         db_instance.load(table_meta)
-        return jsonify(status='success', code=200, message='load data succeed!')
-    elif db_type == 'spark':
-        DB_MAP[db_name] = spark.Spark(request.json)
-        table_meta = request.json['tables']
-        DB_MAP[db_name].load(table_meta)
+        DB_MAP[db_instance.id()] = db_instance
         return jsonify(status='success', code=200, message='load data succeed!')
     else:
         return jsonify(status='error', code=-1, message='sorry, but unsupported db type!')
@@ -108,10 +109,10 @@ def db_tables():
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
 
-    for _, instance in DB_MAP.items():
-        if instance.id() == int(request.json['id']):
-            content = instance.table_list()
-            return jsonify(status="success", code=200, data=content)
+    db_instance = DB_MAP.get(int(request.json['id']), None)
+    if db_instance:
+        content = db_instance.table_list()
+        return jsonify(status="success", code=200, data=content)
 
     return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
 
@@ -128,11 +129,11 @@ def db_table_info():
 
     content = []
 
-    for _, instance in DB_MAP.items():
-        if instance.id() == int(request.json['id']):
-            if request.json['table'] not in instance.table_list():
-                return jsonify(status="error", code=-1, message='the table {} is not in this db!'.format(request.json['table']))
-            result = instance.get_table_info(request.json['table'])
+    db_instance = DB_MAP.get(int(request.json['id']), None)
+    if db_instance:
+        if request.json['table'] not in db_instance.table_list():
+            return jsonify(status="error", code=-1, message='the table {} is not in this db!'.format(request.json['table']))
+        result = db_instance.get_table_info(request.json['table'])
 
         for row in result:
             obj = json.loads(row)
@@ -148,6 +149,7 @@ def db_query():
     """
     /db/query handler
     """
+    print(request.json)
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \
@@ -161,11 +163,7 @@ def db_query():
     content['sql'] = query_sql
     content['err'] = False
 
-    db_instance = None
-
-    for _, instance in DB_MAP.items():
-        if instance.id() == int(request.json['id']):
-            db_instance = instance
+    db_instance = DB_MAP.get(int(request.json['id']), None)
     if db_instance is None:
         return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
 
@@ -213,6 +211,19 @@ def db_query():
                 float(query_params['choropleth']['opacity']),
                 query_params['choropleth']['coordinate'])
             data = choroplethmap(res, vega)
+            content['result'] = data
+        elif query_type == 'weighted':
+            vega = vega_weighted_pointmap(
+                int(query_params['width']),
+                int(query_params['height']),
+                query_params['weighted']['bounding_box'],
+                query_params['weighted']['color'],
+                query_params['weighted']['color_ruler'],
+                query_params['weighted']['stroke_ruler'],
+                float(query_params['weighted']['opacity']),
+                query_params['weighted']['coordinate']
+            )
+            data = weighted_pointmap(res, vega)
             content['result'] = data
         else:
             return jsonify(status="error",
