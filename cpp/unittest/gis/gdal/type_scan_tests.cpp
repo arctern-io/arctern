@@ -47,7 +47,7 @@ TEST(type_scan, single_type_scan) {
   ASSERT_EQ(type_masks->is_unique_type, false);
 
   for (auto type : scanner.types()) {
-    auto& mask = type_masks->get_mask(type);
+    const auto& mask = type_masks->get_mask(type);
     auto uid = type_masks->get_encode_uid(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
     auto encode_uids = type_masks->encode_uids;
@@ -65,7 +65,7 @@ TEST(type_scan, single_type_scan) {
   }
   {
     GroupedWkbTypes type = {WkbTypes::kUnknown};
-    auto& mask = type_masks->get_mask(type);
+    const auto& mask = type_masks->get_mask(type);
     for (int i = 0; i < mask.size(); i++) {
       ASSERT_EQ(mask[i], false);
     }
@@ -88,7 +88,7 @@ TEST(type_scan, unknown_type) {
   auto range2 = cases.GetCaseIndexRange(WkbTypes::kMultiLineString);
   auto& encode_uids = type_masks->encode_uids;
   auto uid = type_masks->get_encode_uid(type);
-  auto& mask = type_masks->get_mask(type);
+  const auto& mask = type_masks->get_mask(type);
   for (int i = 0; i < mask.size(); i++) {
     if ((i >= range0.first && i < range0.second) ||
         (i >= range1.first && i < range1.second) ||
