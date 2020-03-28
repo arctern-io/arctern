@@ -695,7 +695,7 @@ void WeightedPointMap<T>::SetColor(T* ptr) {
 }
 
 template <typename T>
-void WeightedPointMap<T>::SetStroke(T *ptr) {
+void WeightedPointMap<T>::SetStroke(T* ptr) {
   if (ptr == nullptr) {
     std::string err_msg = "Error, nullptr while setting stroke";
     throw std::runtime_error(err_msg);
