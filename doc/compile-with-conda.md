@@ -57,6 +57,7 @@ channels:
   - conda-forge
 dependencies:
 - python
+- libnetcdf=4.7.3
 - gdal=3.0.4
 - pyarrow
 - gtest
