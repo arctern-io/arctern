@@ -22,6 +22,7 @@ import {
   Filters,
   WidgetSettings,
 } from '../types';
+
 // define a dataNode type
 type dataNode = {
   id: string;
@@ -114,7 +115,6 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   let aggTransform: Transform;
   let sortTransform: Transform;
   let limitTransform: Transform;
-  let grpLabelIndex = 0;
 
   config = cloneObj(config);
   // If no measure, put default measure for sql
@@ -130,29 +130,20 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   }
 
   // agg
-  let measures: any[] = config.measures.map((m: Measure) => {
-    return {
-      type: m.expression,
-      x: m.value,
-      field: m.value,
-      as: m.as,
-    };
-  });
+  let measures: any[] = config.measures.map((m: Measure) => ({
+    type: m.expression,
+    field: m.value,
+    as: m.as,
+  }));
 
   // non-bins groups
   const nonBinDimsExprs = config.dimensions
     .filter(d => !d.isBinned)
-    .map(d => {
-      let as = `key${grpLabelIndex}`;
-      grpLabelIndex++;
-      as = d.as || d.label || as;
-
-      return {
-        type: 'project',
-        expr: d.expression ? {...d, type: d.expression} : d.value,
-        as,
-      };
-    });
+    .map(d => ({
+      type: 'project',
+      expr: d.expression ? {...d, type: d.expression} : d.value, //TODO:
+      as: d.as,
+    }));
 
   // bin groups
   let binDims = config.dimensions.filter(d => d.isBinned);
@@ -162,22 +153,17 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   const numericBinDimsExprs = binDims
     .filter(b => !b.timeBin)
     .map(b => {
-      const {value, extent, maxbins = 0} = b;
-      let as = `key${grpLabelIndex}`;
-      as = b.as || b.label || as;
+      const {value, extent, maxbins = 0, as} = b;
       //alias, field, extent, maxbins
       return Helper.bin(as, value, extent as number[], maxbins);
     });
 
   const timeBinDimsExprs = timeBinDims.map(t => {
-    let as = `key${grpLabelIndex}`;
-    grpLabelIndex++;
-    as = t.as || t.label || as;
     if (t.extract) {
-      return Helper.alias(as, `${t.timeBin}(${t.value})`);
+      return Helper.alias(t.as, t.timeBin==='isodow' ?`date_format(${t.value}, 'e')` :`${t.timeBin}(${t.value})`);
     }
     return Helper.alias(
-      as,
+      t.as,
       t.timeBin === 'day' ? `date(${t.value})` : `trunc(${t.value}, '${t.timeBin}')`
     );
   });
@@ -188,7 +174,7 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   if (hasAggregate) {
     // transform agg
     aggTransform = Helper.aggregate([...nonBinDimsExprs, ...timeBinDimsExprs], measures);
-    // push bin groups
+    // push num bin groups
     Array.isArray(aggTransform.groupby) && aggTransform.groupby.push(...numericBinDimsExprs);
     // add to transform
     transform.push(aggTransform);
@@ -225,7 +211,7 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
     );
   }
   transform.push(xFilterExpr);
-  console.info(transform);
+  // console.info(transform);
   return transform;
 };
 
