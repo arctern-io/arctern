@@ -453,6 +453,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
       builder.AppendNull();
     } else if (geo->IsEmpty()) {
       CHECK_ARROW(builder.Append(wkt_geometries->GetString(i)));
+      OGRGeometryFactory::destroyGeometry(geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
       char* wkt = nullptr;
