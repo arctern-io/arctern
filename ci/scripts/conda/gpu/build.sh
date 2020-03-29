@@ -44,7 +44,6 @@ env
 logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
 conda activate arctern
-conda update -n arctern -c conda-forge --all
 
 if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
     conda config --add channels ${CONDA_CUSTOM_CHANNEL}
