@@ -69,7 +69,7 @@ const Limit = (props: ILimit) => {
   const value: number = config[attr] || min;
   const type = getActionType(attr);
   const delayCallback = (val: number) => {
-    setConfig({type, payload: val});
+    setConfig({type, payload: {[attr]: val}});
   };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -77,9 +77,6 @@ const Limit = (props: ILimit) => {
   };
 
   const onSlideChange = (event: ChangeEvent<{}>, val: number | number[]) => {
-    const delayCallback = (val: number) => {
-      setConfig({type, payload: val});
-    };
     changeSlider({val, immediateCallback: setInputNum, delayCallback});
   };
 

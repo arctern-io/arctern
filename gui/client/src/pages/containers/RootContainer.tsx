@@ -1,5 +1,5 @@
 import React, {FC, useContext} from 'react';
-import {BrowserRouter, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
 import {createMuiTheme, makeStyles} from '@material-ui/core/styles';
 import {ThemeProvider} from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -40,12 +40,14 @@ const RootContainer: FC = () => {
         <CssBaseline />
         <BrowserRouter>
           {isLogined && <Nav onAvatarClick={setUnauthStatus} />}
-          <Route path="/login" component={Login} />
-          <Route path="/config" component={DbSetting} />
-          <Route path="/" component={MainContainer} />
-          <Route exact path="/bi">
-            <Redirect to="/" />
-          </Route>
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/config" component={DbSetting} />
+            <Route path="/" component={MainContainer} />
+            <Route exact path="/bi">
+              <Redirect to="/" />
+            </Route>
+          </Switch>
         </BrowserRouter>
         <SnakeBar {...snakebar} />
         <InfoDialog {...dialog} />

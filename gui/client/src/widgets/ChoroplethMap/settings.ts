@@ -50,11 +50,21 @@ const choroplethMapConfigHandler = <ChoroplethMapConfig>(config: ChoroplethMapCo
     as,
     expression,
   };
-  if (!lon || !lat) {
-    return newConfig;
+  if (!newConfig.bounds) {
+    newConfig.bounds = {
+      _sw: {
+        lng: -73.5,
+        lat: 40.1,
+      },
+      _ne: {
+        lng: -70.5,
+        lat: 41.1,
+      },
+    };
+    // return newConfig;
   }
   const {_sw, _ne} = newConfig.bounds;
-  let colorM = measureGetter(newConfig, 'color');
+  let colorM = measureGetter(newConfig, 'w');
 
   newConfig.selfFilter.bounds = {
     type: 'filter',
@@ -102,7 +112,7 @@ const settings = makeSetting<ChoroplethMapConfig>({
     },
     {
       type: RequiredType.REQUIRED,
-      key: 'color',
+      key: 'm',
       short: 'color',
       onAdd: onAddChoroplethMapColor,
       expressions: ['project'],

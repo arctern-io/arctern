@@ -4,7 +4,6 @@ import Paper from '@material-ui/core/Paper';
 import mapboxgl from 'mapbox-gl';
 import MapboxGl from '../common/MapboxGl';
 import {queryContext} from '../../contexts/QueryContext';
-import {drawsGlGetter} from '../Utils/Map';
 import {mapUpdateConfigHandler, drawUpdateConfigHandler} from '../Utils/filters/map';
 import {CONFIG} from '../../utils/Consts';
 import {formatterGetter} from '../../utils/Formatters';
@@ -23,8 +22,6 @@ const ChoroplethMapView: FC<ChoroplethMapProps> = props => {
   const pointRequest = useRef<any>(null);
   const popup = useRef<any>(null);
 
-  // get draws
-  const draws = drawsGlGetter(config);
   // map update on bounds change
   const onMapUpdate = (map: any, container: any) => {
     const center = map.getCenter();
@@ -217,7 +214,7 @@ const ChoroplethMapView: FC<ChoroplethMapProps> = props => {
         onDrawUpdate={onDrawUpdate}
         onMouseMove={onMouseMove}
         onMouseOut={onMouseOut}
-        draws={draws}
+        draws={config.draws || []}
         allowPopUp={true}
         showRuler={false}
       />

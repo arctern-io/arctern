@@ -42,6 +42,7 @@ const featuresGetter = (drawTools: any) => {
 
 const MapboxGlDraw: FC<any> = props => {
   const {map, onDrawUpdate, draws} = props;
+  // console.info(draws);
   const drawToolCache = useRef<any>();
 
   const isFirstRun = useRef(true);
@@ -86,13 +87,11 @@ const MapboxGlDraw: FC<any> = props => {
     // add draws
     drawToolCache.current.deleteAll();
     draws.forEach((d: any) => {
-      if (d.data.isGeoJson) {
-        drawToolCache.current.add(d.data.expr.geoJson);
-      }
+      drawToolCache.current.add(d.data);
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(draws.map((d: any) => d.data.expr.geoJson.id))]);
+  }, [JSON.stringify(draws.map((d: any) => d.id))]);
 
   const onCicleClicked = (e: any) => {
     drawToolCache.current.changeMode('drag_circle');
