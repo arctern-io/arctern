@@ -130,14 +130,12 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
   }
 
   // agg
-  let measures: any[] = config.measures.map(m => {
+  let measures: any[] = config.measures.map((m: Measure) => {
     return {
-      ...m,
-      width: config.width,
-      height: config.height,
       type: m.expression,
       x: m.value,
       field: m.value,
+      as: m.as,
     };
   });
 
@@ -176,11 +174,8 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
     grpLabelIndex++;
     as = t.as || t.label || as;
     if (t.extract) {
-      // return Helper.alias(as, Helper.extract(t.timeBin as ExtractUnits, t.value));
       return Helper.alias(as, `${t.timeBin}(${t.value})`);
     }
-    // TODO: should this add extent in infinivis-cores?
-    // return Helper.alias(as, Helper.dateTrunc(t.timeBin as DateTruncUnits, `${t.value}::TIMESTAMP`));
     return Helper.alias(
       as,
       t.timeBin === 'day' ? `date(${t.value})` : `trunc(${t.value}, '${t.timeBin}')`
@@ -195,12 +190,9 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
     aggTransform = Helper.aggregate([...nonBinDimsExprs, ...timeBinDimsExprs], measures);
     // push bin groups
     Array.isArray(aggTransform.groupby) && aggTransform.groupby.push(...numericBinDimsExprs);
-
     // add to transform
     transform.push(aggTransform);
-  }
-
-  if (!hasAggregate && measures.length > 0) {
+  } else {
     measures.forEach((m: Measure) => {
       transform.push({
         type: 'project',
@@ -233,7 +225,7 @@ const _parseConfigToTransform = (config: WidgetConfig): Transform[] => {
     );
   }
   transform.push(xFilterExpr);
-  // console.info(transform);
+  console.info(transform);
   return transform;
 };
 
