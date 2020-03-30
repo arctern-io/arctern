@@ -30,7 +30,7 @@ namespace cuda {
 constexpr double inf = std::numeric_limits<double>::max();
 struct MinMax {
   DEVICE_RUNNABLE MinMax() : min(+inf), max(-inf) {}
-  DEVICE_RUNNABLE void update(double value) {
+  DEVICE_RUNNABLE void Update(double value) {
     min = value < min ? value : min;
     max = value > max ? value : max;
   }
@@ -46,9 +46,9 @@ class BoundingBox {
  public:
   DEVICE_RUNNABLE MinMax get_xs() const { return xs_; }
   DEVICE_RUNNABLE MinMax get_ys() const { return ys_; }
-  DEVICE_RUNNABLE void update(double2 value) {
-    xs_.update(value.x);
-    ys_.update(value.y);
+  DEVICE_RUNNABLE void Update(double2 value) {
+    xs_.Update(value.x);
+    ys_.Update(value.y);
   }
 
   DEVICE_RUNNABLE bool is_valid() {

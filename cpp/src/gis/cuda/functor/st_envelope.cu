@@ -62,7 +62,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
   BoundingBox bbox;
 
   for (auto iter = values_beg; iter < values_end; iter++) {
-    bbox.update(*iter);
+    bbox.Update(*iter);
   }
   auto xs = bbox.get_xs();
   auto ys = bbox.get_ys();
