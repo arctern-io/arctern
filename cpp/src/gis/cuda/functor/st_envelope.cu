@@ -20,9 +20,9 @@
 #include <limits>
 
 #include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/functor/bounding_box.h"
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
-#include "gis/cuda/functor/bounding_box.h"
 
 namespace arctern {
 namespace gis {
@@ -53,8 +53,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
       // fill multipoint size
       auto metas = input.get_meta_ptr(index);
       for (int i = 0; i < meta_size; ++i) {
-        meta_output[i] = metas[i]
-;
+        meta_output[i] = metas[i];
       }
     }
     return OutputInfo{tag, meta_size, value_size};

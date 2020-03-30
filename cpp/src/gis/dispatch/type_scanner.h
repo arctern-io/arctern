@@ -119,9 +119,10 @@ class MaskResult {
     this->AppendFilter(scanner, supported);
   }
   // bitwise append
-  void AppendFilter(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported_type);
-  void AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries, const GroupedWkbTypes& supported_type);
-
+  void AppendFilter(const GeometryTypeScanner& scanner,
+                    const GroupedWkbTypes& supported_type);
+  void AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries,
+                    const GroupedWkbTypes& supported_type);
 
   Status get_status() const { return status_; }
   const std::vector<bool>& get_mask() const { return mask_; }
