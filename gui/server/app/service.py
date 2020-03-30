@@ -15,10 +15,10 @@ limitations under the License.
 """
 
 import json
+from flask import Blueprint, jsonify, request
+
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
-
-from flask import Blueprint, jsonify, request
 
 from app import account
 from app.common import spark, token, utils
@@ -27,32 +27,36 @@ API = Blueprint('app_api', __name__)
 
 DB_MAP = {}
 
+def load_data(content):
+    if not utils.check_json(content, 'db_name') \
+        or not utils.check_json(content, 'type'):
+        return ('error', -1, 'no db_name or type field!')
+
+    db_name = content['db_name']
+    db_type = content['type']
+    table_meta = content['tables']
+
+    for _, db_instance in DB_MAP.items():
+        if db_name == db_instance.name():
+            db_instance.load(table_meta)
+            return ('success', 200, 'load data succeed!')
+
+    if db_type == 'spark':
+        db_instance = spark.Spark(content)
+        db_instance.load(table_meta)
+        DB_MAP[db_instance.id()] = db_instance
+        return ('success', 200, 'load data succeed!')
+
+    return ('error', -1, 'sorry, but unsupported db type!')
+
 @API.route('/load', methods=['POST'])
 @token.AUTH.login_required
 def load():
     """
     use this function to load data
     """
-    if not utils.check_json(request.json, 'db_name') \
-        or not utils.check_json(request.json, 'type'):
-        return jsonify(status='error', code=-1, message='no db_name or type field!')
-
-    db_name = request.json['db_name']
-    db_type = request.json['type']
-    table_meta = request.json['tables']
-
-    for _, db_instance in DB_MAP.items():
-        if db_name == db_instance.name():
-            db_instance.load(table_meta)
-            return jsonify(status='success', code=200, message='load data succeed!')
-
-    if db_type == 'spark':
-        db_instance = spark.Spark(request.json)
-        db_instance.load(table_meta)
-        DB_MAP[db_instance.id()] = db_instance
-        return jsonify(status='success', code=200, message='load data succeed!')
-    else:
-        return jsonify(status='error', code=-1, message='sorry, but unsupported db type!')
+    status, code, message = load_data(request.json)
+    return jsonify(status=status, code=code, message=message)
 
 @API.route('/login', methods=['POST'])
 def login():
@@ -114,7 +118,7 @@ def db_tables():
         content = db_instance.table_list()
         return jsonify(status="success", code=200, data=content)
 
-    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
 
 @API.route("/db/table/info", methods=['POST'])
@@ -140,7 +144,7 @@ def db_table_info():
             content.append(obj)
         return jsonify(status="success", code=200, data=content)
 
-    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
 
 @API.route("/db/query", methods=['POST'])
@@ -149,7 +153,6 @@ def db_query():
     """
     /db/query handler
     """
-    print(request.json)
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \
@@ -165,7 +168,7 @@ def db_query():
 
     db_instance = DB_MAP.get(int(request.json['id']), None)
     if db_instance is None:
-        return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+        return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
     if query_type == 'sql':
         res = db_instance.run_for_json(query_sql)

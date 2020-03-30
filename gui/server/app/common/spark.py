@@ -79,8 +79,8 @@ class Spark(db.DB):
         _df = self.run(sql)
         return _df.coalesce(1).toJSON().collect()
 
-    def load(self, table_meta):
-        for meta in table_meta:
+    def load(self, metas):
+        for meta in metas:
             if 'path' in meta and 'schema' in meta and 'format' in meta:
                 options = meta.get('options', None)
 
