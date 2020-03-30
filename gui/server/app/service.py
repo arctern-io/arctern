@@ -15,10 +15,10 @@ limitations under the License.
 """
 
 import json
+from flask import Blueprint, jsonify, request
+
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
-
-from flask import Blueprint, jsonify, request
 
 from app import account
 from app.common import spark, token, utils
@@ -46,8 +46,8 @@ def load_data(content):
         db_instance.load(table_meta)
         DB_MAP[db_instance.id()] = db_instance
         return ('success', 200, 'load data succeed!')
-    else:
-        return ('error', -1, 'sorry, but unsupported db type!')
+
+    return ('error', -1, 'sorry, but unsupported db type!')
 
 @API.route('/load', methods=['POST'])
 @token.AUTH.login_required
