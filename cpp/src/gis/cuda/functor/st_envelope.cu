@@ -22,6 +22,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
+#include "gis/cuda/functor/bounding_box.h"
 
 namespace arctern {
 namespace gis {
@@ -31,19 +32,6 @@ namespace {
 using DataState = GeometryVector::DataState;
 
 constexpr double inf = std::numeric_limits<double>::max();
-struct MinMax {
-  double min;
-  double max;
-  DEVICE_RUNNABLE void update(double x) {
-    if (x < min) {
-      min = x;
-    }
-    if (x > max) {
-      max = x;
-    }
-  }
-  DEVICE_RUNNABLE bool is_trivial() { return min == max; }
-};
 
 __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& input,
                                                       int index, GpuContext& results,
@@ -52,10 +40,6 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
   assert(tag.get_space_type() == WkbSpaceType::XY);
   auto values_beg = (const double2*)input.get_value_ptr(index);
   auto values_end = (const double2*)input.get_value_ptr(index + 1);
-  // generate bound from all values
-  // instead of switching by tags
-  MinMax final_x{+inf, -inf};
-  MinMax final_y{+inf, -inf};
 
   auto meta_output = results.get_meta_ptr(index);
   auto value2_output = reinterpret_cast<double2*>(results.get_value_ptr(index));
@@ -69,42 +53,46 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
       // fill multipoint size
       auto metas = input.get_meta_ptr(index);
       for (int i = 0; i < meta_size; ++i) {
-        meta_output[i] = metas[i];
+        meta_output[i] = metas[i]
+;
       }
     }
     return OutputInfo{tag, meta_size, value_size};
   }
 
-  for (auto iter = values_beg; iter < values_end; iter++) {
-    final_x.update(iter->x);
-    final_y.update(iter->y);
-  }
+  BoundingBox bbox;
 
-  if (final_x.is_trivial() && final_y.is_trivial()) {
+  for (auto iter = values_beg; iter < values_end; iter++) {
+    bbox.update(*iter);
+  }
+  auto xs = bbox.get_xs();
+  auto ys = bbox.get_ys();
+
+  if (xs.is_trivial() && ys.is_trivial()) {
     // just point
     if (!skip_write) {
-      value2_output[0].x = final_x.min;
-      value2_output[0].y = final_y.min;
+      value2_output[0].x = xs.min;
+      value2_output[0].y = ys.min;
     }
     return OutputInfo{WkbTypes::kPoint, 0, 2};
   }
 
-  if (final_x.is_trivial()) {
+  if (xs.is_trivial()) {
     if (!skip_write) {
       // points of line
       meta_output[0] = 2;
-      value2_output[0] = {final_x.min, final_y.min};
-      value2_output[1] = {final_x.min, final_y.max};
+      value2_output[0] = {xs.min, ys.min};
+      value2_output[1] = {xs.min, ys.max};
     }
     return OutputInfo{WkbTypes::kLineString, 1, 2 * 2};
   }
 
-  if (final_y.is_trivial()) {
+  if (ys.is_trivial()) {
     if (!skip_write) {
       // points of line
       meta_output[0] = 2;
-      value2_output[0] = {final_x.min, final_y.min};
-      value2_output[1] = {final_x.max, final_y.min};
+      value2_output[0] = {xs.min, ys.min};
+      value2_output[1] = {xs.max, ys.min};
     }
     return OutputInfo{WkbTypes::kLineString, 1, 2 * 2};
   }
@@ -116,11 +104,11 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
     // points of polygon
     meta_output[1] = 5;
     // fill value
-    value2_output[0] = {final_x.min, final_y.min};
-    value2_output[1] = {final_x.min, final_y.max};
-    value2_output[2] = {final_x.max, final_y.max};
-    value2_output[3] = {final_x.max, final_y.min};
-    value2_output[4] = {final_x.min, final_y.min};
+    value2_output[0] = {xs.min, ys.min};
+    value2_output[1] = {xs.min, ys.max};
+    value2_output[2] = {xs.max, ys.max};
+    value2_output[3] = {xs.max, ys.min};
+    value2_output[4] = {xs.min, ys.min};
   }
   return OutputInfo{WkbTypes::kPolygon, 2, 2 * 5};
 }
