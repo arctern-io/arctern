@@ -28,6 +28,14 @@ arctern\_pyspark.render\_func module
    :undoc-members:
    :show-inheritance:
 
+arctern\_pyspark.wrapper\_func module
+-------------------------------------
+
+.. automodule:: arctern_pyspark.wrapper_func
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

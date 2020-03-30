@@ -18,10 +18,11 @@
 # -- Project information -----------------------------------------------------
 import os
 import sys
+sys.path.insert(0, os.path.abspath('../../../spark/pyspark/arctern_pyspark'))
 project = 'arctern'
 copyright = '2020, zilliz'
 author = 'zilliz'
-sys.path.insert(0, os.path.abspath('../../../spark/pyspark/arctern_pyspark'))
+
 # The full version, including alpha/beta/rc tags
 release = '0.2.0'
 
