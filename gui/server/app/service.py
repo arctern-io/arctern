@@ -118,7 +118,7 @@ def db_tables():
         content = db_instance.table_list()
         return jsonify(status="success", code=200, data=content)
 
-    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
 
 @API.route("/db/table/info", methods=['POST'])
@@ -144,7 +144,7 @@ def db_table_info():
             content.append(obj)
         return jsonify(status="success", code=200, data=content)
 
-    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+    return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
 
 @API.route("/db/query", methods=['POST'])
@@ -153,7 +153,6 @@ def db_query():
     """
     /db/query handler
     """
-    print(request.json)
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \
@@ -169,7 +168,7 @@ def db_query():
 
     db_instance = DB_MAP.get(int(request.json['id']), None)
     if db_instance is None:
-        return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + request.json['id'])
+        return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
     if query_type == 'sql':
         res = db_instance.run_for_json(query_sql)
