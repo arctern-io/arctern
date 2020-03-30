@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <arrow/api.h>
+
 #include <cassert>
 #include <map>
 #include <memory>
@@ -115,14 +117,21 @@ class MaskResult {
   };
 
   MaskResult() = default;
-  MaskResult(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported) {
-    this->AppendFilter(scanner, supported);
+  MaskResult(const std::shared_ptr<arrow::StringArray>& geometries,
+             const GroupedWkbTypes& supported) {
+    this->AppendFilter(geometries, supported);
   }
-  // bitwise append
-  void AppendFilter(const GeometryTypeScanner& scanner, const GroupedWkbTypes& supported);
+
+  void AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries,
+                    const GroupedWkbTypes& supported_type);
 
   Status get_status() const { return status_; }
   const std::vector<bool>& get_mask() const { return mask_; }
+
+ private:
+  // bitwise append
+  void AppendFilter(const GeometryTypeScanner& scanner,
+                    const GroupedWkbTypes& supported_type);
 
  private:
   Status status_ = Status::kOnlyTrue;
