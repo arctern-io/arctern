@@ -19,7 +19,7 @@
 
 #include <arrow/api.h>
 
-#include "wkt_type_scanner.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 
 namespace arctern {
 namespace gis {
@@ -67,7 +67,7 @@ void MaskResult::AppendFilter(const GeometryTypeScanner& scanner,
 }
 
 void MaskResult::AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries,
-                  const GroupedWkbTypes& supported_types) {
+                              const GroupedWkbTypes& supported_types) {
   dispatch::TypeScannerForWkt scanner(geometries);
   scanner.mutable_types().push_back(supported_types);
   this->AppendFilter(scanner, supported_types);
