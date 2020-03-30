@@ -23,6 +23,7 @@ build:
 
 requirements:
   build:
+    - libnetcdf ==4.7.3
     - cmake>=3.14
     - gdal ==3.0.4
     - pyarrow ==0.16.0
@@ -32,6 +33,7 @@ requirements:
     - cudatoolkit {{ cuda_version }}.*
 
   run:
+    - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.16.0
     - rapidjson ==1.1.0
