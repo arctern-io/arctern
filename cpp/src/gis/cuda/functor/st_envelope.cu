@@ -31,8 +31,6 @@ namespace cuda {
 namespace {
 using DataState = GeometryVector::DataState;
 
-constexpr double inf = std::numeric_limits<double>::max();
-
 __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& input,
                                                       int index, GpuContext& results,
                                                       bool skip_write) {

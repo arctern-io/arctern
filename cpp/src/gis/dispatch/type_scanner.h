@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "gis/wkb_types.h"
+#include <arrow/api.h>
 
 namespace arctern {
 namespace gis {

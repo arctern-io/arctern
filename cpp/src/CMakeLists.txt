@@ -108,7 +108,7 @@ if (BUILD_WITH_GPU)
             ${third_party_libs}
             GL
             EGL
-            cudart
+            ${CUDA_LIBRARIES}
             )
 else ()
     set(third_party_libs
