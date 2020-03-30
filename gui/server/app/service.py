@@ -27,32 +27,36 @@ API = Blueprint('app_api', __name__)
 
 DB_MAP = {}
 
+def load_data(content):
+    if not utils.check_json(content, 'db_name') \
+        or not utils.check_json(content, 'type'):
+        return ('error', -1, 'no db_name or type field!')
+
+    db_name = content['db_name']
+    db_type = content['type']
+    table_meta = content['tables']
+
+    for _, db_instance in DB_MAP.items():
+        if db_name == db_instance.name():
+            db_instance.load(table_meta)
+            return ('success', 200, 'load data succeed!')
+
+    if db_type == 'spark':
+        db_instance = spark.Spark(content)
+        db_instance.load(table_meta)
+        DB_MAP[db_instance.id()] = db_instance
+        return ('success', 200, 'load data succeed!')
+    else:
+        return ('error', -1, 'sorry, but unsupported db type!')
+
 @API.route('/load', methods=['POST'])
 @token.AUTH.login_required
 def load():
     """
     use this function to load data
     """
-    if not utils.check_json(request.json, 'db_name') \
-        or not utils.check_json(request.json, 'type'):
-        return jsonify(status='error', code=-1, message='no db_name or type field!')
-
-    db_name = request.json['db_name']
-    db_type = request.json['type']
-    table_meta = request.json['tables']
-
-    for _, db_instance in DB_MAP.items():
-        if db_name == db_instance.name():
-            db_instance.load(table_meta)
-            return jsonify(status='success', code=200, message='load data succeed!')
-
-    if db_type == 'spark':
-        db_instance = spark.Spark(request.json)
-        db_instance.load(table_meta)
-        DB_MAP[db_instance.id()] = db_instance
-        return jsonify(status='success', code=200, message='load data succeed!')
-    else:
-        return jsonify(status='error', code=-1, message='sorry, but unsupported db type!')
+    status, code, message = load_data(request.json)
+    return jsonify(status=status, code=code, message=message)
 
 @API.route('/login', methods=['POST'])
 def login():
