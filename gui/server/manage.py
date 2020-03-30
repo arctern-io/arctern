@@ -17,13 +17,13 @@ limitations under the License.
 
 import getopt
 import sys
+from pathlib import Path
+import json
 
 from flask import Flask
 from flask_cors import CORS
 
 from app import service as app_service
-from app.nyctaxi import data as nyctaxi_data
-from app.common import config
 
 APP = Flask(__name__)
 
@@ -42,15 +42,17 @@ def usage():
     print('-r: production mode')
     print('-i: ip address')
     print('-p: http port')
+    print('-c: json config to be loaded')
 
 
 if __name__ == '__main__':
     IS_DEBUG = True
     IP = "0.0.0.0"
-    PORT = config.INSTANCE.get("http", "port")
+    PORT = 8080
+    JSON_CONFIG = None
 
     try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:')
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:')
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         usage()
@@ -66,8 +68,21 @@ if __name__ == '__main__':
             IP = arg
         elif opt == "-p":
             PORT = arg
+        elif opt == '-c':
+            JSON_CONFIG = arg
 
-    nyctaxi_data.init()
+    if JSON_CONFIG:
+        json_file = Path(JSON_CONFIG)
+        if not json_file.is_file():
+            print("error: config %s doesn't exist!" % (JSON_CONFIG))
+            sys.exit(0)
+        else:
+            with open(JSON_CONFIG, 'r') as f:
+                content = json.load(f)
+                status, code, message = app_service.load_data(content)
+                print(message)
+                if code != 200:
+                    sys.exit(0)
 
     if not IS_DEBUG:
         from waitress import serve

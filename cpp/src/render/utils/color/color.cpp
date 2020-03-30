@@ -40,9 +40,9 @@ void ColorParser::ParseHEX() {
     is_css_hex_color_ = true;
   } else {
     // TODO: add **INFO** log here
+    // std::cout << css_color_string_ << " is not an rgb color\n";
     // TODO: note, not throw error here, color string may also be a color_style
     is_css_hex_color_ = false;
-    std::cout << css_color_string_ << " is not an rgb color\n";
     return;
   }
 }

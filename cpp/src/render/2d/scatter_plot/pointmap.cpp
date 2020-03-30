@@ -15,6 +15,7 @@
  */
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -98,8 +99,8 @@ void PointMap::Shader() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -109,8 +110,8 @@ void PointMap::Shader() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -121,8 +122,8 @@ void PointMap::Shader() {
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
