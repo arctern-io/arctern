@@ -19,6 +19,12 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../../spark/pyspark/arctern_pyspark'))
+extensions = ['sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax']
 project = 'arctern'
 copyright = '2020, zilliz'
 author = 'zilliz'
