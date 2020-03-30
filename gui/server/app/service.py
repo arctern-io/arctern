@@ -153,7 +153,6 @@ def db_query():
     """
     /db/query handler
     """
-    print(request.json)
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \

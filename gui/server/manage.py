@@ -24,7 +24,6 @@ from flask import Flask
 from flask_cors import CORS
 
 from app import service as app_service
-from app.common import config
 
 APP = Flask(__name__)
 
