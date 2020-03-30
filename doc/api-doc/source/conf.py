@@ -18,17 +18,10 @@
 # -- Project information -----------------------------------------------------
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../../spark/pyspark/arctern_pyspark'))
-extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax']
 project = 'arctern'
 copyright = '2020, zilliz'
 author = 'zilliz'
-
+sys.path.insert(0, os.path.abspath('../../../spark/pyspark/arctern_pyspark'))
 # The full version, including alpha/beta/rc tags
 release = '0.2.0'
 
@@ -39,6 +32,12 @@ release = '0.2.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
