@@ -15,6 +15,7 @@
 project(ARCTERN LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.12)
+find_package(CUDAToolkit)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
 # get build time
@@ -68,8 +69,10 @@ if (BUILD_WITH_GPU)
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 14)
     find_package(CUDA 10 REQUIRED)
-    include_directories(${CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES})
-    link_directories(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+    message("cmake_include_dirs=${CUDAToolkit_INCLUDE_DIRS}")
+    message("cmake_libraries=${CUDAToolkit_LIBRARY_DIR}")
+    include_directories(${CUDAToolkit_INCLUDE_DIRS})
+    link_directories(${CUDAToolkit_LIBRARY_DIR})
     set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC -D_FORCE_INLINES")
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda")
 else()
