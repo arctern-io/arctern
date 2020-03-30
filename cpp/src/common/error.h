@@ -15,59 +15,23 @@
  */
 #pragma once
 
-#include <string>
-
-#include "render/engine/common/log.h"
-#include "zcommon/error/error.h"
-#include "zlibrary/error/error.h"
-
-#define RENDER_ENGINE_DOMAIN "RENDER ENGINE"
-
 namespace arctern {
-namespace render {
-namespace engine {
 
-using ErrorCode = arctern::common::ErrorCode;
+using ErrorCode = unsigned int;
 
-using arctern::lib::CUDA_SUCCESS;
-using arctern::lib::CudaException;
+constexpr ErrorCode ILLEGAL_VEGA_FORMAT = 5001;
+constexpr ErrorCode NULL_RENDER_OUTPUT = 5002;
+constexpr ErrorCode VALUE_TYPE_NOT_FOUND = 5003;
+constexpr ErrorCode INVALID_VEGA_DATA = 5004;
+constexpr ErrorCode UNKNOW_GEOMETYR_TYPE = 5005;
+constexpr ErrorCode FAILED_COMPILE_SHADER = 5006;
+constexpr ErrorCode FAILED_LINK_SHADER = 5007;
+constexpr ErrorCode COLOR_STYLE_NOT_FOUND = 5008;
+constexpr ErrorCode INVAILD_COLOR_FORMAT = 5009;
+constexpr ErrorCode LABEL_NOT_FOUND = 5010;
+constexpr ErrorCode FAILED_INIT_OSMESA = 5011;
 
-constexpr ErrorCode ERROR_CODE_BASE = 0x45000;
-constexpr ErrorCode ERROR_CODE_END = 0x46000;
+constexpr ErrorCode ILLEGAL_WKT_FORMAT = 6001;
+constexpr ErrorCode ILLEGAL_WKB_FORMAT = 6002;
 
-constexpr ErrorCode ToGlobalErrorCode(const ErrorCode error_code) {
-  return arctern::lib::ToGlobalErrorCode(error_code, ERROR_CODE_BASE);
-}
-
-constexpr ErrorCode UNKNOWN_PLAN_TYPE = ToGlobalErrorCode(0x001);
-constexpr ErrorCode ILLEGAL_VEGA_FORMAT = ToGlobalErrorCode(0x002);
-constexpr ErrorCode UNSUPPORTED_IMAGE_FORMAT = ToGlobalErrorCode(0x003);
-constexpr ErrorCode INPUT_NOT_FOUND = ToGlobalErrorCode(0x004);
-constexpr ErrorCode CREATE_RESPONSE_DATA_NULL = ToGlobalErrorCode(0x005);
-constexpr ErrorCode LABEL_NOT_FOUND = ToGlobalErrorCode(0x006);
-constexpr ErrorCode COLOR_STYLE_NOT_FOUND = ToGlobalErrorCode(0x007);
-constexpr ErrorCode VALUE_TYPE_NOT_FOUND = ToGlobalErrorCode(0x008);
-constexpr ErrorCode UNKNOWN_STRING_TYPE = ToGlobalErrorCode(0x009);
-constexpr ErrorCode ILLEGAL_COLUMN_TYPE = ToGlobalErrorCode(0x00a);
-constexpr ErrorCode ILLEGAL_WINDOW_SIZE = ToGlobalErrorCode(0x00b);
-constexpr ErrorCode NULL_PTR = ToGlobalErrorCode(0x00c);
-constexpr ErrorCode CAST_FAILED = ToGlobalErrorCode(0x00d);
-constexpr ErrorCode FILE_PATH_NOT_FOUND = ToGlobalErrorCode(0x00e);
-constexpr ErrorCode UNINITIALIZED = ToGlobalErrorCode(0x00f);
-
-class RenderEngineException : public arctern::common::Exception {
- public:
-  explicit RenderEngineException(ErrorCode error_code,
-                                 const std::string& message = nullptr)
-      : Exception(error_code, RENDER_ENGINE_DOMAIN, message) {}
-};
-
-}  // namespace engine
-}  // namespace render
 }  // namespace arctern
-
-#define THROW_RENDER_ENGINE_ERROR(err_code, err_msg) \
-  do {                                               \
-    RENDER_ENGINE_LOG_ERROR << err_msg;              \
-    throw RenderEngineException(err_code, err_msg);  \
-  } while (false);

@@ -1,7 +1,7 @@
 {
   "width": 300,
   "height": 200,
-  "description": "circle_2d",
+  "description": "pointmap",
   "data": [
     {
       "name": "nyc_taxi",
@@ -24,10 +24,12 @@
     {
       "encode": {
         "enter": {
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
           "stroke": {"value": "#EE113D"},
           "strokeWidth": {"value": 3},
-          "opacity": {"value": 0.5}
+          "opacity": {"value": 0.5},
+          "coordinate_system": {"value": "EPSG:3857"}
         }
       }
     }
@@ -38,7 +40,7 @@
 {
   "width": 300,
   "height": 200,
-  "description": "circle_2d",
+  "description": "weighted_pointmap",
   "data": [
     {
       "name": "nyc_taxi",
@@ -61,7 +63,49 @@
     {
       "encode": {
         "enter": {
-          "map_scale": {"value": 10}
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+          "shape": {"value": "circle"},
+          "color": {"value": "blue_to_red"}, //{"value": "#EE113D"},
+          "color_ruler": {"value": [2.5, 5]},
+          "stroke_ruler": {"value": [2.5, 5]},
+          "opacity": {"value": 1.0},
+          "coordinate_system": {"value": "EPSG:3857"}
+        }
+      }
+    }
+  ]
+}
+
+
+{
+  "width": 300,
+  "height": 200,
+  "description": "heatmap",
+  "data": [
+    {
+      "name": "nyc_taxi",
+      "url": "data/nyc_taxi_0_5m.csv"
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "longitude_pickup"}
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "latitude_pickup"}
+    }
+  ],
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+          "map_scale": {"value": 10},
+          "coordinate_system": {"value": "EPSG:3857"}
         }
       }
     }
@@ -90,10 +134,11 @@
     {
       "encode": {
         "enter": {
-          "bounding_box": {"value": [-73.984092,40.753893,-73.977588,40.756342]},
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "color_style": {"value": "blue_to_red"},
           "ruler": {"value": [2.5, 5]},
-          "opacity": {"value": 1.0}
+          "opacity": {"value": 1.0},
+          "coordinate_system": {"value": "EPSG:3857"}
         }
       }
     }

@@ -77,4 +77,16 @@ def split_all(folder):
 if __name__ == '__main__':
     # split_data('./data/area.csv')
     # split_data('./data/crosses.csv')
-    split_all('./data')
+    # split_all('./data')
+    dirpath = sys.argv[1]
+    arr = os.listdir(dirpath)
+    for a in arr:
+        file_path = os.path.join(dirpath, a)
+        if os.path.isfile(file_path):
+            # print(file_path)
+
+            with open(file_path, 'r') as f:
+                content = f.read().strip()
+            
+            with open(file_path, 'w') as f:
+                f.write(content)

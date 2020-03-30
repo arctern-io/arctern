@@ -1,9 +1,0 @@
-name: zgis_dev
-dependencies:
-- conda-forge::gdal=3.0.4
-- conda-forge::pyarrow
-- conda-forge::gtest
-- conda-forge::rapidjson
-- conda-forge::Cython
-- conda-forge::pytest
-- conda-forge::pylint

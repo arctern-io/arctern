@@ -17,16 +17,6 @@
 
 #include "render/utils/color/color_gradient.h"
 
-#define WHITE 0xFFFFFF;
-#define YELLOW 0xFFFF00;    //  :255,255,0
-#define ORANGE 0xFF7D00;    //  :255,125,0
-#define PURPLE 0xFF00FF;    //  :255,0,25
-#define RED 0xFF0000;       //  :255,0,0
-#define CYANBLUE 0x00FFFF;  //  :0,255,255
-#define GREEN 0x00FF00;     //  :0,255,0
-#define BLUE 0x0000FF;      //  :0,0,255
-#define SKYBLUE 0xB4E7F5;
-
 #define TRANSPARENCY 0.5f
 
 namespace arctern {
@@ -64,30 +54,6 @@ void ColorGradient::getColorAtValue(const float value, float& red, float& green,
   return;
 }
 
-void HexToRGB(int64_t color, CircleParams& circle_params_2d, ColorStyle color_style) {
-  switch (color_style) {
-    case ColorStyle::kBlueToRed:
-    case ColorStyle::kPurpleToYellow:
-    case ColorStyle::kSkyBlueToWhite:
-      circle_params_2d.color.r = (color >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (color >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (color & 0xff) / 255.0f;
-      break;
-    case ColorStyle::kBlueTransParency:
-    case ColorStyle::kRedTransParency: {
-      circle_params_2d.color.r = (color >> 16 & 0xff) / 255.0f;
-      circle_params_2d.color.g = (color >> 8 & 0xff) / 255.0f;
-      circle_params_2d.color.b = (color & 0xff) / 255.0f;
-      break;
-    }
-    default: {
-      std::string msg = "cannot find color style";
-      // TODO: add log here
-      break;
-    }
-  }
-}
-
 CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_style,
                                             double ratio) {
   CircleParams circle_params_2d;
@@ -108,25 +74,24 @@ CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_st
       break;
     }
     case ColorStyle::kSkyBlueToWhite: {
-      int64_t sky_blue = SKYBLUE;
       circle_params_2d.color.a = 1.0;
-      circle_params_2d.color.r = ((255 - (sky_blue >> 16 & 0xff)) * ratio) / 255.0f;
-      circle_params_2d.color.g = ((255 - (sky_blue >> 8 & 0xff)) * ratio) / 255.0f;
-      circle_params_2d.color.b = ((255 - (sky_blue & 0xff)) * ratio) / 255.0f;
+      circle_params_2d.color.r = (180 + ((255 - 180) * ratio)) / 255.0f;
+      circle_params_2d.color.g = (231 + ((255 - 231) * ratio)) / 255.0f;
+      circle_params_2d.color.b = (245 + ((255 - 245) * ratio)) / 255.0f;
       break;
     }
     case ColorStyle::kRedTransParency: {
-      int64_t red_lp = RED;
       circle_params_2d.color.a = ratio + TRANSPARENCY;
-
-      HexToRGB(red_lp, circle_params_2d, color_style);
+      circle_params_2d.color.r = 1.0f;
+      circle_params_2d.color.g = 0.0f;
+      circle_params_2d.color.b = 0.0f;
       break;
     }
     case ColorStyle::kBlueTransParency: {
-      int64_t blue_lp = BLUE;
       circle_params_2d.color.a = ratio + TRANSPARENCY;
-
-      HexToRGB(blue_lp, circle_params_2d, color_style);
+      circle_params_2d.color.r = 0.0f;
+      circle_params_2d.color.g = 0.0f;
+      circle_params_2d.color.b = 1.0f;
       break;
     }
     case ColorStyle::kBlueGreenYellow: {
@@ -158,9 +123,8 @@ CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_st
       break;
     }
     default: {
-      std::string msg = "cannot find color style";
-      // TODO: add log here
-      break;
+      std::string err_msg = "cannot find color style";
+      throw std::runtime_error(err_msg);
     }
   }
   return circle_params_2d;

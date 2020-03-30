@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <iostream>
+#include <string>
 #include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -45,9 +46,6 @@ template class HeatMap<float>;
 template class HeatMap<double>;
 
 template <typename T>
-HeatMap<T>::HeatMap() : vertices_x_(nullptr), vertices_y_(nullptr), num_vertices_(0) {}
-
-template <typename T>
 HeatMap<T>::HeatMap(uint32_t* input_x, uint32_t* input_y, T* count, int64_t num_vertices)
     : vertices_x_(input_x),
       vertices_y_(input_y),
@@ -59,13 +57,6 @@ HeatMap<T>::~HeatMap() {
   free(vertices_x_);
   free(vertices_y_);
   free(colors_);
-}
-
-template <typename T>
-void HeatMap<T>::InputInit() {
-  array_vector_ = input().array_vector;
-  VegaHeatMap vega_heatmap(input().vega);
-  heatmap_vega_ = vega_heatmap;
 }
 
 template <typename T>
@@ -124,6 +115,7 @@ void HeatMap<T>::Draw() {
 #endif
 }
 
+#ifdef USE_GPU
 template <typename T>
 void HeatMap<T>::Shader() {
   const char* vertexShaderSource =
@@ -156,27 +148,33 @@ void HeatMap<T>::Shader() {
   glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShader);
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
+#endif
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   glCompileShader(fragmentShader);
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
+#endif
   int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+#ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
+#endif
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
@@ -218,10 +216,10 @@ void HeatMap<T>::Shader() {
   glUniform2f(3, window()->window_params().width(), window()->window_params().height());
   glBindVertexArray(VAO_);
 }
+#endif
 
 template <typename T>
 uint8_t* HeatMap<T>::Render() {
-  //    InputInit();
   WindowsInit(heatmap_vega_.window_params());
   DataInit();
 #ifdef USE_GPU

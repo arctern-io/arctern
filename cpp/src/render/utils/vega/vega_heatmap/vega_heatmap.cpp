@@ -22,21 +22,18 @@ namespace render {
 
 VegaHeatMap::VegaHeatMap(const std::string& json) { Parse(json); }
 
-std::string VegaHeatMap::Build() {
-  // TODO: add Build() api to build a vega json string.
-  return "";
-}
-
 void VegaHeatMap::Parse(const std::string& json) {
   rapidjson::Document document;
   document.Parse(json.c_str());
 
   if (document.Parse(json.c_str()).HasParseError()) {
-    printf("json format error\n");
-    return;
+    is_valid_ = false;
+    std::string err_msg = "json format error";
+    throw std::runtime_error(err_msg);
   }
 
   if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
+      !JsonNullCheck(document["width"]) || !JsonNullCheck(document["height"]) ||
       !JsonTypeCheck(document["width"], rapidjson::Type::kNumberType) ||
       !JsonTypeCheck(document["height"], rapidjson::Type::kNumberType)) {
     return;

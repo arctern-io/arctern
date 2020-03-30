@@ -9,7 +9,7 @@ fi
 
 if [[ "$UPLOAD_LIBARCTERN" == "1" || "$UPLOAD_ARCTERN" == "1" || "$UPLOAD_ARCTERN_SPARK" == "1" ]]; then
     if [ -d ${CONDA_PREFIX}/conda-bld ];then
-        tar -zcvf ./conda-bld.tar.gz -C ${CONDA_PREFIX}/ conda-bld
+        tar -zcf ./conda-bld.tar.gz -C ${CONDA_PREFIX}/ conda-bld
         curl -u${JFROG_USENAME:-arctern}:${UPLOAD_PACKAGE_FILE_KEY} -T ./conda-bld.tar.gz ${ARTFACTORY_URL}/conda-bld.tar.gz
         rm ./conda-bld.tar.gz
     fi

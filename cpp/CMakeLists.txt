@@ -44,7 +44,8 @@ endif ()
 # get last commit id
 MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
     execute_process(COMMAND sh "-c" "git log --decorate | head -n 1 | awk '{print $2}'"
-            OUTPUT_VARIABLE ${LAST_COMMIT_ID})
+        WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE     ${LAST_COMMIT_ID})
 ENDMACRO(GET_LAST_COMMIT_ID)
 
 GET_LAST_COMMIT_ID(LAST_COMMIT_ID)
@@ -117,7 +118,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 else()
     message(STATUS "Building Debug version")
-    add_definitions(-DWRITE_IMAGE)
+    add_definitions(-DDEBUG_RENDER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
 endif()
 
@@ -144,6 +145,18 @@ set(CONDA_PREFIX "$ENV{CONDA_PREFIX}")
 message(STATUS "conda_prefix = " ${CONDA_PREFIX})
 include_directories(${CONDA_PREFIX}/include)
 link_directories(${CONDA_PREFIX}/lib)
+
+if (USE_CCACHE)
+    find_program(CCACHE_FOUND ccache)
+    if (CCACHE_FOUND)
+        message(STATUS "Using ccache: ${CCACHE_FOUND}")
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_FOUND})
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_FOUND})
+        # let ccache preserve C++ comments, because some of them may be
+        # meaningful to the compiler
+        set(ENV{CCACHE_COMMENTS} "1")
+    endif (CCACHE_FOUND)
+endif ()
 
 if (BUILD_UNITTEST STREQUAL "ON")
     if (BUILD_COVERAGE STREQUAL "ON")
