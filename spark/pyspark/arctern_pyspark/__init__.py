@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#from ._wrapper_func import *
 from .register import register_funcs
 from .render_func import *
 from .gis_func import *
