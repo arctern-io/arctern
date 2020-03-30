@@ -35,7 +35,7 @@ struct MinMax {
     max = value > max ? value : max;
   }
   DEVICE_RUNNABLE bool is_trivial() const { return min == max; }
-  DEVICE_RUNNABLE bool is_valid() const { return min < max; }
+  DEVICE_RUNNABLE bool is_valid() const { return min <= max; }
 
  public:
   double min;
@@ -49,6 +49,11 @@ class BoundingBox {
   DEVICE_RUNNABLE void update(double2 value) {
     xs_.update(value.x);
     ys_.update(value.y);
+  }
+
+  DEVICE_RUNNABLE bool is_valid() {
+    assert(xs_.is_valid() == ys_.is_valid());
+    return xs_.is_valid();
   }
 
  private:
