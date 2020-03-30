@@ -3,15 +3,12 @@ import {useTheme} from '@material-ui/core/styles';
 import {CONFIG} from '../../utils/Consts';
 import {GeoHeatMapProps} from './types';
 import MapboxGl from '../common/MapboxGl';
-import {drawsGlGetter} from '../Utils/Map';
 import {mapUpdateConfigHandler, drawUpdateConfigHandler} from '../Utils/filters/map';
 
 const GeoHeatMapView: FC<GeoHeatMapProps> = props => {
   const theme = useTheme();
   const {config, setConfig} = props;
 
-  // get draws
-  const draws = drawsGlGetter(config);
   // map update on bounds change
   const onMapUpdate = (map: any, container: any) => {
     const center = map.getCenter();
@@ -45,7 +42,12 @@ const GeoHeatMapView: FC<GeoHeatMapProps> = props => {
         backgroundColor: theme.palette.background.paper,
       }}
     >
-      <MapboxGl {...props} onMapUpdate={onMapUpdate} onDrawUpdate={onDrawUpdate} draws={draws} />
+      <MapboxGl
+        {...props}
+        onMapUpdate={onMapUpdate}
+        onDrawUpdate={onDrawUpdate}
+        draws={config.draws || []}
+      />
     </div>
   );
 };

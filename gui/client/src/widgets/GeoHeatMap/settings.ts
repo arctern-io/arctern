@@ -36,7 +36,7 @@ const geoHeatMapConfigHandler: ConfigHandler<GeoHeatMapConfig> = config => {
 
   let lon = dimensionGetter(newConfig, KEY.LONGTITUDE) as MapDimension;
   let lat = dimensionGetter(newConfig, KEY.LATITUDE) as MapDimension;
-  let color = measureGetter(newConfig, "color");
+  let color = measureGetter(newConfig, "w");
 
   if (!lon || !lat) {
     return newConfig;
@@ -92,7 +92,7 @@ const settings = makeSetting<GeoHeatMapConfig>({
   measures: [
     {
       type: RequiredType.REQUIRED,
-      key: "color",
+      key: "w",
       short: "color",
       onAdd: onAddColor,
       expressions: ['project'],

@@ -47,7 +47,9 @@ const nls = {
   label_name: '名称',
   label_bi_reqfail_title: '数据库请求失败',
   label_bi_reqfail_content: '数据库链接失败，请配置有效数据库信息',
-
+  // DB Setting
+  label_db_dbname: '数据库名称',
+  label_db_dbtype: '数据库类型',
   label_db_title: '数据库配置',
   label_db_ip: '数据库IP地址',
   label_dabasese_type: '数据库类型',

@@ -20,7 +20,7 @@ import {
 import {CONFIG} from '../../utils/Consts';
 import {cloneObj} from '../../utils/Helpers';
 import {delayRunFunc} from '../../utils/EditorHelper';
-import {drawsGlGetter, markerPosGetter, KEY} from '../Utils/Map';
+import {markerPosGetter, KEY} from '../Utils/Map';
 import {mapUpdateConfigHandler, drawUpdateConfigHandler} from '../Utils/filters/map';
 import {DEFAULT_COLOR, genColorGetter, isGradientType} from '../../utils/Colors';
 const PointMapNormal: FC<PointMapProps> = props => {
@@ -36,7 +36,6 @@ const PointMapNormal: FC<PointMapProps> = props => {
   const marker = useRef<any>(null);
   const pointRequest = useRef<any>(null);
   // get draws
-  const draws = drawsGlGetter(config);
   const copiedConfig = cloneObj(config);
   const {popupItems = [], measures = []} = copiedConfig;
   const [allowPopUp, setAllowPopUp] = useState(popupItems.length + measures.length > 0);
@@ -219,9 +218,9 @@ const PointMapNormal: FC<PointMapProps> = props => {
         {...props}
         onMapUpdate={onMapUpdate}
         onDrawUpdate={onDrawUpdate}
-        onMouseMove={onMouseMove}
+        // onMouseMove={onMouseMove}
         onMouseOut={onMouseOut}
-        draws={draws}
+        draws={config.draws || []}
         allowPopUp={allowPopUp}
       />
       <Paper className="z-map-info-container" ref={paperRef}>

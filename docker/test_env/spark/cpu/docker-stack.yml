@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  spark-master:
+    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    networks:
+      - default
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 200M
+    configs:
+      - source: spark-defaults-conf
+        target: /opt/spark/conf/spark-defaults.conf
+  spark-worker:
+    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - test-volume:${LOCAL_PATH}
+    networks:
+      - default
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1200M
+        reservations:
+          cpus: '0.5'
+          memory: 200M
+
+configs:
+  spark-defaults-conf:
+    file: ./spark-defaults.conf
+    # external: true
+
+volumes:
+  test-volume:
+    driver_opts:
+      type: "cifs"
+      o: "vers=1.0,username=${CIFS_USERNAME},password=${CIFS_PASSWORD}"
+      device: "${NETWORK_PATH}"
+
+networks:
+  default:
+    driver: overlay
+    attachable: true

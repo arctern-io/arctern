@@ -1,6 +1,7 @@
 .z-bar-chart {
   padding-right: 10px;
   height: 100%;
+  position: relative;
   .row {
     fill-opacity: 0.8;
     &.unselected {
