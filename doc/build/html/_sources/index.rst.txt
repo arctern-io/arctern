@@ -10,7 +10,6 @@ Welcome to arctern's documentation!
    :maxdepth: 8
    :caption: Contents:
 
-arctern
 
 Indices and tables
 ==================
