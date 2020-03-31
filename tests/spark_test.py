@@ -1263,7 +1263,7 @@ def run_test_st_astext(spark):
 if __name__ == "__main__":
     url = 'local'
     spark_session = SparkSession.builder.appName(
-        "Python zgis sample").master(url).getOrCreate()
+        "Python zgis sample").getOrCreate()
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
     clear_result_dir('/tmp/results')
