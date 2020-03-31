@@ -4,23 +4,6 @@
 
 ## 代码结构
 
-## 配置文件
-
-conf/config.init为配置文件，可以根据情况自行修改，其中：
-
-```bash
-[http]
-port = 8080          # http服务器的监听端口
-
-[spark]
-# lcoal[*]  local mode
-# yarn      hadoop/yarn mode, need env YARN_CONF_DIR and HADOOP_CONF_DIR
-master-addr = local[*]
-# python path for executor
-executor-python = /home/gxz/miniconda3/envs/arctern/bin/python
-
-```
-
 ## 构建环境
 
 构建conda环境
@@ -59,12 +42,18 @@ python setup.py install
 python manage.py -r
 ```
 
+其中命令行参数说明如下：
+-h help
+-r production mode
+-p http port
+-i http ip
+-c [path/to/data-config] load data
+
 ## 与spark服务对接
 
 ### spark local mode
 
 需要设置 spark.executorEnv.PYSPARK_PYTHON
-当前该字段值配置在： config.ini 中的 [spark] executor-python
 
 ### spark standalone mode
 
@@ -152,8 +141,12 @@ token: yes
     "spark": {
         "app_name": "arctern",
         "master-addr": "local[*]",
-        "executor-python": "/home/ljq/miniconda3/envs/zgis_dev/bin/python",
         "envs": {
+            "PYSPARK_PYTHON": "/home/ljq/miniconda3/envs/zgis_dev/bin/python"
+        },
+        "configs": {
+            "spark.sql.execution.arrow.pyspark.enabled": "true",
+            "spark.databricks.session.share": "false"
         }
     },
     "tables": [
