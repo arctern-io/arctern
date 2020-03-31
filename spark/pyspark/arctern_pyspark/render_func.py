@@ -35,6 +35,8 @@ def print_partitions(df):
         i = i + 1
 
 def pointmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from ._wrapper_func import TransformAndProjection, Projection
     coor = vega.coor()
@@ -59,6 +61,8 @@ def pointmap(df, vega):
     return hex_data
 
 def weighted_pointmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -219,6 +223,8 @@ def weighted_pointmap(df, vega):
     return hex_data
 
 def heatmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -256,6 +262,8 @@ def heatmap(df, vega):
     return hex_data
 
 def choroplethmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
