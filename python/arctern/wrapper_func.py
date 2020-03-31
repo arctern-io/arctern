@@ -62,14 +62,15 @@ import pyarrow as pa
 from . import arctern_core_
 
 def ST_Point(x, y):
-    """
-    |*Introduction: Construct a Point from X and Y.*
-    |example:
-    |   x = [1,2,3]
-    |    y = [2,3,4]
-    |    res = ST_Point(x,y)
-    |    res = ['POINT (1 2),'POINT (2 3)','POINT (3 4)']
-    """
+"""
+::
+*Introduction: Construct a Point from X and Y.*
+example:
+    x = [1,2,3]
+    y = [2,3,4]
+    res = ST_Point(x,y)
+    res = ['POINT (1 2),'POINT (2 3)','POINT (3 4)']
+"""
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
     rs = arctern_core_.ST_Point(arr_x, arr_y)
