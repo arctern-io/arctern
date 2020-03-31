@@ -39,8 +39,17 @@ extensions = [
    'sphinx.ext.todo',
    'sphinx.ext.coverage',
    'sphinx.ext.mathjax',
-   'sphinx.ext.viewcode'
+   'sphinx.ext.viewcode',
+   'sphinx.ext.napoleon'
 ]
+
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_special_with_doc = True
+
+autodoc_default_options = {
+    'members': None,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
