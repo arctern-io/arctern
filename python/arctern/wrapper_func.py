@@ -65,21 +65,26 @@ def ST_Point(x, y):
     """
     *Introduction: Construct a Point from X and Y.*
 
-    :type x:double array
-    :param x:x-axis of the point
+    :type x: double array
+    :param x: x-axis of the point
      
-    :type y:double array
-    :param y:y-axis of the point
+    :type y: double array
+    :param y: y-axis of the point
 
     :return: if success,return the string of point
-    :rtype: a datafrme of string    
+    :rtype: a series of string    
 
     :example:
-        x = [1,2,3]
-        y = [2,3,4]
-        res = ST_Point(x,y)
-        res = ['POINT (1 2),'POINT (2 3)','POINT (3 4)']
-"""
+      >>> import pandas
+      >>> import arctern
+      >>> data1 = pandas.Series([1.3, 2.5])
+      >>> data2 = pandas.Series([1.3, 2.5])
+      >>> string_ptr = arctern.ST_Point(data1, data2)
+      >>> print string_ptr
+          0
+        0  POINT (1.3 1.3)
+        1  POINT (2.5 2.5)
+    """
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
     rs = arctern_core_.ST_Point(arr_x, arr_y)
