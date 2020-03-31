@@ -14,4 +14,5 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 SHELL [ "/bin/bash", "-c", "-l" ]
 
 # use login shell when running the container
-ENTRYPOINT [ "/bin/bash", "-c", "-l", "python", "manage.py", "-r"]
+ENTRYPOINT [ "/bin/bash", "-c", "-l"]
+CMD ["python", "manage.py", "-r"]
