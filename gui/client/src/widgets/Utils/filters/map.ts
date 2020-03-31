@@ -22,8 +22,6 @@ export const mapUpdateConfigHandler = (
 export const drawUpdateConfigHandler = (config: MapChartConfig, draws: any) => {
   const copiedConfig = cloneObj(config);
   const {filter = {}} = copiedConfig;
-  // console.info(draws);
-  // debugger;
   // get required lon, lat
   const lon = dimensionGetter(config, KEY.LONGTITUDE) || measureGetter(config, KEY.LONGTITUDE);
   const lat = dimensionGetter(config, KEY.LATITUDE) || measureGetter(config, KEY.LATITUDE);
@@ -70,5 +68,6 @@ export const drawUpdateConfigHandler = (config: MapChartConfig, draws: any) => {
     }
   });
   copiedConfig.filter = filter;
+  copiedConfig.draws = draws;
   return copiedConfig;
 };

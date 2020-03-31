@@ -27,8 +27,8 @@ class Spark(db.DB):
             self._setup_driver_envs(envs)
 
         import uuid
-        self._dbid = uuid.uuid1().int
-        self._dbname = db_config['db_name']
+        self._db_id = uuid.uuid1().int
+        self._db_name = db_config['db_name']
         self._db_type = 'spark'
         self._table_list = []
 
@@ -42,6 +42,9 @@ class Spark(db.DB):
             .getOrCreate()
         print("init spark done")
         register_funcs(self.session)
+
+    def table_list(self):
+        return self._table_list
 
     def _setup_driver_envs(self, envs):
         import os
@@ -76,8 +79,8 @@ class Spark(db.DB):
         _df = self.run(sql)
         return _df.coalesce(1).toJSON().collect()
 
-    def load(self, table_meta):
-        for meta in table_meta:
+    def load(self, metas):
+        for meta in metas:
             if 'path' in meta and 'schema' in meta and 'format' in meta:
                 options = meta.get('options', None)
 

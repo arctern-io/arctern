@@ -89,12 +89,9 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 #if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
   auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
-  dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
-  scanner.mutable_types().push_back(gpu_supported_types);
-  dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(scanner, gpu_supported_types);
+  dispatch::MaskResult mask_result(geometries, gpu_supported_types);
   auto result = dispatch::UnaryExecute<arrow::StringArray>(mask_result, gdal::ST_Envelope,
                                                            cuda::ST_Envelope, geometries);
   return result;
@@ -160,18 +157,10 @@ std::shared_ptr<arrow::Array> ST_Distance(
 #if defined(USE_GPU)
   auto geo_left = std::static_pointer_cast<arrow::StringArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::StringArray>(geo_right_raw);
-
-  auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-  dispatch::TypeScannerForWkt scanner_left(geo_left);
-  scanner_left.mutable_types().emplace_back(gpu_type_left);
-
-  auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-  dispatch::TypeScannerForWkt scanner_right(geo_right);
-  scanner_right.mutable_types().emplace_back(gpu_type_right);
-
+  auto gpu_supported_type = {WkbTypes::kPoint};
   dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(scanner_left, gpu_type_left);
-  mask_result.AppendFilter(scanner_right, gpu_type_right);
+  mask_result.AppendFilter(geo_left, gpu_supported_type);
+  mask_result.AppendFilter(geo_right, gpu_supported_type);
   auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
       mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
   return result;
@@ -185,13 +174,11 @@ std::shared_ptr<arrow::Array> ST_Area(
 #if defined(USE_GPU)
   // currently support ST_Polygon
   auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
-  dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint,      WkbTypes::kLineString,      WkbTypes::kPolygon,
       WkbTypes::kMultiPoint, WkbTypes::kMultiLineString, WkbTypes::kMultiPolygon,
   };
-  scanner.mutable_types().push_back(gpu_supported_types);
-  dispatch::MaskResult mask_result(scanner, gpu_supported_types);
+  dispatch::MaskResult mask_result(geometries, gpu_supported_types);
   return dispatch::UnaryExecute<arrow::DoubleArray>(mask_result, gdal::ST_Area,
                                                     cuda::ST_Area, geometries);
 #else
@@ -204,13 +191,10 @@ std::shared_ptr<arrow::Array> ST_Length(
 #if defined(USE_GPU)
   // currently support ST_LineString
   auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
-  dispatch::TypeScannerForWkt scanner(geometries);
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
-  scanner.mutable_types().push_back(gpu_supported_types);
-  dispatch::MaskResult result_mask;
-  result_mask.AppendFilter(scanner, gpu_supported_types);
-
-  auto result = dispatch::UnaryExecute<arrow::DoubleArray>(result_mask, gdal::ST_Length,
+  dispatch::MaskResult mask_result;
+  mask_result.AppendFilter(geometries, gpu_supported_types);
+  auto result = dispatch::UnaryExecute<arrow::DoubleArray>(mask_result, gdal::ST_Length,
                                                            cuda::ST_Length, geometries);
   return result;
 #else
@@ -270,16 +254,12 @@ std::shared_ptr<arrow::Array> ST_Within(
   auto geo_right = std::static_pointer_cast<arrow::StringArray>(geo_right_raw);
 
   auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-  dispatch::TypeScannerForWkt scanner_left(geo_left);
-  scanner_left.mutable_types().emplace_back(gpu_type_left);
-
   auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
-  dispatch::TypeScannerForWkt scanner_right(geo_right);
-  scanner_right.mutable_types().emplace_back(gpu_type_right);
 
   dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(scanner_left, gpu_type_left);
-  mask_result.AppendFilter(scanner_right, gpu_type_right);
+  mask_result.AppendFilter(geo_left, gpu_type_left);
+  mask_result.AppendFilter(geo_right, gpu_type_right);
+
   auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
       mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
   return result;

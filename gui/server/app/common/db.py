@@ -20,17 +20,18 @@ class DB(metaclass=ABCMeta):
     def dbtype(self):
         return self._db_type
 
+    def id(self):
+        return self._db_id
+
+    def name(self):
+        return self._db_name
+
+    @abstractmethod
     def table_list(self):
         return self._table_list
 
-    def id(self):
-        return self._dbid
-
-    def name(self):
-        return self._dbname
-
     @abstractmethod
-    def run(self, sqlstr):
+    def run(self, sql):
         pass
 
     @abstractmethod
@@ -38,7 +39,7 @@ class DB(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def run_for_json(self, sqlstr):
+    def run_for_json(self, sql):
         pass
 
     @abstractmethod
