@@ -74,7 +74,7 @@ def login():
     # verify username and pwd
     account_db = account.Account()
     is_exist, real_pwd = account_db.get_password(username)
-    if not is_exist or password != real_pwd:
+    if not is_exist or (int)(password) != (int)(real_pwd):
         return jsonify(status='error', code=-1, message='username/password error')
 
     expired = 7*24*60*60
