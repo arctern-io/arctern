@@ -1,8 +1,7 @@
-pyspark
+arctern
 =======
 
 .. toctree::
    :maxdepth: 4
 
-   arctern_pyspark
-   setup
+   arctern
