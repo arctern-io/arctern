@@ -37,6 +37,11 @@ def print_partitions(df):
 def pointmap(df, vega):
     if df.rdd.isEmpty():
         return None
+
+    if len(df.schema.names) != 1:
+        return None
+
+    col_point = df.schema.names[0]
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from ._wrapper_func import TransformAndProjection, Projection
     coor = vega.coor()
@@ -46,9 +51,9 @@ def pointmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if coor != 'EPSG:3857':
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
     else:
-        df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
 
     vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -57,12 +62,28 @@ def pointmap(df, vega):
         return point_map_wkb(point, conf.encode('utf-8'))
 
     df = df.coalesce(1)
-    hex_data = df.agg(pointmap_wkb(df['point'])).collect()[0][0]
+    hex_data = df.agg(pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
 def weighted_pointmap(df, vega):
     if df.rdd.isEmpty():
         return None
+
+    if len(df.schema.names) == 1:
+        col_point = df.schema.names[0]
+        render_mode = 0
+    elif len(df.schema.names) == 2:
+        col_point = df.schema.names[0]
+        col_count = df.schema.names[1]
+        render_mode = 1
+    elif len(df.schema.names) == 3:
+        col_point = df.schema.names[0]
+        col_color = df.schema.names[1]
+        col_stroke = df.schema.names[2]
+        render_mode = 2
+    else:
+        return None
+
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -77,17 +98,17 @@ def weighted_pointmap(df, vega):
     vega = vega.build()
 
     if coor == 'EPSG:3857':
-        if ("c" in df.schema.names and "s" in df.schema.names):
-            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
-            agg_schema = StructType([StructField('point', BinaryType(), True),
-                                     StructField('c', IntegerType(), True),
-                                     StructField('s', IntegerType(), True)])
+        if render_mode == 2:
+            df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_color), col(col_stroke))
+            agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                                     StructField(col_color, IntegerType(), True),
+                                     StructField(col_stroke, IntegerType(), True)])
             @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
             def render_agg_UDF(batch_iter):
                 for pdf in batch_iter:
-                    dd = pdf.groupby(['point'])
-                    dd = dd['c', 's'].agg(['sum']).reset_index()
-                    dd.columns = ['point', 'c', 's']
+                    dd = pdf.groupby([col_point])
+                    dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                    dd.columns = [col_point, col_color, col_stroke]
                     yield dd
 
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -97,17 +118,17 @@ def weighted_pointmap(df, vega):
 
             agg_df = df.mapInPandas(render_agg_UDF)
             agg_df = agg_df.coalesce(1)
-            hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'], agg_df['s'])).collect()[0][0]
-        elif ("c" in df.schema.names and "s" not in df.schema.names):
-            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'))
-            agg_schema = StructType([StructField('point', BinaryType(), True),
-                                     StructField('c', IntegerType(), True)])
+            hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
+        elif render_mode == 1:
+            df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
+            agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                                     StructField(col_count, IntegerType(), True)])
             @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
             def render_agg_UDF(batch_iter):
                 for pdf in batch_iter:
-                    dd = pdf.groupby(['point'])
-                    dd = dd['c'].agg(['sum']).reset_index()
-                    dd.columns = ['point', 'c']
+                    dd = pdf.groupby([col_point])
+                    dd = dd[col_count].agg(['sum']).reset_index()
+                    dd.columns = [col_point, col_count]
                     yield dd
 
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -117,50 +138,30 @@ def weighted_pointmap(df, vega):
 
             agg_df = df.mapInPandas(render_agg_UDF)
             agg_df = agg_df.coalesce(1)
-            hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'])).collect()[0][0]
-        elif ("s" in df.schema.names and "c" not in df.schema.names):
-            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('s'))
-            agg_schema = StructType([StructField('point', BinaryType(), True),
-                                     StructField('s', IntegerType(), True)])
-            @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
-            def render_agg_UDF(batch_iter):
-                for pdf in batch_iter:
-                    dd = pdf.groupby(['point'])
-                    dd = dd['s'].agg(['sum']).reset_index()
-                    dd.columns = ['point', 's']
-                    yield dd
-
-            @pandas_udf("string", PandasUDFType.GROUPED_AGG)
-            def weighted_pointmap_wkb(point, s, conf=vega):
-                from arctern import weighted_point_map_wkb
-                return weighted_point_map_wkb(point, conf.encode('utf-8'), ss=s)
-
-            agg_df = df.mapInPandas(render_agg_UDF)
-            agg_df = agg_df.coalesce(1)
-            hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['s'])).collect()[0][0]
+            hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
         else:
-            df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
+            df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
             def weighted_pointmap_wkb(point, conf=vega):
                 from arctern import weighted_point_map_wkb
                 return weighted_point_map_wkb(point, conf.encode('utf-8'))
 
             df = df.coalesce(1)
-            hex_data = df.agg(weighted_pointmap_wkb(df['point'])).collect()[0][0]
+            hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
         return hex_data
 
 
-    if ("c" in df.schema.names and "s" in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'), col('s'))
-        agg_schema = StructType([StructField('point', BinaryType(), True),
-                                 StructField('c', IntegerType(), True),
-                                 StructField('s', IntegerType(), True)])
+    if render_mode == 2:
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_color), col(col_stroke))
+        agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                                 StructField(col_color, IntegerType(), True),
+                                 StructField(col_stroke, IntegerType(), True)])
         @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
         def render_agg_UDF(batch_iter):
             for pdf in batch_iter:
-                dd = pdf.groupby(['point'])
-                dd = dd['c', 's'].agg(['sum']).reset_index()
-                dd.columns = ['point', 'c', 's']
+                dd = pdf.groupby([col_point])
+                dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                dd.columns = [col_point, col_color, col_stroke]
                 yield dd
 
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -170,17 +171,17 @@ def weighted_pointmap(df, vega):
 
         agg_df = df.mapInPandas(render_agg_UDF)
         agg_df = agg_df.coalesce(1)
-        hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'], agg_df['s'])).collect()[0][0]
-    elif ("c" in df.schema.names and "s" not in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('c'))
-        agg_schema = StructType([StructField('point', BinaryType(), True),
-                                 StructField('c', IntegerType(), True)])
+        hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
+    elif render_mode == 1:
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
+        agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                                 StructField(col_count, IntegerType(), True)])
         @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
         def render_agg_UDF(batch_iter):
             for pdf in batch_iter:
-                dd = pdf.groupby(['point'])
-                dd = dd['c'].agg(['sum']).reset_index()
-                dd.columns = ['point', 'c']
+                dd = pdf.groupby([col_point])
+                dd = dd[col_count].agg(['sum']).reset_index()
+                dd.columns = [col_point, col_count]
                 yield dd
 
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -190,41 +191,27 @@ def weighted_pointmap(df, vega):
 
         agg_df = df.mapInPandas(render_agg_UDF)
         agg_df = agg_df.coalesce(1)
-        hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['c'])).collect()[0][0]
-    elif ("s" in df.schema.names and "c" not in df.schema.names):
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('s'))
-        agg_schema = StructType([StructField('point', BinaryType(), True),
-                                 StructField('s', IntegerType(), True)])
-        @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
-        def render_agg_UDF(batch_iter):
-            for pdf in batch_iter:
-                dd = pdf.groupby(['point'])
-                dd = dd['s'].agg(['sum']).reset_index()
-                dd.columns = ['point', 's']
-                yield dd
-
-        @pandas_udf("string", PandasUDFType.GROUPED_AGG)
-        def weighted_pointmap_wkb(point, s, conf=vega):
-            from arctern import weighted_point_map_wkb
-            return weighted_point_map_wkb(point, conf.encode('utf-8'), ss=s)
-
-        agg_df = df.mapInPandas(render_agg_UDF)
-        agg_df = agg_df.coalesce(1)
-        hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df['point'], agg_df['s'])).collect()[0][0]
+        hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     else:
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"))
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
         def weighted_pointmap_wkb(point, conf=vega):
             from arctern import weighted_point_map_wkb
             return weighted_point_map_wkb(point, conf.encode('utf-8'))
 
         df = df.coalesce(1)
-        hex_data = df.agg(weighted_pointmap_wkb(df['point'])).collect()[0][0]
+        hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
 def heatmap(df, vega):
     if df.rdd.isEmpty():
         return None
+
+    if len(df.schema.names) != 2:
+        return None
+
+    col_point = df.schema.names[0]
+    col_count = df.schema.names[1]
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -235,20 +222,20 @@ def heatmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if coor != 'EPSG:3857':
-        df = df.select(TransformAndProjection(col('point'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
     else:
-        df = df.select(Projection(col('point'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("point"), col('w'))
+        df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
 
     vega = vega.build()
-    agg_schema = StructType([StructField('point', BinaryType(), True),
-                             StructField('w', IntegerType(), True)])
+    agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                             StructField(col_count, IntegerType(), True)])
 
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
-            dd = pdf.groupby(['point'])
-            dd = dd['w'].agg(['sum']).reset_index()
-            dd.columns = ['point', 'w']
+            dd = pdf.groupby([col_point])
+            dd = dd[col_count].agg(['sum']).reset_index()
+            dd.columns = [col_point, col_count]
             yield dd
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -258,12 +245,18 @@ def heatmap(df, vega):
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
-    hex_data = agg_df.agg(heatmap_wkb(agg_df['point'], agg_df['w'])).collect()[0][0]
+    hex_data = agg_df.agg(heatmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     return hex_data
 
 def choroplethmap(df, vega):
     if df.rdd.isEmpty():
         return None
+
+    if len(df.schema.names) != 2:
+        return None
+    col_polygon = df.schema.names[0]
+    col_count = df.schema.names[1]
+
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -274,20 +267,20 @@ def choroplethmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
     if (coor != 'EPSG:3857'):
-        df = df.select(TransformAndProjection(col('wkt'), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
+        df = df.select(TransformAndProjection(col(col_polygon), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_polygon), col(col_count))
     else:
-        df = df.select(Projection(col('wkt'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
+        df = df.select(Projection(col(col_polygon), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_polygon), col(col_count))
 
     vega = vega.build()
-    agg_schema = StructType([StructField('wkb', BinaryType(), True),
-                             StructField('w', IntegerType(), True)])
+    agg_schema = StructType([StructField(col_polygon, BinaryType(), True),
+                             StructField(col_count, IntegerType(), True)])
     
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
     def render_agg_UDF(batch_iter):
         for pdf in batch_iter:
-            dd = pdf.groupby(['wkb'])
-            dd = dd['w'].agg(['sum']).reset_index()
-            dd.columns = ['wkb', 'w']
+            dd = pdf.groupby([col_polygon])
+            dd = dd[col_count].agg(['sum']).reset_index()
+            dd.columns = [col_polygon, col_count]
             yield dd
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
@@ -299,8 +292,8 @@ def choroplethmap(df, vega):
     def sum_udf(v):
         return v.sum()
 
-    agg_df = df.where("wkb != ''")
+    agg_df = df.where("%s != ''" % col_polygon)
     agg_df = agg_df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.coalesce(1)
-    hex_data = agg_df.agg(choroplethmap_wkb(agg_df['wkb'], agg_df['w'])).collect()[0][0]
+    hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
     return hex_data
