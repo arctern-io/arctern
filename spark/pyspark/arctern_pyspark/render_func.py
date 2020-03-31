@@ -35,10 +35,13 @@ def print_partitions(df):
         i = i + 1
 
 def pointmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
+
     if len(df.schema.names) != 1:
         return None
-    col_point = df.schema.names[0]
 
+    col_point = df.schema.names[0]
     from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
     from ._wrapper_func import TransformAndProjection, Projection
     coor = vega.coor()
@@ -63,6 +66,9 @@ def pointmap(df, vega):
     return hex_data
 
 def weighted_pointmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
+
     if len(df.schema.names) == 1:
         col_point = df.schema.names[0]
         render_mode = 0
@@ -198,11 +204,14 @@ def weighted_pointmap(df, vega):
     return hex_data
 
 def heatmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
+
     if len(df.schema.names) != 2:
         return None
+
     col_point = df.schema.names[0]
     col_count = df.schema.names[1]
-
     from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
     from pyspark.sql.types import (StructType, StructField, BinaryType, StringType, IntegerType)
     from ._wrapper_func import TransformAndProjection, Projection
@@ -240,6 +249,9 @@ def heatmap(df, vega):
     return hex_data
 
 def choroplethmap(df, vega):
+    if df.rdd.isEmpty():
+        return None
+
     if len(df.schema.names) != 2:
         return None
     col_polygon = df.schema.names[0]
