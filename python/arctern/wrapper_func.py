@@ -63,7 +63,7 @@ from . import arctern_core_
 
 def ST_Point(x, y):
     """
-    #*Introduction: Construct a Point from X and Y.*#
+    *Introduction: Construct a Point from X and Y.*
     example:
         x = [1,2,3]
         y = [2,3,4]

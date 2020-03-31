@@ -95,6 +95,14 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">arctern_core_</span>
 
 <div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Point">[docs]</a><span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    *Introduction: Construct a Point from X and Y.*</span>
+<span class="sd">    example:</span>
+<span class="sd">        x = [1,2,3]</span>
+<span class="sd">        y = [2,3,4]</span>
+<span class="sd">        res = ST_Point(x,y)</span>
+<span class="sd">        res = [&#39;POINT (1 2),&#39;POINT (2 3)&#39;,&#39;POINT (3 4)&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
     <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Point</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">)</span>
