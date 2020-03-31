@@ -33,9 +33,12 @@ class Spark(db.DB):
         self._table_list = []
 
         print("init spark begin")
+        import socket
+        localhost_ip = socket.gethostbyname(socket.gethostname())
         self.session = SparkSession.builder \
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
+            .config('spark.driver.host', localhost_ip) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
             .config("spark.databricks.session.share", "false") \
             .getOrCreate()
@@ -56,7 +59,7 @@ class Spark(db.DB):
         import os
 
         keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
-                'HADOOP_CONF_DIR', 'YARN_CONF_DIR'
+                'HADOOP_CONF_DIR', 'YARN_CONF_DIR', 'GDAL_DATA', 'PROJ_LIB'
                 )
 
         for key in keys:
