@@ -14,7 +14,7 @@ Submodules
 arctern.wrapper\_func module
 ----------------------------
 
-.. automodule:: arctern.wrapper_func
+.. automodapi:: arctern.wrapper_func
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ arctern.wrapper\_func module
 Module contents
 ---------------
 
-.. automodule:: arctern
+.. automodapi:: arctern
    :members:
    :undoc-members:
    :show-inheritance:

@@ -16,7 +16,7 @@ Submodules
 arctern.util.vega.vega\_node module
 -----------------------------------
 
-.. automodule:: arctern.util.vega.vega_node
+.. automodapi:: arctern.util.vega.vega_node
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,7 +25,7 @@ arctern.util.vega.vega\_node module
 Module contents
 ---------------
 
-.. automodule:: arctern.util.vega
+.. automodapi:: arctern.util.vega
    :members:
    :undoc-members:
    :show-inheritance:
