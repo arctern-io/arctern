@@ -47,7 +47,6 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
                                                        bottom_right, top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
-
   auto res1 = str_arr->GetString(0);
   auto res2 = str_arr->GetString(1);
 
