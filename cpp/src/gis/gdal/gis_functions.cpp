@@ -519,23 +519,12 @@ std::shared_ptr<arrow::Array> ST_MakeValid(const std::shared_ptr<arrow::Array>& 
 
 std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array>& array, 
                                                           double distance_tolerance) {
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::BinaryBuilder builder;
-  for(int i=0; i<len; ++i){
-    auto geo = Wrapper_createFromWkb(wkb, i);
-    if(geo==nullptr){
-      builder.AppendNull();
-    }else{
-      auto simple = geo->SimplifyPreserveTopology(distance_tolerance);
-      AppendWkbNDR(builder,simple);
-      OGRGeometryFactory::destroyGeometry(simple);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  auto op = [&distance_tolerance](arrow::BinaryBuilder &builder, OGRGeometry* geo){
+    auto simple = geo->SimplifyPreserveTopology(distance_tolerance);
+    AppendWkbNDR(builder,simple);
+    OGRGeometryFactory::destroyGeometry(simple);
+  };
+  return UnaryOp<arrow::BinaryBuilder>(array,op);
 }
 
 std::shared_ptr<arrow::Array> ST_Centroid(const std::shared_ptr<arrow::Array>& array){
@@ -549,28 +538,6 @@ std::shared_ptr<arrow::Array> ST_Centroid(const std::shared_ptr<arrow::Array>& a
       }
   };
   return UnaryOp<arrow::BinaryBuilder>(array,op);
-
-  // auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  // int len = wkb->length();
-  // arrow::BinaryBuilder builder;
-  // OGRPoint centro_point;
-  // for(int i=0; i<len; ++i){
-  //   auto geo = Wrapper_createFromWkb(wkb,i);
-  //   if(geo==nullptr){
-  //     builder.AppendNull();
-  //   }else{
-  //     auto err_code = geo->Centroid(&centro_point);
-  //     if(err_code==OGRERR_NONE){
-  //       AppendWkbNDR(builder,&centro_point);
-  //     }else{
-  //       builder.AppendNull();
-  //     }
-  //   }
-  //   OGRGeometryFactory::destroyGeometry(geo);
-  // }
-  // std::shared_ptr<arrow::Array> results;
-  // CHECK_ARROW(builder.Finish(&results));
-  // return results;
 }
 
 std::shared_ptr<arrow::Array> ST_ConvexHull(const std::shared_ptr<arrow::Array>& array){
