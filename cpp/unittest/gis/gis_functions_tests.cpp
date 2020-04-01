@@ -2809,7 +2809,7 @@ TEST(geometry_test, test_ST_Area2) {
   builder.Append(std::string(p7));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Area(input);
+  auto res = arctern::gis::ST_Area(arctern::gis::ST_GeomFromText(input));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
   EXPECT_DOUBLE_EQ(res_double->Value(1), 0);
@@ -2847,7 +2847,7 @@ TEST(geometry_test, test_ST_Area) {
   builder.Append(std::string(p10));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Area(input);
+  auto res = arctern::gis::ST_Area(arctern::gis::ST_GeomFromText(input));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0);
@@ -2886,7 +2886,7 @@ TEST(geometry_test, test_ST_Centroid) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Centroid(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Centroid(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -2900,7 +2900,7 @@ TEST(geometry_test, test_ST_Centroid) {
   ASSERT_EQ(res_str->GetString(8), "POINT (0.466666666666667 1.0)");
 }
 
-TEST(geometry_test, test_ST_Lenght3) {
+TEST(geometry_test, test_ST_Length3) {
   auto p0 = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
   auto p1 = "POLYGON ((1 2, 3 4, 5 6, 1 2))";
   auto p2 = "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))";
@@ -2922,7 +2922,7 @@ TEST(geometry_test, test_ST_Lenght3) {
   builder.Append(std::string(p7));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Length(input);
+  auto res = arctern::gis::ST_Length(arctern::gis::ST_GeomFromText(input));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   for (int i = 0; i < res_double->length(); ++i) {
@@ -2946,7 +2946,7 @@ TEST(geometry_test, test_ST_Length2) {
   builder.Append(std::string(p2));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Length(input);
+  auto res = arctern::gis::ST_Length(arctern::gis::ST_GeomFromText(input));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_TRUE(std::abs(res_double->Value(0) - 24.5999588773797) < 1e-7);
@@ -2982,7 +2982,7 @@ TEST(geometry_test, test_ST_Length) {
   builder.Append(std::string(p11));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Length(input);
+  auto res = arctern::gis::ST_Length(arctern::gis::ST_GeomFromText(input));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 0.0);
@@ -3022,7 +3022,7 @@ TEST(geometry_test, test_ST_ConvexHull) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_ConvexHull(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_ConvexHull(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -3057,7 +3057,7 @@ TEST(geometry_test, test_ST_NPoints2) {
 
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_NPoints(input);
+  auto res = arctern::gis::ST_NPoints(arctern::gis::ST_GeomFromText(input));
   auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
 
   ASSERT_EQ(res_int->Value(0), 5);
@@ -3093,7 +3093,7 @@ TEST(geometry_test, test_ST_NPoints) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_NPoints(input);
+  auto res = arctern::gis::ST_NPoints(arctern::gis::ST_GeomFromText(input));
   auto res_int = std::static_pointer_cast<arrow::Int64Array>(res);
 
   ASSERT_EQ(res_int->Value(0), 1);
@@ -3128,23 +3128,23 @@ TEST(geometry_test, test_ST_Envelope_Empty) {
   builder.Append(std::string(p6));
   builder.Finish(&input);
 
-  auto result = arctern::gis::ST_Envelope(input);
+  auto result = arctern::gis::ST_AsText(arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
-  ASSERT_EQ(result_str->GetString(0), p0);
-  ASSERT_EQ(result_str->GetString(1), p1);
-  ASSERT_EQ(result_str->GetString(2), p2);
-  ASSERT_EQ(result_str->GetString(3), p3);
-  ASSERT_EQ(result_str->GetString(4), p4);
-  ASSERT_EQ(result_str->GetString(5), p5);
-  ASSERT_EQ(result_str->GetString(6), p6);
+  ASSERT_EQ(result_str->IsNull(0), true);
+  ASSERT_EQ(result_str->IsNull(1), true);
+  ASSERT_EQ(result_str->IsNull(2), true);
+  ASSERT_EQ(result_str->IsNull(3), true);
+  ASSERT_EQ(result_str->IsNull(4), true);
+  ASSERT_EQ(result_str->IsNull(5), true);
+  ASSERT_EQ(result_str->IsNull(6), true);
 }
 
 TEST(geometry_test, test_ST_Envelope) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
 
-  auto result = arctern::gis::ST_Envelope(input);
+  auto result = arctern::gis::ST_AsText(arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(result_str->GetString(0), "POINT (0 1)");
@@ -3206,17 +3206,17 @@ TEST(geometry_test, test_ST_Buffer) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Buffer(input, 0);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 0));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
-  auto res1 = arctern::gis::ST_Buffer(input, 1, 2);
+  auto res1 = arctern::gis::ST_AsText(arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 1, 2));
   auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
-  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");
-  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");
-  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->IsNull(0), true);
+  ASSERT_EQ(res_str->IsNull(1), true);
+  ASSERT_EQ(res_str->IsNull(2), true);
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");
-  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->IsNull(4), true);
+  ASSERT_EQ(res_str->IsNull(5), true);
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))");
   ASSERT_EQ(res_str->GetString(8),
@@ -3324,14 +3324,14 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Finish(&y_min);
   y_max_builder.Finish(&y_max);
 
-  auto res = arctern::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max));
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
   ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
-  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
-  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->IsNull(2), true);
+  ASSERT_EQ(res_str->IsNull(3), true);
 }
 
 TEST(geometry_test, test_ST_Transform) {
@@ -3343,7 +3343,7 @@ TEST(geometry_test, test_ST_Transform) {
   std::string src_rs("EPSG:4326");
   std::string dst_rs("EPSG:3857");
 
-  auto res = arctern::gis::ST_Transform(input_data, src_rs, dst_rs);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Transform(arctern::gis::ST_GeomFromText(input_data), src_rs, dst_rs));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(), nullptr, &res_geo));
@@ -3363,7 +3363,7 @@ TEST(geometry_test, test_ST_CurveToLine) {
   builder.Append(std::string("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"));
   builder.Finish(&input_data);
 
-  auto res = arctern::gis::ST_CurveToLine(input_data);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_CurveToLine(arctern::gis::ST_GeomFromText(input_data)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");
@@ -3382,7 +3382,7 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   builder.AppendNull();
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_GeomFromGeoJSON(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_GeomFromGeoJSON(input));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
@@ -3402,7 +3402,7 @@ TEST(geometry_test, test_ST_GeomFromText) {
   builder.Append(std::string(p2));
 
   builder.Finish(&input);
-  auto res = arctern::gis::ST_GeomFromText(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_GeomFromText(input));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   ASSERT_EQ(res_str->GetString(0), "POINT (0 0)");
   ASSERT_TRUE(res_str->IsNull(1));
@@ -3439,7 +3439,7 @@ TEST(geometry_test, test_ST_Union_Aggr3) {
   builder.Append(std::string(g14));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Union_Aggr(input);
+  auto res = arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input));
   auto len = arctern::gis::ST_Length(res);
   auto area = arctern::gis::ST_Area(res);
   auto len_dbl = std::static_pointer_cast<arrow::DoubleArray>(len);
@@ -3466,7 +3466,7 @@ TEST(geometry_test, test_ST_Union_Aggr2) {
   builder.Append(std::string(p5));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Union_Aggr(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0),
@@ -3498,7 +3498,7 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   // builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Union_Aggr(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0),
@@ -3531,7 +3531,7 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
   // builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_Envelope_Aggr(input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Envelope_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((-2 -3,-2 4,3 4,3 -3,-2 -3))");
