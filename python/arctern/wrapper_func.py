@@ -65,14 +65,14 @@ def ST_Point(x, y):
     """
     *Introduction: Construct a Point from X and Y.*
 
-    :type x: double array
+    :type x: double series
     :param x: x-axis of the point
      
-    :type y: double array
+    :type y: double series
     :param y: y-axis of the point
 
-    :return: if success,return the string of point
-    :rtype: a series of string    
+    :return: if success,return wkt of point
+    :rtype: a series of wkt    
 
     :example:
       >>> import pandas
@@ -101,6 +101,28 @@ def ST_GeomFromText(text):
     return rs.to_pandas()
 
 def ST_Intersection(left, right):
+    """
+    *Introduction: Return the intersection shape of two geometries.* 
+    
+    :type left: wkt series
+    :param left: wkt of geometry,this function don't accept 'GEOMETRYCOLLECTION' 
+     
+    :type y: wkt series
+    :param y: wkt of geometry,this function don't accept 'GEOMETRYCOLLECTION'
+
+    :return: if success,return wkt of intersection between left and right
+    :rtype: a series of wkt
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+      >>> data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+      >>> string_ptr = arctern.ST_Point(data1, data2)
+      >>> print string_ptr    
+          0
+      0   LINESTRING (2 2,2 1)
+    """
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Intersection(arr_left, arr_right)
