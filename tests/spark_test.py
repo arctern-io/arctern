@@ -971,20 +971,16 @@ def run_test_st_geomfromgeojson(spark):
 
     data = "geojson.csv"
     table_name = 'test_geomfromjson'
-    sql1 = "select ST_AsText(ST_GeomFromGeoJson(ST_GeomFromText(geos))) as geos from test_geomfromjson"
-    sql2 = "select ST_GeomFromGeoJson(geos) as geos from test_geomfromjson"
+    sql = "select ST_AsText(ST_GeomFromGeoJson(geos)) as geos from test_geomfromjson"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
     #df.show()
     df.createOrReplaceTempView(table_name)
 
-    rs1 = spark.sql(sql1).cache()
-    rs2 = spark.sql(sql2).cache()
+    rs = spark.sql(sql).cache()
     #rs.printSchema()ST_GeomFromText
-    rs1.show()
-    rs2.show()
-    save_result("results/%s" % table_name, rs2)
+    save_result("results/%s" % table_name, rs)
 
 def run_test_st_geomfromgeojson2(spark):
     # this test is only test that arctern can handle empty geojsons, which postgis cannot, do not need to compare with postgis
