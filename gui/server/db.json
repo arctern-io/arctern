@@ -3,7 +3,7 @@
     "type": "spark",
     "spark": {
         "app_name": "arctern",
-        "master-addr": "local[*]",
+        "master-addr": "spark://172.19.0.2:7077",
         "executor-python": "/opt/conda/envs/arctern/bin/python",
         "envs": {
         }

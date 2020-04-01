@@ -39,6 +39,7 @@ __global__ void SetCountValue_gpu(float* out, uint32_t* in_x, uint32_t* in_y, T*
     uint32_t vertice_x = in_x[i];
     uint32_t vertice_y = height - in_y[i] - 1;
     if (vertice_y > height || vertice_x > width) continue;
+    if (vertice_y < 0 || vertice_x < 0) continue;
     int64_t index = vertice_y * width + vertice_x;
     if (index >= width * height) continue;
     out[index] += in_c[i];
