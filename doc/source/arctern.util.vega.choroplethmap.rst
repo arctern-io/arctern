@@ -17,6 +17,6 @@ Module contents
 ---------------
 
 .. automodapi:: arctern.util.vega.choroplethmap
-   :members
+   :members:
    :undoc-members:
    :show-inheritance:
