@@ -34,14 +34,16 @@ class Marks(RootMarks):
                 return dic
 
         def __init__(self, bounding_box: Value, shape: Value, color: Value,
-                     color_ruler: Value, stroke_ruler: Value, opacity: Value, coordinate_system: Value):
+                     color_ruler: Value, stroke_ruler: Value, opacity: Value, 
+                     coordinate_system: Value, color_agg: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
                     and isinstance(color.v, str)
                     and isinstance(color_ruler.v, list)
                     and isinstance(stroke_ruler.v, list)
                     and isinstance(opacity.v, float)
-                    and isinstance(coordinate_system.v, str)):
+                    and isinstance(coordinate_system.v, str)
+                    and isinstance(color_agg.v, str)):
                 # TODO error log here
                 print("illegal")
                 assert 0
@@ -52,6 +54,7 @@ class Marks(RootMarks):
             self._stroke_ruler = stroke_ruler
             self._opacity = opacity
             self._coordinate_system = coordinate_system
+            self._color_agg = color_agg
 
         def to_dict(self):
             dic = {
@@ -62,7 +65,8 @@ class Marks(RootMarks):
                     "color_ruler": self._color_ruler.to_dict(),
                     "stroke_ruler": self._stroke_ruler.to_dict(),
                     "opacity": self._opacity.to_dict(),
-                    "coordinate_system": self._coordinate_system.to_dict()
+                    "coordinate_system": self._coordinate_system.to_dict(),
+                    "color_agg": self._color_agg.to_dict()
                 }
             }
             return dic
@@ -78,7 +82,8 @@ class Marks(RootMarks):
 
 class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 mark_color: str, color_ruler: list, stroke_ruler: list, opacity: float, coordinate_system: str):
+                 mark_color: str, color_ruler: list, stroke_ruler: list, opacity: float, 
+                 coordinate_system: str, color_agg: str):
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
         self._mark_color = mark_color
@@ -86,6 +91,7 @@ class VegaWeightedPointMap(VegaScatterPlot):
         self._stroke_ruler = stroke_ruler
         self._opacity = opacity
         self._coordinate_system = coordinate_system
+        self._color_agg = color_agg
 
     def build(self):
         description = Description(desc="circle_2d")
@@ -101,7 +107,8 @@ class VegaWeightedPointMap(VegaScatterPlot):
                               color_ruler=Marks.Encode.Value(self._color_ruler),
                               stroke_ruler=Marks.Encode.Value(self._stroke_ruler),
                               opacity=Marks.Encode.Value(self._opacity),
-                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system),
+                              color_agg=Marks.Encode.Value(self._color_agg))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)

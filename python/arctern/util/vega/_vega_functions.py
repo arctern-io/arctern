@@ -36,23 +36,21 @@ def vega_pointmap(width, height,
 def vega_weighted_pointmap(width, height,
                   bounding_box,
                   color, color_ruler, stroke_ruler, opacity,
-                  coordinate_system="EPSG:4326"):
-    return VegaWeightedPointMap(width, height,
-                        bounding_box,
+                  coordinate_system="EPSG:4326", color_agg="sum"):
+    return VegaWeightedPointMap(width, height, bounding_box,
                                 color, color_ruler, stroke_ruler, opacity,
-                        coordinate_system)
+                                coordinate_system, color_agg)
 
 def vega_heatmap(width, height, map_scale,
                  bounding_box,
-                 coordinate_system="EPSG:4326"):
+                 coordinate_system="EPSG:4326", color_agg="sum"):
     return VegaHeatMap(width, height, map_scale,
-                       bounding_box,
-                       coordinate_system)
+                       bounding_box, coordinate_system,
+                       color_agg)
 
-def vega_choroplethmap(width, height,
-                       bounding_box,
+def vega_choroplethmap(width, height, bounding_box,
                        color_style, ruler, opacity,
-                       coordinate_system="EPSG:4326"):
-    return VegaChoroplethMap(width, height,
-                             bounding_box, color_style, ruler, opacity,
-                             coordinate_system)
+                       coordinate_system="EPSG:4326", color_agg="sum"):
+    return VegaChoroplethMap(width, height, bounding_box,
+                             color_style, ruler, opacity,
+                             coordinate_system, color_agg)

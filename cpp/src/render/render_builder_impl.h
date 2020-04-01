@@ -298,9 +298,10 @@ std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
 }
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> weight_agg_multiple_column(
-    const std::shared_ptr<arrow::Array>& geos, const std::shared_ptr<arrow::Array>& arr_c,
-    const std::shared_ptr<arrow::Array>& arr_s) {
+std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func> 
+weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos, 
+                           const std::shared_ptr<arrow::Array>& arr_c,
+                           const std::shared_ptr<arrow::Array>& arr_s) {
   auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
 
   auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
@@ -316,17 +317,23 @@ std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> weight_agg_multiple
   assert(geos_size == c_size);
   assert(c_size == s_size);
 
-  std::unordered_map<OGRGeometry*, std::pair<T, T>, hash_func> results;
+  std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func> results;
 
   for (size_t i = 0; i < geos_size; i++) {
     std::string geo_wkb = geo_arr->GetString(i);
     OGRGeometry* res_geo;
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     if (results.find(res_geo) == results.end()) {
-      results[res_geo] = std::make_pair(c_arr[i], s_arr[i]);
+      std::vector<T> weight_c;
+      std::vector<T> weight_s;
+      weight_c.emplace_back(c_arr[i]);
+      weight_s.emplace_back(s_arr[i]);
+      results[res_geo] = std::make_pair(weight_c, weight_s);
     } else {
-      results[res_geo].first += c_arr[i];
-      results[res_geo].second += s_arr[i];
+      auto& weight_c = results[res_geo].first;
+      auto& weight_s = results[res_geo].second;
+      weight_c.emplace_back(c_arr[i]);
+      weight_s.emplace_back(s_arr[i]);
     }
   }
   return results;
