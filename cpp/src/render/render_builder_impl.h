@@ -31,12 +31,12 @@ namespace arctern {
 namespace render {
 
 AggType agg_type(std::string type) {
-  if(type == "avg") return AggType::AVG;
-  if(type == "sum") return AggType::SUM;
-  if(type == "max") return AggType::MAX;
-  if(type == "min") return AggType::MIN;
-  if(type == "count") return AggType::COUNT;
-  if(type == "stddev") return AggType::STDDEV;
+  if (type == "avg") return AggType::AVG;
+  if (type == "sum") return AggType::SUM;
+  if (type == "max") return AggType::MAX;
+  if (type == "min") return AggType::MIN;
+  if (type == "count") return AggType::COUNT;
+  if (type == "stddev") return AggType::STDDEV;
   std::string err_msg =
         "unknow agg type = " + type;
   throw std::runtime_error(err_msg);
@@ -46,36 +46,29 @@ template <typename T>
 T aggregation(std::string type, std::vector<T> weight) {
   T result = 0;
   AggType type_agg = agg_type(type);
-  switch (type_agg) 
-  {
-    case AggType::MAX:
-    {
+  switch (type_agg) {
+    case AggType::MAX: {
       return *max_element(weight.begin(), weight.end());
     }
-    case AggType::MIN:
-    {
+    case AggType::MIN: {
       return *min_element(weight.begin(), weight.end());
     }
-    case AggType::COUNT:
-    {  
+    case AggType::COUNT: {
       return weight.size();
     }
-    case AggType::SUM:
-    {
+    case AggType::SUM: {
       return accumulate(weight.begin(), weight.end(), 0);
     }
-    case AggType::STDDEV:
-    {
+    case AggType::STDDEV: {
       T sum = accumulate(weight.begin(), weight.end(), 0);
       T mean = sum / weight.size();
       T accum = 0;
-      std::for_each (std::begin(weight), std::end(weight), [&](const T d) {
-		    accum += (d - mean) * ( d - mean);
+      std::for_each(std::begin(weight), std::end(weight), [&](const T d) {
+		    accum += (d - mean) * (d - mean);
 	    });
       return sqrt(accum/weight.size());
     }
-    case AggType::AVG:
-    {
+    case AggType::AVG: {
       T sum_data = accumulate(weight.begin(), weight.end(), 0);
       return sum_data / weight.size();
     }
@@ -298,8 +291,8 @@ std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
 }
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func> 
-weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos, 
+std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func>
+weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
                            const std::shared_ptr<arrow::Array>& arr_c,
                            const std::shared_ptr<arrow::Array>& arr_s) {
   auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
@@ -317,7 +310,8 @@ weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
   assert(geos_size == c_size);
   assert(c_size == s_size);
 
-  std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func> results;
+  std::unordered_map<OGRGeometry*,
+      std::pair<std::vector<T>, std::vector<T>>, hash_func> results;
 
   for (size_t i = 0; i < geos_size; i++) {
     std::string geo_wkb = geo_arr->GetString(i);
