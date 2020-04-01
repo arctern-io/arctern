@@ -97,11 +97,13 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
   auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
   if (err_code != OGRERR_NONE) {
-    std::string err_msg =
-        "failed to export to wkb, error code = " + std::to_string(err_code);
-    throw std::runtime_error(err_msg);
+    builder.AppendNull();
+    // std::string err_msg =
+    //     "failed to export to wkb, error code = " + std::to_string(err_code);
+    // throw std::runtime_error(err_msg);
+  }else{
+    CHECK_ARROW(builder.Append(wkb, wkb_size));
   }
-  CHECK_ARROW(builder.Append(wkb, wkb_size));
   CPLFree(wkb);
 }
 
@@ -477,16 +479,54 @@ std::shared_ptr<arrow::Array> ST_MakeValid(const std::shared_ptr<arrow::Array>& 
   return results;
 }
 
+std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(const std::shared_ptr<arrow::Array>& array, 
+                                                          double distance_tolerance) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BinaryBuilder builder;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb, i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      auto simple = geo->SimplifyPreserveTopology(distance_tolerance);
+      if(simple==nullptr){
+        builder.AppendNull();
+      }else{
+        AppendWkbNDR(builder,simple);
+        OGRGeometryFactory::destroyGeometry(simple);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
-// UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_MakeValid, arrow::StringBuilder, geo,
-//                                  OGR_G_MakeValid(geo));
-
-// std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
-//     const std::shared_ptr<arrow::Array>& geometries, double distance_tolerance) {
-//   UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
-//       arrow::StringBuilder, geo, OGR_G_SimplifyPreserveTopology(geo,
-//       distance_tolerance));
-// }
+std::shared_ptr<arrow::Array> ST_Centroid(const std::shared_ptr<arrow::Array>& array){
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BinaryBuilder builder;
+  OGRPoint centro_point;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb,i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      auto err_code = geo->Centroid(&centro_point);
+      if(err_code==OGRERR_NONE){
+        AppendWkbNDR(builder,&centro_point);
+      }else{
+        builder.AppendNull();
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 // UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Centroid, arrow::StringBuilder, geo,
 //                                  Wrapper_OGR_G_Centroid(geo));
