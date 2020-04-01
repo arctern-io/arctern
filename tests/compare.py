@@ -344,7 +344,7 @@ def compare_all():
 	names, table_names, expects = get_tests()
 
     flag = True
-	for name, expect in zip(names, expects):
+    for name, expect in zip(names, expects):
 		
 		arct_result = os.path.join(arctern_result, name + '.csv')
 		pgis_result = os.path.join(expected_result, expect + '.out')
@@ -365,7 +365,7 @@ def compare_all():
 			print('Arctern test: %s, result: FAILED' % name)
         
         flag = flag and res
-        return flag
+    return flag
 
 
 def update_quote(file_path):
