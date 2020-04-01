@@ -136,7 +136,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id2">arctern Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id36">arctern Package</a></li>
 </ul>
 </li>
 </ul>
@@ -210,7 +210,37 @@
 <dl class="function">
 <dt id="arctern.wrapper_func.ST_Contains">
 <code class="sig-prename descclassname">arctern.wrapper_func.</code><code class="sig-name descname">ST_Contains</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_Contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.wrapper_func.ST_Contains" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><a href="#id1"><span class="problematic" id="id2">*</span></a>Check whether a geometry contain another geometry.</p>
+<p>For every (left, right) pair with the same offset value in left and right, check 
+if left_geometry &quot;contains&quot; right_geometry. Left &quot;contains&quot; right means no points
+of right_geometry lie in the exterior of left_geometry and at least one point of 
+the interior of right_geometry lies in the interior of left_geometry.*</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+<li><p><strong>right</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:return :An array of booleans.
+:rtype: pyarrow.array.boolean</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;</span><span class="p">,</span><span class="s2">&quot;POLYGON((8 0,9 0,9 1,8 1,8 0))&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span><span class="p">,</span><span class="s2">&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Contains</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="go">    0    true</span>
+<span class="go">    1    false</span>
+<span class="go">    dtype: bool</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

@@ -89,8 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#arctern-wrapper-func-module">arctern.wrapper_func module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#id1">arctern.wrapper_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id2">arctern Package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id3">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id36">arctern Package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id37">Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -210,7 +210,35 @@
 <dl class="function">
 <dt id="arctern.ST_Intersects">
 <code class="sig-prename descclassname">arctern.</code><code class="sig-name descname">ST_Intersects</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_Intersects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.ST_Intersects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><a href="#id1"><span class="problematic" id="id2">*</span></a>Check whether two geometries intersect.</p>
+<p>For every (left, right) pair with the same offset value in left and right, check 
+if left and right shares any portion of space.*</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+<li><p><strong>right</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:return :An array of booleans.
+:rtype: pyarrow.array.boolean</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;</span><span class="p">,</span><span class="s2">&quot;POLYGON((8 0,9 0,9 1,8 1,8 0))&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span><span class="p">,</span><span class="s2">&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Intersects</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="go">    0    true</span>
+<span class="go">    1    true</span>
+<span class="go">    dtype: bool</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

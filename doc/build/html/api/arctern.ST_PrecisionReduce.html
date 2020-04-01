@@ -89,8 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#arctern-wrapper-func-module">arctern.wrapper_func module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#id1">arctern.wrapper_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id2">arctern Package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id3">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id36">arctern Package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id37">Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -210,7 +210,36 @@
 <dl class="function">
 <dt id="arctern.ST_PrecisionReduce">
 <code class="sig-prename descclassname">arctern.</code><code class="sig-name descname">ST_PrecisionReduce</code><span class="sig-paren">(</span><em class="sig-param">geos</em>, <em class="sig-param">precision</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_PrecisionReduce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.ST_PrecisionReduce" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><a href="#id1"><span class="problematic" id="id2">*</span></a>Reduce the precision of geometry.</p>
+<p>For every geometry in geometries, reduce the decimal places of its coordinates 
+to the given number. The last decimal place will be rounded.</p>
+<p>Note, the operation is performed NOT in &quot;inplace&quot; manner, i.e., new geometries 
+in arrow::Array format will be construted and extra memory will be allocated.*</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geos</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKT.</p></li>
+<li><p><strong>geos</strong> -- The number to reduce the decimals places to.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:return : Geometries organized as WKB.
+:rtype: pyarrow.array.string</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POINT (1.333 2.666)&quot;</span><span class="p">,</span> <span class="s2">&quot;POINT (2.655 4.447)&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">wkb2wkt</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_PrecisionReduce</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="go">    0    POINT (1.33 2.67)</span>
+<span class="go">    1    POINT (2.66 4.45)</span>
+<span class="go">    dtype: object</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
