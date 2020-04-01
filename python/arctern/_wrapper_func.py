@@ -45,15 +45,17 @@ __all__ = [
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "point_map",
-    "point_map_wkt",
+    "point_map_wkb",
+    "weighted_point_map",
+    "weighted_point_map_wkb",
     "heat_map",
-    "heat_map_wkt",
+    "heat_map_wkb",
     "choropleth_map",
-    # "coordinate_projection",
+    "projection",
     "transform_and_projection",
+    "wkt2wkb",
+    "wkb2wkt",
 ]
-
-
 
 import base64
 import pyarrow as pa
@@ -238,9 +240,78 @@ def point_map(xs, ys, conf):
     rs = arctern_core_.point_map(arr_x, arr_y, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def point_map_wkt(points, conf):
-    array_points = pa.array(points, type='string')
-    rs = arctern_core_.point_map_wkt(array_points, conf)
+def weighted_point_map(xs, ys, conf, **kwargs):
+    cs = kwargs.get('cs', None)
+    ss = kwargs.get('ss', None)
+
+    arr_x = pa.array(xs, type='uint32')
+    arr_y = pa.array(ys, type='uint32')
+
+    if (cs is None and ss is None):
+        rs = arctern_core_.weighted_point_map_0_0(arr_x, arr_y, conf)
+    elif (cs is not None and ss is not None):
+        if isinstance(cs[0], float):
+            arr_c = pa.array(cs, type='double')
+        else:
+            arr_c = pa.array(cs, type='int64')
+
+        if isinstance(ss[0], float):
+            arr_s = pa.array(ss, type='double')
+        else:
+            arr_s = pa.array(ss, type='int64')
+        rs = arctern_core_.weighted_point_map_1_1(arr_x, arr_y, conf, arr_c, arr_s)
+    elif (cs is None and ss is not None):
+        if isinstance(ss[0], float):
+            arr = pa.array(ss, type='double')
+        else:
+            arr = pa.array(ss, type='int64')
+        rs = arctern_core_.weighted_point_map_0_1(arr_x, arr_y, conf, arr)
+    else:
+        if isinstance(cs[0], float):
+            arr = pa.array(cs, type='double')
+        else:
+            arr = pa.array(cs, type='int64')
+        rs = arctern_core_.weighted_point_map_1_0(arr_x, arr_y, conf, arr)
+
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def weighted_point_map_wkb(points, conf, **kwargs):
+    cs = kwargs.get('cs', None)
+    ss = kwargs.get('ss', None)
+
+    array_points = pa.array(points, type='binary')
+
+    if (cs is None and ss is None):
+        rs = arctern_core_.weighted_point_map_wkb_0_0(array_points, conf)
+    elif (cs is not None and ss is not None):
+        if isinstance(cs[0], float):
+            arr_c = pa.array(cs, type='double')
+        else:
+            arr_c = pa.array(cs, type='int64')
+
+        if isinstance(ss[0], float):
+            arr_s = pa.array(ss, type='double')
+        else:
+            arr_s = pa.array(ss, type='int64')
+        rs = arctern_core_.weighted_point_map_wkb_1_1(array_points, conf, arr_c, arr_s)
+    elif (cs is None and ss is not None):
+        if isinstance(ss[0], float):
+            arr = pa.array(ss, type='double')
+        else:
+            arr = pa.array(ss, type='int64')
+        rs = arctern_core_.weighted_point_map_wkb_0_1(array_points, conf, arr)
+    else:
+        if isinstance(cs[0], float):
+            arr = pa.array(cs, type='double')
+        else:
+            arr = pa.array(cs, type='int64')
+        rs = arctern_core_.weighted_point_map_wkb_1_0(array_points, conf, arr)
+
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def point_map_wkb(points, conf):
+    array_points = pa.array(points, type='binary')
+    rs = arctern_core_.point_map_wkb(array_points, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def heat_map(x_data, y_data, c_data, conf):
@@ -251,32 +322,32 @@ def heat_map(x_data, y_data, c_data, conf):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 
-def heat_map_wkt(points, c_data, conf):
-    array_points = pa.array(points, type='string')
+def heat_map_wkb(points, c_data, conf):
+    array_points = pa.array(points, type='binary')
 
     if isinstance(c_data[0], float):
         arr_c = pa.array(c_data, type='double')
     else:
         arr_c = pa.array(c_data, type='int64')
 
-    rs = arctern_core_.heat_map_wkt(array_points, arr_c, conf)
+    rs = arctern_core_.heat_map_wkb(array_points, arr_c, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def choropleth_map(wkt_data, count_data, conf):
-    arr_wkt = pa.array(wkt_data, type='string')
+def choropleth_map(wkb_data, count_data, conf):
+    arr_wkb = pa.array(wkb_data, type='binary')
     if isinstance(count_data[0], float):
         arr_count = pa.array(count_data, type='double')
     else:
         arr_count = pa.array(count_data, type='int64')
-    rs = arctern_core_.choropleth_map(arr_wkt, arr_count, conf)
+    rs = arctern_core_.choropleth_map(arr_wkb, arr_count, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-# def coordinate_projection(geos, top_left, bottom_right, height, width):
-#     arr_geos = pa.array(geos, type='string')
-#     src_rs1 = bytes(top_left, encoding="utf8")
-#     dst_rs1 = bytes(bottom_right, encoding="utf8")
-#     rs = arctern_core_.coordinate_projection(arr_geos, src_rs1, dst_rs1, height, width)
-#     return rs.to_pandas()
+def projection(geos, bottom_right, top_left, height, width):
+    arr_geos = pa.array(geos, type='string')
+    bounding_box_min = bytes(bottom_right, encoding="utf8")
+    bounding_box_max = bytes(top_left, encoding="utf8")
+    rs = arctern_core_.projection(arr_geos, bounding_box_min, bounding_box_max, height, width)
+    return rs.to_pandas()
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     arr_geos = pa.array(geos, type='string')
@@ -285,4 +356,14 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     bounding_box_min = bytes(bottom_right, encoding="utf8")
     bounding_box_max = bytes(top_left, encoding="utf8")
     rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_min, bounding_box_max, height, width)
+    return rs.to_pandas()
+
+def wkt2wkb(arr_wkt):
+    wkts = pa.array(arr_wkt, type='string')
+    rs = arctern_core_.wkt2wkb(wkts)
+    return rs.to_pandas()
+
+def wkb2wkt(arr_wkb):
+    wkbs = pa.array(arr_wkb, type='binary')
+    rs = arctern_core_.wkb2wkt(wkbs)
     return rs.to_pandas()

@@ -16,49 +16,101 @@ limitations under the License.
 
 from pyspark.sql import SparkSession
 
-from app.common import config
+from app.common import db
 from arctern_pyspark import register_funcs
 
 
-class Spark:
-    """
-    the singleton of this class keeps the session of spark
-    """
+class Spark(db.DB):
+    def __init__(self, db_config):
+        envs = db_config['spark'].get('envs', None)
+        if envs:    # for spark on yarn
+            self._setup_driver_envs(envs)
 
-    def __init__(self):
-        self.session = SparkSession.builder \
-            .appName("Arctern") \
-            .master(config.INSTANCE.get("spark", "master-addr")) \
-            .config("spark.executorEnv.PYSPARK_PYTHON",
-                    config.INSTANCE.get("spark", "executor-python")
-                    ) \
+        import uuid
+        self._db_id = str(uuid.uuid1()).replace('-', '')
+        self._db_name = db_config['db_name']
+        self._db_type = 'spark'
+        self._table_list = []
+
+        print("init spark begin")
+        import socket
+        localhost_ip = socket.gethostbyname(socket.gethostname())
+        _t = SparkSession.builder \
+            .appName(db_config['spark']['app_name']) \
+            .master(db_config['spark']['master-addr']) \
+            .config('spark.driver.host', localhost_ip) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-            .config("spark.databricks.session.share", "false") \
-            .getOrCreate()
+            .config("spark.databricks.session.share", "false")
+
+        configs = db_config['spark'].get('configs', None)
+        if configs:
+            for key in configs:
+                print("spark config: {} = {}".format(key, configs[key]))
+                _t = _t.config(key, configs[key])
+
+        self.session = _t.getOrCreate()
+
+        print("init spark done")
         register_funcs(self.session)
 
-    def create_session(self):
+    def table_list(self):
+        return self._table_list
+
+    def _setup_driver_envs(self, envs):
+        import os
+
+        keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
+                'HADOOP_CONF_DIR', 'YARN_CONF_DIR', 'GDAL_DATA', 'PROJ_LIB'
+                )
+
+        for key in keys:
+            value = envs.get(key, None)
+            if value:
+                os.environ[key] = value
+
+    def _create_session(self):
         """
         clone new session
         """
         return self.session.newSession()
 
-    @staticmethod
-    def run(sql):
+    def run(self, sql):
         """
         submit sql to spark
         """
-        session = INSTANCE.create_session()
+        session = self._create_session()
         register_funcs(session)
         return session.sql(sql)
 
-    @staticmethod
-    def run_for_json(sql):
+    def run_for_json(self, sql):
         """
         convert the result of run() to json
         """
-        _df = Spark.run(sql)
+        _df = self.run(sql)
         return _df.coalesce(1).toJSON().collect()
 
+    def load(self, metas):
+        for meta in metas:
+            if 'path' in meta and 'schema' in meta and 'format' in meta:
+                options = meta.get('options', None)
 
-INSTANCE = Spark()
+                schema = str()
+                for column in meta.get('schema'):
+                    for key, value in column.items():
+                        schema += key + ' ' + value + ', '
+                rindex = schema.rfind(',')
+                schema = schema[:rindex]
+
+                df = self.session.read.format(meta.get('format')) \
+                    .schema(schema) \
+                    .load(meta.get('path'), **options)
+                df.createOrReplaceGlobalTempView(meta.get('name'))
+            elif 'sql' in meta:
+                df = self.run(meta.get('sql', None))
+                df.createOrReplaceGlobalTempView(meta.get('name'))
+
+            if meta.get('visibility') == 'True':
+                self._table_list.append('global_temp.' + meta.get('name'))
+
+    def get_table_info(self, table_name):
+        return self.run_for_json("desc table {}".format(table_name))

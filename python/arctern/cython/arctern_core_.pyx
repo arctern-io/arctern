@@ -12,19 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport *
-
+from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
 cimport arctern_core__ as arctern_core_pxd
+
+def projection(geos, bottom_right, top_left, int height, int width):
+    return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
     return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
 
-def point_map_wkt(points, conf):
+def point_map_wkb(points, conf):
     return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
 
-def heat_map_wkt(points, arr_c, conf):
+def weighted_point_map_wkb_0_0(points, conf):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), conf))
+
+def weighted_point_map_wkb_1_0(points, conf, cs):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), conf))
+
+def weighted_point_map_wkb_0_1(points, conf, ss):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(ss), conf))
+
+def weighted_point_map_wkb_1_1(points, conf, cs, ss):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
+
+def weighted_point_map_0_0(arr_x, arr_y, conf):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+
+def weighted_point_map_0_1(arr_x, arr_y, conf, ss):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(ss), conf))
+
+def weighted_point_map_1_0(arr_x, arr_y, conf, cs):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), conf))
+
+def weighted_point_map_1_1(arr_x, arr_y, conf, cs, ss):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
+
+def heat_map_wkb(points, arr_c, conf):
     return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
 
 def point_map(arr_x, arr_y, conf):
@@ -35,6 +62,12 @@ def heat_map(arr_x, arr_y, arr_c, conf):
 
 def choropleth_map(arr_wkt, arr_count, conf):
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
+
+def wkt2wkb(arr_wkt):
+    return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
+
+def wkb2wkt(arr_wkb):
+    return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
 
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))

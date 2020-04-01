@@ -12,14 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import pandas
 import arctern
 
-from arctern.util import save_png, diff_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util import save_png
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap
 
-map_path = sys.path[0] + "/../../../tests/expected/draw_map/"
+def test_projection():
+    wkt = ["POINT (-8235193.62386326 4976211.44428777)"]
+    top_left = "POINT (-8235871.4482427 4976468.32320551)"
+    bottom_right = "POINT (-8235147.42627458 4976108.43009739)"
+
+    arr_wkt = pandas.Series(wkt)
+    arctern.projection(arr_wkt, bottom_right, top_left, 200, 300)
+
+def test_transfrom_and_projection():
+    wkt = ["POINT (-73.978003 40.754594)"]
+    top_left = "POINT (-73.984092 40.756342)"
+    bottom_right = "POINT (-73.977588 40.753893)"
+    src_ts = "EPSG:4326"
+    dst_rs = "EPSG:3857"
+
+    arr_wkt = pandas.Series(wkt)
+    arctern.transform_and_projection(arr_wkt, src_ts, dst_rs, bottom_right, top_left, 200, 300)
 
 def test_point_map():
     x_data = []
@@ -47,17 +62,62 @@ def test_point_map():
     vega_json = vega_circle2d.build()
 
     curve_z1 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
-    curve_z2 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
-    curve_z3 = arctern.point_map(arr_x, arr_y, vega_json.encode('utf-8'))
+    save_png(curve_z1, "/tmp/test_curve_z1.png")
 
-    baseline_png = map_path + "curve_z.png"
-    save_png(curve_z1, map_path + "test_curve_z1.png")
-    save_png(curve_z2, map_path + "test_curve_z2.png")
-    save_png(curve_z3, map_path + "test_curve_z3.png")
+def test_weighted_point_map():
+    x_data = []
+    y_data = []
+    c_data = []
+    s_data = []
 
-    assert diff_png(baseline_png, map_path + "test_curve_z1.png")
-    assert diff_png(baseline_png, map_path + "test_curve_z2.png")
-    assert diff_png(baseline_png, map_path + "test_curve_z3.png")
+    x_data.append(10)
+    x_data.append(20)
+    x_data.append(30)
+    x_data.append(40)
+    x_data.append(50)
+
+    y_data.append(10)
+    y_data.append(20)
+    y_data.append(30)
+    y_data.append(40)
+    y_data.append(50)
+
+    c_data.append(1)
+    c_data.append(2)
+    c_data.append(3)
+    c_data.append(4)
+    c_data.append(5)
+
+    s_data.append(2)
+    s_data.append(4)
+    s_data.append(6)
+    s_data.append(8)
+    s_data.append(10)
+
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    arr_c = pandas.Series(c_data)
+    arr_s = pandas.Series(s_data)
+
+    vega1 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#87CEEB", [1, 5], [5], 1.0, "EPSG:3857")
+    vega_json1 = vega1.build()
+    res1 = arctern.weighted_point_map(arr_x, arr_y, vega_json1.encode('utf-8'))
+    save_png(res1, "/tmp/test_weighted_0_0.png")
+
+    vega2 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [1, 5], [5], 1.0, "EPSG:3857")
+    vega_json2 = vega2.build()
+    res2 = arctern.weighted_point_map(arr_x, arr_y, vega_json2.encode('utf-8'), cs=arr_c)
+    save_png(res2, "/tmp/test_weighted_1_0.png")
+
+    vega3 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#87CEEB", [1, 5], [1, 10], 1.0, "EPSG:3857")
+    vega_json3 = vega3.build()
+    res3 = arctern.weighted_point_map(arr_x, arr_y, vega_json3.encode('utf-8'), ss=arr_s)
+    save_png(res3, "/tmp/test_weighted_0_1.png")
+
+    vega4 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_to_red", [1, 5], [1, 10], 1.0, "EPSG:3857")
+    vega_json4 = vega4.build()
+    res4 = arctern.weighted_point_map(arr_x, arr_y, vega_json4.encode('utf-8'), cs=arr_c, ss=arr_s)
+    save_png(res4, "/tmp/test_weighted_1_1.png")
 
 def test_heat_map():
     x_data = []
@@ -77,17 +137,7 @@ def test_heat_map():
     vega_json = vega_heat_map.build()
 
     heat_map1 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-    heat_map2 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-    heat_map3 = arctern.heat_map(arr_x, arr_y, arr_c, vega_json.encode('utf-8'))
-
-    baseline_png = map_path + "heat_map.png"
-    save_png(heat_map1, map_path + "test_heat_map1.png")
-    save_png(heat_map2, map_path + "test_heat_map2.png")
-    save_png(heat_map3, map_path + "test_heat_map3.png")
-
-    assert diff_png(baseline_png, map_path + "test_heat_map1.png", 0.0025)
-    assert diff_png(baseline_png, map_path + "test_heat_map2.png", 0.0025)
-    assert diff_png(baseline_png, map_path + "test_heat_map3.png", 0.0025)
+    save_png(heat_map1, "/tmp/test_heat_map1.png")
 
 def test_choropleth_map():
     wkt_data = []
@@ -107,15 +157,6 @@ def test_choropleth_map():
     vega_choropleth_map = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326')
     vega_json = vega_choropleth_map.build()
 
-    choropleth_map1 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map2 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-    choropleth_map3 = arctern.choropleth_map(arr_wkt, arr_count, vega_json.encode('utf-8'))
-
-    baseline_png = map_path + "choropleth_map.png"
-    save_png(choropleth_map1, map_path + "test_choropleth_map1.png")
-    save_png(choropleth_map2, map_path + "test_choropleth_map2.png")
-    save_png(choropleth_map3, map_path + "test_choropleth_map3.png")
-
-    assert diff_png(baseline_png, map_path + "test_choropleth_map1.png")
-    assert diff_png(baseline_png, map_path + "test_choropleth_map2.png")
-    assert diff_png(baseline_png, map_path + "test_choropleth_map3.png")
+    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    choropleth_map1 = arctern.choropleth_map(arr_wkb, arr_count, vega_json.encode('utf-8'))
+    save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")

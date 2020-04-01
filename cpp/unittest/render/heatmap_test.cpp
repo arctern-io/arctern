@@ -867,76 +867,76 @@ TEST(HEATMAP_TEST, RAW_POINT_DOUBLE_TEST) {
   arctern::render::heat_map(array1, array2, array3, vega);
 }
 
-TEST(HEATMAP_TEST, RAW_POINT_INVALID_DATA_TYPE_TEST) {
-  // param1: x
-  arrow::UInt32Builder x_builder;
-  auto status = x_builder.Append(50);
-  status = x_builder.Append(50);
-  status = x_builder.Append(50);
-  status = x_builder.Append(50);
-  status = x_builder.Append(50);
-
-  std::shared_ptr<arrow::UInt32Array> x_array;
-  status = x_builder.Finish(&x_array);
-
-  // param2: y
-  arrow::UInt32Builder y_builder;
-  status = y_builder.Append(50);
-  status = y_builder.Append(50);
-  status = y_builder.Append(50);
-  status = y_builder.Append(50);
-  status = y_builder.Append(50);
-
-  std::shared_ptr<arrow::UInt32Array> y_array;
-  status = y_builder.Finish(&y_array);
-
-  // param2: color
-  std::shared_ptr<arrow::Array> color_array;
-  arrow::StringBuilder color_builder;
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Finish(&color_array);
-
-  // param3: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 300,\n"
-      "  \"height\": 200,\n"
-      "  \"description\": \"circle_2d\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"data\",\n"
-      "      \"url\": \"data/data.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"x\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
-      "    },\n"
-      "    {\n"
-      "      \"name\": \"y\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"map_scale\": {\"value\": 10}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::heat_map(x_array, y_array, color_array, vega);
-}
+// TEST(HEATMAP_TEST, RAW_POINT_INVALID_DATA_TYPE_TEST) {
+//  // param1: x
+//  arrow::UInt32Builder x_builder;
+//  auto status = x_builder.Append(50);
+//  status = x_builder.Append(50);
+//  status = x_builder.Append(50);
+//  status = x_builder.Append(50);
+//  status = x_builder.Append(50);
+//
+//  std::shared_ptr<arrow::UInt32Array> x_array;
+//  status = x_builder.Finish(&x_array);
+//
+//  // param2: y
+//  arrow::UInt32Builder y_builder;
+//  status = y_builder.Append(50);
+//  status = y_builder.Append(50);
+//  status = y_builder.Append(50);
+//  status = y_builder.Append(50);
+//  status = y_builder.Append(50);
+//
+//  std::shared_ptr<arrow::UInt32Array> y_array;
+//  status = y_builder.Finish(&y_array);
+//
+//  // param2: color
+//  std::shared_ptr<arrow::Array> color_array;
+//  arrow::StringBuilder color_builder;
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Finish(&color_array);
+//
+//  // param3: conf
+//  const std::string vega =
+//      "{\n"
+//      "  \"width\": 300,\n"
+//      "  \"height\": 200,\n"
+//      "  \"description\": \"circle_2d\",\n"
+//      "  \"data\": [\n"
+//      "    {\n"
+//      "      \"name\": \"data\",\n"
+//      "      \"url\": \"data/data.csv\"\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"scales\": [\n"
+//      "    {\n"
+//      "      \"name\": \"x\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+//      "    },\n"
+//      "    {\n"
+//      "      \"name\": \"y\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"marks\": [\n"
+//      "    {\n"
+//      "      \"encode\": {\n"
+//      "        \"enter\": {\n"
+//      "          \"map_scale\": {\"value\": 10}\n"
+//      "        }\n"
+//      "      }\n"
+//      "    }\n"
+//      "  ]\n"
+//      "}";
+//
+//  arctern::render::heat_map(x_array, y_array, color_array, vega);
+//}
 
 TEST(HEATMAP_TEST, WKT_POINT_INT8_TEST) {
   // param1: wkt string
@@ -1000,7 +1000,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
@@ -1065,7 +1066,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
@@ -1130,7 +1132,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
@@ -1195,7 +1198,8 @@ TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
@@ -1260,7 +1264,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
@@ -1325,7 +1330,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
@@ -1390,7 +1396,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
@@ -1455,7 +1462,8 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
@@ -1520,7 +1528,8 @@ TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
@@ -1585,135 +1594,140 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(string_array, color_array, vega);
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::heat_map(wkb, color_array, vega);
 }
 
-TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
-  // param1: wkt string
-  std::string wkt1 = "POINT (50 50)";
-  std::string wkt2 = "POINT (51 51)";
-  std::string wkt3 = "POINT (52 52)";
-  std::string wkt4 = "POINT (53 53)";
-  std::string wkt5 = "POINT (54 54)";
-  arrow::StringBuilder string_builder;
-  auto status = string_builder.Append(wkt1);
-  status = string_builder.Append(wkt2);
-  status = string_builder.Append(wkt3);
-  status = string_builder.Append(wkt4);
-  status = string_builder.Append(wkt5);
+// TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
+//  // param1: wkt string
+//  std::string wkt1 = "POINT (50 50)";
+//  std::string wkt2 = "POINT (51 51)";
+//  std::string wkt3 = "POINT (52 52)";
+//  std::string wkt4 = "POINT (53 53)";
+//  std::string wkt5 = "POINT (54 54)";
+//  arrow::StringBuilder string_builder;
+//  auto status = string_builder.Append(wkt1);
+//  status = string_builder.Append(wkt2);
+//  status = string_builder.Append(wkt3);
+//  status = string_builder.Append(wkt4);
+//  status = string_builder.Append(wkt5);
+//
+//  std::shared_ptr<arrow::StringArray> string_array;
+//  status = string_builder.Finish(&string_array);
+//
+//  // param2: color
+//  std::shared_ptr<arrow::Array> color_array;
+//  arrow::StringBuilder color_builder;
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Append("");
+//  status = color_builder.Finish(&color_array);
+//
+//  // param3: conf
+//  const std::string vega =
+//      "{\n"
+//      "  \"width\": 300,\n"
+//      "  \"height\": 200,\n"
+//      "  \"description\": \"circle_2d\",\n"
+//      "  \"data\": [\n"
+//      "    {\n"
+//      "      \"name\": \"data\",\n"
+//      "      \"url\": \"data/data.csv\"\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"scales\": [\n"
+//      "    {\n"
+//      "      \"name\": \"x\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+//      "    },\n"
+//      "    {\n"
+//      "      \"name\": \"y\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"marks\": [\n"
+//      "    {\n"
+//      "      \"encode\": {\n"
+//      "        \"enter\": {\n"
+//      "          \"map_scale\": {\"value\": 10}\n"
+//      "        }\n"
+//      "      }\n"
+//      "    }\n"
+//      "  ]\n"
+//      "}";
+//
+//  auto wkb = arctern::render::WktToWkb(string_array);
+//  arctern::render::heat_map(wkb, color_array, vega);
+//}
 
-  std::shared_ptr<arrow::StringArray> string_array;
-  status = string_builder.Finish(&string_array);
-
-  // param2: color
-  std::shared_ptr<arrow::Array> color_array;
-  arrow::StringBuilder color_builder;
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Append("");
-  status = color_builder.Finish(&color_array);
-
-  // param3: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 300,\n"
-      "  \"height\": 200,\n"
-      "  \"description\": \"circle_2d\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"data\",\n"
-      "      \"url\": \"data/data.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"x\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
-      "    },\n"
-      "    {\n"
-      "      \"name\": \"y\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"map_scale\": {\"value\": 10}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::heat_map(string_array, color_array, vega);
-}
-
-TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
-  // param1: wkt string
-  std::string wkt1 = "POINT (50 50)";
-  std::string wkt2 = "POINT (51 51)";
-  std::string wkt3 = "POINT (52 52)";
-  std::string wkt4 = "POINT (53 53)";
-  std::string wkt5 = "POINT (54 54)";
-  arrow::StringBuilder string_builder;
-  auto status = string_builder.Append(wkt1);
-  status = string_builder.Append(wkt2);
-  status = string_builder.Append(wkt3);
-  status = string_builder.Append(wkt4);
-  status = string_builder.Append(wkt5);
-
-  std::shared_ptr<arrow::StringArray> string_array;
-  status = string_builder.Finish(&string_array);
-
-  // param2: color
-  std::shared_ptr<arrow::Array> color_array;
-  arrow::DoubleBuilder color_builder;
-  status = color_builder.Append(50);
-  status = color_builder.Append(51);
-  status = color_builder.Append(52);
-  status = color_builder.Append(53);
-  status = color_builder.Append(54);
-  status = color_builder.Finish(&color_array);
-
-  // param3: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 300,\n"
-      "  \"height\": 200,\n"
-      "  \"description\": \"circle_2d\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"data\",\n"
-      "      \"url\": \"data/data.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"x\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
-      "    },\n"
-      "    {\n"
-      "      \"name\": \"y\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"map_scale\": {\"value\": \"INVALID_NUMBER\"}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::heat_map(string_array, color_array, vega);
-}
+// TEST(HEATMAP_TEST, INVALID_JSON_TEST) {
+//  // param1: wkt string
+//  std::string wkt1 = "POINT (50 50)";
+//  std::string wkt2 = "POINT (51 51)";
+//  std::string wkt3 = "POINT (52 52)";
+//  std::string wkt4 = "POINT (53 53)";
+//  std::string wkt5 = "POINT (54 54)";
+//  arrow::StringBuilder string_builder;
+//  auto status = string_builder.Append(wkt1);
+//  status = string_builder.Append(wkt2);
+//  status = string_builder.Append(wkt3);
+//  status = string_builder.Append(wkt4);
+//  status = string_builder.Append(wkt5);
+//
+//  std::shared_ptr<arrow::StringArray> string_array;
+//  status = string_builder.Finish(&string_array);
+//
+//  // param2: color
+//  std::shared_ptr<arrow::Array> color_array;
+//  arrow::DoubleBuilder color_builder;
+//  status = color_builder.Append(50);
+//  status = color_builder.Append(51);
+//  status = color_builder.Append(52);
+//  status = color_builder.Append(53);
+//  status = color_builder.Append(54);
+//  status = color_builder.Finish(&color_array);
+//
+//  // param3: conf
+//  const std::string vega =
+//      "{\n"
+//      "  \"width\": 300,\n"
+//      "  \"height\": 200,\n"
+//      "  \"description\": \"circle_2d\",\n"
+//      "  \"data\": [\n"
+//      "    {\n"
+//      "      \"name\": \"data\",\n"
+//      "      \"url\": \"data/data.csv\"\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"scales\": [\n"
+//      "    {\n"
+//      "      \"name\": \"x\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+//      "    },\n"
+//      "    {\n"
+//      "      \"name\": \"y\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"marks\": [\n"
+//      "    {\n"
+//      "      \"encode\": {\n"
+//      "        \"enter\": {\n"
+//      "          \"map_scale\": {\"value\": \"INVALID_NUMBER\"}\n"
+//      "        }\n"
+//      "      }\n"
+//      "    }\n"
+//      "  ]\n"
+//      "}";
+//
+//  auto wkb = arctern::render::WktToWkb(string_array);
+//  auto wkt = arctern::render::WkbToWkt(wkb);
+//  wkb = arctern::render::WktToWkb(wkt);
+//  arctern::render::heat_map(wkb, color_array, vega);
+//}

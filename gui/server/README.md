@@ -4,23 +4,6 @@
 
 ## 代码结构
 
-## 配置文件
-
-conf/config.init为配置文件，可以根据情况自行修改，其中：
-
-```bash
-[http]
-port = 8080          # http服务器的监听端口
-
-[spark]
-# lcoal[*]  local mode
-# yarn      hadoop/yarn mode, need env YARN_CONF_DIR and HADOOP_CONF_DIR
-master-addr = local[*]
-# python path for executor
-executor-python = /home/gxz/miniconda3/envs/arctern/bin/python
-
-```
-
 ## 构建环境
 
 构建conda环境
@@ -48,7 +31,7 @@ python setup.py install
 
 ## 下载测试数据
 
-在`https://github.com/zilliztech/arctern-tutorial/tree/master/data`下，获取0_5M_nyc_taxi_and_building.csv，
+在`https://github.com/zilliztech/arctern-tutorial/tree/master/data`下获取0_5M_nyc_taxi_and_building.csv
 保持文件不变，放在data目录下
 
 ## 启动web服务
@@ -59,12 +42,18 @@ python setup.py install
 python manage.py -r
 ```
 
+其中命令行参数说明如下：
+-h help
+-r production mode
+-p http port
+-i http ip
+-c [path/to/data-config] load data
+
 ## 与spark服务对接
 
 ### spark local mode
 
 需要设置 spark.executorEnv.PYSPARK_PYTHON
-当前该字段值配置在： config.ini 中的 [spark] executor-python
 
 ### spark standalone mode
 
@@ -136,6 +125,82 @@ for example:
 
 ```shell
 curl -X POST -H "Content-Type: application/json" -d '{"username":"zilliz", "password":"123456"}' http://127.0.0.1:8080/login
+```
+
+### /load加载表数据
+
+method: POST
+token: yes
+
+`request.json`:
+
+```json
+{
+    "db_name": "db1",
+    "type": "spark",
+    "spark": {
+        "app_name": "arctern",
+        "master-addr": "local[*]",
+        "envs": {
+            "PYSPARK_PYTHON": "/home/ljq/miniconda3/envs/zgis_dev/bin/python"
+        },
+        "configs": {
+            "spark.sql.execution.arrow.pyspark.enabled": "true",
+            "spark.databricks.session.share": "false"
+        }
+    },
+    "tables": [
+        {
+            "name": "old_nyc_taxi",
+            "format": "csv",
+            "path": "/home/ljq/work/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "options": {
+                "header": "True",
+                "delimiter": ","
+            },
+            "schema": [
+                {"VendorID": "string"},
+                {"tpep_pickup_datetime": "string"},
+                {"tpep_dropoff_datetime": "string"},
+                {"passenger_count": "long"},
+                {"trip_distance": "double"},
+                {"pickup_longitude": "double"},
+                {"pickup_latitude": "double"},
+                {"dropoff_longitude": "double"},
+                {"dropoff_latitude": "double"},
+                {"fare_amount": "double"},
+                {"tip_amount": "double"},
+                {"total_amount": "double"},
+                {"buildingid_pickup": "long"},
+                {"buildingid_dropoff": "long"},
+                {"buildingtext_pickup": "string"},
+                {"buildingtext_dropoff": "string"}
+            ],
+            "visibility": "False"
+        },
+        {
+            "name": "nyc_taxi",
+            "sql": "select VendorID, to_timestamp(tpep_pickup_datetime,'yyyy-MM-dd HH:mm:ss XXXXX') as tpep_pickup_datetime, to_timestamp(tpep_dropoff_datetime,'yyyy-MM-dd HH:mm:ss XXXXX') as tpep_dropoff_datetime, passenger_count, trip_distance, pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, fare_amount, tip_amount, total_amount, buildingid_pickup, buildingid_dropoff, buildingtext_pickup, buildingtext_dropoff from global_temp.old_nyc_taxi where (pickup_longitude between -180 and 180) and (pickup_latitude between -90 and 90) and (dropoff_longitude between -180 and 180) and  (dropoff_latitude between -90 and 90)",
+            "visibility": "True"
+        }
+    ]
+}
+```
+
+`response.json`:
+
+```json
+{
+    "code":200,
+    "message":"load data succeed!",
+    "status":"success"
+}
+```
+
+举个例子：
+
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YourToken" -d @./arctern/gui/server/db.json http://127.0.0.1:8080/load
 ```
 
 ### /dbs 获取数据库列表
@@ -373,6 +438,36 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
                 "color_style": "blue_to_red",
                 "rule": [2.5, 5],
                 "opacity": 1
+            }
+        }
+    }
+}
+```
+
+权重图
+
+```shell
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d @~/json/weighted_pointmap.json http://127.0.0.1:8080/db/query
+```
+
+其中`~/json/weighted_pointmap.json`的内容如下，sql语句中polygon只是样例，不是固定的，可根据需求构造。
+
+```json
+{
+    "id": "1",
+    "query": {
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "type": "weighted",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "weighted": {
+                "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+                "color": "blue_to_red",
+                "color_ruler": [0, 2],
+                "stroke_ruler": [0, 10],
+                "opacity": 1.0,
+                "coordinate": "EPSG:4326"
             }
         }
     }

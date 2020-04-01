@@ -16,6 +16,7 @@ limitations under the License.
 
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import BadSignature, SignatureExpired
 
 from app import account
 from app.common import utils
@@ -39,8 +40,10 @@ def verify(token):
     """
     check whether the token is valid
     """
-    # 参数为私有秘钥，跟上面方法的秘钥保持一致
-    data = Serializer(secret_key='secret_key').loads(token)
+    try:
+        data = Serializer(secret_key='secret_key').loads(token)
+    except (BadSignature, SignatureExpired):
+        return False
 
     if not utils.check_json(data, 'user'):
         return False

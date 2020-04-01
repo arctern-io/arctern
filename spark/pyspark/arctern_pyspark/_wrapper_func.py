@@ -49,15 +49,30 @@ __all__ = [
     "ST_GeomFromText",
     "ST_GeomFromWKT",
     "ST_AsText",
+    "Projection",
     "TransformAndProjection",
+    "WktToWkb",
+    "WkbToWkt",
 ]
 
 import arctern
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
+def Projection(geos, bottom_right, top_left, height, width):
+    return arctern.projection(geos, bottom_right[0], top_left[0], height[0], width[0])
+
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def TransformAndProjection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     return arctern.transform_and_projection(geos, src_rs[0], dst_rs[0], bottom_right[0], top_left[0], height[0], width[0])
+
+@pandas_udf("binary", PandasUDFType.SCALAR)
+def WktToWkb(wkts):
+    return arctern.wkt2wkb(wkts)
+
+@pandas_udf("string", PandasUDFType.SCALAR)
+def WkbToWkt(wkbs):
+    return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):

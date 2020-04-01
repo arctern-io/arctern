@@ -26,8 +26,10 @@
 #include "gis/dispatch/dispatch.h"
 #include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
+#include "gis/test_common/transforms.h"
 #include "utils/check_status.h"
 
+namespace dispatch = arctern::gis::dispatch;
 using GroupedWkbTypes = arctern::gis::dispatch::GroupedWkbTypes;
 using WkbTypes = arctern::gis::WkbTypes;
 
@@ -45,7 +47,7 @@ TEST(type_scan, single_type_scan) {
   ASSERT_EQ(type_masks->is_unique_type, false);
 
   for (auto type : scanner.types()) {
-    auto& mask = type_masks->get_mask(type);
+    const auto& mask = type_masks->get_mask(type);
     auto uid = type_masks->get_encode_uid(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
     auto encode_uids = type_masks->encode_uids;
@@ -63,7 +65,7 @@ TEST(type_scan, single_type_scan) {
   }
   {
     GroupedWkbTypes type = {WkbTypes::kUnknown};
-    auto& mask = type_masks->get_mask(type);
+    const auto& mask = type_masks->get_mask(type);
     for (int i = 0; i < mask.size(); i++) {
       ASSERT_EQ(mask[i], false);
     }
@@ -86,7 +88,7 @@ TEST(type_scan, unknown_type) {
   auto range2 = cases.GetCaseIndexRange(WkbTypes::kMultiLineString);
   auto& encode_uids = type_masks->encode_uids;
   auto uid = type_masks->get_encode_uid(type);
-  auto& mask = type_masks->get_mask(type);
+  const auto& mask = type_masks->get_mask(type);
   for (int i = 0; i < mask.size(); i++) {
     if ((i >= range0.first && i < range0.second) ||
         (i >= range1.first && i < range1.second) ||
@@ -229,4 +231,37 @@ TEST(type_scan, merge_and_split) {
   checker(tmps[1], true_strs);
   auto output = WktArrayMerge({tmps[0], tmps[1]}, masks);
   checker(output, strs);
+}
+
+TEST(type_scan, dispatch) {
+  using std::string;
+  using std::vector;
+  vector<string> cases_raw = {
+      "MultiPoint Empty",
+      "LineString(0 0, 0 1)",
+      "Point(0 0)",
+      "MultiLineString Empty",
+  };
+  vector<bool> std_masks = {true, false, false, false};
+  auto cases = arctern::gis::StrsToWkt(cases_raw);
+
+  GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
+
+  GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
+
+  dispatch::MaskResult mask_result(cases, type1);
+  mask_result.AppendFilter(cases, type2);
+
+  auto true_checker = [&](std::shared_ptr<arrow::StringArray> wkt) {
+    EXPECT_EQ(wkt->length(), 1);
+    EXPECT_EQ(wkt->GetView(0), cases->GetView(2));
+    return wkt;
+  };
+
+  auto false_checker = [](std::shared_ptr<arrow::StringArray> wkt) {
+    EXPECT_EQ(wkt->length(), 3);
+    return wkt;
+  };
+  dispatch::UnaryExecute<arrow::StringArray>(mask_result, false_checker, true_checker,
+                                             cases);
 }

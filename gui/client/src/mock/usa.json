@@ -1,0 +1,245 @@
+{
+  "id": 5,
+  "title": "美国航运数据",
+  "userId": "zilliz",
+  "configs": [
+    {
+      "id": "id_k88e9fvrt",
+      "type": "BarChart",
+      "source": "ships_ais",
+      "layout": {
+        "w": 16,
+        "h": 8,
+        "x": 14,
+        "y": 0,
+        "i": "id_k88e9fvrt",
+        "minW": 3,
+        "minH": 5,
+        "moved": false,
+        "static": false
+      },
+      "dimensions": [{"type": "text", "value": "vesselname", "as": "d_1pqtirhn1nr"}],
+      "measures": [
+        {
+          "type": "number",
+          "name": "width",
+          "value": "*",
+          "label": "Records",
+          "as": "width",
+          "format": ".2s",
+          "isCustom": false,
+          "expression": "count",
+          "isRecords": true,
+          "color": "#37A2DA"
+        }
+      ],
+      "filter": {},
+      "selfFilter": {},
+      "groups": 12,
+      "sort": {"name": "", "order": "descending"},
+      "title": "VesselType",
+      "ruler": {"min": 0, "max": 0},
+      "rulerBase": {"min": 0, "max": 54.37}
+    },
+    {
+      "id": "id_c47797kgo9",
+      "type": "NumberChart",
+      "source": "ships_ais",
+      "dimensions": [],
+      "measures": [
+        {
+          "type": "text",
+          "name": "value",
+          "value": "mmsi",
+          "label": "mmsi",
+          "as": "value",
+          "format": "auto",
+          "isCustom": false,
+          "expression": "unique",
+          "color": "#37A2DA"
+        }
+      ],
+      "layout": {
+        "w": 6,
+        "h": 5,
+        "x": 24,
+        "y": 8,
+        "i": "id_c47797kgo9",
+        "minW": 3,
+        "minH": 5,
+        "moved": false,
+        "static": false
+      },
+      "colorKey": "#37A2DA"
+    },
+    {
+      "id": "id_o8mhsdc0n4",
+      "type": "LineChart",
+      "source": "ships_ais",
+      "layout": {
+        "w": 10,
+        "h": 10,
+        "x": 14,
+        "y": 8,
+        "i": "id_o8mhsdc0n4",
+        "minW": 3,
+        "minH": 5,
+        "moved": false,
+        "static": false
+      },
+      "dimensions": [
+        {
+          "name": "x",
+          "format": "auto",
+          "type": "DATE",
+          "value": "basedatetime",
+          "label": "basedatetime",
+          "isBinned": true,
+          "extract": false,
+          "as": "x",
+          "min": "Sun Jan 01 00:00:00 2017",
+          "currMin": "Sun Jan 01 00:00:00 2017",
+          "max": "Tue Jan 31 23:59:59 2017",
+          "currMax": "Tue Jan 31 23:59:59 2017",
+          "extent": ["Sun Jan 01 00:00:00 2017", "Tue Jan 31 23:59:59 2017"],
+          "staticRange": ["Sun Jan 01 00:00:00 2017", "Tue Jan 31 23:59:59 2017"],
+          "timeBin": "hour",
+          "binningResolution": "1h"
+        }
+      ],
+      "measures": [
+        {
+          "type": "number",
+          "name": "m0",
+          "value": "*",
+          "label": "Records",
+          "as": "countval",
+          "format": "auto",
+          "isCustom": false,
+          "expression": "count",
+          "isRecords": true,
+          "color": "#37A2DA"
+        }
+      ],
+      "filter": {
+        "xDomain": {
+          "type": "filter",
+          "expr": {
+            "type": "between",
+            "originField": "basedatetime",
+            "field": "basedatetime",
+            "left": "2017-01-01T00:00:00",
+            "right": "2017-01-31T23:59:59"
+          }
+        }
+      },
+      "selfFilter": {},
+      "isShowRange": false,
+      "colorItems": [
+        {"label": "记录数", "color": "#37A2DA", "as": "countval", "isRecords": true}
+      ],
+      "sort": {"name": "x"}
+    },
+    {
+      "id": "id_0o47400cpjib",
+      "type": "NumberChart",
+      "source": "ships_ais",
+      "dimensions": [],
+      "measures": [
+        {
+          "type": "number",
+          "name": "value",
+          "value": "*",
+          "label": "Records",
+          "as": "value",
+          "format": "auto",
+          "isCustom": false,
+          "expression": "count",
+          "isRecords": true,
+          "color": "#37A2DA"
+        }
+      ],
+      "layout": {
+        "w": 6,
+        "h": 5,
+        "x": 24,
+        "y": 13,
+        "i": "id_0o47400cpjib",
+        "minW": 3,
+        "minH": 5,
+        "moved": false,
+        "static": false
+      },
+      "colorKey": "#37A2DA"
+    },
+    {
+      "id": "id_hts5s9ksdxp",
+      "type": "PointMap",
+      "source": "ships_ais",
+      "layout": {
+        "w": 14,
+        "h": 18,
+        "x": 0,
+        "y": 0,
+        "i": "id_hts5s9ksdxp",
+        "minW": 1,
+        "minH": 5,
+        "moved": false,
+        "static": false
+      },
+      "dimensions": [],
+      "measures": [
+        {
+          "type": "float8",
+          "name": "lon",
+          "value": "lon",
+          "label": "lon",
+          "as": "lon",
+          "format": "auto",
+          "isCustom": false,
+          "color": "#9FE6B8"
+        },
+        {
+          "type": "float8",
+          "name": "lat",
+          "value": "lat",
+          "label": "lat",
+          "as": "lat",
+          "format": "auto",
+          "isCustom": false,
+          "color": "#FFDB5C"
+        },
+        {
+          "type": "float8",
+          "name": "color",
+          "value": "cargo",
+          "label": "cargo",
+          "as": "color",
+          "format": "auto",
+          "isCustom": false,
+          "color": "#ff9f7f"
+        }
+      ],
+      "filter": {},
+      "selfFilter": {},
+      "width": 685,
+      "height": 774,
+      "isServerRender": true,
+      "mapTheme": "mapbox://styles/mapbox/dark-v10",
+      "zoom": 2.7099594263290006,
+      "ruler": {"min": 0, "max": 198},
+      "rulerBase": {"min": 0, "max": 198},
+      "colorKey": "blue_to_red",
+      "center": {"lng": -148.3180150015363, "lat": 41.36826979236537},
+      "bounds": {
+        "_sw": {"lng": -185.12362680916056, "lat": 3.9252363598680375},
+        "_ne": {"lng": -111.5124031939125, "lat": 65.33185185616031}
+      },
+      "points": 9600040,
+      "title": "美国航运地图"
+    }
+  ],
+  "createdAt": "Thu Jun  6 12:12:12 2019",
+  "modifyAt": "Thu Jun  6 12:12:13 2019",
+  "sources": ["ships_ais"]
+}

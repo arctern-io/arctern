@@ -15,6 +15,7 @@
  */
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -40,21 +41,17 @@ void PointMap::Draw() {
           1);
 
   glPointSize(point_vega_.circle_params().radius);
-
   auto& color = point_vega_.circle_params().color;
-  glColor4f(color.r / 255, color.g / 255, color.b / 255, color.a);
-
+  glColor4f(color.r, color.g, color.b, color.a);
   glEnableClientState(GL_VERTEX_ARRAY);
 
   int offset = 0;
   std::vector<int32_t> vertices(num_vertices_ * 2);
-
   for (auto i = 0; i < num_vertices_; i++) {
     vertices[offset++] = vertices_x_[i];
     vertices[offset++] = vertices_y_[i];
   }
   glVertexPointer(2, GL_INT, 0, &vertices[0]);
-
   glDrawArrays(GL_POINTS, 0, num_vertices_);
   glFinish();
 
@@ -102,8 +99,8 @@ void PointMap::Shader() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "vertex shader compile failed.";
+    std::string err_msg = "vertex shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -113,8 +110,8 @@ void PointMap::Shader() {
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "fragment shader compile failed.";
+    std::string err_msg = "fragment shader compile failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
@@ -125,8 +122,8 @@ void PointMap::Shader() {
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 #ifdef DEBUG_RENDER
   if (!success) {
-    // TODO: add log here
-    std::cout << "shader program link failed.";
+    std::string err_msg = "shader program link failed";
+    throw std::runtime_error(err_msg);
   }
 #endif
 
