@@ -607,11 +607,11 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
   auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
   arrow::DoubleBuilder builder;
   auto* area = new AreaVisitor;
   for (int32_t i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkt(wkt_geometries, i);
+    auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
     if (ogr == nullptr) {
       builder.AppendNull();
     } else {
@@ -629,11 +629,11 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
   auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
   arrow::DoubleBuilder builder;
   auto* len_sum = new LengthVisitor;
   for (int i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkt(wkt_geometries, i);
+    auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
     if (ogr == nullptr) {
       builder.AppendNull();
     } else {
