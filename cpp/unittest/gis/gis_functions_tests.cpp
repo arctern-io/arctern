@@ -308,7 +308,8 @@ TEST(geometry_test, test_ST_Intersection2) {
   builder_l.Finish(&array_l);
   builder_r.Finish(&array_r);
 
-  auto res = arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(array_l), arctern::gis::ST_GeomFromText(array_r));
+  auto res = arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(array_l),
+                                           arctern::gis::ST_GeomFromText(array_r));
   // auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   // std::cout << res_str->GetString(0) << std::endl;
 
@@ -587,7 +588,8 @@ TEST(geometry_test, test_ST_Intersection) {
   // builder2.Append(std::string(r62));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2)));
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Intersection(
+      arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -705,7 +707,8 @@ TEST(geometry_test, test_ST_PrecisionReduce) {
   string_builder.Append(l13);
 
   string_builder.Finish(&array);
-  auto geometries =  arctern::gis::ST_AsText(arctern::gis::ST_PrecisionReduce(arctern::gis::ST_GeomFromText(array), 4));
+  auto geometries = arctern::gis::ST_AsText(
+      arctern::gis::ST_PrecisionReduce(arctern::gis::ST_GeomFromText(array), 4));
   auto geometries_arr = std::static_pointer_cast<arrow::StringArray>(geometries);
 
   ASSERT_EQ(geometries_arr->GetString(0), "POINT (120.6 101.0)");
@@ -784,7 +787,8 @@ TEST(geometry_test, test_ST_Equals3) {
   builder_l.Finish(&input_l);
   builder_r.Finish(&input_r);
 
-  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input_l), arctern::gis::ST_GeomFromText(input_r));
+  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input_l),
+                                     arctern::gis::ST_GeomFromText(input_r));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->IsNull(0), true);
@@ -819,7 +823,8 @@ TEST(geometry_test, test_ST_Equals2) {
   builder1.Finish(&input1);
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input1),
+                                     arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -1016,7 +1021,8 @@ TEST(geometry_test, test_ST_Equals) {
   builder2.Append(std::string(r42));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Equals(arctern::gis::ST_GeomFromText(input1),
+                                     arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -1342,7 +1348,8 @@ TEST(geometry_test, test_ST_Touches) {
   builder2.Append(std::string(r62));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Touches(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Touches(arctern::gis::ST_GeomFromText(input1),
+                                      arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), false);
@@ -1522,7 +1529,8 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Overlaps(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Overlaps(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), false);
@@ -1609,7 +1617,8 @@ TEST(geometry_test, test_ST_Crosses) {
   builder2.Append(std::string(r12));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Crosses(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Crosses(arctern::gis::ST_GeomFromText(input1),
+                                      arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -1704,7 +1713,8 @@ TEST(geometry_test, test_ST_MakeValid) {
   builder.Append(std::string(p6));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_MakeValid(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_MakeValid(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (1 2)");
@@ -1775,7 +1785,8 @@ TEST(geometry_test, test_ST_SimplifyPreserveTopology) {
   builder.Append(std::string(p8));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_SimplifyPreserveTopology(arctern::gis::ST_GeomFromText(input), 10));
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_SimplifyPreserveTopology(
+      arctern::gis::ST_GeomFromText(input), 10));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -1893,7 +1904,8 @@ TEST(geometry_test, test_ST_Contains) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Contains(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Contains(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2196,7 +2208,8 @@ TEST(geometry_test, test_ST_Intersects) {
   // builder2.Append(std::string(r62));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Intersects(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Intersects(arctern::gis::ST_GeomFromText(input1),
+                                         arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2354,7 +2367,8 @@ TEST(geometry_test, test_ST_Within) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1),
+                                     arctern::gis::ST_GeomFromText(input2));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2405,7 +2419,8 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   builder1.Finish(&input1);
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_EQ(res_double->IsNull(0), true);
@@ -2515,7 +2530,8 @@ TEST(geometry_test, test_ST_Distance) {
   builder2.Append(std::string(r21));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), sqrt(2));
@@ -2714,7 +2730,8 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   builder_l.Finish(&input_l);
   builder_r.Finish(&input_r);
 
-  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input_l), arctern::gis::ST_GeomFromText(input_r));
+  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input_l),
+                                                arctern::gis::ST_GeomFromText(input_r));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_TRUE(std::abs(res_double->Value(0) - 1.4142135623731) < 1e-8);
@@ -2764,7 +2781,8 @@ TEST(geometry_test, test_ST_HausdorffDistance) {
   builder1.Finish(&input1);
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input1), arctern::gis::ST_GeomFromText(input2));
+  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input1),
+                                                arctern::gis::ST_GeomFromText(input2));
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 1);
@@ -2886,7 +2904,8 @@ TEST(geometry_test, test_ST_Centroid) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Centroid(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_Centroid(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -3022,7 +3041,8 @@ TEST(geometry_test, test_ST_ConvexHull) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_ConvexHull(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_ConvexHull(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
@@ -3128,7 +3148,8 @@ TEST(geometry_test, test_ST_Envelope_Empty) {
   builder.Append(std::string(p6));
   builder.Finish(&input);
 
-  auto result = arctern::gis::ST_AsText(arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
+  auto result = arctern::gis::ST_AsText(
+      arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(result_str->IsNull(0), true);
@@ -3144,7 +3165,8 @@ TEST(geometry_test, test_ST_Envelope) {
   COMMON_TEST_CASES;
   CONSTRUCT_COMMON_TEST_CASES;
 
-  auto result = arctern::gis::ST_AsText(arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
+  auto result = arctern::gis::ST_AsText(
+      arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
   ASSERT_EQ(result_str->GetString(0), "POINT (0 1)");
@@ -3206,9 +3228,11 @@ TEST(geometry_test, test_ST_Buffer) {
   builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 0));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 0));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
-  auto res1 = arctern::gis::ST_AsText(arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 1, 2));
+  auto res1 = arctern::gis::ST_AsText(
+      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 1, 2));
   auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
   ASSERT_EQ(res_str->IsNull(0), true);
@@ -3324,7 +3348,8 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Finish(&y_min);
   y_max_builder.Finish(&y_max);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max));
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
@@ -3343,7 +3368,8 @@ TEST(geometry_test, test_ST_Transform) {
   std::string src_rs("EPSG:4326");
   std::string dst_rs("EPSG:3857");
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Transform(arctern::gis::ST_GeomFromText(input_data), src_rs, dst_rs));
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Transform(
+      arctern::gis::ST_GeomFromText(input_data), src_rs, dst_rs));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res)->GetString(0);
   OGRGeometry* res_geo = nullptr;
   CHECK_GDAL(OGRGeometryFactory::createFromWkt(res_str.c_str(), nullptr, &res_geo));
@@ -3363,7 +3389,8 @@ TEST(geometry_test, test_ST_CurveToLine) {
   builder.Append(std::string("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"));
   builder.Finish(&input_data);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_CurveToLine(arctern::gis::ST_GeomFromText(input_data)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_CurveToLine(arctern::gis::ST_GeomFromText(input_data)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");
@@ -3466,7 +3493,8 @@ TEST(geometry_test, test_ST_Union_Aggr2) {
   builder.Append(std::string(p5));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0),
@@ -3498,7 +3526,8 @@ TEST(geometry_test, test_ST_Union_Aggr) {
   // builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_Union_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0),
@@ -3531,7 +3560,8 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
   // builder.Append(std::string(p9));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsText(arctern::gis::ST_Envelope_Aggr(arctern::gis::ST_GeomFromText(input)));
+  auto res = arctern::gis::ST_AsText(
+      arctern::gis::ST_Envelope_Aggr(arctern::gis::ST_GeomFromText(input)));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((-2 -3,-2 4,3 4,3 -3,-2 -3))");
