@@ -118,7 +118,7 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
 template<typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
 UnaryOp(const std::shared_ptr<arrow::Array>& array,
-        std::function<void(T&,const OGRGeometry*)> op){
+        std::function<void(T&,OGRGeometry*)> op){
   auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
   auto len = array->length();
   T builder;
@@ -140,7 +140,7 @@ template<typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
 BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
         const std::shared_ptr<arrow::Array>& geo2,
-        std::function<void(T&,const OGRGeometry*,const OGRGeometry*)> op){
+        std::function<void(T&,OGRGeometry*,OGRGeometry*)> op){
   auto len = geo1->length();
   auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
   auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
@@ -585,7 +585,7 @@ std::shared_ptr<arrow::Array> ST_ConvexHull(const std::shared_ptr<arrow::Array>&
 /*
  * The detailed EPSG information can be found at EPSG.io [https://epsg.io/]
  */
-std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& geos,
+std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& geometries,
                                            const std::string& src_rs,
                                            const std::string& dst_rs) {
   OGRSpatialReference oSrcSRS;
@@ -603,35 +603,46 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-  arrow::BinaryBuilder builder;
 
-  auto len = geos->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
-
-  for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
-    if (geo == nullptr) {
-      CHECK_ARROW(builder.AppendNull());
-    } else {
-      auto err_code = geo->transform((OGRCoordinateTransformation*)poCT);
+  auto op = [&poCT](arrow::BinaryBuilder &builder, OGRGeometry* geo){
+    auto err_code = geo->transform((OGRCoordinateTransformation*)poCT);
       if(err_code==OGRERR_NONE){
         AppendWkbNDR(builder,geo);
       }else{
         builder.AppendNull();
       }
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
+  };
+  return UnaryOp<arrow::BinaryBuilder>(geometries,op);
 
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  OCTDestroyCoordinateTransformation(poCT);
+  // arrow::BinaryBuilder builder;
 
-  return results;
+  // auto len = geos->length();
+  // auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
+
+  // for (int32_t i = 0; i < len; i++) {
+  //   auto geo = Wrapper_createFromWkb(wkt_geometries, i);
+  //   if (geo == nullptr) {
+  //     CHECK_ARROW(builder.AppendNull());
+  //   } else {
+  //     auto err_code = geo->transform((OGRCoordinateTransformation*)poCT);
+  //     if(err_code==OGRERR_NONE){
+  //       AppendWkbNDR(builder,geo);
+  //     }else{
+  //       builder.AppendNull();
+  //     }
+  //   }
+  //   OGRGeometryFactory::destroyGeometry(geo);
+  // }
+
+  // std::shared_ptr<arrow::Array> results;
+  // CHECK_ARROW(builder.Finish(&results));
+  // OCTDestroyCoordinateTransformation(poCT);
+
+  // return results;
 }
 
 std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geometries) {
-  auto op = [](arrow::BinaryBuilder &builder, const OGRGeometry* geo){
+  auto op = [](arrow::BinaryBuilder &builder, OGRGeometry* geo){
     auto line = geo->getLinearGeometry();
     AppendWkbNDR(builder,line);;
     OGRGeometryFactory::destroyGeometry(line);
@@ -643,7 +654,7 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
   auto* area = new AreaVisitor;
-  auto op = [&area](arrow::DoubleBuilder &builder, const OGRGeometry* geo){
+  auto op = [&area](arrow::DoubleBuilder &builder, OGRGeometry* geo){
     area->reset();
     geo->accept(area);
     builder.Append(area->area());
@@ -655,7 +666,7 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
   auto* len_sum = new LengthVisitor;
-  auto op = [&len_sum](arrow::DoubleBuilder &builder, const OGRGeometry* geo){
+  auto op = [&len_sum](arrow::DoubleBuilder &builder, OGRGeometry* geo){
     len_sum->reset();
     geo->accept(len_sum);
     builder.Append(len_sum->length());
@@ -669,7 +680,7 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
     const std::shared_ptr<arrow::Array>& geo1,
     const std::shared_ptr<arrow::Array>& geo2) {
   auto geos_ctx = OGRGeometry::createGEOSContext();
-  auto op = [&geos_ctx](arrow::DoubleBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [&geos_ctx](arrow::DoubleBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     if(ogr1->IsEmpty() || ogr2->IsEmpty()){
       builder.AppendNull();
     }else{
@@ -692,7 +703,7 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
                                           const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::DoubleBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::DoubleBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     if(ogr1->IsEmpty() || ogr2->IsEmpty()){
       builder.AppendNull();
     }else{
@@ -722,7 +733,7 @@ std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& g
 
 std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
                                         const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     if(ogr1->IsEmpty() && ogr2->IsEmpty()){
       builder.AppendNull();
     }else if(ogr1->Within(ogr2) && ogr2->Within(ogr1)){
@@ -736,7 +747,7 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
 
 std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Touches(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
@@ -744,7 +755,7 @@ std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& ge
 
 std::shared_ptr<arrow::Array> ST_Overlaps(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Overlaps(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
@@ -752,7 +763,7 @@ std::shared_ptr<arrow::Array> ST_Overlaps(const std::shared_ptr<arrow::Array>& g
 
 std::shared_ptr<arrow::Array> ST_Crosses(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Crosses(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
@@ -760,7 +771,7 @@ std::shared_ptr<arrow::Array> ST_Crosses(const std::shared_ptr<arrow::Array>& ge
 
 std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Contains(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
@@ -768,7 +779,7 @@ std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& g
 
 std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Intersects(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
@@ -776,7 +787,7 @@ std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>&
 
 std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Within(ogr2)!=0);
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
