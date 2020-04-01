@@ -246,15 +246,11 @@ TEST(type_scan, dispatch) {
   auto cases = arctern::gis::StrsToWkt(cases_raw);
 
   GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
-  dispatch::TypeScannerForWkt scanner1(cases);
-  scanner1.mutable_types().push_back(type1);
 
   GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
-  dispatch::TypeScannerForWkt scanner2(cases);
-  scanner2.mutable_types().push_back(type2);
 
-  dispatch::MaskResult mask_result(scanner1, type1);
-  mask_result.AppendFilter(scanner2, type2);
+  dispatch::MaskResult mask_result(cases, type1);
+  mask_result.AppendFilter(cases, type2);
 
   auto true_checker = [&](std::shared_ptr<arrow::StringArray> wkt) {
     EXPECT_EQ(wkt->length(), 1);

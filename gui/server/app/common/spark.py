@@ -27,19 +27,29 @@ class Spark(db.DB):
             self._setup_driver_envs(envs)
 
         import uuid
-        self._db_id = uuid.uuid1().int
+        self._db_id = str(uuid.uuid1()).replace('-', '')
         self._db_name = db_config['db_name']
         self._db_type = 'spark'
         self._table_list = []
 
         print("init spark begin")
-        self.session = SparkSession.builder \
+        import socket
+        localhost_ip = socket.gethostbyname(socket.gethostname())
+        _t = SparkSession.builder \
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
-            .config("spark.executorEnv.PYSPARK_PYTHON", db_config['spark']['executor-python']) \
+            .config('spark.driver.host', localhost_ip) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-            .config("spark.databricks.session.share", "false") \
-            .getOrCreate()
+            .config("spark.databricks.session.share", "false")
+
+        configs = db_config['spark'].get('configs', None)
+        if configs:
+            for key in configs:
+                print("spark config: {} = {}".format(key, configs[key]))
+                _t = _t.config(key, configs[key])
+
+        self.session = _t.getOrCreate()
+
         print("init spark done")
         register_funcs(self.session)
 
@@ -50,7 +60,7 @@ class Spark(db.DB):
         import os
 
         keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
-                'HADOOP_CONF_DIR', 'YARN_CONF_DIR'
+                'HADOOP_CONF_DIR', 'YARN_CONF_DIR', 'GDAL_DATA', 'PROJ_LIB'
                 )
 
         for key in keys:
@@ -79,8 +89,8 @@ class Spark(db.DB):
         _df = self.run(sql)
         return _df.coalesce(1).toJSON().collect()
 
-    def load(self, table_meta):
-        for meta in table_meta:
+    def load(self, metas):
+        for meta in metas:
             if 'path' in meta and 'schema' in meta and 'format' in meta:
                 options = meta.get('options', None)
 
