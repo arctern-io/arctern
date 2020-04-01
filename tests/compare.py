@@ -368,37 +368,31 @@ def compare_results(config, arctern_results, postgis_results):
 
 
 def compare_all():
-    """Compare all the results of arctern functions and expected."""
-    compare_result_flag = True
-    names = get_tests()[0]
-    expects = get_tests()[2]
+	names, _, expects = get_tests()
 
+    flag = True
     for name, expect in zip(names, expects):
+		
+		arct_result = os.path.join(arctern_result, name + '.csv')
+		pgis_result = os.path.join(expected_result, expect + '.out')
+		print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (name, arct_result, pgis_result))
+		
+		if not os.path.isfile(arct_result):
+			print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'test result not found [%s]' % arct_result))
+			continue
 
-        arct_result = os.path.join(ARCTERN_RESULT, name + '.csv')
-        pgis_result = os.path.join(EXPECTED_RESULT, expect + '.out')
-        print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (
-            name, arct_result, pgis_result))
+		if not os.path.isfile(pgis_result):
+			print('Arctern test: %s, result: FAILED, reason: %s' % (name, 'expected result not found [%s]' % pgis_result))
+			continue
 
-        if not os.path.isfile(arct_result):
-            print('Arctern test: %s, result: FAILED, reason: %s' %
-                  (name, 'test result not found [%s]' % arct_result))
-            continue
-
-        if not os.path.isfile(pgis_result):
-            print('Arctern test: %s, result: FAILED, reason: %s' %
-                  (name, 'expected result not found [%s]' % pgis_result))
-            continue
-
-        res = compare_results(name, arct_result, pgis_result)
-        if res:
-            print('Arctern test: %s, result: PASSED' % name)
-        else:
-            print('Arctern test: %s, result: FAILED' % name)
-
-        compare_result_flag = compare_result_flag and res
-
-    return compare_result_flag
+		res = compare_results(name, arct_result, pgis_result)
+		if res == True:
+			print('Arctern test: %s, result: PASSED' % name)
+		else:
+			print('Arctern test: %s, result: FAILED' % name)
+        
+        flag = flag and res
+    return flag
 
 
 def update_quote(file_path):
