@@ -653,13 +653,13 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
     const std::shared_ptr<arrow::Array>& geo1,
     const std::shared_ptr<arrow::Array>& geo2) {
   auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
   arrow::DoubleBuilder builder;
   auto geos_ctx = OGRGeometry::createGEOSContext();
   for (int32_t i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
     if ((ogr1 == nullptr) || (ogr1->IsEmpty()) || (ogr2 == nullptr) ||
         (ogr2->IsEmpty())) {
       CHECK_ARROW(builder.AppendNull());
@@ -687,13 +687,13 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
                                           const std::shared_ptr<arrow::Array>& geo2) {
   auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
   arrow::DoubleBuilder builder;
 
   for (int i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
     if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
