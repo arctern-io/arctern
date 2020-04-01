@@ -27,7 +27,7 @@ class Spark(db.DB):
             self._setup_driver_envs(envs)
 
         import uuid
-        self._db_id = uuid.uuid1().int
+        self._db_id = str(uuid.uuid1().int)
         self._db_name = db_config['db_name']
         self._db_type = 'spark'
         self._table_list = []
