@@ -89,8 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#arctern-wrapper-func-module">arctern.wrapper_func module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#id1">arctern.wrapper_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id36">arctern Package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id37">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id4">arctern Package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id5">Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -210,9 +210,9 @@
 <dl class="function">
 <dt id="arctern.ST_PolygonFromEnvelope">
 <code class="sig-prename descclassname">arctern.</code><code class="sig-name descname">ST_PolygonFromEnvelope</code><span class="sig-paren">(</span><em class="sig-param">min_x</em>, <em class="sig-param">min_y</em>, <em class="sig-param">max_x</em>, <em class="sig-param">max_y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_PolygonFromEnvelope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.ST_PolygonFromEnvelope" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
-arr_max_y. The edges of polygon are parallel to coordinate axis.</em></p>
-<dl class="field-list simple">
+<dd><p>Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
+arr_max_y. The edges of polygon are parallel to coordinate axis.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>min_x</strong> (<em>pyarrow.array.double</em>) -- The x axis coordinates of the lower left vertical of the rectangles.</p></li>
@@ -221,12 +221,14 @@ arr_max_y. The edges of polygon are parallel to coordinate axis.</em></p>
 <li><p><strong>max_y</strong> (<em>pyarrow.array.double</em>) -- The y axis coordinates of the upper right vertical of the rectangles.</p></li>
 </ul>
 </dd>
-</dl>
-<p>:return : Geometries organized as WKB.
-:rtype: pyarrow.array.string</p>
-<dl class="field-list">
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Geometries organized as WKB.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.string</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_min</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_max</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span>

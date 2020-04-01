@@ -136,7 +136,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id36">arctern Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id4">arctern Package</a></li>
 </ul>
 </li>
 </ul>
@@ -210,23 +210,25 @@
 <dl class="function">
 <dt id="arctern.wrapper_func.ST_SimplifyPreserveTopology">
 <code class="sig-prename descclassname">arctern.wrapper_func.</code><code class="sig-name descname">ST_SimplifyPreserveTopology</code><span class="sig-paren">(</span><em class="sig-param">geos</em>, <em class="sig-param">distance_tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_SimplifyPreserveTopology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.wrapper_func.ST_SimplifyPreserveTopology" title="Permalink to this definition">¶</a></dt>
-<dd><p><a href="#id1"><span class="problematic" id="id2">*</span></a>For each geometry in geometries create a &quot;simplified&quot; version for it according
+<dd><p>For each geometry in geometries create a &quot;simplified&quot; version for it according
 to the precision that parameter tolerance specifies.</p>
 <p>Note simplified geometries with be construted in arrow::Array format, so extra 
-memory will be allocated.*</p>
-<dl class="field-list simple">
+memory will be allocated.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geos</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
 <li><p><strong>distance_tolerance</strong> (<em>double</em>) -- The precision of the simplified geometry.</p></li>
 </ul>
 </dd>
-</dl>
-<p>:return : Geometries organized as WKB.
-:rtype: pyarrow.array.string</p>
-<dl class="field-list">
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Geometries organized as WKB.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.string</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">wkb2wkt</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">10000</span><span class="p">))</span>

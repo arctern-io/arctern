@@ -210,7 +210,7 @@
 
 <div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Point.html#arctern.ST_Point">[docs]</a><span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Construct Point geometries according to the coordinates. *</span>
+<span class="sd">    Construct Point geometries according to the coordinates.</span>
 
 <span class="sd">    :type x: pyarrow.array.double</span>
 <span class="sd">    :param x: abscissa of the point</span>
@@ -218,7 +218,7 @@
 <span class="sd">    :type y: pyarrow.array.double</span>
 <span class="sd">    :param y: ordinate of the point</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -249,10 +249,10 @@
 
 <div class="viewcode-block" id="ST_Intersection"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Intersection.html#arctern.ST_Intersection">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Calculate the point set intersection of geometries.</span>
+<span class="sd">    Calculate the point set intersection of geometries.</span>
 <span class="sd">    </span>
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, </span>
-<span class="sd">    calculate a geometry that represents their point set intersection.*</span>
+<span class="sd">    calculate a geometry that represents their point set intersection.</span>
 <span class="sd">    </span>
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -260,7 +260,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -280,12 +280,12 @@
 
 <div class="viewcode-block" id="ST_IsValid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_IsValid.html#arctern.ST_IsValid">[docs]</a><span class="k">def</span> <span class="nf">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *For each item in geometries, check if it is of valid geometry format.*</span>
+<span class="sd">    For each item in geometries, check if it is of valid geometry format.</span>
 <span class="sd">    </span>
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -304,13 +304,13 @@
 
 <div class="viewcode-block" id="ST_PrecisionReduce"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_PrecisionReduce.html#arctern.ST_PrecisionReduce">[docs]</a><span class="k">def</span> <span class="nf">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Reduce the precision of geometry.</span>
+<span class="sd">    Reduce the precision of geometry.</span>
 <span class="sd">     </span>
 <span class="sd">    For every geometry in geometries, reduce the decimal places of its coordinates </span>
 <span class="sd">    to the given number. The last decimal place will be rounded. </span>
 
 <span class="sd">    Note, the operation is performed NOT in &quot;inplace&quot; manner, i.e., new geometries </span>
-<span class="sd">    in arrow::Array format will be construted and extra memory will be allocated.*</span>
+<span class="sd">    in arrow::Array format will be construted and extra memory will be allocated.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKT.</span>
@@ -318,7 +318,7 @@
 <span class="sd">    :type precision: uint32</span>
 <span class="sd">    :param geos: The number to reduce the decimals places to.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -337,11 +337,11 @@
 
 <div class="viewcode-block" id="ST_Equals"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Equals.html#arctern.ST_Equals">[docs]</a><span class="k">def</span> <span class="nf">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether geometries are &quot;spatially equal&quot;.</span>
+<span class="sd">    Check whether geometries are &quot;spatially equal&quot;.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if they are &quot;spatially equal&quot;. &quot;Spatially equal&quot; here means two geometries represent </span>
-<span class="sd">    the same geometry structure.*</span>
+<span class="sd">    the same geometry structure.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -349,7 +349,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -370,11 +370,11 @@
 
 <div class="viewcode-block" id="ST_Touches"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Touches.html#arctern.ST_Touches">[docs]</a><span class="k">def</span> <span class="nf">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether geometries &quot;touch&quot;.</span>
+<span class="sd">    Check whether geometries &quot;touch&quot;.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if they &quot;touch&quot;. &quot;Touch&quot; here means two geometries have common points, and the </span>
-<span class="sd">    common points locate only on their boundaries.*</span>
+<span class="sd">    common points locate only on their boundaries.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -382,7 +382,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 <span class="sd">    </span>
 <span class="sd">    :example:</span>
@@ -403,11 +403,11 @@
 
 <div class="viewcode-block" id="ST_Overlaps"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Overlaps.html#arctern.ST_Overlaps">[docs]</a><span class="k">def</span> <span class="nf">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether geometries &quot;spatially overlap&quot;.</span>
+<span class="sd">    Check whether geometries &quot;spatially overlap&quot;.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if they &quot;spatially overlap&quot;. &quot;Spatially overlap&quot; here means two geometries </span>
-<span class="sd">    intersect but one does not completely contain another.*</span>
+<span class="sd">    intersect but one does not completely contain another.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -415,7 +415,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 <span class="sd">    </span>
 <span class="sd">    :example:</span>
@@ -436,13 +436,13 @@
 
 <div class="viewcode-block" id="ST_Crosses"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Crosses.html#arctern.ST_Crosses">[docs]</a><span class="k">def</span> <span class="nf">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether geometries &quot;spatially cross&quot;.</span>
+<span class="sd">    Check whether geometries &quot;spatially cross&quot;.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if they &quot;spatially cross&quot;. &quot;Spatially cross&quot; here means two the geometries have</span>
 <span class="sd">    some, but not all interior points in common. The intersection of the interiors of</span>
 <span class="sd">    the geometries must not be the empty set and must have a dimensionality less than </span>
-<span class="sd">    the maximum dimension of the two input geometries.*</span>
+<span class="sd">    the maximum dimension of the two input geometries.</span>
 <span class="sd">    </span>
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -450,7 +450,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 <span class="sd">    </span>
 <span class="sd">    :example:</span>
@@ -471,16 +471,16 @@
 
 <div class="viewcode-block" id="ST_IsSimple"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_IsSimple.html#arctern.ST_IsSimple">[docs]</a><span class="k">def</span> <span class="nf">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether geometry is &quot;simple&quot;.</span>
+<span class="sd">    Check whether geometry is &quot;simple&quot;.</span>
 
 <span class="sd">    For every geometry in geometries, check if it is &quot;simple&quot;. &quot;Simple&quot; here means </span>
 <span class="sd">    that a geometry has no anomalous geometric points such as self intersection or </span>
-<span class="sd">    self tangency.*</span>
+<span class="sd">    self tangency.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -499,12 +499,12 @@
 
 <div class="viewcode-block" id="ST_GeometryType"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_GeometryType.html#arctern.ST_GeometryType">[docs]</a><span class="k">def</span> <span class="nf">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *For each geometry in geometries, return a string that indicates is type.*</span>
+<span class="sd">    For each geometry in geometries, return a string that indicates is type.</span>
 <span class="sd">    </span>
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -523,15 +523,15 @@
 
 <div class="viewcode-block" id="ST_MakeValid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_MakeValid.html#arctern.ST_MakeValid">[docs]</a><span class="k">def</span> <span class="nf">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *For every geometry in geometries, create a valid representation of it without </span>
+<span class="sd">    For every geometry in geometries, create a valid representation of it without </span>
 <span class="sd">    losing any of the input vertices. Already-valid geometries won&#39;t have further </span>
 <span class="sd">    intervention. This function returns geometries which are validated. Note, new </span>
-<span class="sd">    geometries are construted in arrow::Array format, so extra memory will be allocated.*</span>
+<span class="sd">    geometries are construted in arrow::Array format, so extra memory will be allocated.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -549,11 +549,11 @@
 
 <div class="viewcode-block" id="ST_SimplifyPreserveTopology"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_SimplifyPreserveTopology.html#arctern.ST_SimplifyPreserveTopology">[docs]</a><span class="k">def</span> <span class="nf">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *For each geometry in geometries create a &quot;simplified&quot; version for it according</span>
+<span class="sd">    For each geometry in geometries create a &quot;simplified&quot; version for it according</span>
 <span class="sd">    to the precision that parameter tolerance specifies. </span>
 
 <span class="sd">    Note simplified geometries with be construted in arrow::Array format, so extra </span>
-<span class="sd">    memory will be allocated.*</span>
+<span class="sd">    memory will be allocated.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
@@ -561,7 +561,7 @@
 <span class="sd">    :type distance_tolerance: double</span>
 <span class="sd">    :param distance_tolerance: The precision of the simplified geometry.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -579,8 +579,8 @@
 
 <div class="viewcode-block" id="ST_PolygonFromEnvelope"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_PolygonFromEnvelope.html#arctern.ST_PolygonFromEnvelope">[docs]</a><span class="k">def</span> <span class="nf">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, </span>
-<span class="sd">    arr_max_y. The edges of polygon are parallel to coordinate axis.*</span>
+<span class="sd">    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, </span>
+<span class="sd">    arr_max_y. The edges of polygon are parallel to coordinate axis.</span>
 
 <span class="sd">    :type min_x: pyarrow.array.double</span>
 <span class="sd">    :param min_x: The x axis coordinates of the lower left vertical of the rectangles.</span>
@@ -594,7 +594,7 @@
 <span class="sd">    :type max_y: pyarrow.array.double</span>
 <span class="sd">    :param max_y: The y axis coordinates of the upper right vertical of the rectangles.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -618,12 +618,12 @@
 
 <div class="viewcode-block" id="ST_Contains"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Contains.html#arctern.ST_Contains">[docs]</a><span class="k">def</span> <span class="nf">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether a geometry contain another geometry.</span>
+<span class="sd">    Check whether a geometry contain another geometry.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if left_geometry &quot;contains&quot; right_geometry. Left &quot;contains&quot; right means no points</span>
 <span class="sd">    of right_geometry lie in the exterior of left_geometry and at least one point of </span>
-<span class="sd">    the interior of right_geometry lies in the interior of left_geometry.*</span>
+<span class="sd">    the interior of right_geometry lies in the interior of left_geometry.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -631,7 +631,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -652,10 +652,10 @@
 
 <div class="viewcode-block" id="ST_Intersects"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Intersects.html#arctern.ST_Intersects">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether two geometries intersect.</span>
+<span class="sd">    Check whether two geometries intersect.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
-<span class="sd">    if left and right shares any portion of space.*</span>
+<span class="sd">    if left and right shares any portion of space.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -663,7 +663,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -684,12 +684,12 @@
 
 <div class="viewcode-block" id="ST_Within"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Within.html#arctern.ST_Within">[docs]</a><span class="k">def</span> <span class="nf">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Check whether a geometry is within another geometry.</span>
+<span class="sd">    Check whether a geometry is within another geometry.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
 <span class="sd">    if left is &quot;within&quot; right. Left &quot;within&quot; right means no points of left lie in the </span>
 <span class="sd">    exterior of right and at least one point of the interior of left lies in the interior</span>
-<span class="sd">    of right.*</span>
+<span class="sd">    of right.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -697,7 +697,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">    </span>
-<span class="sd">    :return :An array of booleans.</span>
+<span class="sd">    :return: An array of booleans.</span>
 <span class="sd">    :rtype: pyarrow.array.boolean</span>
 
 <span class="sd">    :example:</span>
@@ -718,10 +718,10 @@
 
 <div class="viewcode-block" id="ST_Distance"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Distance.html#arctern.ST_Distance">[docs]</a><span class="k">def</span> <span class="nf">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Calculate the distance between two geometries.</span>
+<span class="sd">    Calculate the distance between two geometries.</span>
 
 <span class="sd">    For every (left, right) pair with the same offset value in left and right, </span>
-<span class="sd">    calculates the minimum 2D Cartesian (planar) distance between left and right.*</span>
+<span class="sd">    calculates the minimum 2D Cartesian (planar) distance between left and right.</span>
 
 <span class="sd">    :type left: pyarrow.array.string</span>
 <span class="sd">    :param left: Geometries organized as WKB.</span>
@@ -729,7 +729,7 @@
 <span class="sd">    :type right: pyarrow.array.string</span>
 <span class="sd">    :param right: Geometries organized as WKB.</span>
 <span class="sd">     </span>
-<span class="sd">    :return :An array of double.</span>
+<span class="sd">    :return: An array of double.</span>
 <span class="sd">    :rtype: pyarrow.array.double</span>
 <span class="sd">    </span>
 <span class="sd">    :example:</span>
@@ -754,15 +754,15 @@
 
 <div class="viewcode-block" id="ST_Area"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Area.html#arctern.ST_Area">[docs]</a><span class="k">def</span> <span class="nf">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Calculate the area of geometry.</span>
+<span class="sd">    Calculate the area of geometry.</span>
 
 <span class="sd">    For every geometry in geometries, calculate the 2D Cartesian (planar) area</span>
-<span class="sd">    of geometry.*</span>
+<span class="sd">    of geometry.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return :An array of double.</span>
+<span class="sd">    :return: An array of double.</span>
 <span class="sd">    :rtype: pyarrow.array.double</span>
 
 <span class="sd">    :example:</span>
@@ -782,14 +782,14 @@
 
 <div class="viewcode-block" id="ST_Centroid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Centroid.html#arctern.ST_Centroid">[docs]</a><span class="k">def</span> <span class="nf">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Compute the centroid of geometry.</span>
+<span class="sd">    Compute the centroid of geometry.</span>
 
-<span class="sd">    For every geometry in geometries, compute the controid point of geometry.*</span>
+<span class="sd">    For every geometry in geometries, compute the controid point of geometry.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -809,14 +809,14 @@
 
 <div class="viewcode-block" id="ST_Length"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Length.html#arctern.ST_Length">[docs]</a><span class="k">def</span> <span class="nf">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Calculate the length of linear geometries.</span>
+<span class="sd">    Calculate the length of linear geometries.</span>
 
-<span class="sd">    For every geometry in geometries, calculate the length of geometry.*</span>
+<span class="sd">    For every geometry in geometries, calculate the length of geometry.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return :An array of double.</span>
+<span class="sd">    :return: An array of double.</span>
 <span class="sd">    :rtype: pyarrow.array.double</span>
 
 <span class="sd">    :example:</span>
@@ -845,15 +845,15 @@
 
 <div class="viewcode-block" id="ST_ConvexHull"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_ConvexHull.html#arctern.ST_ConvexHull">[docs]</a><span class="k">def</span> <span class="nf">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Compute the convex hull of geometry.</span>
+<span class="sd">    Compute the convex hull of geometry.</span>
 
 <span class="sd">    Compute the smallest convex geometry that encloses all geometries for a geometry</span>
-<span class="sd">    in geometries.*</span>
+<span class="sd">    in geometries.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>
@@ -872,7 +872,7 @@
 
 <div class="viewcode-block" id="ST_NPoints"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_NPoints.html#arctern.ST_NPoints">[docs]</a><span class="k">def</span> <span class="nf">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Calculates the points number for every geometry in geometries.*</span>
+<span class="sd">    Calculates the points number for every geometry in geometries.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
@@ -896,12 +896,12 @@
 
 <div class="viewcode-block" id="ST_Envelope"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Envelope.html#arctern.ST_Envelope">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    *Compute the double-precision minimum bounding box geometry for every geometry in geometries.*</span>
+<span class="sd">    Compute the double-precision minimum bounding box geometry for every geometry in geometries.</span>
 
 <span class="sd">    :type geos: pyarrow.array.string</span>
 <span class="sd">    :param geos: Geometries organized as WKB.</span>
 
-<span class="sd">    :return : Geometries organized as WKB.</span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
 <span class="sd">    :rtype: pyarrow.array.string</span>
 
 <span class="sd">    :example:</span>

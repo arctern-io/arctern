@@ -89,8 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#arctern-wrapper-func-module">arctern.wrapper_func module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#id1">arctern.wrapper_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id36">arctern Package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id37">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id4">arctern Package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id5">Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -210,20 +210,22 @@
 <dl class="function">
 <dt id="arctern.ST_Point">
 <code class="sig-prename descclassname">arctern.</code><code class="sig-name descname">ST_Point</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_Point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.ST_Point" title="Permalink to this definition">¶</a></dt>
-<dd><p><a href="#id1"><span class="problematic" id="id2">*</span></a>Construct Point geometries according to the coordinates. *</p>
-<dl class="field-list simple">
+<dd><p>Construct Point geometries according to the coordinates.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>pyarrow.array.double</em>) -- abscissa of the point</p></li>
 <li><p><strong>y</strong> (<em>pyarrow.array.double</em>) -- ordinate of the point</p></li>
 </ul>
 </dd>
-</dl>
-<p>:return : Geometries organized as WKB.
-:rtype: pyarrow.array.string</p>
-<dl class="field-list">
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Geometries organized as WKB.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.string</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>

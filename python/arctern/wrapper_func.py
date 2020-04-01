@@ -63,7 +63,7 @@ from . import arctern_core_
 
 def ST_Point(x, y):
     """
-    *Construct Point geometries according to the coordinates. *
+    Construct Point geometries according to the coordinates.
 
     :type x: pyarrow.array.double
     :param x: abscissa of the point
@@ -71,7 +71,7 @@ def ST_Point(x, y):
     :type y: pyarrow.array.double
     :param y: ordinate of the point
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -102,10 +102,10 @@ def ST_GeomFromText(text):
 
 def ST_Intersection(left, right):
     """
-    *Calculate the point set intersection of geometries.
+    Calculate the point set intersection of geometries.
     
     For every (left, right) pair with the same offset value in left and right, 
-    calculate a geometry that represents their point set intersection.*
+    calculate a geometry that represents their point set intersection.
     
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -113,7 +113,7 @@ def ST_Intersection(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -133,12 +133,12 @@ def ST_Intersection(left, right):
 
 def ST_IsValid(geos):
     """
-    *For each item in geometries, check if it is of valid geometry format.*
+    For each item in geometries, check if it is of valid geometry format.
     
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -157,13 +157,13 @@ def ST_IsValid(geos):
 
 def ST_PrecisionReduce(geos, precision):
     """
-    *Reduce the precision of geometry.
+    Reduce the precision of geometry.
      
     For every geometry in geometries, reduce the decimal places of its coordinates 
     to the given number. The last decimal place will be rounded. 
 
     Note, the operation is performed NOT in "inplace" manner, i.e., new geometries 
-    in arrow::Array format will be construted and extra memory will be allocated.*
+    in arrow::Array format will be construted and extra memory will be allocated.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKT.
@@ -171,7 +171,7 @@ def ST_PrecisionReduce(geos, precision):
     :type precision: uint32
     :param geos: The number to reduce the decimals places to.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -190,11 +190,11 @@ def ST_PrecisionReduce(geos, precision):
 
 def ST_Equals(left, right):
     """
-    *Check whether geometries are "spatially equal".
+    Check whether geometries are "spatially equal".
 
     For every (left, right) pair with the same offset value in left and right, check 
     if they are "spatially equal". "Spatially equal" here means two geometries represent 
-    the same geometry structure.*
+    the same geometry structure.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -202,7 +202,7 @@ def ST_Equals(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -223,11 +223,11 @@ def ST_Equals(left, right):
 
 def ST_Touches(left, right):
     """
-    *Check whether geometries "touch".
+    Check whether geometries "touch".
 
     For every (left, right) pair with the same offset value in left and right, check 
     if they "touch". "Touch" here means two geometries have common points, and the 
-    common points locate only on their boundaries.*
+    common points locate only on their boundaries.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -235,7 +235,7 @@ def ST_Touches(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
     
     :example:
@@ -256,11 +256,11 @@ def ST_Touches(left, right):
 
 def ST_Overlaps(left, right):
     """
-    *Check whether geometries "spatially overlap".
+    Check whether geometries "spatially overlap".
 
     For every (left, right) pair with the same offset value in left and right, check 
     if they "spatially overlap". "Spatially overlap" here means two geometries 
-    intersect but one does not completely contain another.*
+    intersect but one does not completely contain another.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -268,7 +268,7 @@ def ST_Overlaps(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
     
     :example:
@@ -289,13 +289,13 @@ def ST_Overlaps(left, right):
 
 def ST_Crosses(left, right):
     """
-    *Check whether geometries "spatially cross".
+    Check whether geometries "spatially cross".
 
     For every (left, right) pair with the same offset value in left and right, check 
     if they "spatially cross". "Spatially cross" here means two the geometries have
     some, but not all interior points in common. The intersection of the interiors of
     the geometries must not be the empty set and must have a dimensionality less than 
-    the maximum dimension of the two input geometries.*
+    the maximum dimension of the two input geometries.
     
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -303,7 +303,7 @@ def ST_Crosses(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
     
     :example:
@@ -324,16 +324,16 @@ def ST_Crosses(left, right):
 
 def ST_IsSimple(geos):
     """
-    *Check whether geometry is "simple".
+    Check whether geometry is "simple".
 
     For every geometry in geometries, check if it is "simple". "Simple" here means 
     that a geometry has no anomalous geometric points such as self intersection or 
-    self tangency.*
+    self tangency.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -352,12 +352,12 @@ def ST_IsSimple(geos):
 
 def ST_GeometryType(geos):
     """
-    *For each geometry in geometries, return a string that indicates is type.*
+    For each geometry in geometries, return a string that indicates is type.
     
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -376,15 +376,15 @@ def ST_GeometryType(geos):
 
 def ST_MakeValid(geos):
     """
-    *For every geometry in geometries, create a valid representation of it without 
+    For every geometry in geometries, create a valid representation of it without 
     losing any of the input vertices. Already-valid geometries won't have further 
     intervention. This function returns geometries which are validated. Note, new 
-    geometries are construted in arrow::Array format, so extra memory will be allocated.*
+    geometries are construted in arrow::Array format, so extra memory will be allocated.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
     
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -402,11 +402,11 @@ def ST_MakeValid(geos):
 
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
-    *For each geometry in geometries create a "simplified" version for it according
+    For each geometry in geometries create a "simplified" version for it according
     to the precision that parameter tolerance specifies. 
 
     Note simplified geometries with be construted in arrow::Array format, so extra 
-    memory will be allocated.*
+    memory will be allocated.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
@@ -414,7 +414,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :type distance_tolerance: double
     :param distance_tolerance: The precision of the simplified geometry.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -432,8 +432,8 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
 
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     """
-    *Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
-    arr_max_y. The edges of polygon are parallel to coordinate axis.*
+    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
+    arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: pyarrow.array.double
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
@@ -447,7 +447,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     :type max_y: pyarrow.array.double
     :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -471,12 +471,12 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 
 def ST_Contains(left, right):
     """
-    *Check whether a geometry contain another geometry.
+    Check whether a geometry contain another geometry.
 
     For every (left, right) pair with the same offset value in left and right, check 
     if left_geometry "contains" right_geometry. Left "contains" right means no points
     of right_geometry lie in the exterior of left_geometry and at least one point of 
-    the interior of right_geometry lies in the interior of left_geometry.*
+    the interior of right_geometry lies in the interior of left_geometry.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -484,7 +484,7 @@ def ST_Contains(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -505,10 +505,10 @@ def ST_Contains(left, right):
 
 def ST_Intersects(left, right):
     """
-    *Check whether two geometries intersect.
+    Check whether two geometries intersect.
 
     For every (left, right) pair with the same offset value in left and right, check 
-    if left and right shares any portion of space.*
+    if left and right shares any portion of space.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -516,7 +516,7 @@ def ST_Intersects(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -537,12 +537,12 @@ def ST_Intersects(left, right):
 
 def ST_Within(left, right):
     """
-    *Check whether a geometry is within another geometry.
+    Check whether a geometry is within another geometry.
 
     For every (left, right) pair with the same offset value in left and right, check 
     if left is "within" right. Left "within" right means no points of left lie in the 
     exterior of right and at least one point of the interior of left lies in the interior
-    of right.*
+    of right.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -550,7 +550,7 @@ def ST_Within(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
     
-    :return :An array of booleans.
+    :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
     :example:
@@ -571,10 +571,10 @@ def ST_Within(left, right):
 
 def ST_Distance(left, right):
     """
-    *Calculate the distance between two geometries.
+    Calculate the distance between two geometries.
 
     For every (left, right) pair with the same offset value in left and right, 
-    calculates the minimum 2D Cartesian (planar) distance between left and right.*
+    calculates the minimum 2D Cartesian (planar) distance between left and right.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
@@ -582,7 +582,7 @@ def ST_Distance(left, right):
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
      
-    :return :An array of double.
+    :return: An array of double.
     :rtype: pyarrow.array.double
     
     :example:
@@ -607,15 +607,15 @@ def ST_Distance(left, right):
 
 def ST_Area(geos):
     """
-    *Calculate the area of geometry.
+    Calculate the area of geometry.
 
     For every geometry in geometries, calculate the 2D Cartesian (planar) area
-    of geometry.*
+    of geometry.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return :An array of double.
+    :return: An array of double.
     :rtype: pyarrow.array.double
 
     :example:
@@ -635,14 +635,14 @@ def ST_Area(geos):
 
 def ST_Centroid(geos):
     """
-    *Compute the centroid of geometry.
+    Compute the centroid of geometry.
 
-    For every geometry in geometries, compute the controid point of geometry.*
+    For every geometry in geometries, compute the controid point of geometry.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -662,14 +662,14 @@ def ST_Centroid(geos):
 
 def ST_Length(geos):
     """
-    *Calculate the length of linear geometries.
+    Calculate the length of linear geometries.
 
-    For every geometry in geometries, calculate the length of geometry.*
+    For every geometry in geometries, calculate the length of geometry.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return :An array of double.
+    :return: An array of double.
     :rtype: pyarrow.array.double
 
     :example:
@@ -698,15 +698,15 @@ def ST_HausdorffDistance(geo1, geo2):
 
 def ST_ConvexHull(geos):
     """
-    *Compute the convex hull of geometry.
+    Compute the convex hull of geometry.
 
     Compute the smallest convex geometry that encloses all geometries for a geometry
-    in geometries.*
+    in geometries.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
@@ -725,7 +725,7 @@ def ST_ConvexHull(geos):
 
 def ST_NPoints(geos):
     """
-    *Calculates the points number for every geometry in geometries.*
+    Calculates the points number for every geometry in geometries.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
@@ -749,12 +749,12 @@ def ST_NPoints(geos):
 
 def ST_Envelope(geos):
     """
-    *Compute the double-precision minimum bounding box geometry for every geometry in geometries.*
+    Compute the double-precision minimum bounding box geometry for every geometry in geometries.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
-    :return : Geometries organized as WKB.
+    :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
     :example:
