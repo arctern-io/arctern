@@ -133,7 +133,7 @@ TEST(geometry_test, make_point_from_double) {
   builder_x.Finish(&ptr_x);
   builder_y.Finish(&ptr_y);
 
-  auto point_arr = arctern::gis::ST_Point(ptr_x, ptr_y);
+  auto point_arr = arctern::gis::ST_AsText(arctern::gis::ST_Point(ptr_x, ptr_y));
   auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
 
   ASSERT_EQ(point_arr_str->length(), 2);
@@ -242,7 +242,7 @@ TEST(geometry_test, test_ST_IsValid2) {
 
   string_builder.Finish(&line_strings);
 
-  auto res = arctern::gis::ST_IsValid(line_strings);
+  auto res = arctern::gis::ST_IsValid(arctern::gis::ST_GeomFromText(line_strings));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), false);
