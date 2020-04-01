@@ -93,18 +93,24 @@ inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
 }
 
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
-  auto wkb_size = geo->WkbSize();
-  auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-  auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
-  if (err_code != OGRERR_NONE) {
+  if(geo==nullptr){
     builder.AppendNull();
-    // std::string err_msg =
-    //     "failed to export to wkb, error code = " + std::to_string(err_code);
-    // throw std::runtime_error(err_msg);
+  }else if(geo->IsEmpty()){
+    builder.AppendNull();
   }else{
-    CHECK_ARROW(builder.Append(wkb, wkb_size));
+    auto wkb_size = geo->WkbSize();
+    auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
+    if (err_code != OGRERR_NONE) {
+      builder.AppendNull();
+      // std::string err_msg =
+      //     "failed to export to wkb, error code = " + std::to_string(err_code);
+      // throw std::runtime_error(err_msg);
+    }else{
+      CHECK_ARROW(builder.Append(wkb, wkb_size));
+    }
+    CPLFree(wkb);
   }
-  CPLFree(wkb);
 }
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
@@ -224,7 +230,7 @@ std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& ar
     if (geo == nullptr) {
       builder.AppendNull();
     } else {
-      CHECK_ARROW(builder.Append(geo->IsValid() != 0));
+      builder.Append(geo->IsValid() != 0);
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
@@ -316,7 +322,6 @@ std::shared_ptr<arrow::Array> ST_Envelope(
       builder.AppendNull();
     } else if (geo->IsEmpty()) {
       builder.AppendNull();
-      OGRGeometryFactory::destroyGeometry(geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
       if (env.MinX == env.MaxX) {    // vertical line or Point
@@ -347,8 +352,8 @@ std::shared_ptr<arrow::Array> ST_Envelope(
           AppendWkbNDR(builder,&polygon);
         }
       }
-      OGRGeometryFactory::destroyGeometry(geo);
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -369,12 +374,8 @@ std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& arr
       builder.AppendNull();
     }else{
       auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
-      if(buffer==nullptr){
-        builder.AppendNull();
-      }else{
-        AppendWkbNDR(builder,buffer);
-        OGRGeometryFactory::destroyGeometry(buffer);
-      }
+      AppendWkbNDR(builder,buffer);
+      OGRGeometryFactory::destroyGeometry(buffer);
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
@@ -428,14 +429,7 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
       // builder.Append("GEOMETRYCOLLECTION EMPTY");
     } else {
       auto rst = ogr1->Intersection(ogr2);
-      if (rst == nullptr) {
-        builder.AppendNull();
-      } else if (rst->IsEmpty()) {
-        builder.AppendNull();
-        // builder.Append("GEOMETRYCOLLECTION EMPTY");
-      } else {
-        AppendWkbNDR(builder,rst);
-      }
+      AppendWkbNDR(builder,rst);
       OGRGeometryFactory::destroyGeometry(rst);
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
@@ -464,12 +458,8 @@ std::shared_ptr<arrow::Array> ST_MakeValid(const std::shared_ptr<arrow::Array>& 
         builder.Append(data_ptr,offset);
       }else{
         auto make_valid = geo->MakeValid();
-        if(make_valid==nullptr){
-          builder.AppendNull();
-        }else{
-          AppendWkbNDR(builder,make_valid);
-          OGRGeometryFactory::destroyGeometry(make_valid);
-        }
+        AppendWkbNDR(builder,make_valid);
+        OGRGeometryFactory::destroyGeometry(make_valid);
       }
     }
     OGRGeometryFactory::destroyGeometry(geo);
@@ -490,12 +480,8 @@ std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(const std::shared_ptr<
       builder.AppendNull();
     }else{
       auto simple = geo->SimplifyPreserveTopology(distance_tolerance);
-      if(simple==nullptr){
-        builder.AppendNull();
-      }else{
-        AppendWkbNDR(builder,simple);
-        OGRGeometryFactory::destroyGeometry(simple);
-      }
+      AppendWkbNDR(builder,simple);
+      OGRGeometryFactory::destroyGeometry(simple);
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
@@ -528,11 +514,25 @@ std::shared_ptr<arrow::Array> ST_Centroid(const std::shared_ptr<arrow::Array>& a
   return results;
 }
 
-// UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Centroid, arrow::StringBuilder, geo,
-//                                  Wrapper_OGR_G_Centroid(geo));
-
-// UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_ConvexHull, arrow::StringBuilder, geo,
-//                                  OGR_G_ConvexHull(geo));
+std::shared_ptr<arrow::Array> ST_ConvexHull(const std::shared_ptr<arrow::Array>& array){
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BinaryBuilder builder;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb,i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      auto cvx = geo->ConvexHull();
+      AppendWkbNDR(builder,cvx);
+      OGRGeometryFactory::destroyGeometry(cvx);
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 /*
  * The detailed EPSG information can be found at EPSG.io [https://epsg.io/]
@@ -555,22 +555,24 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   }
 
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
 
   auto len = geos->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
 
   for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
     if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull());
     } else {
-      CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
-      auto wkt = Wrapper_OGR_G_ExportToWkt(geo);
-      CHECK_ARROW(builder.Append(wkt));
-      OGRGeometryFactory::destroyGeometry(geo);
-      CPLFree(wkt);
+      auto err_code = geo->transform((OGRCoordinateTransformation*)poCT);
+      if(err_code==OGRERR_NONE){
+        AppendWkbNDR(builder,geo);
+      }else{
+        builder.AppendNull();
+      }
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
 
   std::shared_ptr<arrow::Array> results;
@@ -582,17 +584,15 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos) {
   auto len = geos->length();
-  auto wkt = std::static_pointer_cast<arrow::StringArray>(geos);
-  arrow::StringBuilder builder;
+  auto wkt = std::static_pointer_cast<arrow::BinaryArray>(geos);
+  arrow::BinaryBuilder builder;
   for (int32_t i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkt(wkt, i);
+    auto ogr = Wrapper_createFromWkb(wkt, i);
     if (ogr == nullptr) {
       CHECK_ARROW(builder.AppendNull());
     } else {
       auto line = ogr->getLinearGeometry();
-      auto line_wkt = Wrapper_OGR_G_ExportToWkt(line);
-      CHECK_ARROW(builder.Append(line_wkt));
-      CPLFree(line_wkt);
+      AppendWkbNDR(builder,line);;
       OGRGeometryFactory::destroyGeometry(line);
       OGRGeometryFactory::destroyGeometry(ogr);
     }
