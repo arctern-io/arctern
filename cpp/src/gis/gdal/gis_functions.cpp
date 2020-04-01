@@ -115,6 +115,33 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   }
 }
 
+
+
+template<typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
+BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
+        const std::shared_ptr<arrow::Array>& geo2,
+        std::function<void(T&,const OGRGeometry*,const OGRGeometry*)> op){
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
+  T builder;
+  for(int i = 0; i<len; ++i){
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.AppendNull();
+    }else{
+      op(builder,ogr1,ogr2);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
 std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
@@ -629,43 +656,67 @@ std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geome
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
-  auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
-  arrow::DoubleBuilder builder;
-  auto* len_sum = new LengthVisitor;
-  for (int i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
-    if (ogr == nullptr) {
+template<typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
+UnaryOp(const std::shared_ptr<arrow::Array>& array,
+        std::function<void(T&,const OGRGeometry*)> op){
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  auto len = array->length();
+  T builder;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb,i);
+    if(geo==nullptr){
       builder.AppendNull();
-    } else {
-      len_sum->reset();
-      ogr->accept(len_sum);
-      builder.Append(len_sum->length());
+    }else{
+      op(builder,geo);
     }
-    OGRGeometryFactory::destroyGeometry(ogr);
+    OGRGeometryFactory::destroyGeometry(geo);
   }
-  delete len_sum;
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
 }
 
+std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries) {
+  auto* len_sum = new LengthVisitor;
+  auto op = [&len_sum](arrow::DoubleBuilder &builder, const OGRGeometry* geo){
+    len_sum->reset();
+    geo->accept(len_sum);
+    builder.Append(len_sum->length());
+  };
+  auto results = UnaryOp<arrow::DoubleBuilder>(geometries,op);
+  delete len_sum;
+  return results;
+
+  // auto len = geometries->length();
+  // auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
+  // arrow::DoubleBuilder builder;
+  // auto* len_sum = new LengthVisitor;
+  // for (int i = 0; i < len; i++) {
+  //   auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
+  //   if (ogr == nullptr) {
+  //     builder.AppendNull();
+  //   } else {
+  //     len_sum->reset();
+  //     ogr->accept(len_sum);
+  //     builder.Append(len_sum->length());
+  //   }
+  //   OGRGeometryFactory::destroyGeometry(ogr);
+  // }
+  // delete len_sum;
+  // std::shared_ptr<arrow::Array> results;
+  // CHECK_ARROW(builder.Finish(&results));
+  // return results;
+}
+
 std::shared_ptr<arrow::Array> ST_HausdorffDistance(
     const std::shared_ptr<arrow::Array>& geo1,
     const std::shared_ptr<arrow::Array>& geo2) {
-  auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  arrow::DoubleBuilder builder;
   auto geos_ctx = OGRGeometry::createGEOSContext();
-  for (int32_t i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-    if ((ogr1 == nullptr) || (ogr1->IsEmpty()) || (ogr2 == nullptr) ||
-        (ogr2->IsEmpty())) {
-      CHECK_ARROW(builder.AppendNull());
-    } else {
+  auto op = [&geos_ctx](arrow::DoubleBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    if(ogr1->IsEmpty() || ogr2->IsEmpty()){
+      builder.AppendNull();
+    }else{
       auto geos1 = ogr1->exportToGEOS(geos_ctx);
       auto geos2 = ogr2->exportToGEOS(geos_ctx);
       double dist;
@@ -675,45 +726,29 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
       }
       GEOSGeom_destroy_r(geos_ctx, geos1);
       GEOSGeom_destroy_r(geos_ctx, geos2);
-      CHECK_ARROW(builder.Append(dist));
+      builder.Append(dist);
     }
-    OGRGeometryFactory::destroyGeometry(ogr1);
-    OGRGeometryFactory::destroyGeometry(ogr2);
-  }
+  };
+  auto results = BinaryOp<arrow::DoubleBuilder>(geo1,geo2,op);
   OGRGeometry::freeGEOSContext(geos_ctx);
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
   return results;
 }
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
                                           const std::shared_ptr<arrow::Array>& geo2) {
-  auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  arrow::DoubleBuilder builder;
-
-  for (int i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+  auto op = [](arrow::DoubleBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    if(ogr1->IsEmpty() || ogr2->IsEmpty()){
       builder.AppendNull();
-    } else if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
-      builder.AppendNull();
-    } else {
-      double dist = OGR_G_Distance(ogr1, ogr2);
-      if (dist < 0) {
+    }else{
+      auto dist = ogr1->Distance(ogr2);
+      if(dist < 0){
         builder.AppendNull();
-      } else {
+      }else{
         builder.Append(dist);
       }
     }
-    OGRGeometryFactory::destroyGeometry(ogr1);
-    OGRGeometryFactory::destroyGeometry(ogr2);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  };
+  return BinaryOp<arrow::DoubleBuilder>(geo1,geo2,op);
 }
 
 /************************ SPATIAL RELATIONSHIP ************************/
@@ -728,33 +763,6 @@ std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& g
  * be noted ST_OrderingEquals is a little more stringent than simply verifying order of
  * points are the same).
  * ***********************************************/
-
-template<typename T>
-typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
-BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
-        const std::shared_ptr<arrow::Array>& geo2,
-        std::function<void(T&,const OGRGeometry*,const OGRGeometry*)> op){
-  auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  T builder;
-  for(int i = 0; i<len; ++i){
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.AppendNull();
-    }else{
-      op(builder,ogr1,ogr2);
-    }
-    OGRGeometryFactory::destroyGeometry(ogr1);
-    OGRGeometryFactory::destroyGeometry(ogr2);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
-}
-
-
 
 std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
                                         const std::shared_ptr<arrow::Array>& geo2) {
