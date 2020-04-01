@@ -40,14 +40,15 @@ class Spark(db.DB):
             .master(db_config['spark']['master-addr']) \
             .config('spark.driver.host', localhost_ip) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-            .config("spark.databricks.session.share", "false") \
-            .getOrCreate()
+            .config("spark.databricks.session.share", "false")
 
         configs = db_config['spark'].get('configs', None)
         if configs:
             for key in configs:
                 print("spark config: {} = {}".format(key, configs[key]))
-                self.session.conf.set(key, configs[key])
+                _t = _t.config(key, configs[key])
+
+        self.session = _t.getOrCreate()
 
         print("init spark done")
         register_funcs(self.session)
