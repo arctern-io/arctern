@@ -352,34 +352,49 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 }
 
 /************************ GEOMETRY PROCESSING ************************/
+std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& array,
+                                        double buffer_distance,
+                                        int n_quadrant_segments){
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BinaryBuilder builder;
 
-// std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>&
-// geometries,
-//                                         double buffer_distance, int
-//                                         n_quadrant_segments) {
-//   UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
-//       arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance,
-//       n_quadrant_segments));
-// }
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb,i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
+      if(buffer==nullptr){
+        builder.AppendNull();
+      }else{
+        AppendWkbNDR(builder,buffer);
+        OGRGeometryFactory::destroyGeometry(buffer);
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t precision) {
   auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
   auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
-  arrow::StringBuilder builder;
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
+  arrow::BinaryBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
     if (geo == nullptr) {
-      CHECK_ARROW(builder.AppendNull());
+      builder.AppendNull();
     } else {
       geo->accept(precision_reduce_visitor);
-      auto wkt_tmp = Wrapper_OGR_G_ExportToWkt(geo);
-      CHECK_ARROW(builder.Append(wkt_tmp));
-      OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
-      CPLFree(wkt_tmp);
+      AppendWkbNDR(builder,geo);
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
 
   std::shared_ptr<arrow::Array> results;
@@ -390,32 +405,32 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 
 std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array>& geo1,
                                               const std::shared_ptr<arrow::Array>& geo2) {
-  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
   auto len = wkt1->length();
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
   auto has_curve = new HasCurveVisitor;
 
   for (int i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
     ogr1 = Wrapper_CurveToLine(ogr1, has_curve);
     ogr2 = Wrapper_CurveToLine(ogr2, has_curve);
 
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.Append("GEOMETRYCOLLECTION EMPTY");
+      builder.AppendNull();
+      // builder.Append("GEOMETRYCOLLECTION EMPTY");
     } else {
       auto rst = ogr1->Intersection(ogr2);
       if (rst == nullptr) {
         builder.AppendNull();
       } else if (rst->IsEmpty()) {
-        builder.Append("GEOMETRYCOLLECTION EMPTY");
+        builder.AppendNull();
+        // builder.Append("GEOMETRYCOLLECTION EMPTY");
       } else {
-        char* wkt = Wrapper_OGR_G_ExportToWkt(rst);
-        builder.Append(std::string(wkt));
-        CPLFree(wkt);
+        AppendWkbNDR(builder,rst);
       }
       OGRGeometryFactory::destroyGeometry(rst);
     }
