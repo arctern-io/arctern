@@ -45,10 +45,12 @@ namespace gdal {
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
-  if (parser::IsValidWkt(array->GetString(idx).c_str()) == false) return nullptr;
+  auto wkb_str = array->GetString(idx);
+
+  if (parser::IsValidWkt(wkb_str.c_str()) == false) return nullptr;
   OGRGeometry* geo = nullptr;
   auto err_code =
-      OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
+      OGRGeometryFactory::createFromWkt(wkb_str.c_str(), nullptr, &geo);
   if (err_code != OGRERR_NONE) return nullptr;
   return geo;
 }
@@ -442,9 +444,39 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
 
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
-
   return results;
 }
+
+std::shared_ptr<arrow::Array> ST_MakeValid(const std::shared_ptr<arrow::Array>& array) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BinaryBuilder builder;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb, i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      if(geo->IsValid()){
+        arrow::BinaryArray::offset_type offset;
+        auto data_ptr = wkb->GetValue(i, &offset);
+        builder.Append(data_ptr,offset);
+      }else{
+        auto make_valid = geo->MakeValid();
+        if(make_valid==nullptr){
+          builder.AppendNull();
+        }else{
+          AppendWkbNDR(builder,make_valid);
+          OGRGeometryFactory::destroyGeometry(make_valid);
+        }
+      }
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
+
 
 // UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_MakeValid, arrow::StringBuilder, geo,
 //                                  OGR_G_MakeValid(geo));
