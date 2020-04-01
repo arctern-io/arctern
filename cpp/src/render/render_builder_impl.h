@@ -64,7 +64,7 @@ T aggregation(std::string type, std::vector<T> weight) {
       T accum = 0;
       std::for_each(std::begin(weight), std::end(weight),
                     [&](const T d) { accum += (d - mean) * (d - mean); });
-      return sqrt(accum/weight.size());
+      return sqrt(accum / weight.size());
     }
     case AggType::AVG: {
       T sum_data = accumulate(weight.begin(), weight.end(), 0);
