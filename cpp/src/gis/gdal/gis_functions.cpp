@@ -268,6 +268,20 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
   return results;
 }
 
+std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb){
+  auto op = [](arrow::StringBuilder &builder,OGRGeometry* geo){
+    char *str;
+    auto err_code = geo->exportToWkt(&str);
+    if(err_code != OGRERR_NONE){
+      builder.AppendNull();
+    }else{
+      builder.Append(std::string(str));
+    }
+    CPLFree(str);
+  };
+  return UnaryOp<arrow::StringBuilder>(wkb,op);
+}
+
 /************************* GEOMETRY ACCESSOR **************************/
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& array) {
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* geo){
