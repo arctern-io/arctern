@@ -107,8 +107,8 @@ def ST_Intersection(left, right):
     :type left: wkt series
     :param left: wkt of geometry,this function don't accept 'GEOMETRYCOLLECTION' 
      
-    :type y: wkt series
-    :param y: wkt of geometry,this function don't accept 'GEOMETRYCOLLECTION'
+    :type right: wkt series
+    :param right: wkt of geometry,this function don't accept 'GEOMETRYCOLLECTION'
 
     :return: if success,return wkt of intersection between left and right
     :rtype: a series of wkt
