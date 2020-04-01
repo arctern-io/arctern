@@ -13,6 +13,18 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 # use login shell to activate arrow environment un the RUN commands
 SHELL [ "/bin/bash", "-c", "-l" ]
 
+EXPOSE 8080
+
+ENV PATH /opt/conda/bin:$PATH
+
+# Add Tini
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
+ENV PATH /opt/conda/bin:$PATH
+
+ENTRYPOINT ["/tini", "--"]
+
 # use login shell when running the container
-ENTRYPOINT [ "/bin/bash", "-c", "-l"]
-CMD ["python", "manage.py", "-r"]
+CMD ["conda", "run", "-n", "python", "manage.py", "-r"]
