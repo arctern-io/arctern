@@ -42,21 +42,6 @@ namespace gdal {
 //   return centroid;
 // }
 
-// inline bool Wrapper_OGR_G_IsValid(const char* geo_wkt) {
-//   void* geo = nullptr;
-//   if (parser::IsValidWkt(geo_wkt) == false) return false;
-//   bool is_valid = false;
-//   auto err_code =
-//       OGRGeometryFactory::createFromWkt(geo_wkt, nullptr, (OGRGeometry**)(&geo));
-//   if (err_code == OGRERR_NONE) {
-//     is_valid = OGR_G_IsValid(geo) != 0;
-//   }
-//   if (geo) {
-//     OGRGeometryFactory::destroyGeometry((OGRGeometry*)geo);
-//   }
-//   return is_valid;
-// }
-
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
@@ -117,12 +102,6 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   CHECK_ARROW(builder.Append(wkb, wkb_size));
   CPLFree(wkb);
 }
-
-// inline std::string Wrapper_OGR_G_GetGeometryName(void* geo) {
-//   auto ogr_geometry_name = OGR_G_GetGeometryName(geo);
-//   std::string adjust_geometry_name = "ST_" + std::string(ogr_geometry_name);
-//   return adjust_geometry_name;
-// }
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
@@ -250,11 +229,25 @@ std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& ar
   return results;
 }
 
-// UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(ST_IsValid, arrow::BooleanBuilder, geo_wkt,
-//                                  Wrapper_OGR_G_IsValid(geo_wkt));
-
-// UNARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_GeometryType, arrow::StringBuilder, geo,
-//                                  Wrapper_OGR_G_GetGeometryName(geo));
+std::shared_ptr<arrow::Array> ST_GeometryType(
+    const std::shared_ptr<arrow::Array>& array) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::StringBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkb(wkb, i);
+    if (geo == nullptr) {
+      builder.AppendNull();
+    } else {
+      std::string name = std::string("ST_") + geo->getGeometryName();
+      builder.Append(name);
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 std::shared_ptr<arrow::Array> ST_IsSimple(const std::shared_ptr<arrow::Array>& geo) {
   auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
