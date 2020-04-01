@@ -19,8 +19,8 @@
 
 #include <arrow/api.h>
 
-#include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/dispatch/wkb_type_scanner.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 
 namespace arctern {
 namespace gis {

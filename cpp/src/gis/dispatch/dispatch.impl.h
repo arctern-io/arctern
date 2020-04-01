@@ -32,7 +32,7 @@ namespace dispatch {
 // return [false_array, true_array]
 template <typename TypedArrowArray>
 inline auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
-                       const std::vector<bool>& mask)
+                              const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
   using Builder = GetArrowBuilderType<TypedArrowArray>;
   std::array<Builder, 2> builders;
@@ -56,7 +56,7 @@ inline auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries
 // return [false_array, true_array]
 template <typename TypedArrowArray>
 inline auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geometries_raw,
-                              const std::vector<bool>& mask)
+                                     const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
   auto geometries = std::static_pointer_cast<TypedArrowArray>(geometries_raw);
   return GenericArraySplit(geometries, mask);
@@ -64,9 +64,9 @@ inline auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geomet
 
 // merge [false_array, true_array]
 template <typename TypedArrowArray>
-inline auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
-                       const std::vector<bool>& mask)
-    -> std::shared_ptr<TypedArrowArray> {
+inline auto GenericArrayMerge(
+    const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
+    const std::vector<bool>& mask) -> std::shared_ptr<TypedArrowArray> {
   assert(inputs[0]->length() + inputs[1]->length() == mask.size());
   std::array<int, 2> indexes{0, 0};
   using Builder = GetArrowBuilderType<TypedArrowArray>;
@@ -120,7 +120,8 @@ inline std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
 inline auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
-                       TrueFunc true_func, Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+                              TrueFunc true_func, Arg1&& arg1_ptr)
+    -> std::shared_ptr<RetType> {
   auto split_inputs = GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask);
   assert(split_inputs[1]->null_count() == 0);
   auto false_output = false_func(split_inputs[false]);
@@ -129,8 +130,9 @@ inline auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_fun
 }
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
-inline auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
-                  Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
+inline auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func,
+                         TrueFunc true_func, Arg1&& arg1_ptr)
+    -> std::shared_ptr<RetType> {
   using Status = MaskResult::Status;
   switch (mask_result.get_status()) {
     case Status::kOnlyFalse: {
@@ -153,7 +155,7 @@ inline auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, Tr
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
           typename Arg2>
 inline auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
-                        TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+                               TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
     -> std::shared_ptr<RetType> {
   auto split_inputs =
       std::make_tuple(GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask),
@@ -170,7 +172,7 @@ inline auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_fu
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
           typename Arg2>
 inline auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
-                   TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
+                          TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
     -> std::shared_ptr<RetType> {
   using Status = MaskResult::Status;
   switch (mask_result.get_status()) {
