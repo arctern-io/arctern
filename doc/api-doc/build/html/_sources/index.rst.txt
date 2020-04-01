@@ -7,7 +7,7 @@ Welcome to arctern's documentation!
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 8
    :caption: Contents:
 
    arctern
