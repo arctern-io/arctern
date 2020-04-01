@@ -44,7 +44,7 @@ def load_data(content):
     if db_type == 'spark':
         db_instance = spark.Spark(content)
         db_instance.load(table_meta)
-        DB_MAP[db_instance.id()] = db_instance
+        DB_MAP[str(db_instance.id())] = db_instance
         return ('success', 200, 'load data succeed!')
 
     return ('error', -1, 'sorry, but unsupported db type!')
@@ -113,7 +113,7 @@ def db_tables():
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
 
-    db_instance = DB_MAP.get(int(request.json['id']), None)
+    db_instance = DB_MAP.get(str(request.json['id']), None)
     if db_instance:
         content = db_instance.table_list()
         return jsonify(status="success", code=200, data=content)
@@ -133,7 +133,7 @@ def db_table_info():
 
     content = []
 
-    db_instance = DB_MAP.get(int(request.json['id']), None)
+    db_instance = DB_MAP.get(str(request.json['id']), None)
     if db_instance:
         if request.json['table'] not in db_instance.table_list():
             return jsonify(status="error", code=-1, message='the table {} is not in this db!'.format(request.json['table']))
@@ -166,7 +166,7 @@ def db_query():
     content['sql'] = query_sql
     content['err'] = False
 
-    db_instance = DB_MAP.get(int(request.json['id']), None)
+    db_instance = DB_MAP.get(str(request.json['id']), None)
     if db_instance is None:
         return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
