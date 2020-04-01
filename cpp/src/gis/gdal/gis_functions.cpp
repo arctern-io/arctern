@@ -768,52 +768,14 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
     }
   };
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);
-
-  // auto len = geo1->length();
-  // auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  // auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  // arrow::BooleanBuilder builder;
-  // for (int32_t i = 0; i < len; ++i) {
-  //   auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-  //   auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-  //   if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-  //     builder.AppendNull();
-  //   } else if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
-  //     builder.Append(true);
-  //   } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
-  //     builder.Append(true);
-  //   } else {
-  //     builder.Append(false);
-  //   }
-  //   OGRGeometryFactory::destroyGeometry(ogr1);
-  //   OGRGeometryFactory::destroyGeometry(ogr2);
-  // }
-  // std::shared_ptr<arrow::Array> results;
-  // CHECK_ARROW(builder.Finish(&results));
-  // return results;
 }
-
 
 std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& geo1,
                                          const std::shared_ptr<arrow::Array>& geo2) {
-  auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  arrow::BooleanBuilder builder;
-  for(int i=0;i<len;++i){
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.AppendNull();
-    }else{
-      builder.Append(ogr1->Touches(ogr2)!=0);
-    }
-    OGRGeometryFactory::destroyGeometry(ogr1);
-    OGRGeometryFactory::destroyGeometry(ogr2);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;                            
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Touches(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
 }
 
 
