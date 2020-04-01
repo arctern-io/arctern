@@ -35,7 +35,7 @@ class Spark(db.DB):
         print("init spark begin")
         import socket
         localhost_ip = socket.gethostbyname(socket.gethostname())
-        self.session = SparkSession.builder \
+        _t = SparkSession.builder \
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
             .config('spark.driver.host', localhost_ip) \
