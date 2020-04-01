@@ -115,7 +115,26 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   }
 }
 
-
+template<typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
+UnaryOp(const std::shared_ptr<arrow::Array>& array,
+        std::function<void(T&,const OGRGeometry*)> op){
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  auto len = array->length();
+  T builder;
+  for(int i=0; i<len; ++i){
+    auto geo = Wrapper_createFromWkb(wkb,i);
+    if(geo==nullptr){
+      builder.AppendNull();
+    }else{
+      op(builder,geo);
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 template<typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
@@ -611,69 +630,26 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos) {
-  auto len = geos->length();
-  auto wkt = std::static_pointer_cast<arrow::BinaryArray>(geos);
-  arrow::BinaryBuilder builder;
-  for (int32_t i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkb(wkt, i);
-    if (ogr == nullptr) {
-      CHECK_ARROW(builder.AppendNull());
-    } else {
-      auto line = ogr->getLinearGeometry();
-      AppendWkbNDR(builder,line);;
-      OGRGeometryFactory::destroyGeometry(line);
-      OGRGeometryFactory::destroyGeometry(ogr);
-    }
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-
-  return results;
+std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geometries) {
+  auto op = [](arrow::BinaryBuilder &builder, const OGRGeometry* geo){
+    auto line = geo->getLinearGeometry();
+    AppendWkbNDR(builder,line);;
+    OGRGeometryFactory::destroyGeometry(line);
+  };
+  return UnaryOp<arrow::BinaryBuilder>(geometries,op);
 }
 
 /************************ MEASUREMENT FUNCTIONS ************************/
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries) {
-  auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
-  arrow::DoubleBuilder builder;
   auto* area = new AreaVisitor;
-  for (int32_t i = 0; i < len; i++) {
-    auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
-    if (ogr == nullptr) {
-      builder.AppendNull();
-    } else {
-      area->reset();
-      ogr->accept(area);
-      builder.Append(area->area());
-    }
-    OGRGeometryFactory::destroyGeometry(ogr);
-  }
+  auto op = [&area](arrow::DoubleBuilder &builder, const OGRGeometry* geo){
+    area->reset();
+    geo->accept(area);
+    builder.Append(area->area());
+  };
+  auto results = UnaryOp<arrow::DoubleBuilder>(geometries,op);
   delete area;
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
-}
-
-template<typename T>
-typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
-UnaryOp(const std::shared_ptr<arrow::Array>& array,
-        std::function<void(T&,const OGRGeometry*)> op){
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  auto len = array->length();
-  T builder;
-  for(int i=0; i<len; ++i){
-    auto geo = Wrapper_createFromWkb(wkb,i);
-    if(geo==nullptr){
-      builder.AppendNull();
-    }else{
-      op(builder,geo);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
   return results;
 }
 
@@ -687,26 +663,6 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   auto results = UnaryOp<arrow::DoubleBuilder>(geometries,op);
   delete len_sum;
   return results;
-
-  // auto len = geometries->length();
-  // auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
-  // arrow::DoubleBuilder builder;
-  // auto* len_sum = new LengthVisitor;
-  // for (int i = 0; i < len; i++) {
-  //   auto ogr = Wrapper_createFromWkb(wkt_geometries, i);
-  //   if (ogr == nullptr) {
-  //     builder.AppendNull();
-  //   } else {
-  //     len_sum->reset();
-  //     ogr->accept(len_sum);
-  //     builder.Append(len_sum->length());
-  //   }
-  //   OGRGeometryFactory::destroyGeometry(ogr);
-  // }
-  // delete len_sum;
-  // std::shared_ptr<arrow::Array> results;
-  // CHECK_ARROW(builder.Finish(&results));
-  // return results;
 }
 
 std::shared_ptr<arrow::Array> ST_HausdorffDistance(
