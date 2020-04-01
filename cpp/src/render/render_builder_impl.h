@@ -17,13 +17,13 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <algorithm>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <algorithm>
-#include<numeric>
 
 #include "utils/check_status.h"
 
@@ -37,8 +37,7 @@ AggType agg_type(std::string type) {
   if (type == "min") return AggType::MIN;
   if (type == "count") return AggType::COUNT;
   if (type == "stddev") return AggType::STDDEV;
-  std::string err_msg =
-        "unknow agg type = " + type;
+  std::string err_msg = "unknow agg type = " + type;
   throw std::runtime_error(err_msg);
 }
 
@@ -63,10 +62,9 @@ T aggregation(std::string type, std::vector<T> weight) {
       T sum = accumulate(weight.begin(), weight.end(), 0);
       T mean = sum / weight.size();
       T accum = 0;
-      std::for_each(std::begin(weight), std::end(weight), [&](const T d) {
-		    accum += (d - mean) * (d - mean);
-	    });
-      return sqrt(accum/weight.size());
+      std::for_each(std::begin(weight), std::end(weight),
+                    [&](const T d) { accum += (d - mean) * (d - mean); });
+      return sqrt(accum / weight.size());
     }
     case AggType::AVG: {
       T sum_data = accumulate(weight.begin(), weight.end(), 0);
@@ -310,8 +308,8 @@ weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
   assert(geos_size == c_size);
   assert(c_size == s_size);
 
-  std::unordered_map<OGRGeometry*,
-      std::pair<std::vector<T>, std::vector<T>>, hash_func> results;
+  using vector_pair = std::pair<std::vector<T>, std::vector<T>>;
+  std::unordered_map<OGRGeometry*, vector_pair, hash_func> results;
 
   for (size_t i = 0; i < geos_size; i++) {
     std::string geo_wkb = geo_arr->GetString(i);
