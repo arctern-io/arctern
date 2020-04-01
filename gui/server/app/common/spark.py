@@ -36,10 +36,16 @@ class Spark(db.DB):
         self.session = SparkSession.builder \
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
-            .config("spark.executorEnv.PYSPARK_PYTHON", db_config['spark']['executor-python']) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
             .config("spark.databricks.session.share", "false") \
             .getOrCreate()
+
+        configs = db_config['spark'].get('configs', None)
+        if configs:
+            for key in configs:
+                print("spark config: {} = {}".format(key, configs[key]))
+                self.session.conf.set(key, configs[key])
+
         print("init spark done")
         register_funcs(self.session)
 
