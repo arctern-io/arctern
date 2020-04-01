@@ -31,6 +31,8 @@
 #include <limits>
 #include <utility>
 #include <vector>
+#include <functional>
+#include <type_traits>
 
 namespace arctern {
 namespace gis {
@@ -726,23 +728,23 @@ std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& g
  * be noted ST_OrderingEquals is a little more stringent than simply verifying order of
  * points are the same).
  * ***********************************************/
-std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
-                                        const std::shared_ptr<arrow::Array>& geo2) {
+
+template<typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value, std::shared_ptr<typename arrow::Array>>::type
+BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
+        const std::shared_ptr<arrow::Array>& geo2,
+        std::function<void(T&,const OGRGeometry*,const OGRGeometry*)> op){
   auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::StringArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::StringArray>(geo2);
-  arrow::BooleanBuilder builder;
-  for (int32_t i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkt(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkt(wkt2, i);
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
+  T builder;
+  for(int i = 0; i<len; ++i){
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
     if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
       builder.AppendNull();
-    } else if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
-      builder.Append(true);
-    } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
-      builder.Append(true);
-    } else {
-      builder.Append(false);
+    }else{
+      op(builder,ogr1,ogr2);
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
     OGRGeometryFactory::destroyGeometry(ogr2);
@@ -752,8 +754,68 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
   return results;
 }
 
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Touches, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Touches(geo_1, geo_2) != 0);
+
+
+std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo1,
+                                        const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    if(ogr1->IsEmpty() && ogr2->IsEmpty()){
+      builder.AppendNull();
+    }else if(ogr1->Within(ogr2) && ogr2->Within(ogr1)){
+      builder.Append(true);
+    }else{
+      builder.Append(false);
+    }
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);
+
+  // auto len = geo1->length();
+  // auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  // auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
+  // arrow::BooleanBuilder builder;
+  // for (int32_t i = 0; i < len; ++i) {
+  //   auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+  //   auto ogr2 = Wrapper_createFromWkb(wkt2, i);
+  //   if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+  //     builder.AppendNull();
+  //   } else if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
+  //     builder.Append(true);
+  //   } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
+  //     builder.Append(true);
+  //   } else {
+  //     builder.Append(false);
+  //   }
+  //   OGRGeometryFactory::destroyGeometry(ogr1);
+  //   OGRGeometryFactory::destroyGeometry(ogr2);
+  // }
+  // std::shared_ptr<arrow::Array> results;
+  // CHECK_ARROW(builder.Finish(&results));
+  // return results;
+}
+
+
+std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto len = geo1->length();
+  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
+  arrow::BooleanBuilder builder;
+  for(int i=0;i<len;++i){
+    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
+    if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      builder.AppendNull();
+    }else{
+      builder.Append(ogr1->Touches(ogr2)!=0);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;                            
+}
+
 
 // BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Overlaps, arrow::BooleanBuilder, geo_1, geo_2,
 //                                   OGR_G_Overlaps(geo_1, geo_2) != 0);
