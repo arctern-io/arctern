@@ -250,13 +250,13 @@ std::shared_ptr<arrow::Array> ST_GeometryType(
 }
 
 std::shared_ptr<arrow::Array> ST_IsSimple(const std::shared_ptr<arrow::Array>& geo) {
-  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto wkt = std::static_pointer_cast<arrow::BinaryArray>(geo);
   auto len = geo->length();
   arrow::BooleanBuilder builder;
   auto has_circular = new HasCircularVisitor;
   const char* papszOptions[] = {(const char*)"ADD_INTERMEDIATE_POINT=YES", nullptr};
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt, i);
+    auto geo = Wrapper_createFromWkb(wkt, i);
     if (geo == nullptr) {
       builder.AppendNull();
     } else {
@@ -279,12 +279,12 @@ std::shared_ptr<arrow::Array> ST_IsSimple(const std::shared_ptr<arrow::Array>& g
 }
 
 std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo) {
-  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto wkt = std::static_pointer_cast<arrow::BinaryArray>(geo);
   auto len = geo->length();
   arrow::Int64Builder builder;
   auto npoints = new NPointsVisitor;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt, i);
+    auto geo = Wrapper_createFromWkb(wkt, i);
     if (geo == nullptr) {
       builder.AppendNull();
     } else {
@@ -302,36 +302,35 @@ std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& ge
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries) {
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
   auto len = geometries->length();
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
   OGREnvelope env;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
     if (geo == nullptr) {
       builder.AppendNull();
     } else if (geo->IsEmpty()) {
-      CHECK_ARROW(builder.Append(wkt_geometries->GetString(i)));
+      builder.AppendNull();
       OGRGeometryFactory::destroyGeometry(geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
-      char* wkt = nullptr;
       if (env.MinX == env.MaxX) {    // vertical line or Point
         if (env.MinY == env.MaxY) {  // point
           OGRPoint point(env.MinX, env.MinY);
-          wkt = Wrapper_OGR_G_ExportToWkt(&point);
+          AppendWkbNDR(builder,&point);
         } else {  // line
           OGRLineString line;
           line.addPoint(env.MinX, env.MinY);
           line.addPoint(env.MinX, env.MaxY);
-          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+          AppendWkbNDR(builder,&line);
         }
       } else {
         if (env.MinY == env.MaxY) {  // horizontal line
           OGRLineString line;
           line.addPoint(env.MinX, env.MinY);
           line.addPoint(env.MaxX, env.MinY);
-          wkt = Wrapper_OGR_G_ExportToWkt(&line);
+          AppendWkbNDR(builder,&line);
         } else {  // polygon
           OGRLinearRing ring;
           ring.addPoint(env.MinX, env.MinY);
@@ -341,12 +340,10 @@ std::shared_ptr<arrow::Array> ST_Envelope(
           ring.addPoint(env.MinX, env.MinY);
           OGRPolygon polygon;
           polygon.addRing(&ring);
-          wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
+          AppendWkbNDR(builder,&polygon);
         }
       }
-      CHECK_ARROW(builder.Append(wkt));
       OGRGeometryFactory::destroyGeometry(geo);
-      CPLFree(wkt);
     }
   }
   std::shared_ptr<arrow::Array> results;
