@@ -665,7 +665,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
 
 std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>& geo) {
   auto len = geo->length();
-  auto wkt = std::static_pointer_cast<arrow::StringArray>(geo);
+  auto wkt = std::static_pointer_cast<arrow::BinaryArray>(geo);
   std::vector<OGRGeometry*> union_agg;
   OGRPolygon empty_polygon;
   OGRGeometry *g0, *g1;
@@ -673,14 +673,14 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
   auto has_curve = new HasCurveVisitor;
   for (int i = 0; i <= len / 2; i++) {
     if ((i * 2) < len) {
-      g0 = Wrapper_createFromWkt(wkt, 2 * i);
+      g0 = Wrapper_createFromWkb(wkt, 2 * i);
       g0 = Wrapper_CurveToLine(g0, has_curve);
     } else {
       g0 = nullptr;
     }
 
     if ((i * 2 + 1) < len) {
-      g1 = Wrapper_createFromWkt(wkt, 2 * i + 1);
+      g1 = Wrapper_createFromWkb(wkt, 2 * i + 1);
       g1 = Wrapper_CurveToLine(g1, has_curve);
     } else {
       g1 = nullptr;
@@ -751,13 +751,11 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
     union_agg = std::move(union_tmp);
     len = union_agg.size();
   }
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
   if (union_agg.empty()) {
     builder.AppendNull();
   } else {
-    char* wkt = Wrapper_OGR_G_ExportToWkt(union_agg[0]);
-    CHECK_ARROW(builder.Append(wkt));
-    CPLFree(wkt);
+    AppendWkbNDR(builder,union_agg[0]);
     OGRGeometryFactory::destroyGeometry(union_agg[0]);
   }
   delete has_curve;
@@ -768,7 +766,7 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
 
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries) {
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geometries);
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
   auto len = geometries->length();
   double inf = std::numeric_limits<double>::infinity();
   double xmin = inf;
@@ -779,7 +777,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   OGREnvelope env;
   bool set_env = false;
   for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkt(wkt_geometries, i);
+    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
     if (geo == nullptr) continue;
     if (geo->IsEmpty()) continue;
     set_env = true;
@@ -790,7 +788,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     if (env.MaxY > ymax) ymax = env.MaxY;
     OGRGeometryFactory::destroyGeometry(geo);
   }
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
   if (set_env) {
     OGRLinearRing ring;
     ring.addPoint(xmin, ymin);
@@ -800,12 +798,9 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     ring.addPoint(xmin, ymin);
     OGRPolygon polygon;
     polygon.addRing(&ring);
-    char* wkt = nullptr;
-    wkt = Wrapper_OGR_G_ExportToWkt(&polygon);
-    CHECK_ARROW(builder.Append(wkt));
-    CPLFree(wkt);
+    AppendWkbNDR(builder,&polygon);
   } else {
-    CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+    builder.AppendNull();
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
