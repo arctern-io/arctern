@@ -778,21 +778,45 @@ std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& ge
   return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
 }
 
+std::shared_ptr<arrow::Array> ST_Overlaps(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Overlaps(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+}
 
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Overlaps, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Overlaps(geo_1, geo_2) != 0);
+std::shared_ptr<arrow::Array> ST_Crosses(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Crosses(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+}
 
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Crosses, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Crosses(geo_1, geo_2) != 0);
+std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Contains(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+}
 
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Contains, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Contains(geo_1, geo_2) != 0);
+std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Intersects(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+}
 
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Intersects, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Intersects(geo_1, geo_2) != 0);
-
-// BINARY_WKT_FUNC_WITH_GDAL_IMPL_T1(ST_Within, arrow::BooleanBuilder, geo_1, geo_2,
-//                                   OGR_G_Within(geo_1, geo_2) != 0);
+std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo1,
+                                         const std::shared_ptr<arrow::Array>& geo2) {
+  auto op = [](arrow::BooleanBuilder &builder,const OGRGeometry* ogr1,const OGRGeometry* ogr2){
+    builder.Append(ogr1->Within(ogr2)!=0);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+}
 
 /*********************** AGGREGATE FUNCTIONS ***************************/
 
