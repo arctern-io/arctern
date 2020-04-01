@@ -270,21 +270,10 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
 
 /************************* GEOMETRY ACCESSOR **************************/
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& array) {
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::BooleanBuilder builder;
-  for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkb(wkb, i);
-    if (geo == nullptr) {
-      builder.AppendNull();
-    } else {
-      builder.Append(geo->IsValid() != 0);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* geo){
+    builder.Append(geo->IsValid() != 0);
+  };
+  return UnaryOp<arrow::BooleanBuilder>(array,op);
 }
 
 std::shared_ptr<arrow::Array> ST_GeometryType( const std::shared_ptr<arrow::Array>& array) {
