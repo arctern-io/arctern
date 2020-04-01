@@ -14,7 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=redefined-outer-name
+
 import requests
+import pytest
+
+@pytest.fixture(scope='function')
+def dbid(host, port, headers):
+    url = 'http://' + host + ':' + port + '/dbs'
+    response = requests.get(
+         url=url,
+         headers=headers,
+    )
+    return response.json()['data'][0]['id']
+
+@pytest.fixture(scope='function')
+def table_name(host, port, headers, dbid):
+    url = 'http://' + host + ':' + port + '/db/tables'
+    response = requests.post(
+        url=url,
+        json={'id': dbid},
+        headers=headers,
+    )
+    return response.json()['data'][0]
 
 def test_dbs(host, port, headers):
     url = 'http://' + host + ':' + port + '/dbs'
@@ -23,11 +45,8 @@ def test_dbs(host, port, headers):
          headers=headers,
     )
     assert response.status_code == 200
-    assert response.json()['data'][0]['id'] == '1'
-    assert response.json()['data'][0]['name'] == 'nyc taxi'
-    assert response.json()['data'][0]['type'] == 'spark'
 
-def test_tables(host, port, headers):
+def test_tables(host, port, headers, dbid):
     url = 'http://' + host + ':' + port + '/db/tables'
     # case 1: no id keyword in request.json
     response = requests.post(
@@ -48,18 +67,17 @@ def test_tables(host, port, headers):
     assert response.json()['message'] == 'json error: id is not exist'
     assert response.json()['status'] == 'error'
 
-    # case 3: corrent query format
+    # case 3: correct query format
     response = requests.post(
          url=url,
-         json={'id': 1},
+         json={'id': dbid},
          headers=headers,
     )
     assert response.status_code == 200
-    assert response.json()['data'][0] == 'global_temp.nyc_taxi'
 
     # TODO: check nonexistent id
 
-def test_table_info(host, port, headers):
+def test_table_info(host, port, headers, dbid, table_name):
     url = 'http://' + host + ':' + port + '/db/table/info'
     # case 1: no id and table keyword in request.json
     response = requests.post(
@@ -70,31 +88,28 @@ def test_table_info(host, port, headers):
     assert response.json()['code'] == -1
     assert response.json()['message'] == 'query format error'
 
-    # case 2: corrent query format
+    # case 2: correct query format
     response = requests.post(
          url=url,
-         json={'id': 1, 'table': 'global_temp.nyc_taxi'},
+         json={'id': dbid, 'table': table_name},
          headers=headers,
     )
     assert response.status_code == 200
-    # TODO: check data field in response.json
 
-    # TODO: check nonexistent id or table
-
-def test_query(host, port, headers):
+def test_query(host, port, headers, dbid, table_name):
     url = 'http://' + host + ':' + port + '/db/query'
     # case 1: pointmap
     pointmap_request_dict = {
-        'id': '1',
+        'id': dbid,
         'query': {
              'sql': '''
                     select ST_Point(pickup_longitude, pickup_latitude) as point
-                    from global_temp.nyc_taxi
+                    from {}
                     where ST_Within(
                         ST_Point(pickup_longitude, pickup_latitude),
                         "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
                         )
-             ''',
+             '''.format(table_name),
              'type': 'point',
              'params': {
                   'width': 1024,
@@ -118,16 +133,16 @@ def test_query(host, port, headers):
 
     # case 2: heatmap
     heatmap_request_dict = {
-        'id': '1',
+        'id': dbid,
         'query': {
             'sql': '''
             select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w
-            from global_temp.nyc_taxi
+            from {}
             where ST_Within(
                 ST_Point(pickup_longitude, pickup_latitude),
                 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'
                 )
-            ''',
+            '''.format(table_name),
             'type': 'heat',
             'params': {
                 'width': 1024,
@@ -149,12 +164,12 @@ def test_query(host, port, headers):
 
     # case 3: choropleth map
     choropleth_map_request_dict = {
-        'id': '1',
+        'id': dbid,
         'query': {
             'sql': '''
             select buildingtext_dropoff as wkt, passenger_count as w
-            from global_temp.nyc_taxi
-            ''',
+            from {}
+            '''.format(table_name),
             'type': 'choropleth',
             'params': {
                 'width': 1024,
@@ -173,5 +188,38 @@ def test_query(host, port, headers):
          url=url,
          json=choropleth_map_request_dict,
          headers=headers,
+    )
+    assert response.status_code == 200
+
+    # case 4: weighted pointmap
+    weighted_pointmap_request_dict = {
+        'id': dbid,
+        'query': {
+            'sql': '''
+            select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s
+            from {}
+            where ST_Within(
+                ST_Point(pickup_longitude, pickup_latitude), 
+                'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')
+            '''.format(table_name),
+            'type': 'weighted',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'weighted': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'color': 'blue_to_red',
+                    'color_ruler': [0, 2],
+                    'stroke_ruler': [0, 10],
+                    'opacity': 1.0,
+                    'coordinate': 'EPSG:4326'
+                }
+            }
+        }
+    }
+    response = requests.post(
+        url=url,
+        json=weighted_pointmap_request_dict,
+        headers=headers,
     )
     assert response.status_code == 200

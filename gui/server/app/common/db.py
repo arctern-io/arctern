@@ -31,7 +31,7 @@ class DB(metaclass=ABCMeta):
         return self._table_list
 
     @abstractmethod
-    def run(self, sqlstr):
+    def run(self, sql):
         pass
 
     @abstractmethod
@@ -39,7 +39,7 @@ class DB(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def run_for_json(self, sqlstr):
+    def run_for_json(self, sql):
         pass
 
     @abstractmethod
