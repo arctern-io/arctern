@@ -539,47 +539,47 @@ std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(const std::shared_ptr<
 }
 
 std::shared_ptr<arrow::Array> ST_Centroid(const std::shared_ptr<arrow::Array>& array){
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::BinaryBuilder builder;
   OGRPoint centro_point;
-  for(int i=0; i<len; ++i){
-    auto geo = Wrapper_createFromWkb(wkb,i);
-    if(geo==nullptr){
-      builder.AppendNull();
-    }else{
-      auto err_code = geo->Centroid(&centro_point);
+  auto op=[&centro_point](arrow::BinaryBuilder &builder, OGRGeometry* geo){
+    auto err_code = geo->Centroid(&centro_point);
       if(err_code==OGRERR_NONE){
         AppendWkbNDR(builder,&centro_point);
       }else{
         builder.AppendNull();
       }
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  };
+  return UnaryOp<arrow::BinaryBuilder>(array,op);
+
+  // auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  // int len = wkb->length();
+  // arrow::BinaryBuilder builder;
+  // OGRPoint centro_point;
+  // for(int i=0; i<len; ++i){
+  //   auto geo = Wrapper_createFromWkb(wkb,i);
+  //   if(geo==nullptr){
+  //     builder.AppendNull();
+  //   }else{
+  //     auto err_code = geo->Centroid(&centro_point);
+  //     if(err_code==OGRERR_NONE){
+  //       AppendWkbNDR(builder,&centro_point);
+  //     }else{
+  //       builder.AppendNull();
+  //     }
+  //   }
+  //   OGRGeometryFactory::destroyGeometry(geo);
+  // }
+  // std::shared_ptr<arrow::Array> results;
+  // CHECK_ARROW(builder.Finish(&results));
+  // return results;
 }
 
 std::shared_ptr<arrow::Array> ST_ConvexHull(const std::shared_ptr<arrow::Array>& array){
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::BinaryBuilder builder;
-  for(int i=0; i<len; ++i){
-    auto geo = Wrapper_createFromWkb(wkb,i);
-    if(geo==nullptr){
-      builder.AppendNull();
-    }else{
-      auto cvx = geo->ConvexHull();
-      AppendWkbNDR(builder,cvx);
-      OGRGeometryFactory::destroyGeometry(cvx);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  auto op=[](arrow::BinaryBuilder &builder, OGRGeometry* geo){
+    auto cvx = geo->ConvexHull();
+    AppendWkbNDR(builder,cvx);
+    OGRGeometryFactory::destroyGeometry(cvx);
+  };
+  return UnaryOp<arrow::BinaryBuilder>(array,op);
 }
 
 /*
@@ -612,33 +612,9 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
         builder.AppendNull();
       }
   };
-  return UnaryOp<arrow::BinaryBuilder>(geometries,op);
-
-  // arrow::BinaryBuilder builder;
-
-  // auto len = geos->length();
-  // auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
-
-  // for (int32_t i = 0; i < len; i++) {
-  //   auto geo = Wrapper_createFromWkb(wkt_geometries, i);
-  //   if (geo == nullptr) {
-  //     CHECK_ARROW(builder.AppendNull());
-  //   } else {
-  //     auto err_code = geo->transform((OGRCoordinateTransformation*)poCT);
-  //     if(err_code==OGRERR_NONE){
-  //       AppendWkbNDR(builder,geo);
-  //     }else{
-  //       builder.AppendNull();
-  //     }
-  //   }
-  //   OGRGeometryFactory::destroyGeometry(geo);
-  // }
-
-  // std::shared_ptr<arrow::Array> results;
-  // CHECK_ARROW(builder.Finish(&results));
-  // OCTDestroyCoordinateTransformation(poCT);
-
-  // return results;
+  auto results = UnaryOp<arrow::BinaryBuilder>(geometries,op);
+  OCTDestroyCoordinateTransformation(poCT);
+  return results;
 }
 
 std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geometries) {
