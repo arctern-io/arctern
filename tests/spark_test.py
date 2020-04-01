@@ -206,7 +206,8 @@ def run_test_st_intersection_curve(spark):
 
     data = "intersection_curve.csv"
     table_name = 'test_intersection_curve'
-    sql = "select ST_AsText(ST_CurveToLine(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))) from test_intersection_curve"
+    #sql = "select ST_AsText(ST_CurveToLine(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))) from test_intersection_curve"
+    sql = "select ST_CurveToLine(ST_Intersection(left, right)) from test_intersection_curve"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -252,7 +253,7 @@ def run_test_st_convexhull_curve(spark):
 def run_test_st_buffer(spark):
     data = "buffer.csv"
     table_name = 'test_buffer'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 0)) as geos from test_buffer"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -268,7 +269,7 @@ def run_test_st_buffer(spark):
 def run_test_st_buffer1(spark):
     data = "buffer.csv"
     table_name = 'test_buffer1'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer1"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 1)) as geos from test_buffer1"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -284,7 +285,7 @@ def run_test_st_buffer1(spark):
 def run_test_st_buffer2(spark):
     data = "buffer.csv"
     table_name = 'test_buffer2'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer2"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 5.5)) as geos from test_buffer2"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -300,7 +301,7 @@ def run_test_st_buffer2(spark):
 def run_test_st_buffer3(spark):
     data = "buffer.csv"
     table_name = 'test_buffer3'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer3"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 100)) as geos from test_buffer3"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -316,7 +317,7 @@ def run_test_st_buffer3(spark):
 def run_test_st_buffer4(spark):
     data = "buffer.csv"
     table_name = 'test_buffer4'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer4"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -0.33)) as geos from test_buffer4"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -332,7 +333,7 @@ def run_test_st_buffer4(spark):
 def run_test_st_buffer5(spark):
     data = "buffer.csv"
     table_name = 'test_buffer5'
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -80)) as geos from test_buffer5"
+    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), -2)) as geos from test_buffer5"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -380,7 +381,7 @@ def run_test_st_buffer_curve(spark):
 def run_test_st_buffer_curve1(spark):
     data = "buffer_curve.csv"
     table_name = 'test_buffer_curve1'
-    sql = "select ST_AsText(ST_CurveToLine(st_Buffer(ST_GeomFromText(geos), 0))) as geos from test_buffer_curve1"
+    sql = "select ST_AsText(ST_CurveToLine(st_Buffer(ST_GeomFromText(geos), 1))) as geos from test_buffer_curve1"
 
     df = read_data(spark, base_dir, data)
     # df = df.withColumn("d", col("distance").cast("double"))
@@ -639,7 +640,7 @@ def run_test_st_transform(spark):
 def run_test_st_transform1(spark):
     data = "transform.csv"
     table_name = 'test_transform1'
-    sql = "select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) as geos from test_transform1"
+    sql = "select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:3857', 'epsg:4326')) as geos from test_transform1"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -939,7 +940,7 @@ def run_test_st_simplifypreservetopology(spark):
 def run_test_st_simplifypreservetopology_curve(spark):
     data = "simplifypreservetopology_curve.csv"
     table_name = 'test_simplifypreservetopology_curve'
-    sql = "select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 1)) as geos from test_simplifypreservetopology_curve"
+    sql = "select ST_AsText(ST_CurveToLine(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 1))) as geos from test_simplifypreservetopology_curve"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -970,17 +971,20 @@ def run_test_st_geomfromgeojson(spark):
 
     data = "geojson.csv"
     table_name = 'test_geomfromjson'
-    sql = "select ST_AsText(ST_GeomFromGeoJson(ST_GeomFromText(geos))) as geos from test_geomfromjson"
+    sql1 = "select ST_AsText(ST_GeomFromGeoJson(ST_GeomFromText(geos))) as geos from test_geomfromjson"
+    sql2 = "select ST_GeomFromGeoJson(geos) as geos from test_geomfromjson"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
     #df.show()
     df.createOrReplaceTempView(table_name)
 
-    rs = spark.sql(sql).cache()
+    rs1 = spark.sql(sql1).cache()
+    rs2 = spark.sql(sql2).cache()
     #rs.printSchema()ST_GeomFromText
-    #rs.show()
-    save_result("results/%s" % table_name, rs)
+    rs1.show()
+    rs2.show()
+    save_result("results/%s" % table_name, rs2)
 
 def run_test_st_geomfromgeojson2(spark):
     # this test is only test that arctern can handle empty geojsons, which postgis cannot, do not need to compare with postgis
