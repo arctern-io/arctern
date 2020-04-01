@@ -279,6 +279,7 @@ def choroplethmap(df, vega):
         df = df.select(Projection(col('wkt'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias("wkb"), col('w'))
 
     vega = vega.build()
+    print(vega)
     agg_schema = StructType([StructField('wkb', BinaryType(), True),
                              StructField('w', IntegerType(), True)])
     

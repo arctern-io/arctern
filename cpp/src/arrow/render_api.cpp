@@ -118,7 +118,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
     auto& geo = data.first;
     input_x[i] = geo->toPoint()->getX();
     input_y[i] = geo->toPoint()->getY();
-    input[i++] = data.second;
+    auto weight = data.second;
+    input[i++] = weight[0];
     OGRGeometryFactory::destroyGeometry(geo);
   }
 
@@ -170,7 +171,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
     input_x[i] = rst_pointer->getX();
     input_y[i] = rst_pointer->getY();
-    input_c[i++] = ite1->second;
+    auto weight = ite1->second;
+    input_c[i++] = weight[0];
     OGRGeometryFactory::destroyGeometry(geo);
     data.erase(ite1++);
   }
@@ -186,10 +188,17 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   auto num_geo = data.size();
   std::vector<OGRGeometry*> input_wkb(num_geo);
   std::vector<T> input_c(num_geo);
+
+  rapidjson::Document document;
+  document.Parse(conf.c_str());
+  rapidjson::Value mark_enter;
+  mark_enter = document["marks"][0]["encode"]["enter"];
+  auto agg_type = mark_enter["AggType"]["value"].GetString();
   std::size_t i = 0;
   for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
     input_wkb[i] = ite1->first;
-    input_c[i++] = ite1->second;
+    auto weight = ite1->second;
+    input_c[i++] = aggregation<T>(agg_type, weight);
   }
   auto result = choroplethmap<T>(input_wkb, &input_c[0], num_geo, conf);
   return result;

@@ -100,7 +100,8 @@ def draw_choropleth_map(spark):
 
     res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
 
-    vega = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326') 
+#    vega = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [2.5, 5], 1.0, 'EPSG:4326') 
+    vega = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red", [0, 1], 1.0, 'EPSG:4326', "avg") 
     res = choroplethmap(res, vega)
     save_png(res, '/tmp/choroplethmap.png')
 
@@ -116,9 +117,9 @@ if __name__ == "__main__":
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    draw_heat_map(spark_session)
-    draw_point_map(spark_session)
+#    draw_heat_map(spark_session)
+#    draw_point_map(spark_session)
     draw_choropleth_map(spark_session)
-    draw_weighted_point_map(spark_session)
+#    draw_weighted_point_map(spark_session)
 
     spark_session.stop()

@@ -32,6 +32,15 @@
 namespace arctern {
 namespace render {
 
+enum AggType {
+  SUM = 0,
+  MIN,
+  MAX,
+  COUNT,
+  STDDEV,
+  AVG,
+};
+
 struct hash_func {
   size_t operator()(OGRGeometry* geo) const {
     auto type = wkbFlatten(geo->getGeometryType());
@@ -63,7 +72,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
     const std::string& top_left, const int& height, const int& width);
 
 template <typename T>
-std::unordered_map<OGRGeometry*, T, hash_func> weight_agg(
+std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
     const std::shared_ptr<arrow::Array>& geos,
     const std::shared_ptr<arrow::Array>& arr_c);
 

@@ -34,12 +34,13 @@ class Marks(RootMarks):
                 return dic
 
         def __init__(self, bounding_box: Value, color_style: Value,
-                     ruler: Value, opacity: Value, coordinate_system: Value):
+                     ruler: Value, opacity: Value, coordinate_system: Value, color_agg: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(color_style.v, str)
                     and isinstance(ruler.v, list)
                     and isinstance(opacity.v, float)
-                    and isinstance(coordinate_system.v, str)):
+                    and isinstance(coordinate_system.v, str)
+                    and isinstance(color_agg.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
             self._bounding_box = bounding_box
@@ -47,6 +48,7 @@ class Marks(RootMarks):
             self._ruler = ruler
             self._opacity = opacity
             self._coordinate_system = coordinate_system
+            self._color_agg = color_agg
 
         def to_dict(self):
             dic = {
@@ -55,7 +57,8 @@ class Marks(RootMarks):
                     "color_style": self._color_style.to_dict(),
                     "ruler": self._ruler.to_dict(),
                     "opacity": self._opacity.to_dict(),
-                    "coordinate_system": self._coordinate_system.to_dict()
+                    "coordinate_system": self._coordinate_system.to_dict(),
+                    "color_agg": self._color_agg.to_dict()
                 }
             }
             return dic
@@ -71,7 +74,7 @@ class Marks(RootMarks):
 
 class VegaChoroplethMap:
     def __init__(self, width: int, height: int, bounding_box: list,
-                 color_style: str, ruler: list, opacity: float, coordinate_system: str):
+                 color_style: str, ruler: list, opacity: float, coordinate_system: str, color_agg: str):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
@@ -79,6 +82,7 @@ class VegaChoroplethMap:
         self._ruler = ruler
         self._opacity = float(opacity)
         self._coordinate_system = coordinate_system
+        self._color_agg = color_agg
 
     def build(self):
         description = Description(desc="building_weighted_2d")
@@ -90,7 +94,8 @@ class VegaChoroplethMap:
                               color_style=Marks.Encode.Value(self._color_style),
                               ruler=Marks.Encode.Value(self._ruler),
                               opacity=Marks.Encode.Value(self._opacity),
-                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system),
+                              color_agg=Marks.Encode.Value(self._color_agg))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)
