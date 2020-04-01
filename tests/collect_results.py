@@ -1,47 +1,45 @@
-import random
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#	  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# import random
 import os
-import inspect
-import sys
-import shutil           
+# import inspect
+import shutil
 import glob
+from util import ARCTERN_RESULT
+from util import SPARK_RESULT
+from util import get_tests
 
 
-def collect_results(file_path, results_dir):
-    if not os.path.isdir(results_dir):
-        os.makedirs(results_dir)
+def collect_results():
+    """Collect spark results from different dirs."""
+    if not os.path.isdir(ARCTERN_RESULT):
+        os.makedirs(ARCTERN_RESULT)
 
-    with open(file_path, 'r') as f:
-        cs = f.readlines()
-        cs = [x.strip() for x in cs if not x.startswith('#')]
-        names = [x.strip().split('=')[0] for x in cs]
-        table_names = [x.strip().split('=')[1] for x in cs]
-        # for x in names:
-        #     print(x)
-        # print('------------------')
-        # for x in table_names:
-        #     print(x)
+    names = get_tests()[0]
+    table_names = get_tests()[1]
 
-    base_dir = '/tmp/results'
-    for x, y in zip(table_names, names):
-        print(x, y)
-        target = os.path.join(base_dir, x, '*.csv')
+    base_dir = SPARK_RESULT
+    for table_name, name in zip(table_names, names):
+        target = os.path.join(base_dir, table_name, '*.csv')
         file_name = glob.glob(target)
-        print(file_name)
-        print(file_name[0])
         if os.path.isfile(file_name[0]):
-            shutil.copyfile(file_name[0], os.path.join(results_dir, y +'.csv'))
+            shutil.copyfile(file_name[0], os.path.join(
+                ARCTERN_RESULT, name + '.csv'))
         else:
             print('file [%s] not exist' % file_name[0])
 
 
-def get_sort_zgis(file_path):
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
-        run_funcs = [x.strip().lower() for x in lines]
-        run_funcs.sort()
-        for x in run_funcs:
-            print(x)
-
 if __name__ == '__main__':
-    # collect_results('./config.txt', './arctern_results')
-    collect_results('./config.txt', '/tmp/arctern_results')
+    collect_results()
