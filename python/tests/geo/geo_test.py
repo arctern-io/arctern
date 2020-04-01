@@ -18,13 +18,13 @@ import arctern
 
 def test_ST_IsValid():
     data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
-    rst = arctern.ST_IsValid(data)
-    assert rst[0] == 1
-    assert rst[1] == 1
+    rst = arctern.ST_IsValid(arctern.ST_GeomFromText(data))
+    assert rst[0]
+    assert rst[1]
 
 def test_ST_PrecisionReduce():
     data = pandas.Series(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
-    rst = arctern.ST_PrecisionReduce(data, 3)
+    rst = arctern.ST_AsText(arctern.ST_PrecisionReduce(arctern.ST_GeomFromText(data), 3))
     assert rst[0] == "POINT (1.33 2.67)"
     assert rst[1] == "POINT (2.66 4.45)"
 
