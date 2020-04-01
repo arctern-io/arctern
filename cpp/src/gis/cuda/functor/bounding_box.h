@@ -62,7 +62,7 @@ class BoundingBox {
   MinMax ys_;
 };
 
-DEVICE_RUNNABLE BoundingBox CalcBoundingBox(ConstGpuContext::ConstIter& iter);
+DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag, ConstGpuContext::ConstIter& iter);
 
 }  // namespace cuda
 }  // namespace gis

@@ -24,7 +24,7 @@ namespace gis {
 namespace cuda {
 namespace {
 
-DEVICE_RUNNABLE int CalcSimplePointCount(WkbTag tag, const uint32_t*& meta_iter) {
+DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   switch (tag.get_category()) {
     case WkbCategory::kPoint: {
@@ -51,18 +51,13 @@ DEVICE_RUNNABLE int CalcSimplePointCount(WkbTag tag, const uint32_t*& meta_iter)
 }
 }  // namespace
 
-DEVICE_RUNNABLE thrust::optional<int> CalcPointCount(WkbTag tag,
-                                                     const uint32_t* meta_iter_raw) {
+DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
-  auto meta_iter = meta_iter_raw;
-  auto multi_handler = [](WkbTag sub_tag, const uint32_t*& meta_iter) {
-
-  };
   switch (tag.get_category()) {
     case WkbCategory::kPoint:
     case WkbCategory::kLineString:
     case WkbCategory::kPolygon: {
-      return CalcSimplePointCount(tag, meta_iter);
+      return CalcSimplePointCountImpl(tag, meta_iter);
     }
     case WkbCategory::kMultiPoint:
     case WkbCategory::kMultiPolygon:
@@ -73,12 +68,13 @@ DEVICE_RUNNABLE thrust::optional<int> CalcPointCount(WkbTag tag,
         auto fetched_tag = (WkbTag)*meta_iter++;
         auto sub_tag = RemoveMulti(tag);
         assert(sub_tag.data == fetched_tag.data);
-        total_count += CalcSimplePointCount(sub_tag, meta_iter);
+        total_count += CalcSimplePointCountImpl(sub_tag, meta_iter);
       }
       return total_count;
     }
     default: {
-      return thrust::nullopt;
+      assert(false);
+      return 0;
     }
   }
 }
@@ -86,7 +82,16 @@ DEVICE_RUNNABLE thrust::optional<int> CalcPointCount(WkbTag tag,
 DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag,
                                             ConstGpuContext::ConstIter& iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
-  auto point_count = CalcSimplePointCount();
+  auto point_count = CalcPointCount(tag, iter.metas);
+  auto value2 = reinterpret_cast<const double2*>(iter.values);
+  BoundingBox bbox;
+  for (auto i = 0; i < point_count; ++i) {
+    bbox.Update(value2[i]);
+  }
+  constexpr int dimensions = 2;
+  iter.values += dimensions * point_count;
+  assert(value2 + point_count == (const double2*)iter.values);
+  return bbox;
 }
 
 }  // namespace cuda
