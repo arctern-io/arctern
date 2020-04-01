@@ -632,7 +632,10 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
       builder.Append(false);
     }
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);
 }
 
 std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& geo1,
@@ -640,7 +643,10 @@ std::shared_ptr<arrow::Array> ST_Touches(const std::shared_ptr<arrow::Array>& ge
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Touches(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 std::shared_ptr<arrow::Array> ST_Overlaps(const std::shared_ptr<arrow::Array>& geo1,
@@ -648,7 +654,10 @@ std::shared_ptr<arrow::Array> ST_Overlaps(const std::shared_ptr<arrow::Array>& g
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Overlaps(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 std::shared_ptr<arrow::Array> ST_Crosses(const std::shared_ptr<arrow::Array>& geo1,
@@ -656,7 +665,10 @@ std::shared_ptr<arrow::Array> ST_Crosses(const std::shared_ptr<arrow::Array>& ge
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Crosses(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& geo1,
@@ -664,7 +676,10 @@ std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& g
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Contains(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>& geo1,
@@ -672,7 +687,10 @@ std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>&
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Intersects(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo1,
@@ -680,7 +698,10 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
   auto op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
     builder.Append(ogr1->Within(ogr2)!=0);
   };
-  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op);                       
+  auto null_op = [](arrow::BooleanBuilder &builder,OGRGeometry* ogr1,OGRGeometry* ogr2){
+    builder.Append(false);
+  };
+  return BinaryOp<arrow::BooleanBuilder>(geo1,geo2,op,null_op);                       
 }
 
 /*********************** AGGREGATE FUNCTIONS ***************************/
