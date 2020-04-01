@@ -64,7 +64,7 @@ inline OGRGeometry* Wrapper_createFromWkt(
   OGRGeometry* geo = nullptr;
   auto err_code =
       OGRGeometryFactory::createFromWkt(array->GetString(idx).c_str(), nullptr, &geo);
-  if (err_code!=OGRERR_NONE) return nullptr;
+  if (err_code != OGRERR_NONE) return nullptr;
   return geo;
 }
 
@@ -73,11 +73,11 @@ inline OGRGeometry* Wrapper_createFromWkb(
   if (array->IsNull(idx)) return nullptr;
   arrow::BinaryArray::offset_type offset;
   auto data_ptr = array->GetValue(idx, &offset);
-  if(offset<=0) return nullptr; 
+  if (offset <= 0) return nullptr;
 
   OGRGeometry* geo = nullptr;
-  auto err_code =OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, offset);
-  if (err_code!=OGRERR_NONE) return nullptr;
+  auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, offset);
+  if (err_code != OGRERR_NONE) return nullptr;
   return geo;
 }
 
@@ -105,12 +105,13 @@ inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
   return str;
 }
 
-inline void AppendWkbNDR(arrow::BinaryBuilder& builder,const OGRGeometry* geo) {
+inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   auto wkb_size = geo->WkbSize();
-  auto wkb = static_cast<unsigned char *>(CPLMalloc(wkb_size));
+  auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
   auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
-  if(err_code!=OGRERR_NONE){
-    std::string err_msg = "failed to export to wkb, error code = " + std::to_string(err_code);
+  if (err_code != OGRERR_NONE) {
+    std::string err_msg =
+        "failed to export to wkb, error code = " + std::to_string(err_code);
     throw std::runtime_error(err_msg);
   }
   CHECK_ARROW(builder.Append(wkb, wkb_size));
@@ -133,14 +134,12 @@ std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_va
   auto y_double_values = std::static_pointer_cast<arrow::DoubleArray>(y_values);
   OGRPoint point;
   char* wkt = nullptr;
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
     point.setX(x_double_values->Value(i));
     point.setY(y_double_values->Value(i));
-    CHECK_GDAL(OGR_G_ExportToWkt(&point, &wkt));
-    CHECK_ARROW(builder.Append(wkt));
-    CPLFree(wkt);
+    AppendWkbNDR(builder, &point);
   }
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -166,12 +165,12 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
   auto max_y_double_values =
       std::static_pointer_cast<const arrow::DoubleArray>(max_y_values);
 
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
 
   for (int32_t i = 0; i < len; i++) {
     if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
         (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
-      CHECK_ARROW(builder.Append("POLYGON EMPTY"));
+      CHECK_ARROW(builder.AppendNull());
     } else {
       OGRLinearRing ring;
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
@@ -182,10 +181,7 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
       ring.closeRings();
       OGRPolygon polygon;
       polygon.addRing(&ring);
-      char* wkt = nullptr;
-      CHECK_GDAL(OGR_G_ExportToWkt(&polygon, &wkt));
-      CHECK_ARROW(builder.Append(wkt));
-      CPLFree(wkt);
+      AppendWkbNDR(builder, &polygon);
     }
   }
   std::shared_ptr<arrow::Array> results;
@@ -197,7 +193,7 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json) {
   auto json_geo = std::static_pointer_cast<arrow::StringArray>(json);
   int len = json_geo->length();
-  arrow::StringBuilder builder;
+  arrow::BinaryBuilder builder;
   for (int i = 0; i < len; ++i) {
     if (json_geo->IsNull(i)) {
       builder.AppendNull();
@@ -205,9 +201,7 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
       auto str = json_geo->GetString(i);
       auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
       if (geo != nullptr) {
-        char* wkt = Wrapper_OGR_G_ExportToWkt(geo);
-        CHECK_ARROW(builder.Append(wkt));
-        CPLFree(wkt);
+        AppendWkbNDR(builder, geo);
         OGRGeometryFactory::destroyGeometry(geo);
       } else {
         builder.AppendNull();
@@ -221,20 +215,14 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
 
 std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
   auto geo = std::static_pointer_cast<arrow::StringArray>(text);
-  int len = geo->length();
-  arrow::StringBuilder builder;
+  auto len = geo->length();
+  arrow::BinaryBuilder builder;
   for (int i = 0; i < len; ++i) {
     auto ogr = Wrapper_createFromWkt(geo, i);
     if (ogr == nullptr) {
       builder.AppendNull();
     } else {
-      if (parser::IsValidWkt(geo->GetString(i).c_str()) == false) {
-        builder.AppendNull();
-      } else {
-        char* wkt = Wrapper_OGR_G_ExportToWkt(ogr);
-        CHECK_ARROW(builder.Append(wkt));
-        CPLFree(wkt);
-      }
+      AppendWkbNDR(builder, ogr);
     }
     OGRGeometryFactory::destroyGeometry(ogr);
   }
@@ -244,6 +232,23 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
 }
 
 /************************* GEOMETRY ACCESSOR **************************/
+std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& array) {
+  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  int len = wkb->length();
+  arrow::BooleanBuilder builder;
+  for (int i = 0; i < len; ++i) {
+    auto geo = Wrapper_createFromWkb(wkb, i);
+    if (geo == nullptr) {
+      builder.AppendNull();
+    } else {
+      CHECK_ARROW(builder.Append(geo->IsValid() != 0));
+    }
+    OGRGeometryFactory::destroyGeometry(geo);
+  }
+  std::shared_ptr<arrow::Array> results;
+  CHECK_ARROW(builder.Finish(&results));
+  return results;
+}
 
 // UNARY_WKT_FUNC_WITH_GDAL_IMPL_T3(ST_IsValid, arrow::BooleanBuilder, geo_wkt,
 //                                  Wrapper_OGR_G_IsValid(geo_wkt));
@@ -358,10 +363,13 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 
 /************************ GEOMETRY PROCESSING ************************/
 
-// std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
-//                                         double buffer_distance, int n_quadrant_segments) {
+// std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>&
+// geometries,
+//                                         double buffer_distance, int
+//                                         n_quadrant_segments) {
 //   UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
-//       arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance, n_quadrant_segments));
+//       arrow::StringBuilder, geo, OGR_G_Buffer(geo, buffer_distance,
+//       n_quadrant_segments));
 // }
 
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
@@ -439,7 +447,8 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
 // std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
 //     const std::shared_ptr<arrow::Array>& geometries, double distance_tolerance) {
 //   UNARY_WKT_FUNC_BODY_WITH_GDAL_IMPL_T2(
-//       arrow::StringBuilder, geo, OGR_G_SimplifyPreserveTopology(geo, distance_tolerance));
+//       arrow::StringBuilder, geo, OGR_G_SimplifyPreserveTopology(geo,
+//       distance_tolerance));
 // }
 
 // UNARY_WKT_FUNC_WITH_GDAL_IMPL_T2(ST_Centroid, arrow::StringBuilder, geo,
