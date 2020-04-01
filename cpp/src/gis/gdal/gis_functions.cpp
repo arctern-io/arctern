@@ -287,24 +287,12 @@ std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& ar
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_GeometryType(
-    const std::shared_ptr<arrow::Array>& array) {
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::StringBuilder builder;
-  for (int i = 0; i < len; ++i) {
-    auto geo = Wrapper_createFromWkb(wkb, i);
-    if (geo == nullptr) {
-      builder.AppendNull();
-    } else {
-      std::string name = std::string("ST_") + geo->getGeometryName();
-      builder.Append(name);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+std::shared_ptr<arrow::Array> ST_GeometryType( const std::shared_ptr<arrow::Array>& array) {
+  auto op = [](arrow::StringBuilder& builder,OGRGeometry* geo){
+    std::string name = std::string("ST_") + geo->getGeometryName();
+    builder.Append(name);
+  };
+  return UnaryOp<arrow::StringBuilder>(array,op);
 }
 
 std::shared_ptr<arrow::Array> ST_IsSimple(const std::shared_ptr<arrow::Array>& array) {
