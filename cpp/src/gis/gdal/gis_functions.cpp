@@ -412,46 +412,42 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& array,
                                         double buffer_distance,
                                         int n_quadrant_segments){
-  auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
-  int len = wkb->length();
-  arrow::BinaryBuilder builder;
+  auto op = [&buffer_distance,&n_quadrant_segments](arrow::BinaryBuilder& builder,OGRGeometry* geo){
+    auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
+    AppendWkbNDR(builder,buffer);
+    OGRGeometryFactory::destroyGeometry(buffer);
+  };
+  return UnaryOp<arrow::BinaryBuilder>(array,op);
 
-  for(int i=0; i<len; ++i){
-    auto geo = Wrapper_createFromWkb(wkb,i);
-    if(geo==nullptr){
-      builder.AppendNull();
-    }else{
-      auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
-      AppendWkbNDR(builder,buffer);
-      OGRGeometryFactory::destroyGeometry(buffer);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  // auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
+  // int len = wkb->length();
+  // arrow::BinaryBuilder builder;
+
+  // for(int i=0; i<len; ++i){
+  //   auto geo = Wrapper_createFromWkb(wkb,i);
+  //   if(geo==nullptr){
+  //     builder.AppendNull();
+  //   }else{
+  //     auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
+  //     AppendWkbNDR(builder,buffer);
+  //     OGRGeometryFactory::destroyGeometry(buffer);
+  //   }
+  //   OGRGeometryFactory::destroyGeometry(geo);
+  // }
+  // std::shared_ptr<arrow::Array> results;
+  // CHECK_ARROW(builder.Finish(&results));
+  // return results;
 }
 
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t precision) {
-  auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
-  auto len = geometries->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries);
-  arrow::BinaryBuilder builder;
+    auto precision_reduce_visitor = new PrecisionReduceVisitor(precision);
+    auto op = [&precision_reduce_visitor](arrow::BinaryBuilder& builder,OGRGeometry* geo){
+    geo->accept(precision_reduce_visitor);
+    AppendWkbNDR(builder,geo);
+  };
 
-  for (int32_t i = 0; i < len; i++) {
-    auto geo = Wrapper_createFromWkb(wkt_geometries, i);
-    if (geo == nullptr) {
-      builder.AppendNull();
-    } else {
-      geo->accept(precision_reduce_visitor);
-      AppendWkbNDR(builder,geo);
-    }
-    OGRGeometryFactory::destroyGeometry(geo);
-  }
-
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
+  auto results = UnaryOp<arrow::BinaryBuilder>(geometries,op);
   delete precision_reduce_visitor;
   return results;
 }
