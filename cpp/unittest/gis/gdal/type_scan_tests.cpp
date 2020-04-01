@@ -15,7 +15,6 @@
  */
 #include <arrow/api.h>
 #include <arrow/array.h>
-#include <gis/dispatch/wkt_type_scanner.h>
 #include <gtest/gtest.h>
 #include <ogr_geometry.h>
 
@@ -26,8 +25,10 @@
 #include "arrow/gis_api.h"
 #include "gis/dispatch/dispatch.h"
 #include "gis/dispatch/wkb_type_scanner.h"
+#include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
 #include "gis/test_common/transforms.h"
+#include "utils/arrow_alias.h"
 #include "utils/check_status.h"
 
 namespace dispatch = arctern::gis::dispatch;
@@ -39,7 +40,7 @@ class TypeScan : public ::testing::Test {
  public:
   using XYSpaceCases = std::tuple_element_t<0, Tuple>;
   using TypeScanner = std::tuple_element_t<1, Tuple>;
-  using ArrowType = std::tuple_element_t<2, Tuple>;
+  using ArrayType = std::tuple_element_t<2, Tuple>;
 };
 
 using TypesContainer = ::testing::Types<
@@ -190,10 +191,55 @@ TYPED_TEST(TypeScan, unique_grouped_type) {
   ASSERT_TRUE(type_masks->dict.empty());
 }
 
+TYPED_TEST(TypeScan, merge_and_split) {
+  using arctern::gis::dispatch::GenericArrayMerge;
+  using arctern::gis::dispatch::GenericArraySplit;
+  using std::string;
+  using std::vector;
+
+  using ArrayType = typename TestFixture::ArrayType;
+  using BuilderType = typename arctern::GetArrowBuilderType<ArrayType>;
+
+  std::vector<std::string> strs{"one", "two",  "",   "$a", "four",
+                                "#",   "five", "$b", "$c", ""};
+  std::vector<bool> masks;
+  BuilderType builder;
+  for (auto str : strs) {
+    if (str == "#") {
+      builder.AppendNull();
+    } else {
+      builder.Append(str);
+    }
+    masks.push_back(!str.empty() && str[0] == '$');
+  }
+  std::shared_ptr<ArrayType> input;
+  builder.Finish(&input);
+  auto tmps = GenericArraySplit(input, masks);
+  vector<string> false_strs = {"one", "two", "", "four", "#", "five", ""};
+  vector<string> true_strs = {"$a", "$b", "$c"};
+  auto checker = [](std::shared_ptr<arrow::Array> left_raw, vector<string> right) {
+    auto left = std::static_pointer_cast<ArrayType>(left_raw);
+    ASSERT_EQ(left->length(), right.size());
+    for (auto i = 0; i < right.size(); ++i) {
+      auto str = right[i];
+      if (str == "#") {
+        ASSERT_TRUE(left->IsNull(i));
+      } else {
+        ASSERT_FALSE(left->IsNull(i));
+        ASSERT_EQ(left->GetString(i), str) << i;
+      }
+    }
+  };
+  checker(tmps[0], false_strs);
+  checker(tmps[1], true_strs);
+  auto output = GenericArrayMerge<ArrayType>({tmps[0], tmps[1]}, masks);
+  checker(output, strs);
+}
+
 TYPED_TEST(TypeScan, dispatch) {
   using std::string;
   using std::vector;
-  using ArrowType = typename TestFixture::ArrowType;
+  using ArrayType = typename TestFixture::ArrayType;
   vector<string> cases_raw = {
       "MultiPoint Empty",
       "LineString(0 0, 0 1)",
@@ -202,7 +248,7 @@ TYPED_TEST(TypeScan, dispatch) {
   };
 
   vector<bool> std_masks = {true, false, false, false};
-  auto cases = arctern::gis::StrsTo<ArrowType>(cases_raw);
+  auto cases = arctern::gis::StrsTo<ArrayType>(cases_raw);
 
   GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
   GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
@@ -210,15 +256,15 @@ TYPED_TEST(TypeScan, dispatch) {
   dispatch::MaskResult mask_result(cases, type1);
   mask_result.AppendFilter(cases, type2);
 
-  auto true_checker = [&](std::shared_ptr<ArrowType> wkb) {
+  auto true_checker = [&](std::shared_ptr<ArrayType> wkb) {
     EXPECT_EQ(wkb->length(), 1);
     EXPECT_EQ(wkb->GetView(0), cases->GetView(2));
     return wkb;
   };
 
-  auto false_checker = [](std::shared_ptr<ArrowType> wkb) {
+  auto false_checker = [](std::shared_ptr<ArrayType> wkb) {
     EXPECT_EQ(wkb->length(), 3);
     return wkb;
   };
-  dispatch::UnaryExecute<ArrowType>(mask_result, false_checker, true_checker, cases);
+  dispatch::UnaryExecute<ArrayType>(mask_result, false_checker, true_checker, cases);
 }
