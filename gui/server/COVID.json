@@ -1,0 +1,38 @@
+{
+    "db_name": "COVID",
+    "type": "spark",
+    "spark": {
+        "app_name": "arctern",
+        "master-addr": "local[*]",
+        "executor-python": "/opt/conda/envs/arctern/bin/python",
+        "envs": {
+        }
+    },
+    "tables": [
+        {
+            "name": "COVID_china",
+            "format": "csv",
+            "path": "/tmp/data/COVID-data.csv",
+            "options": {
+                "header": "True",
+                "delimiter": ","
+            },
+            "schema": [
+                {"Province": "string"},
+                {"Country": "string"},
+                {"Longitude": "double"},
+                {"Latitude": "double"},
+                {"ConfirmedCount": "int"},
+                {"DeadCount": "int"},
+                {"CuredCount": "int"},
+                {"LastUpdate": "string"}
+            ],
+            "visibility": "False"
+        },
+        {
+            "name": "COVID",
+            "sql": "select * from global_temp.COVID_china where LastUpdate like '%03-28%' and Longitude is not null",
+            "visibility": "True"
+        }
+    ]
+}
