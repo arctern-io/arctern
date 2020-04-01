@@ -16,6 +16,8 @@
 // under the License.
 
 #include "gis/dispatch/wkb_type_scanner.h"
+
+#include <algorithm>
 namespace arctern {
 namespace gis {
 namespace dispatch {
