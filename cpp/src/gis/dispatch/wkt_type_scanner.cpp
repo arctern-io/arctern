@@ -33,11 +33,11 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
-TypeScannerForWkt::TypeScannerForWkt(
+WktTypeScanner::WktTypeScanner(
     const std::shared_ptr<arrow::StringArray>& geometries)
     : geometries_(geometries) {}
 
-std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
+std::shared_ptr<GeometryTypeMasks> WktTypeScanner::Scan() const {
   auto len = geometries_->length();
 
   if (types().empty()) {

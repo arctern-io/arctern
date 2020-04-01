@@ -113,7 +113,15 @@ class MaskResult {
     this->AppendFilter(geometries, supported);
   }
 
+  MaskResult(const std::shared_ptr<arrow::BinaryArray>& geometries,
+             const GroupedWkbTypes& supported) {
+    this->AppendFilter(geometries, supported);
+  }
+
   void AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries,
+                    const GroupedWkbTypes& supported_type);
+
+  void AppendFilter(const std::shared_ptr<arrow::BinaryArray>& geometries,
                     const GroupedWkbTypes& supported_type);
 
   Status get_status() const { return status_; }

@@ -31,7 +31,7 @@ namespace dispatch {
 
 // return [false_array, true_array]
 template <typename TypedArrowArray>
-auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
+inline auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
                        const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
   using Builder = GetArrowBuilderType<TypedArrowArray>;
@@ -55,7 +55,7 @@ auto GenericArraySplit(const std::shared_ptr<TypedArrowArray>& geometries,
 
 // return [false_array, true_array]
 template <typename TypedArrowArray>
-auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geometries_raw,
+inline auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geometries_raw,
                               const std::vector<bool>& mask)
     -> std::array<std::shared_ptr<TypedArrowArray>, 2> {
   auto geometries = std::static_pointer_cast<TypedArrowArray>(geometries_raw);
@@ -64,7 +64,7 @@ auto GenericArraySplitWrapper(const std::shared_ptr<arrow::Array>& geometries_ra
 
 // merge [false_array, true_array]
 template <typename TypedArrowArray>
-auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
+inline auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& inputs,
                        const std::vector<bool>& mask)
     -> std::shared_ptr<TypedArrowArray> {
   assert(inputs[0]->length() + inputs[1]->length() == mask.size());
@@ -88,7 +88,7 @@ auto GenericArrayMerge(const std::array<std::shared_ptr<TypedArrowArray>, 2>& in
 
 // merge [false_array, true_array]
 template <typename TypedArrowArray>
-auto GenericArrayMergeWrapper(
+inline auto GenericArrayMergeWrapper(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs_raw,
     const std::vector<bool>& mask) {
   std::array<std::shared_ptr<TypedArrowArray>, 2> inputs;
@@ -99,27 +99,27 @@ auto GenericArrayMergeWrapper(
 }
 
 // split into [false_array, true_array]
-std::array<std::shared_ptr<arrow::StringArray>, 2> WktArraySplit(
+inline std::array<std::shared_ptr<arrow::StringArray>, 2> WktArraySplit(
     const std::shared_ptr<arrow::Array>& geometries, const std::vector<bool>& mask) {
   return GenericArraySplitWrapper<arrow::StringArray>(geometries, mask);
 }
 
 // merge [false_array, true_array]
-std::shared_ptr<arrow::StringArray> WktArrayMerge(
+inline std::shared_ptr<arrow::StringArray> WktArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask) {
   return GenericArrayMergeWrapper<arrow::StringArray>(inputs, mask);
 }
 
 // merge [false_array, true_array]
-std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
+inline std::shared_ptr<arrow::DoubleArray> DoubleArrayMerge(
     const std::array<std::shared_ptr<arrow::Array>, 2>& inputs,
     const std::vector<bool>& mask) {
   return GenericArrayMergeWrapper<arrow::DoubleArray>(inputs, mask);
 }
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
-auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+inline auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
                        TrueFunc true_func, Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
   auto split_inputs = GenericArraySplit(std::forward<Arg1>(arg1_ptr), mask);
   assert(split_inputs[1]->null_count() == 0);
@@ -129,7 +129,7 @@ auto UnaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
 }
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1>
-auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
+inline auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc true_func,
                   Arg1&& arg1_ptr) -> std::shared_ptr<RetType> {
   using Status = MaskResult::Status;
   switch (mask_result.get_status()) {
@@ -152,7 +152,7 @@ auto UnaryExecute(const MaskResult& mask_result, FalseFunc false_func, TrueFunc 
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
           typename Arg2>
-auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
+inline auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
                         TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
     -> std::shared_ptr<RetType> {
   auto split_inputs =
@@ -169,7 +169,7 @@ auto BinaryMixedExecute(const std::vector<bool>& mask, FalseFunc false_func,
 
 template <typename RetType, typename FalseFunc, typename TrueFunc, typename Arg1,
           typename Arg2>
-auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
+inline auto BinaryExecute(const MaskResult& mask_result, FalseFunc false_func,
                    TrueFunc true_func, Arg1&& arg1_ptr, Arg2&& arg2_ptr)
     -> std::shared_ptr<RetType> {
   using Status = MaskResult::Status;

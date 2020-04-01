@@ -57,7 +57,7 @@ inline std::shared_ptr<arrow::StringArray> StrsToWkt(
   return result;
 }
 
-inline std::shared_ptr<arrow::Array> StrsToWkb(const std::vector<std::string>& wkt_vec) {
+inline std::shared_ptr<arrow::BinaryArray> StrsToWkb(const std::vector<std::string>& wkt_vec) {
   return gdal::WktToWkb(StrsToWkt(wkt_vec));
 }
 

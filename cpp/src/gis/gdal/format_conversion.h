@@ -26,8 +26,8 @@ namespace arctern {
 namespace gis {
 namespace gdal {
 
-std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& wkb);
-std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& wkt);
+std::shared_ptr<arrow::StringArray> WkbToWkt(const std::shared_ptr<arrow::Array>& wkb);
+std::shared_ptr<arrow::BinaryArray> WktToWkb(const std::shared_ptr<arrow::Array>& wkt);
 
 }  // namespace gdal
 }  // namespace gis
