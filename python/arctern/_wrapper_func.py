@@ -219,12 +219,12 @@ def ST_Buffer(geos, distance):
 def ST_Union_Aggr(geos):
     arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Union_Aggr(arr_geos)
-    return str(rs[0])
+    return rs.to_pandas()
 
 def ST_Envelope_Aggr(geos):
     arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Envelope_Aggr(arr_geos)
-    return str(rs[0])
+    return rs.to_pandas()
 
 def ST_Transform(geos, src, dst):
     arr_geos = pa.array(geos, type='binary')
