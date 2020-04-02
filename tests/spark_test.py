@@ -206,7 +206,7 @@ def run_test_st_intersection_curve(spark):
 
     data = "intersection_curve.csv"
     table_name = 'test_intersection_curve'
-    sql = "select st_curvetoline(st_intersection(left, right)) from test_intersection_curve"
+    sql = "select ST_AsText(ST_CurveToLine(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))) from test_intersection_curve"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
