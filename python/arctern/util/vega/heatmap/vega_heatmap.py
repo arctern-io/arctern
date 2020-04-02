@@ -33,22 +33,25 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, map_scale: Value, coordinate_system: Value):
+        def __init__(self, bounding_box: Value, map_scale: Value, coordinate_system: Value, color_agg: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(map_scale.v, float)
-                    and isinstance(coordinate_system.v, str)):
+                    and isinstance(coordinate_system.v, str)
+                    and isinstance(color_agg.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
             self._bounding_box = bounding_box
             self._map_scale = map_scale
             self._coordinate_system = coordinate_system
+            self._color_agg = color_agg
 
         def to_dict(self):
             dic = {
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
                     "map_scale": self._map_scale.to_dict(),
-                    "coordinate_system": self._coordinate_system.to_dict()
+                    "coordinate_system": self._coordinate_system.to_dict(),
+                    "color_agg": self._color_agg.to_dict()
                 }
             }
             return dic
@@ -64,12 +67,13 @@ class Marks(RootMarks):
 
 class VegaHeatMap:
     def __init__(self, width: int, height: int, map_scale: float,
-                 bounding_box: list, coordinate_system: str):
+                 bounding_box: list, coordinate_system: str, color_agg: str):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
         self._map_scale = float(map_scale)
         self._coordinate_system = coordinate_system
+        self._color_agg = color_agg
 
     def build(self):
         description = Description(desc="heat_map_2d")
@@ -81,7 +85,8 @@ class VegaHeatMap:
         scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               map_scale=Marks.Encode.Value(self._map_scale),
-                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system),
+                              color_agg=Marks.Encode.Value(self._color_agg))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)
