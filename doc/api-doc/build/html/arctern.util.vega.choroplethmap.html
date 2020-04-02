@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="arctern.util.vega.heatmap package" href="arctern.util.vega.heatmap.html" />
+    <link rel="next" title="Marks" href="api/arctern.util.vega.choroplethmap.vega_choroplethmap.Marks.html" />
     <link rel="prev" title="arctern.util.vega package" href="arctern.util.vega.html" /> 
 </head>
 
@@ -54,6 +54,9 @@
             <a href="index.html" class="icon icon-home"> arctern
           
 
+          
+            
+            <img src="_static/arctern-color.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -172,11 +175,66 @@
             
   <div class="section" id="arctern-util-vega-choroplethmap-package">
 <h1>arctern.util.vega.choroplethmap package<a class="headerlink" href="#arctern-util-vega-choroplethmap-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="arctern-util-vega-choroplethmap-vega-choroplethmap-module">
+<h2>arctern.util.vega.choroplethmap.vega_choroplethmap module<a class="headerlink" href="#arctern-util-vega-choroplethmap-vega-choroplethmap-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id1">
+<h2>arctern.util.vega.choroplethmap.vega_choroplethmap Module<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-arctern.util.vega.choroplethmap.vega_choroplethmap"></span><div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Data</span></code>(name, url)</p></td>
+<td><p>Top-Level Vega Specification Property: Data</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Description</span></code>(desc)</p></td>
+<td><p>Top-Level Vega Specification Property: Description</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Height</span></code>(height)</p></td>
+<td><p>Top-Level Vega Specification Property: Height</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/arctern.util.vega.choroplethmap.vega_choroplethmap.Marks.html#arctern.util.vega.choroplethmap.vega_choroplethmap.Marks" title="arctern.util.vega.choroplethmap.vega_choroplethmap.Marks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Marks</span></code></a>(encode)</p></td>
+<td><p>Top-Level Vega Specification Property: Marks</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Root</span></code>(width, height, description, data, ...)</p></td>
+<td><p>Vega Root</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RootMarks</span></code></p></td>
+<td><p>Top-Level Vega Specification Property: Marks</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Scales</span></code>(scales)</p></td>
+<td><p>Top-Level Vega Specification Property: Scales</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/arctern.util.vega.choroplethmap.vega_choroplethmap.VegaChoroplethMap.html#arctern.util.vega.choroplethmap.vega_choroplethmap.VegaChoroplethMap" title="arctern.util.vega.choroplethmap.vega_choroplethmap.VegaChoroplethMap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VegaChoroplethMap</span></code></a>(width, height, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Width</span></code>(width)</p></td>
+<td><p>Top-Level Vega Specification Property: Width</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-inheritance-diagram">
+<h3>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h3>
+digraph inheritancefcb2c3b7dd {
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;Marks&quot; [URL=&quot;api/arctern.util.vega.choroplethmap.vega_choroplethmap.Marks.html#arctern.util.vega.choroplethmap.vega_choroplethmap.Marks&quot;,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5)&quot;,target=&quot;_top&quot;,tooltip=&quot;Top-Level Vega Specification Property: Marks&quot;];
+  &quot;RootMarks&quot; -&gt; &quot;Marks&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;RootMarks&quot; [URL=&quot;api/arctern.util.vega.vega_node.RootMarks.html#arctern.util.vega.vega_node.RootMarks&quot;,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5)&quot;,target=&quot;_top&quot;,tooltip=&quot;Top-Level Vega Specification Property: Marks&quot;];
+  &quot;VegaChoroplethMap&quot; [URL=&quot;api/arctern.util.vega.choroplethmap.vega_choroplethmap.VegaChoroplethMap.html#arctern.util.vega.choroplethmap.vega_choroplethmap.VegaChoroplethMap&quot;,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5)&quot;,target=&quot;_top&quot;];
+}
+</div>
+</div>
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="id1">
-<h2>arctern.util.vega.choroplethmap Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h2>arctern.util.vega.choroplethmap Package<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-arctern.util.vega.choroplethmap"></span></div>
 </div>
 
@@ -188,7 +246,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="arctern.util.vega.heatmap.html" class="btn btn-neutral float-right" title="arctern.util.vega.heatmap package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api/arctern.util.vega.choroplethmap.vega_choroplethmap.Marks.html" class="btn btn-neutral float-right" title="Marks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="arctern.util.vega.html" class="btn btn-neutral float-left" title="arctern.util.vega package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
