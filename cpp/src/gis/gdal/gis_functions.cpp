@@ -96,7 +96,7 @@ inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   if (geo == nullptr) {
     builder.AppendNull();
-  } else if (geo->IsEmpty() && (geo->getGeometryType()==wkbPoint)) {
+  } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
     builder.AppendNull();
   } else {
     auto wkb_size = geo->WkbSize();
@@ -215,11 +215,11 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
   auto empty_size = empty.WkbSize();
   auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
   empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
-  
+
   for (int32_t i = 0; i < len; i++) {
     if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
         (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
-      builder.Append(empty_wkb,empty_size);
+      builder.Append(empty_wkb, empty_size);
     } else {
       OGRLinearRing ring;
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
@@ -348,7 +348,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& a
   OGREnvelope env;
   auto op = [&env](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     if (geo->IsEmpty()) {
-      AppendWkbNDR(builder,geo);
+      AppendWkbNDR(builder, geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
       if (env.MinX == env.MaxX) {    // vertical line or Point
@@ -421,7 +421,7 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   OGRGeometryCollection empty;
   auto empty_size = empty.WkbSize();
   auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
-  empty.exportToWkb(OGRwkbByteOrder::wkbNDR,empty_wkb);
+  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
 
   for (int i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkb(wkt1, i);
@@ -432,14 +432,14 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.Append(empty_wkb,empty_size);
+      builder.Append(empty_wkb, empty_size);
     } else {
       auto rst = ogr1->Intersection(ogr2);
-      if(rst==nullptr){
+      if (rst == nullptr) {
         builder.AppendNull();
-      }else if(rst->IsEmpty()){
-        builder.Append(empty_wkb,empty_size);
-      }else{
+      } else if (rst->IsEmpty()) {
+        builder.Append(empty_wkb, empty_size);
+      } else {
         AppendWkbNDR(builder, rst);
       }
       OGRGeometryFactory::destroyGeometry(rst);
@@ -853,7 +853,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     ring.addPoint(xmax, ymax);
     ring.addPoint(xmax, ymin);
     ring.addPoint(xmin, ymin);
-    polygon.addRing(&ring); 
+    polygon.addRing(&ring);
   }
   AppendWkbNDR(builder, &polygon);
   std::shared_ptr<arrow::Array> results;
