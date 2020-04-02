@@ -7,7 +7,7 @@ Submodules
 arctern.util.vega.choroplethmap.vega\_choroplethmap module
 ----------------------------------------------------------
 
-.. automodapi:: arctern.util.vega.choroplethmap.vega_choroplethmap
+.. automodule:: arctern.util.vega.choroplethmap.vega_choroplethmap
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ arctern.util.vega.choroplethmap.vega\_choroplethmap module
 Module contents
 ---------------
 
-.. automodapi:: arctern.util.vega.choroplethmap
+.. automodule:: arctern.util.vega.choroplethmap
    :members:
    :undoc-members:
    :show-inheritance:

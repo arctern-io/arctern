@@ -81,7 +81,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../arctern.html">arctern python api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arctern.html">arctern package</a></li>
 </ul>
 
             
@@ -208,7 +208,7 @@
 <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">arctern_core_</span>
 
-<div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Point.html#arctern.ST_Point">[docs]</a><span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Point">[docs]</a><span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct Point geometries according to the coordinates.</span>
 
@@ -237,17 +237,17 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Point</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_GeomFromGeoJSON"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_GeomFromGeoJSON.html#arctern.ST_GeomFromGeoJSON">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">json</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_GeomFromGeoJSON"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_GeomFromGeoJSON">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">json</span><span class="p">):</span>
     <span class="n">geo</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_GeomFromText"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_GeomFromText.html#arctern.ST_GeomFromText">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromText</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_GeomFromText"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_GeomFromText">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromText</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="n">geo</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Intersection"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Intersection.html#arctern.ST_Intersection">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Intersection"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Intersection">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the point set intersection of geometries.</span>
 <span class="sd">    </span>
@@ -278,7 +278,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Intersection</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_IsValid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_IsValid.html#arctern.ST_IsValid">[docs]</a><span class="k">def</span> <span class="nf">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_IsValid"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_IsValid">[docs]</a><span class="k">def</span> <span class="nf">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For each item in geometries, check if it is of valid geometry format.</span>
 <span class="sd">    </span>
@@ -302,7 +302,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_IsValid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_PrecisionReduce"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_PrecisionReduce.html#arctern.ST_PrecisionReduce">[docs]</a><span class="k">def</span> <span class="nf">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_PrecisionReduce"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_PrecisionReduce">[docs]</a><span class="k">def</span> <span class="nf">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reduce the precision of geometry.</span>
 <span class="sd">     </span>
@@ -335,7 +335,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_PrecisionReduce</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Equals"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Equals.html#arctern.ST_Equals">[docs]</a><span class="k">def</span> <span class="nf">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Equals"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Equals">[docs]</a><span class="k">def</span> <span class="nf">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether geometries are &quot;spatially equal&quot;.</span>
 
@@ -368,7 +368,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Equals</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Touches"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Touches.html#arctern.ST_Touches">[docs]</a><span class="k">def</span> <span class="nf">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Touches"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Touches">[docs]</a><span class="k">def</span> <span class="nf">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether geometries &quot;touch&quot;.</span>
 
@@ -401,7 +401,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Touches</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Overlaps"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Overlaps.html#arctern.ST_Overlaps">[docs]</a><span class="k">def</span> <span class="nf">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Overlaps"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Overlaps">[docs]</a><span class="k">def</span> <span class="nf">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether geometries &quot;spatially overlap&quot;.</span>
 
@@ -434,7 +434,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Overlaps</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Crosses"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Crosses.html#arctern.ST_Crosses">[docs]</a><span class="k">def</span> <span class="nf">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Crosses"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Crosses">[docs]</a><span class="k">def</span> <span class="nf">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether geometries &quot;spatially cross&quot;.</span>
 
@@ -469,7 +469,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Crosses</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_IsSimple"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_IsSimple.html#arctern.ST_IsSimple">[docs]</a><span class="k">def</span> <span class="nf">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_IsSimple"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_IsSimple">[docs]</a><span class="k">def</span> <span class="nf">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether geometry is &quot;simple&quot;.</span>
 
@@ -497,7 +497,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_IsSimple</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_GeometryType"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_GeometryType.html#arctern.ST_GeometryType">[docs]</a><span class="k">def</span> <span class="nf">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_GeometryType"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_GeometryType">[docs]</a><span class="k">def</span> <span class="nf">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For each geometry in geometries, return a string that indicates is type.</span>
 <span class="sd">    </span>
@@ -521,7 +521,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeometryType</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_MakeValid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_MakeValid.html#arctern.ST_MakeValid">[docs]</a><span class="k">def</span> <span class="nf">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_MakeValid"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_MakeValid">[docs]</a><span class="k">def</span> <span class="nf">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For every geometry in geometries, create a valid representation of it without </span>
 <span class="sd">    losing any of the input vertices. Already-valid geometries won&#39;t have further </span>
@@ -547,7 +547,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_MakeValid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_SimplifyPreserveTopology"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_SimplifyPreserveTopology.html#arctern.ST_SimplifyPreserveTopology">[docs]</a><span class="k">def</span> <span class="nf">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_SimplifyPreserveTopology"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_SimplifyPreserveTopology">[docs]</a><span class="k">def</span> <span class="nf">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For each geometry in geometries create a &quot;simplified&quot; version for it according</span>
 <span class="sd">    to the precision that parameter tolerance specifies. </span>
@@ -577,7 +577,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_PolygonFromEnvelope"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_PolygonFromEnvelope.html#arctern.ST_PolygonFromEnvelope">[docs]</a><span class="k">def</span> <span class="nf">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_PolygonFromEnvelope"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_PolygonFromEnvelope">[docs]</a><span class="k">def</span> <span class="nf">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, </span>
 <span class="sd">    arr_max_y. The edges of polygon are parallel to coordinate axis.</span>
@@ -616,7 +616,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">arr_min_x</span><span class="p">,</span> <span class="n">arr_min_y</span><span class="p">,</span> <span class="n">arr_max_x</span><span class="p">,</span> <span class="n">arr_max_y</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Contains"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Contains.html#arctern.ST_Contains">[docs]</a><span class="k">def</span> <span class="nf">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Contains"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Contains">[docs]</a><span class="k">def</span> <span class="nf">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether a geometry contain another geometry.</span>
 
@@ -650,7 +650,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Contains</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Intersects"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Intersects.html#arctern.ST_Intersects">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Intersects"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Intersects">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether two geometries intersect.</span>
 
@@ -682,7 +682,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Intersects</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Within"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Within.html#arctern.ST_Within">[docs]</a><span class="k">def</span> <span class="nf">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Within"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Within">[docs]</a><span class="k">def</span> <span class="nf">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether a geometry is within another geometry.</span>
 
@@ -716,7 +716,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Within</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Distance"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Distance.html#arctern.ST_Distance">[docs]</a><span class="k">def</span> <span class="nf">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Distance"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Distance">[docs]</a><span class="k">def</span> <span class="nf">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the distance between two geometries.</span>
 
@@ -752,7 +752,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Distance</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Area"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Area.html#arctern.ST_Area">[docs]</a><span class="k">def</span> <span class="nf">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Area"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Area">[docs]</a><span class="k">def</span> <span class="nf">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the area of geometry.</span>
 
@@ -780,7 +780,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Area</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Centroid"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Centroid.html#arctern.ST_Centroid">[docs]</a><span class="k">def</span> <span class="nf">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Centroid"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Centroid">[docs]</a><span class="k">def</span> <span class="nf">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the centroid of geometry.</span>
 
@@ -807,7 +807,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Centroid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Length"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Length.html#arctern.ST_Length">[docs]</a><span class="k">def</span> <span class="nf">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Length"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Length">[docs]</a><span class="k">def</span> <span class="nf">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the length of linear geometries.</span>
 
@@ -834,7 +834,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_HausdorffDistance"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_HausdorffDistance.html#arctern.ST_HausdorffDistance">[docs]</a><span class="k">def</span> <span class="nf">ST_HausdorffDistance</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="n">geo2</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_HausdorffDistance"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_HausdorffDistance">[docs]</a><span class="k">def</span> <span class="nf">ST_HausdorffDistance</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="n">geo2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    **</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -843,7 +843,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_HausdorffDistance</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_ConvexHull"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_ConvexHull.html#arctern.ST_ConvexHull">[docs]</a><span class="k">def</span> <span class="nf">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_ConvexHull"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_ConvexHull">[docs]</a><span class="k">def</span> <span class="nf">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the convex hull of geometry.</span>
 
@@ -870,7 +870,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_ConvexHull</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_NPoints"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_NPoints.html#arctern.ST_NPoints">[docs]</a><span class="k">def</span> <span class="nf">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_NPoints"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_NPoints">[docs]</a><span class="k">def</span> <span class="nf">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the points number for every geometry in geometries.</span>
 
@@ -894,7 +894,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_NPoints</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Envelope"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Envelope.html#arctern.ST_Envelope">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Envelope"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Envelope">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the double-precision minimum bounding box geometry for every geometry in geometries.</span>
 
@@ -934,22 +934,22 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Envelope</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Buffer"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Buffer.html#arctern.ST_Buffer">[docs]</a><span class="k">def</span> <span class="nf">ST_Buffer</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Buffer"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Buffer">[docs]</a><span class="k">def</span> <span class="nf">ST_Buffer</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Buffer</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">distance</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_Union_Aggr"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Union_Aggr.html#arctern.ST_Union_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Union_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Union_Aggr"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Union_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Union_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Union_Aggr</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">rs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ST_Envelope_Aggr"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Envelope_Aggr.html#arctern.ST_Envelope_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Envelope_Aggr"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Envelope_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">rs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ST_Transform"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_Transform.html#arctern.ST_Transform">[docs]</a><span class="k">def</span> <span class="nf">ST_Transform</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_Transform"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_Transform">[docs]</a><span class="k">def</span> <span class="nf">ST_Transform</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">src</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
@@ -957,19 +957,19 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ST_CurveToLine"><a class="viewcode-back" href="../../api/arctern.wrapper_func.ST_CurveToLine.html#arctern.ST_CurveToLine">[docs]</a><span class="k">def</span> <span class="nf">ST_CurveToLine</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+<div class="viewcode-block" id="ST_CurveToLine"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.ST_CurveToLine">[docs]</a><span class="k">def</span> <span class="nf">ST_CurveToLine</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_CurveToLine</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="point_map"><a class="viewcode-back" href="../../api/arctern.wrapper_func.point_map.html#arctern.point_map">[docs]</a><span class="k">def</span> <span class="nf">point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="point_map"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.point_map">[docs]</a><span class="k">def</span> <span class="nf">point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
     <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
     <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">point_map</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="weighted_point_map"><a class="viewcode-back" href="../../api/arctern.wrapper_func.weighted_point_map.html#arctern.weighted_point_map">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="weighted_point_map"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.weighted_point_map">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">cs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">ss</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -1004,7 +1004,7 @@
 
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="weighted_point_map_wkb"><a class="viewcode-back" href="../../api/arctern.wrapper_func.weighted_point_map_wkb.html#arctern.weighted_point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="weighted_point_map_wkb"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.weighted_point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">cs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">ss</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -1038,12 +1038,12 @@
 
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="point_map_wkb"><a class="viewcode-back" href="../../api/arctern.wrapper_func.point_map_wkb.html#arctern.point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="point_map_wkb"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
     <span class="n">array_points</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">point_map_wkb</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="heat_map"><a class="viewcode-back" href="../../api/arctern.wrapper_func.heat_map.html#arctern.heat_map">[docs]</a><span class="k">def</span> <span class="nf">heat_map</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="heat_map"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.heat_map">[docs]</a><span class="k">def</span> <span class="nf">heat_map</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
     <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
     <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
     <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
@@ -1051,7 +1051,7 @@
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="heat_map_wkb"><a class="viewcode-back" href="../../api/arctern.wrapper_func.heat_map_wkb.html#arctern.heat_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">heat_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="heat_map_wkb"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.heat_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">heat_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
     <span class="n">array_points</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
@@ -1062,7 +1062,7 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">heat_map_wkb</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">arr_c</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="choropleth_map"><a class="viewcode-back" href="../../api/arctern.wrapper_func.choropleth_map.html#arctern.choropleth_map">[docs]</a><span class="k">def</span> <span class="nf">choropleth_map</span><span class="p">(</span><span class="n">wkb_data</span><span class="p">,</span> <span class="n">count_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="choropleth_map"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.choropleth_map">[docs]</a><span class="k">def</span> <span class="nf">choropleth_map</span><span class="p">(</span><span class="n">wkb_data</span><span class="p">,</span> <span class="n">count_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
     <span class="n">arr_wkb</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wkb_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">count_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
         <span class="n">arr_count</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">count_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
@@ -1071,14 +1071,14 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">,</span> <span class="n">arr_count</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="projection"><a class="viewcode-back" href="../../api/arctern.wrapper_func.projection.html#arctern.projection">[docs]</a><span class="k">def</span> <span class="nf">projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<div class="viewcode-block" id="projection"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.projection">[docs]</a><span class="k">def</span> <span class="nf">projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">bounding_box_min</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bottom_right</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
     <span class="n">bounding_box_max</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">top_left</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">bounding_box_min</span><span class="p">,</span> <span class="n">bounding_box_max</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="transform_and_projection"><a class="viewcode-back" href="../../api/arctern.wrapper_func.transform_and_projection.html#arctern.transform_and_projection">[docs]</a><span class="k">def</span> <span class="nf">transform_and_projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">,</span> <span class="n">dst_rs</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<div class="viewcode-block" id="transform_and_projection"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.transform_and_projection">[docs]</a><span class="k">def</span> <span class="nf">transform_and_projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">,</span> <span class="n">dst_rs</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
     <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">src</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">src_rs</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dst_rs</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
@@ -1087,12 +1087,12 @@
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">transform_and_projection</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">bounding_box_min</span><span class="p">,</span> <span class="n">bounding_box_max</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="wkt2wkb"><a class="viewcode-back" href="../../api/arctern.wrapper_func.wkt2wkb.html#arctern.wkt2wkb">[docs]</a><span class="k">def</span> <span class="nf">wkt2wkb</span><span class="p">(</span><span class="n">arr_wkt</span><span class="p">):</span>
+<div class="viewcode-block" id="wkt2wkb"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.wkt2wkb">[docs]</a><span class="k">def</span> <span class="nf">wkt2wkb</span><span class="p">(</span><span class="n">arr_wkt</span><span class="p">):</span>
     <span class="n">wkts</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr_wkt</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">wkt2wkb</span><span class="p">(</span><span class="n">wkts</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="wkb2wkt"><a class="viewcode-back" href="../../api/arctern.wrapper_func.wkb2wkt.html#arctern.wkb2wkt">[docs]</a><span class="k">def</span> <span class="nf">wkb2wkt</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">):</span>
+<div class="viewcode-block" id="wkb2wkt"><a class="viewcode-back" href="../../arctern.html#arctern.wrapper_func.wkb2wkt">[docs]</a><span class="k">def</span> <span class="nf">wkb2wkt</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">):</span>
     <span class="n">wkbs</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
     <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">wkb2wkt</span><span class="p">(</span><span class="n">wkbs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>

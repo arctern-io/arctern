@@ -1,5 +1,5 @@
-arctern python api
-==================
+arctern package
+===============
 
 Subpackages
 -----------
@@ -14,7 +14,7 @@ Submodules
 arctern.wrapper\_func module
 ----------------------------
 
-.. automodapi:: arctern.wrapper_func
+.. automodule:: arctern.wrapper_func
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ arctern.wrapper\_func module
 Module contents
 ---------------
 
-.. automodapi:: arctern
+.. automodule:: arctern
    :members:
    :undoc-members:
    :show-inheritance:

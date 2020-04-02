@@ -7,7 +7,7 @@ Submodules
 arctern.util.vega.heatmap.vega\_heatmap module
 ----------------------------------------------
 
-.. automodapi:: arctern.util.vega.heatmap.vega_heatmap
+.. automodule:: arctern.util.vega.heatmap.vega_heatmap
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ arctern.util.vega.heatmap.vega\_heatmap module
 Module contents
 ---------------
 
-.. automodapi:: arctern.util.vega.heatmap
+.. automodule:: arctern.util.vega.heatmap
    :members:
    :undoc-members:
    :show-inheritance:
