@@ -894,7 +894,7 @@ def run_test_st_touches_curve(spark):
 def run_test_st_makevalid(spark):
     data = "makevalid.csv"
     table_name = 'test_makevalid'
-    sql = "select st_makevalid(ST_GeomFromText(geos)) as geos from test_makevalid"
+    sql = "select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) as geos from test_makevalid"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -1030,7 +1030,7 @@ def run_test_st_hausdorffdistance_curve(spark):
 def run_test_st_pointfromtext(spark):
     data = "pointfromtext.csv"
     table_name = 'test_pointfromtext'
-    sql = "select ST_AsText(ST_PointFromText(ST_GeomFromText(geos))) as geos from test_pointfromtext"
+    sql = "select ST_AsText(ST_PointFromText(geos)) as geos from test_pointfromtext"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -1045,7 +1045,7 @@ def run_test_st_pointfromtext(spark):
 def run_test_st_polygonfromtext(spark):
     data = "polygonfromtext.csv"
     table_name = 'test_polygonfromtext'
-    sql = "select ST_AsText(ST_PolygonFromText(ST_GeomFromText(geos))) as geos from test_polygonfromtext"
+    sql = "select ST_AsText(ST_PolygonFromText(geos)) as geos from test_polygonfromtext"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
@@ -1060,7 +1060,7 @@ def run_test_st_polygonfromtext(spark):
 def run_test_st_linestringfromtext(spark):
     data = "linestringfromtext.csv"
     table_name = 'test_linestringfromtext'
-    sql = "select ST_AsText(ST_LinestringFromText(ST_GeomFromText(geos))) as geos from test_linestringfromtext"
+    sql = "select ST_AsText(ST_LinestringFromText(geos)) as geos from test_linestringfromtext"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
