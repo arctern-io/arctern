@@ -1,6 +1,22 @@
 ARG IMAGE_NAME
 FROM ${IMAGE_NAME}:base
 
+COPY python /pyarctern
+
+RUN cd /pyarctern && \
+    . /opt/conda/etc/profile.d/conda.sh && \
+    conda activate arctern && \
+    python setup.py build build_ext --issymbol && \
+    python setup.py install
+
+COPY spark /arctern-spark
+
+RUN cd /arctern-spark/pyspark && \
+    . /opt/conda/etc/profile.d/conda.sh && \
+    conda activate arctern && \
+    python setup.py build && \
+    python setup.py install
+
 COPY gui/server /arctern-gui
 
 WORKDIR /arctern-gui

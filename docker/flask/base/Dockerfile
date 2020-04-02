@@ -26,6 +26,4 @@ RUN mkdir -p /opt/spark && \
     conda activate arctern && \
     cd /opt/spark/python && \
     python setup.py install && \
-    cd / && rm -rf /opt/spark && \
-    conda install -y -n arctern -c conda-forge -c arctern-dev arctern-spark && \
-    conda clean --all -y
+    cd / && rm -rf /opt/spark
