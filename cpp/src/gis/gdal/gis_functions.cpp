@@ -96,7 +96,7 @@ inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   if (geo == nullptr) {
     builder.AppendNull();
-  } else if (geo->IsEmpty()) {
+  } else if (geo->IsEmpty() && (geo->getGeometryType()==wkbPoint)) {
     builder.AppendNull();
   } else {
     auto wkb_size = geo->WkbSize();
