@@ -52,6 +52,6 @@ pushd ${TESTS_DIR}
 
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
 python collect_results.py
-python compare.py
+python compare.py || exit 1
 
 popd
