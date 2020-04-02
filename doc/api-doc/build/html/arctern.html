@@ -142,8 +142,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">arctern Package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">arctern Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -455,8 +455,7 @@
 <td><p>Calculate the length of linear geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_HausdorffDistance.html#arctern.wrapper_func.ST_HausdorffDistance" title="arctern.wrapper_func.ST_HausdorffDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_HausdorffDistance</span></code></a>(geo1, geo2)</p></td>
-<td><p><p><a href="#id2"><span class="problematic" id="id3">**</span></a></p>
-</p></td>
+<td><p>Returns the Hausdorff distance between two geometries, a measure of how similar or dissimilar 2 geometries are.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_ConvexHull.html#arctern.wrapper_func.ST_ConvexHull" title="arctern.wrapper_func.ST_ConvexHull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_ConvexHull</span></code></a>(geos)</p></td>
 <td><p>Compute the convex hull of geometry.</p></td>
@@ -468,25 +467,25 @@
 <td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_Buffer.html#arctern.wrapper_func.ST_Buffer" title="arctern.wrapper_func.ST_Buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Buffer</span></code></a>(geos, distance)</p></td>
-<td><p></p></td>
+<td><p>Returns a geometry that represents all points whose distance from this geos is  less than or equal to distance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_Union_Aggr.html#arctern.wrapper_func.ST_Union_Aggr" title="arctern.wrapper_func.ST_Union_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Union_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_Envelope_Aggr.html#arctern.wrapper_func.ST_Envelope_Aggr" title="arctern.wrapper_func.ST_Envelope_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Envelope_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries,  then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_Transform.html#arctern.wrapper_func.ST_Transform" title="arctern.wrapper_func.ST_Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Transform</span></code></a>(geos, src, dst)</p></td>
-<td><p></p></td>
+<td><p>Returns a new geometry with its coordinates transformed to a different spatial  reference system.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_CurveToLine.html#arctern.wrapper_func.ST_CurveToLine" title="arctern.wrapper_func.ST_CurveToLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_CurveToLine</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or  MULTISURFACE to MULTIPOLYGON.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_GeomFromGeoJSON.html#arctern.wrapper_func.ST_GeomFromGeoJSON" title="arctern.wrapper_func.ST_GeomFromGeoJSON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromGeoJSON</span></code></a>(json)</p></td>
-<td><p></p></td>
+<td><p>Constructs a PostGIS geometry object from the GeoJSON representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.wrapper_func.ST_GeomFromText.html#arctern.wrapper_func.ST_GeomFromText" title="arctern.wrapper_func.ST_GeomFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromText</span></code></a>(text)</p></td>
-<td><p></p></td>
+<td><p>Constructs a PostGIS ST_Geometry object from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.wrapper_func.point_map.html#arctern.wrapper_func.point_map" title="arctern.wrapper_func.point_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_map</span></code></a>(xs, ys, conf)</p></td>
 <td><p></p></td>
@@ -528,10 +527,10 @@
 <div class="section" id="module-contents">
 <h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="id4">
-<h2>arctern Package<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-arctern"></span><div class="section" id="id5">
-<h3>Functions<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h2>arctern Package<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-arctern"></span><div class="section" id="id3">
+<h3>Functions<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -542,7 +541,7 @@
 <td><p>Calculate the area of geometry.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_Buffer.html#arctern.ST_Buffer" title="arctern.ST_Buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Buffer</span></code></a>(geos, distance)</p></td>
-<td><p></p></td>
+<td><p>Returns a geometry that represents all points whose distance from this geos is  less than or equal to distance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_Centroid.html#arctern.ST_Centroid" title="arctern.ST_Centroid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Centroid</span></code></a>(geos)</p></td>
 <td><p>Compute the centroid of geometry.</p></td>
@@ -557,7 +556,7 @@
 <td><p>Check whether geometries &quot;spatially cross&quot;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_CurveToLine.html#arctern.ST_CurveToLine" title="arctern.ST_CurveToLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_CurveToLine</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or  MULTISURFACE to MULTIPOLYGON.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_Distance.html#arctern.ST_Distance" title="arctern.ST_Distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Distance</span></code></a>(left, right)</p></td>
 <td><p>Calculate the distance between two geometries.</p></td>
@@ -566,23 +565,22 @@
 <td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_Envelope_Aggr.html#arctern.ST_Envelope_Aggr" title="arctern.ST_Envelope_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Envelope_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries,  then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_Equals.html#arctern.ST_Equals" title="arctern.ST_Equals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Equals</span></code></a>(left, right)</p></td>
 <td><p>Check whether geometries are &quot;spatially equal&quot;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_GeomFromGeoJSON.html#arctern.ST_GeomFromGeoJSON" title="arctern.ST_GeomFromGeoJSON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromGeoJSON</span></code></a>(json)</p></td>
-<td><p></p></td>
+<td><p>Constructs a PostGIS geometry object from the GeoJSON representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_GeomFromText.html#arctern.ST_GeomFromText" title="arctern.ST_GeomFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromText</span></code></a>(text)</p></td>
-<td><p></p></td>
+<td><p>Constructs a PostGIS ST_Geometry object from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_GeometryType.html#arctern.ST_GeometryType" title="arctern.ST_GeometryType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeometryType</span></code></a>(geos)</p></td>
 <td><p>For each geometry in geometries, return a string that indicates is type.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_HausdorffDistance.html#arctern.ST_HausdorffDistance" title="arctern.ST_HausdorffDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_HausdorffDistance</span></code></a>(geo1, geo2)</p></td>
-<td><p><p><a href="#id6"><span class="problematic" id="id7">**</span></a></p>
-</p></td>
+<td><p>Returns the Hausdorff distance between two geometries, a measure of how similar or dissimilar 2 geometries are.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_Intersection.html#arctern.ST_Intersection" title="arctern.ST_Intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Intersection</span></code></a>(left, right)</p></td>
 <td><p>Calculate the point set intersection of geometries.</p></td>
@@ -624,10 +622,10 @@
 <td><p>Check whether geometries &quot;touch&quot;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_Transform.html#arctern.ST_Transform" title="arctern.ST_Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Transform</span></code></a>(geos, src, dst)</p></td>
-<td><p></p></td>
+<td><p>Returns a new geometry with its coordinates transformed to a different spatial  reference system.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern.ST_Union_Aggr.html#arctern.ST_Union_Aggr" title="arctern.ST_Union_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Union_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern.ST_Within.html#arctern.ST_Within" title="arctern.ST_Within"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Within</span></code></a>(left, right)</p></td>
 <td><p>Check whether a geometry is within another geometry.</p></td>

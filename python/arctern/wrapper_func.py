@@ -79,7 +79,7 @@ def ST_Point(x, y):
       >>> import arctern
       >>> data1 = pandas.Series([1.3, 2.5])
       >>> data2 = pandas.Series([1.3, 2.5])
-      >>> string_ptr = arctern.wkb2wkt(arctern.ST_Point(data1, data2))
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))
       >>> print(string_ptr)
           0    POINT (1.3 3.8)
           1    POINT (2.5 4.9)
@@ -91,11 +91,47 @@ def ST_Point(x, y):
     return rs.to_pandas()
 
 def ST_GeomFromGeoJSON(json):
+    """
+    Constructs a PostGIS geometry object from the GeoJSON representation.
+
+    :type json: pyarrow.array.string
+    :param json: Geometries organized as json
+   
+    :return: Geometries organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = pandas.Series(["{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"])
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_GeomFromGeoJSON(data))
+      >>> print(string_ptr)
+          0    LineString (1 2,4 5,7 8)
+          dtype: object 
+    """
     geo = pa.array(json, type='string')
     rs = arctern_core_.ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
 
 def ST_GeomFromText(text):
+    """
+    Constructs a PostGIS ST_Geometry object from the OGC Well-Known text representation.
+
+    :type json: pyarrow.array.string
+    :param json: Geometries organized as wkt
+   
+    :return: Geometries organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = pandas.Series(["POLYGON ((0 0,0 1,1 1,1 0,0 0))"])
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_GeomFromText(data))
+      >>> print(string_ptr)
+          0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
+          dtype: object
+    """
     geo = pa.array(text, type='string')
     rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
@@ -121,7 +157,7 @@ def ST_Intersection(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> string_ptr = arctern.wkb2wkt(arctern.ST_Point(data1, data2))
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))
       >>> print(string_ptr)   
           0    LINESTRING (2 2,2 1)
           dtype: object
@@ -178,7 +214,7 @@ def ST_PrecisionReduce(geos, precision):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
-      >>> rst = arctern.wkb2wkt(arctern.ST_PrecisionReduce(data, 3))
+      >>> rst = arctern.arctern.ST_AsText(arctern.ST_PrecisionReduce(data, 3))
       >>> print(rst)
           0    POINT (1.33 2.67)
           1    POINT (2.66 4.45)
@@ -364,7 +400,7 @@ def ST_GeometryType(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.wkb2wkt(rctern.ST_GeometryType(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_GeometryType(data))
       >>> print(rst)
           0    ST_POLYGON
           1    ST_POLYGON
@@ -391,7 +427,7 @@ def ST_MakeValid(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
-      >>> rst = arctern.wkb2wkt(arctern.ST_MakeValid(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_MakeValid(data))
       >>> print(rst)
           0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
           dtype: object
@@ -421,7 +457,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.wkb2wkt(arctern.ST_SimplifyPreserveTopology(data, 10000))
+      >>> rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(data, 10000))
       >>> print(rst)
           0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
           dtype: object
@@ -457,7 +493,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
       >>> x_max = pandas.Series([1.0])
       >>> y_min = pandas.Series([0.0])
       >>> y_max = pandas.Series([1.0])
-      >>> rst = arctern.wkb2wkt(rctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max))
+      >>> rst = arctern.ST_AsText(rctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max))
       >>> print(rst)
           0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
           dtype: object
@@ -650,7 +686,7 @@ def ST_Centroid(geos):
       >>> import arctern
       >>> data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.wkb2wkt(arctern.ST_Centroid(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Centroid(data))
       >>> print(rst)
           0    POINT (0.5 0.5)
           1    POINT (4 4)
@@ -689,7 +725,43 @@ def ST_Length(geos):
 
 def ST_HausdorffDistance(geo1, geo2):
     """
-    **
+    Returns the Hausdorff distance between two geometries, a measure of how similar
+    or dissimilar 2 geometries are.
+
+    Implements algorithm for computing a distance metric which can be thought of as 
+    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to 
+    discrete points for one of the geometries. Wikipedia article on Hausdorff distance 
+    Martin Davis note on how Hausdorff Distance calculation was used to prove 
+    correctness of the CascadePolygonUnion approach.
+
+    When densifyFrac is specified, this function performs a segment densification before 
+    computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction
+    by which to densify each segment. Each segment will be split into a number of equal-length 
+    subsegments, whose fraction of the total length is closest to the given fraction.
+
+    Units are in the units of the spatial reference system of the geometries.
+
+    :type left: pyarrow.array.string
+    :param left: Geometries organized as WKB.
+     
+    :type right: pyarrow.array.string
+    :param right: Geometries organized as WKB.
+     
+    :return: An array of double.
+    :rtype: pyarrow.array.double
+ 
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data1 = ["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"]
+      >>> data2 = ["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"]
+      >>> data1 = pandas.Series(data1)
+      >>> data2 = pandas.Series(data2)
+      >>> rst = arctern.ST_HausdorffDistance(data1, data2)
+      >>> print(rst)
+          0    1.0
+          1    1.0
+          dtype: float64
     """
     arr1 = pa.array(geo1, type='string')
     arr2 = pa.array(geo2, type='string')
@@ -714,7 +786,7 @@ def ST_ConvexHull(geos):
       >>> import arctern
       >>> data = ["POINT (1.1 101.1)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.wkb2wkt(arctern.ST_ConvexHull(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_ConvexHull(data))
       >>> print(rst)
           0    POINT (1.1 101.1)
           dtype: object
@@ -770,7 +842,7 @@ def ST_Envelope(geos):
       >>> p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))"
       >>> data = [p1, p2, p3, p4, p5, p6, p7, p8]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.wkb2wkt(arctern.ST_Envelope(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Envelope(data))
       >>> print(rst)
           0    POINT (10 10)
           1    LINESTRING (0 0,0 10)
@@ -781,28 +853,118 @@ def ST_Envelope(geos):
           6    POLYGON ((0 0,0 10,10 10,10 0,0 0))
           7    POLYGON ((0 0,0 20,20 20,20 0,0 0))
           dtype: object
-      
     """
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Envelope(arr_geos)
     return rs.to_pandas()
 
 def ST_Buffer(geos, distance):
+    """
+    Returns a geometry that represents all points whose distance from this geos is 
+    less than or equal to distance.
+    
+    :type geos: pyarrow.array.string
+    :param geos: Geometries organized as WKB.
+
+    :type distance: int64
+    :param distance: The maximum distance of the returned geometry from the given geometry.
+ 
+    :return: Geometries organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = ["POINT (0 1)"]
+      >>> data = pandas.Series(data)
+      >>> rst = arctern.ST_AsText(arctern.ST_Buffer(data, 0))
+      >>> print(rst)
+          0    POLYGON EMPTY
+          dtype: object
+    """
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Buffer(arr_geos, distance)
     return rs.to_pandas()
 
 def ST_Union_Aggr(geos):
+    """
+    This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
+
+    :type geos: pyarrow.array.string
+    :param geos: Geometries organized as WKB.
+
+    :return: Geometry organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+      >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+      >>> data = pandas.Series([p1, p2])
+      >>> rst = arctern.ST_AsText(arctern.ST_Union_Aggr(data))
+      >>> print(rst)
+          0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))
+          dtype: object    
+    """
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Union_Aggr(arr_geos)
     return str(rs[0])
 
 def ST_Envelope_Aggr(geos):
+    """
+    Compute the double-precision minimum bounding box geometry for every geometry in geometries, 
+    then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
+
+    :type geos: pyarrow.array.string
+    :param geos: Geometries organized as WKB.
+
+    :return: Geometry organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+      >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+      >>> data = pandas.Series([p1, p2])
+      >>> rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(data))
+      >>> print(rst)
+          0    POLYGON ((0 0,0 4,7 4,7 0,0 0))
+          dtype: object
+    """
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Envelope_Aggr(arr_geos)
     return str(rs[0])
 
 def ST_Transform(geos, src, dst):
+    """
+    Returns a new geometry with its coordinates transformed to a different spatial 
+    reference system.
+
+    :type geos: pyarrow.array.string
+    :param geos: Geometries organized as WKB.
+
+    :type src: string
+    :param src: The current srid of geometries.
+   
+    :type dst: string
+    :param dst: The target srid of geometries tranfrom to.
+
+    :return: Geometries organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = ["POINT (10 10)"]
+      >>> data = pandas.Series(data)
+      >>> rst = arctern.ST_AsText(arctern.ST_Transform(data, "EPSG:4326", "EPSG:3857"))
+      >>> wkt = rst[0]
+      >>> rst_point = ogr.CreateGeometryFromWkt(str(wkt))
+      >>> assert abs(rst_point.GetX() - 1113194.90793274 < 0.01)
+      >>> assert abs(rst_point.GetY() - 1118889.97485796 < 0.01)
+    """
     arr_geos = pa.array(geos, type='string')
     src = bytes(src, encoding="utf8")
     dst = bytes(dst, encoding="utf8")
@@ -811,6 +973,25 @@ def ST_Transform(geos, src, dst):
     return rs.to_pandas()
 
 def ST_CurveToLine(geos):
+    """
+    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or 
+    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support 
+    CIRCULARSTRING geometry types.
+
+    :type geos: pyarrow.array.string
+    :param geos: Geometries organized as WKB.
+
+    :return: Geometries organized as WKB.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = ["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"]
+      >>> data = pandas.Series(data)
+      >>> rst = arctern.ST_CurveToLine(data)
+      >>> assert str(rst[0]).startswith("POLYGON")
+    """
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()

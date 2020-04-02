@@ -92,8 +92,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#arctern-wrapper-func-module">arctern.wrapper_func module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#id1">arctern.wrapper_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id4">arctern Package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id5">Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../arctern.html#id2">arctern Package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.html#id3">Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Area.html">ST_Area</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Buffer.html">ST_Buffer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="arctern.ST_Centroid.html">ST_Centroid</a></li>
@@ -213,7 +213,37 @@
 <dl class="function">
 <dt id="arctern.ST_Transform">
 <code class="sig-prename descclassname">arctern.</code><code class="sig-name descname">ST_Transform</code><span class="sig-paren">(</span><em class="sig-param">geos</em>, <em class="sig-param">src</em>, <em class="sig-param">dst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.ST_Transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a new geometry with its coordinates transformed to a different spatial 
+reference system.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geos</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+<li><p><strong>src</strong> (<em>string</em>) -- The current srid of geometries.</p></li>
+<li><p><strong>dst</strong> (<em>string</em>) -- The target srid of geometries tranfrom to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Geometries organized as WKB.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.string</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;POINT (10 10)&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:3857&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wkt</span> <span class="o">=</span> <span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst_point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wkt</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rst_point</span><span class="o">.</span><span class="n">GetX</span><span class="p">()</span> <span class="o">-</span> <span class="mf">1113194.90793274</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rst_point</span><span class="o">.</span><span class="n">GetY</span><span class="p">()</span> <span class="o">-</span> <span class="mf">1118889.97485796</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

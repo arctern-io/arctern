@@ -139,7 +139,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id4">arctern Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arctern.html#id2">arctern Package</a></li>
 </ul>
 </li>
 </ul>
@@ -213,7 +213,33 @@
 <dl class="function">
 <dt id="arctern.wrapper_func.ST_Envelope_Aggr">
 <code class="sig-prename descclassname">arctern.wrapper_func.</code><code class="sig-name descname">ST_Envelope_Aggr</code><span class="sig-paren">(</span><em class="sig-param">geos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/wrapper_func.html#ST_Envelope_Aggr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.wrapper_func.ST_Envelope_Aggr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries, 
+then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>geos</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Geometry organized as WKB.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.string</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="s2">&quot;POLYGON ((0 0,4 0,4 4,0 4,0 0))&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="s2">&quot;POLYGON ((5 1,7 1,7 2,5 2,5 1))&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
+<span class="go">    0    POLYGON ((0 0,0 4,7 4,7 0,0 0))</span>
+<span class="go">    dtype: object</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
