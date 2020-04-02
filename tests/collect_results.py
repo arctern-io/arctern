@@ -31,8 +31,13 @@ def collect_results():
     table_names = get_tests()[1]
 
     base_dir = SPARK_RESULT
+    print(base_dir)
+    for dd in os.listdir(base_dir):
+        print(dd)
     for table_name, name in zip(table_names, names):
         target = os.path.join(base_dir, table_name, '*.csv')
+        for tt in os.listdir(os.path.join(base_dir, table_name)):
+            print(tt)
         file_name = glob.glob(target)
         print('---------------------- original spark result files ----------------------------')
         print(file_name)
