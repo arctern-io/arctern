@@ -34,7 +34,7 @@ class Marks(RootMarks):
                 return dic
 
         def __init__(self, bounding_box: Value, shape: Value, color: Value,
-                     color_ruler: Value, stroke_ruler: Value, opacity: Value, 
+                     color_ruler: Value, stroke_ruler: Value, opacity: Value,
                      coordinate_system: Value, color_agg: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
@@ -82,7 +82,7 @@ class Marks(RootMarks):
 
 class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 mark_color: str, color_ruler: list, stroke_ruler: list, opacity: float, 
+                 mark_color: str, color_ruler: list, stroke_ruler: list, opacity: float,
                  coordinate_system: str, color_agg: str):
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
