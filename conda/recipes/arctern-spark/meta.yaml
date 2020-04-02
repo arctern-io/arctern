@@ -20,9 +20,11 @@ requirements:
   build:
     - python ===3.7.6
     - setuptools
+    - pyarctern {{ version }}
 
   run:
     - python ===3.7.6
+    - pyarctern {{ version }}
 
 test:
   commands:
