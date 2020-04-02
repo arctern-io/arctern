@@ -34,6 +34,8 @@ def collect_results():
     for table_name, name in zip(table_names, names):
         target = os.path.join(base_dir, table_name, '*.csv')
         file_name = glob.glob(target)
+        print('---------------------- original spark result files ----------------------------')
+        print(file_name)
         if os.path.isfile(file_name[0]):
             shutil.copyfile(file_name[0], os.path.join(
                 ARCTERN_RESULT, name + '.csv'))
