@@ -20,26 +20,106 @@ namespace arctern {
 namespace gis {
 namespace parser {
 
-bool IsWhiteSpace(const char c) {
+enum class NumberState {
+  BeforeDotSig,
+  BeforeDotNum,
+  Dot,
+  AfterDocNum,
+  SciExpr,
+  SciSig,
+  SciNum,
+  Finished,
+  Error
+};
+
+inline bool IsWhiteSpace(const char c) {
   if (c == ' ' || c == '\t') return true;
   return false;
 }
 
-bool IsAlphabet(const char c) {
+inline bool IsAlphabet(const char c) {
   if (c >= 'a' && c <= 'z') return true;
   if (c >= 'A' && c <= 'Z') return true;
   return false;
 }
 
-bool IsNumber(const char c) {
+inline bool IsDigital(const char c){
   if (c >= '0' && c <= '9') return true;
-  if (c == '.') return true;
-  if (c == '-') return true;
-  if (c == '+') return true;
   return false;
 }
 
-void SetIfEmpty(TokenInfo* token) {
+inline bool IsNumberStarter(const char c) {
+  if (IsDigital(c)) return true;
+  if (c == '.') return true;
+  if (c == '+') return true;
+  if (c == '-') return true;
+  return false;
+}
+
+inline NumberState GetNumbeStarerState(const char c) {
+  if (IsDigital(c)) return NumberState::BeforeDotNum;
+  if (c == '.') return NumberState::Dot;
+  if (c == '+') return NumberState::BeforeDotSig;
+  if (c == '-') return NumberState::BeforeDotSig;
+  return NumberState::Finished;
+}
+
+inline NumberState ParserNumber(NumberState pre_state, const char c) {
+  switch (pre_state) {
+    case NumberState::BeforeDotNum:{
+      if(c=='e' || c=='E') {
+        return NumberState::SciExpr;
+      }else if(IsWhiteSpace(c)){
+        return NumberState::Finished;
+      }
+    }
+    case NumberState::BeforeDotSig:{
+      if(IsDigital(c)){
+        return NumberState::BeforeDotNum;
+      }else if(c=='.'){
+        return NumberState::Dot;
+      }else{
+        return NumberState::Error;
+      }
+    }
+    case NumberState::Dot:
+    case NumberState::AfterDocNum:{
+      if(IsDigital(c)) {
+        return NumberState::AfterDocNum;
+      }else if(c=='e' || c=='E'){
+        return NumberState::SciExpr;
+      }else if(IsWhiteSpace(c)){
+        return NumberState::Finished;
+      }else {
+        return NumberState::Error;
+      }
+    }
+    case NumberState::SciExpr:{
+      if(c=='-' || c=='+'){
+        return NumberState::SciSig;
+      }else if(IsDigital(c)){
+        return NumberState::SciNum;
+      }else{
+        return NumberState::Error;
+      }
+    }
+    case NumberState::SciNum:{
+      if(IsDigital(c)){
+        return NumberState::SciNum;
+      }else if(IsWhiteSpace(c)){
+        return NumberState::Finished;
+      }else{
+        return NumberState::Error;
+      }
+    }
+    default:{
+      return NumberState::Error;
+    }
+  }
+  return NumberState::Error;
+}
+
+inline void SetIfEmpty(TokenInfo* token) {
   static auto empty = (const char*)"empty";
   static auto Empty = (const char*)"EMPTY";
   if (token->type != TokenType::WktKey) return;
@@ -54,6 +134,7 @@ bool NextToken(const char* src, TokenInfo* token) {
   if (*src == '\0') return false;
   token->len = 0;
   token->type = TokenType::Unknown;
+  NumberState num_state = NumberState::Error;
 
   while (*src != '\0') {
     char input = *(src);
@@ -89,10 +170,11 @@ bool NextToken(const char* src, TokenInfo* token) {
           token->type = TokenType::WktKey;
           token->len++;
           break;
-        } else if (IsNumber(input)) {
+        } else if (IsNumberStarter(input)) {
           token->start = src;
           token->type = TokenType::Number;
           token->len++;
+          num_state = GetNumbeStarerState(input);
           break;
         } else if (input == '(') {
           token->start = src;
