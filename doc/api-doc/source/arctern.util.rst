@@ -11,7 +11,7 @@ Subpackages
 Module contents
 ---------------
 
-.. automodule:: arctern.util
+.. automodapi:: arctern.util
    :members:
    :undoc-members:
    :show-inheritance:

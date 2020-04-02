@@ -7,7 +7,7 @@ Submodules
 arctern.util.vega.pointmap.vega\_pointmap module
 ------------------------------------------------
 
-.. automodule:: arctern.util.vega.pointmap.vega_pointmap
+.. automodapi:: arctern.util.vega.pointmap.vega_pointmap
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ arctern.util.vega.pointmap.vega\_pointmap module
 arctern.util.vega.pointmap.vega\_scatter\_plot module
 -----------------------------------------------------
 
-.. automodule:: arctern.util.vega.pointmap.vega_scatter_plot
+.. automodapi:: arctern.util.vega.pointmap.vega_scatter_plot
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ arctern.util.vega.pointmap.vega\_scatter\_plot module
 arctern.util.vega.pointmap.vega\_weighted\_pointmap module
 ----------------------------------------------------------
 
-.. automodule:: arctern.util.vega.pointmap.vega_weighted_pointmap
+.. automodapi:: arctern.util.vega.pointmap.vega_weighted_pointmap
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,7 +32,7 @@ arctern.util.vega.pointmap.vega\_weighted\_pointmap module
 Module contents
 ---------------
 
-.. automodule:: arctern.util.vega.pointmap
+.. automodapi:: arctern.util.vega.pointmap
    :members:
    :undoc-members:
    :show-inheritance:
