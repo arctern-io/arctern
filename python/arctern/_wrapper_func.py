@@ -349,14 +349,14 @@ def choropleth_map(wkb_data, count_data, conf):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     bounding_box_min = bytes(bottom_right, encoding="utf8")
     bounding_box_max = bytes(top_left, encoding="utf8")
     rs = arctern_core_.projection(arr_geos, bounding_box_min, bounding_box_max, height, width)
     return rs.to_pandas()
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     src = bytes(src_rs, encoding="utf8")
     dst = bytes(dst_rs, encoding="utf8")
     bounding_box_min = bytes(bottom_right, encoding="utf8")
