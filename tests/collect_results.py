@@ -36,6 +36,7 @@ def collect_results():
         print(dd)
     for table_name, name in zip(table_names, names):
         target = os.path.join(base_dir, table_name, '*.csv')
+        print('---------------------- original csv files ----------------------------')
         for tt in os.listdir(os.path.join(base_dir, table_name)):
             print(tt)
         file_name = glob.glob(target)
