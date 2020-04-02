@@ -44,6 +44,7 @@ void SetCountValue_cpu(float* out, uint32_t* in_x, uint32_t* in_y, T* in_c, int6
     uint32_t vertice_x = in_x[i];
     uint32_t vertice_y = height - in_y[i] - 1;
     if (vertice_y > height || vertice_x > width) continue;
+    if (vertice_y < 0 || vertice_x < 0) continue;
     int64_t index = vertice_y * width + vertice_x;
     if (index >= width * height) continue;
     out[index] += in_c[i];
@@ -88,7 +89,7 @@ void set_colors_cpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
 
   int64_t c_offset = 0;
   for (auto j = 0; j < window_size; j++) {
-    float value = heat_count[j] / max_pix;
+    float value = max_pix == 0.0f ? 0.0f : heat_count[j] / max_pix;
     float color_r, color_g, color_b;
     color_gradient.getColorAtValue(value, color_r, color_g, color_b);
     colors[c_offset++] = color_r;
