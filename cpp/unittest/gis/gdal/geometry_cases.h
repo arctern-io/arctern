@@ -18,6 +18,7 @@
 #include <arrow/array.h>
 #include <gtest/gtest.h>
 #include <ogr_geometry.h>
+
 #include <ctime>
 #include <iostream>
 #include <memory>
@@ -25,6 +26,7 @@
 #include <vector>
 
 #include "arrow/gis_api.h"
+#include "gis/gdal/format_conversion.h"
 #include "gis/wkb_types.h"
 #include "utils/check_status.h"
 
@@ -219,3 +221,28 @@ inline int XYSpaceWktCases::GetCaseCount(const std::vector<WkbTypes>& wkb_types)
 inline std::pair<int, int> XYSpaceWktCases::GetCaseIndexRange(WkbTypes wkb_type) {
   return index_ranges_[uint32_t(wkb_type)];
 }
+
+class XYSpaceWkbCases {
+ public:
+  XYSpaceWkbCases() = default;
+  std::shared_ptr<arrow::BinaryArray> GetAllCases() {
+    auto wkt_geo = wkt_cases.GetAllCases();
+    return arctern::gis::gdal::WktToWkb(wkt_geo);
+  }
+
+  std::shared_ptr<arrow::BinaryArray> GetCases(const std::vector<WkbTypes>& wkb_types) {
+    auto wkt_geo = wkt_cases.GetCases(wkb_types);
+    return arctern::gis::gdal::WktToWkb(wkt_geo);
+  }
+
+  int GetCaseCount(const std::vector<WkbTypes>& wkb_types) {
+    return wkt_cases.GetCaseCount(wkb_types);
+  }
+
+  std::pair<int, int> GetCaseIndexRange(WkbTypes wkb_type) {
+    return wkt_cases.GetCaseIndexRange(wkb_type);
+  }
+
+ private:
+  XYSpaceWktCases wkt_cases;
+};

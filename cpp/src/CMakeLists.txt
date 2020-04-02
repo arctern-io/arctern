@@ -48,6 +48,7 @@ set(gis_src
         gis/parser.cpp
         gis/gdal/geometry_visitor.cpp
         gis/dispatch/wkt_type_scanner.cpp
+        gis/dispatch/wkb_type_scanner.cpp
         gis/dispatch/type_scanner.cpp
         gis/gdal/format_conversion.cpp
         )
