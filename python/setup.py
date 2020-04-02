@@ -23,7 +23,7 @@ from Cython.Build import cythonize
 class BuildExt(build_ext):
 
     user_options = build_ext.user_options + [
-        ('issymbol', None , "whether is symbol"),
+        ('issymbol', None, "whether is symbol"),
     ]
 
     def initialize_options(self):
