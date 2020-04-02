@@ -43,7 +43,7 @@ inline bool IsAlphabet(const char c) {
   return false;
 }
 
-inline bool IsDigital(const char c){
+inline bool IsDigital(const char c) {
   if (c >= '0' && c <= '9') return true;
   return false;
 }
@@ -56,6 +56,13 @@ inline bool IsNumberStarter(const char c) {
   return false;
 }
 
+inline bool IsNumberTerminal(const char c) {
+  if (c == ' ') return true;
+  if (c == '\t') return true;
+  if (c == ',') return true;
+  if (c == ')') return true;
+}
+
 inline NumberState GetNumbeStarerState(const char c) {
   if (IsDigital(c)) return NumberState::BeforeDotNum;
   if (c == '.') return NumberState::Dot;
@@ -66,55 +73,53 @@ inline NumberState GetNumbeStarerState(const char c) {
 
 inline NumberState ParserNumber(NumberState pre_state, const char c) {
   switch (pre_state) {
-    case NumberState::BeforeDotNum:{
-      if(c=='e' || c=='E') {
+    case NumberState::BeforeDotNum: {
+      if (c == 'e' || c == 'E') {
         return NumberState::SciExpr;
-      }else if(IsWhiteSpace(c)){
+      } else if (IsNumberTerminal(c)) {
         return NumberState::Finished;
       }
     }
-    case NumberState::BeforeDotSig:{
-      if(IsDigital(c)){
+    case NumberState::BeforeDotSig: {
+      if (IsDigital(c)) {
         return NumberState::BeforeDotNum;
-      }else if(c=='.'){
+      } else if (c == '.') {
         return NumberState::Dot;
-      }else{
+      } else {
         return NumberState::Error;
       }
     }
     case NumberState::Dot:
-    case NumberState::AfterDocNum:{
-      if(IsDigital(c)) {
+    case NumberState::AfterDocNum: {
+      if (IsDigital(c)) {
         return NumberState::AfterDocNum;
-      }else if(c=='e' || c=='E'){
+      } else if (c == 'e' || c == 'E') {
         return NumberState::SciExpr;
-      }else if(IsWhiteSpace(c)){
+      } else if (IsNumberTerminal(c)) {
         return NumberState::Finished;
-      }else {
+      } else {
         return NumberState::Error;
       }
     }
-    case NumberState::SciExpr:{
-      if(c=='-' || c=='+'){
+    case NumberState::SciExpr: {
+      if (c == '-' || c == '+') {
         return NumberState::SciSig;
-      }else if(IsDigital(c)){
+      } else if (IsDigital(c)) {
         return NumberState::SciNum;
-      }else{
+      } else {
         return NumberState::Error;
       }
     }
-    case NumberState::SciNum:{
-      if(IsDigital(c)){
+    case NumberState::SciNum: {
+      if (IsDigital(c)) {
         return NumberState::SciNum;
-      }else if(IsWhiteSpace(c)){
+      } else if (IsNumberTerminal(c)) {
         return NumberState::Finished;
-      }else{
+      } else {
         return NumberState::Error;
       }
     }
-    default:{
-      return NumberState::Error;
-    }
+    default: { return NumberState::Error; }
   }
   return NumberState::Error;
 }
@@ -152,14 +157,15 @@ bool NextToken(const char* src, TokenInfo* token) {
         }
       }
       case TokenType::Number: {
-        if (IsWhiteSpace(input) || input == ',' || input == ')') {
+        num_state = ParserNumber(num_state, input);
+        if (num_state == NumberState::Finished) {
           return true;
-        } else if (IsNumber(input)) {
-          token->len++;
-          break;
-        } else {
+        } else if (num_state == NumberState::Error) {
           token->type = TokenType::Unknown;
           return true;
+        } else {
+          token->len++;
+          break;
         }
       }
       case TokenType::Unknown: {
