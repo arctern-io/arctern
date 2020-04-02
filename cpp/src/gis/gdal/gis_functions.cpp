@@ -211,11 +211,15 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
       std::static_pointer_cast<const arrow::DoubleArray>(max_y_values);
 
   arrow::BinaryBuilder builder;
-
+  OGRPolygon empty;
+  auto empty_size = empty.WkbSize();
+  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
+  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
+  
   for (int32_t i = 0; i < len; i++) {
     if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
         (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
-      CHECK_ARROW(builder.AppendNull());
+      builder.Append(empty_wkb,empty_size);
     } else {
       OGRLinearRing ring;
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
@@ -229,6 +233,7 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
       AppendWkbNDR(builder, &polygon);
     }
   }
+  CPLFree(empty_wkb);
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
@@ -343,7 +348,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& a
   OGREnvelope env;
   auto op = [&env](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     if (geo->IsEmpty()) {
-      builder.AppendNull();
+      AppendWkbNDR(builder,geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
       if (env.MinX == env.MaxX) {    // vertical line or Point
@@ -413,6 +418,11 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   arrow::BinaryBuilder builder;
   auto has_curve = new HasCurveVisitor;
 
+  OGRGeometryCollection empty;
+  auto empty_size = empty.WkbSize();
+  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
+  empty.exportToWkb(OGRwkbByteOrder::wkbNDR,empty_wkb);
+
   for (int i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkb(wkt1, i);
     auto ogr2 = Wrapper_createFromWkb(wkt2, i);
@@ -422,11 +432,16 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.AppendNull();
-      // builder.Append("GEOMETRYCOLLECTION EMPTY");
+      builder.Append(empty_wkb,empty_size);
     } else {
       auto rst = ogr1->Intersection(ogr2);
-      AppendWkbNDR(builder, rst);
+      if(rst==nullptr){
+        builder.AppendNull();
+      }else if(rst->IsEmpty()){
+        builder.Append(empty_wkb,empty_size);
+      }else{
+        AppendWkbNDR(builder, rst);
+      }
       OGRGeometryFactory::destroyGeometry(rst);
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
@@ -434,6 +449,7 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   }
 
   delete has_curve;
+  CPLFree(empty_wkb);
 
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -629,7 +645,7 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
-      builder.AppendNull();
+      builder.Append(true);
     } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
     } else {
@@ -829,6 +845,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     OGRGeometryFactory::destroyGeometry(geo);
   }
   arrow::BinaryBuilder builder;
+  OGRPolygon polygon;
   if (set_env) {
     OGRLinearRing ring;
     ring.addPoint(xmin, ymin);
@@ -836,12 +853,9 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     ring.addPoint(xmax, ymax);
     ring.addPoint(xmax, ymin);
     ring.addPoint(xmin, ymin);
-    OGRPolygon polygon;
-    polygon.addRing(&ring);
-    AppendWkbNDR(builder, &polygon);
-  } else {
-    builder.AppendNull();
+    polygon.addRing(&ring); 
   }
+  AppendWkbNDR(builder, &polygon);
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

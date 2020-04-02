@@ -593,8 +593,7 @@ TEST(geometry_test, test_ST_Intersection) {
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
-  // ASSERT_EQ(res_str->GetString(1), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(1));
+  ASSERT_EQ(res_str->GetString(1), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(2), "POINT (0 1)");
   // ASSERT_EQ(res_str->GetString(3), "MULTIPOLYGON EMPTY"); // POINT EMPTY
   ASSERT_EQ(res_str->GetString(4), "POINT (0 1)");
@@ -611,18 +610,15 @@ TEST(geometry_test, test_ST_Intersection) {
   // ASSERT_EQ(res_str->GetString(15), "MULTIPOLYGON EMPTY"); // error
   // TODO : need verify against geospark result below.
   ASSERT_EQ(res_str->GetString(16), "POINT (1 8)");
-  // ASSERT_EQ(res_str->GetString(17), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(17));
+  ASSERT_EQ(res_str->GetString(17), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(18), "POINT (2 3)");
-  // ASSERT_EQ(res_str->GetString(19), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(19));
+  ASSERT_EQ(res_str->GetString(19), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(20), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(21), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(22), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(23), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(24), "POINT (1 8)");
-  // ASSERT_EQ(res_str->GetString(25), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(25));
+  ASSERT_EQ(res_str->GetString(25), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(26), "MULTIPOINT (1 8,2 3)");
   ASSERT_EQ(res_str->GetString(27), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(28), "MULTILINESTRING ((0 0,1 0),(1 0,1 8))");
@@ -634,8 +630,7 @@ TEST(geometry_test, test_ST_Intersection) {
   ASSERT_EQ(res_str->GetString(34), "MULTIPOINT (0 0,1 1,1 3,1 8)");
   ASSERT_EQ(res_str->GetString(35), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(36), "MULTIPOINT (0 0,1 8)");
-  // ASSERT_EQ(res_str->GetString(37), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(37));
+  ASSERT_EQ(res_str->GetString(37), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(38), "LINESTRING (0 0,1 0,1 8)");
   ASSERT_EQ(res_str->GetString(39), "LINESTRING (0 1,2 3,1 1)");
   ASSERT_EQ(res_str->GetString(40), "MULTILINESTRING ((0 1,2 3),(2 3,1 1))");
@@ -745,22 +740,22 @@ TEST(geometry_test, test_ST_PrecisionReduce) {
 
 TEST(geometry_test, test_ST_Equals3) {
   auto l0 = "POLYGON EMPTY";
-  auto r0 = "POINT EMPTY";
+  auto r0 = "POLYGON EMPTY";
 
   auto l1 = "LINESTRING EMPTY";
-  auto r1 = "POINT EMPTY";
+  auto r1 = "POLYGON EMPTY";
 
-  auto l2 = "POINT EMPTY";
-  auto r2 = "POINT EMPTY";
+  auto l2 = "CIRCULARSTRING EMPTY";
+  auto r2 = "POLYGON EMPTY";
 
   auto l3 = "MULTIPOLYGON EMPTY";
-  auto r3 = "POINT EMPTY";
+  auto r3 = "POLYGON EMPTY";
 
   auto l4 = "MULTILINESTRING EMPTY";
-  auto r4 = "POINT EMPTY";
+  auto r4 = "POLYGON EMPTY";
 
   auto l5 = "MULTIPOINT EMPTY";
-  auto r5 = "POINT EMPTY";
+  auto r5 = "POLYGON EMPTY";
 
   arrow::StringBuilder builder_l, builder_r;
 
@@ -791,12 +786,12 @@ TEST(geometry_test, test_ST_Equals3) {
                                      arctern::gis::ST_GeomFromText(input_r));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  ASSERT_EQ(res_bool->IsNull(0), true);
-  ASSERT_EQ(res_bool->IsNull(1), true);
-  ASSERT_EQ(res_bool->IsNull(2), true);
-  ASSERT_EQ(res_bool->IsNull(3), true);
-  ASSERT_EQ(res_bool->IsNull(4), true);
-  ASSERT_EQ(res_bool->IsNull(5), true);
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), true);
+  ASSERT_EQ(res_bool->Value(4), true);
+  ASSERT_EQ(res_bool->Value(5), true);
 }
 
 TEST(geometry_test, test_ST_Equals2) {
@@ -3152,13 +3147,13 @@ TEST(geometry_test, test_ST_Envelope_Empty) {
       arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
-  ASSERT_EQ(result_str->IsNull(0), true);
-  ASSERT_EQ(result_str->IsNull(1), true);
+  ASSERT_EQ(result_str->GetString(0), p0);
+  ASSERT_EQ(result_str->GetString(1), p1);
   ASSERT_EQ(result_str->IsNull(2), true);
-  ASSERT_EQ(result_str->IsNull(3), true);
-  ASSERT_EQ(result_str->IsNull(4), true);
-  ASSERT_EQ(result_str->IsNull(5), true);
-  ASSERT_EQ(result_str->IsNull(6), true);
+  ASSERT_EQ(result_str->GetString(3), p3);
+  ASSERT_EQ(result_str->GetString(4), p4);
+  ASSERT_EQ(result_str->GetString(5), p5);
+  ASSERT_EQ(result_str->GetString(6), p6);
 }
 
 TEST(geometry_test, test_ST_Envelope) {
@@ -3235,12 +3230,12 @@ TEST(geometry_test, test_ST_Buffer) {
       arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 1, 2));
   auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
-  ASSERT_EQ(res_str->IsNull(0), true);
-  ASSERT_EQ(res_str->IsNull(1), true);
-  ASSERT_EQ(res_str->IsNull(2), true);
+  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-  ASSERT_EQ(res_str->IsNull(4), true);
-  ASSERT_EQ(res_str->IsNull(5), true);
+  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))");
   ASSERT_EQ(res_str->GetString(8),
@@ -3355,8 +3350,8 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
   ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
-  ASSERT_EQ(res_str->IsNull(2), true);
-  ASSERT_EQ(res_str->IsNull(3), true);
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
 }
 
 TEST(geometry_test, test_ST_Transform) {
