@@ -24,19 +24,34 @@
 
 #include "arrow/gis_api.h"
 #include "gis/dispatch/dispatch.h"
+#include "gis/dispatch/wkb_type_scanner.h"
 #include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
 #include "gis/test_common/transforms.h"
+#include "utils/arrow_alias.h"
 #include "utils/check_status.h"
 
 namespace dispatch = arctern::gis::dispatch;
 using GroupedWkbTypes = arctern::gis::dispatch::GroupedWkbTypes;
 using WkbTypes = arctern::gis::WkbTypes;
 
-TEST(type_scan, single_type_scan) {
-  XYSpaceWktCases cases;
+template <typename Tuple>
+class TypeScan : public ::testing::Test {
+ public:
+  using XYSpaceCases = std::tuple_element_t<0, Tuple>;
+  using TypeScanner = std::tuple_element_t<1, Tuple>;
+  using ArrayType = std::tuple_element_t<2, Tuple>;
+};
+
+using TypesContainer = ::testing::Types<
+    std::tuple<XYSpaceWkbCases, dispatch::WkbTypeScanner, arrow::BinaryArray>,
+    std::tuple<XYSpaceWktCases, dispatch::WktTypeScanner, arrow::StringArray> >;
+TYPED_TEST_SUITE(TypeScan, TypesContainer);
+
+TYPED_TEST(TypeScan, single_type_scan) {
+  typename TestFixture::XYSpaceCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+  typename TestFixture::TypeScanner scanner(geo_cases);
   scanner.mutable_types().push_back({WkbTypes::kPoint});
   scanner.mutable_types().push_back({WkbTypes::kLineString});
   scanner.mutable_types().push_back({WkbTypes::kPolygon});
@@ -48,16 +63,12 @@ TEST(type_scan, single_type_scan) {
 
   for (auto type : scanner.types()) {
     const auto& mask = type_masks->get_mask(type);
-    auto uid = type_masks->get_encode_uid(type);
     auto range = cases.GetCaseIndexRange(*type.begin());
-    auto encode_uids = type_masks->encode_uids;
     for (int i = 0; i < mask.size(); i++) {
       if (i >= range.first && i < range.second) {
         ASSERT_EQ(mask[i], true);
-        ASSERT_EQ(encode_uids[i], uid);
       } else {
         ASSERT_EQ(mask[i], false);
-        ASSERT_NE(encode_uids[i], uid);
       }
     }
     auto count = type_masks->get_count(type);
@@ -72,10 +83,10 @@ TEST(type_scan, single_type_scan) {
   }
 }
 
-TEST(type_scan, unknown_type) {
-  XYSpaceWktCases cases;
+TYPED_TEST(TypeScan, unknown_type) {
+  typename TestFixture::XYSpaceCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+  typename TestFixture::TypeScanner scanner(geo_cases);
   scanner.mutable_types().push_back({WkbTypes::kLineString});
   scanner.mutable_types().push_back({WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
@@ -86,27 +97,23 @@ TEST(type_scan, unknown_type) {
   auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
   auto range1 = cases.GetCaseIndexRange(WkbTypes::kPolygon);
   auto range2 = cases.GetCaseIndexRange(WkbTypes::kMultiLineString);
-  auto& encode_uids = type_masks->encode_uids;
-  auto uid = type_masks->get_encode_uid(type);
   const auto& mask = type_masks->get_mask(type);
   for (int i = 0; i < mask.size(); i++) {
     if ((i >= range0.first && i < range0.second) ||
         (i >= range1.first && i < range1.second) ||
         (i >= range2.first && i < range2.second)) {
       ASSERT_EQ(mask[i], true);
-      ASSERT_EQ(encode_uids[i], uid);
     } else {
       ASSERT_EQ(mask[i], false);
-      ASSERT_NE(encode_uids[i], uid);
     }
   }
 }
 
-TEST(type_scan, unique_type) {
-  XYSpaceWktCases cases;
+TYPED_TEST(TypeScan, unique_type) {
+  typename TestFixture::XYSpaceCases cases;
   auto geo_cases = cases.GetAllCases();
   {
-    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+    typename TestFixture::TypeScanner scanner(geo_cases);
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kUnknown};
     ASSERT_EQ(type_masks->is_unique_type, true);
@@ -114,7 +121,7 @@ TEST(type_scan, unique_type) {
   }
 
   {
-    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+    typename TestFixture::TypeScanner scanner(geo_cases);
     scanner.mutable_types().push_back({WkbTypes::kMultiPolygon});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kMultiPolygon};
@@ -122,7 +129,7 @@ TEST(type_scan, unique_type) {
   }
   {
     auto geo_cases2 = cases.GetCases({WkbTypes::kLineString});
-    arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases2);
+    typename TestFixture::TypeScanner scanner(geo_cases2);
     scanner.mutable_types().push_back({WkbTypes::kLineString});
     auto type_masks = scanner.Scan();
     GroupedWkbTypes type = {WkbTypes::kLineString};
@@ -132,75 +139,71 @@ TEST(type_scan, unique_type) {
   }
 }
 
-TEST(type_scan, grouped_type) {
-  XYSpaceWktCases cases;
+TYPED_TEST(TypeScan, grouped_type) {
+  typename TestFixture::XYSpaceCases cases;
   auto geo_cases = cases.GetAllCases();
-  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+  typename TestFixture::TypeScanner scanner(geo_cases);
   GroupedWkbTypes type1({WkbTypes::kPoint, WkbTypes::kLineString});
   GroupedWkbTypes type2({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back(type1);
   scanner.mutable_types().push_back(type2);
   auto type_masks = scanner.Scan();
   ASSERT_EQ(type_masks->is_unique_type, false);
-  auto& encode_uids = type_masks->encode_uids;
 
   {
     const auto& mask = type_masks->get_mask(type1);
-    auto uid = type_masks->get_encode_uid(type1);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPoint);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kLineString);
     for (int i = 0; i < mask.size(); i++) {
       if ((i >= range0.first && i < range0.second) ||
           (i >= range1.first && i < range1.second)) {
         ASSERT_EQ(mask[i], true);
-        ASSERT_EQ(encode_uids[i], uid);
       } else {
         ASSERT_EQ(mask[i], false);
-        ASSERT_NE(encode_uids[i], uid);
       }
     }
   }
   {
     const auto& mask = type_masks->get_mask(type2);
-    auto uid = type_masks->get_encode_uid(type2);
     auto range0 = cases.GetCaseIndexRange(WkbTypes::kPolygon);
     auto range1 = cases.GetCaseIndexRange(WkbTypes::kMultiPoint);
     for (int i = 0; i < mask.size(); i++) {
       if ((i >= range0.first && i < range0.second) ||
           (i >= range1.first && i < range1.second)) {
         ASSERT_EQ(mask[i], true);
-        ASSERT_EQ(encode_uids[i], uid);
       } else {
         ASSERT_EQ(mask[i], false);
-        ASSERT_NE(encode_uids[i], uid);
       }
     }
   }
 }
 
-TEST(type_scan, unique_grouped_type) {
-  XYSpaceWktCases cases;
+TYPED_TEST(TypeScan, unique_grouped_type) {
+  typename TestFixture::XYSpaceCases cases;
   auto geo_cases = cases.GetCases({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
 
-  arctern::gis::dispatch::TypeScannerForWkt scanner(geo_cases);
+  typename TestFixture::TypeScanner scanner(geo_cases);
   GroupedWkbTypes type({WkbTypes::kPolygon, WkbTypes::kMultiPoint});
   scanner.mutable_types().push_back(type);
   auto type_masks = scanner.Scan();
   ASSERT_EQ(type_masks->is_unique_type, true);
   ASSERT_EQ(type_masks->unique_type, type);
-  ASSERT_TRUE(type_masks->encode_uids.empty());
   ASSERT_TRUE(type_masks->dict.empty());
 }
 
-TEST(type_scan, merge_and_split) {
-  using arctern::gis::dispatch::WktArrayMerge;
-  using arctern::gis::dispatch::WktArraySplit;
+TYPED_TEST(TypeScan, merge_and_split) {
+  using arctern::gis::dispatch::GenericArrayMerge;
+  using arctern::gis::dispatch::GenericArraySplit;
   using std::string;
   using std::vector;
+
+  using ArrayType = typename TestFixture::ArrayType;
+  using BuilderType = typename arctern::GetArrowBuilderType<ArrayType>;
+
   std::vector<std::string> strs{"one", "two",  "",   "$a", "four",
                                 "#",   "five", "$b", "$c", ""};
   std::vector<bool> masks;
-  arrow::StringBuilder builder;
+  BuilderType builder;
   for (auto str : strs) {
     if (str == "#") {
       builder.AppendNull();
@@ -209,13 +212,13 @@ TEST(type_scan, merge_and_split) {
     }
     masks.push_back(!str.empty() && str[0] == '$');
   }
-  std::shared_ptr<arrow::StringArray> input;
+  std::shared_ptr<ArrayType> input;
   builder.Finish(&input);
-  auto tmps = WktArraySplit(input, masks);
+  auto tmps = GenericArraySplit(input, masks);
   vector<string> false_strs = {"one", "two", "", "four", "#", "five", ""};
   vector<string> true_strs = {"$a", "$b", "$c"};
   auto checker = [](std::shared_ptr<arrow::Array> left_raw, vector<string> right) {
-    auto left = std::static_pointer_cast<arrow::StringArray>(left_raw);
+    auto left = std::static_pointer_cast<ArrayType>(left_raw);
     ASSERT_EQ(left->length(), right.size());
     for (auto i = 0; i < right.size(); ++i) {
       auto str = right[i];
@@ -229,39 +232,39 @@ TEST(type_scan, merge_and_split) {
   };
   checker(tmps[0], false_strs);
   checker(tmps[1], true_strs);
-  auto output = WktArrayMerge({tmps[0], tmps[1]}, masks);
+  auto output = GenericArrayMerge<ArrayType>({tmps[0], tmps[1]}, masks);
   checker(output, strs);
 }
 
-TEST(type_scan, dispatch) {
+TYPED_TEST(TypeScan, dispatch) {
   using std::string;
   using std::vector;
+  using ArrayType = typename TestFixture::ArrayType;
   vector<string> cases_raw = {
       "MultiPoint Empty",
       "LineString(0 0, 0 1)",
       "Point(0 0)",
       "MultiLineString Empty",
   };
+
   vector<bool> std_masks = {true, false, false, false};
-  auto cases = arctern::gis::StrsToWkt(cases_raw);
+  auto cases = arctern::gis::StrsTo<ArrayType>(cases_raw);
 
   GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
-
   GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
 
   dispatch::MaskResult mask_result(cases, type1);
   mask_result.AppendFilter(cases, type2);
 
-  auto true_checker = [&](std::shared_ptr<arrow::StringArray> wkt) {
-    EXPECT_EQ(wkt->length(), 1);
-    EXPECT_EQ(wkt->GetView(0), cases->GetView(2));
-    return wkt;
+  auto true_checker = [&](std::shared_ptr<ArrayType> wkb) {
+    EXPECT_EQ(wkb->length(), 1);
+    EXPECT_EQ(wkb->GetView(0), cases->GetView(2));
+    return wkb;
   };
 
-  auto false_checker = [](std::shared_ptr<arrow::StringArray> wkt) {
-    EXPECT_EQ(wkt->length(), 3);
-    return wkt;
+  auto false_checker = [](std::shared_ptr<ArrayType> wkb) {
+    EXPECT_EQ(wkb->length(), 3);
+    return wkb;
   };
-  dispatch::UnaryExecute<arrow::StringArray>(mask_result, false_checker, true_checker,
-                                             cases);
+  dispatch::UnaryExecute<ArrayType>(mask_result, false_checker, true_checker, cases);
 }

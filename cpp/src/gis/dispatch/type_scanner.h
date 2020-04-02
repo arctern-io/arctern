@@ -46,8 +46,6 @@ struct GeometryTypeMasks {
     // TODO(dog): now make unittest happy
     // This field contains counts of true in mask, or size of indexes
     int64_t mask_count = 0;
-    // This field contains unique id(uid) for each class
-    EncodeUid encode_uid;
   };
   const auto& get_info(const GroupedWkbTypes& grouped_types) const& {
     auto iter = dict.find(grouped_types);
@@ -77,10 +75,6 @@ struct GeometryTypeMasks {
     return get_info(grouped_types).mask_count;
   }
 
-  EncodeUid get_encode_uid(const GroupedWkbTypes& grouped_types) const {
-    return get_info(grouped_types).encode_uid;
-  }
-
  public:
   // If the given geometries share identical type, this field will be set true.
   bool is_unique_type;
@@ -88,9 +82,6 @@ struct GeometryTypeMasks {
   GroupedWkbTypes unique_type;
   // extra fields for
  public:
-  // This field contains uid for each data
-  std::vector<EncodeUid> encode_uids;
-  int num_scan_classes = 0;
   // This contains Info for each geometry type, enable only if !unique_type
   std::map<GroupedWkbTypes, Info> dict;
 };
@@ -122,7 +113,15 @@ class MaskResult {
     this->AppendFilter(geometries, supported);
   }
 
+  MaskResult(const std::shared_ptr<arrow::BinaryArray>& geometries,
+             const GroupedWkbTypes& supported) {
+    this->AppendFilter(geometries, supported);
+  }
+
   void AppendFilter(const std::shared_ptr<arrow::StringArray>& geometries,
+                    const GroupedWkbTypes& supported_type);
+
+  void AppendFilter(const std::shared_ptr<arrow::BinaryArray>& geometries,
                     const GroupedWkbTypes& supported_type);
 
   Status get_status() const { return status_; }

@@ -30,14 +30,13 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
-class WktTypeScanner : public GeometryTypeScanner {
+class WkbTypeScanner : public GeometryTypeScanner {
  public:
-  explicit WktTypeScanner(const std::shared_ptr<arrow::StringArray>& geometries);
-
+  explicit WkbTypeScanner(const std::shared_ptr<arrow::BinaryArray>& geometries);
   std::shared_ptr<GeometryTypeMasks> Scan() const final;
 
  private:
-  const std::shared_ptr<arrow::StringArray>& geometries_;
+  const std::shared_ptr<arrow::BinaryArray>& geometries_;
 };
 
 }  // namespace dispatch

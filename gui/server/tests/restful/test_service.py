@@ -16,8 +16,8 @@ limitations under the License.
 
 # pylint: disable=redefined-outer-name
 
-import requests
 import pytest
+import requests
 
 @pytest.fixture(scope='function')
 def dbid(host, port, headers):
@@ -199,7 +199,7 @@ def test_query(host, port, headers, dbid, table_name):
             select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s
             from {}
             where ST_Within(
-                ST_Point(pickup_longitude, pickup_latitude), 
+                ST_Point(pickup_longitude, pickup_latitude),
                 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')
             '''.format(table_name),
             'type': 'weighted',

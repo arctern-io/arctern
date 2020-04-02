@@ -127,7 +127,7 @@ make install
 
 切换到工程中的`arctern/python`目录
 ```
-python setup.py build && python setup.py install
+python setup.py build build_ext && python setup.py install
 ```
 
 ### 运行Python包 arctern的单元测试
