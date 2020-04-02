@@ -33,11 +33,10 @@ namespace arctern {
 namespace gis {
 namespace dispatch {
 
-TypeScannerForWkt::TypeScannerForWkt(
-    const std::shared_ptr<arrow::StringArray>& geometries)
+WktTypeScanner::WktTypeScanner(const std::shared_ptr<arrow::StringArray>& geometries)
     : geometries_(geometries) {}
 
-std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
+std::shared_ptr<GeometryTypeMasks> WktTypeScanner::Scan() const {
   auto len = geometries_->length();
 
   if (types().empty()) {
@@ -72,10 +71,8 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
   std::vector<Info> mapping(num_scan_classes);
   for (auto i = 0; i < num_scan_classes; i++) {
     mapping[i].mask.resize(len, false);
-    mapping[i].encode_uid = i;
   }
 
-  std::vector<GeometryTypeMasks::EncodeUid> encode_uids(len);
   bool is_unique_type = true;
   int last_idx = -1;
 
@@ -109,7 +106,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
 
     mapping[idx].mask[i] = true;
     mapping[idx].mask_count++;
-    encode_uids[i] = idx;
 
     if (last_idx != -1 && last_idx != idx) {
       is_unique_type = false;
@@ -140,7 +136,6 @@ std::shared_ptr<GeometryTypeMasks> TypeScannerForWkt::Scan() const {
     }
   } else {
     int encode_uid = 0;
-    ret->encode_uids = std::move(encode_uids);
     GroupedWkbTypes unknown_type = {WkbTypes::kUnknown};
     ret->dict[unknown_type] = std::move(mapping[encode_uid++]);
 

@@ -145,9 +145,9 @@ def arc_distance(geox, geoy):
 
 
 # def to_geojson(wkt_str):
-# 	g1 = wkt.loads(wkt_str)
-# 	g2 = geojson.Feature(geometry=g1, properties={})
-# 	return g2.geometry
+#   g1 = wkt.loads(wkt_str)
+#   g2 = geojson.Feature(geometry=g1, properties={})
+#   return g2.geometry
 
 
 def get_tests():
