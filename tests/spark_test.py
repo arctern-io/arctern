@@ -144,7 +144,7 @@ def run_test_st_isvalid_curve(spark):
 
     data = "isvalid_curve.csv"
     table_name = 'test_isvalid_curve'
-    sql = "select ST_IsValid(ST_AsText(geos)) as is_valid from test_isvalid_curve"
+    sql = "select ST_IsValid(ST_GeomFromText(geos)) as is_valid from test_isvalid_curve"
 
     df = read_data(spark, base_dir, data)
     #df.printSchema()
