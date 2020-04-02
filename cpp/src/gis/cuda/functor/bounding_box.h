@@ -22,6 +22,7 @@
 #include <limits>
 
 #include "gis/cuda/common/common.h"
+#include "gis/cuda/common/gis_definitions.h"
 
 namespace arctern {
 namespace gis {
@@ -60,6 +61,8 @@ class BoundingBox {
   MinMax xs_;
   MinMax ys_;
 };
+
+DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag, ConstGpuContext::ConstIter& iter);
 
 }  // namespace cuda
 }  // namespace gis

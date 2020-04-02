@@ -23,6 +23,7 @@
 #include "gis/cuda/functor/bounding_box.h"
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
+#include "gis/cuda/functor/bounding_box.h"
 
 namespace arctern {
 namespace gis {
@@ -37,6 +38,7 @@ __device__ inline OutputInfo GetInfoAndDataPerElement(const ConstGpuContext& inp
   auto tag = input.get_tag(index);
   assert(tag.get_space_type() == WkbSpaceType::XY);
   auto values_beg = (const double2*)input.get_value_ptr(index);
+
   auto values_end = (const double2*)input.get_value_ptr(index + 1);
 
   auto meta_output = results.get_meta_ptr(index);
