@@ -14,8 +14,6 @@
 
 #from distutils.core import setup, Extension
 import os
-import numpy as np
-import pyarrow as pa
 
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
@@ -23,6 +21,50 @@ from Cython.Build import cythonize
 
 # Avoid gcc warnings
 class BuildExt(build_ext):
+
+    user_options = build_ext.user_options + [
+        ('issymbol', None, "whether is symbol"),
+    ]
+
+    def initialize_options(self):
+        super(BuildExt, self).initialize_options()
+        self.issymbol = 0
+
+    def gen_gis_core_modules(self):
+        if self.issymbol:
+            return self._gen_gis_symbol_modules()
+        return self._gen_gis_core_modules()
+
+    def _gen_gis_symbol_modules(self):
+        #gis_core_modules = cythonize(Extension(name="arctern.arctern_core_",
+        gis_core_modules = cythonize(Extension(name="arctern.arctern_core_",
+                                               sources=["arctern/cython/arctern_core_symbol_.pyx"]))
+        return gis_core_modules
+
+    def _gen_gis_core_modules(self):
+        import numpy as np
+        import pyarrow as pa
+        gis_core_modules = cythonize(Extension(name="arctern.arctern_core_",
+                                               sources=["arctern/cython/arctern_core_.pyx"]))
+        for ext in gis_core_modules:
+            # The Numpy C headers are currently required
+            ext.include_dirs.append(np.get_include())
+            ext.include_dirs.append(pa.get_include())
+            ext.libraries.extend(['arctern'] + pa.get_libraries())
+            ext.library_dirs.extend(pa.get_library_dirs())
+
+            if os.name == 'posix':
+                ext.extra_compile_args.append('-std=c++11')
+
+            # Try uncommenting the following line on Linux
+            # if you get weird linker errors or runtime crashes
+            #ext.define_macros.append(("_GLIBCXX_USE_CXX11_ABI", "0"))
+        return gis_core_modules
+
+    def finalize_options(self):
+        self.distribution.ext_modules = self.gen_gis_core_modules()
+        super(BuildExt, self).finalize_options()
+
     def build_extensions(self):
         # Avoid gcc warning "cc1plus: warning:command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++"
         self.compiler.compiler_so.remove('-Wstrict-prototypes')
@@ -30,28 +72,7 @@ class BuildExt(build_ext):
         self.compiler.compiler_so.append('-Wno-unused-variable')
         super(BuildExt, self).build_extensions()
 
-
-def gen_gis_core_modules():
-    gis_core_modules = cythonize(Extension(name="arctern.arctern_core_",
-                                           sources=["arctern/cython/arctern_core_.pyx"]))
-    for ext in gis_core_modules:
-        # The Numpy C headers are currently required
-        ext.include_dirs.append(np.get_include())
-        ext.include_dirs.append(pa.get_include())
-        ext.libraries.extend(['arctern'] + pa.get_libraries())
-        ext.library_dirs.extend(pa.get_library_dirs())
-
-        if os.name == 'posix':
-            ext.extra_compile_args.append('-std=c++11')
-
-        # Try uncommenting the following line on Linux
-        # if you get weird linker errors or runtime crashes
-        #ext.define_macros.append(("_GLIBCXX_USE_CXX11_ABI", "0"))
-
-    return gis_core_modules
-
 setup(
     cmdclass={'build_ext': BuildExt},
     packages=find_packages(),
-    ext_modules=gen_gis_core_modules(),
 )

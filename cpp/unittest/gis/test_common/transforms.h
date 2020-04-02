@@ -57,8 +57,25 @@ inline std::shared_ptr<arrow::StringArray> StrsToWkt(
   return result;
 }
 
-inline std::shared_ptr<arrow::Array> StrsToWkb(const std::vector<std::string>& wkt_vec) {
+inline std::shared_ptr<arrow::BinaryArray> StrsToWkb(
+    const std::vector<std::string>& wkt_vec) {
   return gdal::WktToWkb(StrsToWkt(wkt_vec));
+}
+
+template <typename ArrowRetType>
+inline auto StrsTo(const std::vector<std::string>& wkt_vec)
+    -> std::shared_ptr<ArrowRetType>;
+
+template <>
+inline auto StrsTo<arrow::BinaryArray>(const std::vector<std::string>& wkt_vec)
+    -> std::shared_ptr<arrow::BinaryArray> {
+  return StrsToWkb(wkt_vec);
+}
+
+template <>
+inline auto StrsTo<arrow::StringArray>(const std::vector<std::string>& wkt_vec)
+    -> std::shared_ptr<arrow::StringArray> {
+  return StrsToWkt(wkt_vec);
 }
 
 inline std::vector<char> HexStringToWkb(const std::string& str) {
