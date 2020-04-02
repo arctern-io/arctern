@@ -61,6 +61,7 @@ inline bool IsNumberTerminal(const char c) {
   if (c == '\t') return true;
   if (c == ',') return true;
   if (c == ')') return true;
+  return false;
 }
 
 inline NumberState GetNumbeStarerState(const char c) {
@@ -107,6 +108,13 @@ inline NumberState ParserNumber(NumberState pre_state, const char c) {
       } else if (IsDigital(c)) {
         return NumberState::SciNum;
       } else {
+        return NumberState::Error;
+      }
+    }
+    case NumberState::SciSig:{
+      if(IsDigital(c)){
+        return NumberState::SciNum;
+      }else{
         return NumberState::Error;
       }
     }
@@ -208,7 +216,13 @@ bool NextToken(const char* src, TokenInfo* token) {
   if (token->type == TokenType::WktKey) {
     SetIfEmpty(token);
     return true;
+  }else if(token->type==TokenType::Number){
+    num_state = ParserNumber(num_state,' ');
+    if(num_state == NumberState::Finished){
+      return true;
+    }
   }
+  token->type=TokenType::Unknown;
   return false;
 }
 
