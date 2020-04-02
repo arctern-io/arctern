@@ -27,7 +27,7 @@ class Spark(db.DB):
             self._setup_driver_envs(envs)
 
         import uuid
-        self._db_id = uuid.uuid1().int
+        self._db_id = str(uuid.uuid1()).replace('-', '')
         self._db_name = db_config['db_name']
         self._db_type = 'spark'
         self._table_list = []
@@ -35,19 +35,20 @@ class Spark(db.DB):
         print("init spark begin")
         import socket
         localhost_ip = socket.gethostbyname(socket.gethostname())
-        self.session = SparkSession.builder \
+        _t = SparkSession.builder \
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
             .config('spark.driver.host', localhost_ip) \
             .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-            .config("spark.databricks.session.share", "false") \
-            .getOrCreate()
+            .config("spark.databricks.session.share", "false")
 
         configs = db_config['spark'].get('configs', None)
         if configs:
             for key in configs:
                 print("spark config: {} = {}".format(key, configs[key]))
-                self.session.conf.set(key, configs[key])
+                _t = _t.config(key, configs[key])
+
+        self.session = _t.getOrCreate()
 
         print("init spark done")
         register_funcs(self.session)

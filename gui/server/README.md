@@ -31,7 +31,7 @@ python setup.py install
 
 ## 下载测试数据
 
-在`https://github.com/zilliztech/arctern-tutorial/tree/master/data`下，获取0_5M_nyc_taxi_and_building.csv
+在`https://github.com/zilliztech/arctern-tutorial/tree/master/data`下获取0_5M_nyc_taxi_and_building.csv
 保持文件不变，放在data目录下
 
 ## 启动web服务
@@ -48,6 +48,19 @@ python manage.py -r
 -p http port
 -i http ip
 -c [path/to/data-config] load data
+
+服务器启动后，可以通过[Load API](#api_load_part)可以动态加载数据
+
+如果期望服务器启动，自动加载数据
+
+```bash
+python manage.py -r -c path/to/config.json
+```
+
+其中，config.json内容的格式在[这里](#api_load_part)
+
+- 拷贝request.json对应的json内容，保存为config.json
+- 修改对应的参数项
 
 ## 与spark服务对接
 
@@ -127,7 +140,7 @@ for example:
 curl -X POST -H "Content-Type: application/json" -d '{"username":"zilliz", "password":"123456"}' http://127.0.0.1:8080/login
 ```
 
-### /load加载表数据
+### <span id="api_load_part"/> /load加载表数据
 
 method: POST
 token: yes
