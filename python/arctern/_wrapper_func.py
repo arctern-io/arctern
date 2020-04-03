@@ -58,7 +58,6 @@ __all__ = [
 ]
 
 import base64
-import pyarrow as pa
 from . import arctern_core_
 
 def ST_Point(x, y):
@@ -85,6 +84,7 @@ def ST_Point(x, y):
           1    POINT (2.5 4.9)
           dtype: object
     """
+    import pyarrow as pa
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
     rs = arctern_core_.ST_Point(arr_x, arr_y)
@@ -109,6 +109,7 @@ def ST_GeomFromGeoJSON(json):
           0    LineString (1 2,4 5,7 8)
           dtype: object 
     """
+    import pyarrow as pa
     geo = pa.array(json, type='string')
     rs = arctern_core_.ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
@@ -132,6 +133,7 @@ def ST_GeomFromText(text):
           0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
           dtype: object
     """
+    import pyarrow as pa
     geo = pa.array(text, type='string')
     rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
@@ -162,6 +164,7 @@ def ST_Intersection(left, right):
           0    LINESTRING (2 2,2 1)
           dtype: object
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Intersection(arr_left, arr_right)
@@ -187,6 +190,7 @@ def ST_IsValid(geos):
           1    true
           dtype: bool
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_IsValid(arr_geos)
     return rs.to_pandas()
@@ -220,6 +224,7 @@ def ST_PrecisionReduce(geos, precision):
           1    POINT (2.66 4.45)
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_PrecisionReduce(arr_geos, precision)
     return rs.to_pandas()
@@ -252,6 +257,7 @@ def ST_Equals(left, right):
           1    false
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Equals(arr_left, arr_right)
@@ -285,6 +291,7 @@ def ST_Touches(left, right):
           1    true
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Touches(arr_left, arr_right)
@@ -318,6 +325,7 @@ def ST_Overlaps(left, right):
           1    false
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Overlaps(arr_left, arr_right)
@@ -353,6 +361,7 @@ def ST_Crosses(left, right):
           1    false
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Crosses(arr_left, arr_right)
@@ -382,6 +391,7 @@ def ST_IsSimple(geos):
           1    true
           dtype: bool    
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_IsSimple(arr_geos)
     return rs.to_pandas()
@@ -406,6 +416,7 @@ def ST_GeometryType(geos):
           1    ST_POLYGON
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_GeometryType(arr_geos)
     return rs.to_pandas()
@@ -432,6 +443,7 @@ def ST_MakeValid(geos):
           0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_MakeValid(arr_geos)
     return rs.to_pandas()
@@ -462,6 +474,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
           0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_SimplifyPreserveTopology(arr_geos, distance_tolerance)
     return rs.to_pandas()
@@ -498,6 +511,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
           0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
           dtype: object
     """
+    import pyarrow as pa
     arr_min_x = pa.array(min_x, type='double')
     arr_min_y = pa.array(min_y, type='double')
     arr_max_x = pa.array(max_x, type='double')
@@ -534,6 +548,7 @@ def ST_Contains(left, right):
           1    false
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Contains(arr_left, arr_right)
@@ -566,6 +581,7 @@ def ST_Intersects(left, right):
           1    true
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Intersects(arr_left, arr_right)
@@ -600,6 +616,7 @@ def ST_Within(left, right):
           1    false
           dtype: bool
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Within(arr_left, arr_right)
@@ -636,6 +653,7 @@ def ST_Distance(left, right):
           1    2.0
           dtype: float64
     """
+    import pyarrow as pa
     arr_left = pa.array(left, type='string')
     arr_right = pa.array(right, type='string')
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
@@ -665,6 +683,7 @@ def ST_Area(geos):
           1    64.0
           dtype: float64
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Area(arr_geos)
     return rs.to_pandas()
@@ -692,6 +711,7 @@ def ST_Centroid(geos):
           1    POINT (4 4)
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Centroid(arr_geos)
     return rs.to_pandas()
@@ -719,6 +739,7 @@ def ST_Length(geos):
           1    3.0
           dtype: float64
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Length(arr_geos)
     return rs.to_pandas()
@@ -763,6 +784,7 @@ def ST_HausdorffDistance(geo1, geo2):
           1    1.0
           dtype: float64
     """
+    import pyarrow as pa
     arr1 = pa.array(geo1, type='string')
     arr2 = pa.array(geo2, type='string')
     rs = arctern_core_.ST_HausdorffDistance(arr1, arr2)
@@ -791,6 +813,7 @@ def ST_ConvexHull(geos):
           0    POINT (1.1 101.1)
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_ConvexHull(arr_geos)
     return rs.to_pandas()
@@ -815,6 +838,7 @@ def ST_NPoints(geos):
           0    2
           dtype: int64
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_NPoints(arr_geos)
     return rs.to_pandas()
@@ -854,6 +878,7 @@ def ST_Envelope(geos):
           7    POLYGON ((0 0,0 20,20 20,20 0,0 0))
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Envelope(arr_geos)
     return rs.to_pandas()
@@ -882,6 +907,7 @@ def ST_Buffer(geos, distance):
           0    POLYGON EMPTY
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Buffer(arr_geos, distance)
     return rs.to_pandas()
@@ -907,6 +933,7 @@ def ST_Union_Aggr(geos):
           0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))
           dtype: object    
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Union_Aggr(arr_geos)
     return str(rs[0])
@@ -933,6 +960,7 @@ def ST_Envelope_Aggr(geos):
           0    POLYGON ((0 0,0 4,7 4,7 0,0 0))
           dtype: object
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_Envelope_Aggr(arr_geos)
     return str(rs[0])
@@ -965,6 +993,7 @@ def ST_Transform(geos, src, dst):
       >>> assert abs(rst_point.GetX() - 1113194.90793274 < 0.01)
       >>> assert abs(rst_point.GetY() - 1118889.97485796 < 0.01)
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     src = bytes(src, encoding="utf8")
     dst = bytes(dst, encoding="utf8")
@@ -992,18 +1021,21 @@ def ST_CurveToLine(geos):
       >>> rst = arctern.ST_CurveToLine(data)
       >>> assert str(rst[0]).startswith("POLYGON")
     """
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
 
 
 def point_map(xs, ys, conf):
+    import pyarrow as pa
     arr_x = pa.array(xs, type='uint32')
     arr_y = pa.array(ys, type='uint32')
     rs = arctern_core_.point_map(arr_x, arr_y, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def weighted_point_map(xs, ys, conf, **kwargs):
+    import pyarrow as pa
     cs = kwargs.get('cs', None)
     ss = kwargs.get('ss', None)
 
@@ -1039,6 +1071,7 @@ def weighted_point_map(xs, ys, conf, **kwargs):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def weighted_point_map_wkb(points, conf, **kwargs):
+    import pyarrow as pa
     cs = kwargs.get('cs', None)
     ss = kwargs.get('ss', None)
 
@@ -1073,11 +1106,13 @@ def weighted_point_map_wkb(points, conf, **kwargs):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def point_map_wkb(points, conf):
+    import pyarrow as pa
     array_points = pa.array(points, type='binary')
     rs = arctern_core_.point_map_wkb(array_points, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def heat_map(x_data, y_data, c_data, conf):
+    import pyarrow as pa
     arr_x = pa.array(x_data, type='uint32')
     arr_y = pa.array(y_data, type='uint32')
     arr_c = pa.array(c_data, type='uint32')
@@ -1086,6 +1121,7 @@ def heat_map(x_data, y_data, c_data, conf):
 
 
 def heat_map_wkb(points, c_data, conf):
+    import pyarrow as pa
     array_points = pa.array(points, type='binary')
 
     if isinstance(c_data[0], float):
@@ -1097,6 +1133,7 @@ def heat_map_wkb(points, c_data, conf):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def choropleth_map(wkb_data, count_data, conf):
+    import pyarrow as pa
     arr_wkb = pa.array(wkb_data, type='binary')
     if isinstance(count_data[0], float):
         arr_count = pa.array(count_data, type='double')
@@ -1106,6 +1143,7 @@ def choropleth_map(wkb_data, count_data, conf):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     bounding_box_min = bytes(bottom_right, encoding="utf8")
     bounding_box_max = bytes(top_left, encoding="utf8")
@@ -1113,6 +1151,7 @@ def projection(geos, bottom_right, top_left, height, width):
     return rs.to_pandas()
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
+    import pyarrow as pa
     arr_geos = pa.array(geos, type='string')
     src = bytes(src_rs, encoding="utf8")
     dst = bytes(dst_rs, encoding="utf8")
@@ -1122,11 +1161,13 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     return rs.to_pandas()
 
 def wkt2wkb(arr_wkt):
+    import pyarrow as pa
     wkts = pa.array(arr_wkt, type='string')
     rs = arctern_core_.wkt2wkb(wkts)
     return rs.to_pandas()
 
 def wkb2wkt(arr_wkb):
+    import pyarrow as pa
     wkbs = pa.array(arr_wkb, type='binary')
     rs = arctern_core_.wkb2wkt(wkbs)
     return rs.to_pandas()
