@@ -44,6 +44,7 @@ __all__ = [
     "ST_CurveToLine",
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
+    "ST_AsText",
     "point_map",
     "point_map_wkb",
     "weighted_point_map",
@@ -79,74 +80,80 @@ def ST_GeomFromText(text):
     rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
 
+def ST_AsText(text):
+    import pyarrow as pa
+    geo = pa.array(text, type='binary')
+    rs = arctern_core_.ST_AsText(geo)
+    return rs.to_pandas()
+
 def ST_Intersection(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Intersection(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_IsValid(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_IsValid(arr_geos)
     return rs.to_pandas()
 
 def ST_PrecisionReduce(geos, precision):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_PrecisionReduce(arr_geos, precision)
     return rs.to_pandas()
 
 def ST_Equals(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Equals(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Touches(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Touches(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Overlaps(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Overlaps(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Crosses(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Crosses(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_IsSimple(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_IsSimple(arr_geos)
     return rs.to_pandas()
 
 def ST_GeometryType(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_GeometryType(arr_geos)
     return rs.to_pandas()
 
 def ST_MakeValid(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_MakeValid(arr_geos)
     return rs.to_pandas()
 
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_SimplifyPreserveTopology(arr_geos, distance_tolerance)
     return rs.to_pandas()
 
@@ -161,96 +168,96 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 
 def ST_Contains(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Contains(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Intersects(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Intersects(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Within(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Within(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Distance(left, right):
     import pyarrow as pa
-    arr_left = pa.array(left, type='string')
-    arr_right = pa.array(right, type='string')
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Area(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Area(arr_geos)
     return rs.to_pandas()
 
 def ST_Centroid(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Centroid(arr_geos)
     return rs.to_pandas()
 
 def ST_Length(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Length(arr_geos)
     return rs.to_pandas()
 
 def ST_HausdorffDistance(geo1, geo2):
     import pyarrow as pa
-    arr1 = pa.array(geo1, type='string')
-    arr2 = pa.array(geo2, type='string')
+    arr1 = pa.array(geo1, type='binary')
+    arr2 = pa.array(geo2, type='binary')
     rs = arctern_core_.ST_HausdorffDistance(arr1, arr2)
     return rs.to_pandas()
 
 def ST_ConvexHull(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_ConvexHull(arr_geos)
     return rs.to_pandas()
 
 def ST_NPoints(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_NPoints(arr_geos)
     return rs.to_pandas()
 
 def ST_Envelope(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Envelope(arr_geos)
     return rs.to_pandas()
 
 def ST_Buffer(geos, distance):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Buffer(arr_geos, distance)
     return rs.to_pandas()
 
 def ST_Union_Aggr(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Union_Aggr(arr_geos)
-    return str(rs[0])
+    return rs.to_pandas()
 
 def ST_Envelope_Aggr(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_Envelope_Aggr(arr_geos)
-    return str(rs[0])
+    return rs.to_pandas()
 
 def ST_Transform(geos, src, dst):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     src = bytes(src, encoding="utf8")
     dst = bytes(dst, encoding="utf8")
 
@@ -259,7 +266,7 @@ def ST_Transform(geos, src, dst):
 
 def ST_CurveToLine(geos):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
 
@@ -381,7 +388,7 @@ def choropleth_map(wkb_data, count_data, conf):
 
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     bounding_box_min = bytes(bottom_right, encoding="utf8")
     bounding_box_max = bytes(top_left, encoding="utf8")
     rs = arctern_core_.projection(arr_geos, bounding_box_min, bounding_box_max, height, width)
@@ -389,7 +396,7 @@ def projection(geos, bottom_right, top_left, height, width):
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='string')
+    arr_geos = pa.array(geos, type='binary')
     src = bytes(src_rs, encoding="utf8")
     dst = bytes(dst_rs, encoding="utf8")
     bounding_box_min = bytes(bottom_right, encoding="utf8")

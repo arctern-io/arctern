@@ -75,10 +75,14 @@ auto WkbTypeScanner::Scan() const -> std::shared_ptr<GeometryTypeMasks> {
   };
 
   for (int i = 0; i < geometries_->length(); ++i) {
-    auto payload = geometries_->GetView(i);
-    assert(payload.size() >= sizeof(WkbByteOrder) + sizeof(WkbTypes));
     WkbTypes type;
-    memcpy(&type, payload.data() + sizeof(WkbByteOrder), sizeof(WkbTypes));
+    if (geometries_->IsNull(i)) {
+      type = WkbTypes::kUnknown;
+    } else {
+      auto payload = geometries_->GetView(i);
+      assert(payload.size() >= sizeof(WkbByteOrder) + sizeof(WkbTypes));
+      memcpy(&type, payload.data() + sizeof(WkbByteOrder), sizeof(WkbTypes));
+    }
     auto encode_uid = to_encode_uid(type);
     auto& info = infos[encode_uid];
     info.mask_count++;
