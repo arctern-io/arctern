@@ -1,6 +1,6 @@
 # Installation with local Conda channel
 
-This topic introduces how to use Conda to install Arctern offline. This avoids installation failures caused by network issues.
+This document introduces how to install Arctern with local built Conda channel. This avoids installation failures caused by network issues.
 
 ## TOC
 
