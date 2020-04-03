@@ -152,6 +152,7 @@ pipeline {
                     ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
                     ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
                     ARCTERN_TAG = "${TAG_NAME}"
+                    ARCTERN_FLASK_TAG = "${SEMVER}"
                     PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/${PROJECT_NAME}/pytest"
                     PYTEST_TAG = "v0.1.0"
                 }

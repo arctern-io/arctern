@@ -1,7 +1,7 @@
 def baseImageName = "${ARCTERN_FLASK_REPO}:base"
 sh "docker pull ${baseImageName}"
 
-def imageName = "${FLASK_IMAGE_REPOSITORY}:${TAG_NAME}"
+def imageName = "${FLASK_IMAGE_REPOSITORY}:${ARCTERN_FLASK_TAG}"
 
 try {
     deleteImages("${imageName}", true)
