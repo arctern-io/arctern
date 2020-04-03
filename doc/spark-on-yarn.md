@@ -425,7 +425,7 @@ if __name__ == "__main__":
 ```
 向`spark`提交`st_transform_test.py`
 ```bash
-~/spark-3.0.0-preview2-bin-hadoop2.7/bin/spark-submit --master yarn --deploy-mode cluster st_transform_test.py
+~/spark-3.0.0-preview2-bin-hadoop2.7/bin/spark-submit --master yarn --deploy-mode cluster --num-executors 5 --executor-cores 2 --executor-memory 1536m st_transform_test.py
 ```
 检查`st_transform_test.py`的运行结果
 ```bash
