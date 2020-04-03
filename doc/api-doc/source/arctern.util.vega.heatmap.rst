@@ -1,9 +1,10 @@
 arctern.util.vega.heatmap package
 =================================
 
-
-.. automodapi:: arctern.util.vega.heatmap.vega_heatmap
+.. autoclass:: arctern.util.vega.heatmap.vega_heatmap
    :members:
    :undoc-members:
+   :private-members:
+   :special-members:
    :show-inheritance:
    :inherited-members:
