@@ -11,7 +11,7 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 LIBARCTERN_FILE=${LIBARCTERN_FILE:="libarctern"}
-ARCTERN_FILE=${ARCTERN_FILE:="arctern"}
+PYARCTERN_FILE=${PYARCTERN_FILE:="pyarctern"}
 ARCTERN_SPARK_FILE=${ARCTERN_SPARK_FILE:="arctern-spark"}
 ARCTERN_CHANNEL=${ARCTERN_CHANNEL:="arctern-dev"}
 
@@ -24,10 +24,10 @@ fi
 cd ${SCRIPTS_DIR}
 
 if [ -d ${SCRIPTS_DIR}/conda-bld ];then
-conda install -y -q -n arctern -c conda-forge -c file://${SCRIPTS_DIR}/conda-bld ${LIBARCTERN_FILE} ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
+conda install -y -q -n arctern -c conda-forge -c file://${SCRIPTS_DIR}/conda-bld ${LIBARCTERN_FILE} ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 else
 conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL}/label/cuda10.0 ${LIBARCTERN_FILE}
-conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${ARCTERN_FILE} ${ARCTERN_SPARK_FILE}
+conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 fi
 
 conda install -y -q -n arctern pyyaml
