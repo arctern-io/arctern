@@ -35,7 +35,8 @@ release = '0.2.0'
 extensions = [
    'sphinx.ext.autodoc',
    'sphinx.ext.viewcode',
-   'sphinx_automodapi.automodapi'
+   'sphinx_automodapi.automodapi',
+   'sphinx.ext.inheritance_diagram'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -63,6 +64,8 @@ html_last_updated_fmt = '%b %d, %Y'
 html_domain_indices = True
 html_theme = 'sphinx_rtd_theme'
 html_logo = './_static/arctern-color.png'
+inheritance_graph_attrs = dict(rankdir="LR", size='"6.0, 8.0"',
+                               fontsize=14, ratio='compress')
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
