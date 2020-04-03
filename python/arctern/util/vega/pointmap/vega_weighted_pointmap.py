@@ -86,6 +86,7 @@ class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
                  color_gradient: str, color_bound: list, size_bound: list, opacity: float,
                  coordinate_system: str, aggregation_type: str):
+
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
         self._color_gradient = color_gradient

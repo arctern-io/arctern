@@ -45,11 +45,8 @@ __all__ = [
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "point_map",
-    "point_map_wkb",
     "weighted_point_map",
-    "weighted_point_map_wkb",
     "heat_map",
-    "heat_map_wkb",
     "choropleth_map",
     "projection",
     "transform_and_projection",
@@ -263,120 +260,71 @@ def ST_CurveToLine(geos):
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
 
-
-def point_map(xs, ys, conf):
-    import pyarrow as pa
-    arr_x = pa.array(xs, type='uint32')
-    arr_y = pa.array(ys, type='uint32')
-    rs = arctern_core_.point_map(arr_x, arr_y, conf)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
-
-def weighted_point_map(xs, ys, conf, **kwargs):
-    import pyarrow as pa
-    cs = kwargs.get('cs', None)
-    ss = kwargs.get('ss', None)
-
-    arr_x = pa.array(xs, type='uint32')
-    arr_y = pa.array(ys, type='uint32')
-
-    if (cs is None and ss is None):
-        rs = arctern_core_.weighted_point_map_0_0(arr_x, arr_y, conf)
-    elif (cs is not None and ss is not None):
-        if isinstance(cs[0], float):
-            arr_c = pa.array(cs, type='double')
-        else:
-            arr_c = pa.array(cs, type='int64')
-
-        if isinstance(ss[0], float):
-            arr_s = pa.array(ss, type='double')
-        else:
-            arr_s = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_1_1(arr_x, arr_y, conf, arr_c, arr_s)
-    elif (cs is None and ss is not None):
-        if isinstance(ss[0], float):
-            arr = pa.array(ss, type='double')
-        else:
-            arr = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_0_1(arr_x, arr_y, conf, arr)
-    else:
-        if isinstance(cs[0], float):
-            arr = pa.array(cs, type='double')
-        else:
-            arr = pa.array(cs, type='int64')
-        rs = arctern_core_.weighted_point_map_1_0(arr_x, arr_y, conf, arr)
-
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
-
-def weighted_point_map_wkb(points, conf, **kwargs):
-    import pyarrow as pa
-    cs = kwargs.get('cs', None)
-    ss = kwargs.get('ss', None)
-
-    array_points = pa.array(points, type='binary')
-
-    if (cs is None and ss is None):
-        rs = arctern_core_.weighted_point_map_wkb_0_0(array_points, conf)
-    elif (cs is not None and ss is not None):
-        if isinstance(cs[0], float):
-            arr_c = pa.array(cs, type='double')
-        else:
-            arr_c = pa.array(cs, type='int64')
-
-        if isinstance(ss[0], float):
-            arr_s = pa.array(ss, type='double')
-        else:
-            arr_s = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb_1_1(array_points, conf, arr_c, arr_s)
-    elif (cs is None and ss is not None):
-        if isinstance(ss[0], float):
-            arr = pa.array(ss, type='double')
-        else:
-            arr = pa.array(ss, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb_0_1(array_points, conf, arr)
-    else:
-        if isinstance(cs[0], float):
-            arr = pa.array(cs, type='double')
-        else:
-            arr = pa.array(cs, type='int64')
-        rs = arctern_core_.weighted_point_map_wkb_1_0(array_points, conf, arr)
-
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
-
-def point_map_wkb(points, conf):
+def point_map(vega, points):
     import pyarrow as pa
     array_points = pa.array(points, type='binary')
-    rs = arctern_core_.point_map_wkb(array_points, conf)
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.point_map(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def heat_map(x_data, y_data, c_data, conf):
+def weighted_point_map(vega, points, **kwargs):
     import pyarrow as pa
-    arr_x = pa.array(x_data, type='uint32')
-    arr_y = pa.array(y_data, type='uint32')
-    arr_c = pa.array(c_data, type='uint32')
-    rs = arctern_core_.heat_map(arr_x, arr_y, arr_c, conf)
+    color_weights = kwargs.get('color_weights', None)
+    size_weights = kwargs.get('size_weights', None)
+    vega_string = vega.build().encode('utf-8')
+
+    array_points = pa.array(points, type='binary')
+    if (color_weights is None and size_weights is None):
+        rs = arctern_core_.weighted_point_map(vega_string, array_points)
+    elif (color_weights is not None and size_weights is not None):
+        if isinstance(color_weights[0], float):
+            arr_c = pa.array(color_weights, type='double')
+        else:
+            arr_c = pa.array(color_weights, type='int64')
+
+        if isinstance(size_weights[0], float):
+            arr_s = pa.array(size_weights, type='double')
+        else:
+            arr_s = pa.array(size_weights, type='int64')
+        rs = arctern_core_.weighted_color_size_point_map(vega_string, array_points, arr_c, arr_s)
+    elif (color_weights is None and size_weights is not None):
+        if isinstance(size_weights[0], float):
+            arr_s = pa.array(size_weights, type='double')
+        else:
+            arr_s = pa.array(size_weights, type='int64')
+        rs = arctern_core_.weighted_size_point_map(vega_string, array_points, arr_s)
+    else:
+        if isinstance(color_weights[0], float):
+            arr_c = pa.array(color_weights, type='double')
+        else:
+            arr_c = pa.array(color_weights, type='int64')
+        rs = arctern_core_.weighted_color_point_map(vega_string, array_points, arr_c)
+
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-
-def heat_map_wkb(points, c_data, conf):
+def heat_map(vega, points, weights):
     import pyarrow as pa
     array_points = pa.array(points, type='binary')
+    vega_string = vega.build().encode('utf-8')
 
-    if isinstance(c_data[0], float):
-        arr_c = pa.array(c_data, type='double')
+    if isinstance(weights[0], float):
+        arr_c = pa.array(weights, type='double')
     else:
-        arr_c = pa.array(c_data, type='int64')
+        arr_c = pa.array(weights, type='int64')
 
-    rs = arctern_core_.heat_map_wkb(array_points, arr_c, conf)
+    rs = arctern_core_.heat_map(vega_string, array_points, arr_c)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def choropleth_map(wkb_data, count_data, conf):
+def choropleth_map(vega, region_boundaries, weights):
     import pyarrow as pa
-    arr_wkb = pa.array(wkb_data, type='binary')
-    if isinstance(count_data[0], float):
-        arr_count = pa.array(count_data, type='double')
+    arr_wkb = pa.array(region_boundaries, type='binary')
+    vega_string = vega.build().encode('utf-8')
+
+    if isinstance(weights[0], float):
+        arr_c = pa.array(weights, type='double')
     else:
-        arr_count = pa.array(count_data, type='int64')
-    rs = arctern_core_.choropleth_map(arr_wkb, arr_count, conf)
+        arr_c = pa.array(weights, type='int64')
+    rs = arctern_core_.choropleth_map(vega_string, arr_wkb, arr_c)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):
