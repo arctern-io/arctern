@@ -34,7 +34,7 @@ class Marks(RootMarks):
                 return dic
 
         def __init__(self, bounding_box: Value, shape: Value, color: Value,
-                     color_ruler: Value, stroke_ruler: Value, opacity: Value, 
+                     color_ruler: Value, stroke_ruler: Value, opacity: Value,
                      coordinate_system: Value, color_agg: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)

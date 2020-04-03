@@ -23,7 +23,10 @@ from arctern_pyspark import weighted_pointmap
 
 from pyspark.sql import SparkSession
 
+import time
+
 def draw_point_map(spark):
+    start_time = time.time()
     # file 0_5M_nyc_taxi_and_building.csv could be obtained from arctern-turoial warehouse under zilliztech account. The link on github is https://github.com/zilliztech/arctern-tutorial
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
@@ -39,8 +42,10 @@ def draw_point_map(spark):
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 def draw_weighted_point_map(spark):
+    start_time = time.time()
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
@@ -74,8 +79,10 @@ def draw_weighted_point_map(spark):
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 def draw_heat_map(spark):
+    start_time = time.time()
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
@@ -91,8 +98,10 @@ def draw_heat_map(spark):
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 def draw_choropleth_map(spark):
+    start_time = time.time()
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
         "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
@@ -106,6 +115,7 @@ def draw_choropleth_map(spark):
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 if __name__ == "__main__":

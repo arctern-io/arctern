@@ -105,7 +105,7 @@ fi
 if [[ -n ${LIBRARY_DIRS} ]];then
     python setup.py build build_ext --library-dirs=${LIBRARY_DIRS}
 else
-    python setup.py build
+    python setup.py build build_ext
 fi
 python setup.py install
 

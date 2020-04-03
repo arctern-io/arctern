@@ -60,7 +60,7 @@ def pointmap(vega, df):
         from arctern import point_map
         return point_map(conf, point)
 
-    df = df.coalesce(1)
+    df = df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = df.agg(pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
@@ -115,7 +115,7 @@ def weighted_pointmap(vega, df):
                 return weighted_point_map(conf, point, color_weights=c, size_weights=s)
 
             agg_df = df.mapInPandas(render_agg_UDF)
-            agg_df = agg_df.coalesce(1)
+            agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
         elif render_mode == 1:
             df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
@@ -135,7 +135,7 @@ def weighted_pointmap(vega, df):
                 return weighted_point_map(conf, point, color_weights=c)
 
             agg_df = df.mapInPandas(render_agg_UDF)
-            agg_df = agg_df.coalesce(1)
+            agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
         else:
             df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
@@ -144,7 +144,7 @@ def weighted_pointmap(vega, df):
                 from arctern import weighted_point_map
                 return weighted_point_map(conf, point)
 
-            df = df.coalesce(1)
+            df = df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
         return hex_data
 
@@ -168,7 +168,7 @@ def weighted_pointmap(vega, df):
             return weighted_point_map(vega, point, color_weights=c, size_weights=s)
 
         agg_df = df.mapInPandas(render_agg_UDF)
-        agg_df = agg_df.coalesce(1)
+        agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
     elif render_mode == 1:
         df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
@@ -188,7 +188,7 @@ def weighted_pointmap(vega, df):
             return weighted_point_map(conf, point, color_weights=c)
 
         agg_df = df.mapInPandas(render_agg_UDF)
-        agg_df = agg_df.coalesce(1)
+        agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     else:
         df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
@@ -197,7 +197,7 @@ def weighted_pointmap(vega, df):
             from arctern import weighted_point_map
             return weighted_point_map(conf, point)
 
-        df = df.coalesce(1)
+        df = df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
@@ -241,7 +241,7 @@ def heatmap(vega, df):
         return heat_map(conf, point, w)
 
     agg_df = df.mapInPandas(render_agg_UDF)
-    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(heatmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     return hex_data
 
@@ -290,6 +290,6 @@ def choroplethmap(vega, df):
 
     agg_df = df.where("%s != ''" % col_polygon)
     agg_df = agg_df.mapInPandas(render_agg_UDF)
-    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
     return hex_data
