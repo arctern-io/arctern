@@ -104,7 +104,7 @@ def test_weighted_point_map():
     arr_c = pandas.Series(c_data)
     arr_s = pandas.Series(s_data)
     points = arctern.wkt2wkb(arr_wkt)
-    
+
     vega1 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#87CEEB", [1, 5], [5], 1.0, "EPSG:3857")
     res1 = arctern.weighted_point_map(vega1, points)
     save_png(res1, "/tmp/test_weighted_0_0.png")
