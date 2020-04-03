@@ -5,6 +5,10 @@
         "app_name": "arctern",
         "master-addr": "spark://172.19.0.2:7077",
         "executor-python": "/opt/conda/envs/arctern/bin/python",
+        "configs":{
+            "spark.executorEnv.GDAL_DATA": "",
+            "spark.executorEnv.PROJ_LIB": ""
+        },
         "envs": {
         }
     },
