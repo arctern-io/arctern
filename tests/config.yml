@@ -28,11 +28,11 @@ tests:
       spark_result_name: test_intersection
       expected_name: st_intersection
 
-      #-
-  #    case:
-  #    name: run_test_st_intersection_curve
-  #    spark_result_name: test_intersection_curve
-  #    expected_name: st_intersection_curve
+  -
+    case:
+      name: run_test_st_intersection_curve
+      spark_result_name: test_intersection_curve
+      expected_name: st_intersection_curve
 
   -
     case:

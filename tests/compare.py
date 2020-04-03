@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	  http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@ from ogr import CreateGeometryFromWkt
 from util import get_tests, is_empty, is_geometry, is_geometrycollection
 from util import arc_distance
 from util import ARCTERN_RESULT, EXPECTED_RESULT
-
 
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
 GEO_COLLECTION_TYPES = [
@@ -123,7 +122,6 @@ EPOCH_SURFACE = 1e-2
 EPOCH_CURVE_RELATIVE = 1e-2
 EPOCH_SURFACE_RELATIVE = 1e-2
 
-
 def compare_length(geometry_x, geometry_y):
     """Compare length of 2 geometry types."""
     arct = CreateGeometryFromWkt(geometry_x)
@@ -136,8 +134,8 @@ def compare_length(geometry_x, geometry_y):
     # print('arctern length: %s, postgis length: %s, intersection length: %s' %
     #       (str(arct_length), str(pgis_length), str(intersection_length)))
     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
-    result = compare3float_relative(
-        pgis_length, arct_length, intersection_length, EPOCH_CURVE_RELATIVE)
+    result = compare3float_relative(pgis_length, arct_length,
+                                    intersection_length, EPOCH_CURVE_RELATIVE)
     return result
 
 
@@ -153,14 +151,15 @@ def compare_area(geometry_x, geometry_y):
     # print('arctern area: %s, postgis area: %s, intersection area: %s' %
     #       (str(arct_area), str(pgis_area), str(intersection_area)))
     # result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
-    result = compare3float_relative(
-        pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area,
+                                    EPOCH_SURFACE_RELATIVE)
     return result
 
 
 def compare_geometry(config, geometry_x, geometry_y):
     """Compare whether 2 geometries is 'equal'."""
-    if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith('EMPTY'):
+    if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith(
+            'EMPTY'):
         return True
 
     if config in BLIST:
@@ -245,8 +244,8 @@ def compare_curve(geometry_x, geometry_y):
     arct_length = Geometry.Length(arct)
     pgis_length = Geometry.Length(pgis)
     # result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
-    result = compare3float_relative(
-        pgis_length, arct_length, intersection_length, EPOCH_CURVE_RELATIVE)
+    result = compare3float_relative(pgis_length, arct_length,
+                                    intersection_length, EPOCH_CURVE_RELATIVE)
     return result
 
 
@@ -259,8 +258,8 @@ def compare_surface(geometry_x, geometry_y):
     arct_area = Geometry.Area(arct)
     pgis_area = Geometry.Area(pgis)
 
-    result = compare3float_relative(
-        pgis_area, arct_area, intersection_area, EPOCH_SURFACE_RELATIVE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area,
+                                    EPOCH_SURFACE_RELATIVE)
     # result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
     return result
 
@@ -307,13 +306,14 @@ def compare_one(config, result, expect):
                 return True
 
             elif is_geometry(newvalue_x) and is_geometry(newvalue_y):
-                one_result_flag = compare_geometry(
-                    config, newvalue_x, newvalue_y)
+                one_result_flag = compare_geometry(config, newvalue_x,
+                                                   newvalue_y)
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
 
-            elif is_geometrycollection(newvalue_x) and is_geometrycollection(newvalue_y):
+            elif is_geometrycollection(newvalue_x) and is_geometrycollection(
+                    newvalue_y):
                 one_result_flag = compare_geometrycollection(
                     config, newvalue_x, newvalue_y)
                 if not one_result_flag:
@@ -359,7 +359,8 @@ def compare_results(config, arctern_results, postgis_results):
     if len(arct_arr) != len(pgis_arr):
         return False
 
-    for a_line_in_arctern_result_file, a_line_in_postgis_result_file in zip(arct_arr, pgis_arr):
+    for a_line_in_arctern_result_file, a_line_in_postgis_result_file in zip(
+            arct_arr, pgis_arr):
         res = compare_one(config, a_line_in_arctern_result_file,
                           a_line_in_postgis_result_file)
         case_result_flag = case_result_flag and res
@@ -368,17 +369,16 @@ def compare_results(config, arctern_results, postgis_results):
 
 
 def compare_all():
-    """Compare all the results of arctern functions and expected."""
-    compare_result_flag = True
-    names = get_tests()[0]
-    expects = get_tests()[2]
+    names, _, expects = get_tests()
+    flag = True
 
     for name, expect in zip(names, expects):
 
         arct_result = os.path.join(ARCTERN_RESULT, name + '.csv')
         pgis_result = os.path.join(EXPECTED_RESULT, expect + '.out')
-        print('Arctern test: %s, result compare started, test result: %s, expected result: %s' % (
-            name, arct_result, pgis_result))
+        print(
+            'Arctern test: %s, result compare started, test result: %s, expected result: %s'
+            % (name, arct_result, pgis_result))
 
         if not os.path.isfile(arct_result):
             print('Arctern test: %s, result: FAILED, reason: %s' %
@@ -396,9 +396,8 @@ def compare_all():
         else:
             print('Arctern test: %s, result: FAILED' % name)
 
-        compare_result_flag = compare_result_flag and res
-
-    return compare_result_flag
+        flag = flag and res
+    return flag
 
 
 def update_quote(file_path):
@@ -412,10 +411,15 @@ def update_quote(file_path):
 
 def update_bool(file_path):
     """Update bool values of the original spark results file."""
-    with open(file_path, 'r') as the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint:
-        content = the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint.read()
+    with open(
+            file_path, 'r'
+    ) as the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint:
+        content = the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint.read(
+        )
         update = content.replace('true', 'True').replace('false', 'False')
-    with open(file_path, 'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed:
+    with open(
+            file_path,
+            'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed:
         the_result_file_from_spark_for_write_and_abbr_not_allowed.write(update)
 
 

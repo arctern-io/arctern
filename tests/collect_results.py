@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	  http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,9 +31,17 @@ def collect_results():
     table_names = get_tests()[1]
 
     base_dir = SPARK_RESULT
+    print(base_dir)
+    for dd in os.listdir(base_dir):
+        print(dd)
     for table_name, name in zip(table_names, names):
         target = os.path.join(base_dir, table_name, '*.csv')
+        print('---------------------- original csv files ----------------------------')
+        for tt in os.listdir(os.path.join(base_dir, table_name)):
+            print(tt)
         file_name = glob.glob(target)
+        print('---------------------- original spark result files ----------------------------')
+        print(file_name)
         if os.path.isfile(file_name[0]):
             shutil.copyfile(file_name[0], os.path.join(
                 ARCTERN_RESULT, name + '.csv'))
