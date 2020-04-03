@@ -6,3 +6,4 @@ conda create -n arctern -c arctern-dev -c conda-forge arctern-spark
 
 # install shapely
 conda install -y shapely
+
