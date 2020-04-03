@@ -6,7 +6,7 @@ arctern python api
 
    arctern.util
 
-.. automodapi:: arctern.wrapper_func
+.. automodapi:: arctern._wrapper_func
    :members:
    :undoc-members:
    :show-inheritance:
