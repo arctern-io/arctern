@@ -45,3 +45,5 @@ class DB(metaclass=ABCMeta):
     @abstractmethod
     def get_table_info(self, table_name):
         pass
+
+CENTER = {}
