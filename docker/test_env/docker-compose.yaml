@@ -15,3 +15,17 @@ services:
         reservations:
           cpus: '0.5'
           memory: 200M
+  restful-regression:
+    image: ${PYTEST_REPO}:${PYTEST_TAG}
+    volumes:
+      - ../..:/arctern
+    command: &flask-test
+      ["pytest", "--host=flask", "--port=8080", "--config=/arctern/gui/server/db.json"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 200M

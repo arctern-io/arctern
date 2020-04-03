@@ -145,15 +145,19 @@ pipeline {
 
                 environment {
                     IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
+                    FLASK_IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-flask"
                     GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
                     REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
                     TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                     ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
+                    ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
                     ARCTERN_TAG = "${TAG_NAME}"
+                    PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/${PROJECT_NAME}/pytest"
+                    PYTEST_TAG = "v0.1.0"
                 }
 
                 stages {
-                    stage('Arctern Spark Docker Images') {
+                    stage('Arctern Docker Images') {
                         agent {
                             kubernetes {
                                 label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
@@ -171,6 +175,7 @@ pipeline {
                             container('docker-env') {
                                 script {
                                     load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                    load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
                                 }
                             }
                         }
