@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>VegaScatterPlot &mdash; arctern 0.2.0 documentation</title>
+  <title>save_png &mdash; arctern 0.2.0 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Marks" href="arctern.util.vega.pointmap.vega_weighted_pointmap.Marks.html" />
-    <link rel="prev" title="VegaPointMap" href="arctern.util.vega.pointmap.vega_pointmap.VegaPointMap.html" /> 
+    <link rel="next" title="ST_Point" href="arctern.wrapper_func.ST_Point.html" />
+    <link rel="prev" title="Width" href="arctern.util.vega.vega_node.Width.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,14 +85,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../arctern.html">arctern python api</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../arctern.util.html">arctern.util package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../arctern.util.vega.html">arctern.util.vega package</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../arctern.util.vega.choroplethmap.html">arctern.util.vega.choroplethmap package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../arctern.util.vega.heatmap.html">arctern.util.vega.heatmap package</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../arctern.util.vega.pointmap.html">arctern.util.vega.pointmap package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../arctern.util.vega.html#module-arctern.util.vega.vega_node">arctern.util.vega.vega_node Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arctern.util.vega.html">arctern.util.vega package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../arctern.util.html#module-arctern.util._functions">arctern.util._functions Module</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../arctern.util.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../arctern.util.html#module-arctern.util._functions">arctern.util._functions Module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern.html#module-arctern.wrapper_func">arctern.wrapper_func Module</a></li>
@@ -147,17 +144,13 @@
         
           <li><a href="../arctern.util.html">arctern.util package</a> &raquo;</li>
         
-          <li><a href="../arctern.util.vega.html">arctern.util.vega package</a> &raquo;</li>
-        
-          <li><a href="../arctern.util.vega.pointmap.html">arctern.util.vega.pointmap package</a> &raquo;</li>
-        
-      <li>VegaScatterPlot</li>
+      <li>save_png</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/arctern.util._functions.save_png.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -170,31 +163,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="vegascatterplot">
-<h1>VegaScatterPlot<a class="headerlink" href="#vegascatterplot" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot">
-<em class="property">class </em><code class="sig-prename descclassname">arctern.util.vega.pointmap.vega_scatter_plot.</code><code class="sig-name descname">VegaScatterPlot</code><span class="sig-paren">(</span><em class="sig-param">width: int</em>, <em class="sig-param">height: int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/util/vega/pointmap/vega_scatter_plot.html#VegaScatterPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods Summary</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot.build" title="arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods Documentation</p>
-<dl class="method">
-<dt id="arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/util/vega/pointmap/vega_scatter_plot.html#VegaScatterPlot.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.util.vega.pointmap.vega_scatter_plot.VegaScatterPlot.build" title="Permalink to this definition">¶</a></dt>
+  <div class="section" id="save-png">
+<h1>save_png<a class="headerlink" href="#save-png" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="arctern.util._functions.save_png">
+<code class="sig-prename descclassname">arctern.util._functions.</code><code class="sig-name descname">save_png</code><span class="sig-paren">(</span><em class="sig-param">hex_str</em>, <em class="sig-param">file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern/util/_functions.html#save_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern.util._functions.save_png" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
 
 </div>
 
@@ -206,10 +180,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="arctern.util.vega.pointmap.vega_weighted_pointmap.Marks.html" class="btn btn-neutral float-right" title="Marks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="arctern.wrapper_func.ST_Point.html" class="btn btn-neutral float-right" title="ST_Point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="arctern.util.vega.pointmap.vega_pointmap.VegaPointMap.html" class="btn btn-neutral float-left" title="VegaPointMap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="arctern.util.vega.vega_node.Width.html" class="btn btn-neutral float-left" title="Width" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

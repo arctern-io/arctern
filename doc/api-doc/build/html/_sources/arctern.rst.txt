@@ -6,9 +6,6 @@ arctern python api
 
    arctern.util
 
-arctern.wrapper\_func module
-----------------------------
-
 .. automodapi:: arctern.wrapper_func
    :members:
    :undoc-members:
