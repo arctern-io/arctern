@@ -38,7 +38,7 @@ namespace gis {
 std::shared_ptr<arrow::Array> ST_Point(
     const std::shared_ptr<arrow::Array>& x_values_raw,
     const std::shared_ptr<arrow::Array>& y_values_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_values_raw);
   auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_values_raw);
   return cuda::ST_Point(x_values, y_values);
@@ -93,7 +93,7 @@ std::shared_ptr<arrow::Array> ST_NPoints(
 
 std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   // currently support ST_Point, ST_LineString, ST_Polygon
   auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {
@@ -161,7 +161,7 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left_raw,
     const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
   auto gpu_supported_type = {WkbTypes::kPoint};
@@ -178,7 +178,7 @@ std::shared_ptr<arrow::Array> ST_Distance(
 
 std::shared_ptr<arrow::Array> ST_Area(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   // currently support ST_Polygon
   auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {
@@ -195,7 +195,7 @@ std::shared_ptr<arrow::Array> ST_Area(
 
 std::shared_ptr<arrow::Array> ST_Length(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   // currently support ST_LineString
   auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
@@ -256,7 +256,7 @@ std::shared_ptr<arrow::Array> ST_Intersects(
 std::shared_ptr<arrow::Array> ST_Within(
     const std::shared_ptr<arrow::Array>& geo_left_raw,
     const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
