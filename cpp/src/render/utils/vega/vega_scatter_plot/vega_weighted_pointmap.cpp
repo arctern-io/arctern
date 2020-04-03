@@ -57,7 +57,8 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   // 3. parse point map color
   if (!JsonLabelCheck(mark_enter, "color_gradient") ||
       !JsonLabelCheck(mark_enter["color_gradient"], "value") ||
-      !JsonTypeCheck(mark_enter["color_gradient"]["value"], rapidjson::Type::kStringType)) {
+      !JsonTypeCheck(mark_enter["color_gradient"]["value"],
+                     rapidjson::Type::kStringType)) {
     return;
   }
   auto color_string = std::string(mark_enter["color_gradient"]["value"].GetString());
@@ -125,8 +126,8 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
     return;
   }
   auto size_bound = mark_enter["size_bound"]["value"].Size();
-  if (size_bound == 1 && JsonTypeCheck(mark_enter["size_bound"]["value"][0],
-                                              rapidjson::Type::kNumberType)) {
+  if (size_bound == 1 &&
+      JsonTypeCheck(mark_enter["size_bound"]["value"][0], rapidjson::Type::kNumberType)) {
     is_multiple_point_size_ = false;
     point_params_.point_size = mark_enter["size_bound"]["value"][0].GetDouble();
   } else if (size_bound == 2 &&
@@ -136,7 +137,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
                            rapidjson::Type::kNumberType)) {
     is_multiple_point_size_ = true;
     size_bound_ = std::make_pair(mark_enter["size_bound"]["value"][0].GetDouble(),
-                                   mark_enter["size_bound"]["value"][1].GetDouble());
+                                 mark_enter["size_bound"]["value"][1].GetDouble());
   } else {
     is_valid_ = false;
     std::string err_msg = "unsupported size bound";

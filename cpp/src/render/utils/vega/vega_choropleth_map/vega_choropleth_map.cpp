@@ -55,10 +55,12 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   // parse color gradient
   if (!JsonLabelCheck(mark_enter, "color_gradient") ||
       !JsonLabelCheck(mark_enter["color_gradient"], "value") ||
-      !JsonTypeCheck(mark_enter["color_gradient"]["value"], rapidjson::Type::kStringType)) {
+      !JsonTypeCheck(mark_enter["color_gradient"]["value"],
+                     rapidjson::Type::kStringType)) {
     return;
   }
-  auto color_style_string = std::string(mark_enter["color_gradient"]["value"].GetString());
+  auto color_style_string =
+      std::string(mark_enter["color_gradient"]["value"].GetString());
   if (color_style_string == "blue_to_red") {
     color_style_ = ColorStyle::kBlueToRed;
   } else if (color_style_string == "skyblue_to_white") {
@@ -90,12 +92,13 @@ void VegaChoroplethMap::Parse(const std::string& json) {
     return;
   }
   for (int i = 0; i < 2; i++) {
-    if (!JsonTypeCheck(mark_enter["color_bound"]["value"][i], rapidjson::Type::kNumberType)) {
+    if (!JsonTypeCheck(mark_enter["color_bound"]["value"][i],
+                       rapidjson::Type::kNumberType)) {
       return;
     }
   }
   color_bound_ = std::make_pair(mark_enter["color_bound"]["value"][0].GetDouble(),
-                          mark_enter["color_bound"]["value"][1].GetDouble());
+                                mark_enter["color_bound"]["value"][1].GetDouble());
 
   // parse opacity
   if (!JsonLabelCheck(mark_enter, "opacity") ||

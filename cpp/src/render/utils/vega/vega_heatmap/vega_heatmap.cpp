@@ -53,7 +53,8 @@ void VegaHeatMap::Parse(const std::string& json) {
   mark_enter = document["marks"][0]["encode"]["enter"];
 
   if (!JsonLabelCheck(mark_enter, "map_zoom_level") ||
-      !JsonTypeCheck(mark_enter["map_zoom_level"]["value"], rapidjson::Type::kNumberType)) {
+      !JsonTypeCheck(mark_enter["map_zoom_level"]["value"],
+                     rapidjson::Type::kNumberType)) {
     return;
   }
   map_zoom_level_ = mark_enter["map_zoom_level"]["value"].GetDouble();

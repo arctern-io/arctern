@@ -65,7 +65,7 @@ class WeightedPointMap : public General2D {
 
   void SetColor(T* ptr);
 
-  void SetPointSize(T *ptr);
+  void SetPointSize(T* ptr);
 
  private:
 #ifdef USE_GPU

@@ -50,7 +50,8 @@ void VegaPointmap::Parse(const std::string& json) {
   mark_enter = document["marks"][0]["encode"]["enter"];
 
   if (!JsonLabelCheck(mark_enter, "point_size") ||
-      !JsonLabelCheck(mark_enter, "point_color") || !JsonLabelCheck(mark_enter, "opacity") ||
+      !JsonLabelCheck(mark_enter, "point_color") ||
+      !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["point_size"], "value") ||
       !JsonLabelCheck(mark_enter["point_color"], "value") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
@@ -60,7 +61,8 @@ void VegaPointmap::Parse(const std::string& json) {
     return;
   }
   point_params_.point_size = mark_enter["point_size"]["value"].GetDouble();
-  point_params_.color = ColorParser(mark_enter["point_color"]["value"].GetString()).color();
+  point_params_.color =
+      ColorParser(mark_enter["point_color"]["value"].GetString()).color();
   point_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
 

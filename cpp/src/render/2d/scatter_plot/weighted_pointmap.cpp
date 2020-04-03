@@ -69,8 +69,7 @@ WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y
 
 template <typename T>
 WeightedPointMap<T>::WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y,
-                                      T* color_count, T* size_count,
-                                      size_t num_vertices)
+                                      T* color_count, T* size_count, size_t num_vertices)
     : vertices_x_(vertices_x),
       vertices_y_(vertices_y),
       unknown_(nullptr),
@@ -87,8 +86,8 @@ void WeightedPointMap<T>::Draw() {
   glEnable(GL_POINT_SMOOTH);
 
   if (!mutable_weighted_point_vega().is_multiple_color() &&
-      !mutable_weighted_point_vega().is_multiple_point_size() &&
-      size_count_ == nullptr && color_count_ == nullptr && unknown_ == nullptr) {
+      !mutable_weighted_point_vega().is_multiple_point_size() && size_count_ == nullptr &&
+      color_count_ == nullptr && unknown_ == nullptr) {
     DrawSingleColorSingleSize();
   } else if (mutable_weighted_point_vega().is_multiple_color() &&
              !mutable_weighted_point_vega().is_multiple_point_size() &&
@@ -98,14 +97,14 @@ void WeightedPointMap<T>::Draw() {
 #endif
     DrawMultipleColorSingleSize();
   } else if (!mutable_weighted_point_vega().is_multiple_color() &&
-      mutable_weighted_point_vega().is_multiple_point_size() &&
+             mutable_weighted_point_vega().is_multiple_point_size() &&
              size_count_ == nullptr && color_count_ == nullptr && unknown_ != nullptr) {
 #ifndef USE_GPU
     SetPointSize(unknown_);
 #endif
     DrawSingleColorMultipleSize();
   } else if (mutable_weighted_point_vega().is_multiple_color() &&
-      mutable_weighted_point_vega().is_multiple_point_size() &&
+             mutable_weighted_point_vega().is_multiple_point_size() &&
              size_count_ != nullptr && color_count_ != nullptr && unknown_ == nullptr) {
 #ifndef USE_GPU
     SetPointSize(size_count_);
@@ -122,8 +121,8 @@ void WeightedPointMap<T>::Draw() {
 template <typename T>
 void WeightedPointMap<T>::Shader() {
   if (!mutable_weighted_point_vega().is_multiple_color() &&
-      !mutable_weighted_point_vega().is_multiple_point_size() &&
-      size_count_ == nullptr && color_count_ == nullptr && unknown_ == nullptr) {
+      !mutable_weighted_point_vega().is_multiple_point_size() && size_count_ == nullptr &&
+      color_count_ == nullptr && unknown_ == nullptr) {
     ShaderSingleColorSingleSize();
   } else if (mutable_weighted_point_vega().is_multiple_color() &&
              !mutable_weighted_point_vega().is_multiple_point_size() &&
@@ -695,7 +694,7 @@ void WeightedPointMap<T>::SetColor(T* ptr) {
 }
 
 template <typename T>
-void WeightedPointMap<T>::SetPointSize(T *ptr) {
+void WeightedPointMap<T>::SetPointSize(T* ptr) {
   auto count_start = weighted_point_vega_.size_bound().first;
   auto count_end = weighted_point_vega_.size_bound().second;
 

@@ -26,7 +26,6 @@ namespace render {
 
 class VegaChoroplethMap : public Vega {
  public:
-
  public:
   VegaChoroplethMap() = default;
 
@@ -47,7 +46,7 @@ class VegaChoroplethMap : public Vega {
 
  private:
   std::pair<double, double> color_bound_;
-    ColorStyle color_style_;
+  ColorStyle color_style_;
   double opacity_;
 };
 
