@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     python3-pip python3-dev python3.7 python3-setuptools \
     libgl-dev libosmesa6-dev libglu1-mesa-dev && \
     cd /usr/local/bin && \
-    ln -s /usr/bin/python3 python && \
+    ln -s /usr/bin/python3.7 python && \
     pip3 --no-cache-dir install --upgrade pip && \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
