@@ -4,7 +4,7 @@ FROM ${IMAGE_NAME}:base
 COPY python /arctern/python
 
 RUN cd /arctern/python && \
-    pip3 --no-cache-dir install --upgrade cython pyarrow && \
+    python3.7 -m pip --no-cache-dir install --upgrade cython pyarrow && \
     python setup.py build build_ext --issymbol && \
     python setup.py install
 
@@ -17,7 +17,7 @@ RUN cd /arctern/spark/pyspark && \
 COPY gui/server /arctern/gui/server
 
 RUN cd /arctern/gui/server && \
-    pip3 --no-cache-dir install -r requirements.txt
+    python3.7 -m pip --no-cache-dir install -r requirements.txt
 
 EXPOSE 8080
 

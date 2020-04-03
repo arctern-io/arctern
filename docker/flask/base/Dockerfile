@@ -3,11 +3,11 @@ FROM ubuntu:18.04
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential wget ca-certificates openjdk-8-jdk \
-    python3-pip python3-dev python3.7 python3-setuptools \
+    python3-pip python3.7-dev python3-setuptools \
     libgl-dev libosmesa6-dev libglu1-mesa-dev && \
     cd /usr/local/bin && \
     ln -s /usr/bin/python3.7 python && \
-    pip3 --no-cache-dir install --upgrade pip && \
+    python3.7 -m pip --no-cache-dir install --upgrade pip && \
     apt-get remove --purge -y && \
     rm -rf /var/lib/apt/lists/*
 
