@@ -252,7 +252,7 @@ response:
         "status": "success",
         "code": 200,
         "data": [
-            "global_temp.nyc_taxi"              //表名列表
+            "nyc_taxi"              //表名列表
         ],
         "message": null
     }
@@ -273,7 +273,7 @@ token: YES
 request:
     {
         "id": "1",                              // 指定数据库id
-        "table":  "global_temp.nyc_taxi"        // 指定表名
+        "table":  "nyc_taxi"        // 指定表名
     }
 response:
     {
@@ -301,7 +301,7 @@ response:
 for example:
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"table\":\"global_temp.nyc_taxi\"}" http://127.0.0.1:8080/db/table/info
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"table\":\"nyc_taxi\"}" http://127.0.0.1:8080/db/table/info
 ```
 
 ### /db/query 查询某个数据库
@@ -375,7 +375,7 @@ for example:
 点图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point from global_temp.nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"point\",\"params\":{\"width\":1024,\"height\":896,\"point\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate\":\"EPSG:4326\",\"stroke_width\":3,\"stroke\":\"#2DEF4A\",\"opacity\":0.5}}}}" http://127.0.0.1:8080/db/query
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"point\",\"params\":{\"width\":1024,\"height\":896,\"point\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate\":\"EPSG:4326\",\"stroke_width\":3,\"stroke\":\"#2DEF4A\",\"opacity\":0.5}}}}" http://127.0.0.1:8080/db/query
 ```
 
 其中json为
@@ -384,7 +384,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-    "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from global_temp.nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+    "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
         "type": "point",
         "params": {
             "width": 1024,
@@ -404,7 +404,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 热力图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from global_temp.nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"heat\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate\":\"EPSG:4326\",\"map_scale\":10}}}}" http://127.0.0.1:8080/db/query
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"heat\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate\":\"EPSG:4326\",\"map_scale\":10}}}}" http://127.0.0.1:8080/db/query
 ```
 
 其中json为
@@ -413,7 +413,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from global_temp.nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
         "type": "heat",
         "params": {
             "width": 1024,
@@ -431,7 +431,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 轮廓图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select buildingtext_dropoff as wkt, passenger_count as w from global_temp.nyc_taxi\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"choropleth\":{\"bounding_box\":[-73.984092,40.753893,-73.977588,40.756342],\"coordinate\":\"EPSG:4326\",\"color_style\":\"blue_to_red\",\"rule\":[2.5,5],\"opacity\":1}}}}" http://127.0.0.1:8080/db/query
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"choropleth\":{\"bounding_box\":[-73.984092,40.753893,-73.977588,40.756342],\"coordinate\":\"EPSG:4326\",\"color_style\":\"blue_to_red\",\"rule\":[2.5,5],\"opacity\":1}}}}" http://127.0.0.1:8080/db/query
 ```
 
 其中json为
@@ -440,7 +440,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-        "sql": "select buildingtext_dropoff as wkt, passenger_count as w from global_temp.nyc_taxi",
+        "sql": "select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi",
         "type": "choropleth",
         "params": {
             "width": 1024,
