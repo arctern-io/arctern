@@ -30,16 +30,22 @@ namespace cuda {
 TEST(FunctorEnvelope, naive) {
   using std::string;
   using std::vector;
-  vector<string> raw = {"POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))",
-                        "POLYGON((0 0, 1 0, 1 1, 1 0, 0 0))",
-                        "LINESTRING(3 4, 6 8, 7 2)"};
-  vector<double> std_results = {
-      4 * 4,
-      1,
-      (7 - 3) * (8 - 2),
+  vector<std::pair<string, double>> raw_data = {
+      {"POLYGON((0 2, -2 -2, 2 -2, 0 2),(0 1, -1 -1, 1 -1, 0 1))", 4 * 4},
+      {"POLYGON((0 0, 1 0, 1 1, 1 0, 0 0))", 1},
+      {"LINESTRING(3 4, 6 8, 7 2)", (7 - 3) * (8 - 2)},
+      {"POINT EMPTY", 0},
+      {"POLYGON EMPTY", 0},
+      {"LINESTRING EMPTY", 0},
   };
-  vector<double> results(raw.size());
+  vector<string> raw;
+  vector<double> std_results;
+  for (auto& pr : raw_data) {
+    raw.push_back(pr.first);
+    std_results.push_back(pr.second);
+  }
 
+  vector<double> results(raw.size());
   ASSERT_EQ(results.size(), std_results.size());
 
   auto geo = GeometryVectorFactory::CreateFromWkts(raw);

@@ -36,15 +36,16 @@ auto WkbTypeScanner::Scan() const -> std::shared_ptr<GeometryTypeMasks> {
 
   std::vector<GroupedWkbTypes> decoding_map;
   decoding_map.emplace_back(GroupedWkbTypes{WkbTypes::kUnknown});
-
+  constexpr int MaxTypeVolume = 3000;
   int type_volume = 0;
   for (const auto& type_set : this->types()) {
     for (auto type : type_set) {
+      assert((int)type >= 0);
+      assert((int)type < MaxTypeVolume);
       type_volume = std::max(type_volume, (int)type + 1);
     }
   }
 
-  assert(type_volume < 3000);
   std::vector<int> encoding_map(type_volume, 0);
   int scan_volume = 0;
   {
@@ -67,7 +68,7 @@ auto WkbTypeScanner::Scan() const -> std::shared_ptr<GeometryTypeMasks> {
     info.mask.resize(geometries_->length());
   }
   auto to_encode_uid = [&encoding_map, type_volume](WkbTypes type) -> int {
-    if ((int)type < type_volume) {
+    if ((int)type >= 0 && (int)type < type_volume) {
       return encoding_map[(int)type];
     } else {
       return 0;
