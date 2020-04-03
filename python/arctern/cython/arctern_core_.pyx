@@ -24,44 +24,26 @@ def projection(geos, bottom_right, top_left, int height, int width):
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
     return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
 
-def point_map_wkb(points, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
+def point_map(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), vega))
 
-def weighted_point_map_wkb_0_0(points, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), conf))
+def weighted_point_map(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), vega))
 
-def weighted_point_map_wkb_1_0(points, conf, cs):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), conf))
+def weighted_color_point_map(vega, points, color_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), vega))
 
-def weighted_point_map_wkb_0_1(points, conf, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(ss), conf))
+def weighted_size_point_map(vega, points, size_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(size_weights), vega))
 
-def weighted_point_map_wkb_1_1(points, conf, cs, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
+def weighted_color_size_point_map(vega, points, color_weights, size_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), pyarrow_unwrap_array(size_weights), vega))
 
-def weighted_point_map_0_0(arr_x, arr_y, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+def heat_map(vega, points, weights):
+    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(weights), vega))
 
-def weighted_point_map_0_1(arr_x, arr_y, conf, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(ss), conf))
-
-def weighted_point_map_1_0(arr_x, arr_y, conf, cs):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), conf))
-
-def weighted_point_map_1_1(arr_x, arr_y, conf, cs, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
-
-def heat_map_wkb(points, arr_c, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
-
-def point_map(arr_x, arr_y, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
-
-def heat_map(arr_x, arr_y, arr_c, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(arr_c), conf))
-
-def choropleth_map(arr_wkt, arr_count, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
+def choropleth_map(vega,region_boundaries, weights):
+    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(region_boundaries), pyarrow_unwrap_array(weights), vega))
 
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
