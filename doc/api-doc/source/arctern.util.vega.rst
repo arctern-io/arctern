@@ -1,8 +1,6 @@
 arctern.util.vega package
 =========================
 
-Subpackages
------------
 
 .. toctree::
 
@@ -10,22 +8,11 @@ Subpackages
    arctern.util.vega.heatmap
    arctern.util.vega.pointmap
 
-Submodules
-----------
 
 arctern.util.vega.vega\_node module
 -----------------------------------
 
 .. automodapi:: arctern.util.vega.vega_node
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodapi:: arctern.util.vega
    :members:
    :undoc-members:
    :show-inheritance:

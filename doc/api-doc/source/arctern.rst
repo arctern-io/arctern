@@ -1,5 +1,5 @@
-arctern package
-===============
+arctern python api
+==================
 
 
 .. toctree::

@@ -7,11 +7,3 @@ arctern.util.vega.choroplethmap.vega_choroplethmap module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodapi:: arctern.util.vega.choroplethmap
-   :members:
-   :undoc-members:
-   :show-inheritance:
