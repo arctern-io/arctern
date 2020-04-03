@@ -242,6 +242,7 @@ bool IsValidWkt(const char* src) {
       }
       case TokenType::WktKey: {
         switch (token.type) {
+          case TokenType::WktKey:
           case TokenType::Empty: {
             break;
           }
