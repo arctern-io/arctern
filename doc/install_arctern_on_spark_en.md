@@ -10,8 +10,8 @@ This topic introduces how to install Arctern in Spark.
 - [Setting up Arctern Conda environment](#setting-up-arctern-conda-environment)
 - [Installing Arctern](#installing-arctern)
 - [Validating installation](#validating-installation)
-- [Configure Python path for Spark](#configure-python-path-for-spark)
-- [Test sample file](#test-sample-file)
+- [Configuring Python path for Spark](#configure-python-path-for-spark)
+- [Test case](#test-case)
 - [Uninstalling Arctern](#uninstalling-arctern)
 - [FAQ](#faq)
     - [Support for Spark](#support-for-spark)
@@ -111,7 +111,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> import arctern_pyspark
 ```
 
-## Configure Python path for Spark
+## Configuring Python path for Spark
 
 Add the following content to `conf/spark-default.conf`. `[path/to/your/conda]` is the installation path of Conda.
 
@@ -135,7 +135,7 @@ Check whether PySpark uses the Python path determined by `$PYSPARK_PYTHON`. `[pa
 [path/to/your/conda]/envs/arctern
 ```
 
-## Test sample file
+## Test case
 
 Download test file.
 
