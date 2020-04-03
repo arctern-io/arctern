@@ -23,8 +23,8 @@
 namespace arctern {
 namespace render {
 
-struct CircleParams {
-  float radius;
+struct PointParams {
+  float point_size;
   Color color;
 };
 

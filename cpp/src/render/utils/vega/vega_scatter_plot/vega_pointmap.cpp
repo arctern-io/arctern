@@ -59,9 +59,9 @@ void VegaPointmap::Parse(const std::string& json) {
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
-  circle_params_.radius = mark_enter["point_size"]["value"].GetDouble();
-  circle_params_.color = ColorParser(mark_enter["point_color"]["value"].GetString()).color();
-  circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
+  point_params_.point_size = mark_enter["point_size"]["value"].GetDouble();
+  point_params_.color = ColorParser(mark_enter["point_color"]["value"].GetString()).color();
+  point_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
 
 }  // namespace render

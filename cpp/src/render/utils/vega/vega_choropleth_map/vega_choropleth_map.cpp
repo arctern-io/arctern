@@ -94,7 +94,7 @@ void VegaChoroplethMap::Parse(const std::string& json) {
       return;
     }
   }
-  ruler_ = std::make_pair(mark_enter["color_bound"]["value"][0].GetDouble(),
+  color_bound_ = std::make_pair(mark_enter["color_bound"]["value"][0].GetDouble(),
                           mark_enter["color_bound"]["value"][1].GetDouble());
 
   // parse opacity
