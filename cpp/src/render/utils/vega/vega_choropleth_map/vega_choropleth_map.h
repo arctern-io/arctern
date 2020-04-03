@@ -26,12 +26,6 @@ namespace render {
 
 class VegaChoroplethMap : public Vega {
  public:
-  //  struct BoundingBox {
-  //    double longitude_left;
-  //    double latitude_left;
-  //    double longitude_right;
-  //    double latitude_right;
-  //  };
 
  public:
   VegaChoroplethMap() = default;
@@ -40,8 +34,6 @@ class VegaChoroplethMap : public Vega {
 
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
-
-  //  const BoundingBox& bounding_box() const { return bounding_box_; }
 
   const std::pair<double, double>& ruler() const { return ruler_; }
 
@@ -54,7 +46,6 @@ class VegaChoroplethMap : public Vega {
   void Parse(const std::string& json) final;
 
  private:
-  //  BoundingBox bounding_box_;
   std::pair<double, double> ruler_;
   ColorStyle color_style_;
   double opacity_;

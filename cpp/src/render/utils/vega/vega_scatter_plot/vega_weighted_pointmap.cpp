@@ -55,12 +55,12 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   mark_enter = document["marks"][0]["encode"]["enter"];
 
   // 3. parse point map color
-  if (!JsonLabelCheck(mark_enter, "color") ||
-      !JsonLabelCheck(mark_enter["color"], "value") ||
-      !JsonTypeCheck(mark_enter["color"]["value"], rapidjson::Type::kStringType)) {
+  if (!JsonLabelCheck(mark_enter, "color_gradient") ||
+      !JsonLabelCheck(mark_enter["color_gradient"], "value") ||
+      !JsonTypeCheck(mark_enter["color_gradient"]["value"], rapidjson::Type::kStringType)) {
     return;
   }
-  auto color_string = std::string(mark_enter["color"]["value"].GetString());
+  auto color_string = std::string(mark_enter["color_gradient"]["value"].GetString());
   ColorParser color_parser(color_string);
   if (color_parser.is_css_hex_color()) {
     is_multiple_color_ = false;
@@ -99,47 +99,47 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
   }
 
   // 4. parse color_ruler
-  if (!JsonLabelCheck(mark_enter, "color_ruler") ||
-      !JsonLabelCheck(mark_enter["color_ruler"], "value") ||
-      !JsonTypeCheck(mark_enter["color_ruler"]["value"], rapidjson::Type::kArrayType)) {
+  if (!JsonLabelCheck(mark_enter, "color_bound") ||
+      !JsonLabelCheck(mark_enter["color_bound"], "value") ||
+      !JsonTypeCheck(mark_enter["color_bound"]["value"], rapidjson::Type::kArrayType)) {
     return;
   }
-  auto color_ruler_size = mark_enter["color_ruler"]["value"].Size();
+  auto color_ruler_size = mark_enter["color_bound"]["value"].Size();
   if (color_ruler_size == 2 &&
-      JsonTypeCheck(mark_enter["color_ruler"]["value"][0],
+      JsonTypeCheck(mark_enter["color_bound"]["value"][0],
                     rapidjson::Type::kNumberType) &&
-      JsonTypeCheck(mark_enter["color_ruler"]["value"][1],
+      JsonTypeCheck(mark_enter["color_bound"]["value"][1],
                     rapidjson::Type::kNumberType)) {
-    color_ruler_ = std::make_pair(mark_enter["color_ruler"]["value"][0].GetDouble(),
-                                  mark_enter["color_ruler"]["value"][1].GetDouble());
+    color_ruler_ = std::make_pair(mark_enter["color_bound"]["value"][0].GetDouble(),
+                                  mark_enter["color_bound"]["value"][1].GetDouble());
   } else {
     is_valid_ = false;
-    std::string err_msg = "unsupported color ruler";
+    std::string err_msg = "unsupported color bound";
     throw std::runtime_error(err_msg);
   }
 
   // 5. parse stroke_ruler
-  if (!JsonLabelCheck(mark_enter, "stroke_ruler") ||
-      !JsonLabelCheck(mark_enter["stroke_ruler"], "value") ||
-      !JsonTypeCheck(mark_enter["stroke_ruler"]["value"], rapidjson::Type::kArrayType)) {
+  if (!JsonLabelCheck(mark_enter, "size_bound") ||
+      !JsonLabelCheck(mark_enter["size_bound"], "value") ||
+      !JsonTypeCheck(mark_enter["size_bound"]["value"], rapidjson::Type::kArrayType)) {
     return;
   }
-  auto stroke_ruler_size = mark_enter["stroke_ruler"]["value"].Size();
-  if (stroke_ruler_size == 1 && JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
+  auto stroke_ruler_size = mark_enter["size_bound"]["value"].Size();
+  if (stroke_ruler_size == 1 && JsonTypeCheck(mark_enter["size_bound"]["value"][0],
                                               rapidjson::Type::kNumberType)) {
     is_multiple_stroke_width_ = false;
-    circle_params_.radius = mark_enter["stroke_ruler"]["value"][0].GetDouble();
+    circle_params_.radius = mark_enter["size_bound"]["value"][0].GetDouble();
   } else if (stroke_ruler_size == 2 &&
-             JsonTypeCheck(mark_enter["stroke_ruler"]["value"][0],
+             JsonTypeCheck(mark_enter["size_bound"]["value"][0],
                            rapidjson::Type::kNumberType) &&
-             JsonTypeCheck(mark_enter["stroke_ruler"]["value"][1],
+             JsonTypeCheck(mark_enter["size_bound"]["value"][1],
                            rapidjson::Type::kNumberType)) {
     is_multiple_stroke_width_ = true;
-    stroke_ruler_ = std::make_pair(mark_enter["stroke_ruler"]["value"][0].GetDouble(),
-                                   mark_enter["stroke_ruler"]["value"][1].GetDouble());
+    stroke_ruler_ = std::make_pair(mark_enter["size_bound"]["value"][0].GetDouble(),
+                                   mark_enter["size_bound"]["value"][1].GetDouble());
   } else {
     is_valid_ = false;
-    std::string err_msg = "unsupported stroke ruler";
+    std::string err_msg = "unsupported size bound";
     throw std::runtime_error(err_msg);
   }
 
