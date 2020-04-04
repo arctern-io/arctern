@@ -24,7 +24,7 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
-std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
+std::shared_ptr<arrow::BinaryArray> GeometryVectorToArrowWkb(const GeometryVector&);
 
 using internal::WkbArrowContext;
 

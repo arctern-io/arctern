@@ -241,30 +241,28 @@ TYPED_TEST(TypeScan, dispatch) {
   using std::vector;
   using ArrayType = typename TestFixture::ArrayType;
   vector<string> cases_raw = {
+      "MultiLineString Z((0 0 0, 1 1 1), (0 0 0, 1 1 1, 2 2 2))",
       "MultiPoint Empty",
       "LineString(0 0, 0 1)",
       "Point(0 0)",
-      "MultiLineString Empty",
+      "MultiPolygon Empty",
   };
 
-  vector<bool> std_masks = {true, false, false, false};
   auto cases = arctern::gis::StrsTo<ArrayType>(cases_raw);
 
-  GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint};
-  GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString};
+  GroupedWkbTypes type1 = {WkbTypes::kPoint, WkbTypes::kMultiPoint,
+                           WkbTypes::kMultiLineString};
+  GroupedWkbTypes type2 = {WkbTypes::kPoint, WkbTypes::kLineString,
+                           WkbTypes::kMultiLineString};
 
   dispatch::MaskResult mask_result(cases, type1);
   mask_result.AppendFilter(cases, type2);
-
-  auto true_checker = [&](std::shared_ptr<ArrayType> wkb) {
-    EXPECT_EQ(wkb->length(), 1);
-    EXPECT_EQ(wkb->GetView(0), cases->GetView(2));
-    return wkb;
+  auto checker_gen = [](int n) {
+    return [n](std::shared_ptr<ArrayType> wkb) {
+      EXPECT_EQ(wkb->length(), n);
+      return wkb;
+    };
   };
 
-  auto false_checker = [](std::shared_ptr<ArrayType> wkb) {
-    EXPECT_EQ(wkb->length(), 3);
-    return wkb;
-  };
-  dispatch::UnaryExecute<ArrayType>(mask_result, false_checker, true_checker, cases);
+  dispatch::UnaryExecute<ArrayType>(mask_result, checker_gen(4), checker_gen(1), cases);
 }

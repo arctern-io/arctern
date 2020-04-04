@@ -61,7 +61,7 @@ def pointmap(df, vega):
         from arctern import point_map_wkb
         return point_map_wkb(point, conf.encode('utf-8'))
 
-    df = df.coalesce(1)
+    df = df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = df.agg(pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
@@ -117,7 +117,7 @@ def weighted_pointmap(df, vega):
                 return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c, ss=s)
 
             agg_df = df.mapInPandas(render_agg_UDF)
-            agg_df = agg_df.coalesce(1)
+            agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
         elif render_mode == 1:
             df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
@@ -137,7 +137,7 @@ def weighted_pointmap(df, vega):
                 return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c)
 
             agg_df = df.mapInPandas(render_agg_UDF)
-            agg_df = agg_df.coalesce(1)
+            agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
         else:
             df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
@@ -146,7 +146,7 @@ def weighted_pointmap(df, vega):
                 from arctern import weighted_point_map_wkb
                 return weighted_point_map_wkb(point, conf.encode('utf-8'))
 
-            df = df.coalesce(1)
+            df = df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
         return hex_data
 
@@ -170,7 +170,7 @@ def weighted_pointmap(df, vega):
             return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c, ss=s)
 
         agg_df = df.mapInPandas(render_agg_UDF)
-        agg_df = agg_df.coalesce(1)
+        agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_color], agg_df[col_stroke])).collect()[0][0]
     elif render_mode == 1:
         df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
@@ -190,7 +190,7 @@ def weighted_pointmap(df, vega):
             return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c)
 
         agg_df = df.mapInPandas(render_agg_UDF)
-        agg_df = agg_df.coalesce(1)
+        agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = agg_df.agg(weighted_pointmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     else:
         df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
@@ -199,7 +199,7 @@ def weighted_pointmap(df, vega):
             from arctern import weighted_point_map_wkb
             return weighted_point_map_wkb(point, conf.encode('utf-8'))
 
-        df = df.coalesce(1)
+        df = df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
@@ -244,7 +244,7 @@ def heatmap(df, vega):
         return heat_map_wkb(point, w, conf.encode('utf-8'))
 
     agg_df = df.mapInPandas(render_agg_UDF)
-    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(heatmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     return hex_data
 
@@ -294,6 +294,6 @@ def choroplethmap(df, vega):
 
     agg_df = df.where("%s != ''" % col_polygon)
     agg_df = agg_df.mapInPandas(render_agg_UDF)
-    agg_df = agg_df.coalesce(1)
+    agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
     return hex_data
