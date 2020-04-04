@@ -109,8 +109,8 @@ TEST(parser_test, next_token6) {
   ASSERT_TOKEN(point, &token, arctern::gis::parser::TokenType::Unknown);
 }
 
-TEST(parser_test, num_parser){
-  auto num = (const char *)"1 1. .1 +1 -1 +1. -1. 1e1 1.e+2";
+TEST(parser_test, num_parser) {
+  auto num = (const char*)"1 1. .1 +1 -1 +1. -1. 1e1 1.e+2";
   arctern::gis::parser::TokenInfo token;
   ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Number);
   ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Number);
@@ -124,16 +124,16 @@ TEST(parser_test, num_parser){
   ASSERT_FALSE(arctern::gis::parser::NextToken(num, &token));
 
   num = (const char*)"+-1";
-  ASSERT_TOKEN(num,&token,arctern::gis::parser::TokenType::Unknown);
+  ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Unknown);
 
   num = (const char*)"+1e";
-  ASSERT_TOKEN(num,&token,arctern::gis::parser::TokenType::Unknown);
+  ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Unknown);
 
   num = (const char*)"1.1.1";
-  ASSERT_TOKEN(num,&token,arctern::gis::parser::TokenType::Unknown);
+  ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Unknown);
 
   num = (const char*)"1.1e.1";
-  ASSERT_TOKEN(num,&token,arctern::gis::parser::TokenType::Unknown);
+  ASSERT_TOKEN(num, &token, arctern::gis::parser::TokenType::Unknown);
 }
 
 TEST(parser_test, isvalidwkt) {
@@ -152,9 +152,8 @@ TEST(parser_test, isvalidwkt) {
 
   ISValid_TRUE("LINESTRING(0 0,1.23e-11 1.45e-12)");
   ISValid_TRUE("LINESTRING(0 0,1.343e-12 1.78e-12)")
-  ISValid_TRUE("LINESTRING(-1.12e-08 -9.2e-08,1.2134e-10 1.423e-10)")
-  ISValid_TRUE("POINT(1.132321e-12 2.3123123e-12)")
-  ISValid_TRUE("POINT(1.1e-11 1.567)")
-  ISValid_TRUE("POLYGON((1e-11 1e-11,3.231 1.098,3.765 9.555,1 7,1e-11 1e-11))")
-  ISValid_TRUE("LINESTRING Z ((0 0 0, 1 1 1, 2 2 2))")
+      ISValid_TRUE("LINESTRING(-1.12e-08 -9.2e-08,1.2134e-10 1.423e-10)") ISValid_TRUE(
+          "POINT(1.132321e-12 2.3123123e-12)") ISValid_TRUE("POINT(1.1e-11 1.567)")
+          ISValid_TRUE("POLYGON((1e-11 1e-11,3.231 1.098,3.765 9.555,1 7,1e-11 1e-11))")
+              ISValid_TRUE("LINESTRING Z ((0 0 0, 1 1 1, 2 2 2))")
 }

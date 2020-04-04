@@ -3412,7 +3412,7 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_TRUE(res_str->IsNull(3));
 }
 
-TEST(geometry_test, test_ST_GeomFromText2){
+TEST(geometry_test, test_ST_GeomFromText2) {
   auto p0 = "LINESTRING(0 0,1.23e-11 1.45e-12)";
   auto p1 = "LINESTRING(0 0,1.343e-12 1.78e-12)";
   auto p2 = "LINESTRING(-1.12e-08 -9.2e-08,1.2134e-10 1.423e-10)";
@@ -3433,12 +3433,15 @@ TEST(geometry_test, test_ST_GeomFromText2){
   auto res = arctern::gis::ST_AsText(arctern::gis::ST_GeomFromText(input));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0),"LINESTRING (0 0,0.0000000000123 0.00000000000145)");
-  ASSERT_EQ(res_str->GetString(1),"LINESTRING (0 0,0.000000000001343 0.00000000000178)");
-  ASSERT_EQ(res_str->GetString(2),"LINESTRING (-0.0000000112 -0.000000092,0.00000000012134 0.0000000001423)");
-  ASSERT_EQ(res_str->GetString(3),"POINT (0.000000000001132 0.000000000002312)");
-  ASSERT_EQ(res_str->GetString(4),"POINT (0.000000000011 1.567)");
-  ASSERT_EQ(res_str->GetString(5), "POLYGON ((0.00000000001 0.00000000001,3.231 1.098,3.765 9.555,1 7,0.00000000001 0.00000000001))");
+  ASSERT_EQ(res_str->GetString(0), "LINESTRING (0 0,0.0000000000123 0.00000000000145)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,0.000000000001343 0.00000000000178)");
+  ASSERT_EQ(res_str->GetString(2),
+            "LINESTRING (-0.0000000112 -0.000000092,0.00000000012134 0.0000000001423)");
+  ASSERT_EQ(res_str->GetString(3), "POINT (0.000000000001132 0.000000000002312)");
+  ASSERT_EQ(res_str->GetString(4), "POINT (0.000000000011 1.567)");
+  ASSERT_EQ(res_str->GetString(5),
+            "POLYGON ((0.00000000001 0.00000000001,3.231 1.098,3.765 9.555,1 "
+            "7,0.00000000001 0.00000000001))");
 }
 
 TEST(geometry_test, test_ST_GeomFromText) {

@@ -111,10 +111,10 @@ inline NumberState ParserNumber(NumberState pre_state, const char c) {
         return NumberState::Error;
       }
     }
-    case NumberState::SciSig:{
-      if(IsDigital(c)){
+    case NumberState::SciSig: {
+      if (IsDigital(c)) {
         return NumberState::SciNum;
-      }else{
+      } else {
         return NumberState::Error;
       }
     }
@@ -216,13 +216,13 @@ bool NextToken(const char* src, TokenInfo* token) {
   if (token->type == TokenType::WktKey) {
     SetIfEmpty(token);
     return true;
-  }else if(token->type==TokenType::Number){
-    num_state = ParserNumber(num_state,' ');
-    if(num_state == NumberState::Finished){
+  } else if (token->type == TokenType::Number) {
+    num_state = ParserNumber(num_state, ' ');
+    if (num_state == NumberState::Finished) {
       return true;
     }
   }
-  token->type=TokenType::Unknown;
+  token->type = TokenType::Unknown;
   return false;
 }
 
