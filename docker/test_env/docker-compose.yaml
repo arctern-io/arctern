@@ -17,8 +17,6 @@ services:
           memory: 200M
   restful-regression:
     image: ${PYTEST_REPO}:${PYTEST_TAG}
-    volumes:
-      - ../..:/arctern
     command: &flask-test
       ["pytest", "--host=flask", "--port=8080", "--config=/arctern/gui/server/db.json"]
     deploy:
