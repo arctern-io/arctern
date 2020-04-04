@@ -35,12 +35,15 @@ namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values) {
+std::shared_ptr<arrow::Array> ST_Point(
+    const std::shared_ptr<arrow::Array>& x_values_raw,
+    const std::shared_ptr<arrow::Array>& y_values_raw) {
 #if defined(USE_GPU)
+  auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_values_raw);
+  auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_values_raw);
   return cuda::ST_Point(x_values, y_values);
 #else
-  return gdal::ST_Point(x_values, y_values);
+  return gdal::ST_Point(x_values_raw, y_values_raw);
 #endif
 }
 
@@ -60,6 +63,10 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
 
 std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
   return gdal::ST_GeomFromText(text);
+}
+
+std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb) {
+  return gdal::ST_AsText(wkb);
 }
 
 /***************************** GEOMETRY ACCESSOR *****************************/
@@ -88,11 +95,11 @@ std::shared_ptr<arrow::Array> ST_Envelope(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_Point, ST_LineString, ST_Polygon
-  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
+  auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint, WkbTypes::kLineString, WkbTypes::kPolygon};
   dispatch::MaskResult mask_result(geometries, gpu_supported_types);
-  auto result = dispatch::UnaryExecute<arrow::StringArray>(mask_result, gdal::ST_Envelope,
+  auto result = dispatch::UnaryExecute<arrow::BinaryArray>(mask_result, gdal::ST_Envelope,
                                                            cuda::ST_Envelope, geometries);
   return result;
 #else
@@ -155,8 +162,8 @@ std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left_raw,
     const std::shared_ptr<arrow::Array>& geo_right_raw) {
 #if defined(USE_GPU)
-  auto geo_left = std::static_pointer_cast<arrow::StringArray>(geo_left_raw);
-  auto geo_right = std::static_pointer_cast<arrow::StringArray>(geo_right_raw);
+  auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+  auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
   auto gpu_supported_type = {WkbTypes::kPoint};
   dispatch::MaskResult mask_result;
   mask_result.AppendFilter(geo_left, gpu_supported_type);
@@ -173,7 +180,7 @@ std::shared_ptr<arrow::Array> ST_Area(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_Polygon
-  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
+  auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {
       WkbTypes::kPoint,      WkbTypes::kLineString,      WkbTypes::kPolygon,
       WkbTypes::kMultiPoint, WkbTypes::kMultiLineString, WkbTypes::kMultiPolygon,
@@ -190,7 +197,7 @@ std::shared_ptr<arrow::Array> ST_Length(
     const std::shared_ptr<arrow::Array>& geometries_raw) {
 #if defined(USE_GPU)
   // currently support ST_LineString
-  auto geometries = std::static_pointer_cast<arrow::StringArray>(geometries_raw);
+  auto geometries = std::static_pointer_cast<arrow::BinaryArray>(geometries_raw);
   dispatch::GroupedWkbTypes gpu_supported_types = {WkbTypes::kLineString};
   dispatch::MaskResult mask_result;
   mask_result.AppendFilter(geometries, gpu_supported_types);
@@ -250,8 +257,8 @@ std::shared_ptr<arrow::Array> ST_Within(
     const std::shared_ptr<arrow::Array>& geo_left_raw,
     const std::shared_ptr<arrow::Array>& geo_right_raw) {
 #if defined(USE_GPU)
-  auto geo_left = std::static_pointer_cast<arrow::StringArray>(geo_left_raw);
-  auto geo_right = std::static_pointer_cast<arrow::StringArray>(geo_right_raw);
+  auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+  auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
   auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
   auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
