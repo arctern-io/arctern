@@ -711,7 +711,13 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     bool flag = true;
-    do {  // point within circle
+    do {
+      /*
+       * speed up for point within circle
+       * point pattern : 'POINT ( x y )'
+       * circle pattern : 'CurvePolygon ( CircularString ( x1 y1, x2 y2, x1 y2 ) )'
+       * 
+       */
       auto type1 = ogr1->getGeometryType();
       if (type1 != wkbPoint) break;
       auto point = reinterpret_cast<OGRPoint*>(ogr1);
@@ -731,23 +737,23 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
       if (circular_string->getNumPoints() != 3) break;
 
-      auto curcular_point_it = circular_string->begin();
-      auto curcular_point = &(*curcular_point_it);
-      if (curcular_point->getGeometryType() != wkbPoint) break;
-      auto p0_x = curcular_point->getX();
-      auto p0_y = curcular_point->getY();
+      auto circular_point_it = circular_string->begin();
+      auto circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p0_x = circular_point->getX();
+      auto p0_y = circular_point->getY();
 
-      ++curcular_point_it;
-      curcular_point = &(*curcular_point_it);
-      if (curcular_point->getGeometryType() != wkbPoint) break;
-      auto p1_x = curcular_point->getX();
-      auto p1_y = curcular_point->getY();
+      ++circular_point_it;
+      circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p1_x = circular_point->getX();
+      auto p1_y = circular_point->getY();
 
-      ++curcular_point_it;
-      curcular_point = &(*curcular_point_it);
-      if (curcular_point->getGeometryType() != wkbPoint) break;
-      auto p2_x = curcular_point->getX();
-      auto p2_y = curcular_point->getY();
+      ++circular_point_it;
+      circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p2_x = circular_point->getX();
+      auto p2_y = circular_point->getY();
 
       if (p0_x != p2_x) break;
       if (p0_y != p2_y) break;
