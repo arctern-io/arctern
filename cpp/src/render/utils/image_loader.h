@@ -25,8 +25,8 @@ class ImageLoader {
  private:
   struct ImageBuffer {
     struct ImageParams {
-      float width;
-      float height;
+      int width;
+      int height;
     };
 
     ImageParams image_params;
