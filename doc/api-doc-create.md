@@ -64,6 +64,29 @@ sphinx-quickstart /*输入项目信息*/
             f.write(contents)
 ```
 
+## 修改rst文件识别\_开头的文件以及html格式
+```
+识别\_开头文件的格式如下：
+     .. automodapi:: arctern._wrapper_func
+       :members:
+       :undoc-members:
+       :show-inheritance:
+   
+删除Submodules以及下面的模块名标题，例如：
+     Submodules
+     arctern.util.vega.choroplethmap.vega_choroplethmap module
+   
+如果需要打印类继承图，执行如下命令：
+     conda install -c conda-forge graphviz 
+     conda install -c conda-forge python-graphviz
+	 
+如果不打印类继承图，修改如下：
+     .. automodapi:: arctern.util.vega.heatmap.vega_heatmap
+        :members:
+        :undoc-members:
+        :no-inheritance-diagram:
+```
+
 ## 生成API文档
 ```
 cd arctern/doc/api-doc

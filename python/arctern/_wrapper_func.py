@@ -140,6 +140,21 @@ def ST_GeomFromText(text):
     return rs.to_pandas()
 
 def ST_AsText(text):
+    """
+    Returns the Well-Known Text representation of the geometry.
+
+    :type text: pyarrow.array.string
+    :param text: Geometries organized as WKB.
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = pandas.Series(["POLYGON ((0 0,0 1,1 1,1 0,0 0))"])
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_GeomFromText(data))
+      >>> print(string_ptr)
+          0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
+          dtype: object
+    """
     import pyarrow as pa
     geo = pa.array(text, type='binary')
     rs = arctern_core_.ST_AsText(geo)
