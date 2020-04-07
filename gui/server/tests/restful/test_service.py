@@ -116,9 +116,9 @@ def test_query(host, port, headers, dbid, table_name):
                   'height': 896,
                   'point': {
                        'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                       'coordinate': 'EPSG:4326',
-                       'stroke_width': 3,
-                       'stroke': '#2DEF4A',
+                       'coordinate_system': 'EPSG:4326',
+                       'point_color': 3,
+                       'point_size': '#2DEF4A',
                        'opacity': 0.5
                   }
              }
@@ -149,8 +149,8 @@ def test_query(host, port, headers, dbid, table_name):
                 'height': 896,
                 'heat': {
                     'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'coordinate': 'EPSG:4326',
-                    'map_scale': 10
+                    'coordinate_system': 'EPSG:4326',
+                    'map_zoom_level': 10
                 }
             }
         }
@@ -176,9 +176,9 @@ def test_query(host, port, headers, dbid, table_name):
                 'height': 896,
                 'choropleth': {
                     'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'coordinate': 'EPSG:4326',
-                    'color_style': 'blue_to_red',
-                    'rule': [2.5, 5],
+                    'coordinate_system': 'EPSG:4326',
+                    'color_gradient': 'blue_to_red',
+                    'color_bound': [2.5, 5],
                     'opacity': 1
                 }
             }
@@ -208,11 +208,11 @@ def test_query(host, port, headers, dbid, table_name):
                 'height': 896,
                 'weighted': {
                     'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'color': 'blue_to_red',
-                    'color_ruler': [0, 2],
-                    'stroke_ruler': [0, 10],
+                    'color_gradient': 'blue_to_red',
+                    'color_bound': [0, 2],
+                    'size_bound': [0, 10],
                     'opacity': 1.0,
-                    'coordinate': 'EPSG:4326'
+                    'coordinate_system': 'EPSG:4326'
                 }
             }
         }
