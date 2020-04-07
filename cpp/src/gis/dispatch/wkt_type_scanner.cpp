@@ -52,7 +52,7 @@ std::shared_ptr<GeometryTypeMasks> WktTypeScanner::Scan() const {
   int num_scan_classes = 1;
   auto get_type_index = [](WkbTypes type) {
     auto index = int(type);
-    if (index >= int(WkbTypes::kMaxTypeNumber)) {
+    if (index < 0 || index >= int(WkbTypes::kMaxTypeNumber)) {
       index = int(WkbTypes::kUnknown);
     }
     return index;
@@ -94,7 +94,7 @@ std::shared_ptr<GeometryTypeMasks> WktTypeScanner::Scan() const {
       }
       assert(geo_ != nullptr);
       Holder holder(geo_);
-      auto type = (WkbTypes)wkbFlatten(holder->getGeometryType());
+      auto type = (WkbTypes) static_cast<OGRwkbGeometryType>(holder->getGeometryType());
       // fix Point Empty
       if (type == WkbTypes::kPoint && holder->IsEmpty()) {
         return WkbTypes::kUnknown;

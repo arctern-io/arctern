@@ -117,7 +117,7 @@ std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& ge
       continue;
     }
     OGRGeometry* geo = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkt(
+    auto err_code = OGRGeometryFactory::createFromWkb(
         wkt_geometries->GetString(i).c_str(), nullptr, &geo);
     if (err_code) continue;
     if (geo == nullptr) {
@@ -204,7 +204,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
       continue;
     }
     OGRGeometry* geo = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkt(
+    auto err_code = OGRGeometryFactory::createFromWkb(
         wkt_geometries->GetString(i).c_str(), nullptr, &geo);
     if (err_code) continue;
     if (geo == nullptr) {
