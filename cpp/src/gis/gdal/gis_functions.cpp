@@ -711,58 +711,56 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     bool flag = true;
-    do{ // point with circle
+    do {  // point with circle
       auto type1 = ogr1->getGeometryType();
-      if(type1 != wkbPoint) break;
+      if (type1 != wkbPoint) break;
       auto point = reinterpret_cast<OGRPoint*>(ogr1);
 
       auto type2 = ogr2->getGeometryType();
-      if(type2 != wkbCurvePolygon) break;
+      if (type2 != wkbCurvePolygon) break;
       auto curve_poly = reinterpret_cast<OGRCurvePolygon*>(ogr2);
 
       auto curve_it = curve_poly->begin();
-      if(curve_it == curve_poly->end()) break;
+      if (curve_it == curve_poly->end()) break;
       auto curve = *curve_it;
       ++curve_it;
-      if(curve_it != curve_poly->end()) break;
+      if (curve_it != curve_poly->end()) break;
 
       auto curve_type = curve->getGeometryType();
-      if(curve_type!=wkbCircularString) break;
+      if (curve_type != wkbCircularString) break;
       auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
 
       auto curcular_point_it = circular_string->begin();
-      if(curcular_point_it==circular_string->end()) break;
+      if (curcular_point_it == circular_string->end()) break;
       OGRPoint* p0 = *curcular_point_it;
-      if(p0->getGeometryType() != wkbPoint)break;
+      if (p0->getGeometryType() != wkbPoint) break;
 
       curcular_point_it++;
-      if(curcular_point_it==circular_string->end())break;
+      if (curcular_point_it == circular_string->end()) break;
       OGRPoint* p1 = *curcular_point_it;
-      if(p1->getGeometryType() != wkbPoint)break;
+      if (p1->getGeometryType() != wkbPoint) break;
 
       curcular_point_it++;
-      if(curcular_point_it==circular_string->end())break;
+      if (curcular_point_it == circular_string->end()) break;
       OGRPoint* p2 = *curcular_point_it;
-      if(p2->getGeometryType() != wkbPoint)break;
+      if (p2->getGeometryType() != wkbPoint) break;
 
       curcular_point_it++;
-      if(curcular_point_it!=circular_string->end())break;
+      if (curcular_point_it != circular_string->end()) break;
 
-      if(p0->getX()!=p2->getX())break;
-      if(p0->getY()!=p2->getY())break;
+      if (p0->getX() != p2->getX()) break;
+      if (p0->getY() != p2->getY()) break;
 
-      auto d_x = (p0->getX() + p1->getX())/2 - point->getX();
-      auto d_y = (p0->getY() + p1->getY())/2 - point->getY();
-      auto dd = 4*(d_x * d_x + d_y * d_y);
-      auto l_x = p0->getX() - p1-getX();
-      auto l_y = p0->getY() - p1-getY();
-      auto ll = l_x * l_x + l_y *l_y;
-      if(dd <= ll) builder.Append(true);
-      else builder.Append(false);
-      
+      auto d_x = (p0->getX() + p1->getX()) / 2 - point->getX();
+      auto d_y = (p0->getY() + p1->getY()) / 2 - point->getY();
+      auto dd = 4 * (d_x * d_x + d_y * d_y);
+      auto l_x = p0->getX() - p1 - getX();
+      auto l_y = p0->getY() - p1 - getY();
+      auto ll = l_x * l_x + l_y * l_y;
+      builder.Append(dd <= ll);
+
       flag = false;
-    }while(0)
-    if(flag)builder.Append(ogr1->Within(ogr2) != 0);
+    } while (0) if (flag) builder.Append(ogr1->Within(ogr2) != 0);
   };
   auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { builder.Append(false); };
