@@ -729,7 +729,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       auto curve_type = curve->getGeometryType();
       if (curve_type != wkbCircularString) break;
       auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
-      if(circular_string->getNumPoints() != 3) break;
+      if (circular_string->getNumPoints() != 3) break;
 
       auto curcular_point_it = circular_string->begin();
       auto p0 = &(*curcular_point_it);
