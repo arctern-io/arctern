@@ -66,10 +66,10 @@ def ST_Point(x, y):
     Construct Point geometries according to the coordinates.
 
     :type x: pyarrow.array.double
-    :param x: abscissa of the point
+    :param x: Abscissa of the point.
      
     :type y: pyarrow.array.double
-    :param y: ordinate of the point
+    :param y: Ordinate of the point.
 
     :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
