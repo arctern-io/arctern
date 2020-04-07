@@ -17,12 +17,14 @@ __all__ = [
     "vega_weighted_pointmap",
     "vega_heatmap",
     "vega_choroplethmap",
+    "vega_icon",
 ]
 
 from arctern.util.vega.pointmap.vega_pointmap import VegaPointMap
 from arctern.util.vega.pointmap.vega_weighted_pointmap import VegaWeightedPointMap
 from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
 from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
+from arctern.util.vega.icon.vega_icon import VegaIcon
 
 def vega_pointmap(width, height,
                   bounding_box,
@@ -54,3 +56,11 @@ def vega_choroplethmap(width, height, bounding_box,
     return VegaChoroplethMap(width, height, bounding_box,
                              color_style, ruler, opacity,
                              coordinate_system, color_agg)
+
+def vega_icon(width, height,
+                  bounding_box, icon_path,
+                  coordinate_system="EPSG:4326"):
+    return VegaIcon(width, height,
+                        bounding_box,
+                        icon_path,
+                        coordinate_system)
