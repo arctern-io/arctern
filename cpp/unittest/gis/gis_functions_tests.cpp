@@ -2278,7 +2278,6 @@ TEST(geometry_test, test_ST_Within2) {
   str_builder.Append(circle);
   str_builder.Append("curvepolygon(circularstring(-1 -1, 1 1, 1.4141 0))");
 
-
   std::shared_ptr<arrow::Array> circle_array;
   str_builder.Finish(&circle_array);
 

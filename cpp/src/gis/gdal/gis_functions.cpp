@@ -716,7 +716,10 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
        * speed up for point within circle
        * point pattern : 'POINT ( x y )'
        * circle pattern : 'CurvePolygon ( CircularString ( x1 y1, x2 y2, x1 y2 ) )'
-       *                   
+       *                   if the circularstring has 3 points and closed,
+       *                   it becomes a circle,
+       *                   the centre is (x1+x2)/2, (y1+y2)/2
+       *                   the radius is sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y2-y2))/2
        */
       auto type1 = ogr1->getGeometryType();
       if (type1 != wkbPoint) break;
