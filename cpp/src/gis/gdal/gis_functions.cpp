@@ -711,7 +711,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     bool flag = true;
-    do {  // point with circle
+    do {  // point within circle
       auto type1 = ogr1->getGeometryType();
       if (type1 != wkbPoint) break;
       auto point = reinterpret_cast<OGRPoint*>(ogr1);
