@@ -69,13 +69,15 @@ TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
       "      \"encode\": {\n"
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"icon_path\": {\"value\": \"" + icon_path + "\"},\n"
-                                                              "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
-                                                              "        }\n"
-                                                              "      }\n"
-                                                              "    }\n"
-                                                              "  ]\n"
-                                                              "}";
+      "          \"icon_path\": {\"value\": \"" +
+      icon_path +
+      "\"},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
 
   arctern::render::icon_viz(x_array, y_array, vega);
 }
@@ -125,13 +127,15 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "      \"encode\": {\n"
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"icon_path\": {\"value\": \"" + icon_path + "\"},\n"
-                                                              "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
-                                                              "        }\n"
-                                                              "      }\n"
-                                                              "    }\n"
-                                                              "  ]\n"
-                                                              "}";
+      "          \"icon_path\": {\"value\": \"" +
+      icon_path +
+      "\"},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
   arctern::render::icon_viz(wkb, vega);
