@@ -29,6 +29,7 @@ set(render_src
         render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
         render/utils/vega/vega.cpp
         render/utils/vega/vega_heatmap/vega_heatmap.cpp
+        render/utils/vega/vega_icon/vega_icon.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
         render/utils/image_loader.cpp
