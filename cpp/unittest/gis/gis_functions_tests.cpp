@@ -2259,7 +2259,7 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
-TEST(geometry_test, test_ST_Within2){
+TEST(geometry_test, test_ST_Within2) {
   auto circle = "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))";
 
   arrow::StringBuilder str_builder;
@@ -2288,7 +2288,6 @@ TEST(geometry_test, test_ST_Within2){
   ASSERT_EQ(res_bool->Value(2), true);
   ASSERT_EQ(res_bool->Value(3), false);
 }
-
 
 TEST(geometry_test, test_ST_Within) {
   auto l1 = "POINT (1 0)";
