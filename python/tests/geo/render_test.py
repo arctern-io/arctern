@@ -23,8 +23,8 @@ def test_projection():
     top_left = "POINT (-8235871.4482427 4976468.32320551)"
     bottom_right = "POINT (-8235147.42627458 4976108.43009739)"
 
-    arr_wkt = pandas.Series(wkt)
-    arctern.projection(arr_wkt, bottom_right, top_left, 200, 300)
+    arr_wkb = pandas.Series(arctern.wkt2wkb(wkt))
+    arctern.projection(arr_wkb, bottom_right, top_left, 200, 300)
 
 def test_transfrom_and_projection():
     wkt = ["POINT (-73.978003 40.754594)"]
@@ -33,8 +33,8 @@ def test_transfrom_and_projection():
     src_ts = "EPSG:4326"
     dst_rs = "EPSG:3857"
 
-    arr_wkt = pandas.Series(wkt)
-    arctern.transform_and_projection(arr_wkt, src_ts, dst_rs, bottom_right, top_left, 200, 300)
+    arr_wkb = pandas.Series(arctern.wkt2wkb(wkt))
+    arctern.transform_and_projection(arr_wkb, src_ts, dst_rs, bottom_right, top_left, 200, 300)
 
 def test_point_map():
     x_data = []

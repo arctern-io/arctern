@@ -23,6 +23,7 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
+#include "utils/arrow_alias.h"
 
 namespace arctern {
 namespace gis {
@@ -30,8 +31,7 @@ namespace cuda {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values);
+WkbArrayPtr ST_Point(const DoubleArrayPtr& x_values, const DoubleArrayPtr& y_values);
 
 // std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
 //    const std::shared_ptr<arrow::Array>& min_x_values,
@@ -56,8 +56,7 @@ std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_va
 // std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>&
 // geometries);
 
-std::shared_ptr<arrow::Array> ST_Envelope(
-    const std::shared_ptr<arrow::Array>& geometries);
+WkbArrayPtr ST_Envelope(const WkbArrayPtr& input_geo);
 
 /**************************** GEOMETRY PROCESSING ****************************/
 
@@ -92,13 +91,11 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+DoubleArrayPtr ST_Distance(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo);
 
-std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
+DoubleArrayPtr ST_Area(const WkbArrayPtr& input_geo);
 
-std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries);
+DoubleArrayPtr ST_Length(const WkbArrayPtr& input_geo);
 
 // std::shared_ptr<arrow::Array> ST_HausdorffDistance(
 //    const std::shared_ptr<arrow::Array>& geo1, const std::shared_ptr<arrow::Array>&
@@ -130,9 +127,7 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
 //    const std::shared_ptr<arrow::Array>& geometries_1,
 //    const std::shared_ptr<arrow::Array>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Within(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo);
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
 

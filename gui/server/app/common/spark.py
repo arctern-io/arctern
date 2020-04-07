@@ -39,8 +39,7 @@ class Spark(db.DB):
             .appName(db_config['spark']['app_name']) \
             .master(db_config['spark']['master-addr']) \
             .config('spark.driver.host', localhost_ip) \
-            .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-            .config("spark.databricks.session.share", "false")
+            .config("spark.sql.execution.arrow.pyspark.enabled", "true")
 
         configs = db_config['spark'].get('configs', None)
         if configs:
@@ -72,15 +71,16 @@ class Spark(db.DB):
         """
         clone new session
         """
-        return self.session.newSession()
+        session = self.session.newSession()
+        register_funcs(session)
+        return session
 
     def run(self, sql):
         """
         submit sql to spark
         """
-        session = self._create_session()
-        register_funcs(session)
-        return session.sql(sql)
+        #session = self._create_session()
+        return self.session.sql(sql)
 
     def run_for_json(self, sql):
         """
@@ -104,13 +104,13 @@ class Spark(db.DB):
                 df = self.session.read.format(meta.get('format')) \
                     .schema(schema) \
                     .load(meta.get('path'), **options)
-                df.createOrReplaceGlobalTempView(meta.get('name'))
+                df.createOrReplaceTempView(meta.get('name'))
             elif 'sql' in meta:
                 df = self.run(meta.get('sql', None))
-                df.createOrReplaceGlobalTempView(meta.get('name'))
+                df.createOrReplaceTempView(meta.get('name'))
 
             if meta.get('visibility') == 'True':
-                self._table_list.append('global_temp.' + meta.get('name'))
+                self._table_list.append(meta.get('name'))
 
     def get_table_info(self, table_name):
         return self.run_for_json("desc table {}".format(table_name))
