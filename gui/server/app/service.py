@@ -191,7 +191,7 @@ def db_query():
                 query_params['point']['point_color'],
                 float(query_params['point']['opacity']),
                 query_params['point']['coordinate_system'])
-            data = pointmap(res, vega)
+            data = pointmap(vega, res)
             content['result'] = data
         elif query_type == 'heat':
             vega = vega_heatmap(
@@ -200,7 +200,7 @@ def db_query():
                 query_params['heat']['bounding_box'],
                 float(query_params['heat']['map_zoom_level']),
                 query_params['heat']['coordinate_system'])
-            data = heatmap(res, vega)
+            data = heatmap(vega, res)
             content['result'] = data
         elif query_type == 'choropleth':
             vega = vega_choroplethmap(
@@ -211,7 +211,7 @@ def db_query():
                 query_params['choropleth']['color_bound'],
                 float(query_params['choropleth']['opacity']),
                 query_params['choropleth']['coordinate_system'])
-            data = choroplethmap(res, vega)
+            data = choroplethmap(vega, res)
             content['result'] = data
         elif query_type == 'weighted':
             vega = vega_weighted_pointmap(
@@ -224,7 +224,7 @@ def db_query():
                 float(query_params['weighted']['opacity']),
                 query_params['weighted']['coordinate_system']
             )
-            data = weighted_pointmap(res, vega)
+            data = weighted_pointmap(vega, res)
             content['result'] = data
         else:
             return jsonify(status="error",
