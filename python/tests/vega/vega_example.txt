@@ -168,7 +168,7 @@
       "encode": {
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-          "icon_name": {"value": "taxi"},
+          "icon_path": {"value": "taxi"},
           "coordinate_system": {"value": "EPSG:3857"}
         }
       }

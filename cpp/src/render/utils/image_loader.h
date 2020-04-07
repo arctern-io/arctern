@@ -39,7 +39,7 @@ class ImageLoader {
     return instance;
   }
 
-  ImageBuffer Load(const std::string& file_name);
+  ImageBuffer Load(const std::string& file_path);
 
   void LoadDir(const std::string& file_path);
 

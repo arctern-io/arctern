@@ -20,8 +20,6 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <gdal_utils.h>
-#include <ogrsf_frmts.h>
 
 #include "render/2d/icon/icon_viz.h"
 #include "render/utils/image_loader.h"
@@ -41,27 +39,25 @@ void IconViz::Draw() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  std::string icon_path = icon_vega_.icon_path();
+
   auto image_loader = ImageLoader::GetInstance();
-  auto image_buffer = image_loader.Load(icon_vega_.icon_name());
+  auto image_buffer = image_loader.Load(icon_path);
 
   if (image_buffer.buffer == nullptr) {
+    buffer_ = {};
     std::string err_msg =
-        "image buffer is empty, please make sure there is a icon named " +
-        icon_vega_.icon_name();
+        "image buffer is empty, please make sure there is a icon in " + icon_path;
     throw std::runtime_error(err_msg);
   }
 
-  for (int i = 3;
-       i < image_buffer.image_params.height * image_buffer.image_params.width * 4;
-       i += 4) {
-    image_buffer.buffer[i] /= 5;
-  }
-
   for (int i = 0; i < num_icons_; i++) {
-    glRasterPos2f(vertices_x_[2 * i], vertices_y_[2 * i + 1]);
+    glRasterPos2f(vertices_x_[i], vertices_y_[i]);
     glDrawPixels(image_buffer.image_params.width, image_buffer.image_params.height,
                  GL_RGBA, GL_UNSIGNED_BYTE, image_buffer.buffer);
   }
+
+  glFinish();
 }
 
 uint8_t* IconViz::Render() {

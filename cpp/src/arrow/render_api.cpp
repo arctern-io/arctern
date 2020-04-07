@@ -787,9 +787,8 @@ std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>
   return out_pic(result);
 }
 
-
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
-                                        const std::string& conf) {
+                                       const std::string& conf) {
   auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
   auto num_icons = points->length();
   auto wkb_type = points->type_id();
@@ -812,10 +811,9 @@ std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& poin
   return out_pic(result);
 }
 
-
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_x,
-                                        const std::shared_ptr<arrow::Array>& arr_y,
-                                        const std::string& conf) {
+                                       const std::shared_ptr<arrow::Array>& arr_y,
+                                       const std::string& conf) {
   auto x_length = arr_x->length();
   auto y_length = arr_y->length();
   auto x_type = arr_x->type_id();

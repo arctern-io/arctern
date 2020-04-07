@@ -52,11 +52,11 @@ void VegaIcon::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  if (!JsonLabelCheck(mark_enter, "icon_name") ||
-      !JsonTypeCheck(mark_enter["icon_name"]["value"], rapidjson::Type::kStringType)) {
+  if (!JsonLabelCheck(mark_enter, "icon_path") ||
+      !JsonTypeCheck(mark_enter["icon_path"]["value"], rapidjson::Type::kStringType)) {
     return;
   }
-  icon_name_ = mark_enter["icon_name"]["value"].GetString();
+  icon_path_ = mark_enter["icon_path"]["value"].GetString();
 }
 
 }  // namespace render

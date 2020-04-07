@@ -15,14 +15,7 @@
  */
 #include <dirent.h>
 
-//#define STB_IMAGE_WRITE_STATIC
-//#define STB_IMAGE_IMPLEMENTATION
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-//#include "render/utils/my_zlib_compress.h"
-
-//#define STB_IMAGE_WRITE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
-
 #include "stb/stb_image.h"
 
 #include "render/utils/image_loader.h"
@@ -30,11 +23,13 @@
 namespace arctern {
 namespace render {
 
-ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_name) {
+ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_path) {
   int width, height, channels_in_file;
 
+  stbi_set_flip_vertically_on_load(true);
+
   auto pixel =
-      stbi_load(file_name.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
+      stbi_load(file_path.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
 
   ImageBuffer image_buffer{};
   image_buffer.buffer = pixel;
@@ -56,6 +51,8 @@ void ImageLoader::LoadDir(const std::string& file_path) {
     std::string err_msg = "Cannot find images file path: " + file_path;
     throw std::runtime_error(err_msg);
   }
+
+  stbi_set_flip_vertically_on_load(true);
 
   while ((ent = readdir(dir)) != nullptr) {
     if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {

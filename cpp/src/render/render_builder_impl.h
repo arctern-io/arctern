@@ -432,7 +432,7 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
 }
 
 std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
-                                      const std::string& conf) {
+                                     const std::string& conf) {
   VegaIcon vega_icon(conf);
   if (!vega_icon.is_valid()) {
     return std::make_pair(nullptr, -1);
