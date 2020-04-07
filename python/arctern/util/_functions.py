@@ -16,6 +16,7 @@ __all__ = [
     "save_png"
 ]
 
+
 def save_png(hex_str, file_name):
     import base64
     binary_string = base64.b64decode(hex_str)
