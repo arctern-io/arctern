@@ -15,7 +15,6 @@ try {
 } catch(exc) {
     throw exc
 } finally {
-    sh "docker logs ${composeProject}_flask_1"
     dir ("docker/test_env/spark/${BINARY_VERSION}") {
         sh "docker-compose -p ${composeProject} --compatibility down --rmi all -v"
     }
