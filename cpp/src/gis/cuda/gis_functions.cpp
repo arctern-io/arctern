@@ -41,8 +41,7 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values) {
+WkbArrayPtr ST_Point(const DoubleArrayPtr& x_values, const DoubleArrayPtr& y_values) {
   assert(x_values->length() == y_values->length());
   auto len = x_values->length();
   auto xs = std::static_pointer_cast<arrow::DoubleArray>(x_values);
@@ -52,84 +51,75 @@ std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_va
   ST_Point(xs->raw_values(), ys->raw_values(), len, geo_vector);
   auto wkb_points = GeometryVectorToArrowWkb(geo_vector);
 
-  return gdal::WkbToWkt(wkb_points);
+  return wkb_points;
 }
 
-std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& wkt) {
-  auto input_wkb = gdal::WktToWkb(wkt);
-  auto input_geo_vec = ArrowWkbToGeometryVector(input_wkb);
+WkbArrayPtr ST_Envelope(const WkbArrayPtr& input_geo) {
+  auto input_geo_vec = ArrowWkbToGeometryVector(input_geo);
 
   GeometryVector geo_vec_envelopes;
   ST_Envelope(input_geo_vec, geo_vec_envelopes);
   auto wkb_envelopes = GeometryVectorToArrowWkb(geo_vec_envelopes);
 
-  return gdal::WkbToWkt(wkb_envelopes);
+  return wkb_envelopes;
 }
 
-std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& wkt) {
-  auto len = wkt->length();
-  auto input_wkb = gdal::WktToWkb(wkt);
-  auto input_geo_vec = ArrowWkbToGeometryVector(input_wkb);
+DoubleArrayPtr ST_Area(const WkbArrayPtr& input_geo) {
+  auto len = input_geo->length();
+  auto input_geo_vec = ArrowWkbToGeometryVector(input_geo);
 
   auto raw_area = std::make_unique<double[]>(len);
   ST_Area(input_geo_vec, raw_area.get());
 
   arrow::DoubleBuilder builder;
   CHECK_ARROW(builder.AppendValues(raw_area.get(), len));
-  std::shared_ptr<arrow::Array> area;
+  DoubleArrayPtr area;
   CHECK_ARROW(builder.Finish(&area));
 
   return area;
 }
 
-std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& wkt) {
-  auto len = wkt->length();
-  auto input_wkb = gdal::WktToWkb(wkt);
-  auto input_geo_vector = ArrowWkbToGeometryVector(input_wkb);
+DoubleArrayPtr ST_Length(const WkbArrayPtr& input_geo) {
+  auto len = input_geo->length();
+  auto input_geo_vector = ArrowWkbToGeometryVector(input_geo);
 
   auto raw_length = std::make_unique<double[]>(len);
   ST_Length(input_geo_vector, raw_length.get());
 
   arrow::DoubleBuilder builder;
   CHECK_ARROW(builder.AppendValues(raw_length.get(), len));
-  std::shared_ptr<arrow::Array> length;
+  DoubleArrayPtr length;
   CHECK_ARROW(builder.Finish(&length));
 
   return length;
 }
 
-std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& lhs_geo,
-                                          const std::shared_ptr<arrow::Array>& rhs_geo) {
+DoubleArrayPtr ST_Distance(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   auto len = lhs_geo->length();
-  auto lhs_wkb = gdal::WktToWkb(lhs_geo);
-  auto rhs_wkb = gdal::WktToWkb(rhs_geo);
-  auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_wkb);
-  auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_wkb);
+  auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_geo);
+  auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_geo);
   auto raw_distance = std::make_unique<double[]>(len);
   ST_Distance(lhs_geo_vec, rhs_geo_vec, raw_distance.get());
 
   arrow::DoubleBuilder builder;
   CHECK_ARROW(builder.AppendValues(raw_distance.get(), len));
-  std::shared_ptr<arrow::Array> distance;
+  DoubleArrayPtr distance;
   CHECK_ARROW(builder.Finish(&distance));
 
   return distance;
 }
 
-std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& lhs_geo,
-                                        const std::shared_ptr<arrow::Array>& rhs_geo) {
+BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   auto len = lhs_geo->length();
-  auto lhs_wkb = gdal::WktToWkb(lhs_geo);
-  auto rhs_wkb = gdal::WktToWkb(rhs_geo);
-  auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_wkb);
-  auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_wkb);
+  auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_geo);
+  auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_geo);
 
   auto raw_within = std::make_unique<bool[]>(len);
   ST_Within(lhs_geo_vec, rhs_geo_vec, raw_within.get());
 
   arrow::BooleanBuilder builder;
   CHECK_ARROW(builder.AppendValues((uint8_t*)raw_within.get(), len));
-  std::shared_ptr<arrow::Array> within;
+  BooleanArrayPtr within;
   CHECK_ARROW(builder.Finish(&within));
 
   return within;

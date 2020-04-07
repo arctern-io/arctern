@@ -31,6 +31,8 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
+  auto wkb = arctern::render::WktToWkb(string_array);
+
   // param2: src_rs
   std::string src_ts = "EPSG:4326";
 
@@ -43,8 +45,8 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   // param5: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.753893)";
 
-  auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs,
-                                                       bottom_right, top_left, 200, 300);
+  auto arr = arctern::render::transform_and_projection(wkb, src_ts, dst_rs, bottom_right,
+                                                       top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
   auto res1 = str_arr->GetString(0);
@@ -87,6 +89,8 @@ TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
+  auto wkb = arctern::render::WktToWkb(string_array);
+
   // param2: src_rs
   std::string src_ts = "EPSG:4326";
 
@@ -99,8 +103,8 @@ TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
   // param5: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.753893)";
 
-  auto arr = arctern::render::transform_and_projection(string_array, src_ts, dst_rs,
-                                                       bottom_right, top_left, 200, 300);
+  auto arr = arctern::render::transform_and_projection(wkb, src_ts, dst_rs, bottom_right,
+                                                       top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
 }
@@ -123,7 +127,9 @@ TEST(PROJECTION_TEST, POINT_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto arr = arctern::render::projection(string_array, bottom_right, top_left, 200, 300);
+  auto wkb = arctern::render::WktToWkb(string_array);
+
+  auto arr = arctern::render::projection(wkb, bottom_right, top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
 
@@ -164,7 +170,9 @@ TEST(PROJECTION_TEST, POLYGON_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto arr = arctern::render::projection(string_array, bottom_right, top_left, 200, 300);
+  auto wkb = arctern::render::WktToWkb(string_array);
+
+  auto arr = arctern::render::projection(wkb, bottom_right, top_left, 200, 300);
 
   auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
 
