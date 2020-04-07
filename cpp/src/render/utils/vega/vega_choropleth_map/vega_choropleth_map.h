@@ -17,6 +17,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "render/utils/color/color.h"
 #include "render/utils/vega/vega.h"
@@ -40,6 +41,8 @@ class VegaChoroplethMap : public Vega {
 
   const double& opacity() const { return opacity_; }
 
+  const std::vector<Color>& color_gradient() { return color_gradient_; }
+
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
@@ -48,6 +51,7 @@ class VegaChoroplethMap : public Vega {
   std::pair<double, double> color_bound_;
   ColorStyle color_style_;
   double opacity_;
+  std::vector<Color> color_gradient_;
 };
 
 }  // namespace render

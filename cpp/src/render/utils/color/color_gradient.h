@@ -35,6 +35,8 @@ class ColorGradient {
  public:
   static PointParams GetPointParams(ColorStyle color_style, double ratio);
 
+  static Color GetColor(Color color_start, Color color_end, double ratio);
+
   ColorGradient() { createDefaultHeatMapGradient(); }
 
   void createDefaultHeatMapGradient();

@@ -130,5 +130,16 @@ PointParams ColorGradient::GetPointParams(arctern::render::ColorStyle color_styl
   return circle_params_2d;
 }
 
+Color ColorGradient::GetColor(Color color_start, Color color_end,
+                                          double ratio) {
+  Color color;
+  color.r = color_start.r + (color_end.r - color_start.r) * ratio;
+  color.g = color_start.g + (color_end.g - color_start.g) * ratio;
+  color.b = color_start.b + (color_end.b - color_start.b) * ratio;
+  color.a = color_start.a;
+
+  return color;
+}
+
 }  // namespace render
 }  // namespace arctern

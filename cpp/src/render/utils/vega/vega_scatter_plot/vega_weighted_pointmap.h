@@ -17,6 +17,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
@@ -46,6 +47,8 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const bool& is_multiple_point_size() const { return is_multiple_point_size_; }
 
+  const std::vector<Color>& color_gradient() { return color_gradient_; }
+
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
@@ -58,6 +61,7 @@ class VegaWeightedPointmap : public VegaScatterPlot {
   double opacity_;
   bool is_multiple_color_;
   bool is_multiple_point_size_;
+  std::vector<Color> color_gradient_;
 };
 
 }  // namespace render
