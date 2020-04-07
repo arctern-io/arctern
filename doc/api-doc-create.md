@@ -92,6 +92,7 @@ sphinx-quickstart /*输入项目信息*/
 ## 生成API文档
 ```
 cd arctern/doc/api-doc
+mkdir build
 make clean
 make html
 ```
