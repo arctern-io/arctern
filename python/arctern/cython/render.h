@@ -85,6 +85,13 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     const std::shared_ptr<arrow::Array>& arr_c,
     const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf);
 
+std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_x,
+                                       const std::shared_ptr<arrow::Array>& arr_y,
+                                       const std::string& conf);
+
+std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
+                                       const std::string& conf);
+
 }  // namespace render
 }  // namespace arctern
 
