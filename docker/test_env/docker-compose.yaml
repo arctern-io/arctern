@@ -19,7 +19,7 @@ services:
     image: ${PYTEST_REPO}:${PYTEST_TAG}
     working_dir: /arctern/gui/server/tests/restful
     command: &flask-test
-      ["pytest", "--host=flask", "--port=8080", "--config=/arctern/gui/server/db.json"]
+      ["pytest", "--rootdir", "/arctern/gui/server/tests/restful", "--host", "flask", "--port", "8080", "--config", "/arctern/gui/server/db.json"]
     deploy:
       resources:
         limits:
