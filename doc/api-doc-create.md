@@ -27,7 +27,7 @@ sphinx-quickstart /*输入项目信息*/
 
 ## 配置conf.py及生成rst文件
 ```
-在conf.py中加入如下代码：
+在source/conf.py中加入如下代码：
     import os
     import sys
     sys.path.insert(0, os.path.abspath('../../../python/arctern'))
