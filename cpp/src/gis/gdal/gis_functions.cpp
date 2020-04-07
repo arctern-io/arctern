@@ -729,24 +729,19 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       auto curve_type = curve->getGeometryType();
       if (curve_type != wkbCircularString) break;
       auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
+      if(circular_string->getNumPoints() != 3) break;
 
       auto curcular_point_it = circular_string->begin();
-      if (curcular_point_it == circular_string->end()) break;
-      OGRPoint* p0 = *curcular_point_it;
+      auto p0 = &(*curcular_point_it);
       if (p0->getGeometryType() != wkbPoint) break;
 
-      curcular_point_it++;
-      if (curcular_point_it == circular_string->end()) break;
-      OGRPoint* p1 = *curcular_point_it;
+      ++curcular_point_it;
+      auto p1 = &(*curcular_point_it);
       if (p1->getGeometryType() != wkbPoint) break;
 
-      curcular_point_it++;
-      if (curcular_point_it == circular_string->end()) break;
-      OGRPoint* p2 = *curcular_point_it;
+      ++curcular_point_it;
+      auto p2 = &(*curcular_point_it);
       if (p2->getGeometryType() != wkbPoint) break;
-
-      curcular_point_it++;
-      if (curcular_point_it != circular_string->end()) break;
 
       if (p0->getX() != p2->getX()) break;
       if (p0->getY() != p2->getY()) break;
@@ -754,13 +749,14 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       auto d_x = (p0->getX() + p1->getX()) / 2 - point->getX();
       auto d_y = (p0->getY() + p1->getY()) / 2 - point->getY();
       auto dd = 4 * (d_x * d_x + d_y * d_y);
-      auto l_x = p0->getX() - p1 - getX();
-      auto l_y = p0->getY() - p1 - getY();
+      auto l_x = p0->getX() - p1->getX();
+      auto l_y = p0->getY() - p1->getY();
       auto ll = l_x * l_x + l_y * l_y;
       builder.Append(dd <= ll);
 
       flag = false;
-    } while (0) if (flag) builder.Append(ogr1->Within(ogr2) != 0);
+    } while (0);
+    if (flag) builder.Append(ogr1->Within(ogr2) != 0);
   };
   auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { builder.Append(false); };
