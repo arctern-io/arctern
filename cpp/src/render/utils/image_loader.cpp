@@ -30,7 +30,21 @@
 namespace arctern {
 namespace render {
 
-void ImageLoader::Load(const std::string& file_path) {
+ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_name) {
+  int width, height, channels_in_file;
+
+  auto pixel =
+      stbi_load(file_name.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
+
+  ImageBuffer image_buffer{};
+  image_buffer.buffer = pixel;
+  image_buffer.image_params.width = width;
+  image_buffer.image_params.height = height;
+
+  return image_buffer;
+}
+
+void ImageLoader::LoadDir(const std::string& file_path) {
   image_buffers_.clear();
 
   int width, height, channels_in_file;

@@ -15,8 +15,8 @@
  */
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace arctern {
 namespace render {
@@ -39,7 +39,9 @@ class ImageLoader {
     return instance;
   }
 
-  void Load(const std::string& file_path);
+  ImageBuffer Load(const std::string& file_name);
+
+  void LoadDir(const std::string& file_path);
 
   const std::map<std::string, ImageBuffer>& image_buffers() const {
     return image_buffers_;
