@@ -74,39 +74,39 @@ def WktToWkb(wkts):
 def WkbToWkt(wkbs):
     return arctern.wkb2wkt(wkbs)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PointFromText(geo):
     return arctern.ST_GeomFromText(geo)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PolygonFromText(geo):
     return arctern.ST_GeomFromText(geo)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_LineStringFromText(geo):
     return arctern.ST_GeomFromText(geo)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_GeomFromWKT(geo):
     return arctern.ST_GeomFromText(geo)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_GeomFromText(geo):
     return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_AsText(geo):
-    return geo
+    return arctern.ST_AsText(geo)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Point(x, y):
     return arctern.ST_Point(x, y)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_GeomFromGeoJSON(json):
     return arctern.ST_GeomFromGeoJSON(json)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Intersection(left, right):
     return arctern.ST_Intersection(left, right)
 
@@ -114,7 +114,7 @@ def ST_Intersection(left, right):
 def ST_IsValid(geos):
     return arctern.ST_IsValid(geos)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PrecisionReduce(geos, precision):
     return arctern.ST_PrecisionReduce(geos, precision[0])
 
@@ -143,16 +143,16 @@ def ST_IsSimple(geos):
 def ST_GeometryType(geos):
     return arctern.ST_GeometryType(geos)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_MakeValid(geos):
     return arctern.ST_MakeValid(geos)
 
 # TODO: ST_SimplifyPreserveTopology
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     return arctern.ST_SimplifyPreserveTopology(geos, distance_tolerance[0])
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     return arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)
 
@@ -176,7 +176,7 @@ def ST_Distance(left, right):
 def ST_Area(geos):
     return arctern.ST_Area(geos)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Centroid(geos):
     return arctern.ST_Centroid(geos)
 
@@ -188,7 +188,7 @@ def ST_Length(geos):
 def ST_HausdorffDistance(geo1, geo2):
     return arctern.ST_HausdorffDistance(geo1, geo2)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_ConvexHull(geos):
     return arctern.ST_ConvexHull(geos)
 
@@ -196,27 +196,29 @@ def ST_ConvexHull(geos):
 def ST_NPoints(geos):
     return arctern.ST_NPoints(geos)
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Envelope(geos):
     return arctern.ST_Envelope(geos)
 
 # TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Buffer(geos, dfDist):
     return arctern.ST_Buffer(geos, dfDist[0])
 
-@pandas_udf("string", PandasUDFType.GROUPED_AGG)
+@pandas_udf("binary", PandasUDFType.GROUPED_AGG)
 def ST_Union_Aggr(geos):
-    return arctern.ST_Union_Aggr(geos)
+    rst = arctern.ST_Union_Aggr(geos)
+    return rst[0]
 
-@pandas_udf("string", PandasUDFType.GROUPED_AGG)
+@pandas_udf("binary", PandasUDFType.GROUPED_AGG)
 def ST_Envelope_Aggr(geos):
-    return arctern.ST_Envelope_Aggr(geos)
+    rst = arctern.ST_Envelope_Aggr(geos)
+    return rst[0]
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Transform(geos, src_rs, dst_rs):
     return arctern.ST_Transform(geos, src_rs[0], dst_rs[0])
 
-@pandas_udf("string", PandasUDFType.SCALAR)
+@pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_CurveToLine(geos):
     return arctern.ST_CurveToLine(geos)

@@ -25,7 +25,7 @@ namespace gis {
 namespace cuda {
 
 GeometryVector ArrowWkbToGeometryVector(const std::shared_ptr<arrow::Array>& arrow_wkb);
-std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector&);
+std::shared_ptr<arrow::BinaryArray> GeometryVectorToArrowWkb(const GeometryVector&);
 
 }  // namespace cuda
 }  // namespace gis
