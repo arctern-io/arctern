@@ -21,6 +21,7 @@ conda install sphinx_rtd_theme
 ```
 cd arctern/doc
 mkdir api-doc
+cd api-doc
 sphinx-quickstart /*输入项目信息*/
 ```
 
