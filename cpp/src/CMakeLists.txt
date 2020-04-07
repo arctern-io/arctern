@@ -31,6 +31,7 @@ set(render_src
         render/utils/vega/vega_heatmap/vega_heatmap.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
+        render/utils/image_loader.cpp
         )
 
 set(cpu_render_src
