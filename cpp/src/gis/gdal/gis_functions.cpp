@@ -716,7 +716,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
        * speed up for point within circle
        * point pattern : 'POINT ( x y )'
        * circle pattern : 'CurvePolygon ( CircularString ( x1 y1, x2 y2, x1 y2 ) )'
-       * 
+       *                   
        */
       auto type1 = ogr1->getGeometryType();
       if (type1 != wkbPoint) break;
@@ -736,6 +736,7 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       if (curve_type != wkbCircularString) break;
       auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
       if (circular_string->getNumPoints() != 3) break;
+      if (!circular_string->get_IsClosed()) break;
 
       auto circular_point_it = circular_string->begin();
       auto circular_point = &(*circular_point_it);
@@ -748,15 +749,6 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
       if (circular_point->getGeometryType() != wkbPoint) break;
       auto p1_x = circular_point->getX();
       auto p1_y = circular_point->getY();
-
-      ++circular_point_it;
-      circular_point = &(*circular_point_it);
-      if (circular_point->getGeometryType() != wkbPoint) break;
-      auto p2_x = circular_point->getX();
-      auto p2_y = circular_point->getY();
-
-      if (p0_x != p2_x) break;
-      if (p0_y != p2_y) break;
 
       auto d_x = (p0_x + p1_x) / 2 - point->getX();
       auto d_y = (p0_y + p1_y) / 2 - point->getY();

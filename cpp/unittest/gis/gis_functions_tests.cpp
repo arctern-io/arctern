@@ -2267,6 +2267,7 @@ TEST(geometry_test, test_ST_Within2) {
   str_builder.Append("point(1.5 0)");
   str_builder.Append("point(0.5 0)");
   str_builder.Append("point(2 3)");
+  str_builder.Append("point(0 0)");
 
   std::shared_ptr<arrow::Array> pointer_array;
   str_builder.Finish(&pointer_array);
@@ -2275,6 +2276,8 @@ TEST(geometry_test, test_ST_Within2) {
   str_builder.Append(circle);
   str_builder.Append(circle);
   str_builder.Append(circle);
+  str_builder.Append("curvepolygon(circularstring(-1 -1, 1 1, 1.4141 0))");
+
 
   std::shared_ptr<arrow::Array> circle_array;
   str_builder.Finish(&circle_array);
