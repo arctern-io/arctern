@@ -4,6 +4,10 @@
     "spark": {
         "app_name": "arctern",
         "master-addr": "spark://spark-master:7077",
+        "configs":{
+            "spark.executorEnv.GDAL_DATA": "",
+            "spark.executorEnv.PROJ_LIB": ""
+        },
         "envs": {
         }
     },
