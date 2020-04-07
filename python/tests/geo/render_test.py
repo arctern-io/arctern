@@ -60,8 +60,7 @@ def test_point_map():
 
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
-    arr_wkt = arctern.ST_Point(arr_x, arr_y)
-    points = arctern.wkt2wkb(arr_wkt)
+    points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
     curve_z1 = arctern.point_map(vega, points)
@@ -100,10 +99,9 @@ def test_weighted_point_map():
 
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
-    arr_wkt = arctern.ST_Point(arr_x, arr_y)
+    points = arctern.ST_Point(arr_x, arr_y)
     arr_c = pandas.Series(c_data)
     arr_s = pandas.Series(s_data)
-    points = arctern.wkt2wkb(arr_wkt)
 
     vega1 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#87CEEB", [1, 5], [5], 1.0, "EPSG:3857")
     res1 = arctern.weighted_point_map(vega1, points)
@@ -134,9 +132,8 @@ def test_heat_map():
 
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
-    arr_wkt = arctern.ST_Point(arr_x, arr_y)
+    points = arctern.ST_Point(arr_x, arr_y)
     arr_c = pandas.Series(y_data)
-    points = arctern.wkt2wkb(arr_wkt)
 
     vega = vega_heatmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 10.0, 'EPSG:4326')
     heat_map1 = arctern.heat_map(vega, points, arr_c)
