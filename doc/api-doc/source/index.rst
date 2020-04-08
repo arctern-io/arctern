@@ -11,7 +11,6 @@ Welcome to arctern's documentation!
    :caption: Contents:
 
    arctern
-   arctern_pyspark
    compile-with-conda
 
 Indices and tables

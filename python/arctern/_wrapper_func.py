@@ -61,6 +61,10 @@ __all__ = [
 import base64
 from . import arctern_core_
 
+
+def HAHA():
+    pass
+
 def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
