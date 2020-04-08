@@ -64,7 +64,7 @@ from . import arctern_core_
 
 
 def HAHA():
-    pass
+    print("xxx")
 
 def ST_Point(x, y):
     """
