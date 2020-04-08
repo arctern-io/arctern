@@ -1,29 +1,26 @@
 arctern\_pyspark package
 ========================
 
-Submodules
-----------
-
-arctern\_pyspark.gis\_func module
----------------------------------
 
 .. automodapi:: arctern_pyspark.gis_func
    :members:
    :undoc-members:
    :show-inheritance:
 
-arctern\_pyspark.register module
---------------------------------
 
 .. automodapi:: arctern_pyspark.register
    :members:
    :undoc-members:
    :show-inheritance:
 
-arctern\_pyspark.render\_func module
-------------------------------------
 
 .. automodapi:: arctern_pyspark.render_func
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodapi:: arctern_pyspark._wrapper_func
    :members:
    :undoc-members:
    :show-inheritance:
