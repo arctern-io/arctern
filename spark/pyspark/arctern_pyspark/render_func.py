@@ -17,6 +17,7 @@ __all__ = [
     "weighted_pointmap",
     "heatmap",
     "choroplethmap",
+    "icon_viz",
 ]
 
 def print_partitions(df):
@@ -296,4 +297,35 @@ def choroplethmap(df, vega):
     agg_df = agg_df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
+    return hex_data
+
+def icon_viz(df, vega):
+    if df.rdd.isEmpty():
+        return None
+
+    if len(df.schema.names) != 1:
+        return None
+
+    col_point = df.schema.names[0]
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
+    from ._wrapper_func import TransformAndProjection, Projection
+    coor = vega.coor()
+    bounding_box = vega.bounding_box()
+    height = vega.height()
+    width = vega.width()
+    top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
+    if coor != 'EPSG:3857':
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
+    else:
+        df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
+
+    vega = vega.build()
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def iconviz_wkb(point, conf=vega):
+        from arctern import icon_viz_wkb
+        return icon_viz_wkb(point, conf.encode('utf-8'))
+
+    df = df.rdd.coalesce(1, shuffle=True).toDF()
+    hex_data = df.agg(iconviz_wkb(df[col_point])).collect()[0][0]
     return hex_data
