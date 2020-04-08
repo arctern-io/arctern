@@ -54,8 +54,7 @@ void ColorGradient::getColorAtValue(const float value, float& red, float& green,
   return;
 }
 
-Color ColorGradient::GetColor(Color color_start, Color color_end,
-                                          double ratio) {
+Color ColorGradient::GetColor(Color color_start, Color color_end, double ratio) {
   Color color;
   if (color_start == color_end) {
     color.r = color_start.r;
