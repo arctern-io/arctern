@@ -35,7 +35,7 @@ def print_partitions(df):
             j = j + 1
         i = i + 1
 
-def pointmap(df, vega):
+def pointmap(vega, df):
     if df.rdd.isEmpty():
         return None
 
@@ -56,17 +56,16 @@ def pointmap(df, vega):
     else:
         df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
 
-    vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def pointmap_wkb(point, conf=vega):
-        from arctern import point_map_wkb
-        return point_map_wkb(point, conf.encode('utf-8'))
+        from arctern import point_map
+        return point_map(conf, point)
 
     df = df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = df.agg(pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
-def weighted_pointmap(df, vega):
+def weighted_pointmap(vega, df):
     if df.rdd.isEmpty():
         return None
 
@@ -96,7 +95,6 @@ def weighted_pointmap(df, vega):
     top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
 
-    vega = vega.build()
 
     if coor == 'EPSG:3857':
         if render_mode == 2:
@@ -114,8 +112,8 @@ def weighted_pointmap(df, vega):
 
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
             def weighted_pointmap_wkb(point, c, s, conf=vega):
-                from arctern import weighted_point_map_wkb
-                return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c, ss=s)
+                from arctern import weighted_point_map
+                return weighted_point_map(conf, point, color_weights=c, size_weights=s)
 
             agg_df = df.mapInPandas(render_agg_UDF)
             agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
@@ -134,8 +132,8 @@ def weighted_pointmap(df, vega):
 
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
             def weighted_pointmap_wkb(point, c, conf=vega):
-                from arctern import weighted_point_map_wkb
-                return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c)
+                from arctern import weighted_point_map
+                return weighted_point_map(conf, point, color_weights=c)
 
             agg_df = df.mapInPandas(render_agg_UDF)
             agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
@@ -144,8 +142,8 @@ def weighted_pointmap(df, vega):
             df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
             @pandas_udf("string", PandasUDFType.GROUPED_AGG)
             def weighted_pointmap_wkb(point, conf=vega):
-                from arctern import weighted_point_map_wkb
-                return weighted_point_map_wkb(point, conf.encode('utf-8'))
+                from arctern import weighted_point_map
+                return weighted_point_map(conf, point)
 
             df = df.rdd.coalesce(1, shuffle=True).toDF()
             hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
@@ -167,8 +165,8 @@ def weighted_pointmap(df, vega):
 
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
         def weighted_pointmap_wkb(point, c, s, conf=vega):
-            from arctern import weighted_point_map_wkb
-            return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c, ss=s)
+            from arctern import weighted_point_map
+            return weighted_point_map(vega, point, color_weights=c, size_weights=s)
 
         agg_df = df.mapInPandas(render_agg_UDF)
         agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
@@ -187,8 +185,8 @@ def weighted_pointmap(df, vega):
 
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
         def weighted_pointmap_wkb(point, c, conf=vega):
-            from arctern import weighted_point_map_wkb
-            return weighted_point_map_wkb(point, conf.encode('utf-8'), cs=c)
+            from arctern import weighted_point_map
+            return weighted_point_map(conf, point, color_weights=c)
 
         agg_df = df.mapInPandas(render_agg_UDF)
         agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
@@ -197,14 +195,14 @@ def weighted_pointmap(df, vega):
         df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
         @pandas_udf("string", PandasUDFType.GROUPED_AGG)
         def weighted_pointmap_wkb(point, conf=vega):
-            from arctern import weighted_point_map_wkb
-            return weighted_point_map_wkb(point, conf.encode('utf-8'))
+            from arctern import weighted_point_map
+            return weighted_point_map(conf, point)
 
         df = df.rdd.coalesce(1, shuffle=True).toDF()
         hex_data = df.agg(weighted_pointmap_wkb(df[col_point])).collect()[0][0]
     return hex_data
 
-def heatmap(df, vega):
+def heatmap(vega, df):
     if df.rdd.isEmpty():
         return None
 
@@ -227,7 +225,6 @@ def heatmap(df, vega):
     else:
         df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
 
-    vega = vega.build()
     agg_schema = StructType([StructField(col_point, BinaryType(), True),
                              StructField(col_count, IntegerType(), True)])
 
@@ -241,15 +238,15 @@ def heatmap(df, vega):
 
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def heatmap_wkb(point, w, conf=vega):
-        from arctern import heat_map_wkb
-        return heat_map_wkb(point, w, conf.encode('utf-8'))
+        from arctern import heat_map
+        return heat_map(conf, point, w)
 
     agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(heatmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     return hex_data
 
-def choroplethmap(df, vega):
+def choroplethmap(vega, df):
     if df.rdd.isEmpty():
         return None
 
@@ -272,7 +269,6 @@ def choroplethmap(df, vega):
     else:
         df = df.select(Projection(col(col_polygon), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_polygon), col(col_count))
 
-    vega = vega.build()
     agg_schema = StructType([StructField(col_polygon, BinaryType(), True),
                              StructField(col_count, IntegerType(), True)])
     
@@ -287,7 +283,7 @@ def choroplethmap(df, vega):
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
     def choroplethmap_wkb(wkb, w, conf=vega):
         from arctern import choropleth_map
-        return choropleth_map(wkb, w, conf.encode('utf-8'))
+        return choropleth_map(conf, wkb, w)
 
     @pandas_udf("double", PandasUDFType.GROUPED_AGG)
     def sum_udf(v):
@@ -299,7 +295,7 @@ def choroplethmap(df, vega):
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
     return hex_data
 
-def icon_viz(df, vega):
+def icon_viz(vega, df):
     if df.rdd.isEmpty():
         return None
 
@@ -320,12 +316,11 @@ def icon_viz(df, vega):
     else:
         df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
 
-    vega = vega.build()
     @pandas_udf("string", PandasUDFType.GROUPED_AGG)
-    def iconviz_wkb(point, conf=vega):
-        from arctern import icon_viz_wkb
-        return icon_viz_wkb(point, conf.encode('utf-8'))
+    def iconviz(point, conf=vega):
+        from arctern import icon_viz
+        return icon_viz(conf, point)
 
     df = df.rdd.coalesce(1, shuffle=True).toDF()
-    hex_data = df.agg(iconviz_wkb(df[col_point])).collect()[0][0]
+    hex_data = df.agg(iconviz(df[col_point])).collect()[0][0]
     return hex_data

@@ -26,41 +26,79 @@ from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
 from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 from arctern.util.vega.icon.vega_icon import VegaIcon
 
-def vega_pointmap(width, height,
+
+def vega_pointmap(width,
+                  height,
                   bounding_box,
-                  stroke_width, stroke, opacity,
+                  point_size,
+                  point_color,
+                  opacity,
                   coordinate_system="EPSG:4326"):
-    return VegaPointMap(width, height,
+    return VegaPointMap(width,
+                        height,
                         bounding_box,
-                        stroke_width, stroke, opacity,
+                        point_size,
+                        point_color,
+                        opacity,
                         coordinate_system)
 
-def vega_weighted_pointmap(width, height,
-                  bounding_box,
-                  color, color_ruler, stroke_ruler, opacity,
-                  coordinate_system="EPSG:4326", color_agg="sum"):
-    return VegaWeightedPointMap(width, height, bounding_box,
-                                color, color_ruler, stroke_ruler, opacity,
-                                coordinate_system, color_agg)
 
-def vega_heatmap(width, height, map_scale,
+def vega_weighted_pointmap(width,
+                           height,
+                           bounding_box,
+                           color_gradient,
+                           color_bound,
+                           size_bound,
+                           opacity,
+                           coordinate_system="EPSG:4326",
+                           aggregation_type="sum"):
+    return VegaWeightedPointMap(width,
+                                height,
+                                bounding_box,
+                                color_gradient,
+                                color_bound,
+                                size_bound,
+                                opacity,
+                                coordinate_system,
+                                aggregation_type)
+
+
+def vega_heatmap(width,
+                 height,
                  bounding_box,
-                 coordinate_system="EPSG:4326", color_agg="sum"):
-    return VegaHeatMap(width, height, map_scale,
-                       bounding_box, coordinate_system,
-                       color_agg)
+                 map_zoom_level,
+                 coordinate_system="EPSG:4326",
+                 aggregation_type="sum"):
+    return VegaHeatMap(width,
+                       height,
+                       bounding_box,
+                       map_zoom_level,
+                       coordinate_system,
+                       aggregation_type)
 
-def vega_choroplethmap(width, height, bounding_box,
-                       color_style, ruler, opacity,
-                       coordinate_system="EPSG:4326", color_agg="sum"):
-    return VegaChoroplethMap(width, height, bounding_box,
-                             color_style, ruler, opacity,
-                             coordinate_system, color_agg)
+
+def vega_choroplethmap(width,
+                       height,
+                       bounding_box,
+                       color_gradient,
+                       color_bound,
+                       opacity,
+                       coordinate_system="EPSG:4326",
+                       aggregation_type="sum"):
+    return VegaChoroplethMap(width,
+                             height,
+                             bounding_box,
+                             color_gradient,
+                             color_bound,
+                             opacity,
+                             coordinate_system,
+                             aggregation_type)
+
 
 def vega_icon(width, height,
-                  bounding_box, icon_path,
-                  coordinate_system="EPSG:4326"):
+              bounding_box, icon_path,
+              coordinate_system="EPSG:4326"):
     return VegaIcon(width, height,
-                        bounding_box,
-                        icon_path,
-                        coordinate_system)
+                    bounding_box,
+                    icon_path,
+                    coordinate_system)

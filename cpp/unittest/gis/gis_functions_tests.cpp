@@ -2259,6 +2259,38 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
+TEST(geometry_test, test_ST_Within2) {
+  auto circle = "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))";
+
+  arrow::StringBuilder str_builder;
+  str_builder.Append("point(1.414 0)");
+  str_builder.Append("point(1.5 0)");
+  str_builder.Append("point(0.5 0)");
+  str_builder.Append("point(2 3)");
+  str_builder.Append("point(0 0)");
+
+  std::shared_ptr<arrow::Array> pointer_array;
+  str_builder.Finish(&pointer_array);
+
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append("curvepolygon(circularstring(-1 -1, 1 1, 1.4141 0))");
+
+  std::shared_ptr<arrow::Array> circle_array;
+  str_builder.Finish(&circle_array);
+
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
+                                     arctern::gis::ST_GeomFromText(circle_array));
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), false);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), false);
+}
+
 TEST(geometry_test, test_ST_Within) {
   auto l1 = "POINT (1 0)";
   auto l2 = "POINT (1 3)";

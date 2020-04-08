@@ -44,8 +44,10 @@ class Spark(db.DB):
         configs = db_config['spark'].get('configs', None)
         if configs:
             for key in configs:
-                print("spark config: {} = {}".format(key, configs[key]))
-                _t = _t.config(key, configs[key])
+                _v = configs.get(key)
+                if _v:
+                    print("spark config: {} = {}".format(key, _v))
+                    _t = _t.config(key, _v)
 
         self.session = _t.getOrCreate()
 
