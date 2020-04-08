@@ -33,7 +33,7 @@ set(render_src
         render/utils/vega/vega_icon/vega_icon.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
-        render/utils/image_loader.cpp
+        render/utils/image/image_loader.cpp
         )
 
 set(cpu_render_src
