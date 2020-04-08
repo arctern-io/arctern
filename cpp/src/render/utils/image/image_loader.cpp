@@ -18,7 +18,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-#include "render/utils/image_loader.h"
+#include "render/utils/image/image_loader.h"
 
 namespace arctern {
 namespace render {

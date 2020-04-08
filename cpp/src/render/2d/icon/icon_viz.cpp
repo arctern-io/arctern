@@ -22,7 +22,7 @@
 #include <GL/glext.h>
 
 #include "render/2d/icon/icon_viz.h"
-#include "render/utils/image_loader.h"
+#include "src/render/utils/image/image_loader.h"
 
 namespace arctern {
 namespace render {
