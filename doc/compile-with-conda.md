@@ -16,7 +16,7 @@
 
 ## 安装并配置conda
 
-查看您当前conda环境配置，确认conda配置成功 
+查看您当前conda环境配置，确认conda配置成功
 ```shell
 $ conda env list
 
