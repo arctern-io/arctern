@@ -11,6 +11,7 @@ try {
     dir ("docker/test_env") {
         sh "docker-compose -p ${composeProject} --compatibility run --rm regression"
         sh "docker-compose -p ${composeProject} --compatibility run --rm restful-regression"
+        sh "docker ps"
     }
 } catch(exc) {
     throw exc
