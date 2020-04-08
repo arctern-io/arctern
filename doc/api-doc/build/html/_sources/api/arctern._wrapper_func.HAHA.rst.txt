@@ -1,0 +1,6 @@
+HAHA
+====
+
+.. currentmodule:: arctern._wrapper_func
+
+.. autofunction:: HAHA
