@@ -10,8 +10,14 @@ try {
     }
     dir ("docker/test_env") {
         sh "docker-compose -p ${composeProject} --compatibility run --rm regression"
+        sh "docker-compose -p ${composeProject} --compatibility run --rm restful-regression"
     }
 } catch(exc) {
+    dir ("docker/test_env/spark/${BINARY_VERSION}") {
+        sh "docker-compose -p ${composeProject} logs spark-master"
+        sh "docker-compose -p ${composeProject} logs spark-worker"
+        sh "docker-compose -p ${composeProject} logs flask"
+    }
     throw exc
 } finally {
     dir ("docker/test_env/spark/${BINARY_VERSION}") {
