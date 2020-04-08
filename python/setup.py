@@ -67,9 +67,11 @@ class BuildExt(build_ext):
 
     def build_extensions(self):
         # Avoid gcc warning "cc1plus: warning:command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++"
-        self.compiler.compiler_so.remove('-Wstrict-prototypes')
+        if '-Wstrict-prototypes' in self.compiler.compiler_so:
+            self.compiler.compiler_so.remove('-Wstrict-prototypes')
         # Avoid gcc warning of unused-variable
-        self.compiler.compiler_so.append('-Wno-unused-variable')
+        if '-Wno-unused-variable' in self.compiler.compiler_so:
+            self.compiler.compiler_so.append('-Wno-unused-variable')
         super(BuildExt, self).build_extensions()
 
 setup(
