@@ -27,7 +27,6 @@ class ColorGradient {
   std::vector<Color> color;
 
  public:
-
   static Color GetColor(Color color_start, Color color_end, double ratio);
 
   ColorGradient() { createDefaultHeatMapGradient(); }

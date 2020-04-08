@@ -339,7 +339,7 @@ request:
                 {
                     "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816], //范围[x_min,y_min,x_max,y_max]
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "color_gradient": "blue_to_red",                                //颜色风格
+                    "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [0, 2],                                          //颜色标尺
                     "size_bound": [0, 10],                                          //点大小标尺
                     "opacity": 1.0                                                  //透明度
@@ -358,7 +358,7 @@ request:
                 {
                     "bounding_box": [-73.984092, 40.753893, -73.977588, 40.756342], //范围
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "color_gradient": "blue_to_red",                                //颜色风格
+                    "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [2.5, 5],                                        //标尺
                     "opacity" : 1                                                   //透明度
                 }
@@ -442,7 +442,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 轮廓图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"choropleth\":{\"bounding_box\":[-73.984092,40.753893,-73.977588,40.756342],\"coordinate_system\":\"EPSG:4326\",\"color_gradient\":\"blue_to_red\",\"color_bound\":[2.5,5],\"opacity\":1}}}}" http://127.0.0.1:8080/db/query
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"choropleth\":{\"bounding_box\":[-73.984092,40.753893,-73.977588,40.756342],\"coordinate_system\":\"EPSG:4326\",\"color_gradient\":[\"#0000FF\", \"#FF0000\"],\"color_bound\":[2.5,5],\"opacity\":1}}}}" http://127.0.0.1:8080/db/query
 ```
 
 其中json为
@@ -459,7 +459,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
             "choropleth": {
                 "bounding_box": [-73.984092, 40.753893, -73.977588, 40.756342],
                 "coordinate_system": "EPSG:4326",
-                "color_gradient": "blue_to_red",
+                "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [2.5, 5],
                 "opacity": 1
             }
@@ -488,7 +488,7 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
             "weighted": {
                 "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
                 "coordinate_system": "EPSG:4326",
-                "color_gradient": "blue_to_red",
+                "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [0, 2],
                 "size_bound": [0, 10],
                 "opacity": 1.0
