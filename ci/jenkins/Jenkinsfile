@@ -21,6 +21,9 @@ pipeline {
         PIPELINE_NAME = "arctern-ci"
         LOWER_BUILD_TYPE = params.BUILD_TYPE.toLowerCase()
         SEMVER = "${BRANCH_NAME.contains('/') ? BRANCH_NAME.substring(BRANCH_NAME.lastIndexOf('/') + 1) : BRANCH_NAME}"
+        FLASK_IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-flask"
+        ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
+        ARCTERN_FLASK_TAG = "${SEMVER}"
     }
 
     stages {
@@ -125,6 +128,24 @@ pipeline {
             }
         }
 
+        stage('Build Arctern Web Server Image') {
+            agent {
+                kubernetes {
+                    label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                    defaultContainer 'jnlp'
+                    yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                }
+            }
+
+            steps {
+                container('docker-env') {
+                    script {
+                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
+                    }
+                }
+            }
+        }
+
         stage('Dev Test') {
             matrix {
                 agent none
@@ -145,14 +166,11 @@ pipeline {
 
                 environment {
                     IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-spark"
-                    FLASK_IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-flask"
                     GPU_IMAGE_REPOSITORY = "${IMAGE_REPOSITORY}-gpu"
                     REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
                     TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                     ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
-                    ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
                     ARCTERN_TAG = "${TAG_NAME}"
-                    ARCTERN_FLASK_TAG = "${SEMVER}"
                     PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/library/pytest"
                     PYTEST_TAG = "v0.1.0"
                 }
@@ -176,7 +194,6 @@ pipeline {
                             container('docker-env') {
                                 script {
                                     load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
-                                    load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
                                 }
                             }
                         }
