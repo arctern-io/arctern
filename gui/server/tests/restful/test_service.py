@@ -223,3 +223,37 @@ def test_query(host, port, headers, dbid, table_name):
         headers=headers,
     )
     assert response.status_code == 200
+
+    # case 5: icon_viz
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    png_path = dir_path + "/taxi.png"
+    icon_viz_request_dict = {
+        'id': dbid,
+        'query': {
+            'sql': '''
+                    select ST_Point(pickup_longitude, pickup_latitude) as point
+                    from {}
+                    where ST_Within(
+                        ST_Point(pickup_longitude, pickup_latitude),
+                        "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
+                        )
+             '''.format(table_name),
+            'type': 'icon',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'point': {
+                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
+                    'coordinate': 'EPSG:4326',
+                    'icon_path': png_path
+                }
+            }
+        }
+    }
+    response = requests.post(
+        url=url,
+        json=icon_viz_request_dict,
+        headers=headers,
+    )
+    assert response.status_code == 200
