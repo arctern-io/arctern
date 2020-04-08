@@ -1,0 +1,1391 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>arctern._wrapper_func &mdash; arctern 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> arctern
+          
+
+          
+            
+            <img src="../../_static/arctern-color.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../arctern.html">arctern python api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compile-with-conda.html">conda环境搭建</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">arctern</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>arctern._wrapper_func</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for arctern._wrapper_func</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2019-2020 Zilliz. All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;ST_Point&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Intersection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_IsValid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PrecisionReduce&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Equals&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Touches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Overlaps&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Crosses&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_IsSimple&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeometryType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_MakeValid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_SimplifyPreserveTopology&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PolygonFromEnvelope&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Contains&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Intersects&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Within&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Distance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Area&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Centroid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Length&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_HausdorffDistance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_ConvexHull&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_NPoints&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Envelope&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Buffer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Union_Aggr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Envelope_Aggr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Transform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_CurveToLine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeomFromGeoJSON&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeomFromText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_AsText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;point_map&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;point_map_wkb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;weighted_point_map&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;weighted_point_map_wkb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;heat_map&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;heat_map_wkb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;choropleth_map&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;projection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;transform_and_projection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wkt2wkb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wkb2wkt&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">arctern_core_</span>
+
+<div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Point.html#arctern._wrapper_func.ST_Point">[docs]</a><span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct Point geometries according to the coordinates.</span>
+
+<span class="sd">    :type x: pyarrow.array.double</span>
+<span class="sd">    :param x: abscissa of the point</span>
+<span class="sd">     </span>
+<span class="sd">    :type y: pyarrow.array.double</span>
+<span class="sd">    :param y: ordinate of the point</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([1.3, 2.5])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([1.3, 2.5])</span>
+<span class="sd">      &gt;&gt;&gt; string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))</span>
+<span class="sd">      &gt;&gt;&gt; print(string_ptr)</span>
+<span class="sd">          0    POINT (1.3 3.8)</span>
+<span class="sd">          1    POINT (2.5 4.9)</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Point</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_GeomFromGeoJSON"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_GeomFromGeoJSON.html#arctern._wrapper_func.ST_GeomFromGeoJSON">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">json</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs a PostGIS geometry object from the GeoJSON representation.</span>
+
+<span class="sd">    :type json: pyarrow.array.string</span>
+<span class="sd">    :param json: Geometries organized as json</span>
+<span class="sd">   </span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;{\&quot;type\&quot;:\&quot;LineString\&quot;,\&quot;coordinates\&quot;:[[1,2],[4,5],[7,8]]}&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; string_ptr = arctern.ST_AsText(arctern.ST_GeomFromGeoJSON(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(string_ptr)</span>
+<span class="sd">          0    LineString (1 2,4 5,7 8)</span>
+<span class="sd">          dtype: object </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">geo</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_GeomFromText"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_GeomFromText.html#arctern._wrapper_func.ST_GeomFromText">[docs]</a><span class="k">def</span> <span class="nf">ST_GeomFromText</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs a PostGIS ST_Geometry object from the OGC Well-Known text representation.</span>
+
+<span class="sd">    :type json: pyarrow.array.string</span>
+<span class="sd">    :param json: Geometries organized as wkt</span>
+<span class="sd">   </span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((0 0,0 1,1 1,1 0,0 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; string_ptr = arctern.ST_AsText(arctern.ST_GeomFromText(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(string_ptr)</span>
+<span class="sd">          0    POLYGON ((0 0,0 1,1 1,1 0,0 0))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">geo</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_AsText"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_AsText.html#arctern._wrapper_func.ST_AsText">[docs]</a><span class="k">def</span> <span class="nf">ST_AsText</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the Well-Known Text representation of the geometry.</span>
+
+<span class="sd">    :type text: pyarrow.array.string</span>
+<span class="sd">    :param text: Geometries organized as WKB.</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((0 0,0 1,1 1,1 0,0 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; string_ptr = arctern.ST_AsText(arctern.ST_GeomFromText(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(string_ptr)</span>
+<span class="sd">          0    POLYGON ((0 0,0 1,1 1,1 0,0 0))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">geo</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Intersection"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Intersection.html#arctern._wrapper_func.ST_Intersection">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the point set intersection of geometries.</span>
+<span class="sd">    </span>
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, </span>
+<span class="sd">    calculate a geometry that represents their point set intersection.</span>
+<span class="sd">    </span>
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON ((2 1,3 1,3 2,2 2,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))</span>
+<span class="sd">      &gt;&gt;&gt; print(string_ptr)   </span>
+<span class="sd">          0    LINESTRING (2 2,2 1)</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Intersection</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_IsValid"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_IsValid.html#arctern._wrapper_func.ST_IsValid">[docs]</a><span class="k">def</span> <span class="nf">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each item in geometries, check if it is of valid geometry format.</span>
+<span class="sd">    </span>
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POINT (1.3 2.6)&quot;, &quot;POINT (2.6 4.7)&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_IsValid(data)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)   </span>
+<span class="sd">          0    true</span>
+<span class="sd">          1    true</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_IsValid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_PrecisionReduce"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_PrecisionReduce.html#arctern._wrapper_func.ST_PrecisionReduce">[docs]</a><span class="k">def</span> <span class="nf">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reduce the precision of geometry.</span>
+<span class="sd">     </span>
+<span class="sd">    For every geometry in geometries, reduce the decimal places of its coordinates </span>
+<span class="sd">    to the given number. The last decimal place will be rounded. </span>
+
+<span class="sd">    Note, the operation is performed NOT in &quot;inplace&quot; manner, i.e., new geometries </span>
+<span class="sd">    in arrow::Array format will be construted and extra memory will be allocated.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKT.</span>
+
+<span class="sd">    :type precision: uint32</span>
+<span class="sd">    :param geos: The number to reduce the decimals places to.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POINT (1.333 2.666)&quot;, &quot;POINT (2.655 4.447)&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.arctern.ST_AsText(arctern.ST_PrecisionReduce(data, 3))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POINT (1.33 2.67)</span>
+<span class="sd">          1    POINT (2.66 4.45)</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_PrecisionReduce</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Equals"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Equals.html#arctern._wrapper_func.ST_Equals">[docs]</a><span class="k">def</span> <span class="nf">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether geometries are &quot;spatially equal&quot;.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if they are &quot;spatially equal&quot;. &quot;Spatially equal&quot; here means two geometries represent </span>
+<span class="sd">    the same geometry structure.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((2 1,3 1,3 2,2 2,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Equals(data1, data2)    </span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    true</span>
+<span class="sd">          1    false</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Equals</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Touches"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Touches.html#arctern._wrapper_func.ST_Touches">[docs]</a><span class="k">def</span> <span class="nf">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether geometries &quot;touch&quot;.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if they &quot;touch&quot;. &quot;Touch&quot; here means two geometries have common points, and the </span>
+<span class="sd">    common points locate only on their boundaries.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+<span class="sd">    </span>
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((2 1,3 1,3 2,2 2,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Touches(data1, data2)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    false</span>
+<span class="sd">          1    true</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Touches</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Overlaps"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Overlaps.html#arctern._wrapper_func.ST_Overlaps">[docs]</a><span class="k">def</span> <span class="nf">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether geometries &quot;spatially overlap&quot;.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if they &quot;spatially overlap&quot;. &quot;Spatially overlap&quot; here means two geometries </span>
+<span class="sd">    intersect but one does not completely contain another.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+<span class="sd">    </span>
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((2 1,3 1,3 2,2 2,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Touches(data1, data2)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    false</span>
+<span class="sd">          1    false</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Overlaps</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Crosses"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Crosses.html#arctern._wrapper_func.ST_Crosses">[docs]</a><span class="k">def</span> <span class="nf">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether geometries &quot;spatially cross&quot;.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if they &quot;spatially cross&quot;. &quot;Spatially cross&quot; here means two the geometries have</span>
+<span class="sd">    some, but not all interior points in common. The intersection of the interiors of</span>
+<span class="sd">    the geometries must not be the empty set and must have a dimensionality less than </span>
+<span class="sd">    the maximum dimension of the two input geometries.</span>
+<span class="sd">    </span>
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+<span class="sd">    </span>
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((2 1,3 1,3 2,2 2,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Touches(data1, data2)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    false</span>
+<span class="sd">          1    false</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Crosses</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_IsSimple"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_IsSimple.html#arctern._wrapper_func.ST_IsSimple">[docs]</a><span class="k">def</span> <span class="nf">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether geometry is &quot;simple&quot;.</span>
+
+<span class="sd">    For every geometry in geometries, check if it is &quot;simple&quot;. &quot;Simple&quot; here means </span>
+<span class="sd">    that a geometry has no anomalous geometric points such as self intersection or </span>
+<span class="sd">    self tangency.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_IsSimple(data)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    true</span>
+<span class="sd">          1    true</span>
+<span class="sd">          dtype: bool    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_IsSimple</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_GeometryType"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_GeometryType.html#arctern._wrapper_func.ST_GeometryType">[docs]</a><span class="k">def</span> <span class="nf">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each geometry in geometries, return a string that indicates is type.</span>
+<span class="sd">    </span>
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;, &quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_GeometryType(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    ST_POLYGON</span>
+<span class="sd">          1    ST_POLYGON</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_GeometryType</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_MakeValid"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_MakeValid.html#arctern._wrapper_func.ST_MakeValid">[docs]</a><span class="k">def</span> <span class="nf">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For every geometry in geometries, create a valid representation of it without </span>
+<span class="sd">    losing any of the input vertices. Already-valid geometries won&#39;t have further </span>
+<span class="sd">    intervention. This function returns geometries which are validated. Note, new </span>
+<span class="sd">    geometries are construted in arrow::Array format, so extra memory will be allocated.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_MakeValid(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_MakeValid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_SimplifyPreserveTopology"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_SimplifyPreserveTopology.html#arctern._wrapper_func.ST_SimplifyPreserveTopology">[docs]</a><span class="k">def</span> <span class="nf">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each geometry in geometries create a &quot;simplified&quot; version for it according</span>
+<span class="sd">    to the precision that parameter tolerance specifies. </span>
+
+<span class="sd">    Note simplified geometries with be construted in arrow::Array format, so extra </span>
+<span class="sd">    memory will be allocated.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :type distance_tolerance: double</span>
+<span class="sd">    :param distance_tolerance: The precision of the simplified geometry.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(data, 10000))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POLYGON ((1 1,1 2,2 2,2 1,1 1))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_PolygonFromEnvelope"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_PolygonFromEnvelope.html#arctern._wrapper_func.ST_PolygonFromEnvelope">[docs]</a><span class="k">def</span> <span class="nf">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, </span>
+<span class="sd">    arr_max_y. The edges of polygon are parallel to coordinate axis.</span>
+
+<span class="sd">    :type min_x: pyarrow.array.double</span>
+<span class="sd">    :param min_x: The x axis coordinates of the lower left vertical of the rectangles.</span>
+
+<span class="sd">    :type min_y: pyarrow.array.double</span>
+<span class="sd">    :param min_y: The y axis coordinates of the lower left vertical of the rectangles.</span>
+
+<span class="sd">    :type max_x: pyarrow.array.double</span>
+<span class="sd">    :param max_x: The x axis coordinates of the upper right vertical of the rectangles.</span>
+
+<span class="sd">    :type max_y: pyarrow.array.double</span>
+<span class="sd">    :param max_y: The y axis coordinates of the upper right vertical of the rectangles.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; x_min = pandas.Series([0.0])</span>
+<span class="sd">      &gt;&gt;&gt; x_max = pandas.Series([1.0])</span>
+<span class="sd">      &gt;&gt;&gt; y_min = pandas.Series([0.0])</span>
+<span class="sd">      &gt;&gt;&gt; y_max = pandas.Series([1.0])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(rctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POLYGON ((0 0,0 1,1 1,1 0,0 0))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_min_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">arr_min_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">min_y</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">arr_max_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">max_x</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">arr_max_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">max_y</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">arr_min_x</span><span class="p">,</span> <span class="n">arr_min_y</span><span class="p">,</span> <span class="n">arr_max_x</span><span class="p">,</span> <span class="n">arr_max_y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Contains"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Contains.html#arctern._wrapper_func.ST_Contains">[docs]</a><span class="k">def</span> <span class="nf">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether a geometry contain another geometry.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if left_geometry &quot;contains&quot; right_geometry. Left &quot;contains&quot; right means no points</span>
+<span class="sd">    of right_geometry lie in the exterior of left_geometry and at least one point of </span>
+<span class="sd">    the interior of right_geometry lies in the interior of left_geometry.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;,&quot;POLYGON((8 0,9 0,9 1,8 1,8 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;,&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Contains(data2, data1)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    true</span>
+<span class="sd">          1    false</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Contains</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Intersects"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Intersects.html#arctern._wrapper_func.ST_Intersects">[docs]</a><span class="k">def</span> <span class="nf">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether two geometries intersect.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if left and right shares any portion of space.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;,&quot;POLYGON((8 0,9 0,9 1,8 1,8 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;,&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Intersects(data2, data1)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    true</span>
+<span class="sd">          1    true</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Intersects</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Within"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Within.html#arctern._wrapper_func.ST_Within">[docs]</a><span class="k">def</span> <span class="nf">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether a geometry is within another geometry.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, check </span>
+<span class="sd">    if left is &quot;within&quot; right. Left &quot;within&quot; right means no points of left lie in the </span>
+<span class="sd">    exterior of right and at least one point of the interior of left lies in the interior</span>
+<span class="sd">    of right.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: An array of booleans.</span>
+<span class="sd">    :rtype: pyarrow.array.boolean</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;,&quot;POLYGON((8 0,9 0,9 1,8 1,8 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;,&quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Within(data2, data1)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    false</span>
+<span class="sd">          1    false</span>
+<span class="sd">          dtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Within</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Distance"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Distance.html#arctern._wrapper_func.ST_Distance">[docs]</a><span class="k">def</span> <span class="nf">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the distance between two geometries.</span>
+
+<span class="sd">    For every (left, right) pair with the same offset value in left and right, </span>
+<span class="sd">    calculates the minimum 2D Cartesian (planar) distance between left and right.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :return: An array of double.</span>
+<span class="sd">    :rtype: pyarrow.array.double</span>
+<span class="sd">    </span>
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; p11 = &quot;LINESTRING(9 0,9 2)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p12 = &quot;POINT(10 2)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series([p11, p12])</span>
+<span class="sd">      &gt;&gt;&gt; p21 = &quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p22 = &quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series([p21, p22])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Distance(data2, data1)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    1.0</span>
+<span class="sd">          1    2.0</span>
+<span class="sd">          dtype: float64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_left</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr_right</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Distance</span><span class="p">(</span><span class="n">arr_left</span><span class="p">,</span> <span class="n">arr_right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Area"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Area.html#arctern._wrapper_func.ST_Area">[docs]</a><span class="k">def</span> <span class="nf">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the area of geometry.</span>
+
+<span class="sd">    For every geometry in geometries, calculate the 2D Cartesian (planar) area</span>
+<span class="sd">    of geometry.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: An array of double.</span>
+<span class="sd">    :rtype: pyarrow.array.double</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;, &quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Area(data)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0     1.0</span>
+<span class="sd">          1    64.0</span>
+<span class="sd">          dtype: float64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Area</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Centroid"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Centroid.html#arctern._wrapper_func.ST_Centroid">[docs]</a><span class="k">def</span> <span class="nf">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the centroid of geometry.</span>
+
+<span class="sd">    For every geometry in geometries, compute the controid point of geometry.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;POLYGON((0 0,1 0,1 1,0 1,0 0))&quot;, &quot;POLYGON((0 0,0 8,8 8,8 0,0 0))&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Centroid(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POINT (0.5 0.5)</span>
+<span class="sd">          1    POINT (4 4)</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Centroid</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Length"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Length.html#arctern._wrapper_func.ST_Length">[docs]</a><span class="k">def</span> <span class="nf">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the length of linear geometries.</span>
+
+<span class="sd">    For every geometry in geometries, calculate the length of geometry.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: An array of double.</span>
+<span class="sd">    :rtype: pyarrow.array.double</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;LINESTRING(0 0,0 1)&quot;, &quot;LINESTRING(1 1,1 4)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_Length(data)    </span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    1.0</span>
+<span class="sd">          1    3.0</span>
+<span class="sd">          dtype: float64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_HausdorffDistance"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_HausdorffDistance.html#arctern._wrapper_func.ST_HausdorffDistance">[docs]</a><span class="k">def</span> <span class="nf">ST_HausdorffDistance</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="n">geo2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the Hausdorff distance between two geometries, a measure of how similar</span>
+<span class="sd">    or dissimilar 2 geometries are.</span>
+
+<span class="sd">    Implements algorithm for computing a distance metric which can be thought of as </span>
+<span class="sd">    the &quot;Discrete Hausdorff Distance&quot;. This is the Hausdorff distance restricted to </span>
+<span class="sd">    discrete points for one of the geometries. Wikipedia article on Hausdorff distance </span>
+<span class="sd">    Martin Davis note on how Hausdorff Distance calculation was used to prove </span>
+<span class="sd">    correctness of the CascadePolygonUnion approach.</span>
+
+<span class="sd">    When densifyFrac is specified, this function performs a segment densification before </span>
+<span class="sd">    computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction</span>
+<span class="sd">    by which to densify each segment. Each segment will be split into a number of equal-length </span>
+<span class="sd">    subsegments, whose fraction of the total length is closest to the given fraction.</span>
+
+<span class="sd">    Units are in the units of the spatial reference system of the geometries.</span>
+
+<span class="sd">    :type left: pyarrow.array.string</span>
+<span class="sd">    :param left: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :type right: pyarrow.array.string</span>
+<span class="sd">    :param right: Geometries organized as WKB.</span>
+<span class="sd">     </span>
+<span class="sd">    :return: An array of double.</span>
+<span class="sd">    :rtype: pyarrow.array.double</span>
+<span class="sd"> </span>
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data1 = [&quot;POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))&quot;, &quot;POINT(0 0)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data2 = [&quot;POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))&quot;, &quot;POINT(0 1)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data1 = pandas.Series(data1)</span>
+<span class="sd">      &gt;&gt;&gt; data2 = pandas.Series(data2)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_HausdorffDistance(data1, data2)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    1.0</span>
+<span class="sd">          1    1.0</span>
+<span class="sd">          dtype: float64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr1</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">arr2</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geo2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_HausdorffDistance</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_ConvexHull"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_ConvexHull.html#arctern._wrapper_func.ST_ConvexHull">[docs]</a><span class="k">def</span> <span class="nf">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the convex hull of geometry.</span>
+
+<span class="sd">    Compute the smallest convex geometry that encloses all geometries for a geometry</span>
+<span class="sd">    in geometries.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;POINT (1.1 101.1)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_ConvexHull(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POINT (1.1 101.1)</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_ConvexHull</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_NPoints"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_NPoints.html#arctern._wrapper_func.ST_NPoints">[docs]</a><span class="k">def</span> <span class="nf">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the points number for every geometry in geometries.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return : An array of int64.</span>
+<span class="sd">    :rtype : pyarrow.array.int64</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;LINESTRING(1 1,1 4)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_NPoints(data)</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    2</span>
+<span class="sd">          dtype: int64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_NPoints</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Envelope"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Envelope.html#arctern._wrapper_func.ST_Envelope">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the double-precision minimum bounding box geometry for every geometry in geometries.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; p1 = &quot;point (10 10)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p2 = &quot;linestring (0 0 , 0 10)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p3 = &quot;linestring (0 0 , 10 0)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p4 = &quot;linestring (0 0 , 10 10)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p5 = &quot;polygon ((0 0, 10 0, 10 10, 0 10, 0 0))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p6 = &quot;multipoint (0 0, 10 0, 5 5)&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p7 = &quot;multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p8 = &quot;multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; data = [p1, p2, p3, p4, p5, p6, p7, p8]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Envelope(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POINT (10 10)</span>
+<span class="sd">          1    LINESTRING (0 0,0 10)</span>
+<span class="sd">          2    LINESTRING (0 0,10 0)</span>
+<span class="sd">          3    POLYGON ((0 0,0 10,10 10,10 0,0 0))</span>
+<span class="sd">          4    POLYGON ((0 0,0 10,10 10,10 0,0 0))</span>
+<span class="sd">          5    POLYGON ((0 0,0 5,10 5,10 0,0 0))</span>
+<span class="sd">          6    POLYGON ((0 0,0 10,10 10,10 0,0 0))</span>
+<span class="sd">          7    POLYGON ((0 0,0 20,20 20,20 0,0 0))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Envelope</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Buffer"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Buffer.html#arctern._wrapper_func.ST_Buffer">[docs]</a><span class="k">def</span> <span class="nf">ST_Buffer</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a geometry that represents all points whose distance from this geos is </span>
+<span class="sd">    less than or equal to distance.</span>
+<span class="sd">    </span>
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :type distance: int64</span>
+<span class="sd">    :param distance: The maximum distance of the returned geometry from the given geometry.</span>
+<span class="sd"> </span>
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;POINT (0 1)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Buffer(data, 0))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POLYGON EMPTY</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Buffer</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">distance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Union_Aggr"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Union_Aggr.html#arctern._wrapper_func.ST_Union_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Union_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometry organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; p1 = &quot;POLYGON ((0 0,4 0,4 4,0 4,0 0))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p2 = &quot;POLYGON ((5 1,7 1,7 2,5 2,5 1))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([p1, p2])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Union_Aggr(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))</span>
+<span class="sd">          dtype: object    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Union_Aggr</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Envelope_Aggr"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Envelope_Aggr.html#arctern._wrapper_func.ST_Envelope_Aggr">[docs]</a><span class="k">def</span> <span class="nf">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the double-precision minimum bounding box geometry for every geometry in geometries, </span>
+<span class="sd">    then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometry organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; p1 = &quot;POLYGON ((0 0,4 0,4 4,0 4,0 0))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; p2 = &quot;POLYGON ((5 1,7 1,7 2,5 2,5 1))&quot;</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series([p1, p2])</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(data))</span>
+<span class="sd">      &gt;&gt;&gt; print(rst)</span>
+<span class="sd">          0    POLYGON ((0 0,0 4,7 4,7 0,0 0))</span>
+<span class="sd">          dtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_Transform"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_Transform.html#arctern._wrapper_func.ST_Transform">[docs]</a><span class="k">def</span> <span class="nf">ST_Transform</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a new geometry with its coordinates transformed to a different spatial </span>
+<span class="sd">    reference system.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :type src: string</span>
+<span class="sd">    :param src: The current srid of geometries.</span>
+<span class="sd">   </span>
+<span class="sd">    :type dst: string</span>
+<span class="sd">    :param dst: The target srid of geometries tranfrom to.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;POINT (10 10)&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_AsText(arctern.ST_Transform(data, &quot;EPSG:4326&quot;, &quot;EPSG:3857&quot;))</span>
+<span class="sd">      &gt;&gt;&gt; wkt = rst[0]</span>
+<span class="sd">      &gt;&gt;&gt; rst_point = ogr.CreateGeometryFromWkt(str(wkt))</span>
+<span class="sd">      &gt;&gt;&gt; assert abs(rst_point.GetX() - 1113194.90793274 &lt; 0.01)</span>
+<span class="sd">      &gt;&gt;&gt; assert abs(rst_point.GetY() - 1118889.97485796 &lt; 0.01)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ST_CurveToLine"><a class="viewcode-back" href="../../api/arctern._wrapper_func.ST_CurveToLine.html#arctern._wrapper_func.ST_CurveToLine">[docs]</a><span class="k">def</span> <span class="nf">ST_CurveToLine</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or </span>
+<span class="sd">    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can&#39;t support </span>
+<span class="sd">    CIRCULARSTRING geometry types.</span>
+
+<span class="sd">    :type geos: pyarrow.array.string</span>
+<span class="sd">    :param geos: Geometries organized as WKB.</span>
+
+<span class="sd">    :return: Geometries organized as WKB.</span>
+<span class="sd">    :rtype: pyarrow.array.string</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">      &gt;&gt;&gt; import pandas</span>
+<span class="sd">      &gt;&gt;&gt; import arctern</span>
+<span class="sd">      &gt;&gt;&gt; data = [&quot;CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))&quot;]</span>
+<span class="sd">      &gt;&gt;&gt; data = pandas.Series(data)</span>
+<span class="sd">      &gt;&gt;&gt; rst = arctern.ST_CurveToLine(data)</span>
+<span class="sd">      &gt;&gt;&gt; assert str(rst[0]).startswith(&quot;POLYGON&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">ST_CurveToLine</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="point_map"><a class="viewcode-back" href="../../api/arctern._wrapper_func.point_map.html#arctern._wrapper_func.point_map">[docs]</a><span class="k">def</span> <span class="nf">point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">point_map</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="weighted_point_map"><a class="viewcode-back" href="../../api/arctern._wrapper_func.weighted_point_map.html#arctern._wrapper_func.weighted_point_map">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_0_0</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr_s</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr_s</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_1_1</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr_c</span><span class="p">,</span> <span class="n">arr_s</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_0_1</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_1_0</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="weighted_point_map_wkb"><a class="viewcode-back" href="../../api/arctern._wrapper_func.weighted_point_map_wkb.html#arctern._wrapper_func.weighted_point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">weighted_point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">array_points</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_wkb_0_0</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr_s</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr_s</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_wkb_1_1</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr_c</span><span class="p">,</span> <span class="n">arr_s</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">cs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_wkb_0_1</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">weighted_point_map_wkb_1_0</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="point_map_wkb"><a class="viewcode-back" href="../../api/arctern._wrapper_func.point_map_wkb.html#arctern._wrapper_func.point_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">point_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">array_points</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">point_map_wkb</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="heat_map"><a class="viewcode-back" href="../../api/arctern._wrapper_func.heat_map.html#arctern._wrapper_func.heat_map">[docs]</a><span class="k">def</span> <span class="nf">heat_map</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_x</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">arr_y</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">heat_map</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">arr_y</span><span class="p">,</span> <span class="n">arr_c</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="heat_map_wkb"><a class="viewcode-back" href="../../api/arctern._wrapper_func.heat_map_wkb.html#arctern._wrapper_func.heat_map_wkb">[docs]</a><span class="k">def</span> <span class="nf">heat_map_wkb</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">c_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">array_points</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr_c</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">heat_map_wkb</span><span class="p">(</span><span class="n">array_points</span><span class="p">,</span> <span class="n">arr_c</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="choropleth_map"><a class="viewcode-back" href="../../api/arctern._wrapper_func.choropleth_map.html#arctern._wrapper_func.choropleth_map">[docs]</a><span class="k">def</span> <span class="nf">choropleth_map</span><span class="p">(</span><span class="n">wkb_data</span><span class="p">,</span> <span class="n">count_data</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_wkb</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wkb_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">count_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">arr_count</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">count_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr_count</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">count_data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">,</span> <span class="n">arr_count</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">buffers</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_pybytes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="projection"><a class="viewcode-back" href="../../api/arctern._wrapper_func.projection.html#arctern._wrapper_func.projection">[docs]</a><span class="k">def</span> <span class="nf">projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">bounding_box_min</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bottom_right</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">bounding_box_max</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">top_left</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">bounding_box_min</span><span class="p">,</span> <span class="n">bounding_box_max</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="transform_and_projection"><a class="viewcode-back" href="../../api/arctern._wrapper_func.transform_and_projection.html#arctern._wrapper_func.transform_and_projection">[docs]</a><span class="k">def</span> <span class="nf">transform_and_projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">,</span> <span class="n">dst_rs</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">arr_geos</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">src_rs</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dst_rs</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">bounding_box_min</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bottom_right</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">bounding_box_max</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">top_left</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">transform_and_projection</span><span class="p">(</span><span class="n">arr_geos</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">bounding_box_min</span><span class="p">,</span> <span class="n">bounding_box_max</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="wkt2wkb"><a class="viewcode-back" href="../../api/arctern._wrapper_func.wkt2wkb.html#arctern._wrapper_func.wkt2wkb">[docs]</a><span class="k">def</span> <span class="nf">wkt2wkb</span><span class="p">(</span><span class="n">arr_wkt</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">wkts</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr_wkt</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">wkt2wkb</span><span class="p">(</span><span class="n">wkts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="wkb2wkt"><a class="viewcode-back" href="../../api/arctern._wrapper_func.wkb2wkt.html#arctern._wrapper_func.wkb2wkt">[docs]</a><span class="k">def</span> <span class="nf">wkb2wkt</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+    <span class="n">wkbs</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr_wkb</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">arctern_core_</span><span class="o">.</span><span class="n">wkb2wkt</span><span class="p">(</span><span class="n">wkbs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, zilliz
+      <span class="lastupdated">
+        Last updated on Apr 08, 2020.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
