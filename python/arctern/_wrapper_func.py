@@ -56,7 +56,6 @@ __all__ = [
     "transform_and_projection",
     "wkt2wkb",
     "wkb2wkt",
-    "HAHA"
 ]
 
 import base64
