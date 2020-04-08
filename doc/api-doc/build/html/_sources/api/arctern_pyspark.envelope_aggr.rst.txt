@@ -1,0 +1,6 @@
+envelope_aggr
+=============
+
+.. currentmodule:: arctern_pyspark
+
+.. autofunction:: envelope_aggr

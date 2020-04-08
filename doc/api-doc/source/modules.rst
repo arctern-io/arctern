@@ -5,3 +5,4 @@ arctern
    :maxdepth: 8
 
    arctern
+   arctern_pyspark

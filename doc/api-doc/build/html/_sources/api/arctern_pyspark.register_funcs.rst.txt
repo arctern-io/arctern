@@ -1,0 +1,6 @@
+register_funcs
+==============
+
+.. currentmodule:: arctern_pyspark
+
+.. autofunction:: register_funcs
