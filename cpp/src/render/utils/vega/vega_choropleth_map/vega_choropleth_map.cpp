@@ -62,8 +62,10 @@ void VegaChoroplethMap::Parse(const std::string& json) {
 
   auto color_gradient_size = mark_enter["color_gradient"]["value"].Size();
   if (color_gradient_size == 1 &&
-      JsonTypeCheck(mark_enter["color_gradient"]["value"][0], rapidjson::Type::kStringType)) {
-    auto color = ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
+      JsonTypeCheck(mark_enter["color_gradient"]["value"][0],
+                    rapidjson::Type::kStringType)) {
+    auto color =
+      ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
     color.a = mark_enter["opacity"]["value"].GetDouble();
     color_gradient_.emplace_back(color);
   } else if (color_gradient_size == 2 &&
@@ -71,8 +73,10 @@ void VegaChoroplethMap::Parse(const std::string& json) {
                            rapidjson::Type::kStringType) &&
              JsonTypeCheck(mark_enter["color_gradient"]["value"][1],
                            rapidjson::Type::kStringType)) {
-    auto color_start = ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
-    auto color_end = ColorParser(mark_enter["color_gradient"]["value"][1].GetString()).color();
+    auto color_start =
+      ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
+    auto color_end =
+      ColorParser(mark_enter["color_gradient"]["value"][1].GetString()).color();
     auto opacity = mark_enter["opacity"]["value"].GetDouble();
     color_start.a = opacity;
     color_end.a = opacity;

@@ -22,7 +22,7 @@ namespace render {
 
 struct Color {
   float r, g, b, a;
-  Color() {};
+  Color() {}
   Color(float red, float green, float blue, float value)
         : r(red), g(green), b(blue), a(value) {}
   bool operator==(const Color& other) const {

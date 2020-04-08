@@ -64,7 +64,7 @@ void VegaWeightedPointmap::Parse(const std::string& json) {
 
   auto color_gradient_size = mark_enter["color_gradient"]["value"].Size();
   if (color_gradient_size == 1 &&
-      JsonTypeCheck(mark_enter["color_gradient"]["value"][0], 
+      JsonTypeCheck(mark_enter["color_gradient"]["value"][0],
                     rapidjson::Type::kStringType)) {
     is_multiple_color_ = false;
     auto color =

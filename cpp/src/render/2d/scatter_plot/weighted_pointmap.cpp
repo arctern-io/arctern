@@ -682,7 +682,7 @@ void WeightedPointMap<T>::SetColor(T* ptr) {
   size_t c_offset = 0;
   for (auto i = 0; i < num_vertices_; i++) {
     auto color_gradient = weighted_point_vega_.color_gradient();
-    if(color_gradient.size() == 1) {
+    if (color_gradient.size() == 1) {
       auto color = color_gradient[0];
       colors_[c_offset++] = color.r;
       colors_[c_offset++] = color.g;
