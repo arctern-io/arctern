@@ -593,8 +593,7 @@ TEST(geometry_test, test_ST_Intersection) {
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
-  // ASSERT_EQ(res_str->GetString(1), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(1));
+  ASSERT_EQ(res_str->GetString(1), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(2), "POINT (0 1)");
   // ASSERT_EQ(res_str->GetString(3), "MULTIPOLYGON EMPTY"); // POINT EMPTY
   ASSERT_EQ(res_str->GetString(4), "POINT (0 1)");
@@ -611,18 +610,15 @@ TEST(geometry_test, test_ST_Intersection) {
   // ASSERT_EQ(res_str->GetString(15), "MULTIPOLYGON EMPTY"); // error
   // TODO : need verify against geospark result below.
   ASSERT_EQ(res_str->GetString(16), "POINT (1 8)");
-  // ASSERT_EQ(res_str->GetString(17), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(17));
+  ASSERT_EQ(res_str->GetString(17), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(18), "POINT (2 3)");
-  // ASSERT_EQ(res_str->GetString(19), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(19));
+  ASSERT_EQ(res_str->GetString(19), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(20), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(21), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(22), "POINT (1 8)");
   ASSERT_EQ(res_str->GetString(23), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(24), "POINT (1 8)");
-  // ASSERT_EQ(res_str->GetString(25), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(25));
+  ASSERT_EQ(res_str->GetString(25), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(26), "MULTIPOINT (1 8,2 3)");
   ASSERT_EQ(res_str->GetString(27), "POINT (2 3)");
   ASSERT_EQ(res_str->GetString(28), "MULTILINESTRING ((0 0,1 0),(1 0,1 8))");
@@ -634,8 +630,7 @@ TEST(geometry_test, test_ST_Intersection) {
   ASSERT_EQ(res_str->GetString(34), "MULTIPOINT (0 0,1 1,1 3,1 8)");
   ASSERT_EQ(res_str->GetString(35), "POINT (1 2)");
   ASSERT_EQ(res_str->GetString(36), "MULTIPOINT (0 0,1 8)");
-  // ASSERT_EQ(res_str->GetString(37), "GEOMETRYCOLLECTION EMPTY");
-  ASSERT_TRUE(res_str->IsNull(37));
+  ASSERT_EQ(res_str->GetString(37), "GEOMETRYCOLLECTION EMPTY");
   ASSERT_EQ(res_str->GetString(38), "LINESTRING (0 0,1 0,1 8)");
   ASSERT_EQ(res_str->GetString(39), "LINESTRING (0 1,2 3,1 1)");
   ASSERT_EQ(res_str->GetString(40), "MULTILINESTRING ((0 1,2 3),(2 3,1 1))");
@@ -745,22 +740,22 @@ TEST(geometry_test, test_ST_PrecisionReduce) {
 
 TEST(geometry_test, test_ST_Equals3) {
   auto l0 = "POLYGON EMPTY";
-  auto r0 = "POINT EMPTY";
+  auto r0 = "POLYGON EMPTY";
 
   auto l1 = "LINESTRING EMPTY";
-  auto r1 = "POINT EMPTY";
+  auto r1 = "POLYGON EMPTY";
 
-  auto l2 = "POINT EMPTY";
-  auto r2 = "POINT EMPTY";
+  auto l2 = "CIRCULARSTRING EMPTY";
+  auto r2 = "POLYGON EMPTY";
 
   auto l3 = "MULTIPOLYGON EMPTY";
-  auto r3 = "POINT EMPTY";
+  auto r3 = "POLYGON EMPTY";
 
   auto l4 = "MULTILINESTRING EMPTY";
-  auto r4 = "POINT EMPTY";
+  auto r4 = "POLYGON EMPTY";
 
   auto l5 = "MULTIPOINT EMPTY";
-  auto r5 = "POINT EMPTY";
+  auto r5 = "POLYGON EMPTY";
 
   arrow::StringBuilder builder_l, builder_r;
 
@@ -791,12 +786,12 @@ TEST(geometry_test, test_ST_Equals3) {
                                      arctern::gis::ST_GeomFromText(input_r));
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
-  ASSERT_EQ(res_bool->IsNull(0), true);
-  ASSERT_EQ(res_bool->IsNull(1), true);
-  ASSERT_EQ(res_bool->IsNull(2), true);
-  ASSERT_EQ(res_bool->IsNull(3), true);
-  ASSERT_EQ(res_bool->IsNull(4), true);
-  ASSERT_EQ(res_bool->IsNull(5), true);
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), true);
+  ASSERT_EQ(res_bool->Value(4), true);
+  ASSERT_EQ(res_bool->Value(5), true);
 }
 
 TEST(geometry_test, test_ST_Equals2) {
@@ -2264,6 +2259,38 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
+TEST(geometry_test, test_ST_Within2) {
+  auto circle = "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))";
+
+  arrow::StringBuilder str_builder;
+  str_builder.Append("point(1.414 0)");
+  str_builder.Append("point(1.5 0)");
+  str_builder.Append("point(0.5 0)");
+  str_builder.Append("point(2 3)");
+  str_builder.Append("point(0 0)");
+
+  std::shared_ptr<arrow::Array> pointer_array;
+  str_builder.Finish(&pointer_array);
+
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append("curvepolygon(circularstring(-1 -1, 1 1, 1.4141 0))");
+
+  std::shared_ptr<arrow::Array> circle_array;
+  str_builder.Finish(&circle_array);
+
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
+                                     arctern::gis::ST_GeomFromText(circle_array));
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), false);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), false);
+}
+
 TEST(geometry_test, test_ST_Within) {
   auto l1 = "POINT (1 0)";
   auto l2 = "POINT (1 3)";
@@ -3152,13 +3179,13 @@ TEST(geometry_test, test_ST_Envelope_Empty) {
       arctern::gis::ST_Envelope(arctern::gis::ST_GeomFromText(input)));
   auto result_str = std::static_pointer_cast<arrow::StringArray>(result);
 
-  ASSERT_EQ(result_str->IsNull(0), true);
-  ASSERT_EQ(result_str->IsNull(1), true);
+  ASSERT_EQ(result_str->GetString(0), p0);
+  ASSERT_EQ(result_str->GetString(1), p1);
   ASSERT_EQ(result_str->IsNull(2), true);
-  ASSERT_EQ(result_str->IsNull(3), true);
-  ASSERT_EQ(result_str->IsNull(4), true);
-  ASSERT_EQ(result_str->IsNull(5), true);
-  ASSERT_EQ(result_str->IsNull(6), true);
+  ASSERT_EQ(result_str->GetString(3), p3);
+  ASSERT_EQ(result_str->GetString(4), p4);
+  ASSERT_EQ(result_str->GetString(5), p5);
+  ASSERT_EQ(result_str->GetString(6), p6);
 }
 
 TEST(geometry_test, test_ST_Envelope) {
@@ -3235,12 +3262,12 @@ TEST(geometry_test, test_ST_Buffer) {
       arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input), 1, 2));
   auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
-  ASSERT_EQ(res_str->IsNull(0), true);
-  ASSERT_EQ(res_str->IsNull(1), true);
-  ASSERT_EQ(res_str->IsNull(2), true);
+  ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(1), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-  ASSERT_EQ(res_str->IsNull(4), true);
-  ASSERT_EQ(res_str->IsNull(5), true);
+  ASSERT_EQ(res_str->GetString(4), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(5), "POLYGON EMPTY");
   ASSERT_EQ(res_str->GetString(6), "POLYGON ((0 0,1 4,1 0,0 0))");
   ASSERT_EQ(res_str->GetString(7), "POLYGON ((0 0,0 1,0 4,4 4,4 1,4 0,0 0))");
   ASSERT_EQ(res_str->GetString(8),
@@ -3355,8 +3382,8 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 2,0 3,1 3,1 2,0 2))");
   ASSERT_EQ(res_str->GetString(1), "POLYGON ((0 22,0 33,11 33,11 22,0 22))");
-  ASSERT_EQ(res_str->IsNull(2), true);
-  ASSERT_EQ(res_str->IsNull(3), true);
+  ASSERT_EQ(res_str->GetString(2), "POLYGON EMPTY");
+  ASSERT_EQ(res_str->GetString(3), "POLYGON EMPTY");
 }
 
 TEST(geometry_test, test_ST_Transform) {
@@ -3415,6 +3442,38 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
   ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
   ASSERT_TRUE(res_str->IsNull(3));
+}
+
+TEST(geometry_test, test_ST_GeomFromText2) {
+  auto p0 = "LINESTRING(0 0,1.23e-11 1.45e-12)";
+  auto p1 = "LINESTRING(0 0,1.343e-12 1.78e-12)";
+  auto p2 = "LINESTRING(-1.12e-08 -9.2e-08,1.2134e-10 1.423e-10)";
+  auto p3 = "POINT(1.132321e-12 2.3123123e-12)";
+  auto p4 = "POINT(1.1e-11 1.567)";
+  auto p5 = "POLYGON((1e-11 1e-11,3.231 1.098,3.765 9.555,1 7,1e-11 1e-11))";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+
+  builder.Finish(&input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_GeomFromText(input));
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0), "LINESTRING (0 0,0.0000000000123 0.00000000000145)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,0.000000000001343 0.00000000000178)");
+  ASSERT_EQ(res_str->GetString(2),
+            "LINESTRING (-0.0000000112 -0.000000092,0.00000000012134 0.0000000001423)");
+  ASSERT_EQ(res_str->GetString(3), "POINT (0.000000000001132 0.000000000002312)");
+  ASSERT_EQ(res_str->GetString(4), "POINT (0.000000000011 1.567)");
+  ASSERT_EQ(res_str->GetString(5),
+            "POLYGON ((0.00000000001 0.00000000001,3.231 1.098,3.765 9.555,1 "
+            "7,0.00000000001 0.00000000001))");
 }
 
 TEST(geometry_test, test_ST_GeomFromText) {

@@ -1,69 +1,73 @@
-# 安装说明
-本文档介绍在离线环境下的conda环境中安装 Arctern 的步骤
+# Installation with local Conda channel
 
-## 大纲
-* [安装要求](#prerequisities)
-* [安装依赖项](#downloaddependencies)
-* [为本地Conda Channel建立索引](#buildlocalchannelindex)
-* [安装依赖库](#installdependency)
-* [创建 Arctern Conda 环境](#constructenv)
-* [从本地Conda channel安装 Arctern](#install)
-* [验证是否安装成功](#verification)
-* [配置 Spark的 Python 路径](#pathconfiguration)
-* [测试样例](#test)
-* [卸载](#uninstallation)
-* [FAQ](#faq)
+This topic introduces how to use Conda to install Arctern offline. This avoids installation failures caused by network issues.
+
+## TOC
+
+<!-- TOC -->
+
+- [Prerequisites](#prerequisites)
+- [Installing Arctern](#installing-arctern)
+    - [Install conda-build and requests online](#install-conda-build-and-requests-online)
+    - [Download dependencies](#download-dependencies)
+- [Building indexes for local Conda Channel](#building-indexes-for-local-conda-channel)
+- [Installing dependencies](#installing-dependencies)
+- [Setting up Arctern Conda environment](#setting-up-arctern-conda-environment)
+- [Installing Arctern from Conda channel](#installing-arctern-from-conda-channel)
+- [Validating installation](#validating-installation)
+- [Configuring Python path for Spark](#configuring-python-path-for-spark)
+- [Test case](#test-case)
+- [Uninstalling Arctern](#uninstalling-arctern)
+- [FAQ](#faq)
+    - [Support for Spark](#support-for-spark)
+
+<!-- /TOC -->
+
+## Prerequisites
+
+- CPU version
+
+| Component     | Version              |
+| -------- | ----------------- |
+| Operating system | Ubuntu LTS 18.04  |
+| Conda    | Miniconda Python3 |
+| Spark    | 3.0               |
+
+- GPU version
+
+| Component          | Version              |
+| ------------- | ----------------- |
+| Operating system     | Ubuntu LTS 18.04  |
+| Conda         | Miniconda Python3 |
+| Spark         | 3.0               |
+| CUDA          | 10.0              |
+| Nvidia driver | 4.30              |
 
 
-## 安装要求
+## Installing Arctern
 
-* CPU 版本
-
-|  名称    |   版本     |
-| ---------- | ------------ |
-| 操作系统 |Ubuntu LTS 18.04|
-| Conda  | Miniconda Python3  |
-| Spark | 3.0  |
-
-
-* GPU 版本
-
-|  名称    |   版本     |
-| ---------- | ------------ |
-| 操作系统 |Ubuntu LTS 18.04|
-| Conda | Miniconda Python3  |
-| Spark | 3.0  |
-|CUDA|10.0|
-|Nvidia driver|4.30|
-
-
-
-## <span id = "downloaddependencies">下载依赖项</span>
-
-### 设置有网环境下的conda环境支持运行依赖包
-
-通过以下命令安装所需的 conda-build 和 requests 包
+### Install conda-build and requests online
 
 ```bash
 $ conda install conda-build
 $ conda install requests
 ```
 
-### 执行脚本下载依赖项
+### Download dependencies
 
-在开始后续步骤之前，请先下载这些支持文件，并放到同一位置。
+Download the following files and save them to the same folder.
 
 * [arctern_dependencies.txt](./scripts/arctern_dependencies.txt)
 
 * [download_dependencies.py](./scripts/download_dependencies.py)
 
-然后，执行以下命令下载依赖项
+Run the following command to download dependencies:
 
 ```bash
 $ python download_dependencies.py
 ```
 
-脚本会通过在线的channel下载 Arctern 所需的依赖项并保存在本地。运行脚本会创建类似以下输出
+The command downloads required dependencies needed by Arctern and saves to local disk. The script has the following output:
 
 ```txt
 Using environment list file: arctern_dependencies.txt
@@ -86,10 +90,9 @@ Getting  libwebp-base-1.1.0-2.tar.bz2
 URL: https://conda.anaconda.org/conda-forge/linux-64/libwebp-base-1.1.0-2.tar.bz2
 	 Downloaded linux-64\libwebp-base-1.1.0-2.tar.bz2
 
-...
 ```
 
-当它下载完成后，会在对应目录下创建以下结构的文件夹:
+After download, a folder with the following structure is created:
 
 ```txt
 channel
@@ -103,88 +106,82 @@ channel
     └── ...
 ```
 
+## Building indexes for local Conda Channel
 
-
-## <span id = "buildlocalchannelindex">为本地Conda Channel建立索引</span>
-
-一旦脚本下载完成，需对此位置Conda channel进行构建索引。Conda 会在每个存在包的文件夹下创建一个清单文件 `repodata.json` 。这有助于用户的Conda将其视为本地channel，并从此位置而非互联网搜索并安装包。
-
-请使用以下命令构建索引
+Please use the following command to build indexes. Conda creates a file `repodata.json` in the folder corresponding to each dependency to make it a local channel.
 
 ```bash
 $ cd channel
 $ conda index .
 ```
 
-运行命令会报告以下输出
+Run the command to return the following output. [/path/to/channel] is the directory to the channel folder.
+
 ```txt
-updating index in: /path/to/channel/linux-64
+updating index in: [/path/to/channel]/linux-64
 ...
-updating index in: /path/to/channel/noarch
+updating index in: [/path/to/channel]/noarch
 ...
-updating index in: /path/to/channel/label/cuda10.0/linux-64
+updating index in: [/path/to/channel]/label/cuda10.0/linux-64
 ...
 ```
 
-完成此步骤后，将根文件夹（channel）传输到一个联网位置或者web服务器，或者在其他宿主机将其作为本地 Conda channel
+Then, the root folder (channel) can be recognized as local channel.
 
 
+## Installing dependencies
 
-## <span id = "installdependency">安装依赖库</span>
+- CPU version
 
+  Use the following command to install dependencies for Arctern CPU version:
 
-* CPU 版本
+    ```bash
+    $ sudo apt install libgl-dev libosmesa6-dev libglu1-mesa-dev
+    ```
 
-  使用以下命令安装 Arctern CPU 版本的依赖库：
+- GPU version
+
+    Use the following command to install dependencies for Arctern GPU version:
+
+    ```bash
+    $ sudo apt install libgl1-mesa-dev libegl1-mesa-dev
+    ```
+
+## Setting up Arctern Conda environment
+
+Use the following command to set up Arctern Conda environment:
+
 ```bash
-    sudo apt install libgl-dev libosmesa6-dev libglu1-mesa-dev
+$ conda create -n arctern
 ```
 
-* GPU 版本
+After the environment is created, you can use `conda env list` to check all Conda environments. The result should include the Arctern environment.
 
-
-  使用以下命令安装 Arctern GPU 版本的依赖库：
 ```bash
-    sudo apt install libgl1-mesa-dev libegl1-mesa-dev
+conda environments:
+base         ...
+arctern      ...
+...
+```
+
+Enter Arctern environment:
+
+```
+$ conda activate arctern
 ```
 
 
+**Note: The following steps must be performed in the Arctern environment**
 
-## <span id = "constructenv">创建 Arctern Conda 环境</span>
-
-### 创建 Arctern 虚拟环境
-
-通过以下命令创建 Arctern Conda 环境：
-
-`conda create -n arctern`
-
-创建成功后，可以通过 `conda env list` 命令查看所有Conda环境，其输出结果应包含Arctern环境，类似如下：
-  
-  ```bash
-  conda environments:
-  base         ...
-  arctern      ...
-  ...
-  ```
-
- 进入 Arctern 环境：
-
-  `conda activate arctern`
+## Installing Arctern from Conda channel
 
 
-**注意：后续工作必须在 Arctern 环境中进行**
+* CPU version
 
-
-
-## <span id = "install">从本地Conda channel安装 Arctern</span>
-
-
-* CPU 版本
-
-  执行以下命令在 Conda 环境中安装 Arctern CPU 版本：
+  Use the following command to install Arctern CPU version:
 
 ```shell
-$ conda install -c file:///path/to/channel -n arctern arctern-spark --offline --override-channels
+$ conda install -c file:///[path/to/channel] -n arctern arctern-spark --offline --override-channels
 ```
 
 例如:
@@ -193,27 +190,25 @@ $ conda install -c file:///path/to/channel -n arctern arctern-spark --offline --
 $ conda install -c file:///tmp/arctern-dependencies/channel -n arctern arctern-spark --offline --override-channels
 ```
 
-* GPU版本
+* GPU version
 
-  执行以下命令在 Conda 环境中安装 Arctern CPU 版本：  
+  Use the following command to install Arctern GPU version:  
 
 ```shell
-    conda install -c file:///path/to/channel/label/cuda10.0 -n arctern libarctern --offline --override-channels
-    conda install -c file:///path/to/channel -n arctern arctern arctern-spark --offline --override-channels
+    conda install -c file:///[path/to/channel]/label/cuda10.0 -n arctern libarctern --offline --override-channels
+    conda install -c file:///[path/to/channel] -n arctern arctern arctern-spark --offline --override-channels
 ```
 
-例如:
+For example:
 
 ```shell
     conda install -c file:///tmp/arctern-dependencies/channel/label/cuda10.0 -n arctern libarctern --offline --override-channels
     conda install -c file:///tmp/arctern-dependencies/channel -n arctern arctern arctern-spark --offline --override-channels
 ```
 
+## Validating installation
 
-
-## <span id = "verification">安装验证</span>
-
-进入 Python 环境，尝试导入 `arctern` 和 `arctern_pyspark` 验证安装是否成功。
+In Python, import `arctern` and `arctern_pyspark` to validate whether the installation is successful.
 
 ```python
 Python 3.7.6 | packaged by conda-forge | (default, Jan 29 2020, 14:55:04)
@@ -223,22 +218,22 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> import arctern_pyspark
 ```
 
-## <span id = "pathconfiguration">配置 Spark 的 Python 路径</span>
+## Configuring Python path for Spark
 
-在文件 `conf/spark-default.conf` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
+Add the following content to `conf/spark-default.conf`. `[path/to/your/conda]` is the installation path of Conda.
 
 ```bash
 spark.executorEnv.PROJ_LIB [path/to/your/conda]/envs/arctern/share/proj
 spark.executorEnv.GDAL_DATA [path/to/your/conda]/envs/arctern/share/gdal
 ```
 
-在文件 `conf/spark-env.sh` 的最后添加以下内容。其中 `[path/to/your/conda]` 为Conda的安装路径。
+Add the following content to `conf/spark-env.sh`. `[path/to/your/conda]` is the installation path of Conda.
 
 ```bash
 export PYSPARK_PYTHON=[path/to/your/conda]/envs/arctern/bin/python
 ```
 
-通过如下方式，检查 PySpark 是否使用 $PYSPARK_PYTHON 指定的 Python 路径。其中 `[path/to/your/spark]` 为 Spark 的安装路径。
+Check whether PySpark uses the Python path determined by `$PYSPARK_PYTHON`. `[path/to/your/spark]` is the installation path of Spark.
 
 ```python
 [path/to/your/spark]/bin/pyspark
@@ -247,49 +242,47 @@ export PYSPARK_PYTHON=[path/to/your/conda]/envs/arctern/bin/python
 [path/to/your/conda]/envs/arctern
 ```
 
+## Test case
 
-
-## <span id = "test">测试样例</span>
-
-下载测试文件
+Download test file.
 
 ```bash
 wget https://raw.githubusercontent.com/zilliztech/arctern/conda/spark/pyspark/examples/gis/spark_udf_ex.py
 ```
 
-通过以下命令提交 Spark 任务，其中 `[path/to/]spark_udf_ex.py` 为测试文件所在的路径。
+Use the following command to submit Spark task. `[path/to/]spark_udf_ex.py` is the path of the test file.
 
 ```bash
 # local mode
-[path/to/your/spark]/bin/spark-submit [path/to/]spark_udf_ex.py
+$ [path/to/your/spark]/bin/spark-submit [path/to/]spark_udf_ex.py
 
 # standalone mode
-[path/to/your/spark]/bin/spark-submit --master [spark service address] [path/to/]spark_udf_ex.py
+$ [path/to/your/spark]/bin/spark-submit --master [spark service address] [path/to/]spark_udf_ex.py
 
 # hadoop/yarn mode
-[path/to/your/spark]/bin/spark-submit --master yarn [path/to/]spark_udf_ex.py
+$ [path/to/your/spark]/bin/spark-submit --master yarn [path/to/]spark_udf_ex.py
 ```
 
-## <span id = "uninstallation">卸载</span>
+## Uninstalling Arctern
 
-在 Conda 环境中输入以下命令可卸载 Arctern
+Use the following command to uninstall Arctern.
 
 ```shell
-conda uninstall -n arctern libarctern arctern arctern-spark
+$ conda uninstall -n arctern libarctern arctern arctern-spark
 ```
 
-## <span id = "faq">FAQ</span>
+## FAQ
 
-### 对Spark的支持
+### Support for Spark
 
-Arctern 可以运行在 Spark 的各种模式下，需要在每台运行 Spark 的机器上，执行如下操作：
+Arctern can run in any mode of Spark. You must complete the following tasks for each host that runs Spark.
 
-* 创建 Conda 虚拟环境
-* 安装 Arctern
-* 配置 Spark 环境变量
+- Set up Conda environment
+- Arctern Install Arctern
+- Configure Spark environment variables
 
-如果 Spark 运行在 `standalone` 集群模式下，提交任务机器的 Spark 环境需要与集群的 Spark 环境完全一致，包括以下几点：
+If Spark runs at `standalone` cluster mode, the Spark environment of the host that submit tasks must be consistent with the Spark environment of the cluster by:
 
-* `spark` 安装的绝对路径与集群中每台机器完全一致
-* `conda` 安装的绝对路径与集群中每个机器完全一致
-* `conda` 虚拟环境名与集群中每个机器完全一致
+- The absolute installation path of `spark` must be the same as each host in the cluster
+- The absolute installation path of `conda` must be the same as each host in the cluster
+- The name of the virtual environment must be the same as each host in the cluster

@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  spark-master:
+    image: ${ARCTERN_REPO:-arcternio/arctern-spark-gpu}:${ARCTERN_TAG:-latest}
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    networks:
+      - default
+    deploy:
+      replicas: ${MASTER_REPLICAS:-1}
+      resources:
+        limits:
+          cpus: ${MASTER_LIMITS_CPUS:-1}
+          memory: ${MASTER_LIMITS_MEMORY:-1200M}
+        reservations:
+          cpus: ${MASTER_RESERVATIONS_CPUS:-0.5}
+          memory: ${MASTER_RESERVATIONS_MEMORY:-200M}
+#     configs:
+#       - source: spark-defaults-conf
+#         target: /opt/spark/conf/spark-defaults.conf
+  spark-worker:
+    image: ${ARCTERN_REPO:-arcternio/arctern-spark-gpu}:${ARCTERN_TAG:-latest}
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=${SPARK_WORKER_MEMORY:-1G}
+      - SPARK_WORKER_CORES=${SPARK_WORKER_CORES:-1}
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - test-volume:${CONTAINER_PATH}
+    networks:
+      - default
+    deploy:
+      replicas: ${MASTER_REPLICAS:-3}
+      resources:
+        limits:
+          cpus: ${WORKER_LIMITS_CPUS:-1}
+          memory: ${WORKER_LIMITS_MEMORY:-1200M}
+        reservations:
+          cpus: ${WORKER_RESERVATIONS_CPUS:-0.5}
+          memory: ${WORKER_RESERVATIONS_MEMORY:-200M}
+
+# configs:
+#   spark-defaults-conf:
+#     file: ./spark-defaults.conf
+#     external: true
+
+volumes:
+  test-volume:
+    driver_opts:
+      type: "${VOLUMES_TYPE}"
+      o: "${VOLUMES_OPTIONS}"
+      device: "${NETWORK_PATH}"
+
+networks:
+  default:
+    driver: overlay
+    attachable: true

@@ -96,7 +96,7 @@ inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   if (geo == nullptr) {
     builder.AppendNull();
-  } else if (geo->IsEmpty()) {
+  } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
     builder.AppendNull();
   } else {
     auto wkb_size = geo->WkbSize();
@@ -211,11 +211,15 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
       std::static_pointer_cast<const arrow::DoubleArray>(max_y_values);
 
   arrow::BinaryBuilder builder;
+  OGRPolygon empty;
+  auto empty_size = empty.WkbSize();
+  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
+  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
 
   for (int32_t i = 0; i < len; i++) {
     if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
         (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
-      CHECK_ARROW(builder.AppendNull());
+      builder.Append(empty_wkb, empty_size);
     } else {
       OGRLinearRing ring;
       ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
@@ -229,6 +233,7 @@ std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
       AppendWkbNDR(builder, &polygon);
     }
   }
+  CPLFree(empty_wkb);
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
@@ -343,7 +348,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& a
   OGREnvelope env;
   auto op = [&env](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     if (geo->IsEmpty()) {
-      builder.AppendNull();
+      AppendWkbNDR(builder, geo);
     } else {
       OGR_G_GetEnvelope(geo, &env);
       if (env.MinX == env.MaxX) {    // vertical line or Point
@@ -413,6 +418,11 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   arrow::BinaryBuilder builder;
   auto has_curve = new HasCurveVisitor;
 
+  OGRGeometryCollection empty;
+  auto empty_size = empty.WkbSize();
+  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
+  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
+
   for (int i = 0; i < len; ++i) {
     auto ogr1 = Wrapper_createFromWkb(wkt1, i);
     auto ogr2 = Wrapper_createFromWkb(wkt2, i);
@@ -422,11 +432,16 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
       builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.AppendNull();
-      // builder.Append("GEOMETRYCOLLECTION EMPTY");
+      builder.Append(empty_wkb, empty_size);
     } else {
       auto rst = ogr1->Intersection(ogr2);
-      AppendWkbNDR(builder, rst);
+      if (rst == nullptr) {
+        builder.AppendNull();
+      } else if (rst->IsEmpty()) {
+        builder.Append(empty_wkb, empty_size);
+      } else {
+        AppendWkbNDR(builder, rst);
+      }
       OGRGeometryFactory::destroyGeometry(rst);
     }
     OGRGeometryFactory::destroyGeometry(ogr1);
@@ -434,6 +449,7 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   }
 
   delete has_curve;
+  CPLFree(empty_wkb);
 
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
@@ -629,7 +645,7 @@ std::shared_ptr<arrow::Array> ST_Equals(const std::shared_ptr<arrow::Array>& geo
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
-      builder.AppendNull();
+      builder.Append(true);
     } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
       builder.Append(true);
     } else {
@@ -694,7 +710,60 @@ std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>&
 std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo1,
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
-    builder.Append(ogr1->Within(ogr2) != 0);
+    bool flag = true;
+    do {
+      /*
+       * speed up for point within circle
+       * point pattern : 'POINT ( x y )'
+       * circle pattern : 'CurvePolygon ( CircularString ( x1 y1, x2 y2, x1 y2 ) )'
+       *                   if the circularstring has 3 points and closed,
+       *                   it becomes a circle,
+       *                   the centre is (x1+x2)/2, (y1+y2)/2
+       *                   the radius is sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y2-y2))/2
+       */
+      auto type1 = ogr1->getGeometryType();
+      if (type1 != wkbPoint) break;
+      auto point = reinterpret_cast<OGRPoint*>(ogr1);
+
+      auto type2 = ogr2->getGeometryType();
+      if (type2 != wkbCurvePolygon) break;
+      auto curve_poly = reinterpret_cast<OGRCurvePolygon*>(ogr2);
+
+      auto curve_it = curve_poly->begin();
+      if (curve_it == curve_poly->end()) break;
+      auto curve = *curve_it;
+      ++curve_it;
+      if (curve_it != curve_poly->end()) break;
+
+      auto curve_type = curve->getGeometryType();
+      if (curve_type != wkbCircularString) break;
+      auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
+      if (circular_string->getNumPoints() != 3) break;
+      if (!circular_string->get_IsClosed()) break;
+
+      auto circular_point_it = circular_string->begin();
+      auto circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p0_x = circular_point->getX();
+      auto p0_y = circular_point->getY();
+
+      ++circular_point_it;
+      circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p1_x = circular_point->getX();
+      auto p1_y = circular_point->getY();
+
+      auto d_x = (p0_x + p1_x) / 2 - point->getX();
+      auto d_y = (p0_y + p1_y) / 2 - point->getY();
+      auto dd = 4 * (d_x * d_x + d_y * d_y);
+      auto l_x = p0_x - p1_x;
+      auto l_y = p0_y - p1_y;
+      auto ll = l_x * l_x + l_y * l_y;
+      builder.Append(dd <= ll);
+
+      flag = false;
+    } while (0);
+    if (flag) builder.Append(ogr1->Within(ogr2) != 0);
   };
   auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { builder.Append(false); };
@@ -829,6 +898,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     OGRGeometryFactory::destroyGeometry(geo);
   }
   arrow::BinaryBuilder builder;
+  OGRPolygon polygon;
   if (set_env) {
     OGRLinearRing ring;
     ring.addPoint(xmin, ymin);
@@ -836,12 +906,9 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     ring.addPoint(xmax, ymax);
     ring.addPoint(xmax, ymin);
     ring.addPoint(xmin, ymin);
-    OGRPolygon polygon;
     polygon.addRing(&ring);
-    AppendWkbNDR(builder, &polygon);
-  } else {
-    builder.AppendNull();
   }
+  AppendWkbNDR(builder, &polygon);
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;

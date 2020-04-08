@@ -21,6 +21,9 @@ pipeline {
         PIPELINE_NAME = "arctern-ci"
         LOWER_BUILD_TYPE = params.BUILD_TYPE.toLowerCase()
         SEMVER = "${BRANCH_NAME.contains('/') ? BRANCH_NAME.substring(BRANCH_NAME.lastIndexOf('/') + 1) : BRANCH_NAME}"
+        FLASK_IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-flask"
+        ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
+        ARCTERN_FLASK_TAG = "${SEMVER}"
     }
 
     stages {
@@ -125,6 +128,24 @@ pipeline {
             }
         }
 
+        stage('Build Arctern Web Server Image') {
+            agent {
+                kubernetes {
+                    label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                    defaultContainer 'jnlp'
+                    yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                }
+            }
+
+            steps {
+                container('docker-env') {
+                    script {
+                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
+                    }
+                }
+            }
+        }
+
         stage('Dev Test') {
             matrix {
                 agent none
@@ -150,10 +171,12 @@ pipeline {
                     TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                     ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
                     ARCTERN_TAG = "${TAG_NAME}"
+                    PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/library/pytest"
+                    PYTEST_TAG = "v0.1.0"
                 }
 
                 stages {
-                    stage('Arctern Spark Docker Images') {
+                    stage('Arctern Docker Images') {
                         agent {
                             kubernetes {
                                 label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
