@@ -66,6 +66,7 @@ set(cuda_gis_src
         gis/cuda/functor/st_area.cu
         gis/cuda/functor/st_envelope.cu
         gis/cuda/functor/st_point.cu
+        gis/cuda/functor/st_relate.cu
         gis/cuda/gis_functions.cpp
         )
 

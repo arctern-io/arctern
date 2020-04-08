@@ -12,21 +12,20 @@ class Matrix {
   enum class State : uint8_t {
     Invalid = 0,
 
-    False = 0x10,
+    Ignored = 0x10,
+    False,
     TrueGeneric,
     DimensionZero,
     DimensionOne,
     DimensionTwo,
 
-    // TODO:
-    Ignore = 0x20,
-    RequireTrueFalse,
-    RequireDimension,
+    ComputeIgnored = 0x20,
+    ComputeTrueFalse,
+    ComputeDimension
   };
-  DEVICE_RUNNABLE Matrix() = default;
-  Matrix(const std::string& text) {
-    assert(false);
-  }
+  Matrix() = default;
+
+  explicit Matrix(const std::string& text) { assert(false); }
 
   template <Position row, Position col>
   DEVICE_RUNNABLE State get() {
