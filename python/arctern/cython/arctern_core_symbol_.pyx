@@ -60,6 +60,12 @@ def heat_map(arr_x, arr_y, arr_c, conf):
 def choropleth_map(arr_wkt, arr_count, conf):
     pass
 
+def icon_viz_wkb(points, conf):
+    pass
+
+def icon_viz(arr_x, arr_y, conf):
+    pass
+
 def wkt2wkb(arr_wkt):
     pass
 

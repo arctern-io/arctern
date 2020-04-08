@@ -63,6 +63,12 @@ def heat_map(arr_x, arr_y, arr_c, conf):
 def choropleth_map(arr_wkt, arr_count, conf):
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
 
+def icon_viz_wkb(points, conf):
+    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(points), conf))
+
+def icon_viz(arr_x, arr_y, conf):
+    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
 

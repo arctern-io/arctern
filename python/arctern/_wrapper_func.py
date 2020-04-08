@@ -52,6 +52,8 @@ __all__ = [
     "heat_map",
     "heat_map_wkb",
     "choropleth_map",
+    "icon_viz",
+    "icon_viz_wkb",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -384,6 +386,19 @@ def choropleth_map(wkb_data, count_data, conf):
     else:
         arr_count = pa.array(count_data, type='int64')
     rs = arctern_core_.choropleth_map(arr_wkb, arr_count, conf)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz_wkb(points, conf):
+    import pyarrow as pa
+    array_points = pa.array(points, type='binary')
+    rs = arctern_core_.icon_viz_wkb(array_points, conf)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz(xs, ys, conf):
+    import pyarrow as pa
+    arr_x = pa.array(xs, type='uint32')
+    arr_y = pa.array(ys, type='uint32')
+    rs = arctern_core_.icon_viz(arr_x, arr_y, conf)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):
