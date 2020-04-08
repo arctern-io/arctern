@@ -93,7 +93,7 @@ def ST_Point(x, y):
 
 def ST_GeomFromGeoJSON(json):
     """
-    Constructs a PostGIS geometry object from the GeoJSON representation.
+    Constructs a geometry object from the GeoJSON representation.
 
     :type json: pyarrow.array.string
     :param json: Geometries organized as json
@@ -117,7 +117,7 @@ def ST_GeomFromGeoJSON(json):
 
 def ST_GeomFromText(text):
     """
-    Constructs a PostGIS ST_Geometry object from the OGC Well-Known text representation.
+    Constructs a geometry object from the OGC Well-Known text representation.
 
     :type json: pyarrow.array.string
     :param json: Geometries organized as wkt
