@@ -39,8 +39,6 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const std::pair<double, double>& size_bound() const { return size_bound_; }
 
-  const ColorStyle& color_style() const { return color_style_; }
-
   const double& opacity() const { return opacity_; }
 
   const bool& is_multiple_color() const { return is_multiple_color_; }
@@ -57,7 +55,6 @@ class VegaWeightedPointmap : public VegaScatterPlot {
   PointParams point_params_;
   std::pair<double, double> color_bound_;
   std::pair<double, double> size_bound_;
-  ColorStyle color_style_;
   double opacity_;
   bool is_multiple_color_;
   bool is_multiple_point_size_;

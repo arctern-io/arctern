@@ -3,7 +3,7 @@
     "type": "spark",
     "spark": {
         "app_name": "arctern",
-        "master-addr": "spark://spark-master:7077",
+        "master-addr": "local[*]",
         "envs": {
         }
     },
@@ -11,7 +11,7 @@
         {
             "name": "old_nyc_taxi",
             "format": "csv",
-            "path": "/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "path": "/tmp/0_5M_nyc_taxi_and_building.csv",
             "options": {
                 "header": "True",
                 "delimiter": ","

@@ -37,8 +37,6 @@ class VegaChoroplethMap : public Vega {
 
   const std::pair<double, double>& color_bound() const { return color_bound_; }
 
-  const ColorStyle& color_style() const { return color_style_; }
-
   const double& opacity() const { return opacity_; }
 
   const std::vector<Color>& color_gradient() { return color_gradient_; }
@@ -49,7 +47,6 @@ class VegaChoroplethMap : public Vega {
 
  private:
   std::pair<double, double> color_bound_;
-  ColorStyle color_style_;
   double opacity_;
   std::vector<Color> color_gradient_;
 };
