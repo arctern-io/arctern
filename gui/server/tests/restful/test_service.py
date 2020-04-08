@@ -107,7 +107,7 @@ def test_query(host, port, headers, dbid, table_name):
                     from {}
                     where ST_Within(
                         ST_Point(pickup_longitude, pickup_latitude),
-                        "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
+                        ST_GeomFromText("POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))")
                         )
              '''.format(table_name),
              'type': 'point',
@@ -115,10 +115,10 @@ def test_query(host, port, headers, dbid, table_name):
                   'width': 1024,
                   'height': 896,
                   'point': {
-                       'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                       'coordinate': 'EPSG:4326',
-                       'stroke_width': 3,
-                       'stroke': '#2DEF4A',
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                       'coordinate_system': 'EPSG:4326',
+                       'point_color': '#2DEF4A',
+                       'point_size': 3,
                        'opacity': 0.5
                   }
              }
@@ -130,6 +130,7 @@ def test_query(host, port, headers, dbid, table_name):
          headers=headers,
     )
     assert response.status_code == 200
+    assert response.json()['data']['result'] is not None
 
     # case 2: heatmap
     heatmap_request_dict = {
@@ -140,7 +141,7 @@ def test_query(host, port, headers, dbid, table_name):
             from {}
             where ST_Within(
                 ST_Point(pickup_longitude, pickup_latitude),
-                'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'
+                ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')
                 )
             '''.format(table_name),
             'type': 'heat',
@@ -148,9 +149,9 @@ def test_query(host, port, headers, dbid, table_name):
                 'width': 1024,
                 'height': 896,
                 'heat': {
-                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'coordinate': 'EPSG:4326',
-                    'map_scale': 10
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                    'coordinate_system': 'EPSG:4326',
+                    'map_zoom_level': 10
                 }
             }
         }
@@ -161,13 +162,14 @@ def test_query(host, port, headers, dbid, table_name):
          headers=headers,
     )
     assert response.status_code == 200
+    assert response.json()['data']['result'] is not None
 
     # case 3: choropleth map
     choropleth_map_request_dict = {
         'id': dbid,
         'query': {
             'sql': '''
-            select buildingtext_dropoff as wkt, passenger_count as w
+            select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w
             from {}
             '''.format(table_name),
             'type': 'choropleth',
@@ -175,10 +177,10 @@ def test_query(host, port, headers, dbid, table_name):
                 'width': 1024,
                 'height': 896,
                 'choropleth': {
-                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'coordinate': 'EPSG:4326',
-                    'color_style': 'blue_to_red',
-                    'rule': [2.5, 5],
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                    'coordinate_system': 'EPSG:4326',
+                    'color_gradient': 'blue_to_red',
+                    'color_bound': [2.5, 5],
                     'opacity': 1
                 }
             }
@@ -190,6 +192,7 @@ def test_query(host, port, headers, dbid, table_name):
          headers=headers,
     )
     assert response.status_code == 200
+    assert response.json()['data']['result'] is not None
 
     # case 4: weighted pointmap
     weighted_pointmap_request_dict = {
@@ -200,19 +203,19 @@ def test_query(host, port, headers, dbid, table_name):
             from {}
             where ST_Within(
                 ST_Point(pickup_longitude, pickup_latitude),
-                'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')
+                ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))
             '''.format(table_name),
             'type': 'weighted',
             'params': {
                 'width': 1024,
                 'height': 896,
                 'weighted': {
-                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'color': 'blue_to_red',
-                    'color_ruler': [0, 2],
-                    'stroke_ruler': [0, 10],
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                    'color_gradient': 'blue_to_red',
+                    'color_bound': [0, 2],
+                    'size_bound': [0, 10],
                     'opacity': 1.0,
-                    'coordinate': 'EPSG:4326'
+                    'coordinate_system': 'EPSG:4326'
                 }
             }
         }
@@ -223,3 +226,4 @@ def test_query(host, port, headers, dbid, table_name):
         headers=headers,
     )
     assert response.status_code == 200
+    assert response.json()['data']['result'] is not None

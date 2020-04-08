@@ -54,9 +54,9 @@ void ColorGradient::getColorAtValue(const float value, float& red, float& green,
   return;
 }
 
-CircleParams ColorGradient::GetCircleParams(arctern::render::ColorStyle color_style,
-                                            double ratio) {
-  CircleParams circle_params_2d;
+PointParams ColorGradient::GetPointParams(arctern::render::ColorStyle color_style,
+                                          double ratio) {
+  PointParams circle_params_2d;
 
   switch (color_style) {
     case ColorStyle::kBlueToRed: {
