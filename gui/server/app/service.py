@@ -230,9 +230,9 @@ def db_query():
             vega = vega_icon(
                 int(query_params['width']),
                 int(query_params['height']),
-                query_params['weighted']['bounding_box'],
-                query_params['weighted']['icon_path'],
-                query_params['weighted']['coordinate']
+                query_params['icon']['bounding_box'],
+                query_params['icon']['icon_path'],
+                query_params['icon']['coordinate']
             )
             data = icon_viz(res, vega)
             content['result'] = data

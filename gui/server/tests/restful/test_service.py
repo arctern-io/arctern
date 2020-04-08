@@ -243,7 +243,7 @@ def test_query(host, port, headers, dbid, table_name):
             'params': {
                 'width': 1024,
                 'height': 896,
-                'point': {
+                'icon': {
                     'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
                     'coordinate': 'EPSG:4326',
                     'icon_path': png_path
