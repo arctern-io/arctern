@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>arctern_pyspark._wrapper_func &mdash; arctern 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> arctern
+          
+
+          
+            
+            <img src="../../_static/arctern-color.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../arctern.html">arctern python api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arctern_pyspark.html">arctern_pyspark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compile-with-conda.html">conda环境搭建</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">arctern</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>arctern_pyspark._wrapper_func</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for arctern_pyspark._wrapper_func</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2019-2020 Zilliz. All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;ST_Point&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Intersection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_IsValid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PrecisionReduce&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Equals&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Touches&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Overlaps&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Crosses&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_IsSimple&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeometryType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_MakeValid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_SimplifyPreserveTopology&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PolygonFromEnvelope&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Contains&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Intersects&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Within&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Distance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Area&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Centroid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Length&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_HausdorffDistance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_ConvexHull&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_NPoints&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Envelope&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Buffer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Union_Aggr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Envelope_Aggr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_Transform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_CurveToLine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeomFromGeoJSON&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PointFromText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_PolygonFromText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_LineStringFromText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeomFromText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_GeomFromWKT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ST_AsText&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Projection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TransformAndProjection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WktToWkb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WkbToWkt&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">arctern</span>
+<span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="n">pandas_udf</span><span class="p">,</span> <span class="n">PandasUDFType</span>
+
+<div class="viewcode-block" id="Projection"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.Projection.html#arctern_pyspark._wrapper_func.Projection">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">Projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top_left</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">height</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TransformAndProjection"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.TransformAndProjection.html#arctern_pyspark._wrapper_func.TransformAndProjection">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">TransformAndProjection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">,</span> <span class="n">dst_rs</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">transform_and_projection</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dst_rs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bottom_right</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top_left</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">height</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="WktToWkb"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.WktToWkb.html#arctern_pyspark._wrapper_func.WktToWkb">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">WktToWkb</span><span class="p">(</span><span class="n">wkts</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">wkt2wkb</span><span class="p">(</span><span class="n">wkts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WkbToWkt"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.WkbToWkt.html#arctern_pyspark._wrapper_func.WkbToWkt">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">WkbToWkt</span><span class="p">(</span><span class="n">wkbs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">wkb2wkt</span><span class="p">(</span><span class="n">wkbs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_PointFromText"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_PointFromText.html#arctern_pyspark._wrapper_func.ST_PointFromText">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_PointFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_PolygonFromText"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_PolygonFromText.html#arctern_pyspark._wrapper_func.ST_PolygonFromText">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_PolygonFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_LineStringFromText"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_LineStringFromText.html#arctern_pyspark._wrapper_func.ST_LineStringFromText">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_LineStringFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_GeomFromWKT"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_GeomFromWKT.html#arctern_pyspark._wrapper_func.ST_GeomFromWKT">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_GeomFromWKT</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_GeomFromText"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_GeomFromText.html#arctern_pyspark._wrapper_func.ST_GeomFromText">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_AsText"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_AsText.html#arctern_pyspark._wrapper_func.ST_AsText">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_AsText</span><span class="p">(</span><span class="n">geo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Point"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Point.html#arctern_pyspark._wrapper_func.ST_Point">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_GeomFromGeoJSON"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_GeomFromGeoJSON.html#arctern_pyspark._wrapper_func.ST_GeomFromGeoJSON">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">json</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromGeoJSON</span><span class="p">(</span><span class="n">json</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Intersection"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Intersection.html#arctern_pyspark._wrapper_func.ST_Intersection">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Intersection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_IsValid"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_IsValid.html#arctern_pyspark._wrapper_func.ST_IsValid">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_IsValid</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_PrecisionReduce"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_PrecisionReduce.html#arctern_pyspark._wrapper_func.ST_PrecisionReduce">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_PrecisionReduce</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">precision</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ST_Equals"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Equals.html#arctern_pyspark._wrapper_func.ST_Equals">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Equals</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Touches"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Touches.html#arctern_pyspark._wrapper_func.ST_Touches">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Touches</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Overlaps"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Overlaps.html#arctern_pyspark._wrapper_func.ST_Overlaps">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Overlaps</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ST_Crosses"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Crosses.html#arctern_pyspark._wrapper_func.ST_Crosses">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Crosses</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_IsSimple"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_IsSimple.html#arctern_pyspark._wrapper_func.ST_IsSimple">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_IsSimple</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_GeometryType"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_GeometryType.html#arctern_pyspark._wrapper_func.ST_GeometryType">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeometryType</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_MakeValid"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_MakeValid.html#arctern_pyspark._wrapper_func.ST_MakeValid">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_MakeValid</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<span class="c1"># TODO: ST_SimplifyPreserveTopology</span>
+<div class="viewcode-block" id="ST_SimplifyPreserveTopology"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_SimplifyPreserveTopology.html#arctern_pyspark._wrapper_func.ST_SimplifyPreserveTopology">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_SimplifyPreserveTopology</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">distance_tolerance</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ST_PolygonFromEnvelope"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_PolygonFromEnvelope.html#arctern_pyspark._wrapper_func.ST_PolygonFromEnvelope">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_PolygonFromEnvelope</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Contains"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Contains.html#arctern_pyspark._wrapper_func.ST_Contains">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Contains</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Intersects"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Intersects.html#arctern_pyspark._wrapper_func.ST_Intersects">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Intersects</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Within"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Within.html#arctern_pyspark._wrapper_func.ST_Within">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Within</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Distance"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Distance.html#arctern_pyspark._wrapper_func.ST_Distance">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Distance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Area"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Area.html#arctern_pyspark._wrapper_func.ST_Area">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Area</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Centroid"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Centroid.html#arctern_pyspark._wrapper_func.ST_Centroid">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Centroid</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Length"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Length.html#arctern_pyspark._wrapper_func.ST_Length">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_HausdorffDistance"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_HausdorffDistance.html#arctern_pyspark._wrapper_func.ST_HausdorffDistance">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_HausdorffDistance</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="n">geo2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_HausdorffDistance</span><span class="p">(</span><span class="n">geo1</span><span class="p">,</span> <span class="n">geo2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_ConvexHull"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_ConvexHull.html#arctern_pyspark._wrapper_func.ST_ConvexHull">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_ConvexHull</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_NPoints"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_NPoints.html#arctern_pyspark._wrapper_func.ST_NPoints">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_NPoints</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ST_Envelope"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Envelope.html#arctern_pyspark._wrapper_func.ST_Envelope">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Envelope</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+
+<span class="c1"># TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf</span>
+<div class="viewcode-block" id="ST_Buffer"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Buffer.html#arctern_pyspark._wrapper_func.ST_Buffer">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Buffer</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">dfDist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Buffer</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">dfDist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ST_Union_Aggr"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Union_Aggr.html#arctern_pyspark._wrapper_func.ST_Union_Aggr">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">GROUPED_AGG</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Union_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Union_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ST_Envelope_Aggr"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Envelope_Aggr.html#arctern_pyspark._wrapper_func.ST_Envelope_Aggr">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">GROUPED_AGG</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Envelope_Aggr</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ST_Transform"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_Transform.html#arctern_pyspark._wrapper_func.ST_Transform">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_Transform</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">,</span> <span class="n">dst_rs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">geos</span><span class="p">,</span> <span class="n">src_rs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dst_rs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ST_CurveToLine"><a class="viewcode-back" href="../../api/arctern_pyspark._wrapper_func.ST_CurveToLine.html#arctern_pyspark._wrapper_func.ST_CurveToLine">[docs]</a><span class="nd">@pandas_udf</span><span class="p">(</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="n">PandasUDFType</span><span class="o">.</span><span class="n">SCALAR</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ST_CurveToLine</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_CurveToLine</span><span class="p">(</span><span class="n">geos</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, zilliz
+      <span class="lastupdated">
+        Last updated on Apr 09, 2020.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

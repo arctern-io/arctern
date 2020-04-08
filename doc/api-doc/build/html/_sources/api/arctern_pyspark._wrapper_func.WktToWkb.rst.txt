@@ -1,0 +1,6 @@
+WktToWkb
+========
+
+.. currentmodule:: arctern_pyspark._wrapper_func
+
+.. autofunction:: WktToWkb
