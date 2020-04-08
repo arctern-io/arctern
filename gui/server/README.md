@@ -615,7 +615,7 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     -71.714099,
                     41.897445
                 ],
-                "color_gradient": ["#0000FF", "#FF0000"],
+                "color_gradient": ["#0000FF", "#FF0000"], 
                 "color_bound": [
                     0,
                     2
