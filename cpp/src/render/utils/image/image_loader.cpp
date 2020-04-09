@@ -24,57 +24,55 @@ namespace arctern {
 namespace render {
 
 ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_path) {
-    int width, height, channels_in_file;
+  int width, height, channels_in_file;
 
-    stbi_set_flip_vertically_on_load(true);
+  stbi_set_flip_vertically_on_load(true);
 
-    auto pixel =
-        stbi_load(file_path.c_str(), &width, &height, &channels_in_file,
-        STBI_rgb_alpha);
+  auto pixel =
+      stbi_load(file_path.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
 
   ImageBuffer image_buffer{};
-    image_buffer.buffer = pixel;
-    image_buffer.image_params.width = width;
-    image_buffer.image_params.height = height;
+  image_buffer.buffer = pixel;
+  image_buffer.image_params.width = width;
+  image_buffer.image_params.height = height;
 
   return image_buffer;
 }
 
 void ImageLoader::LoadDir(const std::string& file_path) {
-    image_buffers_.clear();
+  image_buffers_.clear();
 
-    int width, height, channels_in_file;
+  int width, height, channels_in_file;
 
-    DIR* dir;
-    struct dirent* ent;
+  DIR* dir;
+  struct dirent* ent;
 
-    if ((dir = opendir(file_path.c_str())) == nullptr) {
-      std::string err_msg = "Cannot find images file path: " + file_path;
-      throw std::runtime_error(err_msg);
+  if ((dir = opendir(file_path.c_str())) == nullptr) {
+    std::string err_msg = "Cannot find images file path: " + file_path;
+    throw std::runtime_error(err_msg);
+  }
+
+  stbi_set_flip_vertically_on_load(true);
+
+  while ((ent = readdir(dir)) != nullptr) {
+    if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+      continue;
     }
 
-    stbi_set_flip_vertically_on_load(true);
+    std::string file_name = file_path + ent->d_name;
 
-    while ((ent = readdir(dir)) != nullptr) {
-      if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
-        continue;
-      }
+    auto pixel =
+        stbi_load(file_name.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
 
-      std::string file_name = file_path + ent->d_name;
+    ImageBuffer image_buffer{};
+    image_buffer.buffer = pixel;
+    image_buffer.image_params.width = width;
+    image_buffer.image_params.height = height;
 
-      auto pixel =
-          stbi_load(file_name.c_str(), &width, &height, &channels_in_file,
-          STBI_rgb_alpha);
+    image_buffers_.emplace(ent->d_name, image_buffer);
+  }
 
-      ImageBuffer image_buffer{};
-      image_buffer.buffer = pixel;
-      image_buffer.image_params.width = width;
-      image_buffer.image_params.height = height;
-
-      image_buffers_.emplace(ent->d_name, image_buffer);
-    }
-
-    closedir(dir);
+  closedir(dir);
 }
 
 }  // namespace render
