@@ -24,6 +24,9 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
+using WkbSpaceType = WkbSpaceType;
+using WkbCategory = WkbCategory;
+
 struct WkbTag {
   WkbTag() = default;
   constexpr DEVICE_RUNNABLE WkbTag(WkbTypes type) : data((uint32_t)type) {}
