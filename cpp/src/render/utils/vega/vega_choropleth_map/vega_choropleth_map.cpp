@@ -56,31 +56,33 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   if (!JsonLabelCheck(mark_enter, "color_gradient") ||
       !JsonLabelCheck(mark_enter["color_gradient"], "value") ||
       !JsonTypeCheck(mark_enter["color_gradient"]["value"],
-                     rapidjson::Type::kStringType)) {
+                     rapidjson::Type::kArrayType)) {
     return;
   }
-  auto color_style_string =
-      std::string(mark_enter["color_gradient"]["value"].GetString());
-  if (color_style_string == "blue_to_red") {
-    color_style_ = ColorStyle::kBlueToRed;
-  } else if (color_style_string == "skyblue_to_white") {
-    color_style_ = ColorStyle::kSkyBlueToWhite;
-  } else if (color_style_string == "purple_to_yellow") {
-    color_style_ = ColorStyle::kPurpleToYellow;
-  } else if (color_style_string == "red_transparency") {
-    color_style_ = ColorStyle::kRedTransParency;
-  } else if (color_style_string == "blue_transparency") {
-    color_style_ = ColorStyle::kBlueTransParency;
-  } else if (color_style_string == "blue_green_yellow") {
-    color_style_ = ColorStyle::kBlueGreenYellow;
-  } else if (color_style_string == "white_blue") {
-    color_style_ = ColorStyle::kWhiteToBlue;
-  } else if (color_style_string == "blue_white_red") {
-    color_style_ = ColorStyle::kBlueWhiteRed;
-  } else if (color_style_string == "green_yellow_red") {
-    color_style_ = ColorStyle::kGreenYellowRed;
+
+  auto color_gradient_size = mark_enter["color_gradient"]["value"].Size();
+  if (color_gradient_size == 1 && JsonTypeCheck(mark_enter["color_gradient"]["value"][0],
+                                                rapidjson::Type::kStringType)) {
+    auto color =
+        ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
+    color.a = mark_enter["opacity"]["value"].GetDouble();
+    color_gradient_.emplace_back(color);
+  } else if (color_gradient_size == 2 &&
+             JsonTypeCheck(mark_enter["color_gradient"]["value"][0],
+                           rapidjson::Type::kStringType) &&
+             JsonTypeCheck(mark_enter["color_gradient"]["value"][1],
+                           rapidjson::Type::kStringType)) {
+    auto color_start =
+        ColorParser(mark_enter["color_gradient"]["value"][0].GetString()).color();
+    auto color_end =
+        ColorParser(mark_enter["color_gradient"]["value"][1].GetString()).color();
+    auto opacity = mark_enter["opacity"]["value"].GetDouble();
+    color_start.a = opacity;
+    color_end.a = opacity;
+    color_gradient_.emplace_back(color_start);
+    color_gradient_.emplace_back(color_end);
   } else {
-    std::string err_msg = "unsupported color gradient '" + color_style_string + "'.";
+    std::string err_msg = "unsupported color gradient";
     throw std::runtime_error(err_msg);
   }
 

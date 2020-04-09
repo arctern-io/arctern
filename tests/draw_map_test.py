@@ -174,7 +174,7 @@ def run_test_weighted_point_map(spark):
     res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
     # 1.1 opacity = 1.0, color_ruler: [0, 2], color: #EE3814(red)
-    vega1_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE3814", [0, 2],
+    vega1_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#EE3814"], [0, 2],
                                      [10], 1.0, "EPSG:4326")
     baseline1 = weighted_pointmap(vega1_1, res1)
     weighted_point_map1_1_1 = weighted_pointmap(vega1_1, res1)
@@ -186,7 +186,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_1_2, png_path + "test_weighted_point_map_nyc_1_1-2.png")
 
     # 1.2 opacity = 0.0, color_ruler: [0, 2], color: #EE3814(red)
-    vega1_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE3814", [0, 2],
+    vega1_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#EE3814"], [0, 2],
                                      [10], 0.0, "EPSG:4326")
     baseline1_2 = weighted_pointmap(vega1_2, res1)
     weighted_point_map1_2_1 = weighted_pointmap(vega1_2, res1)
@@ -198,7 +198,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_2_2, png_path + "test_weighted_point_map_nyc_1_2-2.png")
 
     # 1.3 opacity = 1.0, color_ruler: [0, 100], color: #14EE47(green)
-    vega1_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 100],
+    vega1_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#14EE47"], [0, 100],
                                      [5], 1.0, "EPSG:4326")
     baseline1_3 = weighted_pointmap(vega1_3, res1)
     weighted_point_map1_3_1 = weighted_pointmap(vega1_3, res1)
@@ -210,7 +210,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_3_2, png_path + "test_weighted_point_map_nyc_1_3-2.png")
 
     # 1.4 opacity = 0.5, color_ruler: [0, 2], color: #1221EE, stroke_ruler: [5]
-    vega1_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#1221EE", [0, 2],
+    vega1_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#1221EE"], [0, 2],
                                      [5], 0.5, "EPSG:4326")
     baseline1_4 = weighted_pointmap(vega1_4, res1)
     weighted_point_map1_4_1 = weighted_pointmap(vega1_4, res1)
@@ -222,7 +222,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_4_2, png_path + "test_weighted_point_map_nyc_1_4-2.png")
 
     # 1.5 size: 200*200, opacity = 0.5, color_ruler: [0, 2], color: #EE1271, stroke_ruler: [10]
-    vega1_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#EE1271", [0, 2],
+    vega1_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#EE1271"], [0, 2],
                                      [10], 0.5, "EPSG:4326")
     baseline1_5 = weighted_pointmap(vega1_5, res1)
     weighted_point_map1_5_1 = weighted_pointmap(vega1_5, res1)
@@ -237,7 +237,7 @@ def run_test_weighted_point_map(spark):
     res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
     # 2.1 opacity = 1.0, color_ruler: [0, 2], color: red_transparency
-    vega2_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "red_transparency",
+    vega2_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#FF0000", "#FF0000"],
                                      [0, 2], [10], 1.0, "EPSG:4326")
     baseline2_1 = weighted_pointmap(vega2_1, res2)
     weighted_point_map2_1_1 = weighted_pointmap(vega2_1, res2)
@@ -249,7 +249,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_1_2, png_path + "test_weighted_point_map_nyc_2_1-2.png")
 
     # 2.2 opacity = 0.0, color_ruler: [1, 10]
-    vega2_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "purple_to_yellow",
+    vega2_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#FF00FF", "#FFFF00"],
                                      [1, 10], [6], 0.0, "EPSG:4326")
     baseline2_2 = weighted_pointmap(vega2_2, res2)
     weighted_point_map2_2_1 = weighted_pointmap(vega2_2, res2)
@@ -261,7 +261,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_2_2, png_path + "test_weighted_point_map_nyc_2_2-2.png")
 
     # 2.3 opacity = 0.5, color_ruler: [0, 100]
-    vega2_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_transparency",
+    vega2_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#0000FF"],
                                      [0, 100], [5], 0.5, "EPSG:4326")
     baseline2_3 = weighted_pointmap(vega2_3, res2)
     weighted_point_map2_3_1 = weighted_pointmap(vega2_3, res2)
@@ -273,8 +273,8 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_3_2, png_path + "test_weighted_point_map_nyc_2_3-2.png")
 
     # 2.4 opacity = 0.5, color_ruler: [0, 2], color: white_blue, stroke_ruler: [0]
-    vega2_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "white_blue", [1, 10],
-                                     [0], 0.5, "EPSG:4326")
+    vega2_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#E2E2E2", "#115F9A"],
+                                     [1, 10], [0], 0.5, "EPSG:4326")
     baseline2_4 = weighted_pointmap(vega2_4, res2)
     weighted_point_map2_4_1 = weighted_pointmap(vega2_4, res2)
     weighted_point_map2_4_2 = weighted_pointmap(vega2_4, res2)
@@ -285,7 +285,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_4_2, png_path + "test_weighted_point_map_nyc_2_4-2.png")
 
     # 2.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red, stroke_ruler: [1]
-    vega2_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red",
+    vega2_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#4D904F", "#C23728"],
                                      [0, 2], [1], 1.0, "EPSG:4326")
     baseline2_5 = weighted_pointmap(vega2_5, res2)
     weighted_point_map2_5_1 = weighted_pointmap(vega2_5, res2)
@@ -300,7 +300,7 @@ def run_test_weighted_point_map(spark):
     res3 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
     # 3.1 opacity = 1.0, color_ruler: [0, 2], color: #900E46(red)
-    vega3_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#900E46", [0, 2],
+    vega3_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#900E46"], [0, 2],
                                      [0, 10], 1.0, "EPSG:4326")
     baseline3_1 = weighted_pointmap(vega3_1, res3)
     weighted_point_map3_1_1 = weighted_pointmap(vega3_1, res3)
@@ -312,7 +312,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_1_2, png_path + "test_weighted_point_map_nyc_3_1-2.png")
 
     # 3.2 opacity = 0.0, color_ruler: [1, 10], color: #4A4145(black)
-    vega3_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#4A4145", [1, 10],
+    vega3_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#4A4145"], [1, 10],
                                      [0, 10], 0.0, "EPSG:4326")
     baseline3_2 = weighted_pointmap(vega3_2, res3)
     weighted_point_map3_2_1 = weighted_pointmap(vega3_2, res3)
@@ -324,7 +324,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_2_2, png_path + "test_weighted_point_map_nyc_3_2-2.png")
 
     # 3.3 opacity = 0.5, color_ruler: [0, 100], color: #4A4145(black)
-    vega3_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#4A4145", [0, 100],
+    vega3_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#4A4145"], [0, 100],
                                      [2, 8], 0.5, "EPSG:4326")
     baseline3_3 = weighted_pointmap(vega3_3, res3)
     weighted_point_map3_3_1 = weighted_pointmap(vega3_3, res3)
@@ -336,7 +336,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_3_2, png_path + "test_weighted_point_map_nyc_3_3-2.png")
 
     # 3.4 opacity = 0.5, color_ruler: [0, 2], color: #3574F0(blue), stroke_ruler: [1, 20]
-    vega3_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "#3574F0", [0, 2],
+    vega3_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#3574F0"], [0, 2],
                                      [1, 20], 0.5, "EPSG:4326")
     baseline3_4 = weighted_pointmap(vega3_4, res3)
     weighted_point_map3_4_1 = weighted_pointmap(vega3_4, res3)
@@ -348,7 +348,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_4_2, png_path + "test_weighted_point_map_nyc_3_4-2.png")
 
     # 3.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: #14EE47(green), stroke_ruler: [5, 11]
-    vega3_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "#14EE47", [0, 2],
+    vega3_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#14EE47"], [0, 2],
                                      [5, 11], 1.0, "EPSG:4326")
     baseline3_5 = weighted_pointmap(vega3_5, res3)
     weighted_point_map3_5_1 = weighted_pointmap(vega3_5, res3)
@@ -363,7 +363,7 @@ def run_test_weighted_point_map(spark):
     res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
 
     # 4.1 opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red
-    vega4_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "green_yellow_red", [0, 2],
+    vega4_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#4D904F", "#C23728"], [0, 2],
                                      [0, 10], 1.0, "EPSG:4326")
     baseline4_1 = weighted_pointmap(vega4_1, res4)
     weighted_point_map4_1_1 = weighted_pointmap(vega4_1, res4)
@@ -375,7 +375,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_1_2, png_path + "test_weighted_point_map_nyc_4_1-2.png")
 
     # 4.2 opacity = 0.0, color_ruler: [1, 10]
-    vega4_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "skyblue_to_white",
+    vega4_2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#B4E7F5", "#FFFFFF"],
                                      [1, 10], [0, 10], 0.0, "EPSG:4326")
     baseline4_2 = weighted_pointmap(vega4_2, res4)
     weighted_point_map4_2_1 = weighted_pointmap(vega4_2, res4)
@@ -387,7 +387,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_2_2, png_path + "test_weighted_point_map_nyc_4_2-2.png")
 
     # 4.3 opacity = 0.5, color_ruler: [1, 5], color: blue_green_yellow
-    vega4_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
+    vega4_3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#115F9A", "#D0F401"],
                                      [1, 5], [0, 10], 0.5, "EPSG:4326")
     baseline4_3 = weighted_pointmap(vega4_3, res4)
     weighted_point_map4_3_1 = weighted_pointmap(vega4_3, res4)
@@ -399,7 +399,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_3_2, png_path + "test_weighted_point_map_nyc_4_3-2.png")
 
     # 4.4 opacity = 0.5, color_ruler: [0, 5], color: blue_green_yellow, stroke_ruler: [1, 11]
-    vega4_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_green_yellow",
+    vega4_4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#115F9A", "#D0F401"],
                                      [0, 5], [1, 11], 0.5, "EPSG:4326")
     baseline4_4 = weighted_pointmap(vega4_4, res4)
     weighted_point_map4_4_1 = weighted_pointmap(vega4_4, res4)
@@ -411,7 +411,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map4_4_2, png_path + "test_weighted_point_map_nyc_4_4-2.png")
 
     # 4.5 size: 200*200, opacity = 1.0, color_ruler: [0, 2], color: blue_transparency, stroke_ruler: [5, 15]
-    vega4_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], "blue_transparency",
+    vega4_5 = vega_weighted_pointmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#0000FF"],
                                      [0, 2], [5, 15], 1.0, "EPSG:4326")
     baseline4_5 = weighted_pointmap(vega4_5, res4)
     weighted_point_map4_5_1 = weighted_pointmap(vega4_5, res4)
@@ -557,9 +557,9 @@ def run_test_choropleth_map(spark):
 
     res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
 
-    # 1-9 test color_style
+    # 1-9 test color_gradient
     # 1 blue_to_red
-    vega_1 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red",
+    vega_1 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline1 = choroplethmap(vega_1, res)
     choropleth_map1_1 = choroplethmap(vega_1, res)
@@ -571,7 +571,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map1_2, png_path + "test_choropleth_map_nyc_1-2.png")
 
     # 2 green_yellow_red
-    vega_2 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "green_yellow_red",
+    vega_2 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#4D904F", "#C23728"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline2 = choroplethmap(vega_2, res)
     choropleth_map2_1 = choroplethmap(vega_2, res)
@@ -583,7 +583,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map2_2, png_path + "test_choropleth_map_nyc_2-2.png")
 
     # 3 blue_white_red
-    vega_3 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_white_red",
+    vega_3 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#1984C5", "#C23728"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline3 = choroplethmap(vega_3, res)
     choropleth_map3_1 = choroplethmap(vega_3, res)
@@ -595,7 +595,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map3_2, png_path + "test_choropleth_map_nyc_3-2.png")
 
     # 4 skyblue_to_white
-    vega_4 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "skyblue_to_white",
+    vega_4 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#B4E7F5", "#FFFFFF"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline4 = choroplethmap(vega_4, res)
     choropleth_map4_1 = choroplethmap(vega_4, res)
@@ -607,7 +607,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map4_2, png_path + "test_choropleth_map_nyc_4-2.png")
 
     # 5 purple_to_yellow
-    vega_5 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_5 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline5 = choroplethmap(vega_5, res)
     choropleth_map5_1 = choroplethmap(vega_5, res)
@@ -619,7 +619,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map5_2, png_path + "test_choropleth_map_nyc_5-2.png")
 
     # 6 red_transparency
-    vega_6 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "red_transparency",
+    vega_6 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF0000", "#FF0000"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline6 = choroplethmap(vega_6, res)
     choropleth_map6_1 = choroplethmap(vega_6, res)
@@ -631,7 +631,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map6_2, png_path + "test_choropleth_map_nyc_6-2.png")
 
     # 7 blue_transparency
-    vega_7 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_transparency",
+    vega_7 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "0000FF"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline7 = choroplethmap(vega_7, res)
     choropleth_map7_1 = choroplethmap(vega_7, res)
@@ -643,7 +643,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map7_2, png_path + "test_choropleth_map_nyc_7-2.png")
 
     # 8 blue_green_yellow
-    vega_8 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_green_yellow",
+    vega_8 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#115F9A", "#D0F401"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline8 = choroplethmap(vega_8, res)
     choropleth_map8_1 = choroplethmap(vega_8, res)
@@ -655,7 +655,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map8_2, png_path + "test_choropleth_map_nyc_8-2.png")
 
     # 9 white_blue
-    vega_9 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "white_blue",
+    vega_9 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#E2E2E2", "#115F9A"],
                                 [2.5, 5], 1.0, 'EPSG:4326')
     baseline9 = choroplethmap(vega_9, res)
     choropleth_map9_1 = choroplethmap(vega_9, res)
@@ -668,7 +668,7 @@ def run_test_choropleth_map(spark):
 
     # 10-12 test ruler
     # 10 ruler: [1, 500]
-    vega_10 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red",
+    vega_10 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"],
                                  [1, 500], 1.0, 'EPSG:4326')
     baseline10 = choroplethmap(vega_10, res)
     choropleth_map10_1 = choroplethmap(vega_10, res)
@@ -680,7 +680,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map10_2, png_path + "test_choropleth_map_nyc_10-2.png")
 
     # 11 ruler: [1, 10000]
-    vega_11 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red",
+    vega_11 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"],
                                  [1, 10000], 1.0, 'EPSG:4326')
     baseline11 = choroplethmap(vega_11, res)
     choropleth_map11_1 = choroplethmap(vega_11, res)
@@ -692,7 +692,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map11_2, png_path + "test_choropleth_map_nyc_11-2.png")
 
     # 12 ruler: [0, 2.5]
-    vega_12 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "blue_to_red",
+    vega_12 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"],
                                  [0, 2.5], 1.0, 'EPSG:4326')
     baseline12 = choroplethmap(vega_12, res)
     choropleth_map12_1 = choroplethmap(vega_12, res)
@@ -705,7 +705,7 @@ def run_test_choropleth_map(spark):
 
     # 13-15 test opacity
     # 13 opacity: 0.0
-    vega_13 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_13 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 0.0, 'EPSG:4326')
     baseline13 = choroplethmap(vega_13, res)
     choropleth_map13_1 = choroplethmap(vega_13, res)
@@ -717,7 +717,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map13_2, png_path + "test_choropleth_map_nyc_13-2.png")
 
     # 14 opacity: 1.0
-    vega_14 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_14 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 1.0, 'EPSG:4326')
     baseline14 = choroplethmap(vega_14, res)
     choropleth_map14_1 = choroplethmap(vega_14, res)
@@ -729,7 +729,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map14_2, png_path + "test_choropleth_map_nyc_14-2.png")
 
     # 15 opacity: 0.5
-    vega_15 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_15 = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 0.5, 'EPSG:4326')
     baseline15 = choroplethmap(vega_15, res)
     choropleth_map15_1 = choroplethmap(vega_15, res)
@@ -742,7 +742,7 @@ def run_test_choropleth_map(spark):
 
     # 16-18 test size
     # 16 width: 256, height: 256
-    vega_16 = vega_choroplethmap(256, 256, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_16 = vega_choroplethmap(256, 256, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 1.0, 'EPSG:4326')
     baseline16 = choroplethmap(vega_16, res)
     choropleth_map16_1 = choroplethmap(vega_16, res)
@@ -754,7 +754,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map16_2, png_path + "test_choropleth_map_nyc_16-2.png")
 
     # 17 width: 200, height: 200
-    vega_17 = vega_choroplethmap(200, 200, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_17 = vega_choroplethmap(200, 200, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 1.0, 'EPSG:4326')
     baseline17 = choroplethmap(vega_17, res)
     choropleth_map17_1 = choroplethmap(vega_17, res)
@@ -766,7 +766,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map17_2, png_path + "test_choropleth_map_nyc_17-2.png")
 
     # 18 width: 500, height: 200
-    vega_18 = vega_choroplethmap(500, 200, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_18 = vega_choroplethmap(500, 200, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 1.0, 'EPSG:4326')
     baseline18 = choroplethmap(vega_18, res)
     choropleth_map18_1 = choroplethmap(vega_18, res)
@@ -778,7 +778,7 @@ def run_test_choropleth_map(spark):
     save_png(choropleth_map18_2, png_path + "test_choropleth_map_nyc_18-2.png")
 
     # 19 width: 10, height: 10
-    vega_19 = vega_choroplethmap(10, 10, [-73.994092, 40.753893, -73.977588, 40.759642], "purple_to_yellow",
+    vega_19 = vega_choroplethmap(10, 10, [-73.994092, 40.753893, -73.977588, 40.759642], ["#FF00FF", "#FFFF00"],
                                  [2.5, 5], 1.0, 'EPSG:4326')
     baseline19 = choroplethmap(vega_19, res)
     choropleth_map19_1 = choroplethmap(vega_19, res)

@@ -39,7 +39,7 @@ class Marks(RootMarks):
                      coordinate_system: Value, aggregation_type: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
-                    and isinstance(color_gradient.v, str)
+                    and isinstance(color_gradient.v, list)
                     and isinstance(color_bound.v, list)
                     and isinstance(size_bound.v, list)
                     and isinstance(opacity.v, float)
@@ -84,7 +84,7 @@ class Marks(RootMarks):
 
 class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 color_gradient: str, color_bound: list, size_bound: list, opacity: float,
+                 color_gradient: list, color_bound: list, size_bound: list, opacity: float,
                  coordinate_system: str, aggregation_type: str):
 
         VegaScatterPlot.__init__(self, width, height)
