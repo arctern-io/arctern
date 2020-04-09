@@ -39,7 +39,7 @@ ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_path) {
   return image_buffer;
 }
 
- void ImageLoader::LoadDir(const std::string& file_path) {
+void ImageLoader::LoadDir(const std::string& file_path) {
   image_buffers_.clear();
 
   int width, height, channels_in_file;
@@ -62,8 +62,7 @@ ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_path) {
     std::string file_name = file_path + ent->d_name;
 
     auto pixel =
-        stbi_load(file_name.c_str(), &width, &height, &channels_in_file,
-        STBI_rgb_alpha);
+        stbi_load(file_name.c_str(), &width, &height, &channels_in_file, STBI_rgb_alpha);
 
     ImageBuffer image_buffer{};
     image_buffer.buffer = pixel;
