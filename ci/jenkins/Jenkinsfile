@@ -178,7 +178,7 @@ pipeline {
                         }
 
                         stages {
-                            stage("${OS_NAME}_${CPU_ARCH}_${BINARY_VERSION}"){
+                            stage('Build'){
                                 agent {
                                     kubernetes {
                                         label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
