@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class VegaScatterPlot:
     def __init__(self, width: int, height: int):
         self._width = width

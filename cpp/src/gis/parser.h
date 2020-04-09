@@ -32,14 +32,6 @@ bool NextToken(const char* src, TokenInfo* token);
 
 bool IsValidWkt(const char* src);
 
-bool IsWhiteSpace(const char c);
-
-bool IsAlphabet(const char c);
-
-bool IsNumber(const char c);
-
-void SetIfEmpty(TokenInfo* token);
-
 }  // namespace parser
 }  // namespace gis
 }  // namespace arctern
