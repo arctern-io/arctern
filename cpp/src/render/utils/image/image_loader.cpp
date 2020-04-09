@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//#include <dirent.h>
-//
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "stb/stb_image.h"
+#include <dirent.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
 
 #include "render/utils/image/image_loader.h"
 
@@ -24,57 +24,57 @@ namespace arctern {
 namespace render {
 
 ImageLoader::ImageBuffer ImageLoader::Load(const std::string& file_path) {
-  //  int width, height, channels_in_file;
-  //
-  //  stbi_set_flip_vertically_on_load(true);
-  //
-  //  auto pixel =
-  //      stbi_load(file_path.c_str(), &width, &height, &channels_in_file,
-  //      STBI_rgb_alpha);
+    int width, height, channels_in_file;
+
+    stbi_set_flip_vertically_on_load(true);
+
+    auto pixel =
+        stbi_load(file_path.c_str(), &width, &height, &channels_in_file,
+        STBI_rgb_alpha);
 
   ImageBuffer image_buffer{};
-  //  image_buffer.buffer = pixel;
-  //  image_buffer.image_params.width = width;
-  //  image_buffer.image_params.height = height;
+    image_buffer.buffer = pixel;
+    image_buffer.image_params.width = width;
+    image_buffer.image_params.height = height;
 
   return image_buffer;
 }
 
 void ImageLoader::LoadDir(const std::string& file_path) {
-  //  image_buffers_.clear();
-  //
-  //  int width, height, channels_in_file;
-  //
-  //  DIR* dir;
-  //  struct dirent* ent;
-  //
-  //  if ((dir = opendir(file_path.c_str())) == nullptr) {
-  //    std::string err_msg = "Cannot find images file path: " + file_path;
-  //    throw std::runtime_error(err_msg);
-  //  }
-  //
-  //  stbi_set_flip_vertically_on_load(true);
-  //
-  //  while ((ent = readdir(dir)) != nullptr) {
-  //    if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
-  //      continue;
-  //    }
-  //
-  //    std::string file_name = file_path + ent->d_name;
-  //
-  //    auto pixel =
-  //        stbi_load(file_name.c_str(), &width, &height, &channels_in_file,
-  //        STBI_rgb_alpha);
-  //
-  //    ImageBuffer image_buffer{};
-  //    image_buffer.buffer = pixel;
-  //    image_buffer.image_params.width = width;
-  //    image_buffer.image_params.height = height;
-  //
-  //    image_buffers_.emplace(ent->d_name, image_buffer);
-  //  }
-  //
-  //  closedir(dir);
+    image_buffers_.clear();
+
+    int width, height, channels_in_file;
+
+    DIR* dir;
+    struct dirent* ent;
+
+    if ((dir = opendir(file_path.c_str())) == nullptr) {
+      std::string err_msg = "Cannot find images file path: " + file_path;
+      throw std::runtime_error(err_msg);
+    }
+
+    stbi_set_flip_vertically_on_load(true);
+
+    while ((ent = readdir(dir)) != nullptr) {
+      if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+        continue;
+      }
+
+      std::string file_name = file_path + ent->d_name;
+
+      auto pixel =
+          stbi_load(file_name.c_str(), &width, &height, &channels_in_file,
+          STBI_rgb_alpha);
+
+      ImageBuffer image_buffer{};
+      image_buffer.buffer = pixel;
+      image_buffer.image_params.width = width;
+      image_buffer.image_params.height = height;
+
+      image_buffers_.emplace(ent->d_name, image_buffer);
+    }
+
+    closedir(dir);
 }
 
 }  // namespace render

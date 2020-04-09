@@ -4,5 +4,5 @@ set -e
 
 if [ "$BUILD_LIBARCTERN" == '1' ]; then
   echo "Building libarctern..."
-  conda build conda/recipes/libarctern/gpu -c defaults -c conda-forge -c groakat
+  conda build conda/recipes/libarctern/gpu -c defaults -c conda-forge -c arctern-dev
 fi

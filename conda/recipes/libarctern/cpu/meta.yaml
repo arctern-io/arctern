@@ -21,6 +21,7 @@ build:
 
 requirements:
   build:
+    - glibc
     - libnetcdf ==4.7.3
     - cmake>=3.14
     - gdal ==3.0.4
