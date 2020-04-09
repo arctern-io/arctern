@@ -710,7 +710,60 @@ std::shared_ptr<arrow::Array> ST_Intersects(const std::shared_ptr<arrow::Array>&
 std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo1,
                                         const std::shared_ptr<arrow::Array>& geo2) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
-    builder.Append(ogr1->Within(ogr2) != 0);
+    bool flag = true;
+    do {
+      /*
+       * speed up for point within circle
+       * point pattern : 'POINT ( x y )'
+       * circle pattern : 'CurvePolygon ( CircularString ( x1 y1, x2 y2, x1 y2 ) )'
+       *                   if the circularstring has 3 points and closed,
+       *                   it becomes a circle,
+       *                   the centre is (x1+x2)/2, (y1+y2)/2
+       *                   the radius is sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y2-y2))/2
+       */
+      auto type1 = ogr1->getGeometryType();
+      if (type1 != wkbPoint) break;
+      auto point = reinterpret_cast<OGRPoint*>(ogr1);
+
+      auto type2 = ogr2->getGeometryType();
+      if (type2 != wkbCurvePolygon) break;
+      auto curve_poly = reinterpret_cast<OGRCurvePolygon*>(ogr2);
+
+      auto curve_it = curve_poly->begin();
+      if (curve_it == curve_poly->end()) break;
+      auto curve = *curve_it;
+      ++curve_it;
+      if (curve_it != curve_poly->end()) break;
+
+      auto curve_type = curve->getGeometryType();
+      if (curve_type != wkbCircularString) break;
+      auto circular_string = reinterpret_cast<OGRCircularString*>(curve);
+      if (circular_string->getNumPoints() != 3) break;
+      if (!circular_string->get_IsClosed()) break;
+
+      auto circular_point_it = circular_string->begin();
+      auto circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p0_x = circular_point->getX();
+      auto p0_y = circular_point->getY();
+
+      ++circular_point_it;
+      circular_point = &(*circular_point_it);
+      if (circular_point->getGeometryType() != wkbPoint) break;
+      auto p1_x = circular_point->getX();
+      auto p1_y = circular_point->getY();
+
+      auto d_x = (p0_x + p1_x) / 2 - point->getX();
+      auto d_y = (p0_y + p1_y) / 2 - point->getY();
+      auto dd = 4 * (d_x * d_x + d_y * d_y);
+      auto l_x = p0_x - p1_x;
+      auto l_y = p0_y - p1_y;
+      auto ll = l_x * l_x + l_y * l_y;
+      builder.Append(dd <= ll);
+
+      flag = false;
+    } while (0);
+    if (flag) builder.Append(ogr1->Within(ogr2) != 0);
   };
   auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { builder.Append(false); };

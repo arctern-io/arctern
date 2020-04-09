@@ -52,32 +52,15 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  // parse bounding box
-  //  if (!JsonLabelCheck(mark_enter, "bounding_box") ||
-  //      !JsonLabelCheck(mark_enter["bounding_box"], "value") ||
-  //      !JsonTypeCheck(mark_enter["bounding_box"]["value"], rapidjson::Type::kArrayType)
-  //      || !JsonSizeCheck(mark_enter["bounding_box"]["value"], "bounding_box.value", 4))
-  //      {
-  //    return;
-  //  }
-  //  for (int i = 0; i < 4; i++) {
-  //    if (!JsonTypeCheck(mark_enter["bounding_box"]["value"][i],
-  //                       rapidjson::Type::kNumberType)) {
-  //      return;
-  //    }
-  //  }
-  //  bounding_box_.longitude_left = mark_enter["bounding_box"]["value"][0].GetDouble();
-  //  bounding_box_.latitude_left = mark_enter["bounding_box"]["value"][1].GetDouble();
-  //  bounding_box_.longitude_right = mark_enter["bounding_box"]["value"][2].GetDouble();
-  //  bounding_box_.latitude_right = mark_enter["bounding_box"]["value"][3].GetDouble();
-
-  // parse color style
-  if (!JsonLabelCheck(mark_enter, "color_style") ||
-      !JsonLabelCheck(mark_enter["color_style"], "value") ||
-      !JsonTypeCheck(mark_enter["color_style"]["value"], rapidjson::Type::kStringType)) {
+  // parse color gradient
+  if (!JsonLabelCheck(mark_enter, "color_gradient") ||
+      !JsonLabelCheck(mark_enter["color_gradient"], "value") ||
+      !JsonTypeCheck(mark_enter["color_gradient"]["value"],
+                     rapidjson::Type::kStringType)) {
     return;
   }
-  auto color_style_string = std::string(mark_enter["color_style"]["value"].GetString());
+  auto color_style_string =
+      std::string(mark_enter["color_gradient"]["value"].GetString());
   if (color_style_string == "blue_to_red") {
     color_style_ = ColorStyle::kBlueToRed;
   } else if (color_style_string == "skyblue_to_white") {
@@ -97,24 +80,25 @@ void VegaChoroplethMap::Parse(const std::string& json) {
   } else if (color_style_string == "green_yellow_red") {
     color_style_ = ColorStyle::kGreenYellowRed;
   } else {
-    std::string err_msg = "unsupported color style '" + color_style_string + "'.";
+    std::string err_msg = "unsupported color gradient '" + color_style_string + "'.";
     throw std::runtime_error(err_msg);
   }
 
-  // parse ruler
-  if (!JsonLabelCheck(mark_enter, "ruler") ||
-      !JsonLabelCheck(mark_enter["ruler"], "value") ||
-      !JsonTypeCheck(mark_enter["ruler"]["value"], rapidjson::Type::kArrayType) ||
-      !JsonSizeCheck(mark_enter["ruler"]["value"], "ruler.value", 2)) {
+  // parse color bound
+  if (!JsonLabelCheck(mark_enter, "color_bound") ||
+      !JsonLabelCheck(mark_enter["color_bound"], "value") ||
+      !JsonTypeCheck(mark_enter["color_bound"]["value"], rapidjson::Type::kArrayType) ||
+      !JsonSizeCheck(mark_enter["color_bound"]["value"], "color_bound.value", 2)) {
     return;
   }
   for (int i = 0; i < 2; i++) {
-    if (!JsonTypeCheck(mark_enter["ruler"]["value"][i], rapidjson::Type::kNumberType)) {
+    if (!JsonTypeCheck(mark_enter["color_bound"]["value"][i],
+                       rapidjson::Type::kNumberType)) {
       return;
     }
   }
-  ruler_ = std::make_pair(mark_enter["ruler"]["value"][0].GetDouble(),
-                          mark_enter["ruler"]["value"][1].GetDouble());
+  color_bound_ = std::make_pair(mark_enter["color_bound"]["value"][0].GetDouble(),
+                                mark_enter["color_bound"]["value"][1].GetDouble());
 
   // parse opacity
   if (!JsonLabelCheck(mark_enter, "opacity") ||
