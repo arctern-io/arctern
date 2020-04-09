@@ -38,7 +38,8 @@ std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_pt
 }
 }  // namespace
 
-std::shared_ptr<arrow::Array> GeometryVectorToArrowWkb(const GeometryVector& geo_vec) {
+std::shared_ptr<arrow::BinaryArray> GeometryVectorToArrowWkb(
+    const GeometryVector& geo_vec) {
   auto size = geo_vec.size();
   auto offsets = GpuMakeUniqueArray<int>(size + 1);
   auto input_holder = geo_vec.CreateReadGpuContext();

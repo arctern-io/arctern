@@ -42,3 +42,15 @@ services:
           memory: 200M
     volumes:
       - ../../../..:/arctern
+  flask:
+    image: ${ARCTERN_FLASK_REPO}:${ARCTERN_FLASK_TAG}
+    depends_on:
+      - spark-master
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1200M
+        reservations:
+          cpus: '0.5'
+          memory: 200M

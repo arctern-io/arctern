@@ -109,8 +109,8 @@ template <typename T>
 void ChoroplethMap<T>::SetColor() {
   colors_.resize(num_buildings_ * 4);
 
-  auto count_start = choropleth_vega_.ruler().first;
-  auto count_end = choropleth_vega_.ruler().second;
+  auto count_start = choropleth_vega_.color_bound().first;
+  auto count_end = choropleth_vega_.color_bound().second;
   auto count_range = count_end - count_start;
 
   size_t c_offset = 0;
@@ -119,7 +119,7 @@ void ChoroplethMap<T>::SetColor() {
     count = count_[i] <= count_end ? count : count_end;
     auto ratio = (count - count_start) / count_range;
     auto circle_params_2d =
-        ColorGradient::GetCircleParams(choropleth_vega_.color_style(), ratio);
+        ColorGradient::GetPointParams(choropleth_vega_.color_style(), ratio);
     colors_[c_offset++] = circle_params_2d.color.r;
     colors_[c_offset++] = circle_params_2d.color.g;
     colors_[c_offset++] = circle_params_2d.color.b;
