@@ -49,19 +49,21 @@ void VegaPointmap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  if (!JsonLabelCheck(mark_enter, "strokeWidth") ||
-      !JsonLabelCheck(mark_enter, "stroke") || !JsonLabelCheck(mark_enter, "opacity") ||
-      !JsonLabelCheck(mark_enter["strokeWidth"], "value") ||
-      !JsonLabelCheck(mark_enter["stroke"], "value") ||
+  if (!JsonLabelCheck(mark_enter, "point_size") ||
+      !JsonLabelCheck(mark_enter, "point_color") ||
+      !JsonLabelCheck(mark_enter, "opacity") ||
+      !JsonLabelCheck(mark_enter["point_size"], "value") ||
+      !JsonLabelCheck(mark_enter["point_color"], "value") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
-      !JsonTypeCheck(mark_enter["strokeWidth"]["value"], rapidjson::Type::kNumberType) ||
-      !JsonTypeCheck(mark_enter["stroke"]["value"], rapidjson::Type::kStringType) ||
+      !JsonTypeCheck(mark_enter["point_size"]["value"], rapidjson::Type::kNumberType) ||
+      !JsonTypeCheck(mark_enter["point_color"]["value"], rapidjson::Type::kStringType) ||
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
-  circle_params_.radius = mark_enter["strokeWidth"]["value"].GetDouble();
-  circle_params_.color = ColorParser(mark_enter["stroke"]["value"].GetString()).color();
-  circle_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
+  point_params_.point_size = mark_enter["point_size"]["value"].GetDouble();
+  point_params_.color =
+      ColorParser(mark_enter["point_color"]["value"].GetString()).color();
+  point_params_.color.a = mark_enter["opacity"]["value"].GetDouble();
 }
 
 }  // namespace render

@@ -17,23 +17,17 @@
 
 #include <vector>
 
-#include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
+#include "render/utils/color/color.h"
 
 namespace arctern {
 namespace render {
 
 class ColorGradient {
  private:
-  struct ColorPoint {
-    float r, g, b;
-    float val;
-    ColorPoint(float red, float green, float blue, float value)
-        : r(red), g(green), b(blue), val(value) {}
-  };
-  std::vector<ColorPoint> color;
+  std::vector<Color> color;
 
  public:
-  static CircleParams GetCircleParams(ColorStyle color_style, double ratio);
+  static Color GetColor(Color color_start, Color color_end, double ratio);
 
   ColorGradient() { createDefaultHeatMapGradient(); }
 

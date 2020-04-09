@@ -1,47 +1,67 @@
-# docker compose部署
+# Using docker compose to deploy Arctern
+<!-- TOC -->
 
-## 安装前提
+- [Prerequisites](#prerequisites)
+    - [Operating system requirements](#operating-system-requirements)
+    - [Software dependencies](#software-dependencies)
+- [Configuring Docker](#configure-docker)
+    - [Confirm Docker status](#confirm-docker-status)
+    - [Get docker images](#get-docker-images)
+- [Configuring NVIDIA Docker (Optional)](#configuring-nvidia-docker-optional)
+    - [Confirm NVIDIA Docker status](#confirm-nvidia-docker-status)
+    - [Configure default runtime environment](#configure-default-runtime-environment)
+- [Configuring Docker compose](#configuring-docker-compose)
+    - [Edit docker-compose.yml](#edit-docker-composeyml)
+    - [Launch distributed cluster](#launch-distributed-cluster)
+    - [Shutdown distributed cluster](#shutdown-distributed-cluster)
 
-### 系统要求
+<!-- /TOC -->
 
 
-| 操作系统    | 版本          |
+## Prerequisites
+
+### Operating system requirements
+
+
+| Operating system   | Version          |
 | ---------- | ------------ |
-| CentOS     | 7 或以上      |
-| Ubuntu LTS | 16.04 或以上  |
+| CentOS     | 7 or higher      |
+| Ubuntu LTS | 16.04 or higher  |
 
-### 软件要求
+### Software dependencies
 
-
-| 软件名称        | 版本          | 备注  |
+| Component        | Version          | Required?  |
 | ----------     | ------------ | ----- |
-| Docker         | 17.06.0 或以上| 必要  |
-| Docker compose | 1.17.1 或以上 | 必要  |
-| Nvidia Docker  | Version 2    | 可选  |
+| Docker         | 17.06.0 or higher| Yes  |
+| Docker compose | 1.17.1 or higher | Yes  |
+| Nvidia Docker  | Version 2    | No  |
 
-## 配置Docker
+## Configuring Docker
 
-### 确认Docker状态
-在您的宿主机上[安装 Docker](https://docs.docker.com/install/)
+### Confirm Docker status
 
-确认 Docker daemon 正在运行：
+Use the following command to confirm the status of docker daemon:
 
 ```shell
 $ docker info
 ```
 
-如果无法正常打印 Docker 相关信息，请启动 **Docker** daemon.
+If the command above cannot print docker information, please run **Docker** daemon.
 
-> 提示：在 Linux 上，Docker 命令前面需加 `sudo`。若要在没有 `sudo` 情况下运行 Docker 命令，请创建 `docker` 组并添加用户。更多详情，请参阅 [Linux 安装后步骤](https://docs.docker.com/install/linux/linux-postinstall/)。
+> Note: On Linux, Docker needs sudo privileges. To run Docker command without `sudo`, create the `docker` group and add your user. For details, see the [post-installation steps for Linux](https://docs.docker.com/install/linux/linux-postinstall/).
 
-### 拉取 Docker镜像
+### Get docker images
+
+Use the following command to pull docker image:
 
 ```shell
 $ sudo docker pull arctern:arctern-spark:latest
 ```
-或者自行构建docker images
 
-纯CPU 版本
+Or use the following command to build images:
+
+CPU version
+
 ```shell
 $ pushd docker/spark/cpu/base
 $ sudo docker build -t arctern-spark:ubuntu18.04-base .
@@ -50,7 +70,8 @@ $ pushd docker/spark/cpu/runtime
 $ sudo docker build -t arctern-spark:ubuntu18.04-runtime --build-arg 'IMAGE_NAME=arctern-spark' .
 ```
 
-全功能版本
+GPU version
+
 ```shell
 $ pushd docker/spark/gpu/base
 $ sudo docker build -t arctern-spark-gpu:ubuntu18.04-base .
@@ -59,18 +80,22 @@ $ pushd docker/spark/gpu/runtime
 $ sudo docker build -t arctern-spark-gpu:ubuntu18.04-runtime --build-arg 'IMAGE_NAME=arctern-spark-gpu' .
 ```
 
-## 配置NVIDIA Docker （可选）
+## Configuring NVIDIA Docker (Optional)
 
-### 确认NVIDIA Docker状态
-如果你需要运行Arctern全功能版本，需[安装 NVIDIA Docker Version 2.0](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-2.0))
+### Confirm NVIDIA Docker status
+
+To run Arctern with GPU support, you need to [install NVIDIA Docker Version 2.0](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-2.0)).
+
+Use the following command to confirm whether NVIDIA docker is installed:
 
 ```shell
 $ nvidia-docker version
 NVIDIA Docker: 2.0.3
 ```
-### 设置默认runtime
 
-编译/etc/docker/daemon.json，并添加"default-runtime"，配置如下:
+### Configure default runtime environment
+
+Edit `/etc/docker/daemon.json` and add  "default-runtime" configuration:
 
 ```
 {
@@ -83,40 +108,39 @@ NVIDIA Docker: 2.0.3
     }
 }
 ```
-重新加载docker
+Use the following command to reload docker:
 
 ```shell
 $ sudo systemctl daemon-reload
 $ sudo systemctl restart docker
 ```
 
-## 配置Docker compose
-在您的宿主机上[安装Docker compose](https://docs.docker.com/compose/install/)
+## Configuring Docker compose
 
-### 确认Docker compose版本信息
+[Install Docker compose](https://docs.docker.com/compose/install/) and use the following command to confirm Docker compose version info:
 
 ```shell
 $ docker-compose version
 ```
 
-### 修改docker-compose.yml文件
+### Edit docker-compose.yml
 
-检查docker-compose.yml中image是否填写的是当前您要使用的docker images (arctern-spark:ubuntu18.04-runtime 或者 arctern-spark-gpu:ubuntu18.04-runtime)。
-检查master和worker的环境变量设置，[具体设置](https://spark.apache.org/docs/latest/spark-standalone.html)
+Check whether the image field in docker-compose.yml is correct (arctern-spark:ubuntu18.04-runtime or arctern-spark-gpu:ubuntu18.04-runtime).
+Also [check whether environment variables for master and worker are correct](https://spark.apache.org/docs/latest/spark-standalone.html).
 
-### 启动分布式集群
+### Launch distributed cluster
 
-前台执行
+Frontend
 ```shell
 $ sudo docker-compose up
 ```
 
-后台执行
+backend
 ```shell
 $ sudo docker-compose up -d
 ```
 
-### 关闭分布式集群
+### Shutdown distributed cluster
 
 ```shell
 $ sudo docker-compose down
