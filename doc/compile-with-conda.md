@@ -55,7 +55,9 @@ conda env create -f arctern.yml
 name: arctern
 channels:
   - conda-forge
+  - arctern-dev
 dependencies:
+- glbc=2.27
 - python
 - libnetcdf=4.7.3
 - gdal=3.0.4

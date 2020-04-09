@@ -69,7 +69,7 @@ $ sudo apt install libgl-dev libosmesa6-dev libglu1-mesa-dev
 构建Conda包
 ```shell
 $ cd conda/recipes/libarctern/cpu
-$ conda build . -c defaults -c conda-forge
+$ conda build . -c defaults -c conda-forge -c arctern-dev
 ```
 
 出现如下信息表示成功构建`libarctern`包
@@ -91,7 +91,7 @@ $ sudo apt install libgl1-mesa-dev libegl1-mesa-dev
 构建Conda包
 ```shell
 $ cd conda/recipes/libarctern/gpu
-$ conda build . -c defaults -c conda-forge
+$ conda build . -c defaults -c conda-forge -c arctern-dev
 ```
 
 出现如下信息表示成功构建`libarctern`包
@@ -108,7 +108,7 @@ TEST END: /opt/conda/envs/arctern/conda-bld/linux-64/libarctern-0.0.0.dev-0.tar.
 构建Conda包
 ```shell
 $ cd conda/recipes/arctern
-$ conda build . -c defaults -c conda-forge
+$ conda build . -c defaults -c conda-forge -c arctern-dev
 ```
 
 出现如下信息表示成功构建`arctern`包
@@ -125,7 +125,7 @@ TEST END: /opt/conda/envs/arctern/conda-bld/linux-64/arctern-0.0.0.dev-0.tar.bz2
 构建Conda包
 ```shell
 $ cd conda/recipes/arctern-spark
-$ conda build . -c defaults -c conda-forge
+$ conda build . -c defaults -c conda-forge -c arctern-dev
 ```
 
 出现如下信息表示成功构建`arctern-spark`包
