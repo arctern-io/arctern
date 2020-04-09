@@ -21,33 +21,33 @@ namespace render {
 VegaPointmap::VegaPointmap(const std::string& json) { Parse(json); }
 
 void VegaPointmap::Parse(const std::string& json) {
-  rapidjson::Document document;
-  document.Parse(json.c_str());
+  rapidjson::Document doc;
+  doc.Parse(json.c_str());
 
-  if (document.Parse(json.c_str()).HasParseError()) {
+  if (doc.Parse(json.c_str()).HasParseError()) {
     is_valid_ = false;
     std::string err_msg = "json format error";
     throw std::runtime_error(err_msg);
   }
 
-  if (!JsonLabelCheck(document, "width") || !JsonLabelCheck(document, "height") ||
-      !JsonNullCheck(document["width"]) || !JsonNullCheck(document["height"]) ||
-      !JsonTypeCheck(document["width"], rapidjson::Type::kNumberType) ||
-      !JsonTypeCheck(document["height"], rapidjson::Type::kNumberType)) {
+  if (!JsonLabelCheck(doc, "width") || !JsonLabelCheck(doc, "height") ||
+      !JsonNullCheck(doc["width"]) || !JsonNullCheck(doc["height"]) ||
+      !JsonTypeCheck(doc["width"], rapidjson::Type::kNumberType) ||
+      !JsonTypeCheck(doc["height"], rapidjson::Type::kNumberType)) {
     return;
   }
-  window_params_.mutable_width() = document["width"].GetInt();
-  window_params_.mutable_height() = document["height"].GetInt();
+  window_params_.mutable_width() = doc["width"].GetInt();
+  window_params_.mutable_height() = doc["height"].GetInt();
 
-  if (!JsonLabelCheck(document, "marks") ||
-      !JsonTypeCheck(document["marks"], rapidjson::Type::kArrayType) ||
-      !JsonSizeCheck(document["marks"], "marks", 1) ||
-      !JsonLabelCheck(document["marks"][0], "encode") ||
-      !JsonLabelCheck(document["marks"][0]["encode"], "enter")) {
+  if (!JsonLabelCheck(doc, "marks") ||
+      !JsonTypeCheck(doc["marks"], rapidjson::Type::kArrayType) ||
+      !JsonSizeCheck(doc["marks"], "marks", 1) ||
+      !JsonLabelCheck(doc["marks"][0], "encode") ||
+      !JsonLabelCheck(doc["marks"][0]["encode"], "enter")) {
     return;
   }
   rapidjson::Value mark_enter;
-  mark_enter = document["marks"][0]["encode"]["enter"];
+  mark_enter = doc["marks"][0]["encode"]["enter"];
 
   if (!JsonLabelCheck(mark_enter, "point_size") ||
       !JsonLabelCheck(mark_enter, "point_color") ||
