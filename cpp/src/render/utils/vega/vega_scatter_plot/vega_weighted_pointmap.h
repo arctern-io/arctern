@@ -32,11 +32,11 @@ class VegaWeightedPointmap : public VegaScatterPlot {
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
 
-  const CircleParams circle_params() const { return circle_params_; }
+  const PointParams point_params() const { return point_params_; }
 
-  const std::pair<double, double>& color_ruler() const { return color_ruler_; }
+  const std::pair<double, double>& color_bound() const { return color_bound_; }
 
-  const std::pair<double, double>& stroke_ruler() const { return stroke_ruler_; }
+  const std::pair<double, double>& size_bound() const { return size_bound_; }
 
   const ColorStyle& color_style() const { return color_style_; }
 
@@ -44,20 +44,20 @@ class VegaWeightedPointmap : public VegaScatterPlot {
 
   const bool& is_multiple_color() const { return is_multiple_color_; }
 
-  const bool& is_multiple_stroke_width() const { return is_multiple_stroke_width_; }
+  const bool& is_multiple_point_size() const { return is_multiple_point_size_; }
 
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
 
  private:
-  CircleParams circle_params_;
-  std::pair<double, double> color_ruler_;
-  std::pair<double, double> stroke_ruler_;
+  PointParams point_params_;
+  std::pair<double, double> color_bound_;
+  std::pair<double, double> size_bound_;
   ColorStyle color_style_;
   double opacity_;
   bool is_multiple_color_;
-  bool is_multiple_stroke_width_;
+  bool is_multiple_point_size_;
 };
 
 }  // namespace render

@@ -17,6 +17,7 @@ from arctern.util.vega.pointmap.vega_scatter_plot import VegaScatterPlot
 from arctern.util.vega.vega_node import (RootMarks, Root, Description, Data,
                                          Width, Height, Scales)
 
+
 class Marks(RootMarks):
     """
         Top-Level Vega Specification Property: Marks
@@ -33,40 +34,40 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, shape: Value, color: Value,
-                     color_ruler: Value, stroke_ruler: Value, opacity: Value,
-                     coordinate_system: Value, color_agg: Value):
+        def __init__(self, bounding_box: Value, shape: Value, color_gradient: Value,
+                     color_bound: Value, size_bound: Value, opacity: Value,
+                     coordinate_system: Value, aggregation_type: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
-                    and isinstance(color.v, str)
-                    and isinstance(color_ruler.v, list)
-                    and isinstance(stroke_ruler.v, list)
+                    and isinstance(color_gradient.v, str)
+                    and isinstance(color_bound.v, list)
+                    and isinstance(size_bound.v, list)
                     and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)
-                    and isinstance(color_agg.v, str)):
+                    and isinstance(aggregation_type.v, str)):
                 # TODO error log here
                 print("illegal")
                 assert 0
             self._bounding_box = bounding_box
             self._shape = shape
-            self._color = color
-            self._color_ruler = color_ruler
-            self._stroke_ruler = stroke_ruler
+            self._color_gradient = color_gradient
+            self._color_bound = color_bound
+            self._size_bound = size_bound
             self._opacity = opacity
             self._coordinate_system = coordinate_system
-            self._color_agg = color_agg
+            self._aggregation_type = aggregation_type
 
         def to_dict(self):
             dic = {
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
                     "shape": self._shape.to_dict(),
-                    "color": self._color.to_dict(),
-                    "color_ruler": self._color_ruler.to_dict(),
-                    "stroke_ruler": self._stroke_ruler.to_dict(),
+                    "color_gradient": self._color_gradient.to_dict(),
+                    "color_bound": self._color_bound.to_dict(),
+                    "size_bound": self._size_bound.to_dict(),
                     "opacity": self._opacity.to_dict(),
                     "coordinate_system": self._coordinate_system.to_dict(),
-                    "color_agg": self._color_agg.to_dict()
+                    "aggregation_type": self._aggregation_type.to_dict()
                 }
             }
             return dic
@@ -80,18 +81,20 @@ class Marks(RootMarks):
         }]
         return dic
 
+
 class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 mark_color: str, color_ruler: list, stroke_ruler: list, opacity: float,
-                 coordinate_system: str, color_agg: str):
+                 color_gradient: str, color_bound: list, size_bound: list, opacity: float,
+                 coordinate_system: str, aggregation_type: str):
+
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
-        self._mark_color = mark_color
-        self._color_ruler = color_ruler
-        self._stroke_ruler = stroke_ruler
+        self._color_gradient = color_gradient
+        self._color_bound = color_bound
+        self._size_bound = size_bound
         self._opacity = opacity
         self._coordinate_system = coordinate_system
-        self._color_agg = color_agg
+        self._aggregation_type = aggregation_type
 
     def build(self):
         description = Description(desc="circle_2d")
@@ -103,12 +106,12 @@ class VegaWeightedPointMap(VegaScatterPlot):
         scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               shape=Marks.Encode.Value("circle"),
-                              color=Marks.Encode.Value(self._mark_color),
-                              color_ruler=Marks.Encode.Value(self._color_ruler),
-                              stroke_ruler=Marks.Encode.Value(self._stroke_ruler),
+                              color_gradient=Marks.Encode.Value(self._color_gradient),
+                              color_bound=Marks.Encode.Value(self._color_bound),
+                              size_bound=Marks.Encode.Value(self._size_bound),
                               opacity=Marks.Encode.Value(self._opacity),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system),
-                              color_agg=Marks.Encode.Value(self._color_agg))
+                              aggregation_type=Marks.Encode.Value(self._aggregation_type))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)

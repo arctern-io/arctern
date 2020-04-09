@@ -33,7 +33,7 @@ class ColorGradient {
   std::vector<ColorPoint> color;
 
  public:
-  static CircleParams GetCircleParams(ColorStyle color_style, double ratio);
+  static PointParams GetPointParams(ColorStyle color_style, double ratio);
 
   ColorGradient() { createDefaultHeatMapGradient(); }
 

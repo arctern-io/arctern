@@ -118,7 +118,6 @@ def ST_IsValid(geos):
 def ST_PrecisionReduce(geos, precision):
     return arctern.ST_PrecisionReduce(geos, precision[0])
 
-
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Equals(left, right):
     return arctern.ST_Equals(left, right)
@@ -130,6 +129,7 @@ def ST_Touches(left, right):
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Overlaps(left, right):
     return arctern.ST_Overlaps(left, right)
+
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Crosses(left, right):
