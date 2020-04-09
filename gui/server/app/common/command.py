@@ -81,10 +81,71 @@ def pcommand():
     else:
         return jsonify(status='success', code=200, message='execute command successfully!')
 
+def _generate_env_code(envs):
+    env_code = 'import os\n'
+    keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
+            'HADOOP_CONF_DIR', 'YARN_CONF_DIR', 'GDAL_DATA', 'PROJ_LIB'
+            )
+    if envs:
+        for key in keys:
+            value = envs.get(key, None)
+            if value:
+                env_code += 'os.environ["{}"] = "{}"\n'.format(key, value)
+    return env_code
+
+def _generate_session_code(metas):
+    session_name = metas.get('session_name')
+    uid = str(uuid.uuid1()).replace('-', '')
+    app_name = metas.get('app_name', default='app_' + uid)
+    master_addr = request.json.get('master-addr', default='local[*]')
+    import socket
+    localhost_ip = socket.gethostbyname(socket.gethostname())
+
+    session_code = 'from pyspark.sql import SparkSession\n'
+    session_code += '{} = SparkSession.builder'.format(session_name)
+    session_code += '.appName("{}")'.format(app_name)
+    session_code += '.master("{}")'.format(master_addr)
+    session_code += '.config("spark.driver.host", "{}")'.format(localhost_ip)
+    session_code += '.config("spark.sql.execution.arrow.pyspark.enabled", "true")'
+
+    configs = metas.get('configs', None)
+    if configs:
+        for key, value in configs.items():
+            if len(value) > 0:
+                session_code += '.config("{}", "{}")'.format(key, value)
+    session_code += '.getOrCreate()'
+    return session_code
+
+def _generate_load_code(table):
+    table_name = table.get('name')
+    if 'path' in table and 'schema' in table and 'format' in table:
+        options = table.get('options', None)
+
+        schema = str()
+        for column in table.get('schema'):
+            for key, value in column.items():
+                schema += key + ' ' + value + ', '
+        rindex = schema.rfind(',')
+        schema = schema[:rindex]
+
+        table_format = table.get('format')
+        path = table.get('path')
+        load_code = '{}_df = {}.read'.format(table_name, session_name)
+        load_code += '.format("{}")'.format(table_format)
+        load_code += '.schema("{}")'.format(schema)
+        for key, value in options.items():
+            load_code += '.option("{}", "{}")'.format(key, value)
+        load_code += '.load("{}")\n'.format(path)
+        load_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
+    elif 'sql' in table:
+        sql = table.get('sql')
+        load_code = '{}_df = {}.run("{}")\n'.format(table_name, session_name, sql)
+        load_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
+    return load_code
+
 @API.route('/createsession', methods=['POST'])
 @token.AUTH.login_required
-def createsession():
-    uid = str(uuid.uuid1()).replace('-', '')
+def create_session():
     scope_id = request.json.get('scope_id', None)
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
@@ -94,36 +155,14 @@ def createsession():
         return jsonify(status='error', code=-1, message='no specific session name!')
     if session_name in scope.keys():
         return jsonify(status='error', code=-1, message='session name {} already in use!'.format(session_name))
-    app_name = request.json.get('app_name', 'app' + uid)
-    master_addr = request.json.get('master-addr', default='local[*]')
-    import socket
-    localhost_ip = socket.gethostbyname(socket.gethostname())
 
-    # generate code
     envs = request.json.get('envs', None)
-    env_code = 'import os\n'
-    keys = ('PYSPARK_PYTHON', 'PYSPARK_DRIVER_PYTHON', 'JAVA_HOME',
-            'HADOOP_CONF_DIR', 'YARN_CONF_DIR', 'GDAL_DATA', 'PROJ_LIB'
-            )
-    if envs:
-        for key in keys:
-            value = envs.get(key, None)
-            if value:
-                env_code += 'os.environ[{}] = {}\n'.format(key, value)
+    env_code = _generate_env_code(envs)
     print(env_code)
-    session_code = 'from pyspark.sql import SparkSession\n'
-    session_code += '{} = SparkSession.builder'.format(session_name)
-    session_code += '.appName("{}")'.format(app_name)
-    session_code += '.master("{}")'.format(master_addr)
-    session_code += '.config("spark.driver.host", "{}")'.format(localhost_ip)
-    session_code += '.config("spark.sql.execution.arrow.pyspark.enabled", "true")'
-    configs = request.json.get('configs', None)
-    if configs:
-        for key, value in configs.items():
-            if len(value) > 0:
-                session_code += '.config("{}", "{}")'.format(key, value)
-    session_code += '.getOrCreate()'
+
+    session_code = _generate_session_code(request.json)
     print(session_code)
+
     try:
         exec(env_code, scope)
         exec(session_code, scope)
@@ -134,7 +173,7 @@ def createsession():
 
 @API.route('/closesession', methods=['POST'])
 @token.AUTH.login_required
-def closesession():
+def close_session():
     scope_id = request.json.get('scope_id', None)
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
@@ -165,43 +204,12 @@ def load_table_v2()
     if session_name not in scope.keys():
         return jsonify(status='error', code=-1, message='session name {} not found!'.format(session_name))
     
-    # generate code
     tables = request.json.get('tables', None)
     for table in tables:
-        table_name = table.get('name')
-        if 'path' in table and 'schema' in table and 'format' in table:
-            options = table.get('options', None)
-
-            schema = str()
-            for column in table.get('schema'):
-                for key, value in column.items():
-                    schema += key + ' ' + value + ', '
-            rindex = schema.rfind(',')
-            schema = schema[:rindex]
-
-            table_format = table.get('format')
-            path = table.get('path')
-            session_code = '{}_df = {}.read'.format(table_name, session_name)
-            session_code += '.format("{}")'.format(table_format)
-            session_code += '.schema("{}")'.format(schema)
-            for key, value in options.items():
-                session_code += '.option("{}", "{}")'.format(key, value)
-            session_code += '.load("{}")\n'.format(path)
-            session_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
-            print(session_code)
-            try:
-                exec(session_code, scope)
-            except Exception as e:
-                raise app_error(str(e), 400)
-            else:
-                return jsonify(status='success', code=200, message='close session successfully!')
-        elif 'sql' in table:
-            sql = table.get('sql')
-            session_code = '{}_df = {}.run("{}")\n'.format(table_name, session_name, sql)
-            session_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
-            try:
-                exec(session_code, scope)
-            except Exception as e:
-                raise app_error(str(e), 400)
-            else:
-                return jsonify(status='success', code=200, message='close session successfully!')
+        load_code = _generate_load_code(table)
+        print(load_code)
+        try:
+            exec(load_code, scope)
+        except Exception as e:
+            raise app_error(str(e), 400)
+    return jsonify(status='success', code=200, message='close session successfully!')
