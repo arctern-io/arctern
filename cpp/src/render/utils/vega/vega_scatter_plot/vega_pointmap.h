@@ -31,14 +31,14 @@ class VegaPointmap : public VegaScatterPlot {
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
 
-  const CircleParams circle_params() const { return circle_params_; }
+  const PointParams point_params() const { return point_params_; }
 
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
 
  private:
-  CircleParams circle_params_;
+  PointParams point_params_;
 };
 
 }  // namespace render

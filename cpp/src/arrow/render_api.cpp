@@ -117,7 +117,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
-  auto agg_type = mark_enter["color_agg"]["value"].GetString();
+  auto agg_type = mark_enter["aggregation_type"]["value"].GetString();
   int i = 0;
   for (auto& data : agg_res) {
     auto& geo = data.first;
@@ -148,7 +148,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
-  auto agg_type = mark_enter["color_agg"]["value"].GetString();
+  auto agg_type = mark_enter["aggregation_type"]["value"].GetString();
   int i = 0;
   for (auto& data : agg_res) {
     auto& geo = data.first;
@@ -180,7 +180,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
-  auto agg_type = mark_enter["color_agg"]["value"].GetString();
+  auto agg_type = mark_enter["aggregation_type"]["value"].GetString();
   auto ite1 = data.begin();
   auto ite2 = data.end();
   std::size_t i = 0;
@@ -211,7 +211,7 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
-  auto agg_type = mark_enter["color_agg"]["value"].GetString();
+  auto agg_type = mark_enter["aggregation_type"]["value"].GetString();
   std::size_t i = 0;
   for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
     input_wkb[i] = ite1->first;
