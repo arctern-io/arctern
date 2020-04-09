@@ -21,7 +21,7 @@ build:
 
 requirements:
   build:
-    - glibc
+    - glibc ==2.27
     - libnetcdf ==4.7.3
     - cmake>=3.14
     - gdal ==3.0.4
@@ -29,7 +29,7 @@ requirements:
     - rapidjson ==1.1.0
 
   run:
-    - glibc
+    - glibc ==2.27
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.16.0
