@@ -41,8 +41,7 @@ class ImageLoader {
 
   ImageBuffer Load(const std::string& file_path);
 
-  // TODO: open LoadDir
-  // void LoadDir(const std::string& file_path);
+  void LoadDir(const std::string& file_path);
 
   const std::map<std::string, ImageBuffer>& image_buffers() const {
     return image_buffers_;
