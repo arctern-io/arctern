@@ -41,8 +41,8 @@ void IconViz::Draw() {
 
   std::string icon_path = icon_vega_.icon_path();
 
-  auto image_loader = ImageLoader::GetInstance();
-  auto image_buffer = image_loader.Load(icon_path);
+  //  auto image_loader = ImageLoader::GetInstance();
+  //  auto image_buffer = image_loader.Load(icon_path);
 
   //  if (image_buffer.buffer == nullptr) {
   //    buffer_ = {};
