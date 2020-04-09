@@ -44,18 +44,18 @@ void IconViz::Draw() {
   auto image_loader = ImageLoader::GetInstance();
   auto image_buffer = image_loader.Load(icon_path);
 
-  if (image_buffer.buffer == nullptr) {
-    buffer_ = {};
-    std::string err_msg =
-        "image buffer is empty, please make sure there is a icon in " + icon_path;
-    throw std::runtime_error(err_msg);
-  }
-
-  for (int i = 0; i < num_icons_; i++) {
-    glRasterPos2f(vertices_x_[i], vertices_y_[i]);
-    glDrawPixels(image_buffer.image_params.width, image_buffer.image_params.height,
-                 GL_RGBA, GL_UNSIGNED_BYTE, image_buffer.buffer);
-  }
+  //  if (image_buffer.buffer == nullptr) {
+  //    buffer_ = {};
+  //    std::string err_msg =
+  //        "image buffer is empty, please make sure there is a icon in " + icon_path;
+  //    throw std::runtime_error(err_msg);
+  //  }
+  //
+  //  for (int i = 0; i < num_icons_; i++) {
+  //    glRasterPos2f(vertices_x_[i], vertices_y_[i]);
+  //    glDrawPixels(image_buffer.image_params.width, image_buffer.image_params.height,
+  //                 GL_RGBA, GL_UNSIGNED_BYTE, image_buffer.buffer);
+  //  }
 
   glFinish();
 }
