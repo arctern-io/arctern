@@ -24,10 +24,12 @@ from flask import Flask
 from flask_cors import CORS
 
 from app import service as app_service
+from app.common import command as app_command
 
 APP = Flask(__name__)
 
 APP.register_blueprint(app_service.API)
+APP.register_blueprint(app_command.API)
 
 CORS(APP, resources=r'/*')
 
