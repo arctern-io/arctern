@@ -21,23 +21,13 @@ namespace arctern {
 namespace render {
 
 struct Color {
-  float r;
-  float g;
-  float b;
-  float a;
-};
-
-enum class ColorStyle : int {
-  kUnknown,
-  kBlueToRed,
-  kSkyBlueToWhite,
-  kPurpleToYellow,
-  kRedTransParency,
-  kBlueTransParency,
-  kBlueGreenYellow,
-  kWhiteToBlue,
-  kBlueWhiteRed,
-  kGreenYellowRed
+  float r, g, b, a;
+  Color() {}
+  Color(float red, float green, float blue, float value)
+      : r(red), g(green), b(blue), a(value) {}
+  bool operator==(const Color& other) const {
+    return r == other.r && g == other.g && b == other.b && a == other.a;
+  }
 };
 
 class ColorParser {
