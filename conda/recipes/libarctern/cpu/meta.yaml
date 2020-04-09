@@ -26,7 +26,6 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.16.0
     - rapidjson ==1.1.0
-    - libc
 
   run:
     - libnetcdf ==4.7.3
