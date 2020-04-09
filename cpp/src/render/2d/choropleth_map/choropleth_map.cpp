@@ -115,15 +115,25 @@ void ChoroplethMap<T>::SetColor() {
 
   size_t c_offset = 0;
   for (auto i = 0; i < num_buildings_; i++) {
-    auto count = count_[i] >= count_start ? count_[i] : count_start;
-    count = count_[i] <= count_end ? count : count_end;
-    auto ratio = (count - count_start) / count_range;
-    auto circle_params_2d =
-        ColorGradient::GetPointParams(choropleth_vega_.color_style(), ratio);
-    colors_[c_offset++] = circle_params_2d.color.r;
-    colors_[c_offset++] = circle_params_2d.color.g;
-    colors_[c_offset++] = circle_params_2d.color.b;
-    colors_[c_offset++] = choropleth_vega_.opacity();
+    auto color_gradient = choropleth_vega_.color_gradient();
+    if (color_gradient.size() == 1) {
+      auto color = color_gradient[0];
+      colors_[c_offset++] = color.r;
+      colors_[c_offset++] = color.g;
+      colors_[c_offset++] = color.b;
+      colors_[c_offset++] = color.a;
+    } else {
+      auto count = count_[i] >= count_start ? count_[i] : count_start;
+      count = count_[i] <= count_end ? count : count_end;
+      auto ratio = (count - count_start) / count_range;
+      auto color_start = color_gradient[0];
+      auto color_end = color_gradient[1];
+      auto color = ColorGradient::GetColor(color_start, color_end, ratio);
+      colors_[c_offset++] = color.r;
+      colors_[c_offset++] = color.g;
+      colors_[c_offset++] = color.b;
+      colors_[c_offset++] = color.a;
+    }
   }
 }
 

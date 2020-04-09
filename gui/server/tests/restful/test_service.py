@@ -179,7 +179,7 @@ def test_query(host, port, headers, dbid, table_name):
                 'choropleth': {
                     'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
                     'coordinate_system': 'EPSG:4326',
-                    'color_gradient': 'blue_to_red',
+                    'color_gradient': ["#0000FF", "#FF0000"],
                     'color_bound': [2.5, 5],
                     'opacity': 1
                 }
@@ -211,7 +211,7 @@ def test_query(host, port, headers, dbid, table_name):
                 'height': 896,
                 'weighted': {
                     'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
-                    'color_gradient': 'blue_to_red',
+                    'color_gradient': ["#0000FF", "#FF0000"],
                     'color_bound': [0, 2],
                     'size_bound': [0, 10],
                     'opacity': 1.0,
