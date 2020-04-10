@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>arctern_pyspark package &mdash; arctern 0.2.0 documentation</title>
+  <title>arctern_pyspark api &mdash; arctern 0.2.0 documentation</title>
   
 
   
@@ -87,7 +87,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="arctern.html">arctern python api</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">arctern_pyspark package</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">arctern_pyspark api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-arctern_pyspark.gis_func">arctern_pyspark.gis_func Module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.gis_func.union_aggr.html">union_aggr</a></li>
@@ -159,23 +159,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">arctern_pyspark Package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.choroplethmap.html">choroplethmap</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.envelope_aggr.html">envelope_aggr</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.heatmap.html">heatmap</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.pointmap.html">pointmap</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.register_funcs.html">register_funcs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.union_aggr.html">union_aggr</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/arctern_pyspark.weighted_pointmap.html">weighted_pointmap</a></li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="compile-with-conda.html">conda环境搭建</a></li>
 </ul>
 
             
@@ -221,7 +206,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>arctern_pyspark package</li>
+      <li>arctern_pyspark api</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -240,8 +225,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="arctern-pyspark-package">
-<h1>arctern_pyspark package<a class="headerlink" href="#arctern-pyspark-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="arctern-pyspark-api">
+<h1>arctern_pyspark api<a class="headerlink" href="#arctern-pyspark-api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-arctern_pyspark.gis_func">
 <span id="arctern-pyspark-gis-func-module"></span><h2>arctern_pyspark.gis_func Module<a class="headerlink" href="#module-arctern_pyspark.gis_func" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="functions">
@@ -316,112 +301,112 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Point.html#arctern_pyspark._wrapper_func.ST_Point" title="arctern_pyspark._wrapper_func.ST_Point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Point</span></code></a>(x, y)</p></td>
-<td><p></p></td>
+<td><p>Construct Point geometries according to the coordinates.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Intersection.html#arctern_pyspark._wrapper_func.ST_Intersection" title="arctern_pyspark._wrapper_func.ST_Intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Intersection</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Calculate the point set intersection of geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_IsValid.html#arctern_pyspark._wrapper_func.ST_IsValid" title="arctern_pyspark._wrapper_func.ST_IsValid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_IsValid</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>For each item in geometries, check if it is of valid geometry format.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_PrecisionReduce.html#arctern_pyspark._wrapper_func.ST_PrecisionReduce" title="arctern_pyspark._wrapper_func.ST_PrecisionReduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_PrecisionReduce</span></code></a>(geos, precision)</p></td>
-<td><p></p></td>
+<td><p>Reduce the precision of geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Equals.html#arctern_pyspark._wrapper_func.ST_Equals" title="arctern_pyspark._wrapper_func.ST_Equals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Equals</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether geometries are &quot;spatially equal&quot;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Touches.html#arctern_pyspark._wrapper_func.ST_Touches" title="arctern_pyspark._wrapper_func.ST_Touches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Touches</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether geometries &quot;touch&quot;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Overlaps.html#arctern_pyspark._wrapper_func.ST_Overlaps" title="arctern_pyspark._wrapper_func.ST_Overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Overlaps</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether geometries &quot;spatially overlap&quot;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Crosses.html#arctern_pyspark._wrapper_func.ST_Crosses" title="arctern_pyspark._wrapper_func.ST_Crosses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Crosses</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether geometries &quot;spatially cross&quot;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_IsSimple.html#arctern_pyspark._wrapper_func.ST_IsSimple" title="arctern_pyspark._wrapper_func.ST_IsSimple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_IsSimple</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Check whether geometry is &quot;simple&quot;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_GeometryType.html#arctern_pyspark._wrapper_func.ST_GeometryType" title="arctern_pyspark._wrapper_func.ST_GeometryType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeometryType</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>For each geometry in geometries, return a string that indicates is type.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_MakeValid.html#arctern_pyspark._wrapper_func.ST_MakeValid" title="arctern_pyspark._wrapper_func.ST_MakeValid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_MakeValid</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>For every geometry in geometries, create a valid representation of it without  losing any of the input vertices.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_SimplifyPreserveTopology.html#arctern_pyspark._wrapper_func.ST_SimplifyPreserveTopology" title="arctern_pyspark._wrapper_func.ST_SimplifyPreserveTopology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_SimplifyPreserveTopology</span></code></a>(geos, ...)</p></td>
-<td><p></p></td>
+<td><p>For each geometry in geometries create a &quot;simplified&quot; version for it according to the precision that parameter tolerance specifies.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_PolygonFromEnvelope.html#arctern_pyspark._wrapper_func.ST_PolygonFromEnvelope" title="arctern_pyspark._wrapper_func.ST_PolygonFromEnvelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_PolygonFromEnvelope</span></code></a>(min_x, min_y, max_x, ...)</p></td>
-<td><p></p></td>
+<td><p>Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,  arr_max_y.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Contains.html#arctern_pyspark._wrapper_func.ST_Contains" title="arctern_pyspark._wrapper_func.ST_Contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Contains</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether a geometry contain another geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Intersects.html#arctern_pyspark._wrapper_func.ST_Intersects" title="arctern_pyspark._wrapper_func.ST_Intersects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Intersects</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether two geometries intersect.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Within.html#arctern_pyspark._wrapper_func.ST_Within" title="arctern_pyspark._wrapper_func.ST_Within"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Within</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Check whether a geometry is within another geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Distance.html#arctern_pyspark._wrapper_func.ST_Distance" title="arctern_pyspark._wrapper_func.ST_Distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Distance</span></code></a>(left, right)</p></td>
-<td><p></p></td>
+<td><p>Calculate the distance between two geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Area.html#arctern_pyspark._wrapper_func.ST_Area" title="arctern_pyspark._wrapper_func.ST_Area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Area</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Calculate the area of geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Centroid.html#arctern_pyspark._wrapper_func.ST_Centroid" title="arctern_pyspark._wrapper_func.ST_Centroid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Centroid</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the centroid of geometry.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Length.html#arctern_pyspark._wrapper_func.ST_Length" title="arctern_pyspark._wrapper_func.ST_Length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Length</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Calculate the length of linear geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_HausdorffDistance.html#arctern_pyspark._wrapper_func.ST_HausdorffDistance" title="arctern_pyspark._wrapper_func.ST_HausdorffDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_HausdorffDistance</span></code></a>(geo1, geo2)</p></td>
-<td><p></p></td>
+<td><p>Returns the Hausdorff distance between two geometries, a measure of how similar or dissimilar 2 geometries are.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_ConvexHull.html#arctern_pyspark._wrapper_func.ST_ConvexHull" title="arctern_pyspark._wrapper_func.ST_ConvexHull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_ConvexHull</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the convex hull of geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_NPoints.html#arctern_pyspark._wrapper_func.ST_NPoints" title="arctern_pyspark._wrapper_func.ST_NPoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_NPoints</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Calculates the points number for every geometry in geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Envelope.html#arctern_pyspark._wrapper_func.ST_Envelope" title="arctern_pyspark._wrapper_func.ST_Envelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Envelope</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Buffer.html#arctern_pyspark._wrapper_func.ST_Buffer" title="arctern_pyspark._wrapper_func.ST_Buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Buffer</span></code></a>(geos, dfDist)</p></td>
-<td><p></p></td>
+<td><p>Returns a geometry that represents all points whose distance from this geos is  less than or equal to distance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Union_Aggr.html#arctern_pyspark._wrapper_func.ST_Union_Aggr" title="arctern_pyspark._wrapper_func.ST_Union_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Union_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Envelope_Aggr.html#arctern_pyspark._wrapper_func.ST_Envelope_Aggr" title="arctern_pyspark._wrapper_func.ST_Envelope_Aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Envelope_Aggr</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Compute the double-precision minimum bounding box geometry for every geometry in geometries,  then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_Transform.html#arctern_pyspark._wrapper_func.ST_Transform" title="arctern_pyspark._wrapper_func.ST_Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_Transform</span></code></a>(geos, src_rs, dst_rs)</p></td>
-<td><p></p></td>
+<td><p>Returns a new geometry with its coordinates transformed to a different spatial  reference system.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_CurveToLine.html#arctern_pyspark._wrapper_func.ST_CurveToLine" title="arctern_pyspark._wrapper_func.ST_CurveToLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_CurveToLine</span></code></a>(geos)</p></td>
-<td><p></p></td>
+<td><p>Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or  MULTISURFACE to MULTIPOLYGON.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_GeomFromGeoJSON.html#arctern_pyspark._wrapper_func.ST_GeomFromGeoJSON" title="arctern_pyspark._wrapper_func.ST_GeomFromGeoJSON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromGeoJSON</span></code></a>(json)</p></td>
-<td><p></p></td>
+<td><p>Constructs a geometry object from the GeoJSON representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_PointFromText.html#arctern_pyspark._wrapper_func.ST_PointFromText" title="arctern_pyspark._wrapper_func.ST_PointFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_PointFromText</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Constructs point objects from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_PolygonFromText.html#arctern_pyspark._wrapper_func.ST_PolygonFromText" title="arctern_pyspark._wrapper_func.ST_PolygonFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_PolygonFromText</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Constructs polygon objects from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_LineStringFromText.html#arctern_pyspark._wrapper_func.ST_LineStringFromText" title="arctern_pyspark._wrapper_func.ST_LineStringFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_LineStringFromText</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Constructs linestring objects from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_GeomFromText.html#arctern_pyspark._wrapper_func.ST_GeomFromText" title="arctern_pyspark._wrapper_func.ST_GeomFromText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromText</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Constructs geometry objects from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_GeomFromWKT.html#arctern_pyspark._wrapper_func.ST_GeomFromWKT" title="arctern_pyspark._wrapper_func.ST_GeomFromWKT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_GeomFromWKT</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Constructs geometry objects from the OGC Well-Known text representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.ST_AsText.html#arctern_pyspark._wrapper_func.ST_AsText" title="arctern_pyspark._wrapper_func.ST_AsText"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ST_AsText</span></code></a>(geo)</p></td>
-<td><p></p></td>
+<td><p>Returns the Well-Known Text representation of the geometry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.Projection.html#arctern_pyspark._wrapper_func.Projection" title="arctern_pyspark._wrapper_func.Projection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Projection</span></code></a>(geos, bottom_right, top_left, ...)</p></td>
 <td><p></p></td>
@@ -433,44 +418,6 @@
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark._wrapper_func.WkbToWkt.html#arctern_pyspark._wrapper_func.WkbToWkt" title="arctern_pyspark._wrapper_func.WkbToWkt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WkbToWkt</span></code></a>(wkbs)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="id4">
-<h2>arctern_pyspark Package<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-arctern_pyspark"></span><div class="section" id="id5">
-<h3>Functions<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark.choroplethmap.html#arctern_pyspark.choroplethmap" title="arctern_pyspark.choroplethmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choroplethmap</span></code></a>(df, vega)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark.envelope_aggr.html#arctern_pyspark.envelope_aggr" title="arctern_pyspark.envelope_aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">envelope_aggr</span></code></a>(df, col_name)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark.heatmap.html#arctern_pyspark.heatmap" title="arctern_pyspark.heatmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heatmap</span></code></a>(df, vega)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark.pointmap.html#arctern_pyspark.pointmap" title="arctern_pyspark.pointmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pointmap</span></code></a>(df, vega)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark.register_funcs.html#arctern_pyspark.register_funcs" title="arctern_pyspark.register_funcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_funcs</span></code></a>(spark)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/arctern_pyspark.union_aggr.html#arctern_pyspark.union_aggr" title="arctern_pyspark.union_aggr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union_aggr</span></code></a>(df, col_name)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/arctern_pyspark.weighted_pointmap.html#arctern_pyspark.weighted_pointmap" title="arctern_pyspark.weighted_pointmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weighted_pointmap</span></code></a>(df, vega)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -501,7 +448,7 @@
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>

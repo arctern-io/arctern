@@ -62,9 +62,6 @@ import base64
 from . import arctern_core_
 
 
-def HAHA():
-    print("xxx")
-
 def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
@@ -150,6 +147,9 @@ def ST_AsText(text):
     :type text: pyarrow.array.string
     :param text: Geometries organized as WKB.
 
+    :return: Geometries organized as WKT.
+    :rtype: pyarrow.array.string
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -210,7 +210,7 @@ def ST_IsValid(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
-      >>> rst = arctern.ST_IsValid(data)
+      >>> rst = arctern.ST_IsValid(arctern.ST_GeomFromText(data))
       >>> print(rst)   
           0    true
           1    true
@@ -244,7 +244,7 @@ def ST_PrecisionReduce(geos, precision):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
-      >>> rst = arctern.arctern.ST_AsText(arctern.ST_PrecisionReduce(data, 3))
+      >>> rst = arctern.arctern.ST_AsText(arctern.ST_PrecisionReduce(arctern.ST_GeomFromText(data), 3))
       >>> print(rst)
           0    POINT (1.33 2.67)
           1    POINT (2.66 4.45)
@@ -277,7 +277,7 @@ def ST_Equals(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Equals(data1, data2)    
+      >>> rst = arctern.ST_Equals(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))    
       >>> print(rst)
           0    true
           1    false
@@ -311,7 +311,7 @@ def ST_Touches(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Touches(data1, data2)
+      >>> rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    false
           1    true
@@ -345,7 +345,7 @@ def ST_Overlaps(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Touches(data1, data2)
+      >>> rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    false
           1    false
@@ -381,7 +381,7 @@ def ST_Crosses(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Touches(data1, data2)
+      >>> rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    false
           1    false
@@ -411,7 +411,7 @@ def ST_IsSimple(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.ST_IsSimple(data)
+      >>> rst = arctern.ST_IsSimple(arctern.ST_GeomFromText(data))
       >>> print(rst)
           0    true
           1    true
@@ -436,7 +436,7 @@ def ST_GeometryType(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.ST_AsText(arctern.ST_GeometryType(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_GeometryType(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    ST_POLYGON
           1    ST_POLYGON
@@ -464,7 +464,7 @@ def ST_MakeValid(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
-      >>> rst = arctern.ST_AsText(arctern.ST_MakeValid(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_MakeValid(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
           dtype: object
@@ -495,7 +495,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(data, 10000))
+      >>> rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(arctern.ST_GeomFromText(data), 10000))
       >>> print(rst)
           0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
           dtype: object
@@ -568,7 +568,7 @@ def ST_Contains(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
       >>> data2 = pandas.Series(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-      >>> rst = arctern.ST_Contains(data2, data1)
+      >>> rst = arctern.ST_Contains(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
           0    true
           1    false
@@ -601,7 +601,7 @@ def ST_Intersects(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
       >>> data2 = pandas.Series(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-      >>> rst = arctern.ST_Intersects(data2, data1)
+      >>> rst = arctern.ST_Intersects(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
           0    true
           1    true
@@ -636,7 +636,7 @@ def ST_Within(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
       >>> data1 = pandas.Series(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-      >>> rst = arctern.ST_Within(data2, data1)
+      >>> rst = arctern.ST_Within(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
           0    false
           1    false
@@ -673,7 +673,7 @@ def ST_Distance(left, right):
       >>> p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
       >>> p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
       >>> data2 = pandas.Series([p21, p22])
-      >>> rst = arctern.ST_Distance(data2, data1)
+      >>> rst = arctern.ST_Distance(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
           0    1.0
           1    2.0
@@ -703,7 +703,7 @@ def ST_Area(geos):
       >>> import arctern
       >>> data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_Area(data)
+      >>> rst = arctern.ST_Area(arctern.ST_GeomFromText(data1))
       >>> print(rst)
           0     1.0
           1    64.0
@@ -731,7 +731,7 @@ def ST_Centroid(geos):
       >>> import arctern
       >>> data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_AsText(arctern.ST_Centroid(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Centroid(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    POINT (0.5 0.5)
           1    POINT (4 4)
@@ -759,7 +759,7 @@ def ST_Length(geos):
       >>> import arctern
       >>> data = ["LINESTRING(0 0,0 1)", "LINESTRING(1 1,1 4)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_Length(data)    
+      >>> rst = arctern.ST_Length(arctern.ST_GeomFromText(data))    
       >>> print(rst)
           0    1.0
           1    3.0
@@ -804,7 +804,7 @@ def ST_HausdorffDistance(geo1, geo2):
       >>> data2 = ["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"]
       >>> data1 = pandas.Series(data1)
       >>> data2 = pandas.Series(data2)
-      >>> rst = arctern.ST_HausdorffDistance(data1, data2)
+      >>> rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    1.0
           1    1.0
@@ -834,7 +834,7 @@ def ST_ConvexHull(geos):
       >>> import arctern
       >>> data = ["POINT (1.1 101.1)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_AsText(arctern.ST_ConvexHull(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_ConvexHull(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    POINT (1.1 101.1)
           dtype: object
@@ -859,7 +859,7 @@ def ST_NPoints(geos):
       >>> import arctern
       >>> data = ["LINESTRING(1 1,1 4)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_NPoints(data)
+      >>> rst = arctern.ST_NPoints(arctern.ST_GeomFromText(data))
       >>> print(rst)
           0    2
           dtype: int64
@@ -892,7 +892,7 @@ def ST_Envelope(geos):
       >>> p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))"
       >>> data = [p1, p2, p3, p4, p5, p6, p7, p8]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_AsText(arctern.ST_Envelope(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Envelope(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    POINT (10 10)
           1    LINESTRING (0 0,0 10)
@@ -928,7 +928,7 @@ def ST_Buffer(geos, distance):
       >>> import arctern
       >>> data = ["POINT (0 1)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_AsText(arctern.ST_Buffer(data, 0))
+      >>> rst = arctern.ST_AsText(arctern.ST_Buffer(arctern.ST_GeomFromText(data), 0))
       >>> print(rst)
           0    POLYGON EMPTY
           dtype: object
@@ -954,7 +954,7 @@ def ST_Union_Aggr(geos):
       >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
       >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
       >>> data = pandas.Series([p1, p2])
-      >>> rst = arctern.ST_AsText(arctern.ST_Union_Aggr(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Union_Aggr(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))
           dtype: object    
@@ -981,7 +981,7 @@ def ST_Envelope_Aggr(geos):
       >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
       >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
       >>> data = pandas.Series([p1, p2])
-      >>> rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    POLYGON ((0 0,0 4,7 4,7 0,0 0))
           dtype: object
@@ -1013,7 +1013,7 @@ def ST_Transform(geos, src, dst):
       >>> import arctern
       >>> data = ["POINT (10 10)"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_AsText(arctern.ST_Transform(data, "EPSG:4326", "EPSG:3857"))
+      >>> rst = arctern.ST_AsText(arctern.ST_Transform(arctern.ST_GeomFromText(data), "EPSG:4326", "EPSG:3857"))
       >>> wkt = rst[0]
       >>> rst_point = ogr.CreateGeometryFromWkt(str(wkt))
       >>> assert abs(rst_point.GetX() - 1113194.90793274 < 0.01)
@@ -1044,14 +1044,13 @@ def ST_CurveToLine(geos):
       >>> import arctern
       >>> data = ["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_CurveToLine(data)
+      >>> rst = arctern.ST_CurveToLine(arctern.ST_GeomFromText(data))
       >>> assert str(rst[0]).startswith("POLYGON")
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
-
 
 def point_map(xs, ys, conf):
     import pyarrow as pa

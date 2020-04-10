@@ -7,12 +7,11 @@ Welcome to arctern's documentation!
 ===================================
 
 .. toctree::
-   :maxdepth: 8
+   :maxdepth: 4
    :caption: Contents:
 
    arctern
    arctern_pyspark
-   compile-with-conda
 
 Indices and tables
 ==================

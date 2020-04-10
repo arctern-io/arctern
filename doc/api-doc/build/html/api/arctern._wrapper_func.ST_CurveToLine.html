@@ -139,8 +139,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compile-with-conda.html">conda环境搭建</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark api</a></li>
 </ul>
 
             
@@ -230,7 +229,7 @@ CIRCULARSTRING geometry types.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_CurveToLine</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_CurveToLine</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;POLYGON&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -262,7 +261,7 @@ CIRCULARSTRING geometry types.</p>
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>

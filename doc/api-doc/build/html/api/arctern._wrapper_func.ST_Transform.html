@@ -139,8 +139,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compile-with-conda.html">conda环境搭建</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark api</a></li>
 </ul>
 
             
@@ -233,7 +232,7 @@ reference system.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;POINT (10 10)&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:3857&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:3857&quot;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">wkt</span> <span class="o">=</span> <span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rst_point</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">CreateGeometryFromWkt</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wkt</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rst_point</span><span class="o">.</span><span class="n">GetX</span><span class="p">()</span> <span class="o">-</span> <span class="mf">1113194.90793274</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">)</span>
@@ -268,7 +267,7 @@ reference system.</p>
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>

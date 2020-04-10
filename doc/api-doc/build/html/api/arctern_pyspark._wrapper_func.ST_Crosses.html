@@ -87,7 +87,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../arctern.html">arctern python api</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark package</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark api</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.gis_func">arctern_pyspark.gis_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.register">arctern_pyspark.register Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.render_func">arctern_pyspark.render_func Module</a></li>
@@ -137,11 +137,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#id4">arctern_pyspark Package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../compile-with-conda.html">conda环境搭建</a></li>
 </ul>
 
             
@@ -187,7 +184,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../arctern_pyspark.html">arctern_pyspark package</a> &raquo;</li>
+          <li><a href="../arctern_pyspark.html">arctern_pyspark api</a> &raquo;</li>
         
       <li>ST_Crosses</li>
     
@@ -213,7 +210,47 @@
 <dl class="function">
 <dt id="arctern_pyspark._wrapper_func.ST_Crosses">
 <code class="sig-prename descclassname">arctern_pyspark._wrapper_func.</code><code class="sig-name descname">ST_Crosses</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern_pyspark/_wrapper_func.html#ST_Crosses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern_pyspark._wrapper_func.ST_Crosses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check whether geometries &quot;spatially cross&quot;.</p>
+<p>For every (left, right) pair with the same offset value in left and right, check 
+if they &quot;spatially cross&quot;. &quot;Spatially cross&quot; here means two the geometries have
+some, but not all interior points in common. The intersection of the interiors of
+the geometries must not be the empty set and must have a dimensionality less than 
+the maximum dimension of the two input geometries.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+<li><p><strong>right</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of booleans.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.boolean</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arctern_pyspark</span> <span class="k">import</span> <span class="n">register_funcs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spark_session</span> <span class="o">=</span> <span class="n">SparkSession</span>           <span class="o">.</span><span class="n">builder</span>           <span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">&quot;Python Arrow-in-Spark example&quot;</span><span class="p">)</span>       <span class="o">&gt;&gt;&gt;</span> <span class="n">register_funcs</span><span class="p">(</span><span class="n">spark_session</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="s1">&#39;MULTIPOINT((1 3), (4 1), (4 3))&#39;</span><span class="p">,</span> <span class="s1">&#39;POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="s1">&#39;POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))&#39;</span><span class="p">,</span> <span class="s1">&#39;POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crosses_df</span> <span class="o">=</span> <span class="n">spark_session</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">test_data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crosses_df</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s2">&quot;crosses&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spark_session</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from crosses&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">+---------------------------------------------------------+</span>
+<span class="go">|ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right))|</span>
+<span class="go">+---------------------------------------------------------+</span>
+<span class="go">|true                                                     |</span>
+<span class="go">+---------------------------------------------------------+</span>
+<span class="go">|false                                                    |</span>
+<span class="go">+---------------------------------------------------------+ </span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
@@ -239,7 +276,7 @@
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>

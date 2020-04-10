@@ -87,7 +87,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../arctern.html">arctern python api</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark package</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark api</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.gis_func">arctern_pyspark.gis_func Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.register">arctern_pyspark.register Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-arctern_pyspark.render_func">arctern_pyspark.render_func Module</a></li>
@@ -137,11 +137,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#module-contents">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arctern_pyspark.html#id4">arctern_pyspark Package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../compile-with-conda.html">conda环境搭建</a></li>
 </ul>
 
             
@@ -187,7 +184,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../arctern_pyspark.html">arctern_pyspark package</a> &raquo;</li>
+          <li><a href="../arctern_pyspark.html">arctern_pyspark api</a> &raquo;</li>
         
       <li>ST_HausdorffDistance</li>
     
@@ -213,7 +210,53 @@
 <dl class="function">
 <dt id="arctern_pyspark._wrapper_func.ST_HausdorffDistance">
 <code class="sig-prename descclassname">arctern_pyspark._wrapper_func.</code><code class="sig-name descname">ST_HausdorffDistance</code><span class="sig-paren">(</span><em class="sig-param">geo1</em>, <em class="sig-param">geo2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arctern_pyspark/_wrapper_func.html#ST_HausdorffDistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arctern_pyspark._wrapper_func.ST_HausdorffDistance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the Hausdorff distance between two geometries, a measure of how similar
+or dissimilar 2 geometries are.</p>
+<p>Implements algorithm for computing a distance metric which can be thought of as 
+the &quot;Discrete Hausdorff Distance&quot;. This is the Hausdorff distance restricted to 
+discrete points for one of the geometries. Wikipedia article on Hausdorff distance</p>
+<p>Martin Davis note on how Hausdorff Distance calculation was used to prove 
+correctness of the CascadePolygonUnion approach.</p>
+<p>When densifyFrac is specified, this function performs a segment densification before 
+computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction
+by which to densify each segment. Each segment will be split into a number of equal-length 
+subsegments, whose fraction of the total length is closest to the given fraction.</p>
+<p>Units are in the units of the spatial reference system of the geometries.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geo1</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+<li><p><strong>geo2</strong> (<em>pyarrow.array.string</em>) -- Geometries organized as WKB.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of double.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyarrow.array.double</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">arctern_pyspark</span> <span class="k">import</span> <span class="n">register_funcs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spark_session</span> <span class="o">=</span> <span class="n">SparkSession</span>           <span class="o">.</span><span class="n">builder</span>           <span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">&quot;Python Arrow-in-Spark example&quot;</span><span class="p">)</span>       <span class="o">&gt;&gt;&gt;</span> <span class="n">register_funcs</span><span class="p">(</span><span class="n">spark_session</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="s2">&quot;POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))&quot;</span><span class="p">,</span> <span class="s2">&quot;POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))&quot;</span><span class="p">,)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="s2">&quot;POINT(0 0)&quot;</span><span class="p">,</span> <span class="s2">&quot;POINT(0 1)&quot;</span><span class="p">,)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hausdorff_df</span> <span class="o">=</span> <span class="n">spark_session</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">test_data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;geo1&quot;</span><span class="p">,</span> <span class="s2">&quot;geo2&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hausdorff_df</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s2">&quot;hausdorff&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spark_session</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">&quot;select ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2)) from hausdorff&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">+-----------------------------------------------------------------+</span>
+<span class="go">|ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2))|</span>
+<span class="go">+-----------------------------------------------------------------+</span>
+<span class="go">|1                                                                |</span>
+<span class="go">+-----------------------------------------------------------------+</span>
+<span class="go">|1                                                                |</span>
+<span class="go">+-----------------------------------------------------------------+    </span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
@@ -239,7 +282,7 @@
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>

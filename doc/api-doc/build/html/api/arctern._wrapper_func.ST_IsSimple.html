@@ -139,8 +139,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compile-with-conda.html">conda环境搭建</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arctern_pyspark.html">arctern_pyspark api</a></li>
 </ul>
 
             
@@ -230,7 +229,7 @@ self tangency.</p>
 <dd class="field-even"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arctern</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;</span><span class="p">,</span> <span class="s2">&quot;POLYGON ((1 1,1 2,2 2,2 1,1 1))&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_IsSimple</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rst</span> <span class="o">=</span> <span class="n">arctern</span><span class="o">.</span><span class="n">ST_IsSimple</span><span class="p">(</span><span class="n">arctern</span><span class="o">.</span><span class="n">ST_GeomFromText</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">rst</span><span class="p">)</span>
 <span class="go">    0    true</span>
 <span class="go">    1    true</span>
@@ -265,7 +264,7 @@ self tangency.</p>
     <p>
         &copy; Copyright 2020, zilliz
       <span class="lastupdated">
-        Last updated on Apr 09, 2020.
+        Last updated on Apr 10, 2020.
       </span>
 
     </p>
