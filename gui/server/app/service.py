@@ -210,7 +210,8 @@ def db_query():
                 query_params['choropleth']['color_gradient'],
                 query_params['choropleth']['color_bound'],
                 float(query_params['choropleth']['opacity']),
-                query_params['choropleth']['coordinate_system'])
+                query_params['choropleth']['coordinate_system'],
+                query_params['choropleth']['aggregation_type'])
             data = choroplethmap(vega, res)
             content['result'] = data
         elif query_type == 'weighted':
@@ -222,7 +223,8 @@ def db_query():
                 query_params['weighted']['color_bound'],
                 query_params['weighted']['size_bound'],
                 float(query_params['weighted']['opacity']),
-                query_params['weighted']['coordinate_system']
+                query_params['weighted']['coordinate_system'],
+                query_params['weighted']['aggregation_type']
             )
             data = weighted_pointmap(vega, res)
             content['result'] = data

@@ -342,7 +342,8 @@ request:
                     "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [0, 2],                                          //颜色标尺
                     "size_bound": [0, 10],                                          //点大小标尺
-                    "opacity": 1.0                                                  //透明度
+                    "opacity": 1.0,                                                 //透明度
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 },
 
                 //热力图的附加参数
@@ -360,7 +361,8 @@ request:
                     "coordinate_system": "EPSG:4326",                               //坐标系
                     "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [2.5, 5],                                        //标尺
-                    "opacity" : 1                                                   //透明度
+                    "opacity" : 1,                                                  //透明度
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 }
             }
         }
@@ -524,7 +526,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     2.5,
                     5
                 ],
-                "opacity": 1
+                "opacity": 1,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -552,7 +555,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                 "coordinate_system": "EPSG:4326",
                 "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [2.5, 5],
-                "opacity": 1
+                "opacity": 1,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -590,7 +594,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     10
                 ],
                 "opacity": 1,
-                "coordinate_system": "EPSG:4326"
+                "coordinate_system": "EPSG:4326",
+                "aggregation_type": "sum"
             }
         }
     }
@@ -625,7 +630,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     10
                 ],
                 "opacity": 1,
-                "coordinate_system": "EPSG:4326"
+                "coordinate_system": "EPSG:4326",
+                "aggregation_type": "sum"
             }
         }
     }

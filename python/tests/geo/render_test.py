@@ -62,7 +62,7 @@ def test_point_map():
     arr_y = pandas.Series(y_data)
     points = arctern.ST_Point(arr_x, arr_y)
 
-    vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
+    vega = vega_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], point_size=3, point_color="#2DEF4A", opacity=0.5, coordinate_system="EPSG:4326")
     curve_z1 = arctern.point_map(vega, points)
     save_png(curve_z1, "/tmp/test_curve_z1.png")
 
@@ -103,19 +103,19 @@ def test_weighted_point_map():
     arr_c = pandas.Series(c_data)
     arr_s = pandas.Series(s_data)
 
-    vega1 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#87CEEB"], [1, 5], [5], 1.0, "EPSG:3857")
+    vega1 = vega_weighted_pointmap(300, 200, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#87CEEB"], opacity=1.0, coordinate_system="EPSG:3857")
     res1 = arctern.weighted_point_map(vega1, points)
     save_png(res1, "/tmp/test_weighted_0_0.png")
 
-    vega2 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], [1, 5], [5], 1.0, "EPSG:3857")
+    vega2 = vega_weighted_pointmap(300, 200, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:3857")
     res2 = arctern.weighted_point_map(vega2, points, color_weights=arr_c)
     save_png(res2, "/tmp/test_weighted_1_0.png")
 
-    vega3 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#87CEEB"], [1, 5], [1, 10], 1.0, "EPSG:3857")
+    vega3 = vega_weighted_pointmap(300, 200, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#87CEEB"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:3857")
     res3 = arctern.weighted_point_map(vega3, points, size_weights=arr_s)
     save_png(res3, "/tmp/test_weighted_0_1.png")
 
-    vega4 = vega_weighted_pointmap(300, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], [1, 5], [1, 10], 1.0, "EPSG:3857")
+    vega4 = vega_weighted_pointmap(300, 200, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:3857")
     res4 = arctern.weighted_point_map(vega4, points, color_weights=arr_c, size_weights=arr_s)
     save_png(res4, "/tmp/test_weighted_1_1.png")
 
@@ -135,7 +135,7 @@ def test_heat_map():
     points = arctern.ST_Point(arr_x, arr_y)
     arr_c = pandas.Series(y_data)
 
-    vega = vega_heatmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 10.0, 'EPSG:4326')
+    vega = vega_heatmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], map_zoom_level=10.0, coordinate_system='EPSG:4326')
     heat_map1 = arctern.heat_map(vega, points, arr_c)
 
     save_png(heat_map1, "/tmp/test_heat_map1.png")
@@ -157,6 +157,6 @@ def test_choropleth_map():
     arr_wkb = arctern.wkt2wkb(arr_wkt)
     arr_count = pandas.Series(count_data)
 
-    vega = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"], [2.5, 5], 1.0, 'EPSG:4326')
+    vega = vega_choroplethmap(1900, 1410, bounding_box=[-73.994092, 40.753893, -73.977588, 40.759642], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     choropleth_map1 = arctern.choropleth_map(vega, arr_wkb, arr_count)
     save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")
