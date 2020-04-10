@@ -88,17 +88,14 @@ def ST_PointFromText(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT (30 10)',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_PointFromText(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_PointFromText(data)) from data").show(100,0)
       +---------------------------------+
       |ST_AsText(ST_PointFromText(data))|
       +---------------------------------+
@@ -121,17 +118,14 @@ def ST_PolygonFromText(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_PolygonFromText(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_PolygonFromText(data)) from data").show(100,0)
       +-----------------------------------+
       |ST_AsText(ST_PolygonFromText(data))|
       +-----------------------------------+
@@ -154,17 +148,14 @@ def ST_LineStringFromText(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING (0 0, 0 1, 1 1, 1 0)',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_LineStringFromText(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_LineStringFromText(data)) from data").show(100,0)
       +--------------------------------------+
       |ST_AsText(ST_LineStringFromText(data))|
       +--------------------------------------+
@@ -187,17 +178,14 @@ def ST_GeomFromWKT(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromWKT(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromWKT(data)) from data").show(100,0)
       +-------------------------------+
       |ST_AsText(ST_GeomFromWKT(data))|
       +-------------------------------+
@@ -220,17 +208,14 @@ def ST_GeomFromText(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show(100,0)
       +--------------------------------+
       |ST_AsText(ST_GeomFromText(data))|
       +--------------------------------+
@@ -253,17 +238,14 @@ def ST_AsText(geo):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show()
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show(100,0)
       +--------------------------------+
       |ST_AsText(ST_GeomFromText(data))|
       +--------------------------------+
@@ -289,17 +271,14 @@ def ST_Point(x, y):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> points_data = []
       >>> points_data.extend([(1,1)])
       >>> points_df = spark_session.createDataFrame(data=points_data, schema=["x", "y"]).cache()
       >>> points_df.createOrReplaceTempView("points")
-      >>> spark_session.sql("select ST_AsText(ST_Point(x, y)) from points").show()
+      >>> spark_session.sql("select ST_AsText(ST_Point(x, y)) from points").show(100,0)
       +-------------------------+
       |ST_AsText(ST_Point(x, y))|
       +-------------------------+
@@ -322,10 +301,7 @@ def ST_GeomFromGeoJSON(json):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
@@ -334,7 +310,7 @@ def ST_GeomFromGeoJSON(json):
       >>> test_data.extend([("{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",)])
       >>> json_df = spark_session.createDataFrame(data=test_data, schema=["json"]).cache()
       >>> json_df.createOrReplaceTempView("json")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromGeoJSON(json)) from json").show()
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromGeoJSON(json)) from json").show(100,0)
       +-----------------------------------+
       |ST_AsText(ST_GeomFromGeoJSON(json))|
       +-----------------------------------+
@@ -367,10 +343,7 @@ def ST_Intersection(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
@@ -378,7 +351,7 @@ def ST_Intersection(left, right):
       >>> test_data.extend([('POINT(0 0)', 'LINESTRING ( 0 0, 2 2 )')])
       >>> intersection_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> intersection_df.createOrReplaceTempView("intersection")
-      >>> spark_session.sql("select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from intersection").show()
+      >>> spark_session.sql("select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from intersection").show(100,0)
       +-------------------------------------------------------------------------+
       |ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))|
       +-------------------------------------------------------------------------+
@@ -403,10 +376,7 @@ def ST_IsValid(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
-          .getOrCreate()
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
       >>> register_funcs(spark_session)
       >>> test_data = []
@@ -414,7 +384,7 @@ def ST_IsValid(geos):
       >>> test_data.extend([('POINT (30 10)',)])
       >>> valid_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> valid_df.createOrReplaceTempView("valid")
-      >>> spark_session.sql("select ST_IsValid(ST_GeomFromText(geos)) from valid").show()
+      >>> spark_session.sql("select ST_IsValid(ST_GeomFromText(geos)) from valid").show(100,0)
       +---------------------------------+
       |ST_IsValid(ST_GeomFromText(geos))|
       +---------------------------------+
@@ -448,15 +418,13 @@ def ST_PrecisionReduce(geos, precision):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT (10.777 11.888)',)])
       >>> precision_reduce_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> precision_reduce_df.createOrReplaceTempView("precision_reduce")
-      >>> spark_session.sql("select ST_AsText(ST_PrecisionReduce(ST_GeomFromText(geos), 4)) from precision_reduce").show()
+      >>> spark_session.sql("select ST_AsText(ST_PrecisionReduce(ST_GeomFromText(geos), 4)) from precision_reduce").show(100,0)
       +-------------------------------------------------------+
       |ST_AsText(ST_PrecisionReduce(ST_GeomFromText(geos), 4))|
       +-------------------------------------------------------+
@@ -486,16 +454,14 @@ def ST_Equals(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(0 0, 10 10)', 'LINESTRING(0 0, 5 5, 10 10)')])
       >>> test_data.extend([('LINESTRING(10 10, 0 0)', 'LINESTRING(0 0, 5 5, 10 10)')])
       >>> equals_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> equals_df.createOrReplaceTempView("equals")
-      >>> spark_session.sql("select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from equals").show()
+      >>> spark_session.sql("select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from equals").show(100,0)
       +--------------------------------------------------------+
       |ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right))|
       +--------------------------------------------------------+
@@ -527,16 +493,14 @@ def ST_Touches(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(0 0, 1 1, 0 2)', 'POINT(1 1)')])
       >>> test_data.extend([('LINESTRING(0 0, 1 1, 0 2)', 'POINT(0 2)')])
       >>> touches_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> touches_df.createOrReplaceTempView("touches")
-      >>> spark_session.sql("select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from touches").show()
+      >>> spark_session.sql("select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from touches").show(100,0)
       +---------------------------------------------------------+
       |ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right))|
       +---------------------------------------------------------+
@@ -568,16 +532,14 @@ def ST_Overlaps(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))', 'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))')])
       >>> test_data.extend([('POINT(1 0.5)', 'LINESTRING(1 0, 1 1, 3 5)')])
       >>> overlaps_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> overlaps_df.createOrReplaceTempView("overlaps")
-      >>> spark.sql("select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from overlaps").show()
+      >>> spark.sql("select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from overlaps").show(100,0)
       +----------------------------------------------------------+
       |ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
@@ -612,16 +574,14 @@ def ST_Crosses(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('MULTIPOINT((1 3), (4 1), (4 3))', 'POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))')])
       >>> test_data.extend([('POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))', 'POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))')])
       >>> crosses_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> crosses_df.createOrReplaceTempView("crosses")
-      >>> spark_session.sql("select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from crosses").show()
+      >>> spark_session.sql("select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from crosses").show(100,0)
       +---------------------------------------------------------+
       |ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right))|
       +---------------------------------------------------------+
@@ -650,16 +610,14 @@ def ST_IsSimple(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((1 2, 3 4, 5 6, 1 2))',)])
       >>> test_data.extend([('LINESTRING(1 1,2 2,2 3.5,1 3,1 2,2 1)',)])
       >>> simple_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simple_df.createOrReplaceTempView("simple")
-      >>> spark_session.sql("select ST_IsSimple(ST_GeomFromText(geos)) from simple").show()
+      >>> spark_session.sql("select ST_IsSimple(ST_GeomFromText(geos)) from simple").show(100,0)
       +----------------------------------+
       |ST_IsSimple(ST_GeomFromText(geos))|
       +----------------------------------+
@@ -684,16 +642,14 @@ def ST_GeometryType(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)',)])
       >>> test_data.extend([('POINT (30 10)',)])
       >>> geometry_type_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> geometry_type_df.createOrReplaceTempView("geometry_type")
-      >>> spark_session.sql("select ST_GeometryType(ST_GeomFromText(geos)) from geometry_type").show()
+      >>> spark_session.sql("select ST_GeometryType(ST_GeomFromText(geos)) from geometry_type").show(100,0)
       +--------------------------------------+
       |ST_GeometryType(ST_GeomFromText(geos))|
       +--------------------------------------+
@@ -721,16 +677,14 @@ def ST_MakeValid(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)',)])
       >>> test_data.extend([('POLYGON((1 5, 1 1, 3 3, 5 3, 7 1, 7 5, 5 3, 3 3, 1 5))',)])
       >>> make_valid_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> make_valid_df.createOrReplaceTempView("make_valid")
-      >>> spark_session.sql("select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) from make_valid").show()
+      >>> spark_session.sql("select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) from make_valid").show(100,0)
       +------------------------------------------------------------------------------------------------+
       |ST_AsText(ST_MakeValid(ST_GeomFromText(geos)))                                                  |
       +------------------------------------------------------------------------------------------------+
@@ -763,9 +717,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([(
@@ -776,7 +728,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
           )])
       >>> simplify_preserve_topology_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show()  
+      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show(100,0)  
       +----------------------------------------------------------------------------+
       |ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10))           |
       +----------------------------------------------------------------------------+
@@ -811,16 +763,14 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([(1.0, 3.0, 5.0, 7.0)])
       >>> test_data.extend([(2.0, 4.0, 6.0, 8.0)])
       >>> polygon_from_envelope_df = spark_session.createDataFrame(data=test_data, schema=['min_x', 'min_y', 'max_x', 'max_y']).cache()
       >>> polygon_from_envelope_df.createOrReplaceTempView('polygon_from_envelope')
-      >>> spark_session.sql("select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from polygon_from_envelope").show()
+      >>> spark_session.sql("select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from polygon_from_envelope").show(100,0)
       +-------------------------------------------------------------+
       |ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y))|
       +-------------------------------------------------------------+
@@ -853,16 +803,14 @@ def ST_Contains(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((-1 3,2 1,0 -3,-1 3))','POLYGON((0 2,1 1,0 -1,0 2))')])
       >>> test_data.extend([('POLYGON((0 2,1 1,0 -1,0 2))','POLYGON((-1 3,2 1,0 -3,-1 3))')])
       >>> contains_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> contains_df.createOrReplaceTempView("contains")
-      >>> spark_session.sql("select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from contains").show()
+      >>> spark_session.sql("select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from contains").show(100,0)
       +----------------------------------------------------------+
       |ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
@@ -893,16 +841,14 @@ def ST_Intersects(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT(0 0)', 'LINESTRING ( 0 0, 0 2 )')])
       >>> test_data.extend([('POINT(0 0)','LINESTRING ( 2 0, 0 2 )')])
       >>> intersects_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> intersects_df.createOrReplaceTempView("intersects")
-      >>> spark_session.sql("select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from intersects").show()
+      >>> spark_session.sql("select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from intersects").show(100,0)
       +------------------------------------------------------------+
       |ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right))|
       +------------------------------------------------------------+
@@ -935,16 +881,14 @@ def ST_Within(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((2 2, 7 2, 7 5, 2 5, 2 2))','POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))')])
       >>> test_data.extend([('POLYGON((0 2, 5 2, 5 5, 0 5, 0 2))','POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))')])
       >>> within_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> within_df.createOrReplaceTempView("within")
-      >>> spark_session.sql("select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from within").show()
+      >>> spark_session.sql("select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from within").show(100,0)
       +--------------------------------------------------------+
       |ST_Within(ST_GeomFromText(left), ST_GeomFromText(right))|
       +--------------------------------------------------------+
@@ -975,16 +919,14 @@ def ST_Distance(left, right):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession .builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((-1 -1,2 2,0 1,-1 -1))','POLYGON((5 2,7 4,5 5,5 2))')])
       >>> test_data.extend([('POINT(31.75 31.25)','LINESTRING(32 32,32 35,40.5 35,32 35,32 32)')])
       >>> distance_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
       >>> distance_df.createOrReplaceTempView("distance")
-      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance").show()
+      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance").show(100,0)
       +----------------------------------------------------------+
       |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
@@ -1012,16 +954,14 @@ def ST_Area(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON((10 20,10 30,20 30,30 10))',)])
       >>> test_data.extend([('POLYGON((10 20,10 40,30 40,40 10))',)])
       >>> area_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> area_df.createOrReplaceTempView("area")
-      >>> spark_session.sql("select ST_Area(ST_GeomFromText(geos)) from area").show()
+      >>> spark_session.sql("select ST_Area(ST_GeomFromText(geos)) from area").show(100,0)
       +------------------------------+
       |ST_Area(ST_GeomFromText(geos))|
       +------------------------------+
@@ -1048,16 +988,14 @@ def ST_Centroid(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('MULTIPOINT ( -1 0, -1 2, -1 3, -1 4, -1 7, 0 1, 0 3, 1 1, 2 0, 6 0, 7 8, 9 8, 10 6 )',)])
       >>> test_data.extend([('CIRCULARSTRING(0 2, -1 1,0 0, 0.5 0, 1 0, 2 1, 1 2, 0.5 2, 0 2)',)])
       >>> centroid_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> centroid_df.createOrReplaceTempView("centroid")
-      >>> spark_session.sql("select ST_AsText(ST_Centroid(ST_GeomFromText(geos))) from centroid").show()
+      >>> spark_session.sql("select ST_AsText(ST_Centroid(ST_GeomFromText(geos))) from centroid").show(100,0)
       +---------------------------------------------+
       |ST_AsText(ST_Centroid(ST_GeomFromText(geos)))|
       +---------------------------------------------+
@@ -1084,16 +1022,14 @@ def ST_Length(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(743238 2967416,743238 2967450,743265 2967450, 743265.625 2967416,743238 2967416)',)])
       >>> test_data.extend([('LINESTRING(-72.1260 42.45, -72.1240 42.45666, -72.123 42.1546)',)])
       >>> length_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> length_df.createOrReplaceTempView("length")
-      >>> spark_session.sql("select ST_Length(ST_GeomFromText(geos)) from length").show()
+      >>> spark_session.sql("select ST_Length(ST_GeomFromText(geos)) from length").show(100,0)
       +--------------------------------+
       |ST_Length(ST_GeomFromText(geos))|
       +--------------------------------+
@@ -1136,16 +1072,14 @@ def ST_HausdorffDistance(geo1, geo2):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([("POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))",)])
       >>> test_data.extend([("POINT(0 0)", "POINT(0 1)",)])
       >>> hausdorff_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> hausdorff_df.createOrReplaceTempView("hausdorff")
-      >>> spark_session.sql("select ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2)) from hausdorff").show()
+      >>> spark_session.sql("select ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2)) from hausdorff").show(100,0)
       +-----------------------------------------------------------------+
       |ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2))|
       +-----------------------------------------------------------------+
@@ -1173,16 +1107,14 @@ def ST_ConvexHull(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('GEOMETRYCOLLECTION(POINT(1 1),POINT(0 0))',)])
       >>> test_data.extend([('GEOMETRYCOLLECTION(LINESTRING(2.5 3,-2 1.5), POLYGON((0 1,1 3,1 -2,0 1)))',)])
       >>> convexhull_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> convexhull_df.createOrReplaceTempView("convexhull")
-      >>> spark_session.sql("select ST_AsText(ST_convexhull(ST_GeomFromText(geos))) from convexhull").show()
+      >>> spark_session.sql("select ST_AsText(ST_convexhull(ST_GeomFromText(geos))) from convexhull").show(100,0)
       +-----------------------------------------------+
       |ST_AsText(ST_convexhull(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
@@ -1207,16 +1139,14 @@ def ST_NPoints(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(77.29 29.07,77.42 29.26,77.27 29.31,77.29 29.07)',)])
       >>> test_data.extend([('LINESTRING(77.29 29.07 1,77.42 29.26 0,77.27 29.31 -1,77.29 29.07 3)',)])
       >>> npoints_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> npoints_df.createOrReplaceTempView("npoints")
-      >>> spark_session.sql("select ST_NPoints(ST_GeomFromText(geos)) from npoints").show()
+      >>> spark_session.sql("select ST_NPoints(ST_GeomFromText(geos)) from npoints").show(100,0)
       +---------------------------------+
       |ST_NPoints(ST_GeomFromText(geos))|
       +---------------------------------+
@@ -1241,9 +1171,7 @@ def ST_Envelope(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('point (10 10)',)])
@@ -1256,7 +1184,7 @@ def ST_Envelope(geos):
       >>> test_data.extend([('multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))',)])
       >>> envelope_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> envelope_df.createOrReplaceTempView("envelope")
-      >>> spark_session.sql("select ST_AsText(ST_Envelope(ST_GeomFromText(geos))) from envelope").show()
+      >>> spark_session.sql("select ST_AsText(ST_Envelope(ST_GeomFromText(geos))) from envelope").show(100,0)
       +---------------------------------------------+
       |ST_AsText(ST_Envelope(ST_GeomFromText(geos)))|
       +---------------------------------------------+
@@ -1298,15 +1226,13 @@ def ST_Buffer(geos, dfDist):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT (0 1)',)])
       >>> buffer_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> buffer_df.createOrReplaceTempView("buffer")
-      >>> spark_session.sql("select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 0)) from buffer").show()
+      >>> spark_session.sql("select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 0)) from buffer").show(100,0)
       +----------------------------------------------+
       |ST_AsText(ST_Buffer(ST_GeomFromText(geos), 0))|
       +----------------------------------------------+
@@ -1329,16 +1255,14 @@ def ST_Union_Aggr(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data1 = []
       >>> test_data1.extend([('POLYGON ((1 1,1 2,2 2,2 1,1 1))',)])
       >>> test_data1.extend([('POLYGON ((2 1,3 1,3 2,2 2,2 1))',)])
       >>> union_aggr_df1 = spark_session.createDataFrame(data=test_data1, schema=['geos']).cache()
       >>> union_aggr_df1.createOrReplaceTempView("union_aggr1")
-      >>> spark_session.sql("select ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos))) from union_aggr1").show()
+      >>> spark_session.sql("select ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos))) from union_aggr1").show(100,0)
       +-----------------------------------------------+
       |ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
@@ -1363,16 +1287,14 @@ def ST_Envelope_Aggr(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,4 0,4 4,0 4,0 0))',)])
       >>> test_data.extend([('POLYGON ((5 1,7 1,7 2,5 2,5 1))',)])
       >>> envelope_aggr_df = spark_session.createDataFrame(data=test_data, schema=['geos'])
       >>> envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
-      >>> spark_session.sql("select ST_AsText(ST_Envelope_Aggr(ST_GeomFromText(geos))) from envelope_aggr").show()
+      >>> spark_session.sql("select ST_AsText(ST_Envelope_Aggr(ST_GeomFromText(geos))) from envelope_aggr").show(100,0)
       +--------------------------------------------------+
       |ST_AsText(ST_Envelope_Aggr(ST_GeomFromText(geos)))|
       +--------------------------------------------------+
@@ -1403,15 +1325,13 @@ def ST_Transform(geos, src_rs, dst_rs):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>>  test_data = []
       >>> test_data.extend([('POINT (10 10)',)])
       >>> buffer_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> buffer_df.createOrReplaceTempView("buffer")
-      >>> spark_session.sql("select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) from buffer").show()
+      >>> spark_session.sql("select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) from buffer").show(100,0)
       +------------------------------------------------------------------------+
       |ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857'))|
       +------------------------------------------------------------------------+
@@ -1436,9 +1356,7 @@ def ST_CurveToLine(geos):
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
-      >>> spark_session = SparkSession \
-          .builder \
-          .appName("Python Arrow-in-Spark example") \
+      >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))',)])
