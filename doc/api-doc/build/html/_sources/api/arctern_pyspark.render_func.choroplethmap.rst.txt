@@ -1,6 +1,0 @@
-choroplethmap
-=============
-
-.. currentmodule:: arctern_pyspark.render_func
-
-.. autofunction:: choroplethmap

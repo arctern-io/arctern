@@ -1,6 +1,0 @@
-weighted_pointmap
-=================
-
-.. currentmodule:: arctern_pyspark
-
-.. autofunction:: weighted_pointmap

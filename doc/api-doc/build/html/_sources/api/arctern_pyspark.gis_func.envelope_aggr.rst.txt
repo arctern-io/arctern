@@ -1,6 +1,0 @@
-envelope_aggr
-=============
-
-.. currentmodule:: arctern_pyspark.gis_func
-
-.. autofunction:: envelope_aggr

@@ -1,6 +1,0 @@
-Projection
-==========
-
-.. currentmodule:: arctern_pyspark._wrapper_func
-
-.. autofunction:: Projection

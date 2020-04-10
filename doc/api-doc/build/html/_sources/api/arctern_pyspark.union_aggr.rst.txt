@@ -1,6 +1,0 @@
-union_aggr
-==========
-
-.. currentmodule:: arctern_pyspark
-
-.. autofunction:: union_aggr

@@ -1,6 +1,0 @@
-pointmap
-========
-
-.. currentmodule:: arctern_pyspark.render_func
-
-.. autofunction:: pointmap
