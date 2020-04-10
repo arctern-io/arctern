@@ -8,19 +8,19 @@
 namespace de9im {
 class Matrix {
  public:
-  enum class Position : uint8_t { Interier = 0, Borderline = 1, Exterier = 2 };
+  enum class Position : uint8_t { kInterier = 0, kBorderline = 1, kExterier = 2 };
   enum class State : uint8_t {
-    Invalid = '@',
+    kInvalid = '@',
 
-    Ignored = '*',
-    False = 'F',
-    TrueGeneric = 'T',
-    DimensionZero = '0',
-    DimensionOne = '1',
-    DimensionTwo = '2',
+    kIgnored = '*',
+    kFalse = 'F',
+    kTrueGeneric = 'T',
+    kDimensionZero = '0',
+    kDimensionOne = '1',
+    kDimensionTwo = '2',
 
-    ComputeTrueFalse = '?',
-    ComputeDimension = 'n'
+    kComputeTrueFalse = '?',
+    kComputeDimension = 'n'
   };
   Matrix() = default;
 
@@ -41,9 +41,26 @@ class Matrix {
     assert(0 <= col && col < 3);
     auto index = row * 3 + col;
     if (index >= 8) {
+      assert(state == State::kIgnored);
       return;
     }
     states_[index] = state;
+  }
+
+  template <Position row>
+  DEVICE_RUNNABLE void set_row(const char* text) {
+    assert(text[3] == '\0');
+    set<row, Position::kInterier>(text[0]);
+    set<row, Position::kBorderline>(text[1]);
+    set<row, Position::kExterier>(text[2]);
+  }
+
+  template <Position col>
+  DEVICE_RUNNABLE void set_col(const char* text) {
+    assert(text[3] == '\0');
+    set<Position::kInterier, col>(text[0]);
+    set<Position::kBorderline, col>(text[1]);
+    set<Position::kExterier, col>(text[2]);
   }
 
   template <Position row, Position col>
@@ -56,15 +73,14 @@ class Matrix {
     assert(0 <= col && col < 3);
     auto index = row * 3 + col;
     if (index >= 8) {
-      return State::DimensionTwo;
+      return State::kDimensionTwo;
     }
     return states_[index];
   }
 
  private:
-  State states_[8] = {State::Invalid};
+  State states_[8] = {State::kInvalid};
 };
-
 constexpr Matrix INVALID_MATRIX = {};
 
 }  // namespace de9im

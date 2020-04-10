@@ -8,7 +8,6 @@ namespace cuda {
 
 using ConstIter = ConstGpuContext::ConstIter;
 using de9im::Matrix;
-namespace {
 __device__ Matrix PointRelateTo(ConstIter& left_iter, const ConstGpuContext& right,
                                 Matrix matrix, int index) {
   (void)matrix;  // ignore
@@ -18,29 +17,60 @@ __device__ Matrix PointRelateTo(ConstIter& left_iter, const ConstGpuContext& rig
   left_iter.values += 2;
 
   auto right_iter = right.get_iter(index);
+  Matrix result;
   switch (right_tag.get_category()) {
     case WkbCategory::kPoint: {
       auto right_point = *(const double2*)right_iter.values;
       right_iter.values += 2;
-      auto is_eq = is_equal(left_point, right_point);
-      auto result = is_eq ? Matrix("0FFFFFFF*") : Matrix("FF0FFF0F");
+      auto is_eq = IsEqual(left_point, right_point);
+      result = is_eq ? Matrix("0FFFFFFF*") : Matrix("FF0FFF0F*");
       break;
     }
     case WkbCategory::kLineString: {
       auto size = (int)*right_iter.metas++;
-      auto values2 = (const double2*)right_iter.values;
+      auto points = (const double2*)right_iter.values;
 
-      if(size == 0) {
-        return
+      if (size == 0) {
+        result = Matrix("FFFFFFFF*");
+        break;
       }
-      for(int i = 0; i < size - 1; ++i) {
-        auto point = values2[i];
 
+      if(size == 1) {
+        auto right_point = points[0];
+        right_iter.values += 2;
+        auto is_eq = IsEqual(left_point, right_point);
+        result = is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
+        break;
       }
+
+
+      assert(size >= 2);
+      auto endpoint0 = points[0];
+      auto endpoint1 = points[size - 1];
+      Matrix mat;
+
+      using Position = Matrix::Position;
+      using State = Matrix::State;
+
+      if(IsEqual(endpoint0, left_point) || IsEqual(endpoint1, left_point)) {
+        mat.set_col<Position::kBorderline>("0FF");
+      } else {
+        mat.set_col<Position::kBorderline>("FF0");
+      }
+      bool point_in_line = false;
+      for (int i = 0; i < size - 1; ++i) {
+        auto u = points[i];
+        auto v = points[i + 1];
+        if(i != 0 && IsEqual(u, left_point)) {
+          point_in_line = true;
+          break;
+        }
+        is_in_line(u, )
+      }
+
     }
   }
 }
-}  // namespace
 
 __device__ Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
                            de9im::Matrix input_matrix, int index) {
