@@ -8,7 +8,7 @@
 namespace de9im {
 class Matrix {
  public:
-  enum class Position : uint8_t { kInterier = 0, kBorderline = 1, kExterier = 2 };
+  enum class Position : uint8_t { kInterier = 0, kBoundry = 1, kExterier = 2 };
   enum class State : uint8_t {
     kInvalid = '@',
 
@@ -51,7 +51,7 @@ class Matrix {
   DEVICE_RUNNABLE void set_row(const char* text) {
     assert(text[3] == '\0');
     set<row, Position::kInterier>(text[0]);
-    set<row, Position::kBorderline>(text[1]);
+    set<row, Position::kBoundry>(text[1]);
     set<row, Position::kExterier>(text[2]);
   }
 
@@ -59,7 +59,7 @@ class Matrix {
   DEVICE_RUNNABLE void set_col(const char* text) {
     assert(text[3] == '\0');
     set<Position::kInterier, col>(text[0]);
-    set<Position::kBorderline, col>(text[1]);
+    set<Position::kBoundry, col>(text[1]);
     set<Position::kExterier, col>(text[2]);
   }
 
