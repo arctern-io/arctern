@@ -17,7 +17,7 @@
 
 #include <thrust/optional.h>
 
-#include "gis/cuda/functor/bounding_box.h"
+#include "gis/cuda/tools/bounding_box.h"
 
 namespace arctern {
 namespace gis {

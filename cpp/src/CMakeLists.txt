@@ -67,6 +67,8 @@ set(cuda_gis_src
         gis/cuda/functor/st_envelope.cu
         gis/cuda/functor/st_point.cu
         gis/cuda/functor/st_relate.cu
+        gis/cuda/tools/relation.cu
+        gis/cuda/tools/bounding_box.cu
         gis/cuda/gis_functions.cpp
         )
 

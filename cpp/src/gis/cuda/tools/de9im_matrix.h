@@ -24,22 +24,18 @@ class Matrix {
   };
   Matrix() = default;
 
-  DEVICE_RUNNABLE constexpr Matrix(const char* text) {
+  DEVICE_RUNNABLE static inline State toState(char ch) { return static_cast<State>(ch); }
+
+  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) {
     assert(text[8] == '*');
     for (int i = 0; i < 8; i++) {
-      states_[i] = (State)text[i];
+      states_[i] = toState(text[i]);
     }
   }
 
   template <Position row, Position col>
-  DEVICE_RUNNABLE State get() {
-    return this->get((int)row, (int)col);
-  }
-
-  DEVICE_RUNNABLE void set(int row, int col, State state) {
-    assert(0 <= row && row < 3);
-    assert(0 <= col && col < 3);
-    auto index = row * 3 + col;
+  DEVICE_RUNNABLE void set(State state) {
+    auto index = static_cast<int>(row) * 3 + static_cast<int>(col);
     if (index >= 8) {
       assert(state == State::kIgnored);
       return;
@@ -50,32 +46,26 @@ class Matrix {
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
     assert(text[3] == '\0');
-    set<row, Position::kInterier>((State)text[0]);
-    set<row, Position::kBoundry>((State)text[1]);
-    set<row, Position::kExterier>((State)text[2]);
+    set<row, Position::kInterier>(toState(text[0]));
+    set<row, Position::kBoundry>(toState(text[1]));
+    set<row, Position::kExterier>(toState(text[2]));
   }
 
   template <Position col>
   DEVICE_RUNNABLE void set_col(const char* text) {
     assert(text[3] == '\0');
-    set<Position::kInterier, col>((State)text[0]);
-    set<Position::kBoundry, col>((State)text[1]);
-    set<Position::kExterier, col>((State)text[2]);
+    set<Position::kInterier, col>(toState(text[0]));
+    set<Position::kBoundry, col>(toState(text[1]));
+    set<Position::kExterier, col>(toState(text[2]));
   }
 
-  template <Position row, Position col>
-  DEVICE_RUNNABLE void set(State state) {
-    set((int)row, (int)col, state);
-  };
-
-  DEVICE_RUNNABLE State get(int row, int col) {
-    assert(0 <= row && row < 3);
-    assert(0 <= col && col < 3);
-    auto index = row * 3 + col;
-    if (index >= 8) {
-      return State::kDimensionTwo;
+  DEVICE_RUNNABLE Matrix transpose() const {
+    Matrix mat;
+    for (int i = 0; i < 8; ++i) {
+      auto ref = i / 3 + i % 3 * 3;
+      mat.states_[i] = states_[ref];
     }
-    return states_[index];
+    return mat;
   }
 
  private:

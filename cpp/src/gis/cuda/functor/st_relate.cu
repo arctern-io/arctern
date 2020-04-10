@@ -1,6 +1,6 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_relate.h"
-#include "gis/cuda/tools/relations.h"
+#include "gis/cuda/tools/relation.h"
 
 namespace arctern {
 namespace gis {
@@ -9,40 +9,26 @@ namespace cuda {
 using ConstIter = ConstGpuContext::ConstIter;
 using de9im::Matrix;
 
-__device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_iter) {
-  auto size = (int)*right_iter.metas++;
-  auto points = (const double2*)right_iter.values;
-
-  if (size == 0) {
+__device__ Matrix PointRelateToLineString(double2 left_point, int right_size,
+                                          const double2* right_points) {
+  if (right_size == 0) {
     return Matrix("FFFFFFFF*");
   }
 
-  if (size == 1) {
-    auto right_point = points[0];
-    right_iter.values += 2;
+  if (right_size == 1) {
+    auto right_point = right_points[0];
     auto is_eq = IsEqual(left_point, right_point);
     return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
   }
 
-  assert(size >= 2);
+  assert(right_size >= 2);
   Matrix mat;
 
   using Position = Matrix::Position;
   using State = Matrix::State;
-  bool point_in_line = false;
-  for (int i = 0; i < size - 1; ++i) {
-    auto u = points[i];
-    auto v = points[i + 1];
-    if (i != 0 && IsEqual(u, left_point)) {
-      point_in_line = true;
-      break;
-    }
-    if (IsPointInLine(left_point, u, v)) {
-      point_in_line = true;
-      break;
-    }
-  }
-  if (point_in_line) {
+
+  auto point_on_line = PointOnInnerLineString(left_point, right_size, right_points);
+  if (point_on_line) {
     mat.set_col<Position::kInterier>("0F0");
     mat.set_col<Position::kExterier>("FF*");
   } else {
@@ -50,10 +36,9 @@ __device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_i
     // false positive: boundary is not included in exterier
     mat.set_col<Position::kExterier>("0F*");
   }
-
   // endpoints
-  auto ep0 = points[0];
-  auto ep1 = points[size - 1];
+  auto ep0 = right_points[0];
+  auto ep1 = right_points[right_size - 1];
   if (IsEqual(ep0, left_point) || IsEqual(ep1, left_point)) {
     mat.set_col<Position::kBoundry>("0FF");
     // fix possible false positive
@@ -61,30 +46,36 @@ __device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_i
   } else {
     mat.set_col<Position::kBoundry>("FF0");
   }
-  right_iter.values = (const double*)(points + size);
   return mat;
 }
 
+__device__ Matrix LineStringRelateToLineString(int size, ConstIter& left_iter,
+                                               ConstIter& right_iter) {
+  //
+  return de9im::INVALID_MATRIX;
+}
+
+// ops:
 __device__ Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
                                 ConstIter& right_iter, Matrix matrix_hint) {
   (void)matrix_hint;  // ignore
-//  auto right_tag = right.get_tag(index);
+  //  auto right_tag = right.get_tag(index);
   assert(right_tag.get_space_type() == WkbSpaceType::XY);
-  auto left_point = *(const double2*)left_iter.values;
-  left_iter.values += 2;
+  auto left_point = left_iter.read_value<double2>();
 
-//  auto right_iter = right.get_iter(index);
+  //  auto right_iter = right.get_iter(index);
   Matrix result;
   switch (right_tag.get_category()) {
     case WkbCategory::kPoint: {
-      auto right_point = *(const double2*)right_iter.values;
-      right_iter.values += 2;
+      auto right_point = right_iter.read_value<double2>();
       auto is_eq = IsEqual(left_point, right_point);
       result = is_eq ? Matrix("0FFFFFFF*") : Matrix("FF0FFF0F*");
       break;
     }
     case WkbCategory::kLineString: {
-      result = PointRelateToLineString(left_point, right_iter);
+      auto right_size = right_iter.read_meta<int>();
+      auto right_points = right_iter.read_value_ptr<double2>(right_size);
+      result = PointRelateToLineString(left_point, right_size, right_points);
       break;
     }
     default: {
@@ -96,11 +87,35 @@ __device__ Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
   return result;
 }
 
-__device__ Matrix LineStringRelateOp(ConstIter& left_iter, const ConstGpuContext& right,
-                                     Matrix matrix_hint, int index) {
+__device__ Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag,
+                                     ConstIter& right_iter, Matrix matrix_hint) {
   (void)matrix_hint;  // ignore
-  // TODO(dog)
-  return de9im::INVALID_MATRIX;
+                      //  auto right_tag = right.get_tag(index);
+  assert(right_tag.get_space_type() == WkbSpaceType::XY);
+
+  auto left_size = left_iter.read_meta<int>();
+  auto left_points = left_iter.read_value_ptr<double2>(left_size);
+  Matrix result;
+  switch (right_tag.get_category()) {
+    case WkbCategory::kPoint: {
+      auto right_point = right_iter.read_value<double2>();
+      auto mat = PointRelateToLineString(right_point, left_size, left_points);
+      result = mat.transpose();
+      break;
+    }
+    case WkbCategory::kLineString: {
+      auto right_size = right_iter.read_value<int>();
+      auto right_points = right_iter.read_value_ptr<double2>(right_size);
+
+      break;
+    }
+    default: {
+      assert(false);
+      result = de9im::INVALID_MATRIX;
+      break;
+    }
+  }
+  return result;
 }
 
 __device__ Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
