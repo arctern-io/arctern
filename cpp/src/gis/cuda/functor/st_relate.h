@@ -17,7 +17,7 @@
 
 #pragma once
 #include "gis/cuda/common/gis_definitions.h"
-#include "gis/cuda/functor/de9im_matrix.h"
+#include "gis/cuda/tools/de9im_matrix.h"
 
 namespace arctern {
 namespace gis {

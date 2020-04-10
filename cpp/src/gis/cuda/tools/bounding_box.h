@@ -16,13 +16,11 @@
 // under the License.
 
 #pragma once
-#include <thrust/pair.h>
-
-#include <algorithm>
-#include <limits>
-
-#include "gis/cuda/common/common.h"
-#include "gis/cuda/common/gis_definitions.h"
+#include "../../../../../../../../../opt/cuda/include/thrust/pair.h"
+#include "../../../../../../../../../usr/include/c++/9.3.0/algorithm"
+#include "../../../../../../../../../usr/include/c++/9.3.0/limits"
+#include "../common/common.h"
+#include "../common/gis_definitions.h"
 
 namespace arctern {
 namespace gis {

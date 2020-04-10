@@ -20,10 +20,9 @@
 #include <limits>
 
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/functor/bounding_box.h"
 #include "gis/cuda/functor/geometry_output.h"
 #include "gis/cuda/functor/st_envelope.h"
-#include "gis/cuda/functor/bounding_box.h"
+#include "gis/cuda/tools/bounding_box.h"
 
 namespace arctern {
 namespace gis {
