@@ -27,7 +27,7 @@ RUN set -x \
     && rm -rf /var/cache/yum/*
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda create -n arctern python=3.7 shapely && \
+    conda create -n arctern python=3.7 && \
     conda clean --all -y && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate arctern" >> ~/.bashrc
