@@ -27,7 +27,7 @@
                 {"buildingid_dropoff": "long"},
                 {"buildingtext_pickup": "string"},
                 {"buildingtext_dropoff": "string"}
-            ],
+            ]
         },
         {
             "name": "nyc_taxi",

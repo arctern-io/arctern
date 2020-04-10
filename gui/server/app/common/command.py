@@ -16,12 +16,12 @@ limitations under the License.
 
 import uuid
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 
 from app.common import token, utils
 from app.common import error as app_error
 
-API = Blueprint('app_api', __name__)
+API = Blueprint('command_api', __name__)
 
 _COMMAND_SCOPE = {}
 
@@ -33,20 +33,20 @@ def invalid_usage(ex):
 
 @API.route('/scope', methods=['GET', 'POST'])
 @token.AUTH.login_required
-def pscope():
+def create_scope():
     """
     GET: return all scope name
     POST: create new scope and return the name of new scope
     """
     if request.method == 'GET':
-        return jsonify(status='success', code=200, data=_COMMAND_SCOPE.keys())
+        return jsonify(status='success', code=200, data=list(_COMMAND_SCOPE.keys()))
     elif request.method == 'POST':
-        scope_id = request.json.get('scope_id', None)
+        scope_id = request.json.get('scope_id')
         if scope_id is None:
             scope_id = str(uuid.uuid1()).replace('-', '')
             _COMMAND_SCOPE[scope_id] = dict()
             return jsonify(status='success', code=200, data={'scope_id': scope_id})
-        elif scope_id is not in _COMMAND_SCOPE:
+        elif scope_id not in _COMMAND_SCOPE:
             _COMMAND_SCOPE[scope_id] = dict()
             return jsonify(status='success', code=200, data={'scope_id': scope_id})
         else:
@@ -54,7 +54,8 @@ def pscope():
 
 @API.route('/scope/<scope_id>', methods=['DELETE'])
 @token.AUTH.login_required
-def remove_scope():
+def remove_scope(scope_id):
+    print(scope_id)
     if scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     del _COMMAND_SCOPE[scope_id]
@@ -62,12 +63,12 @@ def remove_scope():
 
 @API.route('/command', methods=['POST'])
 @token.AUTH.login_required
-def pcommand():
+def create_command():
     """
     execute python code with specific scope
     """
-    scope_id = request.json.get('scope_id', default=None)
-    code = request.json.get('command', None)
+    scope_id = request.json.get('scope_id')
+    code = request.json.get('command')
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     if code is None:
@@ -96,8 +97,8 @@ def _generate_env_code(envs):
 def _generate_session_code(metas):
     session_name = metas.get('session_name')
     uid = str(uuid.uuid1()).replace('-', '')
-    app_name = metas.get('app_name', default='app_' + uid)
-    master_addr = request.json.get('master-addr', default='local[*]')
+    app_name = metas.get('app_name', 'app_' + uid)
+    master_addr = request.json.get('master-addr', 'local[*]')
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
@@ -116,7 +117,7 @@ def _generate_session_code(metas):
     session_code += '.getOrCreate()'
     return session_code
 
-def _generate_load_code(table):
+def _generate_load_code(session_name, table):
     table_name = table.get('name')
     if 'path' in table and 'schema' in table and 'format' in table:
         options = table.get('options', None)
@@ -139,24 +140,24 @@ def _generate_load_code(table):
         load_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
     elif 'sql' in table:
         sql = table.get('sql')
-        load_code = '{}_df = {}.run("{}")\n'.format(table_name, session_name, sql)
+        load_code = '{}_df = {}.sql("{}")\n'.format(table_name, session_name, sql)
         load_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
     return load_code
 
 @API.route('/createsession', methods=['POST'])
 @token.AUTH.login_required
 def create_session():
-    scope_id = request.json.get('scope_id', None)
+    scope_id = request.json.get('scope_id')
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     scope = _COMMAND_SCOPE[scope_id]
-    session_name = request.json.get('session_name', None)
+    session_name = request.json.get('session_name')
     if session_name is None:
         return jsonify(status='error', code=-1, message='no specific session name!')
     if session_name in scope.keys():
         return jsonify(status='error', code=-1, message='session name {} already in use!'.format(session_name))
 
-    envs = request.json.get('envs', None)
+    envs = request.json.get('envs')
     env_code = _generate_env_code(envs)
     print(env_code)
 
@@ -167,18 +168,18 @@ def create_session():
         exec(env_code, scope)
         exec(session_code, scope)
     except Exception as e:
-        raise app_error(str(e), 400)
+        raise app_error.InvalidUsage(str(e), 400)
     else:
         return jsonify(status='success', code=200, message='create session successfully!')
 
 @API.route('/closesession', methods=['POST'])
 @token.AUTH.login_required
 def close_session():
-    scope_id = request.json.get('scope_id', None)
+    scope_id = request.json.get('scope_id')
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     scope = _COMMAND_SCOPE[scope_id]
-    session_name = request.json.get('session_name', None)
+    session_name = request.json.get('session_name')
     if session_name is None:
         return jsonify(status='error', code=-1, message='no specific session name!')
     if session_name not in scope.keys():
@@ -187,29 +188,29 @@ def close_session():
     try:
         exec(session_code, scope)
     except Exception as e:
-        raise app_error(str(e), 400)
+        raise app_error.InvalidUsage(str(e), 400)
     else:
         return jsonify(status='success', code=200, message='close session successfully!')
 
 @API.route('/loadv2', methods=['POST'])
 @token.AUTH.login_required
-def load_table_v2()
-    scope_id = request.json.get('scope_id', None)
+def load_table_v2():
+    scope_id = request.json.get('scope_id')
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     scope = _COMMAND_SCOPE[scope_id]
-    session_name = request.json.get('session_name', None)
+    session_name = request.json.get('session_name')
     if session_name is None:
         return jsonify(status='error', code=-1, message='no specific session name!')
     if session_name not in scope.keys():
         return jsonify(status='error', code=-1, message='session name {} not found!'.format(session_name))
     
-    tables = request.json.get('tables', None)
+    tables = request.json.get('tables')
     for table in tables:
-        load_code = _generate_load_code(table)
+        load_code = _generate_load_code(session_name, table)
         print(load_code)
         try:
             exec(load_code, scope)
         except Exception as e:
-            raise app_error(str(e), 400)
-    return jsonify(status='success', code=200, message='close session successfully!')
+            raise app_error.InvalidUsage(str(e), 400)
+    return jsonify(status='success', code=200, message='load table successfully!')
