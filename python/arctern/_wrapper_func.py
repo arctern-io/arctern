@@ -1050,7 +1050,7 @@ def ST_CurveToLine(geos):
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
 
-def point_map(xs, ys, conf):
+def point_map(vega, points):
     import pyarrow as pa
     array_points = pa.array(points, type='binary')
     vega_string = vega.build().encode('utf-8')

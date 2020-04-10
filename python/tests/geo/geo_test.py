@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pandas
-from  osgeo import ogr
+from osgeo import ogr
 import arctern
 
 def test_ST_IsValid():
