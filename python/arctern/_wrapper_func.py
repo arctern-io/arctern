@@ -65,7 +65,7 @@ def ST_Point(x, y):
 
     :type x: pyarrow.array.double
     :param x: Abscissa of the point.
-     
+
     :type y: pyarrow.array.double
     :param y: Ordinate of the point.
 
@@ -95,7 +95,7 @@ def ST_GeomFromGeoJSON(json):
 
     :type json: pyarrow.array.string
     :param json: Geometries organized as json
-   
+
     :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
@@ -106,7 +106,7 @@ def ST_GeomFromGeoJSON(json):
       >>> string_ptr = arctern.ST_AsText(arctern.ST_GeomFromGeoJSON(data))
       >>> print(string_ptr)
           0    LineString (1 2,4 5,7 8)
-          dtype: object 
+          dtype: object
     """
     import pyarrow as pa
     geo = pa.array(json, type='string')
@@ -119,7 +119,7 @@ def ST_GeomFromText(text):
 
     :type json: pyarrow.array.string
     :param json: Geometries organized as wkt
-   
+
     :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
@@ -164,13 +164,13 @@ def ST_AsText(text):
 def ST_Intersection(left, right):
     """
     Calculate the point set intersection of geometries.
-    
-    For every (left, right) pair with the same offset value in left and right, 
+
+    For every (left, right) pair with the same offset value in left and right,
     calculate a geometry that represents their point set intersection.
-    
+
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
 
@@ -183,7 +183,7 @@ def ST_Intersection(left, right):
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
       >>> string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))
-      >>> print(string_ptr)   
+      >>> print(string_ptr)
           0    LINESTRING (2 2,2 1)
           dtype: object
     """
@@ -196,7 +196,7 @@ def ST_Intersection(left, right):
 def ST_IsValid(geos):
     """
     For each item in geometries, check if it is of valid geometry format.
-    
+
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
@@ -208,7 +208,7 @@ def ST_IsValid(geos):
       >>> import arctern
       >>> data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
       >>> rst = arctern.ST_IsValid(arctern.ST_GeomFromText(data))
-      >>> print(rst)   
+      >>> print(rst)
           0    true
           1    true
           dtype: bool
@@ -221,11 +221,11 @@ def ST_IsValid(geos):
 def ST_PrecisionReduce(geos, precision):
     """
     Reduce the precision of geometry.
-     
-    For every geometry in geometries, reduce the decimal places of its coordinates 
-    to the given number. The last decimal place will be rounded. 
 
-    Note, the operation is performed NOT in "inplace" manner, i.e., new geometries 
+    For every geometry in geometries, reduce the decimal places of its coordinates
+    to the given number. The last decimal place will be rounded.
+
+    Note, the operation is performed NOT in "inplace" manner, i.e., new geometries
     in arrow::Array format will be construted and extra memory will be allocated.
 
     :type geos: pyarrow.array.string
@@ -256,16 +256,16 @@ def ST_Equals(left, right):
     """
     Check whether geometries are "spatially equal".
 
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they are "spatially equal". "Spatially equal" here means two geometries represent 
+    For every (left, right) pair with the same offset value in left and right, check
+    if they are "spatially equal". "Spatially equal" here means two geometries represent
     the same geometry structure.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
@@ -274,7 +274,7 @@ def ST_Equals(left, right):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Equals(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))    
+      >>> rst = arctern.ST_Equals(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    true
           1    false
@@ -290,19 +290,19 @@ def ST_Touches(left, right):
     """
     Check whether geometries "touch".
 
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they "touch". "Touch" here means two geometries have common points, and the 
+    For every (left, right) pair with the same offset value in left and right, check
+    if they "touch". "Touch" here means two geometries have common points, and the
     common points locate only on their boundaries.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
-    
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -324,19 +324,19 @@ def ST_Overlaps(left, right):
     """
     Check whether geometries "spatially overlap".
 
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they "spatially overlap". "Spatially overlap" here means two geometries 
+    For every (left, right) pair with the same offset value in left and right, check
+    if they "spatially overlap". "Spatially overlap" here means two geometries
     intersect but one does not completely contain another.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
-    
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -358,21 +358,21 @@ def ST_Crosses(left, right):
     """
     Check whether geometries "spatially cross".
 
-    For every (left, right) pair with the same offset value in left and right, check 
+    For every (left, right) pair with the same offset value in left and right, check
     if they "spatially cross". "Spatially cross" here means two the geometries have
     some, but not all interior points in common. The intersection of the interiors of
-    the geometries must not be the empty set and must have a dimensionality less than 
+    the geometries must not be the empty set and must have a dimensionality less than
     the maximum dimension of the two input geometries.
-    
+
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
-    
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -394,8 +394,8 @@ def ST_IsSimple(geos):
     """
     Check whether geometry is "simple".
 
-    For every geometry in geometries, check if it is "simple". "Simple" here means 
-    that a geometry has no anomalous geometric points such as self intersection or 
+    For every geometry in geometries, check if it is "simple". "Simple" here means
+    that a geometry has no anomalous geometric points such as self intersection or
     self tangency.
 
     :type geos: pyarrow.array.string
@@ -413,7 +413,7 @@ def ST_IsSimple(geos):
       >>> print(rst)
           0    true
           1    true
-          dtype: bool    
+          dtype: bool
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
@@ -423,7 +423,7 @@ def ST_IsSimple(geos):
 def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
-    
+
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
@@ -447,14 +447,14 @@ def ST_GeometryType(geos):
 
 def ST_MakeValid(geos):
     """
-    For every geometry in geometries, create a valid representation of it without 
-    losing any of the input vertices. Already-valid geometries won't have further 
-    intervention. This function returns geometries which are validated. Note, new 
+    For every geometry in geometries, create a valid representation of it without
+    losing any of the input vertices. Already-valid geometries won't have further
+    intervention. This function returns geometries which are validated. Note, new
     geometries are construted in arrow::Array format, so extra memory will be allocated.
 
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
-    
+
     :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
@@ -475,9 +475,9 @@ def ST_MakeValid(geos):
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
-    to the precision that parameter tolerance specifies. 
+    to the precision that parameter tolerance specifies.
 
-    Note simplified geometries with be construted in arrow::Array format, so extra 
+    Note simplified geometries with be construted in arrow::Array format, so extra
     memory will be allocated.
 
     :type geos: pyarrow.array.string
@@ -505,7 +505,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
 
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     """
-    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
+    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: pyarrow.array.double
@@ -547,17 +547,17 @@ def ST_Contains(left, right):
     """
     Check whether a geometry contain another geometry.
 
-    For every (left, right) pair with the same offset value in left and right, check 
+    For every (left, right) pair with the same offset value in left and right, check
     if left_geometry "contains" right_geometry. Left "contains" right means no points
-    of right_geometry lie in the exterior of left_geometry and at least one point of 
+    of right_geometry lie in the exterior of left_geometry and at least one point of
     the interior of right_geometry lies in the interior of left_geometry.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
@@ -582,15 +582,15 @@ def ST_Intersects(left, right):
     """
     Check whether two geometries intersect.
 
-    For every (left, right) pair with the same offset value in left and right, check 
+    For every (left, right) pair with the same offset value in left and right, check
     if left and right shares any portion of space.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
@@ -615,17 +615,17 @@ def ST_Within(left, right):
     """
     Check whether a geometry is within another geometry.
 
-    For every (left, right) pair with the same offset value in left and right, check 
-    if left is "within" right. Left "within" right means no points of left lie in the 
+    For every (left, right) pair with the same offset value in left and right, check
+    if left is "within" right. Left "within" right means no points of left lie in the
     exterior of right and at least one point of the interior of left lies in the interior
     of right.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pyarrow.array.boolean
 
@@ -650,18 +650,18 @@ def ST_Distance(left, right):
     """
     Calculate the distance between two geometries.
 
-    For every (left, right) pair with the same offset value in left and right, 
+    For every (left, right) pair with the same offset value in left and right,
     calculates the minimum 2D Cartesian (planar) distance between left and right.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-     
+
     :return: An array of double.
     :rtype: pyarrow.array.double
-    
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -773,28 +773,28 @@ def ST_HausdorffDistance(geo1, geo2):
     Returns the Hausdorff distance between two geometries, a measure of how similar
     or dissimilar 2 geometries are.
 
-    Implements algorithm for computing a distance metric which can be thought of as 
-    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to 
-    discrete points for one of the geometries. Wikipedia article on Hausdorff distance 
-    Martin Davis note on how Hausdorff Distance calculation was used to prove 
+    Implements algorithm for computing a distance metric which can be thought of as
+    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to
+    discrete points for one of the geometries. Wikipedia article on Hausdorff distance
+    Martin Davis note on how Hausdorff Distance calculation was used to prove
     correctness of the CascadePolygonUnion approach.
 
-    When densifyFrac is specified, this function performs a segment densification before 
+    When densifyFrac is specified, this function performs a segment densification before
     computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction
-    by which to densify each segment. Each segment will be split into a number of equal-length 
+    by which to densify each segment. Each segment will be split into a number of equal-length
     subsegments, whose fraction of the total length is closest to the given fraction.
 
     Units are in the units of the spatial reference system of the geometries.
 
     :type left: pyarrow.array.string
     :param left: Geometries organized as WKB.
-     
+
     :type right: pyarrow.array.string
     :param right: Geometries organized as WKB.
-     
+
     :return: An array of double.
     :rtype: pyarrow.array.double
- 
+
     :example:
       >>> import pandas
       >>> import arctern
@@ -909,15 +909,15 @@ def ST_Envelope(geos):
 
 def ST_Buffer(geos, distance):
     """
-    Returns a geometry that represents all points whose distance from this geos is 
+    Returns a geometry that represents all points whose distance from this geos is
     less than or equal to distance.
-    
+
     :type geos: pyarrow.array.string
     :param geos: Geometries organized as WKB.
 
     :type distance: int64
     :param distance: The maximum distance of the returned geometry from the given geometry.
- 
+
     :return: Geometries organized as WKB.
     :rtype: pyarrow.array.string
 
@@ -955,7 +955,7 @@ def ST_Union_Aggr(geos):
       >>> rst = arctern.ST_AsText(arctern.ST_Union_Aggr(arctern.ST_GeomFromText(data)))
       >>> print(rst)
           0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))
-          dtype: object    
+          dtype: object
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
@@ -964,7 +964,7 @@ def ST_Union_Aggr(geos):
 
 def ST_Envelope_Aggr(geos):
     """
-    Compute the double-precision minimum bounding box geometry for every geometry in geometries, 
+    Compute the double-precision minimum bounding box geometry for every geometry in geometries,
     then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
 
     :type geos: pyarrow.array.string
@@ -991,7 +991,7 @@ def ST_Envelope_Aggr(geos):
 
 def ST_Transform(geos, src, dst):
     """
-    Returns a new geometry with its coordinates transformed to a different spatial 
+    Returns a new geometry with its coordinates transformed to a different spatial
     reference system.
 
     :type geos: pyarrow.array.string
@@ -999,7 +999,7 @@ def ST_Transform(geos, src, dst):
 
     :type src: string
     :param src: The current srid of geometries.
-   
+
     :type dst: string
     :param dst: The target srid of geometries tranfrom to.
 
@@ -1027,8 +1027,8 @@ def ST_Transform(geos, src, dst):
 
 def ST_CurveToLine(geos):
     """
-    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or 
-    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support 
+    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or
+    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
 
     :type geos: pyarrow.array.string
