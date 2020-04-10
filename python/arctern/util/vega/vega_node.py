@@ -15,6 +15,7 @@
 from typing import List
 import abc
 
+
 class Width:
     """
         Top-Level Vega Specification Property: Width
@@ -33,6 +34,7 @@ class Width:
     @width.setter
     def width(self, width):
         self._width = width
+
 
 class Height:
     """
@@ -53,6 +55,7 @@ class Height:
     @height.setter
     def height(self, height):
         self._height = height
+
 
 class Description:
 
@@ -79,6 +82,7 @@ class Description:
     def description(self, description):
         self._description = description
 
+
 class Data:
     """
         Top-Level Vega Specification Property: Data
@@ -93,6 +97,7 @@ class Data:
             "url": self._url
         }]
         return dic
+
 
 class Scales:
 
@@ -134,6 +139,7 @@ class Scales:
             dic.append(s.to_dict())
         return dic
 
+
 class RootMarks:
     """
         Top-Level Vega Specification Property: Marks
@@ -141,6 +147,7 @@ class RootMarks:
     @abc.abstractmethod
     def to_dict(self):
         pass
+
 
 class Root:
     """

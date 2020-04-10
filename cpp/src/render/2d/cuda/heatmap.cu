@@ -108,7 +108,7 @@ void set_colors_gpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
   cudaMemcpy(in_c, input_c, num * sizeof(T), cudaMemcpyHostToDevice);
   SetCountValue_gpu<T><<<256, 1024>>>(pix_count, in_x, in_y, in_c, num, width, height);
 
-  double scale = vega_heat_map.map_scale() * 0.4;
+  double scale = vega_heat_map.map_zoom_level() * 0.4;
   int d = pow(2, scale);
   int64_t kernel_size = d * 2 + 3;
 

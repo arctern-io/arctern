@@ -26,8 +26,8 @@
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
-          "stroke": {"value": "#EE113D"},
-          "strokeWidth": {"value": 3},
+          "point_size": {"value": 3},
+          "point_color": {"value": "#EE113D"},
           "opacity": {"value": 0.5},
           "coordinate_system": {"value": "EPSG:3857"}
         }
@@ -65,11 +65,12 @@
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
           "shape": {"value": "circle"},
-          "color": {"value": "blue_to_red"}, //{"value": "#EE113D"},
-          "color_ruler": {"value": [2.5, 5]},
-          "stroke_ruler": {"value": [2.5, 5]},
+          "color_gradient": {"value": "blue_to_red"}, //{"value": "#EE113D"},
+          "color_bound": {"value": [2.5, 5]},
+          "size_bound": {"value": [2.5, 5]},
           "opacity": {"value": 1.0},
-          "coordinate_system": {"value": "EPSG:3857"}
+          "coordinate_system": {"value": "EPSG:3857"},
+          "aggregation_type": {"value": "sum"}
         }
       }
     }
@@ -104,8 +105,9 @@
       "encode": {
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-          "map_scale": {"value": 10},
-          "coordinate_system": {"value": "EPSG:3857"}
+          "map_zoom_level": {"value": 10},
+          "coordinate_system": {"value": "EPSG:3857"},
+          "aggregation_type": {"value": "sum"}
         }
       }
     }
@@ -135,10 +137,11 @@
       "encode": {
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-          "color_style": {"value": "blue_to_red"},
-          "ruler": {"value": [2.5, 5]},
+          "color_gradient": {"value": "blue_to_red"},
+          "color_bound": {"value": [2.5, 5]},
           "opacity": {"value": 1.0},
-          "coordinate_system": {"value": "EPSG:3857"}
+          "coordinate_system": {"value": "EPSG:3857"},
+          "aggregation_type": {"value": "sum"}
         }
       }
     }

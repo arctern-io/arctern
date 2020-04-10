@@ -17,6 +17,7 @@ from arctern.util.vega.pointmap.vega_scatter_plot import VegaScatterPlot
 from arctern.util.vega.vega_node import (RootMarks, Root, Description, Data,
                                             Width, Height, Scales)
 
+
 class Marks(RootMarks):
     """
         Top-Level Vega Specification Property: Marks
@@ -33,12 +34,12 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, shape: Value, stroke: Value,
-                     stroke_width: Value, opacity: Value, coordinate_system: Value):
+        def __init__(self, bounding_box: Value, shape: Value, point_size: Value,
+                     point_color: Value, opacity: Value, coordinate_system: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(shape.v, str)
-                    and isinstance(stroke_width.v, int)
-                    and isinstance(stroke.v, str)
+                    and isinstance(point_size.v, int)
+                    and isinstance(point_color.v, str)
                     and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)):
                 # TODO error log here
@@ -46,8 +47,8 @@ class Marks(RootMarks):
                 assert 0
             self._bounding_box = bounding_box
             self._shape = shape
-            self._stroke = stroke
-            self._stroke_width = stroke_width
+            self._point_size = point_size
+            self._point_color = point_color
             self._opacity = opacity
             self._coordinate_system = coordinate_system
 
@@ -56,8 +57,8 @@ class Marks(RootMarks):
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
                     "shape": self._shape.to_dict(),
-                    "stroke": self._stroke.to_dict(),
-                    "strokeWidth": self._stroke_width.to_dict(),
+                    "point_size": self._point_size.to_dict(),
+                    "point_color": self._point_color.to_dict(),
                     "opacity": self._opacity.to_dict(),
                     "coordinate_system": self._coordinate_system.to_dict()
                 }
@@ -73,13 +74,14 @@ class Marks(RootMarks):
         }]
         return dic
 
+
 class VegaPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 mark_size: int, mark_color: str, opacity: float, coordinate_system: str):
+                 point_size: int, point_color: str, opacity: float, coordinate_system: str):
         VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
-        self._mark_size = int(mark_size)
-        self._mark_color = mark_color
+        self._point_size = int(point_size)
+        self._point_color = point_color
         self._opacity = float(opacity)
         self._coordinate_system = coordinate_system
 
@@ -93,8 +95,8 @@ class VegaPointMap(VegaScatterPlot):
         scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               shape=Marks.Encode.Value("circle"),
-                              stroke=Marks.Encode.Value(self._mark_color),
-                              stroke_width=Marks.Encode.Value(self._mark_size),
+                              point_color=Marks.Encode.Value(self._point_color),
+                              point_size=Marks.Encode.Value(self._point_size),
                               opacity=Marks.Encode.Value(self._opacity),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)

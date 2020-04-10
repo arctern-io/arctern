@@ -44,46 +44,26 @@ std::shared_ptr<arrow::Array> coordinate_projection(
     const std::string bottom_right, const int height, const int width);
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
-                                        const std::string& conf);
+                                        const std::string& vega);
 
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
-                                       const std::string& conf);
+                                       const std::shared_ptr<arrow::Array>& weights,
+                                       const std::string& vega);
 
-std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
-                                        const std::shared_ptr<arrow::Array>& arr_y,
-                                        const std::string& conf);
+std::shared_ptr<arrow::Array> weighted_point_map(
+    const std::shared_ptr<arrow::Array>& points, const std::string& vega);
 
-std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
-                                       const std::shared_ptr<arrow::Array>& arr_y,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
-                                       const std::string& conf);
+std::shared_ptr<arrow::Array> weighted_point_map(
+    const std::shared_ptr<arrow::Array>& points, const std::shared_ptr<arrow::Array>& weights,
+    const std::string& vega);
+
+std::shared_ptr<arrow::Array> weighted_point_map(
+    const std::shared_ptr<arrow::Array>& points, const std::shared_ptr<arrow::Array>& color_weights,
+    const std::shared_ptr<arrow::Array>& size_weights, const std::string& vega);
 
 std::shared_ptr<arrow::Array> choropleth_map(
-    const std::shared_ptr<arrow::Array>& arr_wkt,
-    const std::shared_ptr<arrow::Array>& arr_count, const std::string& conf);
-
-// two args api: point_map(wkt, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr1, const std::string& conf);
-
-// three args api: point_map(x, y, conf), point_map(wkt, c, conf), point_map(wkt, s, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr1, const std::shared_ptr<arrow::Array>& arr2,
-    const std::string& conf);
-
-// four args api: point_map(x, y, c, conf), point_map(x, y, s, conf), point_map(wkt, c, s,
-// conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr1, const std::shared_ptr<arrow::Array>& arr2,
-    const std::shared_ptr<arrow::Array>& arr3, const std::string& conf);
-
-// five args api: point_map(x, y, c, s, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr_x,
-    const std::shared_ptr<arrow::Array>& arr_y,
-    const std::shared_ptr<arrow::Array>& arr_c,
-    const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf);
+    const std::shared_ptr<arrow::Array>& region_boundaries,
+    const std::shared_ptr<arrow::Array>& weights, const std::string& vega);
 
 }  // namespace render
 }  // namespace arctern
