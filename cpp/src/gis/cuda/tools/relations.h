@@ -8,14 +8,17 @@ namespace cuda {
 DEVICE_RUNNABLE inline bool IsEqual(double2 a, double2 b) {
   return abs(a.x - b.x) == 0 && abs(a.y - b.y) == 0;
 }
-double2 operator-(double2 u, double2 v) { return {u.x - v.x, u.y - v.y}; }
+DEVICE_RUNNABLE double2 operator-(double2 u, double2 v) {
+  // complex minus
+  return {u.x - v.x, u.y - v.y};
+}
 
-double2 complex_mul(double2 u, double2 v) {
+DEVICE_RUNNABLE double2 complex_mul(double2 u, double2 v) {
   // complex multiply
   return {u.x * v.x - u.y * v.y, u.x * v.y + u.y * v.x};
 }
 
-double2 complex_conjugate(double2 u) {
+DEVICE_RUNNABLE double2 complex_conjugate(double2 u) {
   // negate the imaginary part
   return {u.x, -u.y};
 }

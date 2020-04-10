@@ -9,7 +9,7 @@ namespace de9im {
 class Matrix {
  public:
   enum class Position : uint8_t { kInterier = 0, kBoundry = 1, kExterier = 2 };
-  enum class State : uint8_t {
+  enum class State : char {
     kInvalid = '@',
 
     kIgnored = '*',
@@ -50,17 +50,17 @@ class Matrix {
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
     assert(text[3] == '\0');
-    set<row, Position::kInterier>(text[0]);
-    set<row, Position::kBoundry>(text[1]);
-    set<row, Position::kExterier>(text[2]);
+    set<row, Position::kInterier>((State)text[0]);
+    set<row, Position::kBoundry>((State)text[1]);
+    set<row, Position::kExterier>((State)text[2]);
   }
 
   template <Position col>
   DEVICE_RUNNABLE void set_col(const char* text) {
     assert(text[3] == '\0');
-    set<Position::kInterier, col>(text[0]);
-    set<Position::kBoundry, col>(text[1]);
-    set<Position::kExterier, col>(text[2]);
+    set<Position::kInterier, col>((State)text[0]);
+    set<Position::kBoundry, col>((State)text[1]);
+    set<Position::kExterier, col>((State)text[2]);
   }
 
   template <Position row, Position col>

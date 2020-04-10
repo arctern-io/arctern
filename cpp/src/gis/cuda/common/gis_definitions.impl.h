@@ -55,6 +55,28 @@ struct GeometryVector::ConstGpuContext {
   struct ConstIter {
     const uint32_t* metas;
     const double* values;
+    template <typename T>
+    DEVICE_RUNNABLE T read_meta() {
+      static_assert(sizeof(T) % sizeof(uint32_t) == 0, "mismatch");
+      T tmp = *reinterpret_cast<const T*>(metas);
+      metas += sizeof(T) / sizeof(uint32_t);
+      return tmp;
+    }
+    template <typename T>
+    DEVICE_RUNNABLE T read_value() {
+      static_assert(sizeof(T) % sizeof(double) == 0, "mismatch");
+      T tmp = *reinterpret_cast<const T*>(values);
+      values += sizeof(T) / sizeof(double);
+      return tmp;
+    }
+
+    template <typename T>
+    DEVICE_RUNNABLE const T* read_value_ptr(int count) {
+      static_assert(sizeof(T) % sizeof(double) == 0, "mismatch");
+      const T* ptr = reinterpret_cast<const T*>(values);
+      values += sizeof(T) / sizeof(double) * count;
+      return ptr;
+    }
   };
 
   DEVICE_RUNNABLE ConstIter get_iter(int index) const {

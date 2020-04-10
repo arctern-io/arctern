@@ -15,7 +15,6 @@ __device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_i
 
   if (size == 0) {
     return Matrix("FFFFFFFF*");
-    ;
   }
 
   if (size == 1) {
@@ -57,7 +56,7 @@ __device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_i
   auto ep1 = points[size - 1];
   if (IsEqual(ep0, left_point) || IsEqual(ep1, left_point)) {
     mat.set_col<Position::kBoundry>("0FF");
-    // fix false positive
+    // fix possible false positive
     mat.set<Position::kInterier, Position::kExterier>(State::kFalse);
   } else {
     mat.set_col<Position::kBoundry>("FF0");
@@ -66,15 +65,15 @@ __device__ Matrix PointRelateToLineString(double2 left_point, ConstIter& right_i
   return mat;
 }
 
-__device__ Matrix PointRelateOp(ConstIter& left_iter, const ConstGpuContext& right,
-                                Matrix matrix_hint, int index) {
+__device__ Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
+                                ConstIter& right_iter, Matrix matrix_hint) {
   (void)matrix_hint;  // ignore
-  auto right_tag = right.get_tag(index);
+//  auto right_tag = right.get_tag(index);
   assert(right_tag.get_space_type() == WkbSpaceType::XY);
   auto left_point = *(const double2*)left_iter.values;
   left_iter.values += 2;
 
-  auto right_iter = right.get_iter(index);
+//  auto right_iter = right.get_iter(index);
   Matrix result;
   switch (right_tag.get_category()) {
     case WkbCategory::kPoint: {
@@ -89,13 +88,12 @@ __device__ Matrix PointRelateOp(ConstIter& left_iter, const ConstGpuContext& rig
       break;
     }
     default: {
+      assert(false);
       result = de9im::INVALID_MATRIX;
-      right_iter = right.get_iter(index + 1);
       break;
     }
   }
-  assert(right_iter.values == right.get_value_ptr(index));
-  assert(right_iter.metas == right.get_meta_ptr(index));
+  return result;
 }
 
 __device__ Matrix LineStringRelateOp(ConstIter& left_iter, const ConstGpuContext& right,
@@ -111,9 +109,11 @@ __device__ Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
   assert(left_tag.get_space_type() == WkbSpaceType::XY);
   de9im::Matrix result;
   auto left_iter = left.get_iter(index);
+  auto right_iter = right.get_iter(index);
+
   switch (left_tag.get_category()) {
     case WkbCategory::kPoint: {
-      result = PointRelateOp(left_iter, right, matrix_hint, index);
+      result = PointRelateOp(left_iter, right.get_tag(index), right_iter, matrix_hint);
       break;
     }
     case WkbCategory::kMultiLineString: {
@@ -135,7 +135,6 @@ __device__ Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
 static __global__ void ST_RelateImpl(ConstGpuContext left, ConstGpuContext right,
                                      de9im::Matrix input_matrix,
                                      de9im::Matrix* output_matrixes) {
-  //
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < left.size) {
     output_matrixes[index] = RelateOp(left, right, input_matrix, index);
