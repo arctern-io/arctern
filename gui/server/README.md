@@ -29,7 +29,7 @@ cd python
 python setup.py install
 ```
 
-## 下载测试数据 
+## 下载测试数据
 
 在`https://github.com/zilliztech/arctern-tutorial/tree/master/data`下获取0_5M_nyc_taxi_and_building.csv
 保持文件不变，放在data目录下
