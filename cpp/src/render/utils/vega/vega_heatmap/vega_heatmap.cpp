@@ -52,11 +52,12 @@ void VegaHeatMap::Parse(const std::string& json) {
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
 
-  if (!JsonLabelCheck(mark_enter, "map_scale") ||
-      !JsonTypeCheck(mark_enter["map_scale"]["value"], rapidjson::Type::kNumberType)) {
+  if (!JsonLabelCheck(mark_enter, "map_zoom_level") ||
+      !JsonTypeCheck(mark_enter["map_zoom_level"]["value"],
+                     rapidjson::Type::kNumberType)) {
     return;
   }
-  map_scale_ = mark_enter["map_scale"]["value"].GetDouble();
+  map_zoom_level_ = mark_enter["map_zoom_level"]["value"].GetDouble();
 }
 
 }  // namespace render
