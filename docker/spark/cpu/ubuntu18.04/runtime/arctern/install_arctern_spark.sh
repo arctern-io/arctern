@@ -24,9 +24,9 @@ fi
 cd ${SCRIPTS_DIR}
 
 if [ -d ${SCRIPTS_DIR}/conda-bld ];then
-conda install -y -q -n arctern -c conda-forge -c arctern -c file://${SCRIPTS_DIR}/conda-bld ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
+conda install -y -q -n arctern -c conda-forge -c file://${SCRIPTS_DIR}/conda-bld ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 else
-conda install -y -q -n arctern -c conda-forge -c arctern -c ${ARCTERN_CHANNEL} ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
+conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 fi
 
 conda install -y -q -n arctern pyyaml
