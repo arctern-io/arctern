@@ -199,7 +199,8 @@ def db_query():
                 int(query_params['height']),
                 query_params['heat']['bounding_box'],
                 float(query_params['heat']['map_zoom_level']),
-                query_params['heat']['coordinate_system'])
+                query_params['heat']['coordinate_system'],
+                query_params['heat']['aggregation_type'])
             data = heatmap(vega, res)
             content['result'] = data
         elif query_type == 'choropleth':
@@ -223,8 +224,7 @@ def db_query():
                 query_params['weighted']['color_bound'],
                 query_params['weighted']['size_bound'],
                 float(query_params['weighted']['opacity']),
-                query_params['weighted']['coordinate_system'],
-                query_params['weighted']['aggregation_type']
+                query_params['weighted']['coordinate_system']
             )
             data = weighted_pointmap(vega, res)
             content['result'] = data

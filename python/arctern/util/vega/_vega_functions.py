@@ -49,7 +49,7 @@ def vega_weighted_pointmap(width,
                            size_bound=None,
                            opacity=1.0,
                            coordinate_system="EPSG:4326",
-                           aggregation_type="sum"):
+                           aggregation_type="max"):
     if color_bound is None:
         color_bound = [0, 0]
     if size_bound is None:
