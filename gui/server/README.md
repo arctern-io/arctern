@@ -13,7 +13,7 @@ conda create -n arctern python=3.7
 conda activate arctern
 
 安装arctern包
-conda install -y -q -c conda-forge arctern-spark
+conda install -y -q -c conda-forge -c arctern-dev arctern-spark
 
 进入项目目录，运行下面的命令构建环境
 
