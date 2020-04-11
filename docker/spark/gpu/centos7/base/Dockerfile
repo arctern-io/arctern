@@ -26,12 +26,12 @@ RUN set -x \
     && gosu nobody true \
     && rm -rf /var/cache/yum/*
 
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda create -n arctern python=3.7 shapely && \
-    conda clean --all -y && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate arctern" >> ~/.bashrc
-
 RUN mkdir -p /opt/spark && \
     wget -qO- "http://mirror.bit.edu.cn/apache/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz" | tar --strip-components=1 -xz -C /opt/spark && \
     chown -R root:root /opt/spark
+
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    conda create -n arctern python=3.7 && \
+    conda clean --all -y && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate arctern" >> ~/.bashrc
