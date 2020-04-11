@@ -3440,10 +3440,14 @@ TEST(geometry_test, test_ST_AsGeoJSON) {
   auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input));
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-
-  ASSERT_EQ(res_str->GetString(0),"{ \"type\": \"Point\", \"coordinates\": [ 1.0, 2.0 ] }");
-  ASSERT_EQ(res_str->GetString(1),R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");
-  ASSERT_EQ(res_str->GetString(2),R"({ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] })");
+  ASSERT_EQ(res_str->GetString(0),
+            R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
+  ASSERT_EQ(
+      res_str->GetString(1),
+      R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");
+  ASSERT_EQ(
+      res_str->GetString(2),
+      R"({ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] })");
   ASSERT_TRUE(res_str->IsNull(3));
   ASSERT_TRUE(res_str->IsNull(4));
 }
