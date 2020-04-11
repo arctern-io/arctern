@@ -73,7 +73,7 @@ if __name__== "__main__":
     res = heatmap(res, vega)
     save_png(res, '/tmp/heatmap.png')
 
-    spark.catalog.dropGlobalTempView("nyc_taxi")
+    spark.catalog.dropTempView("nyc_taxi")
 
     spark.stop()
 ```
