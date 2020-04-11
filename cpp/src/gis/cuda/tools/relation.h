@@ -1,7 +1,9 @@
 #pragma once
 #include <thrust/complex.h>
+#include <thrust/pair.h>
 
 #include "gis/cuda/common/common.h"
+#include "gis/cuda/tools/de9im_matrix.h"
 
 namespace arctern {
 namespace gis {
@@ -25,8 +27,12 @@ DEVICE_RUNNABLE inline bool IsPointInLine(double2 point_raw, double2 line_beg,
   return result.imag() == 0 && result.real() < 0;
 }
 
-__device__ bool PointOnInnerLineString(double2 left_point, int right_size,
-                                       const double2* right_points);
+struct Line {
+  double2 endpoint[2];
+};
+
+DEVICE_RUNNABLE bool PointOnInnerLineString(double2 left_point, int right_size,
+                                            const double2* right_points);
 
 }  // namespace cuda
 }  // namespace gis

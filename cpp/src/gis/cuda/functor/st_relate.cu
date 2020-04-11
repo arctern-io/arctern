@@ -15,11 +15,11 @@ __device__ Matrix PointRelateToLineString(double2 left_point, int right_size,
     return Matrix("FFFFFFFF*");
   }
 
-  if (right_size == 1) {
-    auto right_point = right_points[0];
-    auto is_eq = IsEqual(left_point, right_point);
-    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
-  }
+  //  if (right_size == 1) {
+  //    auto right_point = right_points[0];
+  //    auto is_eq = IsEqual(left_point, right_point);
+  //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
+  //  }
 
   assert(right_size >= 2);
   Matrix mat;
@@ -52,6 +52,25 @@ __device__ Matrix PointRelateToLineString(double2 left_point, int right_size,
 __device__ Matrix LineStringRelateToLineString(int size, ConstIter& left_iter,
                                                ConstIter& right_iter) {
   //
+
+  auto left_size = left_iter.read_meta<int>();
+  auto left_points = left_iter.read_value_ptr<double2>(left_size);
+
+  auto right_size = left_iter.read_meta<int>();
+  auto right_points = left_iter.read_value_ptr<double2>(right_size);
+
+  if (left_size == 0) {
+    if (right_size == 0) {
+      return Matrix("FFFFFFFF*");
+    } else {
+      return Matrix("FFFFFF01*");
+    }
+  }
+  if(right_size == 0) {
+    return Matrix("FF0FF1FF");
+  }
+
+
   return de9im::INVALID_MATRIX;
 }
 
