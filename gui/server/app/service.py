@@ -21,7 +21,7 @@ from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, v
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
 
 from app import account
-from app.common import spark, token, utils, db
+from app.common import spark, token, utils, db, log
 
 API = Blueprint('app_api', __name__)
 
@@ -42,7 +42,7 @@ def load_data(content):
     if db_type == 'spark':
         db_instance = spark.Spark(content)
         db_instance.load(table_meta)
-        db.CENTER[str(db_instance.id())] = db_instance
+        db.CENTER[db_instance.id()] = db_instance
         return ('success', 200, 'load data succeed!')
 
     return ('error', -1, 'sorry, but unsupported db type!')
@@ -53,6 +53,7 @@ def load():
     """
     use this function to load data
     """
+    log.INSTANCE.info('/load: post:{}'.format(request.json))
     status, code, message = load_data(request.json)
     return jsonify(status=status, code=code, message=message)
 
@@ -81,6 +82,8 @@ def login():
     content['token'] = token.create(request.json['username'], expired)
     content['expired'] = expired
 
+    log.INSTANCE.info('/login: user: {}, toke: {}'.format(username, content['token']))
+
     return jsonify(status='success', code=200, data=content)
 
 
@@ -99,6 +102,8 @@ def dbs():
         info['type'] = db_instance.dbtype()
         content.append(info)
 
+    log.INSTANCE.info('get /dbs:')
+
     return jsonify(status='success', code=200, data=content)
 
 
@@ -110,6 +115,8 @@ def db_tables():
     """
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
+
+    log.INSTANCE.info('get /db/tables: db:{}'.format(request.json['id']))
 
     db_instance = db.CENTER.get(str(request.json['id']), None)
     if db_instance:
@@ -128,6 +135,9 @@ def db_table_info():
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'table'):
         return jsonify(status='error', code=-1, message='query format error')
+
+    log.INSTANCE.info('get /db/table/info: db: {}, table: {}'.format(
+        request.json['id'], request.json['table']))
 
     content = []
 
@@ -156,6 +166,8 @@ def db_query():
             or not utils.check_json(request.json['query'], 'type') \
             or not utils.check_json(request.json['query'], 'sql'):
         return jsonify(status='error', code=-1, message='query format error')
+
+    log.INSTANCE.info('get /db/query: post: {}'.format(request.json))
 
     query_sql = request.json['query']['sql']
     query_type = request.json['query']['type']

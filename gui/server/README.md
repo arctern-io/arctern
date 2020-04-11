@@ -48,6 +48,8 @@ python manage.py -r
 -p http port
 -i http ip
 -c [path/to/data-config] load data
+ --logfile= [path/to/logfile], default: ./log.txt'
+--loglevel= log level [debug/info/warn/error/fatal], default: info'
 
 服务器启动后，可以通过[Load API](#api_load_part)可以动态加载数据
 
