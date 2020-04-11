@@ -277,13 +277,13 @@ def ST_AsGeoJSON(geo):
       >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
       >>> data_df.createOrReplaceTempView("data")
       >>> spark_session.sql("select ST_AsGeoJSON(ST_GeomFromText(data)) from data").show(100,0)
-      +--------------------------------+
-      |ST_AsText(ST_GeomFromText(data))|
-      +--------------------------------+
-      |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
-      +--------------------------------+
+      +------------------------------------------------------------------------------------------------------------------+
+      |ST_AsGeoJSON(ST_GeomFromText(data))                                                                               |
+      +------------------------------------------------------------------------------------------------------------------+
+      |{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }|
+      +------------------------------------------------------------------------------------------------------------------+
     """
-    return arctern.ST_AsText(geo)
+    return arctern.ST_AsGeoJSON(geo)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Point(x, y):
