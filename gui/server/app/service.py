@@ -53,7 +53,7 @@ def load():
     """
     use this function to load data
     """
-    log.INSTANCE.info('/load: post:{}'.format(request.json))
+    log.INSTANCE.info('POST /load: {}'.format(request.json))
     status, code, message = load_data(request.json)
     return jsonify(status=status, code=code, message=message)
 
@@ -62,6 +62,8 @@ def login():
     """
     login handler
     """
+    log.INSTANCE.info('POST /login: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'username') \
             or \
             not utils.check_json(request.json, 'password'):
@@ -93,6 +95,8 @@ def dbs():
     """
     /dbs handler
     """
+    log.INSTANCE.info('GET /dbs:')
+
     content = []
 
     for _, db_instance in db.CENTER.items():
@@ -101,8 +105,6 @@ def dbs():
         info['name'] = db_instance.name()
         info['type'] = db_instance.dbtype()
         content.append(info)
-
-    log.INSTANCE.info('get /dbs:')
 
     return jsonify(status='success', code=200, data=content)
 
@@ -113,10 +115,10 @@ def db_tables():
     """
     /db/tables handler
     """
+    log.INSTANCE.info('POST /db/tables: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
-
-    log.INSTANCE.info('get /db/tables: db:{}'.format(request.json['id']))
 
     db_instance = db.CENTER.get(str(request.json['id']), None)
     if db_instance:
@@ -132,12 +134,11 @@ def db_table_info():
     """
     /db/table/info handler
     """
+    log.INSTANCE.info('POST /db/table/info: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'table'):
         return jsonify(status='error', code=-1, message='query format error')
-
-    log.INSTANCE.info('get /db/table/info: db: {}, table: {}'.format(
-        request.json['id'], request.json['table']))
 
     content = []
 
@@ -161,13 +162,13 @@ def db_query():
     """
     /db/query handler
     """
+    log.INSTANCE.info('POST /db/query: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \
             or not utils.check_json(request.json['query'], 'sql'):
         return jsonify(status='error', code=-1, message='query format error')
-
-    log.INSTANCE.info('get /db/query: post: {}'.format(request.json))
 
     query_sql = request.json['query']['sql']
     query_type = request.json['query']['type']
