@@ -125,4 +125,4 @@ def plot(ax, geoms):
         if len(geoms.columns)!=1:
             raise RuntimeError(f"The input param 'geoms' should have only one column. geoms schema = {geoms.columns}")
         geom_series = geoms[geoms.columns[0]]
-        _plot_pandas_series(ax, geoms)
+        _plot_pandas_series(ax, geom_series)
