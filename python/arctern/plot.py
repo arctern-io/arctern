@@ -74,9 +74,7 @@ def _plot_collection(ax, plot_collect):
             "You can install it using 'conda install -c conda-forge descartes' "
         )
     try:
-        import matplotlib
         from matplotlib.collections import PatchCollection, LineCollection
-        from matplotlib.colors import is_color_like
     except ImportError:
         raise ImportError(
             "The matplotlib package is required for plotting polygons in geopandas. "
@@ -94,6 +92,7 @@ def _plot_collection(ax, plot_collect):
         y = [p[1] for p in plot_collect['points']]
         collection = ax.scatter(x, y)
     ax.autoscale_view()
+    return None
 
 def _plot_pandas_series(ax, geoms):
     import pandas.core.series
@@ -116,6 +115,7 @@ def _plot_pandas_series(ax, geoms):
         _flat_geoms(geo_dict, plot_collect)
 
     _plot_collection(ax, plot_collect)
+    return None
 
 def plot(ax, geoms):
     import pandas.core.series
