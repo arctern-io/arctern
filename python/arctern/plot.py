@@ -120,9 +120,9 @@ def _plot_pandas_series(ax,geoms):
 def plot(ax, geoms):
     import pandas.core.series
     if isinstance(geoms,pandas.core.series.Series):
-        _plot_spark_data_frame(ax, geoms)
+        _plot_pandas_series(ax, geoms)
     elif isinstance(geoms,pandas.core.frame.DataFrame):
         if len(geoms.columns)!=1:
             raise RuntimeError(f"The input param 'geoms' should have only one column. geoms schema = {geoms.columns}")
         geom_series = geoms[geoms.columns[0]]
-        _plot_spark_data_frame(ax, geoms)
+        _plot_pandas_series(ax, geoms)
