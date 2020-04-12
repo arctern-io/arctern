@@ -30,7 +30,8 @@ DEVICE_RUNNABLE int PointOnLineString(double2 left_point, int right_size,
 // Solution was put off to next iteration
 DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoints,
                                                     int right_size,
-                                                    const double2* right_points);
+                                                    const double2* right_points,
+                                                    KernelBuffer& buffer);
 
 }  // namespace cuda
 }  // namespace gis
