@@ -57,11 +57,11 @@ def _flat_geoms(geo_dict, dict_collect):
         for geos in geo_dict['geometries']:
             _flat_geoms(geos, dict_collect)
     elif geo_dict['type'] == 'MultiPolygon' or geo_dict['type'] == 'Polygon':
-        _flat_polygon(geos, dict_collect)
+        _flat_polygon(geo_dict, dict_collect)
     elif geo_dict['type'] == 'MultiLineString' or geo_dict['type'] == 'LineString':
-        _flat_line(geos, dict_collect)
+        _flat_line(geo_dict, dict_collect)
     elif geo_dict['type'] == 'Point' or geo_dict['type'] == 'MultiPoint':
-        _flat_point(geos, dict_collect)
+        _flat_point(geo_dict, dict_collect)
     else:
         from osgeo import ogr
         geo = ogr.CreateGeometryFromJson(json.dumps(geo_dict))
