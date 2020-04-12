@@ -1,4 +1,4 @@
-#include <src/gis/cuda/tools/relation.impl.h>
+#include <src/gis/cuda/tools/relation.h>
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_relate.h"

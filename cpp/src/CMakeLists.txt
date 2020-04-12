@@ -60,7 +60,6 @@ set(cuda_gis_src
         gis/cuda/conversion/arrow_encode.cpp
         gis/cuda/common/gis_definitions.cpp
         gis/cuda/common/gis_definitions.cu
-        gis/cuda/tools/relation.cu
         gis/cuda/tools/bounding_box.cu
         gis/cuda/functor/st_distance.cu
         gis/cuda/functor/st_within.cu

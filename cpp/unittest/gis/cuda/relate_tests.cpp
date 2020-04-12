@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "gis/cuda/tools/relation.h"
-#include "gis/cuda/tools/relation.impl.h"
 using std::vector;
 namespace cu = arctern::gis::cuda;
 
