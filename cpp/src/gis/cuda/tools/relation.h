@@ -4,7 +4,6 @@
 
 #include "gis/cuda/common/common.h"
 #include "gis/cuda/tools/de9im_matrix.h"
-
 namespace arctern {
 namespace gis {
 namespace cuda {

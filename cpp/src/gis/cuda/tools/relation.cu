@@ -3,6 +3,9 @@
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 #include "gis/cuda/tools/relation.impl.h"
+#ifndef __CUDACC__
+#error wtf
+#endif
 
 namespace arctern {
 namespace gis {
