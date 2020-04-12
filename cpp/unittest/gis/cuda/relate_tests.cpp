@@ -82,12 +82,12 @@ TEST(Relation, LineRelateToLineString) {
   using vd = vector<double>;
   using lrr = cu::LineRelationResult;
   vector<Data> datas{
+      {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, lrr{0, false, 1}},
+      {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, lrr{0, false, 2}},
       {vd{0, 0, 0, 1}, vd{0, 0, 2, 3}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{-2, 0, 2, 0}, lrr{0, false, 1}},
       {vd{0, 0, 0, 2}, vd{0, 1, 2, 3}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{-2, 0, 2, 1}, lrr{0, false, 1}},
-      {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, lrr{0, false, 2}},
-      {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{0, 1, 2, 2}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{0, 3, 2, 2}, lrr{-1, false, 0}},
       {vd{0, 0, 0, 1}, vd{0, 0, 0, 1}, lrr{1, true, -100}},
@@ -99,18 +99,19 @@ TEST(Relation, LineRelateToLineString) {
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
        lrr{1, true, -100}},
   };
-  for (auto data : datas) {
-    auto size = data.line.size();
+  for (auto index = 0; index < datas.size(); ++index) {
+    auto data = datas[index];
+    auto size = data.lnstr.size();
     assert(size % 2 == 0);
     size /= 2;
     cu::KernelBuffer buffer;
     auto result = cu::LineOnLineString((double2*)data.line.data(), size,
                                        (double2*)data.lnstr.data(), buffer);
     auto ref = data.std_result;
-    ASSERT_EQ(result.II, ref.II);
-    ASSERT_EQ(result.is_coveredby, ref.is_coveredby);
+    ASSERT_EQ(result.II, ref.II) << index;
+    ASSERT_EQ(result.is_coveredby, ref.is_coveredby) << index;
     if (ref.cross_count != -100) {
-      ASSERT_EQ(result.cross_count, ref.cross_count);
+      ASSERT_EQ(result.cross_count, ref.cross_count) << index;
     }
   }
 }

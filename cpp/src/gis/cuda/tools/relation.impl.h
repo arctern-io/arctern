@@ -95,10 +95,8 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
     auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
     auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
     if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
-      // included
       auto r0 = rv0.real();
-      // not included
-      auto r1 = rv0.real();
+      auto r1 = rv1.real();
       if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
