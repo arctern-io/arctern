@@ -100,7 +100,7 @@ def _plot_spark_data_frame(ax, geoms):
     from pyspark.sql.functions import col
     
     if len(geoms.columns) != 1:
-        raise RuntimeError(f"geoms should has only one colums, input schema = {geoms.schema}")
+        raise RuntimeError(f"The input param 'geoms' should have only one column. geoms schema = {geoms.schema}")
     head_row = geoms.head()
     if head_row==None:
         return ax
