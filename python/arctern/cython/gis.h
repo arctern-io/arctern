@@ -34,6 +34,8 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
 
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+
 std::shared_ptr<arrow::Array> ST_Intersection(
     const std::shared_ptr<arrow::Array>& left_geometries,
     const std::shared_ptr<arrow::Array>& right_geometries);
