@@ -64,9 +64,9 @@ __global__ void FillDataKernel(Functor functor, GpuContext results) {
 template <typename Functor>
 void GeometryOutput(Functor functor, int size, GeometryVector& results) {
   using internal::DataState;
-  // STEP 1: Initialize vector with size of elements
+  // STEP 1: Initialize container with size of elements
   results.OutputInitialize(size);
-  // STEP 2: Create gpu context according to the vector for cuda
+  // STEP 2: Create gpu context according to the container for cuda
   // where tags and offsets fields are uninitailized
   auto ctx_holder = results.OutputCreateGpuContext();
   {

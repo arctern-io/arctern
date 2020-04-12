@@ -27,7 +27,7 @@
 
 #include "gis/cuda/mock/arrow/api.h"
 template <typename T>
-using GpuVector = std::vector<T>;  // TODO: use gpu vector, now just placeholder
+using GpuVector = std::vector<T>;  // TODO: use gpu container, now just placeholder
 
 #include "gis/cuda/wkb/wkb_tag.h"
 #include "utils/function_wrapper.h"
@@ -114,9 +114,9 @@ class GeometryVector {
   ConstGpuContextHolder CreateReadGpuContext() const;  // TODO
   GeometryVector() = default;
 
-  // STEP 1: Initialize vector with size of elements
+  // STEP 1: Initialize container with size of elements
   void OutputInitialize(int size);
-  // STEP 2: Create gpu context according to the vector for cuda
+  // STEP 2: Create gpu context according to the container for cuda
   // where tags and offsets fields are uninitailized
   GpuContextHolder OutputCreateGpuContext();
   // STEP 3: Fill info(tags and offsets) to gpu_ctx using CUDA Kernels
