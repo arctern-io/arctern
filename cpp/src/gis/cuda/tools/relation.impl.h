@@ -1,3 +1,4 @@
+#pragma once
 #include <thrust/complex.h>
 #include <thrust/optional.h>
 
