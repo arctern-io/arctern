@@ -31,8 +31,8 @@ DEVICE_RUNNABLE inline bool IsPointInLine(double2 point_raw, double2 line_beg,
 }
 
 // return count of cross point
-DEVICE_RUNNABLE inline int PointOnInnerLineString(double2 left_point, int right_size,
-                                                  const double2* right_points) {
+DEVICE_RUNNABLE inline int PointOnLineString(double2 left_point, int right_size,
+                                             const double2* right_points) {
   int count = 0;
   for (int i = 0; i < right_size - 1; ++i) {
     auto u = right_points[i];
@@ -99,7 +99,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
       auto r0 = rv0.real();
       // not included
       auto r1 = rv0.real();
-      if (r0 <= 0 && r1 <= 0 || r0 >= 1 && r1 >= 1) {
+      if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
           result.II = max(result.II, 0);

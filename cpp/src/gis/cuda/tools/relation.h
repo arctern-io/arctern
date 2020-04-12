@@ -20,8 +20,8 @@ struct KernelBuffer {
 // endpoints included
 DEVICE_RUNNABLE bool IsPointInLine(double2 point_raw, double2 line_beg, double2 line_end);
 // return count of cross point
-DEVICE_RUNNABLE int PointOnInnerLineString(double2 left_point, int right_size,
-                                           const double2* right_points);
+DEVICE_RUNNABLE int PointOnLineString(double2 left_point, int right_size,
+                                      const double2* right_points);
 
 // Note: when dealing with linestring, we view it as endpoints included
 // linestring, which is collection of endpoints

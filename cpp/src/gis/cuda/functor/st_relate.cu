@@ -30,7 +30,7 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   using Position = Matrix::Position;
   using State = Matrix::State;
 
-  auto cross_count = PointOnInnerLineString(left_point, right_size, right_points);
+  auto cross_count = PointOnLineString(left_point, right_size, right_points);
 
   // endpoints
   auto ep0 = right_points[0];
