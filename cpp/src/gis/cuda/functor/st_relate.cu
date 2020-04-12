@@ -1,3 +1,5 @@
+#include <src/gis/cuda/tools/relation.impl.h>
+
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_relate.h"
 #include "gis/cuda/tools/relation.h"
@@ -15,11 +17,12 @@ __device__ Matrix PointRelateToLineString(double2 left_point, int right_size,
     return Matrix("FFFFFFFF*");
   }
 
-  //  if (right_size == 1) {
-  //    auto right_point = right_points[0];
-  //    auto is_eq = IsEqual(left_point, right_point);
-  //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
-  //  }
+  if (right_size == 1) {
+    //    auto right_point = right_points[0];
+    //    auto is_eq = IsEqual(left_point, right_point);
+    //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
+    return de9im::INVALID_MATRIX;
+  }
 
   assert(right_size >= 2);
   Matrix mat;
@@ -27,25 +30,33 @@ __device__ Matrix PointRelateToLineString(double2 left_point, int right_size,
   using Position = Matrix::Position;
   using State = Matrix::State;
 
-  auto point_on_line = PointOnInnerLineString(left_point, right_size, right_points);
-  if (point_on_line) {
+  auto cross_count = PointOnInnerLineString(left_point, right_size, right_points);
+
+  // endpoints
+  auto ep0 = right_points[0];
+  auto ep1 = right_points[right_size - 1];
+  int boundary_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
+
+  if (right_size == 2) {
+    boundary_count = min(boundary_count, 1);
+  }
+
+  cross_count -= boundary_count;
+  assert(cross_count >= 0);
+  if (cross_count > 0) {
     mat.set_col<Position::kInterier>("0F0");
     mat.set_col<Position::kExterier>("FF*");
   } else {
     mat.set_col<Position::kInterier>("FF0");
-    // false positive: boundary is not included in exterier
     mat.set_col<Position::kExterier>("0F*");
   }
-  // endpoints
-  auto ep0 = right_points[0];
-  auto ep1 = right_points[right_size - 1];
-  if (IsEqual(ep0, left_point) || IsEqual(ep1, left_point)) {
+
+  if (boundary_count > 0) {
     mat.set_col<Position::kBoundry>("0FF");
-    // fix possible false positive
-    mat.set<Position::kInterier, Position::kExterier>(State::kFalse);
   } else {
     mat.set_col<Position::kBoundry>("FF0");
   }
+
   return mat;
 }
 
@@ -66,10 +77,9 @@ __device__ Matrix LineStringRelateToLineString(int size, ConstIter& left_iter,
       return Matrix("FFFFFF01*");
     }
   }
-  if(right_size == 0) {
+  if (right_size == 0) {
     return Matrix("FF0FF1FF");
   }
-
 
   return de9im::INVALID_MATRIX;
 }
@@ -123,7 +133,7 @@ __device__ Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag,
       break;
     }
     case WkbCategory::kLineString: {
-      auto right_size = right_iter.read_value<int>();
+      auto right_size = right_iter.read_meta<int>();
       auto right_points = right_iter.read_value_ptr<double2>(right_size);
 
       break;

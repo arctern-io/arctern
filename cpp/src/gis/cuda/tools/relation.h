@@ -8,10 +8,10 @@
 namespace arctern {
 namespace gis {
 namespace cuda {
-DEVICE_RUNNABLE inline bool IsEqual(double2 a, double2 b);
+DEVICE_RUNNABLE bool IsEqual(double2 a, double2 b);
 
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern
 
-#include "relation.impl.h"
+//#include "relation.impl.h"

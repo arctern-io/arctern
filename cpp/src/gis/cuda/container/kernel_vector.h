@@ -24,7 +24,7 @@ class KernelVector {
   DEVICE_RUNNABLE void reserve(int new_capacity) {
     if (new_capacity > capacity_) {
       delete[] data_;
-      capacity_ = std::max(new_capacity, 2 * capacity_ + 5);
+      capacity_ = max(new_capacity, 2 * capacity_ + 5);
       data_ = new T[capacity_];
     }
   }

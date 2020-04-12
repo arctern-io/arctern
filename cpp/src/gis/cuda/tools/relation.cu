@@ -2,6 +2,7 @@
 
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
+#include "gis/cuda/tools/relation.impl.h"
 
 namespace arctern {
 namespace gis {
@@ -100,11 +101,11 @@ DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoint
       if (r0 <= 0 && r1 <= 0 || r0 >= 1 && r1 >= 1) {
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
-          result.II = std::max(result.II, 0);
+          result.II = max(result.II, 0);
         }
         if (r1 == 0 || r1 == 1) {
           ++result.cross_count;
-          result.II = std::max(result.II, 0);
+          result.II = max(result.II, 0);
         }
       } else {
         // at least intersect, no need for cross_count
@@ -149,7 +150,7 @@ DEVICE_RUNNABLE de9im::Matrix LineStringRelateToLineString(int left_size,
                                                            const double2* right_points) {
   assert(left_size >= 2);
   assert(right_size >= 2);
-     
+  return de9im::INVALID_MATRIX;
 }
 
 }  // namespace cuda

@@ -1,5 +1,6 @@
 #pragma once
 #include "relation.h"
+#include "gis/cuda/container/kernel_vector.h"
 namespace arctern {
 namespace gis {
 namespace cuda {
