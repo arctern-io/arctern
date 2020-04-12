@@ -12,17 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def _flat_geoms(geo_dict, dict_collect):
+def _flat_polygon(geo_dict, dict_collect):
+    if 'polygons' not in dict_collect:
+        dict_collect['polygons'] = []
+    dict_collect['polygons'].append(geo_dict)
+
+def _flat_line(geo_dict, dict_collect):
     import numpy as np
-    import json
-    if geo_dict['type'] == 'GeometryCollection':
-        for geos in geo_dict['geometries']:
-            _flat_geoms(geos, dict_collect)
-    elif geo_dict['type'] == 'MultiPolygon' or geo_dict['type'] == 'Polygon':
-        if 'polygons' not in dict_collect:
-            dict_collect['polygons'] = []
-        dict_collect['polygons'].append(geo_dict)
-    elif geo_dict['type'] == 'MultiLineString':
+    if geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
             line_arry = np.zeros([len(line), 2])
             idx = 0
@@ -43,7 +40,9 @@ def _flat_geoms(geo_dict, dict_collect):
         if 'lines' not in dict_collect:
             dict_collect['lines'] = []
         dict_collect['lines'].append(line_arry)
-    elif geo_dict['type'] == 'Point':
+
+def _flat_point(geo_dict, dict_collect):
+    if geo_dict['type'] == 'Point':
         if 'points' not in dict_collect:
             dict_collect['points'] = []
         dict_collect['points'].append(geo_dict['coordinates'])
@@ -51,6 +50,18 @@ def _flat_geoms(geo_dict, dict_collect):
         if 'points' not in dict_collect:
             dict_collect['points'] = []
         dict_collect['points'].extend(geo_dict['coordinates'])
+
+def _flat_geoms(geo_dict, dict_collect):
+    import json
+    if geo_dict['type'] == 'GeometryCollection':
+        for geos in geo_dict['geometries']:
+            _flat_geoms(geos, dict_collect)
+    elif geo_dict['type'] == 'MultiPolygon' or geo_dict['type'] == 'Polygon':
+        _flat_polygon(geos, dict_collect)
+    elif geo_dict['type'] == 'MultiLineString' or geo_dict['type'] == 'LineString':
+        _flat_line(geos, dict_collect)
+    elif geo_dict['type'] == 'Point' or geo_dict['type'] == 'MultiPoint':
+        _flat_point(geos, dict_collect)
     else:
         from osgeo import ogr
         geo = ogr.CreateGeometryFromJson(json.dumps(geo_dict))
