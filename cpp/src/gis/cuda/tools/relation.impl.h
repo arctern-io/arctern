@@ -7,7 +7,6 @@ struct LineRelationResult {
   int II;             // dimension of II
   bool is_coveredby;  // is line coveredby LineString
   int cross_count;
-  int overlap_count;
 };
 
 // endpoints included

@@ -28,6 +28,7 @@ class KernelVector {
       data_ = new T[capacity_];
     }
   }
+  DEVICE_RUNNABLE void clear() { size_ = 0; }
   DEVICE_RUNNABLE T& operator[](int index) { return data_[index]; }
   DEVICE_RUNNABLE const T& operator[](int index) const { return data_[index]; }
   DEVICE_RUNNABLE int size() const { return size_; }
@@ -36,6 +37,20 @@ class KernelVector {
     reserve(size_ + 1);
     data_[size_] = x;
     ++size_;
+  }
+
+  // O(n^2) sort algorithm
+  DEVICE_RUNNABLE void sort() {
+    for (int index = 1; index < size_; index++) {
+      auto value = data_[index];
+      auto iter = index;
+      // peek previous
+      while (iter && value < data_[iter - 1]) {
+        data_[iter] = data_[iter - 1];
+        --iter;
+      }
+      data_[iter] = value;
+    }
   }
 
  private:

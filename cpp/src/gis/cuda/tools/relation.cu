@@ -1,3 +1,4 @@
+#include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 
 namespace arctern {
@@ -40,8 +41,8 @@ DEVICE_RUNNABLE int PointOnInnerLineString(double2 left_point, int right_size,
 }
 
 DEVICE_RUNNABLE inline bool is_zero(double x) {
-//  static constexpr double epsilon = 1e-8;
-//  (void)epsilon;
+  //  static constexpr double epsilon = 1e-8;
+  //  (void)epsilon;
   return x == 0;
 }
 
@@ -50,9 +51,12 @@ DEVICE_RUNNABLE inline bool is_zero(double x) {
 // Known bug: false negative for
 //  ST_Equals("LineString(0 0, 0 1, 0 2)", "LineString(0 0, 0 2)"));
 // Solution was put off to next iteration
-DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoints,
-                                                    int right_size,
-                                                    const double2* right_points) {
+DEVICE_RUNNABLE LineRelationResult LineOnLineString(
+    const double2* line_endpoints, int right_size, const double2* right_points,
+    KernelVector<thrust::pair<double, double>>& index_recorder) {
+  // possible false negative, record for further processing
+  index_recorder.clear();
+  int first_item_index = -1;
   // included
   auto lv0 = to_complex(line_endpoints[0]);
   // not included
@@ -84,9 +88,11 @@ DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoint
           result.is_coveredby = true;
           break;
         } else {
-          // possible false negative, record for further processing
-          result.overlap_count++;
-
+          if(first_item_index == -1) {
+            first_item_index = right_index;
+          } else {
+            temp_recorder.push_back()
+          }
         }
       }
     } else if (rv0.imag() * rv1.imag() <= 0) {
