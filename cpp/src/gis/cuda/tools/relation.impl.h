@@ -9,9 +9,12 @@ struct LineRelationResult {
   int cross_count;
 };
 
+struct KernelBuffer {
+  KernelVector<thrust::pair<double, double>> ranges;
+};
+
 // endpoints included
-DEVICE_RUNNABLE bool IsPointInLine(double2 point_raw, double2 line_beg,
-                                   double2 line_end);
+DEVICE_RUNNABLE bool IsPointInLine(double2 point_raw, double2 line_beg, double2 line_end);
 // return count of cross point
 DEVICE_RUNNABLE int PointOnInnerLineString(double2 left_point, int right_size,
                                            const double2* right_points);
@@ -24,8 +27,6 @@ DEVICE_RUNNABLE int PointOnInnerLineString(double2 left_point, int right_size,
 DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoints,
                                                     int right_size,
                                                     const double2* right_points);
-
-
 
 }  // namespace cuda
 }  // namespace gis

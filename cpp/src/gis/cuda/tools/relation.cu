@@ -1,3 +1,5 @@
+#include <thrust/optional.h>
+
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 
@@ -46,26 +48,49 @@ DEVICE_RUNNABLE inline bool is_zero(double x) {
   return x == 0;
 }
 
+// check if [0, 1] coveredby sorted ranges
+DEVICE_RUNNABLE static bool IsRange01CoveredBy(
+    const KernelVector<thrust::pair<double, double>>& ranges) {
+  auto total_range = ranges[0];
+  for (int iter = 1; iter < ranges.size(); ++iter) {
+    auto range = ranges[iter];
+    if (total_range.second < range.first) {
+      // has gap
+      if (range.first <= 0) {
+        // previous total range are all before 0. just discard
+        total_range = range;
+      } else {
+        // gap after 0. terminate
+        break;
+      }
+    } else {
+      // no gap, just extend
+      total_range.second = max(total_range.second, range.second);
+      if (range.second >= 1) {
+        break;
+      }
+    }
+  }
+  return total_range.first <= 0 && 1 <= total_range.second;
+}
+
 // Note: when dealing with linestring, we view it as endpoints included
 // linestring, which is collection of endpoints
-// Known bug: false negative for
-//  ST_Equals("LineString(0 0, 0 1, 0 2)", "LineString(0 0, 0 2)"));
-// Solution was put off to next iteration
-DEVICE_RUNNABLE LineRelationResult LineOnLineString(
-    const double2* line_endpoints, int right_size, const double2* right_points,
-    KernelVector<thrust::pair<double, double>>& index_recorder) {
+DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoints,
+                                                    int right_size,
+                                                    const double2* right_points,
+                                                    KernelBuffer& buffer) {
   // possible false negative, record for further processing
-  index_recorder.clear();
-  int first_item_index = -1;
-  // included
+  auto& ranges_buffer = buffer.ranges;
+  ranges_buffer.clear();
+  // this is to avoid too many allocations
+  thrust::optional<thrust::pair<double, double>> first_item;
+
   auto lv0 = to_complex(line_endpoints[0]);
-  // not included
   auto lv1 = to_complex(line_endpoints[0 + 1]) - lv0;
   LineRelationResult result{-1, false, 0};
   for (int right_index = 0; right_index < right_size - 1; ++right_index) {
-    // included
     auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
-    // not included
     auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
     if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
       // included
@@ -88,23 +113,33 @@ DEVICE_RUNNABLE LineRelationResult LineOnLineString(
           result.is_coveredby = true;
           break;
         } else {
-          if(first_item_index == -1) {
-            first_item_index = right_index;
-          } else {
-            temp_recorder.push_back()
+          if (!result.is_coveredby) {
+            auto item = thrust::make_pair(min(r0, r1), max(r0, r1));
+            if (!first_item.has_value()) {
+              first_item = item;
+            } else {
+              ranges_buffer.push_back(item);
+            }
           }
         }
       }
     } else if (rv0.imag() * rv1.imag() <= 0) {
       auto proj =
           (rv0.real() * rv1.imag() - rv0.real() * rv0.imag()) / (rv1.imag() - rv0.imag());
-
       if (0 <= proj && proj <= 1) {
         result.II = max(result.II, 0);
         ++result.cross_count;
       }
     }
   }
+
+  if (!result.is_coveredby && ranges_buffer.size() != 0) {
+    assert(first_item.has_value());
+    ranges_buffer.push_back(first_item.value_or(thrust::make_pair(0.0, 0.0)));
+    ranges_buffer.sort();
+    result.is_coveredby = IsRange01CoveredBy(ranges_buffer);
+  }
+
   return result;
 }
 
