@@ -63,7 +63,7 @@ def _flat_geoms(geo_dict, dict_collect):
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
 def _plot_collection(ax, plot_collect):
-    if len(plot_collect  == 0):
+    if len(plot_collect) == 0:
         return None
 
     try:
