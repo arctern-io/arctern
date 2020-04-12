@@ -143,49 +143,13 @@ DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoint
   return result;
 }
 
-DEVICE_RUNNABLE bool LineStringOnLineString(int left_size, const double2* left_points,
-                                            int right_size, const double2* right_points) {
-
-}
-
 DEVICE_RUNNABLE de9im::Matrix LineStringRelateToLineString(int left_size,
                                                            const double2* left_points,
                                                            int right_size,
                                                            const double2* right_points) {
   assert(left_size >= 2);
   assert(right_size >= 2);
-
-  for (int left_index = 0; left_index < left_size - 1; ++left_index) {
-    // NOTE: we assume SIMPLE geometries, so LineString(0 0, 2 0, 1 0)
-    // won't be handled correctly since it is not simple
-    // Before use this method, geometries must be simplify
-
-    auto lv0 = to_complex(left_points[left_index]);
-    auto lv1 = to_complex(left_points[left_index + 1]) - lv0;
-
-    for (int right_index = 0; right_index < right_size - 1; ++left_index) {
-      // project points to zeros
-
-      auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
-      auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
-      Matrix sub_mat("FFFFFFFF*");
-      int II = -1, IE = 1, EI = 1;
-      if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
-        double lv0_ref = 0;
-        double lv1_ref = 1;
-        // maybe cross
-        auto min_ep = min(rv0.real(), rv1.real());
-        auto max_ep = max(rv0.real(), rv1.real());
-        if (max_ep <= 0 || min_ep >= 1) {
-          continue;
-        }
-        II = 1;
-        if (max_ep <= 1 || min_ep >= 0) {
-          IE = -1;
-        }
-      }
-    }
-  }
+     
 }
 
 }  // namespace cuda
