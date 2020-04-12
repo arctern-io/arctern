@@ -14,41 +14,42 @@
 
 def _flat_geoms(geo_dict, dict_collect):
     import numpy as np
+    import json
     if geo_dict['type'] == 'GeometryCollection':
         for geos in geo_dict['geometries']:
             _flat_geoms(geos, dict_collect)
     elif geo_dict['type'] == 'MultiPolygon' or geo_dict['type'] == 'Polygon':
         if 'polygons' not in dict_collect:
-            dict_collect['polygons']=[]
+            dict_collect['polygons'] = []
         dict_collect['polygons'].append(geo_dict)
     elif geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
-            line_arry = np.zeros([len(line),2])
+            line_arry = np.zeros([len(line), 2])
             idx = 0
             for coor in line:
-                line_arry[idx,0]=coor[0]
-                line_arry[idx,1]=coor[1]
+                line_arry[idx, 0] = coor[0]
+                line_arry[idx, 1] = coor[1]
                 idx = idx + 1
             if 'lines' not in dict_collect:
-                dict_collect['lines']=[]
+                dict_collect['lines'] = []
             dict_collect['lines'].append(line_arry)
     elif geo_dict['type'] == 'LineString':
-        line_arry=np.zeros([len(geo_dict['coordinates']),2])
+        line_arry = np.zeros([len(geo_dict['coordinates']), 2])
         idx = 0
         for coor in geo_dict['coordinates']:
-            line_arry[idx,0]=coor[0]
-            line_arry[idx,1]=coor[1]
+            line_arry[idx, 0] = coor[0]
+            line_arry[idx, 1] = coor[1]
             idx = idx + 1
         if 'lines' not in dict_collect:
-            dict_collect['lines']=[]
+            dict_collect['lines'] = []
         dict_collect['lines'].append(line_arry)
-    elif geo_dict['type']=='Point':
+    elif geo_dict['type'] == 'Point':
         if 'points' not in dict_collect:
-            dict_collect['points']=[]
+            dict_collect['points'] = []
         dict_collect['points'].append(geo_dict['coordinates'])
-    elif geo_dict['type']=='MultiPoint':
+    elif geo_dict['type'] == 'MultiPoint':
         if 'points' not in dict_collect:
-            dict_collect['points']=[]
+            dict_collect['points'] = []
         dict_collect['points'].extend(geo_dict['coordinates'])
     else:
         from osgeo import ogr
@@ -57,14 +58,14 @@ def _flat_geoms(geo_dict, dict_collect):
             geo = geo.GetLinearGeometry()
             geo = geo.ExportToJson()
             geo = json.loads(geo)
-            _flat_geoms(geo,dict_collect)
+            _flat_geoms(geo, dict_collect)
         else:
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
-            
+
 def _plot_collection(ax, plot_collect):
-    if(len(plot_collect)==0):
+    if len(plot_collect  == 0):
         return None
-    
+
     try:
         from descartes.patch import PolygonPatch
     except ImportError:
@@ -74,15 +75,14 @@ def _plot_collection(ax, plot_collect):
         )
     try:
         import matplotlib
-        from matplotlib.collections import PatchCollection,LineCollection
+        from matplotlib.collections import PatchCollection, LineCollection
         from matplotlib.colors import is_color_like
     except ImportError:
         raise ImportError(
             "The matplotlib package is required for plotting polygons in geopandas. "
             "You can install it using 'conda install -c conda-forge descartes' "
         )
-    
-        
+
     if 'polygons' in plot_collect:
         collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
         ax.add_collection(collection, autolim=True)
@@ -92,37 +92,37 @@ def _plot_collection(ax, plot_collect):
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
-        collection = ax.scatter(x,y)
+        collection = ax.scatter(x, y)
     ax.autoscale_view()
 
-def _plot_pandas_series(ax,geoms):
+def _plot_pandas_series(ax, geoms):
     import pandas.core.series
     import json
-    if not isinstance(geoms,pandas.core.series.Series):
+    if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
     if len(geoms) < 1:
         return None
-    if isinstance(geoms[0],str):
+    if isinstance(geoms[0], str):
         pass
-    elif isinstance(geoms[0],bytes):
+    elif isinstance(geoms[0], bytes):
         import arctern
-        geoms=arctern.ST_AsGeoJSON(geoms)
+        geoms = arctern.ST_AsGeoJSON(geoms)
     else:
         raise RuntimeError(f"unexpected input type, {type(geoms[0])}")
-        
+
     plot_collect = dict()
     for geo in geoms:
         geo_dict = json.loads(geo)
-        _flat_geoms(geo_dict,plot_collect)
-    
+        _flat_geoms(geo_dict, plot_collect)
+
     _plot_collection(ax, plot_collect)
 
 def plot(ax, geoms):
     import pandas.core.series
-    if isinstance(geoms,pandas.core.series.Series):
+    if isinstance(geoms, pandas.core.series.Series):
         _plot_pandas_series(ax, geoms)
-    elif isinstance(geoms,pandas.core.frame.DataFrame):
-        if len(geoms.columns)!=1:
+    elif isinstance(geoms, pandas.core.frame.DataFrame):
+        if len(geoms.columns) != 1:
             raise RuntimeError(f"The input param 'geoms' should have only one column. geoms schema = {geoms.columns}")
-        geom_series = geoms[geoms.columns[0]]
+        geom_series = geoms[geoms. columns[0]]
         _plot_pandas_series(ax, geom_series)

@@ -47,6 +47,6 @@
 def plot(ax, geoms):
     import pyspark.sql.dataframe
     import arctern
-    if isinstance(geoms,pyspark.sql.dataframe.DataFrame):
+    if isinstance(geoms, pyspark.sql.dataframe.DataFrame):
         pandas_df = geoms.toPandas()
         arctern.plot(ax, pandas_df)
