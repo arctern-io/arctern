@@ -1,0 +1,127 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+def _flat_geoms(geo_dict, dict_collect):
+    import numpy as np
+    if geo_dict['type'] == 'GeometryCollection':
+        for geos in geo_dict['geometries']:
+            _flat_geoms(geos, dict_collect)
+    elif geo_dict['type'] == 'MultiPolygon' or geo_dict['type'] == 'Polygon':
+        if 'polygons' not in dict_collect:
+            dict_collect['polygons']=[]
+        dict_collect['polygons'].append(geo_dict)
+    elif geo_dict['type'] == 'MultiLineString':
+        for line in geo_dict['coordinates']:
+            line_arry = np.zeros([len(line),2])
+            idx = 0
+            for coor in line:
+                line_arry[idx,0]=coor[0]
+                line_arry[idx,1]=coor[1]
+                idx = idx + 1
+            if 'lines' not in dict_collect:
+                dict_collect['lines']=[]
+            dict_collect['lines'].append(line_arry)
+    elif geo_dict['type'] == 'LineString':
+        line_arry=np.zeros([len(geo_dict['coordinates']),2])
+        idx = 0
+        for coor in geo_dict['coordinates']:
+            line_arry[idx,0]=coor[0]
+            line_arry[idx,1]=coor[1]
+            idx = idx + 1
+        if 'lines' not in dict_collect:
+            dict_collect['lines']=[]
+        dict_collect['lines'].append(line_arry)
+    elif geo_dict['type']=='Point':
+        if 'points' not in dict_collect:
+            dict_collect['points']=[]
+        dict_collect['points'].append(geo_dict['coordinates'])
+    elif geo_dict['type']=='MultiPoint':
+        if 'points' not in dict_collect:
+            dict_collect['points']=[]
+        dict_collect['points'].extend(geo_dict['coordinates'])
+    else:
+        from osgeo import ogr
+        geo = ogr.CreateGeometryFromJson(json.dumps(geo_dict))
+        if geo.HasCurveGeometry():
+            geo = geo.GetLinearGeometry()
+            geo = geo.ExportToJson()
+            geo = json.loads(geo)
+            _flat_geoms(geo,dict_collect)
+        else:
+            raise RuntimeError(f"unsupported geometry: {geo_dict}")
+            
+def _plot_collection(ax, plot_collect):
+    if(len(plot_collect)==0):
+        return None
+    
+    try:
+        from descartes.patch import PolygonPatch
+    except ImportError:
+        raise ImportError(
+            "The descartes package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+        )
+    try:
+        import matplotlib
+        from matplotlib.collections import PatchCollection,LineCollection
+        from matplotlib.colors import is_color_like
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+        )
+    
+        
+    if 'polygons' in plot_collect:
+        collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
+        ax.add_collection(collection, autolim=True)
+    if 'lines' in plot_collect:
+        collection = LineCollection(plot_collect['lines'])
+        ax.add_collection(collection, autolim=True)
+    if 'points' in plot_collect:
+        x = [p[0] for p in plot_collect['points']]
+        y = [p[1] for p in plot_collect['points']]
+        collection = ax.scatter(x,y)
+    ax.autoscale_view()            
+
+def _plot_spark_data_frame(ax, geoms):
+    import json
+    
+    if len(geoms.columns) != 1:
+        raise RuntimeError(f"geoms should has only one colums, input schema = {geoms.schema}")
+    head_row = geoms.head()
+    if head_row==None:
+        return ax
+    head_row = head_row[0]
+    if isinstance(head_row, str): # input is geojson
+        geoms = geoms.collect()
+    elif isinstance(head_row,bytearray): #input is wkb
+        from arctern_pyspark._wrapper_func import ST_AsGeoJSON
+        geoms = geoms.select(ST_AsGeoJSON(col(geoms.columns[0])))
+        geoms = geoms.collect()
+    else:
+        raise RuntimeError(f"unexpect input type, {type(head_row)}")
+        
+    plot_collect = dict()
+    for geo in geoms:
+        geo_dict = json.loads(geo[0])
+        _flat_geoms(geo_dict,plot_collect)
+    
+    _plot_collection(ax, plot_collect)
+
+
+def plot(ax, geoms):
+    import pyspark.sql.dataframe
+    if isinstance(geoms,pyspark.sql.dataframe.DataFrame):
+        _plot_spark_data_frame(ax, geoms)
