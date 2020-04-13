@@ -97,4 +97,4 @@ def test_plot3():
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
-    print(file_size)
+    assert 30 <= file_size <= 50
