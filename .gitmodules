@@ -1,0 +1,4 @@
+[submodule "gui/client/infini-client"]
+	path = gui/client/infini-client
+	url = git@github.com:zilliztech/infini-client.git
+	branch = arctern
