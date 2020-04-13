@@ -46,3 +46,27 @@ def test_plot1():
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
     assert 15 <= file_size <= 25
+
+def test_plot2():
+    raw_data = []
+    raw_data.append('point(0 0)')
+    raw_data.append('point(1 1)')
+    raw_data.append('point(2 2)')
+
+    arr_wkt = pandas.Series(raw_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+
+    file_name = "/tmp/test_plot2.png"
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
+        assert False
+
+    fig, ax = plt.subplots()
+    arctern.plot(ax, arr_wkb)
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
+    file_size = file_size / 1024
+    print(file_size)
