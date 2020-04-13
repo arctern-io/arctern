@@ -74,8 +74,13 @@ def _flat_geoms(geo_dict, dict_collect):
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
 def _plot_point(ax, x, y, **style_kwds):
+    from matplotlib.colors import is_color_like
     args = dict()
-    ax.scatter(x, y)
+    if 'color' in style_kwds and is_color_like(style_kwds['color']):
+        args['color'] = style_kwds['color']
+    if 'marker' in style_kwds:
+        marker['marker'] = style_kwds['style_kwds']
+    ax.scatter(x, y, *args)
 
 def _plot_collection(ax, plot_collect, **style_kwds):
     if len(plot_collect) == 0:
