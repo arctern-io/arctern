@@ -80,6 +80,25 @@ def _get_attr(attr_list, **style_kwds):
             attr_val[attr] = style_kwds[attr]
     return attr_val
 
+def _plot_polygons(ax, polygons, **style_kwds):
+    try:
+        from descartes.patch import PolygonPatch
+    except ImportError:
+        raise ImportError(
+            "The descartes package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+        )
+    try:
+        from matplotlib.collections import PatchCollection
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+        )
+    attr = _get_attr(['linewidth', 'edgecolor', 'facecolor'], **style_kwds)
+    collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
+    ax.add_collection(collection, autolim=True)
+
 # value for linestyles : solid|dashed|dashdot|dotted
 def _plot_lines(ax, lines, **style_kwds):
     try:
@@ -90,7 +109,7 @@ def _plot_lines(ax, lines, **style_kwds):
             "You can install it using 'conda install -c conda-forge descartes' "
         )
     attr = _get_attr(['color', 'linewidths', 'linestyles'], **style_kwds)
-    collection = LineCollection(lines, **style_kwds)
+    collection = LineCollection(lines, **attr)
     ax.add_collection(collection, autolim=True)
 
 def _plot_points(ax, x, y, **style_kwds):
@@ -103,24 +122,8 @@ def _plot_collection(ax, plot_collect, **style_kwds):
     if len(plot_collect) == 0:
         return None
 
-    try:
-        from descartes.patch import PolygonPatch
-    except ImportError:
-        raise ImportError(
-            "The descartes package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
-    try:
-        from matplotlib.collections import PatchCollection, LineCollection
-    except ImportError:
-        raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
-
     if 'polygons' in plot_collect:
-        collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
-        ax.add_collection(collection, autolim=True)
+        _plot_polygons(ax, plot_collect['polygons'], **style_kwds)
     if 'lines' in plot_collect:
         _plot_lines(ax, plot_collect['lines'], **style_kwds)
     if 'points' in plot_collect:
