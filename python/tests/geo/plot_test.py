@@ -92,9 +92,39 @@ def test_plot3():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot(ax, arr_wkb, color=['green', 'red', 'black', 'orange'], linewidths=[5, 6, 7, 8], linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
+    arctern.plot(ax, arr_wkb, color=['green', 'red', 'black', 'orange'], linewidth=[5, 6, 7, 8], linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
     assert 30 <= file_size <= 50
+
+def test_plot4():
+    raw_data = []
+    raw_data.append('polygon((0 0,0 1,1 1,1 0,0 0))')
+    raw_data.append('polygon((1 1,1 2,2 2,2 1,1 1))')
+    raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+    raw_data.append('polygon((3 3,3 4,4 4,4 3,3 3))')
+
+    arr_wkt = pandas.Series(raw_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+
+    file_name = "/tmp/test_plot4.png"
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
+        assert False
+
+    fig, ax = plt.subplots()
+    arctern.plot(ax, arr_wkb, \
+        edgecolor=['green', 'red', 'black', 'orange'], \
+        linewidth=[5, 6, 7, 8], \
+        linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
+    ax.grid()
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
+    file_size = file_size / 1024
+    print(file_size)
+    # assert 30 <= file_size <= 50

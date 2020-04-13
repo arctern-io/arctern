@@ -95,7 +95,7 @@ def _plot_polygons(ax, polygons, **style_kwds):
             "The matplotlib package is required for plotting polygons in geopandas. "
             "You can install it using 'conda install -c conda-forge descartes' "
         )
-    attr = _get_attr(['linewidth', 'edgecolor', 'facecolor'], **style_kwds)
+    attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
     collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
     ax.add_collection(collection, autolim=True)
 
@@ -108,7 +108,7 @@ def _plot_lines(ax, lines, **style_kwds):
             "The matplotlib package is required for plotting polygons in geopandas. "
             "You can install it using 'conda install -c conda-forge descartes' "
         )
-    attr = _get_attr(['color', 'linewidths', 'linestyles'], **style_kwds)
+    attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
     collection = LineCollection(lines, **attr)
     ax.add_collection(collection, autolim=True)
 
