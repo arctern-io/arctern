@@ -148,3 +148,7 @@ def test_plot5():
 
     fig, ax = plt.subplots()
     arctern.plot(ax, arr_wkb)
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
+    file_size = file_size / 1024
+    print(file_size)
