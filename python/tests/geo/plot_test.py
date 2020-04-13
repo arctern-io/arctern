@@ -129,3 +129,22 @@ def test_plot4():
     file_size = file_size / 1024
     print(file_size)
     assert 10 <= file_size <= 20
+
+def test_plot5():
+    raw_data = []
+    raw_data.append('circularstring(-2 -2, 2 2, -2 -2)')
+    raw_data.append('circularstring(-1 -1, 1 1, -1 -1)')
+
+    arr_wkt = pandas.Series(raw_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+
+    file_name = "/tmp/test_plot5.png"
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
+        assert False
+
+    fig, ax = plt.subplots()
+    arctern.plot(ax, arr_wkb)
