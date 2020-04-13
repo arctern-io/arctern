@@ -27,10 +27,8 @@ API = Blueprint('app_api', __name__)
 
 @API.errorhandler(Exception)
 def exception_handler(e):
-    response = make_response(str(e))
-    response.status_code = 400
-    log.INSTANCE.info('exception: {}'.format(str(e)))
-    return response
+    log.INSTANCE.error('exception: {}'.format(str(e)))
+    return jsonify(status='error', code=-1, message=str(e))
 
 def load_data(content):
     if not utils.check_json(content, 'db_name') \
