@@ -73,15 +73,18 @@ def _flat_geoms(geo_dict, dict_collect):
         else:
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
+def _get_attr(attr_list, **style_kwds):
+    attr_val = dict()
+    for attr in attr_list:
+        if attr in style_kwds:
+            attr_val[attr] = style_kwds[attr]
+    return attr_val
+
 def _plot_point(ax, x, y, **style_kwds):
-    args = dict()
-    if 'color' in style_kwds:
-        args['color'] = style_kwds['color']
-    if 'marker' in style_kwds:
-        args['marker'] = style_kwds['marker']
+    attr = _get_attr(['color', 'marker'], **style_kwds)
     if 'markersize' in style_kwds:
-        args['s'] = style_kwds['markersize']
-    ax.scatter(x, y, **args)
+        attr['s'] = style_kwds['markersize']
+    ax.scatter(x, y, **attr)
 
 def _plot_collection(ax, plot_collect, **style_kwds):
     if len(plot_collect) == 0:
@@ -118,6 +121,10 @@ def _plot_collection(ax, plot_collect, **style_kwds):
 def _plot_pandas_series(ax, geoms, **style_kwds):
     import pandas.core.series
     import json
+
+    if geoms is None:
+        return None
+
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
     if len(geoms) < 1:
