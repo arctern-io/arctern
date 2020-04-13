@@ -109,7 +109,7 @@ def ST_PointFromText(geo):
 def ST_PolygonFromText(geo):
     """
     Constructs polygon objects from the OGC Well-Known text representation.
-    
+
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
 
@@ -132,14 +132,14 @@ def ST_PolygonFromText(geo):
       +-----------------------------------+
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
-    """    
+    """
     return arctern.ST_GeomFromText(geo)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_LineStringFromText(geo):
     """
     Constructs linestring objects from the OGC Well-Known text representation.
-    
+
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
 
@@ -169,7 +169,7 @@ def ST_LineStringFromText(geo):
 def ST_GeomFromWKT(geo):
     """
     Constructs geometry objects from the OGC Well-Known text representation.
-    
+
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
 
@@ -199,7 +199,7 @@ def ST_GeomFromWKT(geo):
 def ST_GeomFromText(geo):
     """
     Constructs geometry objects from the OGC Well-Known text representation.
-    
+
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
 
@@ -232,9 +232,9 @@ def ST_AsText(geo):
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKB.
-    
+
     :return: Geometries organized as WKT.
-    :rtype: pandas.Series.object 
+    :rtype: pandas.Series.object
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -262,9 +262,9 @@ def ST_AsGeoJSON(geo):
 
     :type geo: pyarrow.array.string
     :param geo: Geometries organized as WKB.
-    
+
     :return: Geometries organized as GeoJSON.
-    :rtype: pyarrow.array.string 
+    :rtype: pyarrow.array.string
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -292,13 +292,13 @@ def ST_Point(x, y):
 
     :type x: pandas.Series.float64
     :param x: Abscissa of the point.
-     
+
     :type y: pandas.Series.float64
     :param y: Ordinate of the point.
 
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
- 
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -325,7 +325,7 @@ def ST_GeomFromGeoJSON(json):
 
     :type json: pandas.Series.object
     :param json: Geometries organized as json
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -358,13 +358,13 @@ def ST_GeomFromGeoJSON(json):
 def ST_Intersection(left, right):
     """
     Calculate the point set intersection of geometries.
-    
-    For every (left, right) pair with the same offset value in left and right, 
+
+    For every (left, right) pair with the same offset value in left and right,
     calculate a geometry that represents their point set intersection.
-    
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
@@ -389,7 +389,7 @@ def ST_Intersection(left, right):
       |GEOMETRYCOLLECTION EMPTY                                                 |
       +-------------------------------------------------------------------------+
       |POINT (0 0)                                                              |
-      +-------------------------------------------------------------------------+    
+      +-------------------------------------------------------------------------+
     """
     return arctern.ST_Intersection(left, right)
 
@@ -397,7 +397,7 @@ def ST_Intersection(left, right):
 def ST_IsValid(geos):
     """
     For each item in geometries, check if it is of valid geometry format.
-    
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
@@ -430,22 +430,22 @@ def ST_IsValid(geos):
 def ST_PrecisionReduce(geos, precision):
     """
     Reduce the precision of geometry.
-     
-    For every geometry in geometries, reduce the decimal places of its coordinates 
-    to the given number. The last decimal place will be rounded. 
-   
-    Note, the operation is performed NOT in "inplace" manner, i.e., new geometries 
+
+    For every geometry in geometries, reduce the decimal places of its coordinates
+    to the given number. The last decimal place will be rounded.
+
+    Note, the operation is performed NOT in "inplace" manner, i.e., new geometries
     in arrow::Array format will be construted and extra memory will be allocated.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKT.
-   
+
     :type precision: uint32
     :param geos: The number to reduce the decimals places to.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
-   
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -460,7 +460,7 @@ def ST_PrecisionReduce(geos, precision):
       |ST_AsText(ST_PrecisionReduce(ST_GeomFromText(geos), 4))|
       +-------------------------------------------------------+
       |POINT (10.78 11.89)                                    |
-      +-------------------------------------------------------+ 
+      +-------------------------------------------------------+
     """
     return arctern.ST_PrecisionReduce(geos, precision[0])
 
@@ -468,17 +468,17 @@ def ST_PrecisionReduce(geos, precision):
 def ST_Equals(left, right):
     """
     Check whether geometries are "spatially equal".
-   
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they are "spatially equal". "Spatially equal" here means two geometries represent 
+
+    For every (left, right) pair with the same offset value in left and right, check
+    if they are "spatially equal". "Spatially equal" here means two geometries represent
     the same geometry structure.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -499,7 +499,7 @@ def ST_Equals(left, right):
       |true                                                    |
       +--------------------------------------------------------+
       |true                                                    |
-      +--------------------------------------------------------+      
+      +--------------------------------------------------------+
     """
     return arctern.ST_Equals(left, right)
 
@@ -507,17 +507,17 @@ def ST_Equals(left, right):
 def ST_Touches(left, right):
     """
     Check whether geometries "touch".
-   
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they "touch". "Touch" here means two geometries have common points, and the 
+
+    For every (left, right) pair with the same offset value in left and right, check
+    if they "touch". "Touch" here means two geometries have common points, and the
     common points locate only on their boundaries.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -546,17 +546,17 @@ def ST_Touches(left, right):
 def ST_Overlaps(left, right):
     """
     Check whether geometries "spatially overlap".
-   
-    For every (left, right) pair with the same offset value in left and right, check 
-    if they "spatially overlap". "Spatially overlap" here means two geometries 
+
+    For every (left, right) pair with the same offset value in left and right, check
+    if they "spatially overlap". "Spatially overlap" here means two geometries
     intersect but one does not completely contain another.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -577,7 +577,7 @@ def ST_Overlaps(left, right):
       |true                                                      |
       +----------------------------------------------------------+
       |false                                                     |
-      +----------------------------------------------------------+    
+      +----------------------------------------------------------+
     """
     return arctern.ST_Overlaps(left, right)
 
@@ -586,19 +586,19 @@ def ST_Overlaps(left, right):
 def ST_Crosses(left, right):
     """
     Check whether geometries "spatially cross".
-   
-    For every (left, right) pair with the same offset value in left and right, check 
+
+    For every (left, right) pair with the same offset value in left and right, check
     if they "spatially cross". "Spatially cross" here means two the geometries have
     some, but not all interior points in common. The intersection of the interiors of
-    the geometries must not be the empty set and must have a dimensionality less than 
+    the geometries must not be the empty set and must have a dimensionality less than
     the maximum dimension of the two input geometries.
-    
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -619,7 +619,7 @@ def ST_Crosses(left, right):
       |true                                                     |
       +---------------------------------------------------------+
       |false                                                    |
-      +---------------------------------------------------------+ 
+      +---------------------------------------------------------+
     """
     return arctern.ST_Crosses(left, right)
 
@@ -627,14 +627,14 @@ def ST_Crosses(left, right):
 def ST_IsSimple(geos):
     """
     Check whether geometry is "simple".
-   
-    For every geometry in geometries, check if it is "simple". "Simple" here means 
-    that a geometry has no anomalous geometric points such as self intersection or 
+
+    For every geometry in geometries, check if it is "simple". "Simple" here means
+    that a geometry has no anomalous geometric points such as self intersection or
     self tangency.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -663,13 +663,13 @@ def ST_IsSimple(geos):
 def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
-    
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
-    
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -694,14 +694,14 @@ def ST_GeometryType(geos):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_MakeValid(geos):
     """
-    For every geometry in geometries, create a valid representation of it without 
-    losing any of the input vertices. Already-valid geometries won't have further 
-    intervention. This function returns geometries which are validated. Note, new 
+    For every geometry in geometries, create a valid representation of it without
+    losing any of the input vertices. Already-valid geometries won't have further
+    intervention. This function returns geometries which are validated. Note, new
     geometries are construted in arrow::Array format, so extra memory will be allocated.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-    
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -722,7 +722,7 @@ def ST_MakeValid(geos):
       |LINESTRING (0 0,10 0,20 0,20 0,30 0)                                                            |
       +------------------------------------------------------------------------------------------------+
       |GEOMETRYCOLLECTION (MULTIPOLYGON (((3 3,1 1,1 5,3 3)),((5 3,7 5,7 1,5 3))),LINESTRING (3 3,5 3))|
-      +------------------------------------------------------------------------------------------------+    
+      +------------------------------------------------------------------------------------------------+
     """
     return arctern.ST_MakeValid(geos)
 
@@ -731,20 +731,20 @@ def ST_MakeValid(geos):
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
-    to the precision that parameter tolerance specifies. 
-   
-    Note simplified geometries with be construted in arrow::Array format, so extra 
+    to the precision that parameter tolerance specifies.
+
+    Note simplified geometries with be construted in arrow::Array format, so extra
     memory will be allocated.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :type distance_tolerance: double
     :param distance_tolerance: The precision of the simplified geometry.
-   
+
     :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object 
-    
+    :rtype: pandas.Series.object
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -759,7 +759,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
           )])
       >>> simplify_preserve_topology_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show(100,0)  
+      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show(100,0)
       +----------------------------------------------------------------------------+
       |ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10))           |
       +----------------------------------------------------------------------------+
@@ -773,21 +773,21 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     """
-    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x, 
+    Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
-   
+
     :type min_x: pandas.Series.float64
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
-    
+
     :type min_y: pandas.Series.float64
     :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
-    
+
     :type max_x: pandas.Series.float64
     :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
-    
+
     :type max_y: pandas.Series.float64
     :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
-    
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -816,18 +816,18 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 def ST_Contains(left, right):
     """
     Check whether a geometry contain another geometry.
-   
-    For every (left, right) pair with the same offset value in left and right, check 
+
+    For every (left, right) pair with the same offset value in left and right, check
     if left_geometry "contains" right_geometry. Left "contains" right means no points
-    of right_geometry lie in the exterior of left_geometry and at least one point of 
+    of right_geometry lie in the exterior of left_geometry and at least one point of
     the interior of right_geometry lies in the interior of left_geometry.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -857,15 +857,15 @@ def ST_Intersects(left, right):
     """
     Check whether two geometries intersect.
 
-    For every (left, right) pair with the same offset value in left and right, check 
+    For every (left, right) pair with the same offset value in left and right, check
     if left and right shares any portion of space.
 
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -894,18 +894,18 @@ def ST_Intersects(left, right):
 def ST_Within(left, right):
     """
     Check whether a geometry is within another geometry.
-   
-    For every (left, right) pair with the same offset value in left and right, check 
-    if left is "within" right. Left "within" right means no points of left lie in the 
+
+    For every (left, right) pair with the same offset value in left and right, check
+    if left is "within" right. Left "within" right means no points of left lie in the
     exterior of right and at least one point of the interior of left lies in the interior
     of right.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-    
+
     :return: An array of booleans.
     :rtype: pandas.Series.bool
 
@@ -934,19 +934,19 @@ def ST_Within(left, right):
 def ST_Distance(left, right):
     """
     Calculate the distance between two geometries.
-   
-    For every (left, right) pair with the same offset value in left and right, 
+
+    For every (left, right) pair with the same offset value in left and right,
     calculates the minimum 2D Cartesian (planar) distance between left and right.
-   
+
     :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
-     
+
     :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
-     
+
     :return: An array of double.
     :rtype: pandas.Series.float64
-    
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -972,13 +972,13 @@ def ST_Distance(left, right):
 def ST_Area(geos):
     """
     Calculate the area of geometry.
-   
+
     For every geometry in geometries, calculate the 2D Cartesian (planar) area
     of geometry.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: An array of double.
     :rtype: pandas.Series.float64
 
@@ -1007,12 +1007,12 @@ def ST_Area(geos):
 def ST_Centroid(geos):
     """
     Compute the centroid of geometry.
-   
+
     For every geometry in geometries, compute the controid point of geometry.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1041,12 +1041,12 @@ def ST_Centroid(geos):
 def ST_Length(geos):
     """
     Calculate the length of linear geometries.
-   
+
     For every geometry in geometries, calculate the length of geometry.
-    
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-    
+
     :return: An array of double.
     :rtype: pandas.Series.float64
 
@@ -1067,7 +1067,7 @@ def ST_Length(geos):
       |122.63074400009504              |
       +--------------------------------+
       |0.30901547439030225             |
-      +--------------------------------+  
+      +--------------------------------+
     """
     return arctern.ST_Length(geos)
 
@@ -1076,27 +1076,27 @@ def ST_HausdorffDistance(geo1, geo2):
     """
     Returns the Hausdorff distance between two geometries, a measure of how similar
     or dissimilar 2 geometries are.
-   
-    Implements algorithm for computing a distance metric which can be thought of as 
-    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to 
-    discrete points for one of the geometries. Wikipedia article on Hausdorff distance 
-   
-    Martin Davis note on how Hausdorff Distance calculation was used to prove 
+
+    Implements algorithm for computing a distance metric which can be thought of as
+    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to
+    discrete points for one of the geometries. Wikipedia article on Hausdorff distance
+
+    Martin Davis note on how Hausdorff Distance calculation was used to prove
     correctness of the CascadePolygonUnion approach.
-   
-    When densifyFrac is specified, this function performs a segment densification before 
+
+    When densifyFrac is specified, this function performs a segment densification before
     computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction
-    by which to densify each segment. Each segment will be split into a number of equal-length 
+    by which to densify each segment. Each segment will be split into a number of equal-length
     subsegments, whose fraction of the total length is closest to the given fraction.
-   
+
     Units are in the units of the spatial reference system of the geometries.
-   
+
     :type geo1: pandas.Series.object
     :param geo1: Geometries organized as WKB.
-     
+
     :type geo2: pandas.Series.object
     :param geo2: Geometries organized as WKB.
-     
+
     :return: An array of double.
     :rtype: pandas.Series.float64
 
@@ -1117,7 +1117,7 @@ def ST_HausdorffDistance(geo1, geo2):
       |1                                                                |
       +-----------------------------------------------------------------+
       |1                                                                |
-      +-----------------------------------------------------------------+    
+      +-----------------------------------------------------------------+
     """
     return arctern.ST_HausdorffDistance(geo1, geo2)
 
@@ -1125,16 +1125,16 @@ def ST_HausdorffDistance(geo1, geo2):
 def ST_ConvexHull(geos):
     """
     Compute the convex hull of geometry.
-   
+
     Compute the smallest convex geometry that encloses all geometries for a geometry
     in geometries.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
-    
+
     :example:
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
@@ -1152,7 +1152,7 @@ def ST_ConvexHull(geos):
       |LINESTRING (1 1,0 0)                           |
       +-----------------------------------------------+
       |POLYGON ((1 -2,-2.0 1.5,1 3,2.5 3.0,1 -2))     |
-      +-----------------------------------------------+   
+      +-----------------------------------------------+
     """
     return arctern.ST_ConvexHull(geos)
 
@@ -1160,10 +1160,10 @@ def ST_ConvexHull(geos):
 def ST_NPoints(geos):
     """
     Calculates the points number for every geometry in geometries.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return : An array of int64.
     :rtype : pandas.Series.int64
 
@@ -1192,10 +1192,10 @@ def ST_NPoints(geos):
 def ST_Envelope(geos):
     """
     Compute the double-precision minimum bounding box geometry for every geometry in geometries.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1242,15 +1242,15 @@ def ST_Envelope(geos):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Buffer(geos, dfDist):
     """
-    Returns a geometry that represents all points whose distance from this geos is 
+    Returns a geometry that represents all points whose distance from this geos is
     less than or equal to distance.
-    
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :type ofDist: int64
     :param ofDist: The maximum distance of the returned geometry from the given geometry.
- 
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1276,10 +1276,10 @@ def ST_Buffer(geos, dfDist):
 def ST_Union_Aggr(geos):
     """
     This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometry organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1298,7 +1298,7 @@ def ST_Union_Aggr(geos):
       |ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
       |POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))|
-      +-----------------------------------------------+ 
+      +-----------------------------------------------+
     """
     rst = arctern.ST_Union_Aggr(geos)
     return rst[0]
@@ -1306,12 +1306,12 @@ def ST_Union_Aggr(geos):
 @pandas_udf("binary", PandasUDFType.GROUPED_AGG)
 def ST_Envelope_Aggr(geos):
     """
-    Compute the double-precision minimum bounding box geometry for every geometry in geometries, 
+    Compute the double-precision minimum bounding box geometry for every geometry in geometries,
     then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometry organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1338,18 +1338,18 @@ def ST_Envelope_Aggr(geos):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Transform(geos, src_rs, dst_rs):
     """
-    Returns a new geometry with its coordinates transformed to a different spatial 
+    Returns a new geometry with its coordinates transformed to a different spatial
     reference system.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :type src_rs: string
     :param src_rs: The current srid of geometries.
-   
+
     :type dst_rs: string
     :param dst_rs: The target srid of geometries tranfrom to.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
@@ -1374,13 +1374,13 @@ def ST_Transform(geos, src_rs, dst_rs):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_CurveToLine(geos):
     """
-    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or 
-    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support 
+    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or
+    MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
-   
+
     :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
-   
+
     :return: Geometries organized as WKB.
     :rtype: pandas.Series.object
 
