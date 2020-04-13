@@ -82,6 +82,7 @@ TEST(Relation, LineRelateToLineString) {
   using vd = vector<double>;
   using lrr = cu::LineRelationResult;
   vector<Data> datas{
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
       {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
           lrr{1, true, -100}},
       {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, lrr{0, false, 1}},
@@ -95,7 +96,6 @@ TEST(Relation, LineRelateToLineString) {
       {vd{0, 0, 0, 1}, vd{0, 0, 0, 1}, lrr{1, true, -100}},
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 0, 2, 0, 3}, lrr{1, true, -100}},
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 2, 0, 1, 0, 3}, lrr{1, true, -100}},
-      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
        lrr{1, true, -100}},
   };

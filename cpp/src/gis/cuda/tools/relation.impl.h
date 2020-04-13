@@ -98,6 +98,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
       auto r0 = rv0.real();
       auto r1 = rv1.real();
       if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
+        // outside, just check endpoints
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
           result.II = max(result.II, 0);
@@ -107,14 +108,16 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
           result.II = max(result.II, 0);
         }
       } else {
+        auto rmin = min(r0, r1);
+        auto rmax = max(r0, r1);
         // at least intersect, no need for cross_count
         result.II = 1;
-        if (0 <= r0 && r0 <= 1 && 0 <= r1 && r1 <= 1) {
+        if (rmin <= 0 && 1 <= rmax) {
           result.is_coveredby = true;
           break;
         } else {
           if (!result.is_coveredby) {
-            auto item = thrust::make_pair(min(r0, r1), max(r0, r1));
+            auto item = thrust::make_pair(rmin, rmax);
             if (!first_item.has_value()) {
               first_item = item;
             } else {
