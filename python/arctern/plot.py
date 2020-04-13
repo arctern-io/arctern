@@ -80,6 +80,7 @@ def _get_attr(attr_list, **style_kwds):
             attr_val[attr] = style_kwds[attr]
     return attr_val
 
+# value for linestyles : solid|dashed|dashdot|dotted
 def _plot_lines(ax, lines, **style_kwds):
     try:
         from matplotlib.collections import LineCollection
@@ -121,8 +122,7 @@ def _plot_collection(ax, plot_collect, **style_kwds):
         collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
         ax.add_collection(collection, autolim=True)
     if 'lines' in plot_collect:
-        collection = LineCollection(plot_collect['lines'])
-        ax.add_collection(collection, autolim=True)
+        _plot_lines(ax, plot_collect['lines'])
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
