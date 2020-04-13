@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import json
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
@@ -24,6 +24,11 @@ from app import account
 from app.common import spark, token, utils, db, log
 
 API = Blueprint('app_api', __name__)
+
+@API.errorhandler(Exception)
+def exception_handler(e):
+    log.INSTANCE.error('exception: {}'.format(str(e)))
+    return jsonify(status='error', code=-1, message=str(e))
 
 def load_data(content):
     if not utils.check_json(content, 'db_name') \
@@ -212,7 +217,8 @@ def db_query():
                 int(query_params['height']),
                 query_params['heat']['bounding_box'],
                 float(query_params['heat']['map_zoom_level']),
-                query_params['heat']['coordinate_system'])
+                query_params['heat']['coordinate_system'],
+                query_params['heat']['aggregation_type'])
             data = heatmap(vega, res)
             content['result'] = data
         elif query_type == 'choropleth':
@@ -223,7 +229,8 @@ def db_query():
                 query_params['choropleth']['color_gradient'],
                 query_params['choropleth']['color_bound'],
                 float(query_params['choropleth']['opacity']),
-                query_params['choropleth']['coordinate_system'])
+                query_params['choropleth']['coordinate_system'],
+                query_params['choropleth']['aggregation_type'])
             data = choroplethmap(vega, res)
             content['result'] = data
         elif query_type == 'weighted':
@@ -243,4 +250,5 @@ def db_query():
             return jsonify(status="error",
                            code=-1,
                            message='{} not support'.format(query_type))
+
     return jsonify(status="success", code=200, data=content)
