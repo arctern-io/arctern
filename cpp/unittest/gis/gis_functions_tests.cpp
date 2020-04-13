@@ -3423,6 +3423,35 @@ TEST(geometry_test, test_ST_CurveToLine) {
   ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");
 }
 
+TEST(geometry_test, test_ST_AsGeoJSON) {
+  auto j0 = R"({"type":"Point","coordinates":[1,2]})";
+  auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
+  auto j2 = R"({"type":"Polygon","coordinates":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]})";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(j0));
+  builder.Append(std::string(j1));
+  builder.Append(std::string(j2));
+  builder.AppendNull();
+  builder.Append(std::string(""));
+  builder.Finish(&input);
+
+  auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input));
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0),
+            R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
+  ASSERT_EQ(
+      res_str->GetString(1),
+      R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");
+  ASSERT_EQ(
+      res_str->GetString(2),
+      R"({ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] })");
+  ASSERT_TRUE(res_str->IsNull(3));
+  ASSERT_TRUE(res_str->IsNull(4));
+}
+
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   auto j0 = R"({"type":"Point","coordinates":[1,2]})";
   auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
