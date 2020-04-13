@@ -45,6 +45,8 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
 
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);

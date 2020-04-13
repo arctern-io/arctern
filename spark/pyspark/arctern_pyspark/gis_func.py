@@ -20,19 +20,19 @@ __all__ = [
 def _agg_func_template(df, col_name, st_agg_func):
     import pandas as pd
     from pyspark.sql.functions import pandas_udf, PandasUDFType
-    from pyspark.sql.types import (StructType, StructField, StringType)
+    from pyspark.sql.types import (StructType, StructField, BinaryType)
 
-    agg_schema = StructType([StructField('geos', StringType(), True)])
+    agg_schema = StructType([StructField('geos', BinaryType(), True)])
     @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
-    def agg_step1(batch_iter):
+    def agg_step1(batch_iter, col_name=col_name):
         for pdf in batch_iter:
             ret = st_agg_func(pdf[col_name])
-            df = pd.DataFrame({"geos":[ret]})
+            df = pd.DataFrame({"geos": [ret[0]]})
             yield df
 
-    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    @pandas_udf(BinaryType(), PandasUDFType.GROUPED_AGG)
     def agg_step2(geos):
-        return st_agg_func(geos)
+        return st_agg_func(geos)[0]
 
     agg_df = df.mapInPandas(agg_step1)
     agg_df = agg_df.coalesce(1)
