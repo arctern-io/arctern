@@ -143,8 +143,9 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
 
     plot_collect = dict()
     for geo in geoms:
-        geo_dict = json.loads(geo)
-        _flat_geoms(geo_dict, plot_collect)
+        if geo is not None:
+            geo_dict = json.loads(geo)
+            _flat_geoms(geo_dict, plot_collect)
 
     _plot_collection(ax, plot_collect, **style_kwds)
     return None
