@@ -212,7 +212,8 @@ def db_query():
                 int(query_params['height']),
                 query_params['heat']['bounding_box'],
                 float(query_params['heat']['map_zoom_level']),
-                query_params['heat']['coordinate_system'])
+                query_params['heat']['coordinate_system'],
+                query_params['heat']['aggregation_type'])
             data = heatmap(vega, res)
             content['result'] = data
         elif query_type == 'choropleth':
@@ -223,7 +224,8 @@ def db_query():
                 query_params['choropleth']['color_gradient'],
                 query_params['choropleth']['color_bound'],
                 float(query_params['choropleth']['opacity']),
-                query_params['choropleth']['coordinate_system'])
+                query_params['choropleth']['coordinate_system'],
+                query_params['choropleth']['aggregation_type'])
             data = choroplethmap(vega, res)
             content['result'] = data
         elif query_type == 'weighted':
