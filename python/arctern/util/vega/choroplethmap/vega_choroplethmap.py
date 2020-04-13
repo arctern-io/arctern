@@ -36,7 +36,7 @@ class Marks(RootMarks):
         def __init__(self, bounding_box: Value, color_gradient: Value,
                      color_bound: Value, opacity: Value, coordinate_system: Value, aggregation_type: Value):
             if not (isinstance(bounding_box.v, list)
-                    and isinstance(color_gradient.v, str)
+                    and isinstance(color_gradient.v, list)
                     and isinstance(color_bound.v, list)
                     and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)
@@ -75,7 +75,7 @@ class Marks(RootMarks):
 
 class VegaChoroplethMap:
     def __init__(self, width: int, height: int, bounding_box: list,
-                 color_gradient: str, color_bound: list, opacity: float, coordinate_system: str, aggregation_type: str):
+                 color_gradient: list, color_bound: list, opacity: float, coordinate_system: str, aggregation_type: str):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
