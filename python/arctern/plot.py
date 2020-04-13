@@ -73,6 +73,10 @@ def _flat_geoms(geo_dict, dict_collect):
         else:
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
+def _plot_point(ax, x, y, **style_kwds):
+    args = dict()
+    ax.scatter(x, y)
+
 def _plot_collection(ax, plot_collect, **style_kwds):
     if len(plot_collect) == 0:
         return None
@@ -101,7 +105,7 @@ def _plot_collection(ax, plot_collect, **style_kwds):
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
-        collection = ax.scatter(x, y)
+        _plot_point(ax, x, y, **style_kwds)
     ax.autoscale_view()
     return None
 
