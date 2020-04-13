@@ -118,11 +118,11 @@ def test_plot4():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot(ax, arr_wkb, \
-        edgecolor=['green', 'red', 'black', 'orange'], \
-        linewidth=[5, 6, 7, 8], \
-        linestyle=['solid', 'dashed', 'dashdot', 'dotted'], \
-        facecolor=['red', 'black', 'orange', 'green'])
+    arctern.plot(ax, arr_wkb,
+                 edgecolor=['green', 'red', 'black', 'orange'],
+                 linewidth=[5, 6, 7, 8],
+                 linestyle=['solid', 'dashed', 'dashdot', 'dotted'],
+                 facecolor=['red', 'black', 'orange', 'green'])
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
@@ -175,7 +175,14 @@ def test_plot6():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot(ax, arr_wkb)
+    arctern.plot(ax, arr_wkb,
+                 color=['orange', 'green'],
+                 marker='^',
+                 markersize=100,
+                 linewidth=[None, 7, 8],
+                 linestyle=[None, 'dashed', 'dashdot'],
+                 edgecolor=[None, None, 'red'],
+                 facecolor=[None, None, 'black'])
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
