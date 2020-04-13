@@ -122,9 +122,6 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
     import pandas.core.series
     import json
 
-    if geoms is None:
-        return None
-
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
     if len(geoms) < 1:
