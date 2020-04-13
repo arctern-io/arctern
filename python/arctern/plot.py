@@ -110,9 +110,46 @@ def _plot_points(ax, x, y, **style_kwds):
         attr['s'] = style_kwds['markersize']
     ax.scatter(x, y, **attr)
 
-def _plot_collection(ax, plot_collect, **style_kwds):
-    if len(plot_collect) == 0:
-        return None
+def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
+    if geo_name in geo_collect:
+        if geo_name not in plot_collect:
+            plot_collect[geo_name] = []
+        plot_collect[geo_name].extend(geo_collect[geo_name])
+
+        for style_key, style_val in row_style.items():
+            if style_key not in geo_style:
+                geo_style[style_key] = []
+            style = [style_val for _ in range(len(geo_collect[geo_name]))]
+            geo_style[style_key].extend(style)
+
+def _plot_collection(ax, geoms_list, **style_kwds):
+    import json
+
+    style_iter = dict()
+    polygons_style = dict()
+    lines_style = dict()
+    points_style = dict()
+    for key, val in style_kwds.items():
+        try:
+            style_iter[key] = iter(val)
+        except TypeError:
+            polygons_style[key] = val
+            lines_style[key] = val
+            points_style[key] = val
+
+    plot_collect = dict()
+    for geo in geoms_list:
+        row_style = dict()
+        for key, val_iter in style_iter.items():
+            val = next(val_iter, None)
+            row_style[key] = val
+        if geo is not None:
+            geo_dict = json.loads(geo)
+            geo_collect = dict()
+            _flat_geoms(geo_dict, geo_collect)
+            _extend_collect('polygons', geo_collect, plot_collect, row_style, polygons_style)
+            _extend_collect('lines', geo_collect, plot_collect, row_style, lines_style)
+            _extend_collect('points', geo_collect, plot_collect, row_style, points_style)
 
     if 'polygons' in plot_collect:
         _plot_polygons(ax, plot_collect['polygons'], **style_kwds)
@@ -123,15 +160,14 @@ def _plot_collection(ax, plot_collect, **style_kwds):
         y = [p[1] for p in plot_collect['points']]
         _plot_points(ax, x, y, **style_kwds)
     ax.autoscale_view()
-    return None
 
 def _plot_pandas_series(ax, geoms, **style_kwds):
     import pandas.core.series
-    import json
 
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
-    if len(geoms) < 1:
+    len_geoms = len(geoms)
+    if len_geoms < 1:
         return None
     if isinstance(geoms[0], str):
         pass
@@ -141,13 +177,7 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
     else:
         raise RuntimeError(f"unexpected input type, {type(geoms[0])}")
 
-    plot_collect = dict()
-    for geo in geoms:
-        if geo is not None:
-            geo_dict = json.loads(geo)
-            _flat_geoms(geo_dict, plot_collect)
-
-    _plot_collection(ax, plot_collect, **style_kwds)
+    _plot_collection(ax, geoms, **style_kwds)
     return None
 
 def plot(ax, geoms, **style_kwds):
