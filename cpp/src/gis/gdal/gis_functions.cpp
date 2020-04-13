@@ -295,6 +295,19 @@ std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb
   return UnaryOp<arrow::StringBuilder>(wkb, op);
 }
 
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+  auto op = [](arrow::StringBuilder& builder, OGRGeometry* geo) {
+    char* str = geo->exportToJson();
+    if (str == nullptr) {
+      builder.AppendNull();
+    } else {
+      builder.Append(std::string(str));
+      CPLFree(str);
+    }
+  };
+  return UnaryOp<arrow::StringBuilder>(wkb, op);
+}
+
 /************************* GEOMETRY ACCESSOR **************************/
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& array) {
   auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* geo) {
