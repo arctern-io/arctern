@@ -73,7 +73,7 @@ def _flat_geoms(geo_dict, dict_collect):
         else:
             raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
-def _plot_collection(ax, plot_collect):
+def _plot_collection(ax, plot_collect, **style_kwds):
     if len(plot_collect) == 0:
         return None
 
@@ -105,7 +105,7 @@ def _plot_collection(ax, plot_collect):
     ax.autoscale_view()
     return None
 
-def _plot_pandas_series(ax, geoms):
+def _plot_pandas_series(ax, geoms, **style_kwds):
     import pandas.core.series
     import json
     if not isinstance(geoms, pandas.core.series.Series):
@@ -125,15 +125,15 @@ def _plot_pandas_series(ax, geoms):
         geo_dict = json.loads(geo)
         _flat_geoms(geo_dict, plot_collect)
 
-    _plot_collection(ax, plot_collect)
+    _plot_collection(ax, plot_collect, **style_kwds)
     return None
 
-def plot(ax, geoms):
+def plot(ax, geoms, **style_kwds):
     import pandas.core.series
     if isinstance(geoms, pandas.core.series.Series):
-        _plot_pandas_series(ax, geoms)
+        _plot_pandas_series(ax, geoms, **style_kwds)
     elif isinstance(geoms, pandas.core.frame.DataFrame):
         if len(geoms.columns) != 1:
             raise RuntimeError(f"The input param 'geoms' should have only one column. geoms schema = {geoms.columns}")
         geom_series = geoms[geoms. columns[0]]
-        _plot_pandas_series(ax, geom_series)
+        _plot_pandas_series(ax, geom_series, **style_kwds)

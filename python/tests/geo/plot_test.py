@@ -32,15 +32,17 @@ def test_plot1():
     arr_wkt = pandas.Series(raw_data)
     arr_wkb = arctern.ST_GeomFromText(arr_wkt)
 
-    if os.path.exists("/tmp/plot_test.png"):
-        os.remove("/tmp/plot_test.png")
+    file_name = "/tmp/test_plot1.png"
 
-    if os.path.exists("/tmp/plot_test.png"):
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
         assert False
 
     fig, ax = plt.subplots()
     arctern.plot(ax, arr_wkb)
-    fig.savefig("/tmp/plot_test.png")
-    file_size = os.path.getsize("/tmp/plot_test.png")
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
     assert 15 <= file_size <= 25
