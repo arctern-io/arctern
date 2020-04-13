@@ -172,9 +172,21 @@ DEVICE_RUNNABLE inline LineRelationResult SumLineOnLineString(int left_size,
   return total_relation;
 }
 
-DEVICE_RUNNABLE inline LineRelationResult LineRelateToLineString(
-    int left_size, const double2* left_points, int right_size,
-    const double2* right_points, KernelBuffer& buffer) {
+DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
+                                                           const double2* left_points,
+                                                           int right_size,
+                                                           const double2* right_points,
+                                                           KernelBuffer& buffer) {
+  if (left_size == 0) {
+    if (right_size == 0) {
+      return Matrix("FFFFFFFF*");
+    } else {
+      return Matrix("FFFFFF01*");
+    }
+  }
+  if (right_size == 0) {
+    return Matrix("FF0FF1FF");
+  }
   assert(left_size >= 2);
   assert(right_size >= 2);
   // left boundary
@@ -199,34 +211,83 @@ DEVICE_RUNNABLE inline LineRelationResult LineRelateToLineString(
   assert(IE_relation.cross_count == EI_relation.cross_count);
   assert(IE_relation.CC == EI_relation.CC);
   using State = de9im::Matrix::State;
-  State II;
+  Matrix matrix;
   switch (IE_relation.CC) {
     case -1: {
-      II = State::kFalse;
+      matrix->II = State::kFalse;
       break;
     }
     case 0: {
       auto II_count = IE_relation.cross_count - BC_count - CB_count + BB_count;
-      II = II_count ? State::kDimensionZero : State::kFalse;
+      matrix->II = II_count ? State::kDimensionZero : State::kFalse;
       break;
     }
     case 1: {
-      II = State::kDimensionOne;
+      matrix->II = State::kDimensionOne;
       break;
     }
     default: {
+      matrix->II = State::kInvalid;
       assert(false);
     }
   }
-  State BI = BC_count - BB_count ? State::kDimensionZero : State::kFalse;
-  State IB = CB_count - BB_count ? State::kDimensionZero : State::kFalse;
-  State IE = !IE_relation.is_coveredby ? State::kTrueGeneric: State::kFalse;
-  State EI = !EI_relation.is_coveredby ? State::kTrueGeneric: State::kFalse;
-  State BE = !BC_count ? State::kDimensionZero: State::kFalse;
-  State EB = !CB_count ? State::kDimensionZero: State::kFalse;
+  matrix->BI = BC_count - BB_count ? State::kDimensionZero : State::kFalse;
+  matrix->IB = CB_count - BB_count ? State::kDimensionZero : State::kFalse;
+  matrix->IE = !IE_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
+  matrix->EI = !EI_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
+  matrix->BE = !BC_count ? State::kDimensionZero : State::kFalse;
+  matrix->EB = !CB_count ? State::kDimensionZero : State::kFalse;
 
+  return matrix;
+}
 
-  return LineRelationResult{};
+DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_size,
+                                               const double2* right_points) {
+  if (right_size == 0) {
+    return Matrix("FFFFFFFF*");
+  }
+
+  if (right_size == 1) {
+    //    auto right_point = right_points[0];
+    //    auto is_eq = IsEqual(left_point, right_point);
+    //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
+    return de9im::INVALID_MATRIX;
+  }
+
+  assert(right_size >= 2);
+  Matrix mat;
+
+  using Position = Matrix::Position;
+  //  using State = Matrix::State;
+
+  auto cross_count = PointOnLineString(left_point, right_size, right_points);
+
+  // endpoints
+  auto ep0 = right_points[0];
+  auto ep1 = right_points[right_size - 1];
+  int boundary_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
+
+  if (right_size == 2) {
+    boundary_count = min(boundary_count, 1);
+  }
+
+  cross_count -= boundary_count;
+  assert(cross_count >= 0);
+  if (cross_count > 0) {
+    mat.set_col<Position::kI>("0F0");
+    mat.set_col<Position::kE>("FF*");
+  } else {
+    mat.set_col<Position::kI>("FF0");
+    mat.set_col<Position::kE>("0F*");
+  }
+
+  if (boundary_count > 0) {
+    mat.set_col<Position::kB>("0FF");
+  } else {
+    mat.set_col<Position::kB>("FF0");
+  }
+
+  return mat;
 }
 
 }  // namespace cuda

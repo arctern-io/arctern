@@ -9,9 +9,9 @@ namespace de9im {
 class Matrix {
  public:
   enum class Position : uint8_t {
-    kI = 0,
-    kB = 1,
-    kE = 2,
+    kI = 0,  // Interior
+    kB = 1,  // Boundary
+    kE = 2,  // Exterior
   };
   enum class State : char {
     kInvalid = 0,
@@ -26,9 +26,7 @@ class Matrix {
     kComputeTrueFalse = '?',
     kComputeDimension = 'n'
   };
-  Matrix() = default;
 
-  DEVICE_RUNNABLE static inline State toState(char ch) { return static_cast<State>(ch); }
   struct NamedStates {
     State II;
     State IB;
@@ -40,10 +38,17 @@ class Matrix {
     State EB;
   };
 
+ public:
+  DEVICE_RUNNABLE constexpr Matrix() : states_{State::kInvalid} {}
+
+  DEVICE_RUNNABLE static constexpr State toState(char ch) {
+    return static_cast<State>(ch);
+  }
+
   DEVICE_RUNNABLE constexpr Matrix(NamedStates named_states)
       : named_states_(named_states) {}
 
-  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) {
+  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) : states_() {
     assert(text[8] == '*');
     for (int i = 0; i < 8; i++) {
       states_[i] = toState(text[i]);
@@ -90,11 +95,11 @@ class Matrix {
 
  private:
   union {
-    State states_[8] = {State::kInvalid};
+    State states_[8];
     NamedStates named_states_;
-    uint32_t payload;
+    uint64_t payload;  // for alignment
   };
 };
-constexpr Matrix INVALID_MATRIX = {};
+constexpr Matrix INVALID_MATRIX;
 
 }  // namespace de9im

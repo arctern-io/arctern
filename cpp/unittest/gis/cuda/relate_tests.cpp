@@ -99,7 +99,7 @@ TEST(Relation, LineRelateToLineString) {
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
        lrr{1, true, -100}},
   };
-  for (auto index = 0; index < datas.size(); ++index) {
+ for (auto index = 0; index < datas.size(); ++index) {
     auto data = datas[index];
     auto size = data.lnstr.size();
     assert(size % 2 == 0);
@@ -114,4 +114,8 @@ TEST(Relation, LineRelateToLineString) {
       ASSERT_EQ(result.cross_count, ref.cross_count) << index;
     }
   }
+}
+
+TEST(Relation, LineRelateToLIneString) {
+
 }

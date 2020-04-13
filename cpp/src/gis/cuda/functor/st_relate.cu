@@ -11,80 +11,6 @@ namespace cuda {
 using ConstIter = ConstGpuContext::ConstIter;
 using de9im::Matrix;
 
-DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_size,
-                                               const double2* right_points) {
-  if (right_size == 0) {
-    return Matrix("FFFFFFFF*");
-  }
-
-  if (right_size == 1) {
-    //    auto right_point = right_points[0];
-    //    auto is_eq = IsEqual(left_point, right_point);
-    //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
-    return de9im::INVALID_MATRIX;
-  }
-
-  assert(right_size >= 2);
-  Matrix mat;
-
-  using Position = Matrix::Position;
-  using State = Matrix::State;
-
-  auto cross_count = PointOnLineString(left_point, right_size, right_points);
-
-  // endpoints
-  auto ep0 = right_points[0];
-  auto ep1 = right_points[right_size - 1];
-  int boundary_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
-
-  if (right_size == 2) {
-    boundary_count = min(boundary_count, 1);
-  }
-
-  cross_count -= boundary_count;
-  assert(cross_count >= 0);
-  if (cross_count > 0) {
-    mat.set_col<Position::kI>("0F0");
-    mat.set_col<Position::kE>("FF*");
-  } else {
-    mat.set_col<Position::kI>("FF0");
-    mat.set_col<Position::kE>("0F*");
-  }
-
-  if (boundary_count > 0) {
-    mat.set_col<Position::kB>("0FF");
-  } else {
-    mat.set_col<Position::kB>("FF0");
-  }
-
-  return mat;
-}
-
-DEVICE_RUNNABLE Matrix LineStringRelateToLineString(int size, ConstIter& left_iter,
-                                                    ConstIter& right_iter) {
-  //
-
-  auto left_size = left_iter.read_meta<int>();
-  auto left_points = left_iter.read_value_ptr<double2>(left_size);
-
-  auto right_size = left_iter.read_meta<int>();
-  auto right_points = left_iter.read_value_ptr<double2>(right_size);
-
-  if (left_size == 0) {
-    if (right_size == 0) {
-      return Matrix("FFFFFFFF*");
-    } else {
-      return Matrix("FFFFFF01*");
-    }
-  }
-  if (right_size == 0) {
-    return Matrix("FF0FF1FF");
-  }
-
-  return de9im::INVALID_MATRIX;
-}
-
-// ops:
 DEVICE_RUNNABLE Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
                                      ConstIter& right_iter, Matrix matrix_hint) {
   (void)matrix_hint;  // ignore
@@ -117,9 +43,7 @@ DEVICE_RUNNABLE Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
 }
 
 DEVICE_RUNNABLE Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag,
-                                          ConstIter& right_iter, Matrix matrix_hint) {
-  (void)matrix_hint;  // ignore
-                      //  auto right_tag = right.get_tag(index);
+                                          ConstIter& right_iter, KernelBuffer& buffer) {
   assert(right_tag.get_space_type() == WkbSpaceType::XY);
 
   auto left_size = left_iter.read_meta<int>();
@@ -135,7 +59,8 @@ DEVICE_RUNNABLE Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag
     case WkbCategory::kLineString: {
       auto right_size = right_iter.read_meta<int>();
       auto right_points = right_iter.read_value_ptr<double2>(right_size);
-
+      result = LineStringRelateToLineString(left_size, left_points, right_size,
+                                            right_points, buffer);
       break;
     }
     default: {
@@ -177,8 +102,8 @@ DEVICE_RUNNABLE Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
 }
 
 __global__ void ST_RelateImpl(ConstGpuContext left, ConstGpuContext right,
-                                     de9im::Matrix input_matrix,
-                                     de9im::Matrix* output_matrixes) {
+                              de9im::Matrix input_matrix,
+                              de9im::Matrix* output_matrixes) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < left.size) {
     output_matrixes[index] = RelateOp(left, right, input_matrix, index);
