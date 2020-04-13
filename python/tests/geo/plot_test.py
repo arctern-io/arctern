@@ -70,3 +70,28 @@ def test_plot2():
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
     assert 10 <= file_size <= 15
+
+def test_plot3():
+    raw_data = []
+    raw_data.append('linestring(0 0, 5 5, 10 10)')
+    raw_data.append('linestring(0 10, 5 5, 10 0)')
+    raw_data.append('linestring(0 1, 5 6, 10 11)')
+    raw_data.append('linestring(0 11, 5 6, 10 1)')
+
+    arr_wkt = pandas.Series(raw_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+
+    file_name = "/tmp/test_plot3.png"
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
+        assert False
+
+    fig, ax = plt.subplots()
+    arctern.plot(ax, arr_wkb, color=['green', 'red', 'black', 'orange'], linewidths=[5,6,7,8], linestyle=['solid','dashed','dashdot','dotted'])
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
+    file_size = file_size / 1024
+    print(file_size)
