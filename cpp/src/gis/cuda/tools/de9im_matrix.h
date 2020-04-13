@@ -60,8 +60,8 @@ class Matrix {
     states_[index] = state;
   }
 
-  DEVICE_RUNNABLE NamedStates& named_ref() { return named_states_; }
-  DEVICE_RUNNABLE const NamedStates& named_ref() const { return named_states_; }
+  DEVICE_RUNNABLE NamedStates* operator->() { return &named_states_; }
+  DEVICE_RUNNABLE const NamedStates* operator->() const { return &named_states_; }
 
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
