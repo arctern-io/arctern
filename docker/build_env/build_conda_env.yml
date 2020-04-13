@@ -8,3 +8,5 @@ dependencies:
 - conda-forge::pytest=5.3.5
 - conda-forge::pylint=2.4.4
 - conda-forge::opencv=4.2
+- conda-forge::matplotlib=3.2.1
+- conda-forge::descartes=1.1.0
