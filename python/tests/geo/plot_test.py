@@ -121,10 +121,11 @@ def test_plot4():
     arctern.plot(ax, arr_wkb, \
         edgecolor=['green', 'red', 'black', 'orange'], \
         linewidth=[5, 6, 7, 8], \
-        linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
+        linestyle=['solid', 'dashed', 'dashdot', 'dotted'], \
+        facecolor=['red', 'black', 'orange', 'green'])
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
     print(file_size)
-    # assert 30 <= file_size <= 50
+    assert 10 <= file_size <= 20
