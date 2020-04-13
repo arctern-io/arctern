@@ -27,8 +27,9 @@ API = Blueprint('app_api', __name__)
 
 @API.errorhandler(Exception)
 def exception_handler(e):
-    response = make_response(e.message)
+    response = make_response(str(e))
     response.status_code = 400
+    log.INSTANCE.info('exception: {}'.format(str(e)))
     return response
 
 def load_data(content):
