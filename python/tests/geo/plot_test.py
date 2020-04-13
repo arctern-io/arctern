@@ -42,6 +42,7 @@ def test_plot1():
 
     fig, ax = plt.subplots()
     arctern.plot(ax, arr_wkb)
+    ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
@@ -66,6 +67,7 @@ def test_plot2():
 
     fig, ax = plt.subplots()
     arctern.plot(ax, arr_wkb, color=['red', 'blue', 'black'], marker='^', markersize=100)
+    ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
@@ -90,7 +92,8 @@ def test_plot3():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot(ax, arr_wkb, color=['green', 'red', 'black', 'orange'], linewidths=[5,6,7,8], linestyle=['solid','dashed','dashdot','dotted'])
+    arctern.plot(ax, arr_wkb, color=['green', 'red', 'black', 'orange'], linewidths=[5, 6, 7, 8], linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
+    ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024

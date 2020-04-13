@@ -122,7 +122,7 @@ def _plot_collection(ax, plot_collect, **style_kwds):
         collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
         ax.add_collection(collection, autolim=True)
     if 'lines' in plot_collect:
-        _plot_lines(ax, plot_collect['lines'])
+        _plot_lines(ax, plot_collect['lines'], **style_kwds)
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
