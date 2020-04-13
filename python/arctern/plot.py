@@ -63,15 +63,7 @@ def _flat_geoms(geo_dict, dict_collect):
     elif geo_dict['type'] == 'Point' or geo_dict['type'] == 'MultiPoint':
         _flat_point(geo_dict, dict_collect)
     else:
-        from osgeo import ogr
-        geo = ogr.CreateGeometryFromJson(json.dumps(geo_dict))
-        if geo.HasCurveGeometry():
-            geo = geo.GetLinearGeometry()
-            geo = geo.ExportToJson()
-            geo = json.loads(geo)
-            _flat_geoms(geo, dict_collect)
-        else:
-            raise RuntimeError(f"unsupported geometry: {geo_dict}")
+        raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
 def _get_attr(attr_list, **style_kwds):
     attr_val = dict()

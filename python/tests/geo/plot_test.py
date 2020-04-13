@@ -136,7 +136,7 @@ def test_plot5():
     raw_data.append('circularstring(-1 -1, 1 1, -1 -1)')
 
     arr_wkt = pandas.Series(raw_data)
-    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+    arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
 
     file_name = "/tmp/test_plot5.png"
 
