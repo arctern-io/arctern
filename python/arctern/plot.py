@@ -80,7 +80,19 @@ def _get_attr(attr_list, **style_kwds):
             attr_val[attr] = style_kwds[attr]
     return attr_val
 
-def _plot_point(ax, x, y, **style_kwds):
+def _plot_lines(ax, lines, **style_kwds):
+    try:
+        from matplotlib.collections import LineCollection
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+        )
+    attr = _get_attr(['color', 'linewidths', 'linestyles'], **style_kwds)
+    collection = LineCollection(lines, **style_kwds)
+    ax.add_collection(collection, autolim=True)
+
+def _plot_points(ax, x, y, **style_kwds):
     attr = _get_attr(['color', 'marker'], **style_kwds)
     if 'markersize' in style_kwds:
         attr['s'] = style_kwds['markersize']
@@ -114,7 +126,7 @@ def _plot_collection(ax, plot_collect, **style_kwds):
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
-        _plot_point(ax, x, y, **style_kwds)
+        _plot_points(ax, x, y, **style_kwds)
     ax.autoscale_view()
     return None
 
