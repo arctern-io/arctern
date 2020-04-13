@@ -21,7 +21,7 @@ def _flat_line(geo_dict, dict_collect):
     import numpy as np
     if geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
-            line_arry = np.zeros([len(line), 2])
+            line_arry = np.zeros([len(line), 2], dtype=np.double)
             idx = 0
             for coor in line:
                 line_arry[idx, 0] = coor[0]
@@ -31,7 +31,7 @@ def _flat_line(geo_dict, dict_collect):
                 dict_collect['lines'] = []
             dict_collect['lines'].append(line_arry)
     elif geo_dict['type'] == 'LineString':
-        line_arry = np.zeros([len(geo_dict['coordinates']), 2])
+        line_arry = np.zeros([len(geo_dict['coordinates']), 2], dtype=np.double)
         idx = 0
         for coor in geo_dict['coordinates']:
             line_arry[idx, 0] = coor[0]
