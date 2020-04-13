@@ -84,7 +84,7 @@ TEST(Relation, LineRelateToLineString) {
   vector<Data> datas{
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
       {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
-          lrr{1, true, -100}},
+       lrr{1, true, -100}},
       {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, lrr{0, false, 2}},
       {vd{0, 0, 0, 1}, vd{0, 0, 2, 3}, lrr{0, false, 1}},
@@ -105,8 +105,8 @@ TEST(Relation, LineRelateToLineString) {
     assert(size % 2 == 0);
     size /= 2;
     cu::KernelBuffer buffer;
-    auto result = cu::LineOnLineString((double2*)data.line.data(), size,
-                                       (double2*)data.lnstr.data(), buffer);
+    auto result = cu::LineOnLineString((const double2*)data.line.data(), size,
+                                       (const double2*)data.lnstr.data(), buffer);
     auto ref = data.std_result;
     ASSERT_EQ(result.II, ref.II) << index;
     ASSERT_EQ(result.is_coveredby, ref.is_coveredby) << index;
