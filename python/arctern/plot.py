@@ -81,7 +81,7 @@ def _plot_point(ax, x, y, **style_kwds):
     if 'marker' in style_kwds:
         args['marker'] = style_kwds['marker']
     if 'markersize' in style_kwds:
-        args['markersize'] = style_kwds['markersize']
+        args['c'] = style_kwds['markersize']
     ax.scatter(x, y, *args)
 
 def _plot_collection(ax, plot_collect, **style_kwds):
