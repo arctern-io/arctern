@@ -65,7 +65,7 @@ def test_plot2():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot(ax, arr_wkb)
+    arctern.plot(ax, arr_wkb, **{'color':'blue','marker':'^','s':100})
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
