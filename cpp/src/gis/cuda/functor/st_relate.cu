@@ -44,17 +44,17 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   cross_count -= boundary_count;
   assert(cross_count >= 0);
   if (cross_count > 0) {
-    mat.set_col<Position::kInterier>("0F0");
-    mat.set_col<Position::kExterier>("FF*");
+    mat.set_col<Position::kI>("0F0");
+    mat.set_col<Position::kE>("FF*");
   } else {
-    mat.set_col<Position::kInterier>("FF0");
-    mat.set_col<Position::kExterier>("0F*");
+    mat.set_col<Position::kI>("FF0");
+    mat.set_col<Position::kE>("0F*");
   }
 
   if (boundary_count > 0) {
-    mat.set_col<Position::kBoundry>("0FF");
+    mat.set_col<Position::kB>("0FF");
   } else {
-    mat.set_col<Position::kBoundry>("FF0");
+    mat.set_col<Position::kB>("FF0");
   }
 
   return mat;

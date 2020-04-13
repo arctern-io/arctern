@@ -8,7 +8,8 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 struct LineRelationResult {
-  int II;             // dimension of II
+  // C(losure) is union(I, B), or complement of E
+  int CC;             // dimension of RR
   bool is_coveredby;  // is line coveredby LineString
   int cross_count;
 };

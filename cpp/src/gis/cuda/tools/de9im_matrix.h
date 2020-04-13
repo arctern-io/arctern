@@ -8,9 +8,13 @@
 namespace de9im {
 class Matrix {
  public:
-  enum class Position : uint8_t { kInterier = 0, kBoundry = 1, kExterier = 2 };
+  enum class Position : uint8_t {
+    kI = 0,
+    kB = 1,
+    kE = 2,
+  };
   enum class State : char {
-    kInvalid = '@',
+    kInvalid = 0,
 
     kIgnored = '*',
     kFalse = 'F',
@@ -25,6 +29,19 @@ class Matrix {
   Matrix() = default;
 
   DEVICE_RUNNABLE static inline State toState(char ch) { return static_cast<State>(ch); }
+  struct NamedStates {
+    State II;
+    State IB;
+    State IE;
+    State BI;
+    State BB;
+    State BE;
+    State EI;
+    State EB;
+  };
+
+  DEVICE_RUNNABLE constexpr Matrix(NamedStates named_states)
+      : named_states_(named_states) {}
 
   DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) {
     assert(text[8] == '*');
@@ -43,20 +60,23 @@ class Matrix {
     states_[index] = state;
   }
 
+  DEVICE_RUNNABLE NamedStates& named_ref() { return named_states_; }
+  DEVICE_RUNNABLE const NamedStates& named_ref() const { return named_states_; }
+
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
     assert(text[3] == '\0');
-    set<row, Position::kInterier>(toState(text[0]));
-    set<row, Position::kBoundry>(toState(text[1]));
-    set<row, Position::kExterier>(toState(text[2]));
+    set<row, Position::kI>(toState(text[0]));
+    set<row, Position::kB>(toState(text[1]));
+    set<row, Position::kE>(toState(text[2]));
   }
 
   template <Position col>
   DEVICE_RUNNABLE void set_col(const char* text) {
     assert(text[3] == '\0');
-    set<Position::kInterier, col>(toState(text[0]));
-    set<Position::kBoundry, col>(toState(text[1]));
-    set<Position::kExterier, col>(toState(text[2]));
+    set<Position::kI, col>(toState(text[0]));
+    set<Position::kB, col>(toState(text[1]));
+    set<Position::kE, col>(toState(text[2]));
   }
 
   DEVICE_RUNNABLE Matrix transpose() const {
@@ -69,7 +89,11 @@ class Matrix {
   }
 
  private:
-  State states_[8] = {State::kInvalid};
+  union {
+    State states_[8] = {State::kInvalid};
+    NamedStates named_states_;
+    uint32_t payload;
+  };
 };
 constexpr Matrix INVALID_MATRIX = {};
 

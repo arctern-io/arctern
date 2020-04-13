@@ -108,7 +108,7 @@ TEST(Relation, LineRelateToLineString) {
     auto result = cu::LineOnLineString((const double2*)data.line.data(), size,
                                        (const double2*)data.lnstr.data(), buffer);
     auto ref = data.std_result;
-    ASSERT_EQ(result.II, ref.II) << index;
+    ASSERT_EQ(result.CC, ref.CC) << index;
     ASSERT_EQ(result.is_coveredby, ref.is_coveredby) << index;
     if (ref.cross_count != -100) {
       ASSERT_EQ(result.cross_count, ref.cross_count) << index;

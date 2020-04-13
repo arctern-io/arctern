@@ -88,12 +88,15 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   // this is to avoid too many allocations
   thrust::optional<thrust::pair<double, double>> first_item;
 
+  // project left line to 0->1
   auto lv0 = to_complex(line_endpoints[0]);
   auto lv1 = to_complex(line_endpoints[0 + 1]) - lv0;
   LineRelationResult result{-1, false, 0};
   for (int right_index = 0; right_index < right_size - 1; ++right_index) {
+    // do similiar projection
     auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
     auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
+    // if projected complex nums are at x axis
     if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
       auto r0 = rv0.real();
       auto r1 = rv1.real();
@@ -101,23 +104,25 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
         // outside, just check endpoints
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
-          result.II = max(result.II, 0);
-        }
-        if (r1 == 0 || r1 == 1) {
+          result.CC = max(result.CC, 0);
+        } else if (r1 == 0 || r1 == 1) {
           ++result.cross_count;
-          result.II = max(result.II, 0);
+          result.CC = max(result.CC, 0);
         }
       } else {
+        // at least intersect
         auto rmin = min(r0, r1);
         auto rmax = max(r0, r1);
-        // at least intersect, no need for cross_count
-        result.II = 1;
+        result.CC = 1;
+        // check if overlap
         if (rmin <= 0 && 1 <= rmax) {
           result.is_coveredby = true;
           break;
         } else {
+          // false negative since multiple segments can be combined
           if (!result.is_coveredby) {
             auto item = thrust::make_pair(rmin, rmax);
+            // first_item lazy push, so common cases won't cost memory allocation
             if (!first_item.has_value()) {
               first_item = item;
             } else {
@@ -127,15 +132,17 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
         }
       }
     } else if (rv0.imag() * rv1.imag() <= 0) {
+      // cross/touch the x axis, so check intersect point
       auto proj =
           (rv0.real() * rv1.imag() - rv0.real() * rv0.imag()) / (rv1.imag() - rv0.imag());
       if (0 <= proj && proj <= 1) {
-        result.II = max(result.II, 0);
+        result.CC = max(result.CC, 0);
         ++result.cross_count;
       }
     }
   }
 
+  // if container has value
   if (!result.is_coveredby && ranges_buffer.size() != 0) {
     assert(first_item.has_value());
     ranges_buffer.push_back(first_item.value_or(thrust::make_pair(0.0, 0.0)));
@@ -146,12 +153,80 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   return result;
 }
 
-DEVICE_RUNNABLE inline de9im::Matrix LineStringRelateToLineString(
-    int left_size, const double2* left_points, int right_size,
-    const double2* right_points) {
+// return sum result of lineOnlineString
+DEVICE_RUNNABLE inline LineRelationResult SumLineOnLineString(int left_size,
+                                                              const double2* left_points,
+                                                              int right_size,
+                                                              const double2* right_points,
+                                                              KernelBuffer& buffer) {
   assert(left_size >= 2);
   assert(right_size >= 2);
-  return de9im::INVALID_MATRIX;
+  LineRelationResult total_relation{-1, true, 0};
+  for (auto index = 0; index < left_size - 1; ++index) {
+    auto left_ptr = reinterpret_cast<const double2*>(left_points + index);
+    auto relation = LineOnLineString(left_ptr, right_size, right_points, buffer);
+    total_relation.CC = max(total_relation.CC, relation.CC);
+    total_relation.is_coveredby = total_relation.is_coveredby && relation.is_coveredby;
+    total_relation.cross_count = total_relation.cross_count + relation.cross_count;
+  }
+  return total_relation;
+}
+
+DEVICE_RUNNABLE inline LineRelationResult LineRelateToLineString(
+    int left_size, const double2* left_points, int right_size,
+    const double2* right_points, KernelBuffer& buffer) {
+  assert(left_size >= 2);
+  assert(right_size >= 2);
+  // left boundary
+  auto left_b = thrust::make_pair(left_points[0], left_points[left_size - 1]);
+  auto right_b = thrust::make_pair(right_points[0], right_points[right_size - 1]);
+  // boundary to boundary
+  int BB_count = 0;
+  BB_count += IsEqual(left_b.first, right_b.first);
+  BB_count += IsEqual(left_b.first, right_b.second);
+  BB_count += IsEqual(left_b.second, right_b.first);
+  BB_count += IsEqual(left_b.second, right_b.second);
+  // boundary to linestring
+  auto BC_count = PointOnLineString(left_b.first, right_size, right_points) +
+                  PointOnLineString(left_b.second, right_size, right_points);
+  auto CB_count = PointOnLineString(right_b.first, left_size, left_points) +
+                  PointOnLineString(right_b.second, left_size, left_points);
+  auto IE_relation =
+      SumLineOnLineString(left_size, left_points, right_size, right_points, buffer);
+
+  auto EI_relation =
+      SumLineOnLineString(right_size, right_points, left_size, left_points, buffer);
+  assert(IE_relation.cross_count == EI_relation.cross_count);
+  assert(IE_relation.CC == EI_relation.CC);
+  using State = de9im::Matrix::State;
+  State II;
+  switch (IE_relation.CC) {
+    case -1: {
+      II = State::kFalse;
+      break;
+    }
+    case 0: {
+      auto II_count = IE_relation.cross_count - BC_count - CB_count + BB_count;
+      II = II_count ? State::kDimensionZero : State::kFalse;
+      break;
+    }
+    case 1: {
+      II = State::kDimensionOne;
+      break;
+    }
+    default: {
+      assert(false);
+    }
+  }
+  State BI = BC_count - BB_count ? State::kDimensionZero : State::kFalse;
+  State IB = CB_count - BB_count ? State::kDimensionZero : State::kFalse;
+  State IE = !IE_relation.is_coveredby ? State::kTrueGeneric: State::kFalse;
+  State EI = !EI_relation.is_coveredby ? State::kTrueGeneric: State::kFalse;
+  State BE = !BC_count ? State::kDimensionZero: State::kFalse;
+  State EB = !CB_count ? State::kDimensionZero: State::kFalse;
+
+
+  return LineRelationResult{};
 }
 
 }  // namespace cuda
