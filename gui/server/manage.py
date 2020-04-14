@@ -24,8 +24,8 @@ import json
 from flask import Flask
 from flask_cors import CORS
 
-from app import service as app_service
-from app.common import log
+from server.app import service as app_service
+from server.app.common import log
 
 APP = Flask(__name__)
 
@@ -49,7 +49,8 @@ def usage():
     print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+def main(argv):
     IS_DEBUG = True
     IP = "0.0.0.0"
     PORT = 8080
@@ -66,7 +67,7 @@ if __name__ == '__main__':
     }
 
     try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
+        OPTS, ARGS = getopt.getopt(argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         usage()
