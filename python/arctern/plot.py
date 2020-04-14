@@ -12,13 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import numpy as np
+try:
+    from descartes.patch import PolygonPatch
+except ImportError:
+    raise ImportError(
+        "The descartes package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' "
+    )
+try:
+    from matplotlib.collections import PatchCollection
+    from matplotlib.colors import is_color_like
+    from matplotlib.collections import LineCollection
+except ImportError:
+    raise ImportError(
+        "The matplotlib package is required for plotting polygons in geopandas. "
+        "You can install it using 'conda install -c conda-forge descartes' "
+    )
+
 def _flat_polygon(geo_dict, dict_collect):
     if 'polygons' not in dict_collect:
         dict_collect['polygons'] = []
     dict_collect['polygons'].append(geo_dict)
 
 def _flat_line(geo_dict, dict_collect):
-    import numpy as np
     if geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
             line_arry = np.zeros([len(line), 2], dtype=np.double)
@@ -73,33 +90,12 @@ def _get_attr(attr_list, **style_kwds):
     return attr_val
 
 def _plot_polygons(ax, polygons, **style_kwds):
-    try:
-        from descartes.patch import PolygonPatch
-    except ImportError:
-        raise ImportError(
-            "The descartes package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
-    try:
-        from matplotlib.collections import PatchCollection
-    except ImportError:
-        raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
     attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
     collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
     ax.add_collection(collection, autolim=True)
 
 # value for linestyles : solid|dashed|dashdot|dotted
 def _plot_lines(ax, lines, **style_kwds):
-    try:
-        from matplotlib.collections import LineCollection
-    except ImportError:
-        raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
     attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
     collection = LineCollection(lines, **attr)
     ax.add_collection(collection, autolim=True)
@@ -130,12 +126,17 @@ def _plot_collection(ax, geoms_list, **style_kwds):
     lines_style = dict()
     points_style = dict()
     for key, val in style_kwds.items():
-        try:
-            style_iter[key] = iter(val)
-        except TypeError:
+        if isinstance(val, (str, int, float)):
             polygons_style[key] = val
             lines_style[key] = val
             points_style[key] = val
+        else:
+            try:
+                style_iter[key] = iter(val)
+            except TypeError:
+                polygons_style[key] = val
+                lines_style[key] = val
+                points_style[key] = val
 
     plot_collect = dict()
     for geo in geoms_list:
@@ -143,6 +144,7 @@ def _plot_collection(ax, geoms_list, **style_kwds):
         for key, val_iter in style_iter.items():
             val = next(val_iter, None)
             row_style[key] = val
+
         if geo is not None:
             geo_dict = json.loads(geo)
             geo_collect = dict()
@@ -152,13 +154,13 @@ def _plot_collection(ax, geoms_list, **style_kwds):
             _extend_collect('points', geo_collect, plot_collect, row_style, points_style)
 
     if 'polygons' in plot_collect:
-        _plot_polygons(ax, plot_collect['polygons'], **style_kwds)
+        _plot_polygons(ax, plot_collect['polygons'], **polygons_style)
     if 'lines' in plot_collect:
-        _plot_lines(ax, plot_collect['lines'], **style_kwds)
+        _plot_lines(ax, plot_collect['lines'], **lines_style)
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
-        _plot_points(ax, x, y, **style_kwds)
+        _plot_points(ax, x, y, **points_style)
     ax.autoscale_view()
 
 def _plot_pandas_series(ax, geoms, **style_kwds):
