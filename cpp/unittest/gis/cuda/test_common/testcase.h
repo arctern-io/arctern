@@ -9,8 +9,7 @@
 namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
-0_0_0_3,0_0_0_1_1_1_0_2_0_3,FFFFFFFF*
-0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
+0_0_0_3,0_0_0_1_1_1_0_2_0_3,1F1F0F1F*
 0_0_0_1,0_1_0_2,FFFFFFFF*
 0_0_0_1,0_0_2_1_-2_0,FFFFFFFF*
 0_0_0_1,0_0_2_3,FFFFFFFF*
@@ -22,7 +21,9 @@ constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0_0_0_1,0_0_0_1,FFFFFFFF*
 0_0_0_3,0_0_0_1_0_2_0_3,FFFFFFFF*
 0_0_0_3,0_0_0_2_0_1_0_3,FFFFFFFF*
-0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*)";
+0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
+0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*
+)";
 }  // namespace datasource
 
 using std::string;
@@ -71,7 +72,11 @@ inline vector<vector<string>> GetTableFromCsv(const string& csv_raw) {
   auto lines = SplitString(csv_raw, '\n');
   vector<vector<string>> table;
   for (auto& line : lines) {
-    table.emplace_back(SplitString(line, ','));
+    auto vec = SplitString(line, ',');
+    if(vec.size() == 0) {
+      continue;
+    }
+    table.emplace_back(vec);
   }
   return table;
 }

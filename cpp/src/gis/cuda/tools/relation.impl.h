@@ -237,6 +237,7 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   matrix->EI = !EI_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
   matrix->BE = !BC_count ? State::kDimensionZero : State::kFalse;
   matrix->EB = !CB_count ? State::kDimensionZero : State::kFalse;
+  matrix->BB = BB_count ? State::kDimensionZero : State::kFalse;
 
   return matrix;
 }
