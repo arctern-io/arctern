@@ -16,6 +16,7 @@ import pandas
 from osgeo import ogr
 import arctern
 
+
 def test_ST_IsValid():
     data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
     rst = arctern.ST_IsValid(arctern.ST_GeomFromText(data))
@@ -101,6 +102,16 @@ def test_ST_GeomFromGeoJSON():
     assert str_ptr[0] == "POINT (1 2)"
     assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
     assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+
+def test_ST_AsGeoJSON():
+    j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
+    j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
+    j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
+    data = pandas.Series([j0, j1, j2])
+    str_ptr = arctern.ST_AsGeoJSON(arctern.ST_GeomFromGeoJSON(data))
+    assert str_ptr[0] == '{ "type": "Point", "coordinates": [ 1.0, 2.0 ] }'
+    assert str_ptr[1] == '{ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] }'
+    assert str_ptr[2] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
 
 def test_ST_GeomFromText():
     p0 = "POINT (1 2)"
