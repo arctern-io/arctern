@@ -18,4 +18,5 @@ from setuptools import find_packages, setup
 setup(
     name="server",
     packages=find_packages(),
+    data_files=['server/data/0_5M_nyc_taxi_and_building.csv', 'server/data/account.db']
 )

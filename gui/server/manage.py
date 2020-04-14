@@ -49,7 +49,6 @@ def usage():
     print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
-# if __name__ == '__main__':
 def main(argv):
     IS_DEBUG = True
     IP = "0.0.0.0"
@@ -111,3 +110,9 @@ def main(argv):
     else:
         APP.debug = True
         APP.run(host=IP, port=PORT)
+
+
+
+if __name__ == '__main__':
+    main(sys.argv)
+
