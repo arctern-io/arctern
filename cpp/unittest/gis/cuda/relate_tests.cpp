@@ -188,7 +188,7 @@ TEST(Relation, LineStringRelateToLineString) {
       auto matrix =
           cu::LineStringRelateToLineString(data.left.size(), data.left.data(),
                                            data.right.size(), data.right.data(), buffer);
-      ASSERT_EQ(matrix, data.std_matrix);
+      ASSERT_EQ(matrix, data.std_matrix) << index;
     }
   }
 }
