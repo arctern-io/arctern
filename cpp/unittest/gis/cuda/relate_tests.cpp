@@ -3,6 +3,7 @@
 #include "gis/cuda/tools/relation.h"
 using std::vector;
 namespace cu = arctern::gis::cuda;
+using cu::Matrix;
 
 TEST(Relation, IsPointInLine) {
   struct Data {
@@ -70,10 +71,10 @@ TEST(Relation, LineRelateToLineString) {
     vector<double> lnstr;
     cu::LineRelationResult std_result;
   };
-  thrust::complex<double> scale_factor;
-  auto scale = [&scale_factor](double* ptr) {
+  thrust::complex<double> control_scale_factor;
+  auto scale = [&control_scale_factor](double* ptr) {
     thrust::complex<double> raw(ptr[0], ptr[1]);
-    auto tmp = scale_factor * raw;
+    auto tmp = control_scale_factor * raw;
     ptr[0] = tmp.real();
     ptr[1] = tmp.imag();
   };
@@ -99,23 +100,156 @@ TEST(Relation, LineRelateToLineString) {
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
        lrr{1, true, -100}},
   };
- for (auto index = 0; index < datas.size(); ++index) {
-    auto data = datas[index];
-    auto size = data.lnstr.size();
-    assert(size % 2 == 0);
-    size /= 2;
-    cu::KernelBuffer buffer;
-    auto result = cu::LineOnLineString((const double2*)data.line.data(), size,
-                                       (const double2*)data.lnstr.data(), buffer);
-    auto ref = data.std_result;
-    ASSERT_EQ(result.CC, ref.CC) << index;
-    ASSERT_EQ(result.is_coveredby, ref.is_coveredby) << index;
-    if (ref.cross_count != -100) {
-      ASSERT_EQ(result.cross_count, ref.cross_count) << index;
+  vector<thrust::complex<double>> scale_factors;
+  for (double i : {0, 1, -1}) {
+    for (double j : {0, 1, -1}) {
+      auto x = cu::to_complex({i, j});
+      if (x == 0) {
+        continue;
+      }
+      scale_factors.emplace_back(x);
+    }
+  }
+  for (auto scale_factor : scale_factors) {
+    for (auto index = 0; index < datas.size(); ++index) {
+      control_scale_factor = scale_factor;
+      auto data = datas[index];
+      scale(data.line.data());
+      scale(data.line.data() + 2);
+      auto size = data.lnstr.size();
+      assert(size % 2 == 0);
+      size /= 2;
+      for (int i = 0; i < size; ++i) {
+        scale(data.lnstr.data() + i * 2);
+      }
+      cu::KernelBuffer buffer;
+      auto result = cu::LineOnLineString((const double2*)data.line.data(), size,
+                                         (const double2*)data.lnstr.data(), buffer);
+      auto ref = data.std_result;
+      ASSERT_EQ(result.CC, ref.CC) << index;
+      ASSERT_EQ(result.is_coveredby, ref.is_coveredby) << index;
+      if (ref.cross_count != -100) {
+        ASSERT_EQ(result.cross_count, ref.cross_count) << index;
+      }
     }
   }
 }
 
-TEST(Relation, LineRelateToLIneString) {
+// csv format, for better readability in linestring.csv file
+std::string data_source = R"(left_linestring,right_linestring,matrix
+0_0_0_3,0_0_0_1_1_1_0_2_0_3,FFFFFFFF*
+0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
+0_0_0_1,0_1_0_2,FFFFFFFF*
+0_0_0_1,0_0_2_1_-2_0,FFFFFFFF*
+0_0_0_1,0_0_2_3,FFFFFFFF*
+0_0_0_1,-2_0_2_0,FFFFFFFF*
+0_0_0_2,0_1_2_3,FFFFFFFF*
+0_0_0_1,-2_0_2_1,FFFFFFFF*
+0_0_0_1,0_1_2_2,FFFFFFFF*
+0_0_0_1,0_3_2_2,FFFFFFFF*
+0_0_0_1,0_0_0_1,FFFFFFFF*
+0_0_0_3,0_0_0_1_0_2_0_3,FFFFFFFF*
+0_0_0_3,0_0_0_2_0_1_0_3,FFFFFFFF*
+0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*)";
 
+struct Data {
+  vector<double> left;   // left linestring
+  vector<double> right;  // right linestring
+  Matrix std_result;
+};
+using std::string;
+
+vector<string> split_string(string raw, char delimitor) {
+  int index = 0;
+  vector<string> result;
+  while (index < raw.size()) {
+    auto pos = raw.find_first_of(delimitor, delimitor);
+    if (pos == raw.npos) {
+      result.push_back(raw.substr(index, raw.size() - index));
+      index = raw.size();
+    } else {
+      result.push_back(raw.substr(index, pos - index));
+      index = pos + 1;
+    }
+  }
+}
+
+vector<double> to_double_array(const string& underscore_splitted_str) {
+  auto tmp_vec = split_string(underscore_splitted_str, '_');
+  vector<double> result;
+  for (auto str : tmp_vec) {
+    result.push_back(strtod(str.data(), nullptr));
+  }
+  return result;
+}
+
+Data GetLineStringData() {
+  
+}
+
+TEST(Relation, LineStringRelateToLineString) {
+  struct Data {
+    vector<double> left;   // left linestring
+    vector<double> right;  // right linestring
+    Matrix std_result;
+  };
+  thrust::complex<double> control_scale_factor;
+  auto scale = [&control_scale_factor](double* ptr) {
+    thrust::complex<double> raw(ptr[0], ptr[1]);
+    auto tmp = control_scale_factor * raw;
+    ptr[0] = tmp.real();
+    ptr[1] = tmp.imag();
+  };
+  (void)scale;
+
+  using vd = vector<double>;
+  using mat = Matrix;
+
+  vector<Data> datas{
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
+       mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 0, 2, 3}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{-2, 0, 2, 0}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 2}, vd{0, 1, 2, 3}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{-2, 0, 2, 1}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 1, 2, 2}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 3, 2, 2}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 1}, vd{0, 0, 0, 1}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 0, 2, 0, 3}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 2, 0, 1, 0, 3}, mat("FFFFFFFF*")},
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
+       mat("FFFFFFFF*")},
+  };
+  vector<thrust::complex<double>> scale_factors;
+  scale_factors.emplace_back(1, 0);
+  //  for (double i : {0, 1, -1}) {
+  //    for (double j : {0, 1, -1}) {
+  //      auto x = cu::to_complex({i, j});
+  //      if (x == 0) {
+  //        continue;
+  //      }
+  //      scale_factors.emplace_back(x);
+  //    }
+  //  }
+  for (auto scale_factor : scale_factors) {
+    for (auto index = 0; index < datas.size(); ++index) {
+      control_scale_factor = scale_factor;
+      auto data = datas[index];
+      scale(data.line.data());
+      scale(data.line.data() + 2);
+      auto right_size = data.right.size();
+      assert(right_size % 2 == 0);
+      right_size /= 2;
+      for (int i = 0; i < right_size; ++i) {
+        scale(data.right.data() + i * 2);
+      }
+      cu::KernelBuffer buffer;
+      auto result = cu::LineOnLineString((const double2*)data.line.data(), right_size,
+                                         (const double2*)data.right.data(), buffer);
+      auto ref = data.std_result;
+    }
+  }
 }

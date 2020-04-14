@@ -93,6 +93,10 @@ class Matrix {
     return mat;
   }
 
+  DEVICE_RUNNABLE friend inline bool operator==(const Matrix& a, const Matrix& b) {
+    return a.payload == b.payload;
+  }
+
  private:
   union {
     State states_[8];
@@ -100,6 +104,7 @@ class Matrix {
     uint64_t payload;  // for alignment
   };
 };
+
 constexpr Matrix INVALID_MATRIX;
 
 }  // namespace de9im
