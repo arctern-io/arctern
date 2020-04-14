@@ -134,7 +134,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
     } else if (rv0.imag() * rv1.imag() <= 0) {
       // cross/touch the x axis, so check intersect point
       auto proj =
-          (rv0.real() * rv1.imag() - rv0.real() * rv0.imag()) / (rv1.imag() - rv0.imag());
+          (rv0.real() * rv1.imag() - rv1.real() * rv0.imag()) / (rv1.imag() - rv0.imag());
       if (0 <= proj && proj <= 1) {
         result.CC = max(result.CC, 0);
         ++result.cross_count;
@@ -199,10 +199,13 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   BB_count += IsEqual(left_b.second, right_b.first);
   BB_count += IsEqual(left_b.second, right_b.second);
   // boundary to linestring
-  auto BC_count = PointOnLineString(left_b.first, right_size, right_points) +
-                  PointOnLineString(left_b.second, right_size, right_points);
-  auto CB_count = PointOnLineString(right_b.first, left_size, left_points) +
-                  PointOnLineString(right_b.second, left_size, left_points);
+  auto BC_count_0 = PointOnLineString(left_b.first, right_size, right_points);
+  auto BC_count_1 = PointOnLineString(left_b.second, right_size, right_points);
+  auto CB_count_0 = PointOnLineString(right_b.first, left_size, left_points);
+  auto CB_count_1 = PointOnLineString(right_b.second, left_size, left_points);
+  auto BC_count = BC_count_0 + BC_count_1;
+  auto CB_count = CB_count_0 + CB_count_1;
+
   auto IE_relation =
       SumLineOnLineString(left_size, left_points, right_size, right_points, buffer);
 
@@ -235,8 +238,10 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   matrix->IB = CB_count - BB_count ? State::kDimensionZero : State::kFalse;
   matrix->IE = !IE_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
   matrix->EI = !EI_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
-  matrix->BE = BC_count != 2 ? State::kDimensionZero : State::kFalse;
-  matrix->EB = CB_count != 2 ? State::kDimensionZero : State::kFalse;
+  // Fix bug: BC_count != 2 can be misleading if B is on vertex of I,
+  // which will be counted twice
+  matrix->BE = !(BC_count_0 && BC_count_1) ? State::kDimensionZero : State::kFalse;
+  matrix->EB = !(CB_count_0 && CB_count_1) ? State::kDimensionZero : State::kFalse;
   matrix->BB = BB_count ? State::kDimensionZero : State::kFalse;
 
   return matrix;
