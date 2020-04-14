@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def plot(ax, geoms):
+def plot(ax, geoms, **style_kwds):
     import pyspark.sql.dataframe
     import arctern
     if isinstance(geoms, pyspark.sql.dataframe.DataFrame):
         pandas_df = geoms.toPandas()
-        arctern.plot(ax, pandas_df)
+        arctern.plot(ax, pandas_df, **style_kwds)
