@@ -257,6 +257,10 @@ def plot(ax, geoms, **style_kwds):
              marker
              markersize
      :example:
+         import pandas
+         import matplotlib.pyplot as plt
+         import arctern
+
          raw_data = []
          raw_data.append('point(0 0)')
          raw_data.append('linestring(0 10, 5 5, 10 0)')
