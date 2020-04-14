@@ -123,7 +123,7 @@ def _get_style_value(geo_name, style_key, style_vale):
         if style_key == 'edgecolor':
             return style_vale if is_color_like(style_vale) else mpl.rcParams['patch.edgecolor']
         if style_key == 'facecolor':
-            return style_vale if style_vale is not None else mpl.rcParams['patch.edgecolor']
+            return style_vale if style_vale is not None else mpl.rcParams['patch.facecolor']
     elif geo_name == 'lines':
         if style_key == 'color':
             return style_vale if is_color_like(style_vale) else mpl.rcParams['lines.color']
