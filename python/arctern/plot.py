@@ -232,6 +232,55 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
     return None
 
 def plot(ax, geoms, **style_kwds):
+    """
+     Plots a collection of geometries to `ax`
+
+     :type ax: matplotlib.axes.Axes
+     :parms ax: The axes where geometries will be plotted
+
+     :type geoms: pandas.core.series.Series or pandas.core.frame.DataFrame
+     :parms geoms: sequence of geometries
+
+     :type **style_kwds: dict
+     :parms **style_kwds: optional, collection of plot style
+         `Polygon` and `MultiPolygon`:
+             linewidth
+             linestyle
+             edgecolor
+             facecolor
+         `LineString` and `MultiLineString`:
+             color
+             linewidth
+             linestyle
+         `Point` and `MultiPoint`:
+             color
+             marker
+             markersize
+     :example:
+         raw_data = []
+         raw_data.append('point(0 0)')
+         raw_data.append('linestring(0 10, 5 5, 10 0)')
+         raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+         raw_data.append("GEOMETRYCOLLECTION(" \
+                         "polygon((1 1,1 2,2 2,2 1,1 1))," \
+                         "linestring(0 1, 5 6, 10 11)," \
+                         "POINT(4 7))")
+         arr_wkt = pandas.Series(raw_data)
+         arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
+         df = pandas.DataFrame({'wkb':arr_wkb})
+
+         fig, ax = plt.subplots()
+         arctern.plot(ax, df,
+                      color=['orange', 'green'],
+                      marker='^',
+                      markersize=100,
+                      linewidth=[None, 7, 8],
+                      linestyle=[None, 'dashed', 'dashdot'],
+                      edgecolor=[None, None, 'red'],
+                      facecolor=[None, None, 'black'])
+         ax.grid()
+         fig.savefig('/tmp/plot_test.png')
+    """
     if isinstance(geoms, pandas.core.series.Series):
         _plot_pandas_series(ax, geoms, **style_kwds)
     elif isinstance(geoms, pandas.core.frame.DataFrame):
