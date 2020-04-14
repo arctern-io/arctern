@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 def _flat_polygon(geo_dict, dict_collect):
     if 'polygons' not in dict_collect:
         dict_collect['polygons'] = []
@@ -21,7 +20,7 @@ def _flat_line(geo_dict, dict_collect):
     import numpy as np
     if geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
-            line_arry = np.zeros([len(line), 2])
+            line_arry = np.zeros([len(line), 2], dtype=np.double)
             idx = 0
             for coor in line:
                 line_arry[idx, 0] = coor[0]
@@ -31,7 +30,7 @@ def _flat_line(geo_dict, dict_collect):
                 dict_collect['lines'] = []
             dict_collect['lines'].append(line_arry)
     elif geo_dict['type'] == 'LineString':
-        line_arry = np.zeros([len(geo_dict['coordinates']), 2])
+        line_arry = np.zeros([len(geo_dict['coordinates']), 2], dtype=np.double)
         idx = 0
         for coor in geo_dict['coordinates']:
             line_arry[idx, 0] = coor[0]
@@ -52,7 +51,6 @@ def _flat_point(geo_dict, dict_collect):
         dict_collect['points'].extend(geo_dict['coordinates'])
 
 def _flat_geoms(geo_dict, dict_collect):
-    import json
     if geo_dict['type'] == 'GeometryCollection':
         for geos in geo_dict['geometries']:
             _flat_geoms(geos, dict_collect)
@@ -63,72 +61,229 @@ def _flat_geoms(geo_dict, dict_collect):
     elif geo_dict['type'] == 'Point' or geo_dict['type'] == 'MultiPoint':
         _flat_point(geo_dict, dict_collect)
     else:
-        from osgeo import ogr
-        geo = ogr.CreateGeometryFromJson(json.dumps(geo_dict))
-        if geo.HasCurveGeometry():
-            geo = geo.GetLinearGeometry()
-            geo = geo.ExportToJson()
-            geo = json.loads(geo)
-            _flat_geoms(geo, dict_collect)
-        else:
-            raise RuntimeError(f"unsupported geometry: {geo_dict}")
+        raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
-def _plot_collection(ax, plot_collect, **style_kwds):
-    if len(plot_collect) == 0:
-        return None
+def _get_attr(attr_list, **style_kwds):
+    attr_val = dict()
+    for attr in attr_list:
+        if attr in style_kwds:
+            attr_val[attr] = style_kwds[attr]
+    return attr_val
 
+def _plot_polygons(ax, polygons, **style_kwds):
     try:
         from descartes.patch import PolygonPatch
     except ImportError:
         raise ImportError(
             "The descartes package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
+            "You can install it using 'conda install -c conda-forge descartes' ")
     try:
-        from matplotlib.collections import PatchCollection, LineCollection
+        from matplotlib.collections import PatchCollection
     except ImportError:
         raise ImportError(
             "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' "
-        )
+            "You can install it using 'conda install -c conda-forge descartes' ")
+    attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
+    collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
+    ax.add_collection(collection, autolim=True)
+
+# value for linestyles : solid|dashed|dashdot|dotted
+def _plot_lines(ax, lines, **style_kwds):
+    try:
+        from matplotlib.collections import LineCollection
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
+    attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
+    collection = LineCollection(lines, **attr)
+    ax.add_collection(collection, autolim=True)
+
+def _plot_points(ax, x, y, **style_kwds):
+    attr = _get_attr(['color', 'marker'], **style_kwds)
+    if 'markersize' in style_kwds:
+        attr['s'] = style_kwds['markersize']
+    ax.scatter(x, y, **attr)
+
+def _get_random_color_from_cycle():
+    import random
+    try:
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
+    cycle_list = mpl.rcParams['axes.prop_cycle'].by_key()['color']
+    cyc_idx = random.randrange(0, len(cycle_list))
+    return cycle_list[cyc_idx]
+
+# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
+def _get_style_value(geo_name, style_key, style_vale):
+    try:
+        from matplotlib.colors import is_color_like
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
+    if geo_name == 'polygons':
+        if style_key == 'linewidth':
+            return style_vale if style_vale is not None else mpl.rcParams['patch.linewidth']
+        if style_key == 'linestyle':
+            return style_vale if style_vale is not None else mpl.rcParams['lines.linestyle']
+        if style_key == 'edgecolor':
+            return style_vale if is_color_like(style_vale) else mpl.rcParams['patch.edgecolor']
+        if style_key == 'facecolor':
+            return style_vale if style_vale is not None else mpl.rcParams['patch.facecolor']
+    elif geo_name == 'lines':
+        if style_key == 'color':
+            return style_vale if is_color_like(style_vale) else mpl.rcParams['lines.color']
+        if style_key == 'linewidth':
+            return style_vale if style_vale is not None else mpl.rcParams['lines.linewidth']
+        if style_key == 'linestyle':
+            return style_vale if style_vale is not None else mpl.rcParams['lines.linestyle']
+    elif geo_name == 'points':
+        if style_key == 'color':
+            return style_vale if is_color_like(style_vale) else _get_random_color_from_cycle()
+        if style_key == 'marker':
+            return style_vale if style_vale is not None else mpl.rcParams['scatter.marker']
+    return None
+
+def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
+    if geo_name in geo_collect:
+        if geo_name not in plot_collect:
+            plot_collect[geo_name] = []
+        plot_collect[geo_name].extend(geo_collect[geo_name])
+
+        for style_key, style_val in row_style.items():
+            if style_key not in geo_style:
+                geo_style[style_key] = []
+            style_val = _get_style_value(geo_name, style_key, style_val)
+            style = [style_val for _ in range(len(geo_collect[geo_name]))]
+            geo_style[style_key].extend(style)
+
+def _plot_collection(ax, geoms_list, **style_kwds):
+    import json
+    style_iter = dict()
+    polygons_style = dict()
+    lines_style = dict()
+    points_style = dict()
+    for key, val in style_kwds.items():
+        if isinstance(val, (str, int, float)):
+            polygons_style[key] = val
+            lines_style[key] = val
+            points_style[key] = val
+        else:
+            try:
+                style_iter[key] = iter(val)
+            except TypeError:
+                polygons_style[key] = val
+                lines_style[key] = val
+                points_style[key] = val
+
+    plot_collect = dict()
+    for geo in geoms_list:
+        row_style = dict()
+        for key, val_iter in style_iter.items():
+            val = next(val_iter, None)
+            row_style[key] = val
+
+        if geo is not None:
+            geo_dict = json.loads(geo)
+            geo_collect = dict()
+            _flat_geoms(geo_dict, geo_collect)
+            _extend_collect('polygons', geo_collect, plot_collect, row_style, polygons_style)
+            _extend_collect('lines', geo_collect, plot_collect, row_style, lines_style)
+            _extend_collect('points', geo_collect, plot_collect, row_style, points_style)
 
     if 'polygons' in plot_collect:
-        collection = PatchCollection([PolygonPatch(geo) for geo in plot_collect['polygons']])
-        ax.add_collection(collection, autolim=True)
+        _plot_polygons(ax, plot_collect['polygons'], **polygons_style)
     if 'lines' in plot_collect:
-        collection = LineCollection(plot_collect['lines'])
-        ax.add_collection(collection, autolim=True)
+        _plot_lines(ax, plot_collect['lines'], **lines_style)
     if 'points' in plot_collect:
         x = [p[0] for p in plot_collect['points']]
         y = [p[1] for p in plot_collect['points']]
-        collection = ax.scatter(x, y)
+        _plot_points(ax, x, y, **points_style)
     ax.autoscale_view()
-    return None
 
 def _plot_pandas_series(ax, geoms, **style_kwds):
     import pandas.core.series
-    import json
+    import arctern
+
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
-    if len(geoms) < 1:
+    len_geoms = len(geoms)
+    if len_geoms < 1:
         return None
     if isinstance(geoms[0], str):
         pass
     elif isinstance(geoms[0], bytes):
-        import arctern
         geoms = arctern.ST_AsGeoJSON(geoms)
     else:
         raise RuntimeError(f"unexpected input type, {type(geoms[0])}")
 
-    plot_collect = dict()
-    for geo in geoms:
-        geo_dict = json.loads(geo)
-        _flat_geoms(geo_dict, plot_collect)
-
-    _plot_collection(ax, plot_collect, **style_kwds)
+    _plot_collection(ax, geoms, **style_kwds)
     return None
 
 def plot(ax, geoms, **style_kwds):
+    """
+     Plots a collection of geometries to `ax`
+
+     :type ax: matplotlib.axes.Axes
+     :parms ax: The axes where geometries will be plotted
+
+     :type geoms: pandas.core.series.Series or pandas.core.frame.DataFrame
+     :parms geoms: sequence of geometries
+
+     :type **style_kwds: dict
+     :parms **style_kwds: optional, collection of plot style
+         `Polygon` and `MultiPolygon`:
+             linewidth
+             linestyle
+             edgecolor
+             facecolor
+         `LineString` and `MultiLineString`:
+             color
+             linewidth
+             linestyle
+         `Point` and `MultiPoint`:
+             color
+             marker
+             markersize
+     :example:
+         import pandas
+         import matplotlib.pyplot as plt
+         import arctern
+
+         raw_data = []
+         raw_data.append('point(0 0)')
+         raw_data.append('linestring(0 10, 5 5, 10 0)')
+         raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+         raw_data.append("GEOMETRYCOLLECTION(" \
+                         "polygon((1 1,1 2,2 2,2 1,1 1))," \
+                         "linestring(0 1, 5 6, 10 11)," \
+                         "POINT(4 7))")
+         arr_wkt = pandas.Series(raw_data)
+         arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
+         df = pandas.DataFrame({'wkb':arr_wkb})
+
+         fig, ax = plt.subplots()
+         arctern.plot(ax, df,
+                      color=['orange', 'green'],
+                      marker='^',
+                      markersize=100,
+                      linewidth=[None, 7, 8],
+                      linestyle=[None, 'dashed', 'dashdot'],
+                      edgecolor=[None, None, 'red'],
+                      facecolor=[None, None, 'black'])
+         ax.grid()
+         fig.savefig('/tmp/plot_test.png')
+    """
     import pandas.core.series
     if isinstance(geoms, pandas.core.series.Series):
         _plot_pandas_series(ax, geoms, **style_kwds)
