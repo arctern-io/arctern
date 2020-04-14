@@ -83,6 +83,7 @@ TEST(Relation, LineRelateToLineString) {
 
   using vd = vector<double>;
   using lrr = cu::LineRelationResult;
+  // TODO(dog): use CSV format
   vector<Data> datas{
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
       {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
@@ -138,29 +139,28 @@ TEST(Relation, LineRelateToLineString) {
 
 TEST(Relation, LineStringRelateToLineString) {
   struct Data {
-    vector<double> left;   // left linestring
-    vector<double> right;  // right linestring
+    vector<double2> left;   // left linestring
+    vector<double2> right;  // right linestring
     Matrix std_matrix;
   };
   thrust::complex<double> control_scale_factor;
-  auto scale = [&control_scale_factor](double* ptr) {
-    thrust::complex<double> raw(ptr[0], ptr[1]);
+  auto scale = [&control_scale_factor](double2& v) {
+    auto raw = cu::to_complex(v);
     auto tmp = control_scale_factor * raw;
-    ptr[0] = tmp.real();
-    ptr[1] = tmp.imag();
+    v = double2{tmp.real(), tmp.imag()};
   };
   (void)scale;
 
   auto csv_table = ProjectedTableFromCsv(
       datasource::relation_csv, {"left_linestring", "right_linestring", "matrix"});
   vector<Data> datas;
-  for(auto& line: csv_table) {
+  for (auto& line : csv_table) {
     Data data;
-    data.left = StringToDoubleArray(line[0]);
-    data.right = StringToDoubleArray(line[1]);
+    data.left = ToDouble2Array(line[0]);
+    data.right = ToDouble2Array(line[1]);
     data.std_matrix = Matrix(line[2].c_str());
+    datas.push_back(std::move(data));
   }
-
 
   vector<thrust::complex<double>> scale_factors;
   scale_factors.emplace_back(1, 0);
@@ -173,22 +173,22 @@ TEST(Relation, LineStringRelateToLineString) {
   //      scale_factors.emplace_back(x);
   //    }
   //  }
+
   for (auto scale_factor : scale_factors) {
     for (auto index = 0; index < datas.size(); ++index) {
+      cu::KernelBuffer buffer;
       control_scale_factor = scale_factor;
       auto data = datas[index];
-      scale(data.line.data());
-      scale(data.line.data() + 2);
-      auto right_size = data.right.size();
-      assert(right_size % 2 == 0);
-      right_size /= 2;
-      for (int i = 0; i < right_size; ++i) {
-        scale(data.right.data() + i * 2);
+      for (auto& v : data.left) {
+        scale(v);
       }
-      cu::KernelBuffer buffer;
-      auto result = cu::LineOnLineString((const double2*)data.line.data(), right_size,
-                                         (const double2*)data.right.data(), buffer);
-      auto ref = data.std_result;
+      for (auto& v : data.right) {
+        scale(v);
+      }
+      auto matrix =
+          cu::LineStringRelateToLineString(data.left.size(), data.left.data(),
+                                           data.right.size(), data.right.data(), buffer);
+      ASSERT_EQ(matrix, data.std_matrix);
     }
   }
 }

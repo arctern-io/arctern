@@ -1,4 +1,7 @@
 #pragma once
+#include <cuda.h>
+#include <vector_types.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -33,19 +36,35 @@ inline vector<string> SplitString(const string& raw, char delimitor) {
     if (pos == raw.npos) {
       pos = raw.size();
     }
-    result.push_back(raw.substr(index, raw.size() - index));
+    result.push_back(raw.substr(index, pos - index));
     index = pos + 1;
   }
+  return result;
 }
 
 // should be underscore splitted
-inline vector<double> StringToDoubleArray(const string& str_raw) {
+inline vector<double> ToDoubleArray(const string& str_raw) {
   auto tmp_vec = SplitString(str_raw, '_');
   vector<double> result;
   for (auto str : tmp_vec) {
     result.push_back(strtod(str.data(), nullptr));
   }
   return result;
+}
+
+inline vector<double2> ToDouble2Array(const vector<double>& vec) {
+  assert(vec.size() % 2 == 0);
+  vector<double2> result;
+  for (int i = 0; i < vec.size() / 2; ++i) {
+    result.push_back(double2{vec[i * 2], vec[i * 2 + 1]});
+  }
+  return result;
+}
+
+// should be underscore splitted
+inline vector<double2> ToDouble2Array(const string& str_raw) {
+  auto vec = ToDoubleArray(str_raw);
+  return ToDouble2Array(vec);
 }
 
 inline vector<vector<string>> GetTableFromCsv(const string& csv_raw) {

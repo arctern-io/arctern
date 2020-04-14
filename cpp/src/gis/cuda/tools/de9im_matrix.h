@@ -14,8 +14,7 @@ class Matrix {
     kE = 2,  // Exterior
   };
   enum class State : char {
-    kInvalid = 0,
-
+    kInvalid = '\0',
     kIgnored = '*',
     kFalse = 'F',
     kTrueGeneric = 'T',
@@ -97,6 +96,11 @@ class Matrix {
     return a.payload == b.payload;
   }
 
+  friend std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
+    out << std::string((const char*)mat.states_, 8);
+    return out;
+  }
+
  private:
   union {
     State states_[8];
@@ -105,6 +109,6 @@ class Matrix {
   };
 };
 
-constexpr Matrix INVALID_MATRIX;
+constexpr Matrix INVALID_MATRIX = {};
 
 }  // namespace de9im
