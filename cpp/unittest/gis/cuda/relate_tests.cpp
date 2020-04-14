@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "gis/cuda/test_common/testcase.h"
 #include "gis/cuda/tools/relation.h"
 using std::vector;
 namespace cu = arctern::gis::cuda;
@@ -135,57 +136,7 @@ TEST(Relation, LineRelateToLineString) {
   }
 }
 
-// csv format, for better readability in linestring.csv file
-std::string data_source = R"(left_linestring,right_linestring,matrix
-0_0_0_3,0_0_0_1_1_1_0_2_0_3,FFFFFFFF*
-0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
-0_0_0_1,0_1_0_2,FFFFFFFF*
-0_0_0_1,0_0_2_1_-2_0,FFFFFFFF*
-0_0_0_1,0_0_2_3,FFFFFFFF*
-0_0_0_1,-2_0_2_0,FFFFFFFF*
-0_0_0_2,0_1_2_3,FFFFFFFF*
-0_0_0_1,-2_0_2_1,FFFFFFFF*
-0_0_0_1,0_1_2_2,FFFFFFFF*
-0_0_0_1,0_3_2_2,FFFFFFFF*
-0_0_0_1,0_0_0_1,FFFFFFFF*
-0_0_0_3,0_0_0_1_0_2_0_3,FFFFFFFF*
-0_0_0_3,0_0_0_2_0_1_0_3,FFFFFFFF*
-0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*)";
 
-struct Data {
-  vector<double> left;   // left linestring
-  vector<double> right;  // right linestring
-  Matrix std_result;
-};
-using std::string;
-
-vector<string> split_string(string raw, char delimitor) {
-  int index = 0;
-  vector<string> result;
-  while (index < raw.size()) {
-    auto pos = raw.find_first_of(delimitor, delimitor);
-    if (pos == raw.npos) {
-      result.push_back(raw.substr(index, raw.size() - index));
-      index = raw.size();
-    } else {
-      result.push_back(raw.substr(index, pos - index));
-      index = pos + 1;
-    }
-  }
-}
-
-vector<double> to_double_array(const string& underscore_splitted_str) {
-  auto tmp_vec = split_string(underscore_splitted_str, '_');
-  vector<double> result;
-  for (auto str : tmp_vec) {
-    result.push_back(strtod(str.data(), nullptr));
-  }
-  return result;
-}
-
-Data GetLineStringData() {
-  
-}
 
 TEST(Relation, LineStringRelateToLineString) {
   struct Data {
