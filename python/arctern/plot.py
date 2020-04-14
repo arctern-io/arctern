@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import json
+import random
 import numpy as np
 import pandas.core.series
 import arctern
-import random
 try:
     from descartes.patch import PolygonPatch
 except ImportError:
@@ -195,8 +195,6 @@ def _plot_collection(ax, geoms_list, **style_kwds):
     ax.autoscale_view()
 
 def _plot_pandas_series(ax, geoms, **style_kwds):
-    
-
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
     len_geoms = len(geoms)
