@@ -97,7 +97,7 @@ def ST_GeomFromGeoJSON(json):
     :param json: Geometries organized as json
 
     :return: Geometries organized as WKB.
-    :rtype: ppandas.Series.object
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -409,7 +409,6 @@ def ST_IsSimple(geos):
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> rst = arctern.ST_IsSimple(arctern.ST_GeomFromText(data))
-      >>> rst = arctern.ST_IsSimple(data)
       >>> print(rst)
           0    true
           1    true
