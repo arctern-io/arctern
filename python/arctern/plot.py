@@ -17,21 +17,6 @@ import json
 import numpy as np
 import pandas.core.series
 import arctern
-try:
-    from descartes.patch import PolygonPatch
-except ImportError:
-    raise ImportError(
-        "The descartes package is required for plotting polygons in geopandas. "
-        "You can install it using 'conda install -c conda-forge descartes' ")
-try:
-    from matplotlib.collections import PatchCollection
-    from matplotlib.colors import is_color_like
-    from matplotlib.collections import LineCollection
-    import matplotlib as mpl
-except ImportError:
-    raise ImportError(
-        "The matplotlib package is required for plotting polygons in geopandas. "
-        "You can install it using 'conda install -c conda-forge descartes' ")
 
 def _flat_polygon(geo_dict, dict_collect):
     if 'polygons' not in dict_collect:
@@ -92,12 +77,32 @@ def _get_attr(attr_list, **style_kwds):
     return attr_val
 
 def _plot_polygons(ax, polygons, **style_kwds):
+    try:
+        from descartes.patch import PolygonPatch
+    except ImportError:
+        raise ImportError(
+            "The descartes package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+    try:
+        from matplotlib.collections import PatchCollection
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
     attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
     collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
     ax.add_collection(collection, autolim=True)
 
 # value for linestyles : solid|dashed|dashdot|dotted
 def _plot_lines(ax, lines, **style_kwds):
+    try:
+        from matplotlib.collections import LineCollection
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
     attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
     collection = LineCollection(lines, **attr)
     ax.add_collection(collection, autolim=True)
@@ -109,12 +114,28 @@ def _plot_points(ax, x, y, **style_kwds):
     ax.scatter(x, y, **attr)
 
 def _get_random_color_from_cycle():
+    try:
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
     cycle_list = mpl.rcParams['axes.prop_cycle'].by_key()['color']
     cyc_idx = random.randrange(0, len(cycle_list))
     return cycle_list[cyc_idx]
 
 # pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
 def _get_style_value(geo_name, style_key, style_vale):
+    try:
+        from matplotlib.colors import is_color_like
+        import matplotlib as mpl
+    except ImportError:
+        raise ImportError(
+            "The matplotlib package is required for plotting polygons in geopandas. "
+            "You can install it using 'conda install -c conda-forge descartes' ")
+
     if geo_name == 'polygons':
         if style_key == 'linewidth':
             return style_vale if style_vale is not None else mpl.rcParams['patch.linewidth']
