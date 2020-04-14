@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import random
+import json
 import numpy as np
 import pandas.core.series
 import arctern
