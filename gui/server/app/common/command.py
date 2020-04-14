@@ -144,7 +144,7 @@ def _generate_load_code(session_name, table):
         load_code += '{}_df.createOrReplaceTempView("{}")'.format(table_name, table_name)
     return load_code
 
-@API.route('/createsession', methods=['POST'])
+@API.route('/session', methods=['POST'])
 @token.AUTH.login_required
 def create_session():
     scope_id = request.json.get('scope_id')
@@ -172,14 +172,12 @@ def create_session():
     else:
         return jsonify(status='success', code=200, message='create session successfully!')
 
-@API.route('/closesession', methods=['POST'])
+@API.route('/session/<scope_id>/<session_name>', methods=['DELETE'])
 @token.AUTH.login_required
-def close_session():
-    scope_id = request.json.get('scope_id')
+def close_session(scope_id, session_name):
     if scope_id is None or scope_id not in _COMMAND_SCOPE:
         return jsonify(status='error', code=-1, message='scope_id {} not found!'.format(scope_id))
     scope = _COMMAND_SCOPE[scope_id]
-    session_name = request.json.get('session_name')
     if session_name is None:
         return jsonify(status='error', code=-1, message='no specific session name!')
     if session_name not in scope.keys():

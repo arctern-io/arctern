@@ -1,0 +1,5 @@
+{
+    "scope_id": "scope1",
+    "session_name": "arctern",
+    "sql": "select * from nyc_taxi"
+}

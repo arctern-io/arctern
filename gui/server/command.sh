@@ -19,7 +19,7 @@ curl --location --request POST 'http://192.168.2.29:9999/command' \
 	"command":"import os\nimport json\n"
 }'
 
-curl --location --request POST 'http://192.168.2.29:9999/createsession' \
+curl --location --request POST 'http://192.168.2.29:9999/session' \
 --header 'Authorization: Token eyJhbGciOiJIUzUxMiIsImlhdCI6MTU4NjQ4NDM5NSwiZXhwIjoxNTg3MDg5MTk1fQ.eyJ1c2VyIjoiemlsbGl6In0.Od-3FaaiU6AkEqKaJiD3gNPCyHXyaNMIi2LkqrdpveeGZrgIH_4CNBrZ9dAQlyTYj9PFa6a1AD1vBGtViCVrvA' \
 --header 'Content-Type: application/json' \
 --data-raw '{
