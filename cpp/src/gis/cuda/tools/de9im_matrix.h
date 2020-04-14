@@ -1,7 +1,9 @@
 #pragma once
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <string>
+#include <vector>
 
 #include "gis/cuda/common/common.h"
 
@@ -108,6 +110,7 @@ class Matrix {
     uint64_t payload;  // for alignment
   };
 };
+
 
 constexpr Matrix INVALID_MATRIX = {};
 

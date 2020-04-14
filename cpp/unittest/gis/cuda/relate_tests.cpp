@@ -100,7 +100,7 @@ TEST(Relation, LineRelateToLineString) {
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
        lrr{1, true, -100}},
       {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
-          lrr{1, true, -100}},
+       lrr{1, true, -100}},
   };
   vector<thrust::complex<double>> scale_factors;
   for (double i : {0, 1, -1}) {
@@ -135,6 +135,14 @@ TEST(Relation, LineRelateToLineString) {
       }
     }
   }
+}
+
+inline std::ostream& operator<<(std::ostream& out, const std::vector<double2>& vec) {
+  for (auto v : vec) {
+    out << "(" << v.x << "," << v.y << ")"
+        << ", ";
+  }
+  return out;
 }
 
 TEST(Relation, LineStringRelateToLineString) {
@@ -188,7 +196,9 @@ TEST(Relation, LineStringRelateToLineString) {
       auto matrix =
           cu::LineStringRelateToLineString(data.left.size(), data.left.data(),
                                            data.right.size(), data.right.data(), buffer);
-      ASSERT_EQ(matrix, data.std_matrix) << index;
+      ASSERT_EQ(matrix, data.std_matrix) << index << std::endl
+                                         << data.left << std::endl
+                                         << data.right << std::endl;
     }
   }
 }

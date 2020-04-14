@@ -9,11 +9,10 @@
 namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
-0_0_0_3,0_0_0_1_1_1_0_2_0_3,1F1F0F1F*
-0_0_0_1,0_1_0_2,FFFFFFFF*
-0_0_0_1,0_0_2_1_-2_0,FFFFFFFF*
-0_0_0_1,0_0_2_3,FFFFFFFF*
-0_0_0_1,-2_0_2_0,FFFFFFFF*
+0_0_0_1,0_1_0_2,FF1F0010*
+0_0_0_1,0_0_2_1_-2_0,0F1F0010*
+0_0_0_1,0_0_2_3,FF1F0010*
+0_0_0_1,-2_0_2_0,FF10F010*
 0_0_0_2,0_1_2_3,FFFFFFFF*
 0_0_0_1,-2_0_2_1,FFFFFFFF*
 0_0_0_1,0_1_2_2,FFFFFFFF*
@@ -23,6 +22,8 @@ constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0_0_0_3,0_0_0_2_0_1_0_3,FFFFFFFF*
 0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
 0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*
+
+0_0_0_3,0_0_0_1_1_1_0_2_0_3,1F1F0F1F*
 )";
 }  // namespace datasource
 
@@ -106,3 +107,4 @@ inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
   }
   return result;
 }
+
