@@ -136,13 +136,11 @@ TEST(Relation, LineRelateToLineString) {
   }
 }
 
-
-
 TEST(Relation, LineStringRelateToLineString) {
   struct Data {
     vector<double> left;   // left linestring
     vector<double> right;  // right linestring
-    Matrix std_result;
+    Matrix std_matrix;
   };
   thrust::complex<double> control_scale_factor;
   auto scale = [&control_scale_factor](double* ptr) {
@@ -153,27 +151,17 @@ TEST(Relation, LineStringRelateToLineString) {
   };
   (void)scale;
 
-  using vd = vector<double>;
-  using mat = Matrix;
+  auto csv_table = ProjectedTableFromCsv(
+      datasource::relation_csv, {"left_linestring", "right_linestring", "matrix"});
+  vector<Data> datas;
+  for(auto& line: csv_table) {
+    Data data;
+    data.left = StringToDoubleArray(line[0]);
+    data.right = StringToDoubleArray(line[1]);
+    data.std_matrix = Matrix(line[2].c_str());
+  }
 
-  vector<Data> datas{
-      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 3}, vd{0, -100, 0, -99, 3, 3, 0, -1, 0, 1, 0, 2, 0, 4},
-       mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 0, 2, 3}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{-2, 0, 2, 0}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 2}, vd{0, 1, 2, 3}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{-2, 0, 2, 1}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 1, 2, 2}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 3, 2, 2}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 1}, vd{0, 0, 0, 1}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 0, 2, 0, 3}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 3}, vd{0, 0, 0, 2, 0, 1, 0, 3}, mat("FFFFFFFF*")},
-      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3, 4, 4, 0, 2, 0, 1},
-       mat("FFFFFFFF*")},
-  };
+
   vector<thrust::complex<double>> scale_factors;
   scale_factors.emplace_back(1, 0);
   //  for (double i : {0, 1, -1}) {

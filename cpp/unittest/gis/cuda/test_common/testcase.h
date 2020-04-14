@@ -1,7 +1,9 @@
 #pragma once
+#include <map>
 #include <string>
 #include <vector>
 
+namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0_0_0_3,0_0_0_1_1_1_0_2_0_3,FFFFFFFF*
@@ -18,6 +20,7 @@ constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0_0_0_3,0_0_0_1_0_2_0_3,FFFFFFFF*
 0_0_0_3,0_0_0_2_0_1_0_3,FFFFFFFF*
 0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,FFFFFFFF*)";
+}  // namespace datasource
 
 using std::string;
 using std::vector;
@@ -35,8 +38,9 @@ inline vector<string> SplitString(const string& raw, char delimitor) {
   }
 }
 
-inline vector<double> StringToDoubleArray(const string& underscore_splitted_str) {
-  auto tmp_vec = SplitString(underscore_splitted_str, '_');
+// should be underscore splitted
+inline vector<double> StringToDoubleArray(const string& str_raw) {
+  auto tmp_vec = SplitString(str_raw, '_');
   vector<double> result;
   for (auto str : tmp_vec) {
     result.push_back(strtod(str.data(), nullptr));
@@ -44,11 +48,37 @@ inline vector<double> StringToDoubleArray(const string& underscore_splitted_str)
   return result;
 }
 
-vector<vector<string>> GetTableFromCsv(const string& csv_raw) {
+inline vector<vector<string>> GetTableFromCsv(const string& csv_raw) {
   auto lines = SplitString(csv_raw, '\n');
   vector<vector<string>> table;
   for (auto& line : lines) {
     table.emplace_back(SplitString(line, ','));
   }
   return table;
+}
+
+// csv[keys..]
+inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
+                                                         const vector<string>& keys) {
+  auto raw_table = GetTableFromCsv(csv_raw);
+  auto raw_keys = raw_table[0];
+  raw_table.erase(raw_table.begin());
+
+  std::map<string, int> mapping;
+  std::vector<int> indexes;
+  for (int i = 0; i < raw_keys.size(); ++i) {
+    mapping[raw_keys[i]] = i;
+  }
+  for (auto& key : keys) {
+    indexes.push_back(mapping[key]);
+  }
+  vector<vector<string>> result;
+  for (const auto& raw_line : raw_table) {
+    vector<string> line;
+    for (auto index : indexes) {
+      line.push_back(raw_line[index]);
+    }
+    result.push_back(std::move(line));
+  }
+  return result;
 }
