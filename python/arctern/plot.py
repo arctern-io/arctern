@@ -11,19 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import random
-import json
-import numpy as np
-import pandas.core.series
-import arctern
-
 def _flat_polygon(geo_dict, dict_collect):
     if 'polygons' not in dict_collect:
         dict_collect['polygons'] = []
     dict_collect['polygons'].append(geo_dict)
 
 def _flat_line(geo_dict, dict_collect):
+    import numpy as np
     if geo_dict['type'] == 'MultiLineString':
         for line in geo_dict['coordinates']:
             line_arry = np.zeros([len(line), 2], dtype=np.double)
@@ -114,6 +108,7 @@ def _plot_points(ax, x, y, **style_kwds):
     ax.scatter(x, y, **attr)
 
 def _get_random_color_from_cycle():
+    import random
     try:
         import matplotlib as mpl
     except ImportError:
@@ -173,6 +168,7 @@ def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
             geo_style[style_key].extend(style)
 
 def _plot_collection(ax, geoms_list, **style_kwds):
+    import json
     style_iter = dict()
     polygons_style = dict()
     lines_style = dict()
@@ -216,6 +212,9 @@ def _plot_collection(ax, geoms_list, **style_kwds):
     ax.autoscale_view()
 
 def _plot_pandas_series(ax, geoms, **style_kwds):
+    import pandas.core.series
+    import arctern
+
     if not isinstance(geoms, pandas.core.series.Series):
         raise TypeError("geoms shuld be type of pandas.core.series.Series")
     len_geoms = len(geoms)
@@ -285,6 +284,7 @@ def plot(ax, geoms, **style_kwds):
          ax.grid()
          fig.savefig('/tmp/plot_test.png')
     """
+    import pandas.core.series
     if isinstance(geoms, pandas.core.series.Series):
         _plot_pandas_series(ax, geoms, **style_kwds)
     elif isinstance(geoms, pandas.core.frame.DataFrame):
