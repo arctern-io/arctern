@@ -2423,6 +2423,26 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(22), false);
 }
 
+
+
+TEST(geometry_test, test_ST_DistanceSphere) {
+  auto distance_in_meters_double =[](double fromlon,
+                          double fromlat,
+                          double tolon,
+                          double tolat) {
+    double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
+    double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+        cos(tolat * 0.017453292519943295769236907684886);
+    return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+};
+
+}
+
 TEST(geometry_test, test_ST_Distance_Empty) {
   auto l0 = "";
   auto l1 = "POINT EMPTY";
