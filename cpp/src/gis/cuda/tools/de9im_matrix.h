@@ -23,9 +23,6 @@ class Matrix {
     kDimensionZero = '0',
     kDimensionOne = '1',
     kDimensionTwo = '2',
-
-    kComputeTrueFalse = '?',
-    kComputeDimension = 'n'
   };
 
   struct NamedStates {
