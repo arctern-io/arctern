@@ -628,7 +628,6 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
 std::shared_ptr<arrow::Array> ST_DistanceSphere(
     const std::shared_ptr<arrow::Array>& point_left,
     const std::shared_ptr<arrow::Array>& point_right) {
-
   auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
     double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
     double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
@@ -641,7 +640,7 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
     return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
   };
 
-  auto op = [&distance ](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
+  auto op = [&distance](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
     if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
       builder.AppendNull();
     } else {
@@ -655,7 +654,7 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
           (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
         builder.AppendNull();
       } else {
-        builder.Append(distance(fromlat,fromlon,tolat,tolon));
+        builder.Append(distance(fromlat, fromlon, tolat, tolon));
       }
     }
   };
