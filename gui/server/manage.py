@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import logging
 import getopt
 import sys
@@ -110,7 +109,6 @@ def main(argv):
     else:
         APP.debug = True
         APP.run(host=IP, port=PORT)
-
 
 
 if __name__ == '__main__':
