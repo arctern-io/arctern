@@ -9,10 +9,6 @@
 namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
-0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,10F00F1F*
-0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1.5,FFFFFFFF*
-0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,FFFFFFFF*
-
 0_0_0_3,0_0_0_1_1_1_0_2_0_3,1F1F0F1F*
 0_0_0_1,0_1_0_2,FF1F0010*
 0_0_0_1,0_0_2_1_-2_0,0F1F0010*
@@ -25,6 +21,11 @@ constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0_0_0_1,0_0_0_1,1FFF0FFF*
 0_0_0_3,0_0_0_1_0_2_0_3,1FFF0FFF*
 0_0_0_3,0_0_0_2_0_1_0_3,1FFF0FFF*
+1_0_2_0,0_0_1_0_2_0_3_0,1FF0FF10*
+0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1,10F00F1F*
+0_0_0_3,0_0_0_1_1_1_0_2_0_3_4_4_0_2_0_1.5,10100F1F*
+0_0_0_3,0_-100_0_-99_3_3_0_-1_0_1_0_2_0_4,1FF0FF10*
+0_1_1_0_0_0_0_-1_-1_0_0_0_0_1,0_1_0_-1_-1_0_1_0_0_1,1FFF0FFF*
 )";
 }  // namespace datasource
 

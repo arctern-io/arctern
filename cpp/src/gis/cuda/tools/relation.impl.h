@@ -211,8 +211,8 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
 
   auto EI_relation =
       SumLineOnLineString(right_size, right_points, left_size, left_points, buffer);
-  assert(IE_relation.cross_count == EI_relation.cross_count);
   assert(IE_relation.CC == EI_relation.CC);
+  assert(IE_relation.CC == 1 || IE_relation.cross_count == EI_relation.cross_count);
   using State = de9im::Matrix::State;
   Matrix matrix;
   switch (IE_relation.CC) {
