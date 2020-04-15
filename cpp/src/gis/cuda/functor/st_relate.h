@@ -24,7 +24,7 @@ namespace gis {
 namespace cuda {
 
 void ST_Relate(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               de9im::Matrix input_matrix, de9im::Matrix* host_output_matrixes);
+               de9im::Matrix ref_matrix, bool* host_results);
 
 }  // namespace cuda
 }  // namespace gis

@@ -21,7 +21,7 @@ set(gis_cuda_test_srcs
         functor_length_tests.cpp
         functor_envelope_tests.cpp
         arrow_conversion_tests.cpp
-        relate_tests.cpp
+        host_relation_tests.cpp
         ${unittest_srcs}
         )
 add_executable(gis_cuda_tests ${gis_cuda_test_srcs})

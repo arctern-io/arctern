@@ -92,7 +92,41 @@ class Matrix {
   }
 
   DEVICE_RUNNABLE friend inline bool operator==(const Matrix& a, const Matrix& b) {
-    return a.payload == b.payload;
+    return a.payload_ == b.payload_;
+  }
+
+  DEVICE_RUNNABLE constexpr bool IsMatchTo(Matrix ref_matrix) const {
+    for (int i = 0; i < 8; ++i) {
+      auto state = states_[i];
+      auto ref_state = ref_matrix.states_[i];
+      assert(ref_state != State::kInvalid);
+      switch (ref_state) {
+        case State::kInvalid: {
+          return false;
+        }
+        case State::kIgnored: {
+          break;
+        }
+        case State::kTrueGeneric: {
+          if (state == State::kFalse) {
+            return false;
+          } else {
+            break;
+          }
+        }
+        case State::kFalse:
+        case State::kDimensionZero:
+        case State::kDimensionOne:
+        case State::kDimensionTwo: {
+          if (state != ref_state) {
+            return false;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
@@ -100,15 +134,13 @@ class Matrix {
     return out;
   }
 
-
  private:
   union {
     State states_[8];
     NamedStates named_states_;
-    uint64_t payload;  // for alignment
+    uint64_t payload_;  // for alignment
   };
 };
-
 
 constexpr Matrix INVALID_MATRIX = {};
 
