@@ -651,10 +651,11 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
                      cos(tolat * 0.017453292519943295769236907684886);
         double distance =
             6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
-        builder.Append(distance)
+        builder.Append(distance);
       }
     }
-  } return BinaryOp<arrow::DoubleBuilder>(geo1, geo2, op);
+  };
+  return BinaryOp<arrow::DoubleBuilder>(point_left, point_right, op);
 }
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
