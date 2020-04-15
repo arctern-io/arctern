@@ -8,7 +8,7 @@ RUN yum install -y epel-release centos-release-scl-rh && yum install -y wget cur
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    yum install -y ccache lcov make automake git libcurl-devel \
+    yum install -y ccache lcov make automake bzip2 git libcurl-devel \
     llvm-toolset-7.0-clang llvm-toolset-7.0-clang-tools-extra \
     mesa-libGLU-devel mesa-libOSMesa-devel && \
     mkdir /build && \
