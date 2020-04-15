@@ -287,21 +287,16 @@ def run_st_distance(spark):
     assert rs[1][0] == 0.7905694150420949
 
 def run_st_distance_sphere(spark):
-    # TODO(dyh):: finish test
     test_data = []
     test_data.extend([(
-        'POINT(31.75 31.25)',
-        'POINT(31.75 31.25)'
-    )])
-    test_data.extend([(
-        'POINT(31.75 31.25)',
-        'POINT(31.75 31.25)'
+        'POINT(-73.981153 40.741841)',
+        'POINT(-73.99016751859183 40.729884354626904)'
     )])
     distance_sphere_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
     distance_sphere_df.createOrReplaceTempView("distance_sphere")
     rs = spark.sql("select ST_DistanceSphere(ST_GeomFromText(left), ST_GeomFromText(right)) from distance_sphere").collect()
-    # assert rs[0][0] == 3
-    # assert rs[1][0] == 0.7905694150420949
+
+    assert abs(rs[0][0]-1531) < 1
 
 def run_st_area(spark):
     test_data = []
