@@ -17,7 +17,7 @@ import json
 from flask import Blueprint, jsonify, request, redirect, url_for
 
 from app.common import utils, log
-from app.codegen import *
+from app import codegen
 
 API = Blueprint("scope_api", __name__)
 
@@ -37,7 +37,8 @@ def create_scope():
         scope = str(uuid.uuid1()).replace("-", "")
     _SCOPE[scope] = dict()
     # create default SparkSession in scope
-    session_code = _generate_session_code("spark")
+    session_code = codegen.generate_session_code("spark")
+    log.INSTANCE.info(session_code)
     exec(session_code, _SCOPE[scope])
     return jsonify(status="success", code=200, message="create scope successfully!", scope=scope)
 
@@ -60,8 +61,8 @@ def execute_command():
         return jsonify(status="error", code=-1, message="scope {} not found!".format(scope))
     if code is None:
         return jsonify(status="success", code=200, message="execute command successfully!")
-    print("scope", scope)
-    print(code)
+    log.INSTANCE.info("scope: {}".format(scope))
+    log.INSTANCE.info(code)
     exec(code, _SCOPE[scope])
     return jsonify(status="success", code=200, message="execute command successfully!")
 
@@ -70,6 +71,7 @@ def load_file():
     log.INSTANCE.info("POST /loadfile: {}".format(request.json))
 
     scope = request.json.get('scope')
+    log.INSTANCE.info("scope: {}".format(scope))
     if scope not in _SCOPE:
         return jsonify(status='error', code=-1, message='scope {} not found!'.format(scope))
 
@@ -79,8 +81,8 @@ def load_file():
     
     tables = request.json.get('tables')
     for table in tables:
-        load_code = _generate_load_code(table, session)
-        print(load_code)
+        load_code = codegen.generate_load_code(table, session)
+        log.INSTANCE.info(load_code)
         exec(load_code, _SCOPE[scope])
     return jsonify(status='success', code=200, message='load table successfully!')
 
@@ -89,6 +91,7 @@ def save_table():
     log.INSTANCE.info("POST /savetable: {}".format(request.json))
 
     scope = request.json.get('scope')
+    log.INSTANCE.info("scope: {}".format(scope))
     if scope not in _SCOPE:
         return jsonify(status='error', code=-1, message='scope {} not found!'.format(scope))
 
@@ -98,39 +101,48 @@ def save_table():
 
     tables = request.json.get('tables')
     for table in tables:
-        save_code = _generate_save_code(table, session)
-        print(save_code)
+        save_code = codegen.generate_save_code(table, session)
+        log.INSTANCE.info(save_code)
         exec(save_code, _SCOPE[scope])
     return jsonify(status='success', code=200, message='save table successfully!')
 
-@API.route('/table', methods=['GET'])
+@API.route('/table/schema', methods=['GET'])
 def table_info():
     log.INSTANCE.info("GET /table: {}".format(request.args))
 
     scope = request.args.get('scope')
+    log.INSTANCE.info("scope: {}".format(scope))
     if scope not in _SCOPE:
         return jsonify(status='error', code=-1, message='scope {} not found!'.format(scope))
 
     session = request.args.get('session')
     if session is None:
         session = 'spark'
+    log.INSTANCE.info("session: {}".format(session))
 
     table_name = request.args.get('table')
+    log.INSTANCE.info("table: {}".format(table_name))
     # use eval to get result instead of exec
-    table_schema_code = _generate_table_schema_code(table_name, session)
+    table_schema_code = codegen.generate_table_schema_code(table_name, session)
+    log.INSTANCE.info(table_schema_code)
     json_schema = eval(table_schema_code, _SCOPE[scope])
+    log.INSTANCE.info(json_schema)
     schema = [json.loads(row) for row in json_schema]
+    log.INSTANCE.info(schema)
 
-    table_count_code = _generate_table_count_code(table_name, session)
-    json_count = eval(table_count_code, _SCOPE[scope])
-    num_rows = json.loads(json_count[0])
+    # table_count_code = codegen.generate_table_count_code(table_name, session)
+    # log.INSTANCE.info(table_count_code)
+    # json_count = eval(table_count_code, _SCOPE[scope])
+    # log.INSTANCE.info(json_count)
+    # num_rows = json.loads(json_count[0])
+    # log.INSTANCE.info(num_rows)
 
     return jsonify(
         status="success",
         code=200,
         table=table_name,
         schema=schema,
-        **num_rows,
+        # **num_rows,
     )
 
 @API.route('/query', methods=['POST'])
@@ -149,7 +161,7 @@ def query():
 
     collect_result = request.json.get('collect_result')
     if collect_result is None or collect_result == '1':
-        code = _generate_run_for_json_code(sql, session)
+        code = codegen.generate_run_for_json_code(sql, session)
         json_res = eval(code, _SCOPE[scope])
         return jsonify(
             status='success',
@@ -159,7 +171,7 @@ def query():
         )
     
     # just run sql
-    code = _generate_run_sql_code(sql, session)
+    code = codegen.generate_run_sql_code(sql, session)
     exec(code, _SCOPE[scope])
     return jsonify(
         status='success',
@@ -169,10 +181,10 @@ def query():
 
 def render(payload, render_type):
     generate_func = {
-        "pointmap": _generate_pointmap_code,
-        "heatmap": _generate_heatmap_code,
-        "choroplethmap": _generate_choropleth_map_code,
-        "weighted_pointmap": _generate_weighted_map_code,
+        "pointmap": codegen.generate_pointmap_code,
+        "heatmap": codegen.generate_heatmap_code,
+        "choroplethmap": codegen.generate_choropleth_map_code,
+        "weighted_pointmap": codegen.generate_weighted_map_code,
     }
 
     log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
@@ -188,7 +200,7 @@ def render(payload, render_type):
     sql = payload.get('sql')
     params = payload.get('params')
 
-    sql_code, vega_code = generate_func[render_type](sql, params, session_name)
+    sql_code, vega_code = generate_func[render_type](sql, params, session)
 
     res = eval(sql_code, _SCOPE[scope])
     vega = eval(vega_code, _SCOPE[scope])

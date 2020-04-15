@@ -13,7 +13,7 @@ limitations under the License.
 
 import uuid
 
-def _generate_session_code(session_name="spark"):
+def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
     master_addr = "local[*]"
@@ -34,7 +34,7 @@ def _generate_session_code(session_name="spark"):
 
     return session_code
 
-def _generate_load_code(table, session_name="spark"):
+def generate_load_code(table, session_name="spark"):
     table_name = table.get("name")
     if 'path' in table and 'schema' in table and 'format' in table:
         options = table.get('options', None)
@@ -61,39 +61,40 @@ def _generate_load_code(table, session_name="spark"):
         load_code += '{}_df.createOrReplaceTempView("{}")\n'.format(table_name, table_name)
     return load_code
 
-def _generate_save_code(table, session_name="spark"):
+def generate_save_code(table, session_name="spark"):
     path = table.get("path")
     table_format = table.get("format")
     options = table.get("options", None)
     sql = table.get("sql")
 
     save_code = '{}.sql("{}")'.format(session_name, sql)
-    save_code += '.write.format("{}")'.format(table_format)
+    # no need to coalesce(1) just due to saving as a single file?
+    save_code += '.coalesce(1).write.format("{}")'.format(table_format)
     for key, value in options.items():
         save_code += '.option("{}", "{}")'.format(key, value)
     save_code += '.save("{}")\n'.format(path)
 
     return save_code
 
-def _generate_run_sql_code(sql, session_name='spark'):
+def generate_run_sql_code(sql, session_name='spark'):
     code = '{}.sql("{}")'.format(session_name, sql)
     return code
 
-def _generate_run_for_json_code(sql, session_name='spark'):
+def generate_run_for_json_code(sql, session_name='spark'):
     code = '{}.sql("{}")'.format(session_name, sql)
     code += '.coalesce(1).toJSON().collect()'
     return code
 
-def _generate_table_schema_code(table_name, session_name='spark'):
+def generate_table_schema_code(table_name, session_name='spark'):
     sql = "desc table {}".format(table_name)
-    return _generate_run_for_json_code(sql, session_name)
+    return generate_run_for_json_code(sql, session_name)
 
-def _generate_table_count_code(table_name, session_name='spark'):
-    sql = "select count(*) as num_rows from {}".format()
-    return _generate_run_for_json_code(sql, session_name)
+def generate_table_count_code(table_name, session_name='spark'):
+    sql = "select count(*) as num_rows from {}".format(table_name)
+    return generate_run_for_json_code(sql, session_name)
 
-def _generate_pointmap_code(sql, params, session_name='spark'):
-    sql_code = _generate_run_sql_code(sql, session_name)
+def generate_pointmap_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
     vega_code = 'vega_pointmap({}, {}, {}, {}, "{}", {}, "{}")'.format(
         int(params.get('width')),
         int(params.get('height')),
@@ -105,8 +106,8 @@ def _generate_pointmap_code(sql, params, session_name='spark'):
     )
     return sql_code, vega_code
 
-def _generate_heatmap_code(sql, params, session_name='spark'):
-    sql_code = _generate_run_sql_code(sql, session_name)
+def generate_heatmap_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
     vega_code = 'vega_heatmap({}, {}, {}, {}, "{}", "{}")'.format(
         int(params.get('width')),
         int(params.get('height')),
@@ -117,8 +118,8 @@ def _generate_heatmap_code(sql, params, session_name='spark'):
     )
     return sql_code, vega_code
 
-def _generate_choropleth_map_code(sql, params, session_name='spark'):
-    sql_code = _generate_run_sql_code(sql, session_name)
+def generate_choropleth_map_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
     vega_code = 'vega_choroplethmap({}, {}, {}, {}, {}, {}, "{}", "{}")'.format(
         int(params.get('width')),
         int(params.get('height')),
@@ -131,8 +132,8 @@ def _generate_choropleth_map_code(sql, params, session_name='spark'):
     )
     return sql_code, vega_code
 
-def _generate_weighted_map_code(sql, params, session_name='spark'):
-    sql_code = _generate_run_sql_code(sql, session_name)
+def generate_weighted_map_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
     vega_code = 'vega_weighted_pointmap({}, {}, {}, {}, {}, {}, {}, "{}")'.format(
         int(params.get('width')),
         int(params.get('height')),
