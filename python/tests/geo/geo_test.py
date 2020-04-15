@@ -194,6 +194,7 @@ def test_ST_Distance():
     assert rst[1] == 2.0
 
 def test_ST_DistanceSphere():
+    import numpy
     p11 = "POINT(-73.981153 40.741841)"
     p12 = "POINT(200 10)"
     data1 = pandas.Series([p11, p12])
@@ -205,7 +206,7 @@ def test_ST_DistanceSphere():
     rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
 
     assert abs(rst[0]-1531) < 1
-    assert rst[1] is None
+    assert numpy.isnan(rst[0])
 
 def test_ST_Area():
     data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
