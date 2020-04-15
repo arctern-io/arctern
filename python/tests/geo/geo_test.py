@@ -194,7 +194,7 @@ def test_ST_Distance():
     assert rst[1] == 2.0
 
 def test_ST_DistanceSphere():
-    p11 = "POINT(-73.981153 -73.981153)"
+    p11 = "POINT(-73.981153 40.741841)"
     p12 = "POINT(200 10)"
     data1 = pandas.Series([p11, p12])
 
