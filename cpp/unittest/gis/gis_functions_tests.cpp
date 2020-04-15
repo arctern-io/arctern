@@ -2444,10 +2444,10 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Append(10), lon_builder.Append(-91);
 
   std::shared_ptr<arrow::Array> from_lat, from_lon;
-  lat_buider.Finish(&from_lat),lon_builder.Finish(&from_lon)
-  auto from_point = arctern::gis::ST_Point(from_lat, from_lon)
+  lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
+  auto from_point = arctern::gis::ST_Point(from_lat, from_lon);
 
-  lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904));
+  lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
   lat_buider.Append(100), lon_builder.Append(70);
   lat_buider.Append(100), lon_builder.Append(70);
   lat_buider.Append(100), lon_builder.Append(70);
@@ -2455,13 +2455,17 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Append(100), lon_builder.Append(70);
 
   std::shared_ptr<arrow::Array> to_lat, to_lon;
-  lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lat);
-  auto to_point = arctern::gis::ST_Point(to_lat, to_lat);
+  lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
+  auto to_point = arctern::gis::ST_Point(to_lat, to_lon);
 
   auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
-  ASSERT_TRUE(std::abs(res_double->Value(0) - 1531) < 1);
+  std::cout << res_double->Value(0) << std::endl;
+  std::cout << distance(-73.981153, 40.741841, -73.99016751859183, 40.729884354626904)
+            << std::endl;
+
+  ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(1), distance(10, 20, 100, 70));
   ASSERT_TRUE(res_double->IsNull(2));
   ASSERT_TRUE(res_double->IsNull(3));
