@@ -162,6 +162,12 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
+std::shared_ptr<arrow::Array> ST_DistanceSphere(
+    const std::shared_ptr<arrow::Array>& point_left,
+    const std::shared_ptr<arrow::Array>& point_right) {
+  return gdal::ST_DistanceSphere(point_left, point_right);
+}
+
 std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left_raw,
     const std::shared_ptr<arrow::Array>& geo_right_raw) {

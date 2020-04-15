@@ -123,6 +123,9 @@ def ST_Within(object geo_arr1,object geo_arr2):
 def ST_Distance(object geo_arr1,object geo_arr2):
     pass
 
+def ST_DistanceSphere(object geo_arr1,object geo_arr2):
+    pass
+
 def ST_Area(object geo_arr):
     pass
 
