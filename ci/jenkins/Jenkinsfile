@@ -35,7 +35,7 @@ pipeline {
                 axes {
                     axis {
                         name 'OS_NAME'
-                        values 'ubuntu18.04'
+                        values 'centos7'
                     }
                     axis {
                         name 'CPU_ARCH'
@@ -92,7 +92,7 @@ pipeline {
                 axes {
                     axis {
                         name 'OS_NAME'
-                        values 'ubuntu18.04'
+                        values 'centos7'
                     }
                     axis {
                         name 'CPU_ARCH'
