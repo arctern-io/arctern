@@ -53,7 +53,7 @@ DEVICE_RUNNABLE Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag
     case WkbCategory::kPoint: {
       auto right_point = right_iter.read_value<double2>();
       auto mat = PointRelateToLineString(right_point, left_size, left_points);
-      result = mat.transpose();
+      result = mat.get_transpose();
       break;
     }
     case WkbCategory::kLineString: {

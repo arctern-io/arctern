@@ -85,7 +85,7 @@ class Matrix {
     set<Position::kE, col>(toState(text[2]));
   }
 
-  DEVICE_RUNNABLE Matrix transpose() const {
+  DEVICE_RUNNABLE Matrix get_transpose() const {
     Matrix mat;
     for (int i = 0; i < 8; ++i) {
       auto ref = i / 3 + i % 3 * 3;

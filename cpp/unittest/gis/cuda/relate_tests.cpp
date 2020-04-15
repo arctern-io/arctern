@@ -171,16 +171,15 @@ TEST(Relation, LineStringRelateToLineString) {
   }
 
   vector<thrust::complex<double>> scale_factors;
-  scale_factors.emplace_back(1, 0);
-  //  for (double i : {0, 1, -1}) {
-  //    for (double j : {0, 1, -1}) {
-  //      auto x = cu::to_complex({i, j});
-  //      if (x == 0) {
-  //        continue;
-  //      }
-  //      scale_factors.emplace_back(x);
-  //    }
-  //  }
+  for (double i : {0, 1, -1}) {
+    for (double j : {0, 1, -1}) {
+      auto x = cu::to_complex({i, j});
+      if (x == 0) {
+        continue;
+      }
+      scale_factors.emplace_back(x);
+    }
+  }
 
   for (auto scale_factor : scale_factors) {
     for (auto index = 0; index < datas.size(); ++index) {
@@ -193,7 +192,17 @@ TEST(Relation, LineStringRelateToLineString) {
       for (auto& v : data.right) {
         scale(v);
       }
+
       auto matrix =
+          cu::LineStringRelateToLineString(data.left.size(), data.left.data(),
+                                           data.right.size(), data.right.data(), buffer);
+      ASSERT_EQ(matrix, data.std_matrix) << index << std::endl
+                                         << data.left << std::endl
+                                         << data.right << std::endl;
+
+      std::swap(data.left, data.right);
+      data.std_matrix = data.std_matrix.get_transpose();
+      matrix =
           cu::LineStringRelateToLineString(data.left.size(), data.left.data(),
                                            data.right.size(), data.right.data(), buffer);
       ASSERT_EQ(matrix, data.std_matrix) << index << std::endl
