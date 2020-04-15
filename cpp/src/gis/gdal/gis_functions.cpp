@@ -624,34 +624,37 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_DistanceSphere(const std::shared_ptr<arrow::Array>& point_left,
-                                                const std::shared_ptr<arrow::Array>& point_right) {
+std::shared_ptr<arrow::Array> ST_DistanceSphere(
+    const std::shared_ptr<arrow::Array>& point_left,
+    const std::shared_ptr<arrow::Array>& point_right) {
   auto op = [](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
-    if((g1->getGeometryType()!=wkbPoint) || (g2->getGeometryType()!=wkbPoint)){
+    if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
       builder.AppendNull();
-    }else{
+    } else {
       auto p1 = reinterpret_cast<OGRPoint*>(g1);
       auto p2 = reinterpret_cast<OGRPoint*>(g2);
       double fromlat = p1->getX();
       double fromlon = p1->getY();
       double tolat = p2->getX();
       double tolon = p2->getY();
-      if((fromlat>180) || (fromlat<-180) || (fromlon>90) || (fromlon<-90) || (tolat>180) || (tolat<-180) || (tolon>90) || (tolon<-90)){
+      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
+          (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
         builder.AppendNull();
-      }else{
+      } else {
         double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
         double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
         double latitudeH = sin(latitudeArc * 0.5);
         latitudeH *= latitudeH;
         double lontitudeH = sin(longitudeArc * 0.5);
         lontitudeH *= lontitudeH;
-        double tmp = cos(fromlat * 0.017453292519943295769236907684886) * cos(tolat * 0.017453292519943295769236907684886);
-        double distance = 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+        double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+                     cos(tolat * 0.017453292519943295769236907684886);
+        double distance =
+            6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
         builder.Append(distance)
       }
     }
-  }
-  return BinaryOp<arrow::DoubleBuilder>(geo1, geo2, op);
+  } return BinaryOp<arrow::DoubleBuilder>(geo1, geo2, op);
 }
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,
