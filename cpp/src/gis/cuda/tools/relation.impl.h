@@ -181,11 +181,11 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
     if (right_size == 0) {
       return Matrix("FFFFFFFF*");
     } else {
-      return Matrix("FFFFFF01*");
+      return Matrix("FFFFFF10*");
     }
   }
   if (right_size == 0) {
-    return Matrix("FF0FF1FF");
+    return Matrix("FF1FF0FF");
   }
   assert(left_size >= 2);
   assert(right_size >= 2);

@@ -9,6 +9,8 @@
 namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
+,,FFFFFFFF*
+,0_0_0_1,FFFFFF10*
 0_0_0_3,0_0_0_1_1_1_0_2_0_3,1F1F0F1F*
 0_0_0_1,0_1_0_2,FF1F0010*
 0_0_0_1,0_0_2_1_-2_0,0F1F0010*
