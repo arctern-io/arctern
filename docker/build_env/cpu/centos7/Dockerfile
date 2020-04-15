@@ -13,7 +13,8 @@ RUN yum install -y epel-release centos-release-scl-rh && yum install -y wget cur
     mesa-libGLU-devel mesa-libOSMesa-devel && \
     mkdir /build && \
     wget -qO- "https://mirrors.ustc.edu.cn/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz" | tar --strip-components=1 -xz -C /build && \
-    cd build && ./configure --enable-checking=release --enable-languages=c,c++ --disable-multilib && \
+    cd build && ./contrib/download_prerequisites && \
+    ./configure --enable-checking=release --enable-languages=c,c++ --disable-multilib && \
     make && make install && \
     rm -rf /build && \
     rm -rf /var/cache/yum/*
