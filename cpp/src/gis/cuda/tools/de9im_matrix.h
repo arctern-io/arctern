@@ -103,6 +103,7 @@ class Matrix {
     return out;
   }
 
+
  private:
   union {
     State states_[8];

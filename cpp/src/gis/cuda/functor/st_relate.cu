@@ -102,19 +102,24 @@ DEVICE_RUNNABLE Matrix RelateOp(ConstGpuContext& left, ConstGpuContext& right,
 }
 
 __global__ void ST_RelateImpl(ConstGpuContext left, ConstGpuContext right,
-                              de9im::Matrix input_matrix,
-                              de9im::Matrix* output_matrixes) {
+                              de9im::Matrix hint_matrix, de9im::Matrix* output_matrixes) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < left.size) {
-    output_matrixes[index] = RelateOp(left, right, input_matrix, index);
-    // TODO: check hint, use bool api
+    output_matrixes[index] = RelateOp(left, right, hint_matrix, index);
   }
 }
 
+
+
+
 void ST_Relate(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               de9im::Matrix input_matrix, de9im::Matrix* host_output_matrixes) {
+               de9im::Matrix input_matrix, bool* host_is_matched) {
   assert(left_vec.size() == right_vec.size());
   auto size = left_vec.size();
+  auto left_holder = left_vec.CreateReadGpuContext();
+  auto right_holder = right_vec.CreateReadGpuContext();
+//  RelateOp();
+
 }
 
 }  // namespace cuda
