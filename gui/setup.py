@@ -16,7 +16,12 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="server",
+    name="arctern_server",
+    version="0.1.0",
+    author="Zilliz",
+    author_email="support@zilliz.com",
+    description="arctern demo server",
     packages=find_packages(),
-    data_files=['server/data/0_5M_nyc_taxi_and_building.csv', 'server/data/account.db']
+    data_files=['server/data/0_5M_nyc_taxi_and_building.csv', 'server/data/account.db'],
+    python_requires='>=3.6',
 )
