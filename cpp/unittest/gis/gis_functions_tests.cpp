@@ -2455,7 +2455,7 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Append(100), lon_builder.Append(70);
 
   std::shared_ptr<arrow::Array> to_lat, to_lon;
-  lat_buider.Finish(&to_lat),lon_builder.Finish(&to_lat);
+  lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lat);
   auto to_point = arctern::gis::ST_Point(to_lat, to_lat);
 
   auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
