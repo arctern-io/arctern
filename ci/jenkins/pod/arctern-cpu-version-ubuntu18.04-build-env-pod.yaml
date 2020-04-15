@@ -8,12 +8,12 @@ metadata:
 spec:
   containers:
   - name: arctern-cpu-build-env
-    image: registry.zilliz.com/arctern/arctern-cpu-build-env:v0.1.0-ubuntu18.04
+    image: registry.zilliz.com/arctern/arctern-build-env:v0.1.0-ubuntu18.04
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      value: "ec4141b819dd77a0a7caef398c961140b052d2b4e9accbf01df02ff636181535"
+      value: "e7fe40e2d322a5053fe488945aceb5902ee79700ede24e21bf5cc1caff2f67f3"
     command:
     - cat
     tty: true
