@@ -206,7 +206,7 @@ def test_ST_DistanceSphere():
     rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
 
     assert abs(rst[0]-1531) < 1
-    assert math.isnan(rst[0])
+    assert math.isnan(rst[1])
 
 def test_ST_Area():
     data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
