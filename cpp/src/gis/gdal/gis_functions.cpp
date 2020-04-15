@@ -628,7 +628,20 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
 std::shared_ptr<arrow::Array> ST_DistanceSphere(
     const std::shared_ptr<arrow::Array>& point_left,
     const std::shared_ptr<arrow::Array>& point_right) {
-  auto op = [](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
+
+  auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
+    double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
+    double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+                 cos(tolat * 0.017453292519943295769236907684886);
+    return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+  };
+
+  auto op = [&distance ](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
     if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
       builder.AppendNull();
     } else {
@@ -642,17 +655,7 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
           (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
         builder.AppendNull();
       } else {
-        double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
-        double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
-        double latitudeH = sin(latitudeArc * 0.5);
-        latitudeH *= latitudeH;
-        double lontitudeH = sin(longitudeArc * 0.5);
-        lontitudeH *= lontitudeH;
-        double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
-                     cos(tolat * 0.017453292519943295769236907684886);
-        double distance =
-            6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
-        builder.Append(distance);
+        builder.Append(distance(fromlat,fromlon,tolat,tolon));
       }
     }
   };
