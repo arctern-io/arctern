@@ -193,6 +193,21 @@ def test_ST_Distance():
     assert rst[0] == 1.0
     assert rst[1] == 2.0
 
+def test_ST_DistanceSphere():
+    # TODO(dyh):: finish test
+    p11 = "POINT(10 2)"
+    p12 = "POINT(10 2)"
+    data1 = pandas.Series([p11, p12])
+
+    p21 = "POINT(10 2)"
+    p22 = "POINT(10 2)"
+    data2 = pandas.Series([p21, p22])
+
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+
+    # assert rst[0] == 1.0
+    # assert rst[1] == 2.0
+
 def test_ST_Area():
     data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
     data = pandas.Series(data)

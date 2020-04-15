@@ -286,6 +286,23 @@ def run_st_distance(spark):
     assert rs[0][0] == 3
     assert rs[1][0] == 0.7905694150420949
 
+def run_st_distance_sphere(spark):
+    # TODO(dyh):: finish test
+    test_data = []
+    test_data.extend([(
+        'POINT(31.75 31.25)',
+        'POINT(31.75 31.25)'
+    )])
+    test_data.extend([(
+        'POINT(31.75 31.25)',
+        'POINT(31.75 31.25)'
+    )])
+    distance_sphere_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+    distance_sphere_df.createOrReplaceTempView("distance_sphere")
+    rs = spark.sql("select ST_DistanceSphere(ST_GeomFromText(left), ST_GeomFromText(right)) from distance_sphere").collect()
+    # assert rs[0][0] == 3
+    # assert rs[1][0] == 0.7905694150420949
+
 def run_st_area(spark):
     test_data = []
     test_data.extend([('POLYGON((10 20,10 30,20 30,30 10))',)])
@@ -461,6 +478,7 @@ if __name__ == "__main__":
     run_st_intersects(spark_session)
     run_st_within(spark_session)
     run_st_distance(spark_session)
+    run_st_distance_sphere(spark_session)
     run_st_area(spark_session)
     run_st_centroid(spark_session)
     run_st_length(spark_session)
