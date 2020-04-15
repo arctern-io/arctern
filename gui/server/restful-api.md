@@ -122,6 +122,77 @@ curl --location --request DELETE 'http://localhost:8080/scope/scope_name'
 }
 ```
 
+### 执行命令
+
+在指定作用域内(`scope`)执行python代码，后台返回执行结果。
+
+#### Request
+
+- Method: **POST**
+- URL: `/command`
+- Headers:
+    - `Content-Type: application/json`
+- Body:
+```json
+{
+    "scope": "scope_name",
+    "command": "import sys\nprint(len(sys.argv))"
+}
+```
+
+参数说明：
+
+- scope：该字段指明在哪一个作用域内执行command；
+- command：待执行的`python`代码。
+
+样例：
+
+```python
+import requests
+
+url = "http://localhost:8080/command"
+
+payload = "{\n\t\"scope\":\"scope_name\",\n\t\"comamnd\":\"import sys\\nprint(len(sys.argv))\"\n}"
+headers = {
+  'Content-Type': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data = payload)
+
+print(response.text.encode('utf8'))
+```
+
+```shell
+curl --location --request POST 'http://localhost:8080/command' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"scope":"scope_name",
+	"comamnd":"import sys\nprint(len(sys.argv))"
+}'
+```
+
+#### Response
+
+正常执行：
+
+```json
+{
+    "status": "success",
+    "code": "200",
+    "message": "execute command successfully!"
+}
+```
+
+执行对应代码出现异常：
+
+```json
+{
+    "status": "error",
+    "code": "400",
+    "message": "cannot import package1"
+}
+```
+
 ### 从文件中加载表
 
 在指定作用域(`scope`)内加载文件内容，并执行对应的建表操作，注意，该操作使用`scope`内的`spark`作为默认的`SparkSession`，详见[/scope](###/scope)。
@@ -349,10 +420,10 @@ curl --location --request POST 'http://localhost:8080/savetable' \
 #### Request
 
 - Method: **GET**
-- URL: /table/<scope_name>/<session_name>/<table_name>
+- URL: /table?scope=scope1&session=spark&table=table1
 
 - scope_name：该字段指明在哪一个作用域内查询表的信息；
-- session_name：该字段指明使用哪个`SparkSession`查询表的信息，若未指定，则使用默认的`spark`，此时url为/table/scope/table_name；
+- session_name：可选参数，该字段指明使用哪个`SparkSession`查询表的信息，若未指定，则使用默认的`spark`；
 - table_name：表名。
 
 样例：
@@ -360,7 +431,7 @@ curl --location --request POST 'http://localhost:8080/savetable' \
 ```python
 import requests
 
-url = "http://localhost:8080/table/scope/spark/table_name"
+url = "http://localhost:8080/table?scope=scope1&session=spark&table=table1"
 
 payload = {}
 headers= {}
@@ -371,7 +442,7 @@ print(response.text.encode('utf8'))
 ```
 
 ```shell
-curl --location --request GET 'http://localhost:8080/table/scope/spark/table_name'
+curl --location --request GET 'http://localhost:8080/table?scope=scope1&session=spark&table=table1'
 ```
 
 ### Response
@@ -612,7 +683,8 @@ curl --location --request POST 'http://localhost:8080/pointmap' \
         "height": 896,
         "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
         "coordinate_system": "EPSG:4326",
-        "map_zoom_level": 10
+        "map_zoom_level": 10,
+        "aggragation_type": "sum"
     }
 }
 ```
@@ -628,6 +700,7 @@ curl --location --request POST 'http://localhost:8080/pointmap' \
     - bounding_box：渲染图片所表示的地理范围[`x_min`, `y_min`, `x_max`, `y_max`]；
     - coordinate_system：输入数据的坐标系统，详见[World Geodetic System](https://en.wikipedia.org/wiki/World_Geodetic_System)；
     - map_zoom_level：地图放大比例，取值范围`(1 ~ 15)`；
+    - aggregation_type：聚合类型。
 
 样例：
 
@@ -680,7 +753,7 @@ curl --location --request POST 'http://localhost:8080/heatmap' \
 轮廓图，根据`sql`语句以及相关画图参数绘制轮廓图，将编码后的图片数据返回。
 
 - Method: **POST**
-- URL: `/choropleth_map`
+- URL: `/choroplethmap`
 - Headers:
     - `Content-Type: application/json`
 - Body:
@@ -696,7 +769,8 @@ curl --location --request POST 'http://localhost:8080/heatmap' \
         "coordinate_system": "EPSG:4326",
         "color_gradient": ["#0000FF", "#FF0000"],
         "color_bound": [2.5, 5],
-        "opacity": 1
+        "opacity": 1,
+        "aggregation_type": "sum"
     }
 }
 ```
@@ -714,13 +788,14 @@ curl --location --request POST 'http://localhost:8080/heatmap' \
     - color_gradient：点的颜色渐变范围，即点的颜色从左边渐变到右边；
     - color_bound：点颜色的取值范围，与`color_gradient`配合使用；
     - opacity：点的不透明度。
+    - aggregation_type：聚合类型。
 
 样例：
 
 ```python
 import requests
 
-url = "http://localhost:8080/choropleth_map"
+url = "http://localhost:8080/choroplethmap"
 
 payload = "{\n    \"scope\": \"scope_name\",\n    \"session\": \"session_name\",\n    \"sql\": \"select ST_Point(col2, col2) as point, col2 as count from table_name\",\n    \"params\": {\n        \"width\": 1024,\n        \"height\": 896,\n        \"bounding_box\": [-75.37976, 40.191296, -71.714099, 41.897445],\n        \"coordinate_system\": \"EPSG:4326\",\n        \"color_gradient\": [\"#0000FF\", \"#FF0000\"],\n        \"color_bound\": [2.5, 5],\n        \"opacity\": 1\n    }\n}"
 headers = {
@@ -733,7 +808,7 @@ print(response.text.encode('utf8'))
 ```
 
 ```shell
-curl --location --request POST 'http://localhost:8080/choropleth_map' \
+curl --location --request POST 'http://localhost:8080/choroplethmap' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "scope": "scope_name",
@@ -768,7 +843,7 @@ curl --location --request POST 'http://localhost:8080/choropleth_map' \
 权重图，根据`sql`语句以及相关画图参数绘制权重图，将编码后的图片数据返回。
 
 - Method: **POST**
-- URL: `/weighted_map`
+- URL: `/weighted_pointmap`
 - Headers:
     - `Content-Type: application/json`
 - Body:
@@ -810,7 +885,7 @@ curl --location --request POST 'http://localhost:8080/choropleth_map' \
 ```python
 import requests
 
-url = "http://localhost:8080/weighted_map"
+url = "http://localhost:8080/weighted_pointmap"
 
 payload = "{\n    \"scope\": \"scope_name\",\n    \"session\": \"session_name\",\n    \"sql\": \"select ST_Point(col2, col2) as point, col2 as count1, col2 as count2 from table_name\",\n    \"params\": {\n            \"width\": 1024,\n            \"height\": 896,\n            \"bounding_box\": [-75.37976, 40.191296, -71.714099, 41.897445],\n            \"color_gradient\": [\"#0000FF\", \"#FF0000\"],\n            \"color_bound\": [0, 2],\n            \"size_bound\": [0, 10],\n            \"opacity\": 1.0,\n            \"coordinate_system\": \"EPSG:4326\"\n    }\n}"
 headers = {
@@ -823,7 +898,7 @@ print(response.text.encode('utf8'))
 ```
 
 ```shell
-curl --location --request POST 'http://localhost:8080/weighted_map' \
+curl --location --request POST 'http://localhost:8080/weighted_pointmap' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "scope": "scope_name",

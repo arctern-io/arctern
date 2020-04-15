@@ -33,6 +33,10 @@ APP.register_blueprint(app_service.API)
 
 CORS(APP, resources=r'/*')
 
+@APP.errorhandler(Exception)
+def exception_handler(e):
+    log.INSTANCE.error('exception: {}'.format(str(e)))
+    return jsonify(status='error', code=-1, message=str(e))
 
 def usage():
     """
