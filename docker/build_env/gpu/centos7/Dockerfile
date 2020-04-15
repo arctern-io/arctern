@@ -17,6 +17,7 @@ RUN yum install -y epel-release centos-release-scl-rh && yum install -y wget cur
     cd build && ./contrib/download_prerequisites && \
     ./configure --enable-checking=release --enable-languages=c,c++ --disable-multilib && \
     make && make install && \
+    rm -rf /build && \
     rm -rf /var/cache/yum/*
 
 RUN echo "source scl_source enable llvm-toolset-7.0" >> /etc/profile.d/llvm-toolset-7.sh
