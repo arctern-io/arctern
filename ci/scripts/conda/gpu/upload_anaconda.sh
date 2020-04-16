@@ -31,7 +31,7 @@ if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
 fi
 
 if [ "$UPLOAD_ARCTERN" == "1" ]; then
-    export ARCTERN_FILE=`conda build conda/recipes/pyarctern -c conda-forge -c defaults --output`
+    export ARCTERN_FILE=`conda build conda/recipes/arctern -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
