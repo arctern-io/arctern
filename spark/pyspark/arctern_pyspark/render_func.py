@@ -105,7 +105,8 @@ def weighted_pointmap(vega, df):
             def render_agg_UDF(batch_iter):
                 for pdf in batch_iter:
                     dd = pdf.groupby([col_point])
-                    dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                    ll = [col_color, col_stroke]
+                    dd = dd[ll].agg(['sum']).reset_index()
                     dd.columns = [col_point, col_color, col_stroke]
                     yield dd
 
@@ -158,7 +159,8 @@ def weighted_pointmap(vega, df):
         def render_agg_UDF(batch_iter):
             for pdf in batch_iter:
                 dd = pdf.groupby([col_point])
-                dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                ll = [col_color, col_stroke]
+                dd = dd[ll].agg(['sum']).reset_index()
                 dd.columns = [col_point, col_color, col_stroke]
                 yield dd
 

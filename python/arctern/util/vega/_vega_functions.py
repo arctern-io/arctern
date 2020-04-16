@@ -45,11 +45,15 @@ def vega_weighted_pointmap(width,
                            height,
                            bounding_box,
                            color_gradient,
-                           color_bound,
-                           size_bound,
-                           opacity,
+                           color_bound=None,
+                           size_bound=None,
+                           opacity=1.0,
                            coordinate_system="EPSG:4326",
-                           aggregation_type="sum"):
+                           aggregation_type="max"):
+    if color_bound is None:
+        color_bound = [0, 0]
+    if size_bound is None:
+        size_bound = [10]
     return VegaWeightedPointMap(width,
                                 height,
                                 bounding_box,
@@ -79,10 +83,12 @@ def vega_choroplethmap(width,
                        height,
                        bounding_box,
                        color_gradient,
-                       color_bound,
-                       opacity,
+                       color_bound=None,
+                       opacity=1.0,
                        coordinate_system="EPSG:4326",
                        aggregation_type="sum"):
+    if color_bound is None:
+        color_bound = [0, 0]
     return VegaChoroplethMap(width,
                              height,
                              bounding_box,

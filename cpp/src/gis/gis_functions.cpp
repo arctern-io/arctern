@@ -69,6 +69,10 @@ std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb
   return gdal::ST_AsText(wkb);
 }
 
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+  return gdal::ST_AsGeoJSON(wkb);
+}
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(
@@ -157,6 +161,12 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
 }
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
+
+std::shared_ptr<arrow::Array> ST_DistanceSphere(
+    const std::shared_ptr<arrow::Array>& point_left,
+    const std::shared_ptr<arrow::Array>& point_right) {
+  return gdal::ST_DistanceSphere(point_left, point_right);
+}
 
 std::shared_ptr<arrow::Array> ST_Distance(
     const std::shared_ptr<arrow::Array>& geo_left_raw,

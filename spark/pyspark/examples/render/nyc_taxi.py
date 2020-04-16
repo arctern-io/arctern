@@ -36,7 +36,7 @@ def draw_point_map(spark):
     register_funcs(spark)
     res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
-    vega = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
+    vega = vega_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], point_size=3, point_color="#2DEF4A", opacity=0.5, coordinate_system="EPSG:4326")
     res = pointmap(vega, res)
     save_png(res, '/tmp/pointmap.png')
 
@@ -55,27 +55,29 @@ def draw_weighted_point_map(spark):
 
     # single color and single stroke width
     res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
-    vega1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#87CEEB"], [0, 2], [5], 1.0, "EPSG:4326")
+    vega1 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#87CEEB"], opacity=1.0, coordinate_system="EPSG:4326")
     res1 = weighted_pointmap(vega1, res1)
     save_png(res1, '/tmp/weighted_pointmap_0_0.png')
 
     # multiple color and single stroke width
     res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
-    vega2 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], [0, 2], [5], 1.0, "EPSG:4326")
+    vega2 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[0, 2], opacity=1.0, coordinate_system="EPSG:4326")
     res2 = weighted_pointmap(vega2, res2)
     save_png(res2, '/tmp/weighted_pointmap_1_0.png')
 
     # single color and multiple stroke width
     res3 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
-    vega3 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#87CEEB"], [0, 2], [0, 10], 1.0, "EPSG:4326")
+    vega3 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#87CEEB"], size_bound=[0, 10], opacity=1.0, coordinate_system="EPSG:4326")
     res3 = weighted_pointmap(vega3, res3)
     save_png(res3, '/tmp/weighted_pointmap_0_1.png')
 
     # multiple color and multiple stroke width
     res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
-    vega4 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], [0, 2], [0, 10], 1.0, "EPSG:4326")
+    vega4 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[0, 2], size_bound=[0, 10], opacity=1.0, coordinate_system="EPSG:4326")
     res4 = weighted_pointmap(vega4, res4)
     save_png(res4, '/tmp/weighted_pointmap_1_1.png')
+
+
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
@@ -93,7 +95,7 @@ def draw_heat_map(spark):
 
     res.show()
 
-    vega = vega_heatmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 10.0, 'EPSG:4326')
+    vega = vega_heatmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], map_zoom_level=10.0, coordinate_system='EPSG:4326')
     res = heatmap(vega, res)
     save_png(res, '/tmp/heatmap.png')
 
@@ -111,9 +113,9 @@ def draw_choropleth_map(spark):
     register_funcs(spark)
     res = spark.sql("select ST_GeomFromText(buildingtext_dropoff) as polygon, passenger_count as w from nyc_taxi")
 
-    vega = vega_choroplethmap(1900, 1410, [-73.994092, 40.753893, -73.977588, 40.759642], ["#0000FF", "#FF0000"], [2.5, 5], 1.0, 'EPSG:4326') 
-    res = choroplethmap(vega, res)
-    save_png(res, '/tmp/choroplethmap.png')
+    vega1 = vega_choroplethmap(1900, 1410, bounding_box=[-73.994092, 40.753893, -73.977588, 40.759642], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326') 
+    res1 = choroplethmap(vega1, res)
+    save_png(res1, '/tmp/choroplethmap1.png')
 
     spark.sql("show tables").show()
     spark.catalog.dropGlobalTempView("nyc_taxi")
