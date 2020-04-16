@@ -263,20 +263,23 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   assert(right_size >= 2);
   Matrix mat;
 
-//  using Position = Matrix::Position;
-  //  using State = Matrix::State;
+  using State = Matrix::State;
+  using Position = Matrix::Position;
 
-  auto cross_count = PointOnLineString(left_point, right_size, right_points);
+  auto C_count = PointOnLineString(left_point, right_size, right_points);
 
   // endpoints
   auto ep0 = right_points[0];
   auto ep1 = right_points[right_size - 1];
-  int boundary_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
+  int B_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
 
-  cross_count -= boundary_count;
-  assert(cross_count >= 0);
-//  mat->II = cross_count - boundary_count ? State::kDim0 : State
-
+  assert(C_count - B_count >= 0);
+  mat->II = C_count - B_count ? State::kDim0 : State::kFalse;
+  mat->IB = B_count ? State::kDim0 : State::kFalse;
+  mat->IE = !C_count ? State::kDim0 : State::kFalse;
+  mat.set_row<Position::kB>("FFF");
+  mat->EI = State::kDim1;
+  mat->EB = B_count != 2 ? State::kDim0 : State::kFalse;
 
   return mat;
 }
