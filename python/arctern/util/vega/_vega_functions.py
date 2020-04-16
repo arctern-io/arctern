@@ -28,10 +28,10 @@ from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 def vega_pointmap(width,
                   height,
                   bounding_box,
-                  point_size,
-                  point_color,
-                  opacity,
-                  coordinate_system="EPSG:4326"):
+                  point_size=3,
+                  point_color="#115f9a",
+                  opacity=1.0,
+                  coordinate_system="EPSG:3857"):
     return VegaPointMap(width,
                         height,
                         bounding_box,
@@ -48,12 +48,12 @@ def vega_weighted_pointmap(width,
                            color_bound=None,
                            size_bound=None,
                            opacity=1.0,
-                           coordinate_system="EPSG:4326",
+                           coordinate_system="EPSG:3857",
                            aggregation_type="max"):
     if color_bound is None:
         color_bound = [0, 0]
     if size_bound is None:
-        size_bound = [10]
+        size_bound = [3]
     return VegaWeightedPointMap(width,
                                 height,
                                 bounding_box,
@@ -69,7 +69,7 @@ def vega_heatmap(width,
                  height,
                  bounding_box,
                  map_zoom_level,
-                 coordinate_system="EPSG:4326",
+                 coordinate_system="EPSG:3857",
                  aggregation_type="sum"):
     return VegaHeatMap(width,
                        height,
@@ -85,7 +85,7 @@ def vega_choroplethmap(width,
                        color_gradient,
                        color_bound=None,
                        opacity=1.0,
-                       coordinate_system="EPSG:4326",
+                       coordinate_system="EPSG:3857",
                        aggregation_type="sum"):
     if color_bound is None:
         color_bound = [0, 0]
