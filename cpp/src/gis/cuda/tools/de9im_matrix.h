@@ -51,10 +51,10 @@ class Matrix {
     State BE;
     State EI;
     State EB;
-  }__align__(8);
+  } __align__(8);
 
  public:
-  DEVICE_RUNNABLE constexpr Matrix(): states_{} {}
+  DEVICE_RUNNABLE constexpr Matrix() : states_{} {}
   constexpr Matrix(const Matrix& mat) = default;
   constexpr Matrix(Matrix&& mat) = default;
   constexpr Matrix& operator=(const Matrix& mat) = default;
@@ -64,7 +64,7 @@ class Matrix {
     return static_cast<State>(ch);
   }
 
-  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text): states_{} {
+  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) : states_{} {
     assert(text[8] == '*');
     for (int i = 0; i < 8; i++) {
       states_[i] = toState(text[i]);
