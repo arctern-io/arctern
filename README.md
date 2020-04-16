@@ -25,7 +25,7 @@ For data format, Arctern supports standard numeric types, WKB formats, and files
 
 Arctern includes three types of column-based interface: C++ API, Python API, and Spark API. The C++ APIs pass arguments in Arrow format, Python and Spark APIs pass arguments in dataframe format. Because Spark will start to support GPU resource management since the 3.0 version, the Spark interface of Arctern only supports Spark 3.0.
 
-## Code example
+## Code example 
 
 ```python
 # Invoke Arctern API in PySpark
