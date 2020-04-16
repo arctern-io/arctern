@@ -18,7 +18,6 @@
 #pragma once
 #include <thrust/complex.h>
 #include <thrust/extrema.h>
-#include <thrust/optional.h>
 
 #include <algorithm>
 #include <utility>
@@ -107,7 +106,8 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   auto& ranges_buffer = buffer.ranges;
   ranges_buffer.clear();
   // this is to avoid too many allocations
-  thrust::optional<thrust::pair<double, double>> first_item;
+  bool has_first_item = false;
+  thrust::pair<double, double> first_item;
 
   // project left line to 0->1
   auto lv0 = to_complex(line_endpoints[0]);
@@ -144,7 +144,8 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
           if (!result.is_coveredby) {
             auto item = thrust::make_pair(rmin, rmax);
             // first_item lazy push, so common cases won't cost memory allocation
-            if (!first_item.has_value()) {
+            if (!has_first_item) {
+              has_first_item = true;
               first_item = item;
             } else {
               ranges_buffer.push_back(item);
@@ -165,8 +166,8 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
 
   // if vector has value
   if (!result.is_coveredby && ranges_buffer.size() != 0) {
-    assert(first_item.has_value());
-    ranges_buffer.push_back(first_item.value_or(thrust::make_pair(0.0, 0.0)));
+    assert(has_first_item);
+    ranges_buffer.push_back(first_item);
     ranges_buffer.sort();
     result.is_coveredby = IsRange01CoveredBy(ranges_buffer);
   }

@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include <thrust/optional.h>
-
 #include "gis/cuda/tools/bounding_box.h"
 
 namespace arctern {
