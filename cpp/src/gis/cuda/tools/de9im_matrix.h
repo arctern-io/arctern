@@ -20,9 +20,9 @@ class Matrix {
     kIgnored = '*',
     kFalse = 'F',
     kTrueGeneric = 'T',
-    kDimensionZero = '0',
-    kDimensionOne = '1',
-    kDimensionTwo = '2',
+    kDim0 = '0',
+    kDim1 = '1',
+    kDim2 = '2',
   };
 
   struct NamedStates {
@@ -119,9 +119,9 @@ class Matrix {
           }
         }
         case State::kFalse:
-        case State::kDimensionZero:
-        case State::kDimensionOne:
-        case State::kDimensionTwo: {
+        case State::kDim0:
+        case State::kDim1:
+        case State::kDim2: {
           if (state != ref_state) {
             return false;
           } else {

@@ -222,11 +222,11 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
     }
     case 0: {
       auto II_count = IE_relation.cross_count - BC_count - CB_count + BB_count;
-      matrix->II = II_count ? State::kDimensionZero : State::kFalse;
+      matrix->II = II_count ? State::kDim0 : State::kFalse;
       break;
     }
     case 1: {
-      matrix->II = State::kDimensionOne;
+      matrix->II = State::kDim1;
       break;
     }
     default: {
@@ -234,15 +234,15 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
       assert(false);
     }
   }
-  matrix->BI = BC_count - BB_count ? State::kDimensionZero : State::kFalse;
-  matrix->IB = CB_count - BB_count ? State::kDimensionZero : State::kFalse;
-  matrix->IE = !IE_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
-  matrix->EI = !EI_relation.is_coveredby ? State::kDimensionOne : State::kFalse;
+  matrix->BI = BC_count - BB_count ? State::kDim0 : State::kFalse;
+  matrix->IB = CB_count - BB_count ? State::kDim0 : State::kFalse;
+  matrix->IE = !IE_relation.is_coveredby ? State::kDim1 : State::kFalse;
+  matrix->EI = !EI_relation.is_coveredby ? State::kDim1 : State::kFalse;
   // Fix bug: BC_count != 2 can be misleading if B is on vertex of I,
   // which will be counted twice
-  matrix->BE = !(BC_count_0 && BC_count_1) ? State::kDimensionZero : State::kFalse;
-  matrix->EB = !(CB_count_0 && CB_count_1) ? State::kDimensionZero : State::kFalse;
-  matrix->BB = BB_count ? State::kDimensionZero : State::kFalse;
+  matrix->BE = !(BC_count_0 && BC_count_1) ? State::kDim0 : State::kFalse;
+  matrix->EB = !(CB_count_0 && CB_count_1) ? State::kDim0 : State::kFalse;
+  matrix->BB = BB_count ? State::kDim0 : State::kFalse;
 
   return matrix;
 }
@@ -275,9 +275,7 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
 
   cross_count -= boundary_count;
   assert(cross_count >= 0);
-//  using State = Matrix::State;
-
-//  mat->II = cross_count - boundary_count ? State::kDimensionZero : State
+//  mat->II = cross_count - boundary_count ? State::kDim0 : State
 
 
   return mat;
