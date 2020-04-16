@@ -20,8 +20,8 @@
 #define DEVICE_RUNNABLE __host__ __device__
 #else
 #define DEVICE_RUNNABLE
-using std::min;
 using std::max;
+using std::min;
 #endif
 
 #include <cuda_runtime.h>
