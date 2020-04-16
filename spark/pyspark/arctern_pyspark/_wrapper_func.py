@@ -77,9 +77,9 @@ def WkbToWkt(wkbs):
     return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PointFromText(geo):
+def ST_PointFromText(geos):
     """
-    Constructs point objects from the OGC Well-Known text representation.
+    Constructs points from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -104,12 +104,12 @@ def ST_PointFromText(geo):
       |POINT (30 10)                    |
       +---------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PolygonFromText(geo):
+def ST_PolygonFromText(geos):
     """
-    Constructs polygon objects from the OGC Well-Known text representation.
+    Constructs polygons from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -134,12 +134,12 @@ def ST_PolygonFromText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_LineStringFromText(geo):
+def ST_LineStringFromText(geos):
     """
-    Constructs linestring objects from the OGC Well-Known text representation.
+    Constructs linestrings from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -164,12 +164,12 @@ def ST_LineStringFromText(geo):
       |LINESTRING (0 0, 0 1, 1 1, 1 0)       |
       +--------------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromWKT(geo):
+def ST_GeomFromWKT(geos):
     """
-    Constructs geometry objects from the OGC Well-Known text representation.
+    Constructs geometries from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -194,12 +194,12 @@ def ST_GeomFromWKT(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))|
       +-------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromText(geo):
+def ST_GeomFromText(geos):
     """
-    Constructs geometry objects from the OGC Well-Known text representation.
+    Constructs geometries from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -224,12 +224,12 @@ def ST_GeomFromText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
-def ST_AsText(geo):
+def ST_AsText(geos):
     """
-    Returns the Well-Known Text representation of the geometry.
+    Returns the Well-Known Text representation of the geometries.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKB.
@@ -254,12 +254,12 @@ def ST_AsText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_AsText(geo)
+    return arctern.ST_AsText(geos)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
-def ST_AsGeoJSON(geo):
+def ST_AsGeoJSON(geos):
     """
-    Returns the GeoJSON representation of the geometry.
+    Returns the GeoJSON representation of the geometries.
 
     :type geo: pyarrow.array.string
     :param geo: Geometries organized as WKB.
@@ -284,12 +284,12 @@ def ST_AsGeoJSON(geo):
       |{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }|
       +------------------------------------------------------------------------------------------------------------------+
     """
-    return arctern.ST_AsGeoJSON(geo)
+    return arctern.ST_AsGeoJSON(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Point(x, y):
     """
-    Construct Point geometries according to the coordinates.
+    Construct points according to the coordinates.
 
     :type x: pandas.Series.float64
     :param x: Abscissa of the point.
@@ -322,7 +322,7 @@ def ST_Point(x, y):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_GeomFromGeoJSON(json):
     """
-    Constructs a geometry object from the GeoJSON representation.
+    Constructs geometries from the GeoJSON representation.
 
     :type json: pandas.Series.object
     :param json: Geometries organized as json
