@@ -163,6 +163,6 @@ class Matrix {
   State states_[8] __align__(8);
 };
 
-constexpr Matrix INVALID_MATRIX;
+constexpr Matrix INVALID_MATRIX("\0\0\0\0\0\0\0\0*");
 
 }  // namespace de9im
