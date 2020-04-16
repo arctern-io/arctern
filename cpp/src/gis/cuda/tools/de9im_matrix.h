@@ -38,6 +38,10 @@ class Matrix {
 
  public:
   DEVICE_RUNNABLE constexpr Matrix() : states_{State::kInvalid} {}
+  constexpr Matrix(const Matrix& mat) = default;
+  constexpr Matrix(Matrix&& mat) = default;
+  constexpr Matrix& operator=(const Matrix& mat) = default;
+  constexpr Matrix& operator=(Matrix&& mat) = default;
 
   DEVICE_RUNNABLE static constexpr State toState(char ch) {
     return static_cast<State>(ch);
@@ -128,6 +132,7 @@ class Matrix {
     }
     return true;
   }
+  DEVICE_RUNNABLE uint64_t get_payload() const { return payload_; }
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
     out << std::string((const char*)mat.states_, 8);

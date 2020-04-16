@@ -263,7 +263,7 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   assert(right_size >= 2);
   Matrix mat;
 
-  using Position = Matrix::Position;
+//  using Position = Matrix::Position;
   //  using State = Matrix::State;
 
   auto cross_count = PointOnLineString(left_point, right_size, right_points);
@@ -273,25 +273,12 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   auto ep1 = right_points[right_size - 1];
   int boundary_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
 
-  if (right_size == 2) {
-    boundary_count = min(boundary_count, 1);
-  }
-
   cross_count -= boundary_count;
   assert(cross_count >= 0);
-  if (cross_count > 0) {
-    mat.set_col<Position::kI>("0F0");
-    mat.set_col<Position::kE>("FF*");
-  } else {
-    mat.set_col<Position::kI>("FF0");
-    mat.set_col<Position::kE>("0F*");
-  }
+//  using State = Matrix::State;
 
-  if (boundary_count > 0) {
-    mat.set_col<Position::kB>("0FF");
-  } else {
-    mat.set_col<Position::kB>("FF0");
-  }
+//  mat->II = cross_count - boundary_count ? State::kDimensionZero : State
+
 
   return mat;
 }

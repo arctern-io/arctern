@@ -96,8 +96,9 @@ DEVICE_RUNNABLE Matrix RelateOp(const ConstGpuContext& left, const ConstGpuConte
       break;
     }
   }
-  assert(left_iter.values == left.get_value_ptr(index));
-  assert(left_iter.metas == left.get_meta_ptr(index));
+  assert(left_iter.values == left.get_value_ptr(index + 1));
+  assert(left_iter.metas == left.get_meta_ptr(index + 1));
+
   return result;
 }
 
@@ -121,6 +122,7 @@ __global__ void ST_RelateImpl(ConstGpuContext left, ConstGpuContext right,
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < left.size) {
     auto matrix = RelateOp(left, right, index);
+    output_matrixes[index] = matrix.IsMatchTo(ref_matrix);
   }
 }
 
