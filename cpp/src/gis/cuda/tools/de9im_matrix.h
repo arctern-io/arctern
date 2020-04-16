@@ -54,7 +54,7 @@ class Matrix {
   };
 
  public:
-  DEVICE_RUNNABLE constexpr Matrix() : states_{State::kInvalid} {}
+  DEVICE_RUNNABLE constexpr Matrix(): states_{} {}
   constexpr Matrix(const Matrix& mat) = default;
   constexpr Matrix(Matrix&& mat) = default;
   constexpr Matrix& operator=(const Matrix& mat) = default;
@@ -64,10 +64,7 @@ class Matrix {
     return static_cast<State>(ch);
   }
 
-  DEVICE_RUNNABLE constexpr Matrix(NamedStates named_states)
-      : named_states_(named_states) {}
-
-  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) : states_() {
+  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text): states_{} {
     assert(text[8] == '*');
     for (int i = 0; i < 8; i++) {
       states_[i] = toState(text[i]);
@@ -164,6 +161,6 @@ class Matrix {
   };
 };
 
-constexpr Matrix INVALID_MATRIX = {};
+constexpr Matrix INVALID_MATRIX("\0\0\0\0\0\0\0\0*");
 
 }  // namespace de9im
