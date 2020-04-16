@@ -51,7 +51,7 @@ class Matrix {
     State BE;
     State EI;
     State EB;
-  };
+  }__align__(8);
 
  public:
   DEVICE_RUNNABLE constexpr Matrix(): states_{} {}
@@ -81,8 +81,12 @@ class Matrix {
     states_[index] = state;
   }
 
-  DEVICE_RUNNABLE NamedStates* operator->() { return &named_states_; }
-  DEVICE_RUNNABLE const NamedStates* operator->() const { return &named_states_; }
+  DEVICE_RUNNABLE NamedStates* operator->() {
+    return reinterpret_cast<NamedStates*>(states_);
+  }
+  DEVICE_RUNNABLE const NamedStates* operator->() const {
+    return reinterpret_cast<const NamedStates*>(states_);
+  }
 
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
@@ -110,7 +114,7 @@ class Matrix {
   }
 
   DEVICE_RUNNABLE friend inline bool operator==(const Matrix& a, const Matrix& b) {
-    return a.payload_ == b.payload_;
+    return a.get_payload() == b.get_payload();
   }
 
   DEVICE_RUNNABLE constexpr bool IsMatchTo(Matrix ref_matrix) const {
@@ -146,7 +150,9 @@ class Matrix {
     }
     return true;
   }
-  DEVICE_RUNNABLE uint64_t get_payload() const { return payload_; }
+  DEVICE_RUNNABLE uint64_t get_payload() const {
+    return *reinterpret_cast<const uint64_t*>(states_);
+  }
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
     out << std::string((const char*)mat.states_, 8);
@@ -154,11 +160,7 @@ class Matrix {
   }
 
  private:
-  union {
-    State states_[8];
-    NamedStates named_states_;
-    uint64_t payload_;  // for alignment
-  };
+  State states_[8] __align__(8);
 };
 
 constexpr Matrix INVALID_MATRIX("\0\0\0\0\0\0\0\0*");
