@@ -15,8 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include <utility>
-
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_relate.h"
 #include "gis/cuda/tools/relation.h"
