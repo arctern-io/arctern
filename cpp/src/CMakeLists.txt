@@ -63,12 +63,14 @@ set(cuda_gis_src
         gis/cuda/conversion/arrow_encode.cpp
         gis/cuda/common/gis_definitions.cpp
         gis/cuda/common/gis_definitions.cu
+        gis/cuda/tools/bounding_box.cu
         gis/cuda/functor/st_distance.cu
         gis/cuda/functor/st_within.cu
         gis/cuda/functor/st_length.cu
         gis/cuda/functor/st_area.cu
         gis/cuda/functor/st_envelope.cu
         gis/cuda/functor/st_point.cu
+        gis/cuda/functor/st_relate.cu
         gis/cuda/gis_functions.cpp
         )
 

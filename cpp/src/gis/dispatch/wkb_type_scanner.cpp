@@ -61,7 +61,7 @@ auto WkbTypeScanner::Scan() const -> std::shared_ptr<GeometryTypeMasks> {
     assert(encode_uid == 1 + types().size());
   }
 
-  // TODO: use gpu when container is ready
+  // TODO: use gpu when vector is ready
   std::vector<GeometryTypeMasks::Info> infos(types().size() + 1);
   for (auto& info : infos) {
     info.mask_count = 0;
