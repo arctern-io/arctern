@@ -30,6 +30,7 @@ __all__ = [
     "ST_Intersects",
     "ST_Within",
     "ST_Distance",
+    "ST_DistanceSphere",
     "ST_Area",
     "ST_Centroid",
     "ST_Length",
@@ -967,6 +968,46 @@ def ST_Distance(left, right):
       +----------------------------------------------------------+
     """
     return arctern.ST_Distance(left, right)
+
+@pandas_udf("double", PandasUDFType.SCALAR)
+def ST_DistanceSphere(left, right):
+    """
+    Returns minimum distance in meters between two lon/lat points.
+    Uses a spherical earth and radius derived from the spheroid defined by the SRID.
+
+    For every (left, right) pair with the same offset value in left and right,
+    calculates the minimum spherical distance between left and right.
+
+    :type left: pandas.Series.object
+    :param left: Geometries organized as WKB.
+
+    :type right: pandas.Series.object
+    :param right: Geometries organized as WKB.
+
+    :return: An array of double.
+    :rtype: pandas.Series.float64
+
+    :example:
+    TODO(dyh):: finish test
+      >>> from pyspark.sql import SparkSession
+      >>> from arctern_pyspark import register_funcs
+      >>> spark_session = SparkSession .builder.appName("Python Arrow-in-Spark example").getOrCreate()
+      >>> register_funcs(spark_session)
+      >>> test_data = []
+      >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
+      >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
+      >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> distance_sphere_df.createOrReplaceTempView("distance_sphere")
+      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance_sphere").show(100,0)
+      +----------------------------------------------------------+
+      |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
+      +----------------------------------------------------------+
+      |3                                                         |
+      +----------------------------------------------------------+
+      |0.7905694150420949                                        |
+      +----------------------------------------------------------+
+    """
+    return arctern.ST_DistanceSphere(left, right)
 
 @pandas_udf("double", PandasUDFType.SCALAR)
 def ST_Area(geos):

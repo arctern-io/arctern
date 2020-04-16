@@ -114,6 +114,9 @@ def ST_Within(object geo_arr1,object geo_arr2):
 def ST_Distance(object geo_arr1,object geo_arr2):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Distance(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
 
+def ST_DistanceSphere(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_DistanceSphere(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
 def ST_Area(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Area(pyarrow_unwrap_array(geo_arr)))
 
