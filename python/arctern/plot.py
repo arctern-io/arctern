@@ -123,7 +123,7 @@ def _get_style_value(geo_name, style_key, style_vale):
             "You can install it using 'conda install -c conda-forge matplotlib' ")
 
     if style_key == 'alpha':
-        return return style_vale if style_vale is not None else 1
+        return style_vale if style_vale is not None else 1
 
     if geo_name == 'polygons':
         if style_key == 'linewidth':
