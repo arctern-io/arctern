@@ -1,0 +1,13 @@
+{
+    "scope": "scope1",
+    "session": "spark",
+    "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))",
+    "params": {
+        "width": 1024,
+        "height": 896,
+        "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
+        "coordinate_system": "EPSG:4326",
+        "map_zoom_level": 10,
+        "aggregation_type": "sum"
+    }
+}

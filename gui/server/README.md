@@ -48,18 +48,20 @@ python manage.py -r
 -p http port
 -i http ip
 -c [path/to/data-config] load data
+--logfile= [path/to/logfile], default: ./log.txt'
+--loglevel= log level [debug/info/warn/error/fatal], default: info'
 
 服务器启动后，可以通过[Load API](#api_load_part)可以动态加载数据
 
 如果期望服务器启动，自动加载数据
 
 ```bash
-python manage.py -r -c path/to/config.json
+python manage.py -r -c path/to/db.json
 ```
 
-其中，config.json内容的格式在[这里](#api_load_part)
+其中，db.json内容的格式在[这里](#api_load_part)
 
-- 拷贝request.json对应的json内容，保存为config.json
+- 拷贝request.json对应的json内容，保存为db.json
 - 修改对应的参数项
 
 ## 与spark服务对接
@@ -339,7 +341,7 @@ request:
                 {
                     "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816], //范围[x_min,y_min,x_max,y_max]
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "color_gradient": "blue_to_red",                                //颜色风格
+                    "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [0, 2],                                          //颜色标尺
                     "size_bound": [0, 10],                                          //点大小标尺
                     "opacity": 1.0                                                  //透明度
@@ -350,7 +352,8 @@ request:
                 {
                     "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816], //范围[x_min,y_min,x_max,y_max]
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "map_zoom_level": 10                                            //缩放比
+                    "map_zoom_level": 10,                                           //缩放比
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 },
 
                 //轮廓图的附加擦数
@@ -358,9 +361,10 @@ request:
                 {
                     "bounding_box": [-73.984092, 40.753893, -73.977588, 40.756342], //范围
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "color_gradient": "blue_to_red",                                //颜色风格
+                    "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [2.5, 5],                                        //标尺
-                    "opacity" : 1                                                   //透明度
+                    "opacity" : 1,                                                  //透明度
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 }
             }
         }
@@ -386,7 +390,32 @@ for example:
 点图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"point\",\"params\":{\"width\":1024,\"height\":896,\"point\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate_system\":\"EPSG:4326\",\"point_size\":3,\"point_color\":\"#2DEF4A\",\"opacity\":0.5}}}}" http://127.0.0.1:8080/db/query
+curl --location --request POST 'http://localhost:8080/db/query' \
+--header 'Authorization: Token YourToken' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "1",
+    "query": {
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('\''POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'\''))",
+        "type": "point",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "point": {
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
+                "coordinate_system": "EPSG:4326",
+                "point_color": "#2DEF4A",
+                "point_size": 3,
+                "opacity": 0.5
+            }
+        }
+    }
+}'
 ```
 
 其中json为
@@ -395,16 +424,21 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-    "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))",
         "type": "point",
         "params": {
             "width": 1024,
             "height": 896,
             "point": {
-                "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
                 "coordinate_system": "EPSG:4326",
-                "point_size": 3,
                 "point_color": "#2DEF4A",
+                "point_size": 3,
                 "opacity": 0.5
             }
         }
@@ -415,7 +449,31 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 热力图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"heat\":{\"bounding_box\":[-73.998427,40.730309,-73.954348,40.780816],\"coordinate_system\":\"EPSG:4326\",\"map_zoom_level\":10}}}}" http://127.0.0.1:8080/db/query
+curl --location --request POST 'http://localhost:8080/db/query' \
+--header 'Authorization: Token YourToken' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "1",
+    "query": {
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within( ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('\''POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'\''))",
+        "type": "heat",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "heat": {
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
+                "coordinate_system": "EPSG:4326",
+                "map_zoom_level": 10,
+                "aggregation_type": "sum"
+            }
+        }
+    }
+}'
 ```
 
 其中json为
@@ -424,15 +482,21 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within( ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))",
         "type": "heat",
         "params": {
             "width": 1024,
             "height": 896,
             "heat": {
-                "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
                 "coordinate_system": "EPSG:4326",
-                "map_zoom_level": 10
+                "map_zoom_level": 10,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -442,7 +506,36 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 轮廓图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d "{\"id\":\"1\",\"query\":{\"sql\":\"select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi\",\"type\":\"heat\",\"params\":{\"width\":1024,\"height\":896,\"choropleth\":{\"bounding_box\":[-73.984092,40.753893,-73.977588,40.756342],\"coordinate_system\":\"EPSG:4326\",\"color_gradient\":\"blue_to_red\",\"color_bound\":[2.5,5],\"opacity\":1}}}}" http://127.0.0.1:8080/db/query
+curl --location --request POST 'http://localhost:8080/db/query' \
+--header 'Authorization: Token YourToken' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "1",
+    "query": {
+        "sql": "select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from nyc_taxi",
+        "type": "choropleth",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "choropleth": {
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
+                "coordinate_system": "EPSG:4326",
+                "color_gradient": ["#0000FF", "#FF0000"],
+                "color_bound": [
+                    2.5,
+                    5
+                ],
+                "opacity": 1,
+                "aggregation_type": "sum"
+            }
+        }
+    }
+}'
 ```
 
 其中json为
@@ -451,17 +544,23 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 {
     "id": "1",
     "query": {
-        "sql": "select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi",
+        "sql": "select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from nyc_taxi",
         "type": "choropleth",
         "params": {
             "width": 1024,
             "height": 896,
             "choropleth": {
-                "bounding_box": [-73.984092, 40.753893, -73.977588, 40.756342],
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
                 "coordinate_system": "EPSG:4326",
-                "color_gradient": "blue_to_red",
+                "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [2.5, 5],
-                "opacity": 1
+                "opacity": 1,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -471,30 +570,89 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours"
 权重图
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token yours" -d @~/json/weighted_pointmap.json http://127.0.0.1:8080/db/query
-```
-
-其中`~/json/weighted_pointmap.json`的内容如下，sql语句中polygon只是样例，不是固定的，可根据需求构造。
-
-```json
-{
+curl --location --request POST 'http://localhost:8080/db/query' \
+--header 'Authorization: Token eyJhbGciOiJIUzUxMiIsImlhdCI6MTU4NjI1NTE1OCwiZXhwIjoxNTg2ODU5OTU4fQ.eyJ1c2VyIjoiemlsbGl6In0.FbRX5ktderWVDtl1JzRN-yGZlWINAZiv3VUfe_WO-EZLDcxwvL2y2sBlm4lENpIFpNOU7lW1PhwtKhTRwGs85A' \
+--header 'Content-Type: application/json' \
+--data-raw '{
     "id": "1",
     "query": {
-        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')",
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('\''POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'\''))",
         "type": "weighted",
         "params": {
             "width": 1024,
             "height": 896,
             "weighted": {
-                "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-                "coordinate_system": "EPSG:4326",
-                "color_gradient": "blue_to_red",
-                "color_bound": [0, 2],
-                "size_bound": [0, 10],
-                "opacity": 1.0
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
+                "color_gradient": ["#0000FF", "#FF0000"],
+                "color_bound": [
+                    0,
+                    2
+                ],
+                "size_bound": [
+                    0,
+                    10
+                ],
+                "opacity": 1,
+                "coordinate_system": "EPSG:4326"
+            }
+        }
+    }
+}'
+```
+
+其中json为：
+
+```json
+{
+    "id": "1",
+    "query": {
+        "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))",
+        "type": "weighted",
+        "params": {
+            "width": 1024,
+            "height": 896,
+            "weighted": {
+                "bounding_box": [
+                    -75.37976,
+                    40.191296,
+                    -71.714099,
+                    41.897445
+                ],
+                "color_gradient": ["#0000FF", "#FF0000"], 
+                "color_bound": [
+                    0,
+                    2
+                ],
+                "size_bound": [
+                    0,
+                    10
+                ],
+                "opacity": 1,
+                "coordinate_system": "EPSG:4326"
             }
         }
     }
 }
+```
+
+## 代码测试
+
+启动server：
+
+```shell
+cd arctern/gui/server
+python manage.py -r 
+```
+
+运行restful api test：
+
+```shell
+cd arctern/gui/server/tests/restful
+pytest --host=localhost --port=8080 --config=../../db.json
 ```
 
