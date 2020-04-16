@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: disable=too-many-lines
 
 __all__ = [
     "ST_Point",
@@ -30,6 +31,7 @@ __all__ = [
     "ST_Intersects",
     "ST_Within",
     "ST_Distance",
+    "ST_DistanceSphere",
     "ST_Area",
     "ST_Centroid",
     "ST_Length",
@@ -45,6 +47,7 @@ __all__ = [
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "ST_AsText",
+    "ST_AsGeoJSON",
     "point_map",
     "weighted_point_map",
     "heat_map",
@@ -159,6 +162,30 @@ def ST_AsText(text):
     import pyarrow as pa
     geo = pa.array(text, type='binary')
     rs = arctern_core_.ST_AsText(geo)
+    return rs.to_pandas()
+
+def ST_AsGeoJSON(text):
+    """
+    Returns the GeoJSON representation of the geometry.
+
+    :type text: pyarrow.array.string
+    :param text: Geometries organized as WKB.
+
+    :return: Geometries organized as GeoJSON.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = pandas.Series(["POLYGON ((0 0,0 1,1 1,1 0,0 0))"])
+      >>> string_ptr = arctern.ST_AsGeoJSON(arctern.ST_GeomFromText(data))
+      >>> print(string_ptr)
+          0    { "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }
+          dtype: object
+    """
+    import pyarrow as pa
+    geo = pa.array(text, type='binary')
+    rs = arctern_core_.ST_AsGeoJSON(geo)
     return rs.to_pandas()
 
 def ST_Intersection(left, right):
@@ -680,6 +707,44 @@ def ST_Distance(left, right):
     arr_left = pa.array(left, type='binary')
     arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
+    return rs.to_pandas()
+
+def ST_DistanceSphere(left, right):
+    """
+    Returns minimum distance in meters between two lon/lat points.
+    Uses a spherical earth and radius derived from the spheroid defined by the SRID.
+
+    For every (left, right) pair with the same offset value in left and right,
+    calculates the minimum spherical distance between left and right.
+
+    :type left: pandas.Series.object
+    :param left: Geometries organized as WKB.
+
+    :type right: pandas.Series.object
+    :param right: Geometries organized as WKB.
+
+    :return: An array of double.
+    :rtype: pandas.Series.float64
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> p11 = "POINT(10 2)"
+      >>> p12 = "POINT(10 2)"
+      >>> data1 = pandas.Series([p11, p12])
+      >>> p21 = "POINT(10 2)"
+      >>> p22 = "POINT(10 2)"
+      >>> data2 = pandas.Series([p21, p22])
+      >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+      >>> print(rst)
+          0    1.0
+          1    2.0
+          dtype: float64
+    """
+    import pyarrow as pa
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
+    rs = arctern_core_.ST_DistanceSphere(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Area(geos):

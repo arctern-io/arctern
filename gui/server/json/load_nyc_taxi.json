@@ -1,0 +1,33 @@
+{
+    "scope": "scope1",
+    "tables": [
+        {
+            "name": "old_nyc_taxi",
+            "format": "csv",
+            "path": "/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "options": {
+                "header": "True",
+                "delimiter": ","
+            },
+            "schema": [
+                {"VendorID": "string"},
+                {"tpep_pickup_datetime": "string"},
+                {"tpep_dropoff_datetime": "string"},
+                {"passenger_count": "long"},
+                {"trip_distance": "double"},
+                {"pickup_longitude": "double"},
+                {"pickup_latitude": "double"},
+                {"dropoff_longitude": "double"},
+                {"dropoff_latitude": "double"},
+                {"fare_amount": "double"},
+                {"tip_amount": "double"},
+                {"total_amount": "double"},
+                {"buildingid_pickup": "long"},
+                {"buildingid_dropoff": "long"},
+                {"buildingtext_pickup": "string"},
+                {"buildingtext_dropoff": "string"}
+            ]
+        }
+    ]
+}
+

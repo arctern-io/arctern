@@ -48,6 +48,8 @@ python manage.py -r
 -p http port
 -i http ip
 -c [path/to/data-config] load data
+--logfile= [path/to/logfile], default: ./log.txt'
+--loglevel= log level [debug/info/warn/error/fatal], default: info'
 
 服务器启动后，可以通过[Load API](#api_load_part)可以动态加载数据
 
@@ -350,7 +352,8 @@ request:
                 {
                     "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816], //范围[x_min,y_min,x_max,y_max]
                     "coordinate_system": "EPSG:4326",                               //坐标系
-                    "map_zoom_level": 10                                            //缩放比
+                    "map_zoom_level": 10,                                           //缩放比
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 },
 
                 //轮廓图的附加擦数
@@ -360,7 +363,8 @@ request:
                     "coordinate_system": "EPSG:4326",                               //坐标系
                     "color_gradient": ["#0000FF", "#FF0000"],                                //颜色风格
                     "color_bound": [2.5, 5],                                        //标尺
-                    "opacity" : 1                                                   //透明度
+                    "opacity" : 1,                                                  //透明度
+                    "aggregation_type": "sum"                                       //[sum, max, min, avg, count, stddev]
                 }
             }
         }
@@ -464,7 +468,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     41.897445
                 ],
                 "coordinate_system": "EPSG:4326",
-                "map_zoom_level": 10
+                "map_zoom_level": 10,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -490,7 +495,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     41.897445
                 ],
                 "coordinate_system": "EPSG:4326",
-                "map_zoom_level": 10
+                "map_zoom_level": 10,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -524,7 +530,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                     2.5,
                     5
                 ],
-                "opacity": 1
+                "opacity": 1,
+                "aggregation_type": "sum"
             }
         }
     }
@@ -552,7 +559,8 @@ curl --location --request POST 'http://localhost:8080/db/query' \
                 "coordinate_system": "EPSG:4326",
                 "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [2.5, 5],
-                "opacity": 1
+                "opacity": 1,
+                "aggregation_type": "sum"
             }
         }
     }

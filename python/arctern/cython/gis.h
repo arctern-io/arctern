@@ -34,6 +34,8 @@ std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
 
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+
 std::shared_ptr<arrow::Array> ST_Intersection(
     const std::shared_ptr<arrow::Array>& left_geometries,
     const std::shared_ptr<arrow::Array>& right_geometries);
@@ -89,6 +91,9 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_arr1,
                                           const std::shared_ptr<arrow::Array>& geo_arr2);
+
+std::shared_ptr<arrow::Array> ST_DistanceSphere(const std::shared_ptr<arrow::Array>& point_left,
+                                                const std::shared_ptr<arrow::Array>& point_right);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geo_arr);
 

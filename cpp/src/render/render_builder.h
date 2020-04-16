@@ -26,6 +26,7 @@
 
 #include "render/2d/choropleth_map/choropleth_map.h"
 #include "render/2d/heatmap/heatmap.h"
+#include "render/2d/icon/icon_viz.h"
 #include "render/2d/scatter_plot/pointmap.h"
 #include "render/2d/scatter_plot/weighted_pointmap.h"
 
@@ -107,6 +108,9 @@ template <typename T>
 std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf);
+
+std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
+                                     int64_t num_vertices, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern
