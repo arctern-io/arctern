@@ -152,6 +152,8 @@ def _get_style_value(geo_name, style_key, style_vale):
             return style_vale if is_color_like(style_vale) else _get_random_color_from_cycle()
         if style_key == 'marker':
             return style_vale if style_vale is not None else mpl.rcParams['scatter.marker']
+        if style_key == 'markersize':
+            return style_vale if style_vale is not None else mpl.rcParams['lines.markersize']
     return None
 
 def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
