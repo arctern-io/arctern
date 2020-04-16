@@ -175,7 +175,7 @@ TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
 //  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
 //  auto buffer1 =
 //      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-//  std::container<std::shared_ptr<arrow::Buffer>> buffers1;
+//  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
 //  buffers1.emplace_back(buffer0);
 //  buffers1.emplace_back(buffer1);
 //  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
@@ -190,7 +190,7 @@ TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
 //  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
 //  auto buffer21 =
 //      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-//  std::container<std::shared_ptr<arrow::Buffer>> buffers2;
+//  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
 //  buffers2.emplace_back(buffer20);
 //  buffers2.emplace_back(buffer21);
 //  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);

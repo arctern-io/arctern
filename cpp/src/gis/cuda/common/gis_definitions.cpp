@@ -33,7 +33,7 @@ GeometryVector::ConstGpuContextHolder GeometryVector::CreateReadGpuContext() con
 
   GeometryVector::ConstGpuContextHolder holder(new ConstGpuContext);
   static_assert(std::is_same<GpuVector<int>, std::vector<int>>::value,
-                "here use container now");
+                "here use vector now");
   auto size = tags_.size();  // size_ of elements
   assert(size + 1 == meta_offsets_.size());
   assert(size + 1 == value_offsets_.size());

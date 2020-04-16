@@ -422,7 +422,7 @@ _CPP_HEADERS = frozenset([
     'tempbuf.h',
     'tree.h',
     'type_traits.h',
-    'container.h',
+    'vector.h',
     # 17.6.1.2 C++ library headers
     'algorithm',
     'array',
@@ -476,7 +476,7 @@ _CPP_HEADERS = frozenset([
     'unordered_set',
     'utility',
     'valarray',
-    'container',
+    'vector',
     # 17.6.1.2 C++ headers for C library facilities
     'cassert',
     'ccomplex',
@@ -5532,7 +5532,7 @@ _HEADERS_CONTAINING_TEMPLATES = (
     ('<unordered_map>', ('unordered_map', 'unordered_multimap')),
     ('<unordered_set>', ('unordered_set', 'unordered_multiset')),
     ('<utility>', ('pair',)),
-    ('<container>', ('container',)),
+    ('<vector>', ('vector',)),
 
     # gcc extensions.
     # Note: std::hash is their hash, ::hash is our hash

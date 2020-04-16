@@ -163,7 +163,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
     }
   }
 
-  // if container has value
+  // if vector has value
   if (!result.is_coveredby && ranges_buffer.size() != 0) {
     assert(first_item.has_value());
     ranges_buffer.push_back(first_item.value_or(thrust::make_pair(0.0, 0.0)));
