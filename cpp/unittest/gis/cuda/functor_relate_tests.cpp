@@ -15,7 +15,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include <gis/cuda/tools/de9im_matrix.h>
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -26,6 +25,7 @@
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/st_relate.h"
 #include "gis/cuda/test_common/geometry_factory.h"
+#include "gis/cuda/tools/de9im_matrix.h"
 using de9im::Matrix;
 
 namespace arctern {

@@ -18,7 +18,7 @@
 #pragma once
 #include <thrust/complex.h>
 #include <thrust/optional.h>
-
+#include <thrust/extrema.h>
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 
@@ -84,7 +84,7 @@ DEVICE_RUNNABLE inline bool IsRange01CoveredBy(
       }
     } else {
       // no gap, just extend
-      total_range.second = max(total_range.second, range.second);
+      total_range.second = thrust::max(total_range.second, range.second);
       if (range.second >= 1) {
         break;
       }
@@ -121,15 +121,15 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
         // outside, just check endpoints
         if (r0 == 0 || r0 == 1) {
           ++result.cross_count;
-          result.CC = max(result.CC, 0);
+          result.CC = thrust::max(result.CC, 0);
         } else if (r1 == 0 || r1 == 1) {
           ++result.cross_count;
-          result.CC = max(result.CC, 0);
+          result.CC = thrust::max(result.CC, 0);
         }
       } else {
         // at least intersect
-        auto rmin = min(r0, r1);
-        auto rmax = max(r0, r1);
+        auto rmin = thrust::min(r0, r1);
+        auto rmax = thrust::max(r0, r1);
         result.CC = 1;
         // check if overlap
         if (rmin <= 0 && 1 <= rmax) {
@@ -153,7 +153,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
       auto proj =
           (rv0.real() * rv1.imag() - rv1.real() * rv0.imag()) / (rv1.imag() - rv0.imag());
       if (0 <= proj && proj <= 1) {
-        result.CC = max(result.CC, 0);
+        result.CC = thrust::max(result.CC, 0);
         ++result.cross_count;
       }
     }
@@ -182,7 +182,7 @@ DEVICE_RUNNABLE inline LineRelationResult SumLineOnLineString(int left_size,
   for (auto index = 0; index < left_size - 1; ++index) {
     auto left_ptr = reinterpret_cast<const double2*>(left_points + index);
     auto relation = LineOnLineString(left_ptr, right_size, right_points, buffer);
-    total_relation.CC = max(total_relation.CC, relation.CC);
+    total_relation.CC = thrust::max(total_relation.CC, relation.CC);
     total_relation.is_coveredby = total_relation.is_coveredby && relation.is_coveredby;
     total_relation.cross_count = total_relation.cross_count + relation.cross_count;
   }

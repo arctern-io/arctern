@@ -17,6 +17,7 @@
 
 #pragma once
 #include "gis/cuda/common/common.h"
+#include <thrust/extrema.h>
 
 // a mock function for std::vector
 // should be used in device kernel
@@ -41,7 +42,7 @@ class KernelVector {
   DEVICE_RUNNABLE void reserve(int new_capacity) {
     if (new_capacity > capacity_) {
       delete[] data_;
-      capacity_ = max(new_capacity, 2 * capacity_ + 5);
+      capacity_ = thrust::max(new_capacity, 2 * capacity_ + 5);
       data_ = new T[capacity_];
     }
   }
