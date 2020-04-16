@@ -19,7 +19,7 @@
 #include "render/2d/general_2d.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "render/utils/my_zlib_compress.h"
+#include "src/render/utils/image/my_zlib_compress.h"
 
 namespace arctern {
 namespace render {
