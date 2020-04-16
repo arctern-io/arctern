@@ -63,13 +63,6 @@ def _flat_geoms(geo_dict, dict_collect):
     else:
         raise RuntimeError(f"unsupported geometry: {geo_dict}")
 
-def _get_attr(attr_list, **style_kwds):
-    attr_val = dict()
-    for attr in attr_list:
-        if attr in style_kwds:
-            attr_val[attr] = style_kwds[attr]
-    return attr_val
-
 def _plot_polygons(ax, polygons, **style_kwds):
     try:
         from descartes.patch import PolygonPatch
@@ -83,8 +76,7 @@ def _plot_polygons(ax, polygons, **style_kwds):
         raise ImportError(
             "The matplotlib package is required for plotting polygons in arctern. "
             "You can install it using 'conda install -c conda-forge matplotlib' ")
-    attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
-    collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
+    collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **style_kwds)
     ax.add_collection(collection, autolim=True)
 
 # value for linestyles : solid|dashed|dashdot|dotted
@@ -97,15 +89,14 @@ def _plot_lines(ax, lines, **style_kwds):
             "The matplotlib package is required for plotting polygons in arctern. "
             "You can install it using 'conda install -c conda-forge matplotlib' ")
 
-    attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
-    collection = LineCollection(lines, **attr)
+    collection = LineCollection(lines, **style_kwds)
     ax.add_collection(collection, autolim=True)
 
 def _plot_points(ax, x, y, **style_kwds):
-    attr = _get_attr(['color', 'marker'], **style_kwds)
     if 'markersize' in style_kwds:
-        attr['s'] = style_kwds['markersize']
-    ax.scatter(x, y, **attr)
+        style_kwds['s'] = style_kwds['markersize']
+        del style_kwds['markersize']
+    ax.scatter(x, y, **style_kwds)
 
 def _get_random_color_from_cycle():
     import random
@@ -130,6 +121,9 @@ def _get_style_value(geo_name, style_key, style_vale):
         raise ImportError(
             "The matplotlib package is required for plotting polygons in arctern. "
             "You can install it using 'conda install -c conda-forge matplotlib' ")
+
+    if style_key == 'alpha':
+        return return style_vale if style_vale is not None else 1
 
     if geo_name == 'polygons':
         if style_key == 'linewidth':
@@ -166,8 +160,11 @@ def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
             if style_key not in geo_style:
                 geo_style[style_key] = []
             style_val = _get_style_value(geo_name, style_key, style_val)
-            style = [style_val for _ in range(len(geo_collect[geo_name]))]
-            geo_style[style_key].extend(style)
+            if style_val is None:
+                del geo_style[style_key]
+            else:
+                style = [style_val for _ in range(len(geo_collect[geo_name]))]
+                geo_style[style_key].extend(style)
 
 def _plot_collection(ax, geoms_list, **style_kwds):
     import json
