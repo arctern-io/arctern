@@ -75,14 +75,14 @@ def _plot_polygons(ax, polygons, **style_kwds):
         from descartes.patch import PolygonPatch
     except ImportError:
         raise ImportError(
-            "The descartes package is required for plotting polygons in geopandas. "
+            "The descartes package is required for plotting polygons in arctern. "
             "You can install it using 'conda install -c conda-forge descartes' ")
     try:
         from matplotlib.collections import PatchCollection
     except ImportError:
         raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' ")
+            "The matplotlib package is required for plotting polygons in arctern. "
+            "You can install it using 'conda install -c conda-forge matplotlib' ")
     attr = _get_attr(['linewidth', 'linestyle', 'edgecolor', 'facecolor'], **style_kwds)
     collection = PatchCollection([PolygonPatch(geo) for geo in polygons], **attr)
     ax.add_collection(collection, autolim=True)
@@ -94,8 +94,8 @@ def _plot_lines(ax, lines, **style_kwds):
         import matplotlib as mpl
     except ImportError:
         raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' ")
+            "The matplotlib package is required for plotting polygons in arctern. "
+            "You can install it using 'conda install -c conda-forge matplotlib' ")
 
     attr = _get_attr(['color', 'linewidth', 'linestyle'], **style_kwds)
     collection = LineCollection(lines, **attr)
@@ -113,8 +113,8 @@ def _get_random_color_from_cycle():
         import matplotlib as mpl
     except ImportError:
         raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' ")
+            "The matplotlib package is required for plotting polygons in arctern. "
+            "You can install it using 'conda install -c conda-forge matplotlib' ")
 
     cycle_list = mpl.rcParams['axes.prop_cycle'].by_key()['color']
     cyc_idx = random.randrange(0, len(cycle_list))
@@ -128,8 +128,8 @@ def _get_style_value(geo_name, style_key, style_vale):
         import matplotlib as mpl
     except ImportError:
         raise ImportError(
-            "The matplotlib package is required for plotting polygons in geopandas. "
-            "You can install it using 'conda install -c conda-forge descartes' ")
+            "The matplotlib package is required for plotting polygons in arctern. "
+            "You can install it using 'conda install -c conda-forge matplotlib' ")
 
     if geo_name == 'polygons':
         if style_key == 'linewidth':
