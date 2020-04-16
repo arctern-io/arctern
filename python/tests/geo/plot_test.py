@@ -216,7 +216,7 @@ def test_plot7():
     arctern.plot(ax, df,
                  color=['orange', 'green'],
                  marker='^',
-                 markersize=100,
+                 markersize=[100],
                  linewidth=[None, 7, 8],
                  linestyle=[None, 'dashed', 'dashdot'],
                  edgecolor=[None, None, 'red'],
