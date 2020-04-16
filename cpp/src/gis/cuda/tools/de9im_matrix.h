@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #pragma once
 #include <cassert>
 #include <cstdint>
@@ -51,6 +52,8 @@ class Matrix {
     State BE;
     State EI;
     State EB;
+    constexpr State& operator[](int index) { return *(&II + index); }
+    constexpr const State& operator[](int index) const { return *(&II + index); }
   } __align__(8);
 
  public:
@@ -81,12 +84,8 @@ class Matrix {
     states_[index] = state;
   }
 
-  DEVICE_RUNNABLE NamedStates* operator->() {
-    return reinterpret_cast<NamedStates*>(states_);
-  }
-  DEVICE_RUNNABLE const NamedStates* operator->() const {
-    return reinterpret_cast<const NamedStates*>(states_);
-  }
+  DEVICE_RUNNABLE NamedStates* operator->() { return &states_; }
+  DEVICE_RUNNABLE const NamedStates* operator->() const { return &states_; }
 
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
@@ -150,17 +149,20 @@ class Matrix {
     }
     return true;
   }
+
   DEVICE_RUNNABLE uint64_t get_payload() const {
-    return *reinterpret_cast<const uint64_t*>(states_);
+    const void* raw_ptr = &states_;
+    uint64_t payload = *reinterpret_cast<const uint64_t*>(raw_ptr);
+    return payload;
   }
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
-    out << std::string((const char*)mat.states_, 8);
+    out << std::string((const char*)&mat.states_, 8);
     return out;
   }
 
  private:
-  State states_[8] __align__(8);
+  NamedStates states_;
 };
 
 constexpr Matrix INVALID_MATRIX;
