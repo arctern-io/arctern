@@ -166,6 +166,12 @@ def _extend_collect(geo_name, geo_collect, plot_collect, row_style, geo_style):
                 style = [style_val for _ in range(len(geo_collect[geo_name]))]
                 geo_style[style_key].extend(style)
 
+def _add_global_plot_style(geo_name, style_key, style_val, plot_style):
+    value = _get_style_value(geo_name, style_key, style_val)
+    if value is not None:
+        plot_style[style_key] = value
+
+
 def _plot_collection(ax, geoms_list, **style_kwds):
     import json
     style_iter = dict()
@@ -174,16 +180,16 @@ def _plot_collection(ax, geoms_list, **style_kwds):
     points_style = dict()
     for key, val in style_kwds.items():
         if isinstance(val, (str, int, float)):
-            polygons_style[key] = val
-            lines_style[key] = val
-            points_style[key] = val
+            _add_global_plot_style('polygons', key, val, polygons_style)
+            _add_global_plot_style('lines', key, val, lines_style)
+            _add_global_plot_style('points', key, val, points_style)
         else:
             try:
                 style_iter[key] = iter(val)
             except TypeError:
-                polygons_style[key] = val
-                lines_style[key] = val
-                points_style[key] = val
+                _add_global_plot_style('polygons', key, val, polygons_style)
+                _add_global_plot_style('lines', key, val, lines_style)
+                _add_global_plot_style('points', key, val, points_style)
 
     plot_collect = dict()
     for geo in geoms_list:
