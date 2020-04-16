@@ -64,7 +64,7 @@ class Matrix {
     return static_cast<State>(ch);
   }
 
-  DEVICE_RUNNABLE explicit constexpr Matrix(const char* text) : states_{} {
+  DEVICE_RUNNABLE explicit Matrix(const char* text) : states_{} {
     assert(text[8] == '*');
     for (int i = 0; i < 8; i++) {
       states_[i] = toState(text[i]);
@@ -163,6 +163,6 @@ class Matrix {
   State states_[8] __align__(8);
 };
 
-constexpr Matrix INVALID_MATRIX("\0\0\0\0\0\0\0\0*");
+constexpr Matrix INVALID_MATRIX;
 
 }  // namespace de9im
