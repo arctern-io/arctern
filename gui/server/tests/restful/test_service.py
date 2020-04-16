@@ -242,7 +242,7 @@ def test_query(host, port, headers, dbid, table_name):
                     from {}
                     where ST_Within(
                         ST_Point(pickup_longitude, pickup_latitude),
-                        "POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))"
+                        ST_GeomFromText("POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))")
                         )
              '''.format(table_name),
             'type': 'icon',
@@ -250,8 +250,8 @@ def test_query(host, port, headers, dbid, table_name):
                 'width': 1024,
                 'height': 896,
                 'icon': {
-                    'bounding_box': [-73.998427, 40.730309, -73.954348, 40.780816],
-                    'coordinate': 'EPSG:4326',
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                    'coordinate_system': 'EPSG:4326',
                     'icon_path': png_path
                 }
             }
