@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cmath>
 #include <unordered_set>
+#include <utility>
 
 #include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/common/gpu_memory.h"
@@ -50,7 +51,6 @@ TEST(FunctorRelate, naive) {
       {"Point(0 0)", "LineString(0 -1, 0 1)", mat("0FFFFF10*"), true},
       {"Point(0 0)", "LineString(0 0, 0 1)", mat("F0FFFF10*"), true},
       {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
-
   };
   vector<string> left_vec;
   vector<string> right_vec;

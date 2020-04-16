@@ -16,8 +16,11 @@
 // under the License.
 
 #pragma once
-#include "gis/cuda/common/common.h"
 #include <thrust/extrema.h>
+
+#include <algorithm>
+
+#include "gis/cuda/common/common.h"
 
 // a mock function for std::vector
 // should be used in device kernel

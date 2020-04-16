@@ -17,8 +17,12 @@
 
 #pragma once
 #include <thrust/complex.h>
-#include <thrust/optional.h>
 #include <thrust/extrema.h>
+#include <thrust/optional.h>
+
+#include <algorithm>
+#include <utility>
+
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 

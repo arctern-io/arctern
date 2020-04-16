@@ -75,7 +75,7 @@ class Matrix {
   }
 
   template <Position row, Position col>
-  DEVICE_RUNNABLE void set(State state) {
+  DEVICE_RUNNABLE void set_cell(State state) {
     auto index = static_cast<int>(row) * 3 + static_cast<int>(col);
     if (index >= 8) {
       assert(state == State::kIgnored);
@@ -90,17 +90,17 @@ class Matrix {
   template <Position row>
   DEVICE_RUNNABLE void set_row(const char* text) {
     assert(text[3] == '\0');
-    set<row, Position::kI>(toState(text[0]));
-    set<row, Position::kB>(toState(text[1]));
-    set<row, Position::kE>(toState(text[2]));
+    set_cell<row, Position::kI>(toState(text[0]));
+    set_cell<row, Position::kB>(toState(text[1]));
+    set_cell<row, Position::kE>(toState(text[2]));
   }
 
   template <Position col>
   DEVICE_RUNNABLE void set_col(const char* text) {
     assert(text[3] == '\0');
-    set<Position::kI, col>(toState(text[0]));
-    set<Position::kB, col>(toState(text[1]));
-    set<Position::kE, col>(toState(text[2]));
+    set_cell<Position::kI, col>(toState(text[0]));
+    set_cell<Position::kB, col>(toState(text[1]));
+    set_cell<Position::kE, col>(toState(text[2]));
   }
 
   DEVICE_RUNNABLE Matrix get_transpose() const {
