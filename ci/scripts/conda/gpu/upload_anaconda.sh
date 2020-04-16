@@ -36,7 +36,7 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
     test -e ${ARCTERN_FILE}
-    echo "Upload pyarctern..."
+    echo "Upload arctern..."
     echo ${ARCTERN_FILE}
     anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
 fi
