@@ -25,6 +25,7 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &color_weights,const shared_ptr[CArray] &size_weights,const string &vega) except +
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &weights,const string &vega) except +
     shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &region_boundaries,const shared_ptr[CArray] &weights,const string &vega) except +
+    shared_ptr[CArray] icon_viz(const shared_ptr[CArray] &points,const string &conf) except +
     shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except + 
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
 
 
 def test_vega_pointmap():
@@ -112,3 +112,20 @@ def test_vega_choropleth_map():
     assert vega_dict["marks"][0]["encode"]["enter"]["opacity"]["value"] == 1.0
     assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
     assert vega_dict["marks"][0]["encode"]["enter"]["aggregation_type"]["value"] == "sum"
+
+
+def test_vega_icon():
+    vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path", "EPSG:3857").build()
+    vega_dict = json.loads(vega)
+    assert vega_dict["width"] == 1900
+    assert vega_dict["height"] == 1410
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][0] == -73.998427
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][1] == 40.730309
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][2] == -73.954348
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][3] == 40.780816
+    assert vega_dict["marks"][0]["encode"]["enter"]["icon_path"]["value"] == "icon_path"
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+
+    vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path").build()
+    vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
