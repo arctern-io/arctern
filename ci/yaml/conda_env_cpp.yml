@@ -1,4 +1,4 @@
-python=3.7.6
+python=3.7
 gdal=3.0.4
 arrow-cpp=0.16.0
 gtest=1.10.0
