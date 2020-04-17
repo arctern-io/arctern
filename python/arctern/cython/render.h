@@ -65,6 +65,9 @@ std::shared_ptr<arrow::Array> choropleth_map(
     const std::shared_ptr<arrow::Array>& region_boundaries,
     const std::shared_ptr<arrow::Array>& weights, const std::string& vega);
 
+std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
+                                       const std::string& conf);
+
 }  // namespace render
 }  // namespace arctern
 

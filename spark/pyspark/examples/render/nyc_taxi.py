@@ -13,13 +13,14 @@
 # limitations under the License.
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap
+from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
+from arctern_pyspark import icon_viz
 
 from pyspark.sql import SparkSession
 
@@ -121,6 +122,25 @@ def draw_choropleth_map(spark):
     spark.catalog.dropGlobalTempView("nyc_taxi")
     print("--- %s seconds ---" % (time.time() - start_time))
 
+def draw_icon_viz(spark):
+    start_time = time.time()
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        "file:///tmp/0_5M_nyc_taxi_and_building.csv").cache()
+    df.createOrReplaceTempView("nyc_taxi")
+
+    register_funcs(spark)
+    res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
+
+    icon_path = "/tmp/taxi.png"
+    vega = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], icon_path, "EPSG:4326")
+    res = icon_viz(vega, res)
+    save_png(res, '/tmp/icon_viz.png')
+
+    spark.sql("show tables").show()
+    spark.catalog.dropGlobalTempView("nyc_taxi")
+    print("--- %s seconds ---" % (time.time() - start_time))
+
 
 if __name__ == "__main__":
     spark_session = SparkSession \
@@ -134,5 +154,6 @@ if __name__ == "__main__":
     draw_point_map(spark_session)
     draw_choropleth_map(spark_session)
     draw_weighted_point_map(spark_session)
+    draw_icon_viz(spark_session)
 
     spark_session.stop()

@@ -11,7 +11,7 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 LIBARCTERN_FILE=${LIBARCTERN_FILE:="libarctern"}
-PYARCTERN_FILE=${PYARCTERN_FILE:="pyarctern"}
+PYARCTERN_FILE=${PYARCTERN_FILE:="arctern"}
 ARCTERN_SPARK_FILE=${ARCTERN_SPARK_FILE:="arctern-spark"}
 ARCTERN_CHANNEL=${ARCTERN_CHANNEL:="arctern-dev"}
 

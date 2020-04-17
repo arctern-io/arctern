@@ -16,7 +16,7 @@ import pandas
 import arctern
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
 
 
 def test_projection():
@@ -160,3 +160,24 @@ def test_choropleth_map():
     vega = vega_choroplethmap(1900, 1410, bounding_box=[-73.994092, 40.753893, -73.977588, 40.759642], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     choropleth_map1 = arctern.choropleth_map(vega, arr_wkb, arr_count)
     save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")
+
+def test_icon_viz():
+    x_data = []
+    y_data = []
+
+    for i in range(5):
+        x_data.append(i * 100)
+        y_data.append(i * 100)
+
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    points = arctern.ST_Point(arr_x, arr_y)
+
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    png_path = dir_path + "/../images/taxi.png"
+
+    vega = vega_icon(800, 600, [-73.998427, 40.730309, -73.954348, 40.780816], png_path, "EPSG:43")
+
+    icon_buf = arctern.icon_viz(vega, points)
+    save_png(icon_buf, "/tmp/test_icon_viz.png")

@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <type_traits>
@@ -622,6 +623,42 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   auto results = BinaryOp<arrow::DoubleBuilder>(geo1, geo2, op);
   OGRGeometry::freeGEOSContext(geos_ctx);
   return results;
+}
+
+std::shared_ptr<arrow::Array> ST_DistanceSphere(
+    const std::shared_ptr<arrow::Array>& point_left,
+    const std::shared_ptr<arrow::Array>& point_right) {
+  auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
+    double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
+    double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+                 cos(tolat * 0.017453292519943295769236907684886);
+    return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+  };
+
+  auto op = [&distance](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
+    if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
+      builder.AppendNull();
+    } else {
+      auto p1 = reinterpret_cast<OGRPoint*>(g1);
+      auto p2 = reinterpret_cast<OGRPoint*>(g2);
+      double fromlat = p1->getX();
+      double fromlon = p1->getY();
+      double tolat = p2->getX();
+      double tolon = p2->getY();
+      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
+          (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
+        builder.AppendNull();
+      } else {
+        builder.Append(distance(fromlat, fromlon, tolat, tolon));
+      }
+    }
+  };
+  return BinaryOp<arrow::DoubleBuilder>(point_left, point_right, op);
 }
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo1,

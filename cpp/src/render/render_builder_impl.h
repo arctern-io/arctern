@@ -431,5 +431,20 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
   return std::make_pair(render, ret_size);
 }
 
+std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
+                                     const std::string& conf) {
+  VegaIcon vega_icon(conf);
+  if (!vega_icon.is_valid()) {
+    return std::make_pair(nullptr, -1);
+  }
+
+  IconViz icon_viz(arr_x, arr_y, num);
+  icon_viz.mutable_icon_vega() = vega_icon;
+
+  const auto& render = icon_viz.Render();
+  const auto& ret_size = icon_viz.output_image_size();
+  return std::make_pair(render, ret_size);
+}
+
 }  // namespace render
 }  // namespace arctern

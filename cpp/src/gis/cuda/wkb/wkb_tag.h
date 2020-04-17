@@ -24,6 +24,9 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
+using WkbSpaceType = WkbSpaceType;
+using WkbCategory = WkbCategory;
+
 struct WkbTag {
   WkbTag() = default;
   constexpr DEVICE_RUNNABLE WkbTag(WkbTypes type) : data((uint32_t)type) {}
@@ -39,6 +42,28 @@ struct WkbTag {
   }
   uint32_t data;
 };
+
+inline DEVICE_RUNNABLE WkbCategory RemoveMulti(WkbCategory category) {
+  switch (category) {
+    case WkbCategory::kMultiPoint: {
+      return WkbCategory::kPoint;
+    }
+    case WkbCategory::kMultiLineString: {
+      return WkbCategory::kLineString;
+    }
+    case WkbCategory::kMultiPolygon: {
+      return WkbCategory::kPolygon;
+    }
+    default: {
+      assert(false);
+      return WkbCategory::kUnknown;
+    }
+  }
+}
+
+inline DEVICE_RUNNABLE WkbTag RemoveMulti(WkbTag tag) {
+  return WkbTag(RemoveMulti(tag.get_category()), tag.get_space_type());
+}
 
 }  // namespace cuda
 }  // namespace gis
