@@ -6,7 +6,7 @@ services:
     volumes:
       - ../..:/arctern
     command: &spark-test
-      ["/arctern/ci/scripts/run_spark_regression.sh", "--master", "spark://spark-master:7077", "/arctern/tests/spark_test.py"]
+      ["/arctern/ci/scripts/run_spark_regression.sh", "--master", "spark://spark-master:7077", "/arctern/tests/spark_test.py", "/arctern/tests/draw_map_test.py", "/arctern/tests/draw_plot_test.py"]
     deploy:
       resources:
         limits:
