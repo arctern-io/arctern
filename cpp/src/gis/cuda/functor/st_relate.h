@@ -16,50 +16,15 @@
 // under the License.
 
 #pragma once
-#include <thrust/pair.h>
-
-#include <algorithm>
-#include <limits>
-
-#include "gis/cuda/common/common.h"
+#include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/tools/de9im_matrix.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
 
-constexpr double inf = std::numeric_limits<double>::max();
-struct MinMax {
-  DEVICE_RUNNABLE MinMax() : min(+inf), max(-inf) {}
-  DEVICE_RUNNABLE void Update(double value) {
-    min = value < min ? value : min;
-    max = value > max ? value : max;
-  }
-  DEVICE_RUNNABLE bool is_trivial() const { return min == max; }
-  DEVICE_RUNNABLE bool is_valid() const { return min <= max; }
-
- public:
-  double min;
-  double max;
-};
-
-class BoundingBox {
- public:
-  DEVICE_RUNNABLE MinMax get_xs() const { return xs_; }
-  DEVICE_RUNNABLE MinMax get_ys() const { return ys_; }
-  DEVICE_RUNNABLE void Update(double2 value) {
-    xs_.Update(value.x);
-    ys_.Update(value.y);
-  }
-
-  DEVICE_RUNNABLE bool is_valid() {
-    assert(xs_.is_valid() == ys_.is_valid());
-    return xs_.is_valid();
-  }
-
- private:
-  MinMax xs_;
-  MinMax ys_;
-};
+void ST_Relate(const GeometryVector& left_vec, const GeometryVector& right_vec,
+               de9im::Matrix ref_matrix, bool* host_results);
 
 }  // namespace cuda
 }  // namespace gis

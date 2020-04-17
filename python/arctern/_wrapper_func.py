@@ -52,6 +52,7 @@ __all__ = [
     "weighted_point_map",
     "heat_map",
     "choropleth_map",
+    "icon_viz",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -100,7 +101,7 @@ def ST_GeomFromGeoJSON(json):
     :param json: Geometries organized as json
 
     :return: Geometries organized as WKB.
-    :rtype: ppandas.Series.object
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -436,7 +437,6 @@ def ST_IsSimple(geos):
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> rst = arctern.ST_IsSimple(arctern.ST_GeomFromText(data))
-      >>> rst = arctern.ST_IsSimple(data)
       >>> print(rst)
           0    true
           1    true
@@ -728,7 +728,6 @@ def ST_DistanceSphere(left, right):
     :rtype: pandas.Series.float64
 
     :example:
-    TODO(dyh):: finish test
       >>> import pandas
       >>> import arctern
       >>> p11 = "POINT(10 2)"
@@ -1181,6 +1180,13 @@ def choropleth_map(vega, region_boundaries, weights):
     else:
         arr_c = pa.array(weights, type='int64')
     rs = arctern_core_.choropleth_map(vega_string, arr_wkb, arr_c)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz(vega, points):
+    import pyarrow as pa
+    array_points = pa.array(points, type='binary')
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.icon_viz(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):

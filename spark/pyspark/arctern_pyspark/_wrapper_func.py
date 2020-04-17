@@ -77,9 +77,9 @@ def WkbToWkt(wkbs):
     return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PointFromText(geo):
+def ST_PointFromText(geos):
     """
-    Constructs point objects from the OGC Well-Known text representation.
+    Constructs points from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -104,12 +104,12 @@ def ST_PointFromText(geo):
       |POINT (30 10)                    |
       +---------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PolygonFromText(geo):
+def ST_PolygonFromText(geos):
     """
-    Constructs polygon objects from the OGC Well-Known text representation.
+    Constructs polygons from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -134,12 +134,12 @@ def ST_PolygonFromText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_LineStringFromText(geo):
+def ST_LineStringFromText(geos):
     """
-    Constructs linestring objects from the OGC Well-Known text representation.
+    Constructs linestrings from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -164,12 +164,12 @@ def ST_LineStringFromText(geo):
       |LINESTRING (0 0, 0 1, 1 1, 1 0)       |
       +--------------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromWKT(geo):
+def ST_GeomFromWKT(geos):
     """
-    Constructs geometry objects from the OGC Well-Known text representation.
+    Constructs geometries from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -194,12 +194,12 @@ def ST_GeomFromWKT(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))|
       +-------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromText(geo):
+def ST_GeomFromText(geos):
     """
-    Constructs geometry objects from the OGC Well-Known text representation.
+    Constructs geometries from the OGC Well-Known text representation.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKT.
@@ -224,12 +224,12 @@ def ST_GeomFromText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_GeomFromText(geo)
+    return arctern.ST_GeomFromText(geos)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
-def ST_AsText(geo):
+def ST_AsText(geos):
     """
-    Returns the Well-Known Text representation of the geometry.
+    Returns the Well-Known Text representation of the geometries.
 
     :type geo: pandas.Series.object
     :param geo: Geometries organized as WKB.
@@ -254,12 +254,12 @@ def ST_AsText(geo):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_AsText(geo)
+    return arctern.ST_AsText(geos)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
-def ST_AsGeoJSON(geo):
+def ST_AsGeoJSON(geos):
     """
-    Returns the GeoJSON representation of the geometry.
+    Returns the GeoJSON representation of the geometries.
 
     :type geo: pyarrow.array.string
     :param geo: Geometries organized as WKB.
@@ -284,12 +284,12 @@ def ST_AsGeoJSON(geo):
       |{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }|
       +------------------------------------------------------------------------------------------------------------------+
     """
-    return arctern.ST_AsGeoJSON(geo)
+    return arctern.ST_AsGeoJSON(geos)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_Point(x, y):
     """
-    Construct Point geometries according to the coordinates.
+    Construct points according to the coordinates.
 
     :type x: pandas.Series.float64
     :param x: Abscissa of the point.
@@ -322,7 +322,7 @@ def ST_Point(x, y):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_GeomFromGeoJSON(json):
     """
-    Constructs a geometry object from the GeoJSON representation.
+    Constructs geometries from the GeoJSON representation.
 
     :type json: pandas.Series.object
     :param json: Geometries organized as json
@@ -347,9 +347,7 @@ def ST_GeomFromGeoJSON(json):
       |ST_AsText(ST_GeomFromGeoJSON(json))|
       +-----------------------------------+
       |POINT (1 2)                        |
-      +-----------------------------------+
       |LINESTRING (1 2,4 5,7 8)           |
-      +-----------------------------------+
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
     """
@@ -388,7 +386,6 @@ def ST_Intersection(left, right):
       |ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))|
       +-------------------------------------------------------------------------+
       |GEOMETRYCOLLECTION EMPTY                                                 |
-      +-------------------------------------------------------------------------+
       |POINT (0 0)                                                              |
       +-------------------------------------------------------------------------+
     """
@@ -421,7 +418,6 @@ def ST_IsValid(geos):
       |ST_IsValid(ST_GeomFromText(geos))|
       +---------------------------------+
       |true                             |
-      +---------------------------------+
       |true                             |
       +---------------------------------+
     """
@@ -498,7 +494,6 @@ def ST_Equals(left, right):
       |ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right))|
       +--------------------------------------------------------+
       |true                                                    |
-      +--------------------------------------------------------+
       |true                                                    |
       +--------------------------------------------------------+
     """
@@ -537,7 +532,6 @@ def ST_Touches(left, right):
       |ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right))|
       +---------------------------------------------------------+
       |false                                                    |
-      +---------------------------------------------------------+
       |true                                                     |
       +---------------------------------------------------------+
     """
@@ -576,7 +570,6 @@ def ST_Overlaps(left, right):
       |ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
       |true                                                      |
-      +----------------------------------------------------------+
       |false                                                     |
       +----------------------------------------------------------+
     """
@@ -618,7 +611,6 @@ def ST_Crosses(left, right):
       |ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right))|
       +---------------------------------------------------------+
       |true                                                     |
-      +---------------------------------------------------------+
       |false                                                    |
       +---------------------------------------------------------+
     """
@@ -654,7 +646,6 @@ def ST_IsSimple(geos):
       |ST_IsSimple(ST_GeomFromText(geos))|
       +----------------------------------+
       |false                             |
-      +----------------------------------+
       |false                             |
       +----------------------------------+
     """
@@ -686,7 +677,6 @@ def ST_GeometryType(geos):
       |ST_GeometryType(ST_GeomFromText(geos))|
       +--------------------------------------+
       |ST_LINESTRING                         |
-      +--------------------------------------+
       |POINT                                 |
       +--------------------------------------+
     """
@@ -721,7 +711,6 @@ def ST_MakeValid(geos):
       |ST_AsText(ST_MakeValid(ST_GeomFromText(geos)))                                                  |
       +------------------------------------------------------------------------------------------------+
       |LINESTRING (0 0,10 0,20 0,20 0,30 0)                                                            |
-      +------------------------------------------------------------------------------------------------+
       |GEOMETRYCOLLECTION (MULTIPOLYGON (((3 3,1 1,1 5,3 3)),((5 3,7 5,7 1,5 3))),LINESTRING (3 3,5 3))|
       +------------------------------------------------------------------------------------------------+
     """
@@ -765,7 +754,6 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
       |ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10))           |
       +----------------------------------------------------------------------------+
       |POLYGON ((8 25,28 22,15 11,33 3,56 30,47 44,35 36,43 19,24 39,8 25))        |
-      +----------------------------------------------------------------------------+
       |LINESTRING (250 250,280 290,300 230,340 300,360 260,440 310,470 360,604 286)|
       +----------------------------------------------------------------------------+
     """
@@ -807,7 +795,6 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
       |ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y))|
       +-------------------------------------------------------------+
       |POLYGON ((1 3,1 7,5 7,5 3,1 3))                              |
-      +-------------------------------------------------------------+
       |POLYGON ((2 4,2 8,6 8,6 4,2 4))                              |
       +-------------------------------------------------------------+
     """
@@ -847,7 +834,6 @@ def ST_Contains(left, right):
       |ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
       |true                                                      |
-      +----------------------------------------------------------+
       |false                                                     |
       +----------------------------------------------------------+
     """
@@ -885,7 +871,6 @@ def ST_Intersects(left, right):
       |ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right))|
       +------------------------------------------------------------+
       |true                                                        |
-      +------------------------------------------------------------+
       |false                                                       |
       +------------------------------------------------------------+
     """
@@ -925,7 +910,6 @@ def ST_Within(left, right):
       |ST_Within(ST_GeomFromText(left), ST_GeomFromText(right))|
       +--------------------------------------------------------+
       |true                                                    |
-      +--------------------------------------------------------+
       |false                                                   |
       +--------------------------------------------------------+
     """
@@ -963,7 +947,6 @@ def ST_Distance(left, right):
       |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
       |3                                                         |
-      +----------------------------------------------------------+
       |0.7905694150420949                                        |
       +----------------------------------------------------------+
     """
@@ -988,7 +971,6 @@ def ST_DistanceSphere(left, right):
     :rtype: pandas.Series.float64
 
     :example:
-    TODO(dyh):: finish test
       >>> from pyspark.sql import SparkSession
       >>> from arctern_pyspark import register_funcs
       >>> spark_session = SparkSession .builder.appName("Python Arrow-in-Spark example").getOrCreate()
@@ -1003,7 +985,6 @@ def ST_DistanceSphere(left, right):
       |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
       +----------------------------------------------------------+
       |3                                                         |
-      +----------------------------------------------------------+
       |0.7905694150420949                                        |
       +----------------------------------------------------------+
     """
@@ -1038,7 +1019,6 @@ def ST_Area(geos):
       |ST_Area(ST_GeomFromText(geos))|
       +------------------------------+
       |200                           |
-      +------------------------------+
       |600                           |
       +------------------------------+
     """
@@ -1072,7 +1052,6 @@ def ST_Centroid(geos):
       |ST_AsText(ST_Centroid(ST_GeomFromText(geos)))|
       +---------------------------------------------+
       |POINT (2.30769230769231 3.30769230769231)    |
-      +---------------------------------------------+
       |POINT (0.5 1.0)                              |
       +---------------------------------------------+
     """
@@ -1106,7 +1085,6 @@ def ST_Length(geos):
       |ST_Length(ST_GeomFromText(geos))|
       +--------------------------------+
       |122.63074400009504              |
-      +--------------------------------+
       |0.30901547439030225             |
       +--------------------------------+
     """
@@ -1156,7 +1134,6 @@ def ST_HausdorffDistance(geo1, geo2):
       |ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2))|
       +-----------------------------------------------------------------+
       |1                                                                |
-      +-----------------------------------------------------------------+
       |1                                                                |
       +-----------------------------------------------------------------+
     """
@@ -1191,7 +1168,6 @@ def ST_ConvexHull(geos):
       |ST_AsText(ST_convexhull(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
       |LINESTRING (1 1,0 0)                           |
-      +-----------------------------------------------+
       |POLYGON ((1 -2,-2.0 1.5,1 3,2.5 3.0,1 -2))     |
       +-----------------------------------------------+
     """
@@ -1223,7 +1199,6 @@ def ST_NPoints(geos):
       |ST_NPoints(ST_GeomFromText(geos))|
       +---------------------------------+
       |4                                |
-      +---------------------------------+
       |4                                |
       +---------------------------------+
     """
@@ -1261,19 +1236,12 @@ def ST_Envelope(geos):
       |ST_AsText(ST_Envelope(ST_GeomFromText(geos)))|
       +---------------------------------------------+
       |POINT (10 10)                                |
-      +---------------------------------------------+
       |LINESTRING (0 0,0 10)                        |
-      +---------------------------------------------+
       |LINESTRING (0 0,10 0)                        |
-      +---------------------------------------------+
       |POLYGON ((0 0,0 10,10 10,10 0,0 0))          |
-      +---------------------------------------------+
       |POLYGON ((0 0,0 10,10 10,10 0,0 0))          |
-      +---------------------------------------------+
       |POLYGON ((0 0,0 5,10 5,10 0,0 0))            |
-      +---------------------------------------------+
       |POLYGON ((0 0,0 10,10 10,10 0,0 0))          |
-      +---------------------------------------------+
       |POLYGON ((0 0,0 20,20 20,20 0,0 0))          |
       +---------------------------------------------+
     """

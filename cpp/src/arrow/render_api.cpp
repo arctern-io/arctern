@@ -787,5 +787,47 @@ std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>
   return out_pic(result);
 }
 
+std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
+                                       const std::string& conf) {
+  auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
+  auto num_icons = points->length();
+  auto wkb_type = points->type_id();
+  assert(wkb_type == arrow::Type::BINARY);
+
+  std::vector<uint32_t> input_x(num_icons);
+  std::vector<uint32_t> input_y(num_icons);
+
+  OGRGeometry* res_geo = nullptr;
+  for (size_t i = 0; i < num_icons; i++) {
+    std::string geo_wkb = point_arr->GetString(i);
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
+    auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+    input_x[i] = rs_pointer->getX();
+    input_y[i] = rs_pointer->getY();
+  }
+
+  auto result = iconviz(&input_x[0], &input_y[0], num_icons, conf);
+
+  return out_pic(result);
+}
+
+std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_x,
+                                       const std::shared_ptr<arrow::Array>& arr_y,
+                                       const std::string& conf) {
+  auto x_length = arr_x->length();
+  auto y_length = arr_y->length();
+  auto x_type = arr_x->type_id();
+  auto y_type = arr_y->type_id();
+
+  assert(x_length == y_length);
+  assert(x_type == arrow::Type::UINT32);
+  assert(y_type == arrow::Type::UINT32);
+
+  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
+  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
+
+  return out_pic(iconviz(input_x, input_y, x_length, conf));
+}
+
 }  // namespace render
 }  // namespace arctern
