@@ -66,14 +66,14 @@ def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
 
-    :type x: pandas.Series.float64
+    :type x: Series dtype:float64
     :param x: Abscissa of the point.
 
-    :type y: pandas.Series.float64
+    :type y: Series dtype:float64
     :param y: Ordinate of the point.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -94,13 +94,13 @@ def ST_Point(x, y):
 
 def ST_GeomFromGeoJSON(json):
     """
-    Constructs a geometry object from the GeoJSON representation.
+    Construct geometry from the GeoJSON representation.
 
-    :type json: pandas.Series.object
-    :param json: Geometries organized as json
+    :type json: Series dtype:object
+    :param json: Geometries in json format.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -118,13 +118,13 @@ def ST_GeomFromGeoJSON(json):
 
 def ST_GeomFromText(text):
     """
-    Constructs a geometry object from the OGC Well-Known text representation.
+    Transform the representation of geometry from WKT to WKB.
 
-    :type json: pandas.Series.object
-    :param json: Geometries organized as wkt
+    :type json: Series dtype:object
+    :param json: Geometries in WKT form.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -142,13 +142,13 @@ def ST_GeomFromText(text):
 
 def ST_AsText(text):
     """
-    Returns the Well-Known Text representation of the geometry.
+    Transform the representation of geometry from WKB to WKT.
 
-    :type text: pandas.Series.object
-    :param text: Geometries organized as WKB.
+    :type text: Series dtype:object
+    :param text: Geometries in WKB form.
 
-    :return: Geometries organized as WKT.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKT form.
 
     :example:
       >>> import pandas
@@ -166,13 +166,13 @@ def ST_AsText(text):
 
 def ST_AsGeoJSON(text):
     """
-    Returns the GeoJSON representation of the geometry.
+    Return the GeoJSON representation of the geometry.
 
-    :type text: pyarrow.array.string
-    :param text: Geometries organized as WKB.
+    :type text: Series dtype:object
+    :param text: Geometries in WKB form.
 
-    :return: Geometries organized as GeoJSON.
-    :rtype: pyarrow.array.string
+    :rtype: Series dtype:object
+    :return: Geometries in GeoJSON format.
 
     :example:
       >>> import pandas
@@ -190,19 +190,16 @@ def ST_AsGeoJSON(text):
 
 def ST_Intersection(left, right):
     """
-    Calculate the point set intersection of geometries.
+    Calculate the point set intersection of two geometry objects.
 
-    For every (left, right) pair with the same offset value in left and right,
-    calculate a geometry that represents their point set intersection.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB from.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB from.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB from.
 
     :example:
       >>> import pandas
@@ -222,13 +219,13 @@ def ST_Intersection(left, right):
 
 def ST_IsValid(geos):
     """
-    For each item in geometries, check if it is of valid geometry format.
+    Check if geometry is of valid geometry format.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry is valid.
 
     :example:
       >>> import pandas
@@ -247,22 +244,17 @@ def ST_IsValid(geos):
 
 def ST_PrecisionReduce(geos, precision):
     """
-    Reduce the precision of geometry.
+    For the coordinates of the geometry, reduce the number of significant digits
+     to the given number. The last decimal place will be rounded.
 
-    For every geometry in geometries, reduce the decimal places of its coordinates
-    to the given number. The last decimal place will be rounded.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    Note, the operation is performed NOT in "inplace" manner, i.e., new geometries
-    in arrow::Array format will be construted and extra memory will be allocated.
-
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKT.
-
-    :type precision: uint32
+    :type precision: int
     :param geos: The number to reduce the decimals places to.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -281,20 +273,17 @@ def ST_PrecisionReduce(geos, precision):
 
 def ST_Equals(left, right):
     """
-    Check whether geometries are "spatially equal".
+    Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
+     the same geometry structure.
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if they are "spatially equal". "Spatially equal" here means two geometries represent
-    the same geometry structure.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" equals geometry "right".
 
     :example:
       >>> import pandas
@@ -315,20 +304,17 @@ def ST_Equals(left, right):
 
 def ST_Touches(left, right):
     """
-    Check whether geometries "touch".
+    Check whether geometries "touch". "Touch" here means two geometries have common points, and the
+     common points locate only on their boundaries.
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if they "touch". "Touch" here means two geometries have common points, and the
-    common points locate only on their boundaries.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" touches geometry "right".
 
     :example:
       >>> import pandas
@@ -349,20 +335,17 @@ def ST_Touches(left, right):
 
 def ST_Overlaps(left, right):
     """
-    Check whether geometries "spatially overlap".
+    Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
+     intersect but one does not completely contain another.
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if they "spatially overlap". "Spatially overlap" here means two geometries
-    intersect but one does not completely contain another.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" overlap geometry "right".
 
     :example:
       >>> import pandas
@@ -383,22 +366,19 @@ def ST_Overlaps(left, right):
 
 def ST_Crosses(left, right):
     """
-    Check whether geometries "spatially cross".
+    Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
+     some, but not all interior points in common. The intersection of the interiors of the geometries
+     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
+     input geometries.
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if they "spatially cross". "Spatially cross" here means two the geometries have
-    some, but not all interior points in common. The intersection of the interiors of
-    the geometries must not be the empty set and must have a dimensionality less than
-    the maximum dimension of the two input geometries.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:object
+    :return: True if geometry "left" crosses geometry "right".
 
     :example:
       >>> import pandas
@@ -419,17 +399,14 @@ def ST_Crosses(left, right):
 
 def ST_IsSimple(geos):
     """
-    Check whether geometry is "simple".
+    Check whether geometry is "simple". "Simple" here means that a geometry has no anomalous geometric points
+     such as self intersection or self tangency.
 
-    For every geometry in geometries, check if it is "simple". "Simple" here means
-    that a geometry has no anomalous geometric points such as self intersection or
-    self tangency.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry is simple.
 
     :example:
       >>> import pandas
@@ -450,11 +427,11 @@ def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: The type of geometry, e.g., "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT".
 
     :example:
       >>> import pandas
@@ -473,16 +450,14 @@ def ST_GeometryType(geos):
 
 def ST_MakeValid(geos):
     """
-    For every geometry in geometries, create a valid representation of it without
-    losing any of the input vertices. Already-valid geometries won't have further
-    intervention. This function returns geometries which are validated. Note, new
-    geometries are construted in arrow::Array format, so extra memory will be allocated.
+    Create a valid representation of the geometry without losing any of the input vertices. If
+     the geometry is already-valid, then nothing will be done.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometry if the input geometry is already-valid or can be made valid. Otherwise, NULL.
 
     :example:
       >>> import pandas
@@ -501,19 +476,16 @@ def ST_MakeValid(geos):
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
-    to the precision that parameter tolerance specifies.
+     to the precision that parameter tolerance specifies.
 
-    Note simplified geometries with be construted in arrow::Array format, so extra
-    memory will be allocated.
-
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB from.
 
     :type distance_tolerance: double
     :param distance_tolerance: The precision of the simplified geometry.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -534,20 +506,20 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
-    :type min_x: pandas.Series.float64
+    :type min_x: Series dtype:float64
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
 
-    :type min_y: pandas.Series.float64
+    :type min_y: Series dtype:float64
     :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
 
-    :type max_x: pandas.Series.float64
+    :type max_x: Series dtype:float64
     :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
 
-    :type max_y: pandas.Series.float64
+    :type max_y: Series dtype:float64
     :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -571,21 +543,18 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 
 def ST_Contains(left, right):
     """
-    Check whether a geometry contain another geometry.
+    Check whether geometry "left" contains geometry "right". "Left contains right" means no points
+     of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
+     in the interior of "left".
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if left_geometry "contains" right_geometry. Left "contains" right means no points
-    of right_geometry lie in the exterior of left_geometry and at least one point of
-    the interior of right_geometry lies in the interior of left_geometry.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" contains geometry "right".
 
     :example:
       >>> import pandas
@@ -606,19 +575,16 @@ def ST_Contains(left, right):
 
 def ST_Intersects(left, right):
     """
-    Check whether two geometries intersect.
+    Check whether two geometries intersect (i.e., share any portion of space).
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if left and right shares any portion of space.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" intersects geometry "right".
 
     :example:
       >>> import pandas
@@ -639,21 +605,17 @@ def ST_Intersects(left, right):
 
 def ST_Within(left, right):
     """
-    Check whether a geometry is within another geometry.
+    Check whether geometry "left" is within geometry "right". "Left within right" means no points of "left" lie in the
+     exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
 
-    For every (left, right) pair with the same offset value in left and right, check
-    if left is "within" right. Left "within" right means no points of left lie in the
-    exterior of right and at least one point of the interior of left lies in the interior
-    of right.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of booleans.
-    :rtype: pandas.Series.bool
+    :rtype: Series dtype:bool
+    :return: True if geometry "left" within geometry "right".
 
     :example:
       >>> import pandas
@@ -674,19 +636,16 @@ def ST_Within(left, right):
 
 def ST_Distance(left, right):
     """
-    Calculate the distance between two geometries.
+    Calculates the minimum 2D Cartesian (planar) distance between "left" and "right".
 
-    For every (left, right) pair with the same offset value in left and right,
-    calculates the minimum 2D Cartesian (planar) distance between left and right.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of double.
-    :rtype: pandas.Series.float64
+    :rtype: Series dtype:float64
+    :return: The value that represents the distance between geometry "left" and geometry "right".
 
     :example:
       >>> import pandas
@@ -711,20 +670,17 @@ def ST_Distance(left, right):
 
 def ST_DistanceSphere(left, right):
     """
-    Returns minimum distance in meters between two lon/lat points.
-    Uses a spherical earth and radius derived from the spheroid defined by the SRID.
+    Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
+     and radius derived from the spheroid defined by the SRID.
 
-    For every (left, right) pair with the same offset value in left and right,
-    calculates the minimum spherical distance between left and right.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of double.
-    :rtype: pandas.Series.float64
+    :rtype: Series dtype:float64
+    :return: The value that represents the distance between geometry "left" and geometry "right".
 
     :example:
       >>> import pandas
@@ -749,16 +705,13 @@ def ST_DistanceSphere(left, right):
 
 def ST_Area(geos):
     """
-    Calculate the area of geometry.
+    Calculate the 2D Cartesian (planar) area of geometry.
 
-    For every geometry in geometries, calculate the 2D Cartesian (planar) area
-    of geometry.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
-
-    :return: An array of double.
-    :rtype: pandas.Series.float64
+    :rtype: Series dtype:float64
+    :return: The value that represents the area of geometry.
 
     :example:
       >>> import pandas
@@ -780,13 +733,11 @@ def ST_Centroid(geos):
     """
     Compute the centroid of geometry.
 
-    For every geometry in geometries, compute the controid point of geometry.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
-
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -808,13 +759,11 @@ def ST_Length(geos):
     """
     Calculate the length of linear geometries.
 
-    For every geometry in geometries, calculate the length of geometry.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
-
-    :return: An array of double.
-    :rtype: pandas.Series.float64
+    :rtype: Series dtype:float64
+    :return: The value that represents the length of geometry.
 
     :example:
       >>> import pandas
@@ -837,27 +786,14 @@ def ST_HausdorffDistance(geo1, geo2):
     Returns the Hausdorff distance between two geometries, a measure of how similar
     or dissimilar 2 geometries are.
 
-    Implements algorithm for computing a distance metric which can be thought of as
-    the "Discrete Hausdorff Distance". This is the Hausdorff distance restricted to
-    discrete points for one of the geometries. Wikipedia article on Hausdorff distance
-    Martin Davis note on how Hausdorff Distance calculation was used to prove
-    correctness of the CascadePolygonUnion approach.
+    :type left: Series dtype:object
+    :param left: Geometries in WKB form.
 
-    When densifyFrac is specified, this function performs a segment densification before
-    computing the discrete hausdorff distance. The densifyFrac parameter sets the fraction
-    by which to densify each segment. Each segment will be split into a number of equal-length
-    subsegments, whose fraction of the total length is closest to the given fraction.
+    :type right: Series dtype:object
+    :param right: Geometries in WKB form.
 
-    Units are in the units of the spatial reference system of the geometries.
-
-    :type left: pandas.Series.object
-    :param left: Geometries organized as WKB.
-
-    :type right: pandas.Series.object
-    :param right: Geometries organized as WKB.
-
-    :return: An array of double.
-    :rtype: pandas.Series.float64
+    :rtype: Series dtype:float64
+    :return: The value that represents the hausdorff distance between geo1 and geo2.
 
     :example:
       >>> import pandas
@@ -880,16 +816,13 @@ def ST_HausdorffDistance(geo1, geo2):
 
 def ST_ConvexHull(geos):
     """
-    Compute the convex hull of geometry.
+    Compute the smallest convex geometry that encloses all geometries in the given geometry.
 
-    Compute the smallest convex geometry that encloses all geometries for a geometry
-    in geometries.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
-
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:float64
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -910,11 +843,11 @@ def ST_NPoints(geos):
     """
     Calculates the points number for every geometry in geometries.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return : An array of int64.
-    :rtype : pandas.Series.int64
+    :rtype : Series object:int
+    :return : The number of points.
 
     :example:
       >>> import pandas
@@ -933,13 +866,13 @@ def ST_NPoints(geos):
 
 def ST_Envelope(geos):
     """
-    Compute the double-precision minimum bounding box geometry for every geometry in geometries.
+    Compute the double-precision minimum bounding box geometry for the given geometry.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -974,16 +907,16 @@ def ST_Envelope(geos):
 def ST_Buffer(geos, distance):
     """
     Returns a geometry that represents all points whose distance from this geos is
-    less than or equal to distance.
+    less than or equal to "distance".
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :type distance: int64
+    :type distance: int
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -1002,13 +935,13 @@ def ST_Buffer(geos, distance):
 
 def ST_Union_Aggr(geos):
     """
-    This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
+    Return a geometry that represents the union of a set of geometries.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometry organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -1028,14 +961,13 @@ def ST_Union_Aggr(geos):
 
 def ST_Envelope_Aggr(geos):
     """
-    Compute the double-precision minimum bounding box geometry for every geometry in geometries,
-    then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
+    Compute the double-precision minimum bounding box geometry for the union of given geometries.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometry organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -1055,11 +987,10 @@ def ST_Envelope_Aggr(geos):
 
 def ST_Transform(geos, src, dst):
     """
-    Returns a new geometry with its coordinates transformed to a different spatial
-    reference system.
+    Return a new geometry with its coordinates transformed from spatial reference system "src" to a "dst".
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
     :type src: string
     :param src: The current srid of geometries.
@@ -1067,8 +998,8 @@ def ST_Transform(geos, src, dst):
     :type dst: string
     :param dst: The target srid of geometries tranfrom to.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -1091,15 +1022,15 @@ def ST_Transform(geos, src, dst):
 
 def ST_CurveToLine(geos):
     """
-    Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or
+    Convert curves in a geometry to approximate linear representation, e,g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON, and
     MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
 
-    :type geos: pandas.Series.object
-    :param geos: Geometries organized as WKB.
+    :type geos: Series dtype:object
+    :param geos: Geometries in WKB form.
 
-    :return: Geometries organized as WKB.
-    :rtype: pandas.Series.object
+    :rtype: Series dtype:object
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
