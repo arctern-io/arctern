@@ -46,7 +46,8 @@ class TypeScan : public ::testing::Test {
 using TypesContainer = ::testing::Types<
     std::tuple<XYSpaceWkbCases, dispatch::WkbTypeScanner, arrow::BinaryArray>,
     std::tuple<XYSpaceWktCases, dispatch::WktTypeScanner, arrow::StringArray> >;
-TYPED_TEST_SUITE(TypeScan, TypesContainer);
+
+TYPED_TEST_CASE(TypeScan, TypesContainer);
 
 TYPED_TEST(TypeScan, single_type_scan) {
   typename TestFixture::XYSpaceCases cases;
@@ -266,3 +267,4 @@ TYPED_TEST(TypeScan, dispatch) {
 
   dispatch::UnaryExecute<ArrayType>(mask_result, checker_gen(4), checker_gen(1), cases);
 }
+
