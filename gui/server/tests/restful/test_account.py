@@ -27,7 +27,6 @@ def test_login(host, port):
         url=url,
         json=invalid_params
     )
-    print(response.json())
     assert response.json()['code'] == -1
     assert response.json()['message'] == 'username/password error'
     assert response.json()['status'] == 'error'

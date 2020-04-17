@@ -52,6 +52,7 @@ __all__ = [
     "weighted_point_map",
     "heat_map",
     "choropleth_map",
+    "icon_viz",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -1110,6 +1111,13 @@ def choropleth_map(vega, region_boundaries, weights):
     else:
         arr_c = pa.array(weights, type='int64')
     rs = arctern_core_.choropleth_map(vega_string, arr_wkb, arr_c)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz(vega, points):
+    import pyarrow as pa
+    array_points = pa.array(points, type='binary')
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.icon_viz(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):

@@ -16,13 +16,14 @@ import sys
 import cv2
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap
+from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
 from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
+from arctern_pyspark import icon_viz
 
 from pyspark.sql import SparkSession
 
@@ -77,7 +78,7 @@ def run_test_point_map(spark):
 
     register_funcs(spark)
     res = spark.sql(
-        "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+        "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 1 size:1024*896, point_size: 3, opacity: 0.5, color: #2DEF4A(green)
     vega_1 = vega_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 3, "#2DEF4A", 0.5, "EPSG:4326")
@@ -171,7 +172,7 @@ def run_test_weighted_point_map(spark):
 
     register_funcs(spark)
     # 1 single color; single point size
-    res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+    res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 1.1 opacity = 1.0, color_ruler: [0, 2], color: #EE3814(red)
     vega1_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#EE3814"], [0, 2],
@@ -234,7 +235,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map1_5_2, png_path + "test_weighted_point_map_nyc_1_5-2.png")
 
     # 2 multiple color; single point size
-    res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+    res2 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 2.1 opacity = 1.0, color_ruler: [0, 2], color: red_transparency
     vega2_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#FF0000", "#FF0000"],
@@ -297,7 +298,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map2_5_2, png_path + "test_weighted_point_map_nyc_2_5-2.png")
 
     # 3 single color; multiple point size
-    res3 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+    res3 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 3.1 opacity = 1.0, color_ruler: [0, 2], color: #900E46(red)
     vega3_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#900E46"], [0, 2],
@@ -360,7 +361,7 @@ def run_test_weighted_point_map(spark):
     save_png(weighted_point_map3_5_2, png_path + "test_weighted_point_map_nyc_3_5-2.png")
 
     # 4 multiple color; multiple point size
-    res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+    res4 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c, fare_amount as s from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 4.1 opacity = 1.0, color_ruler: [0, 2], color: green_yellow_red
     vega4_1 = vega_weighted_pointmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#4D904F", "#C23728"], [0, 2],
@@ -476,7 +477,7 @@ def run_test_heat_map(spark):
 
     register_funcs(spark)
     res = spark.sql(
-        "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  'POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))')")
+        "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     # 1 size:1024*896, map_scale: 10.0
     vega_1 = vega_heatmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], 10.0, 'EPSG:4326')
@@ -555,7 +556,7 @@ def run_test_choropleth_map(spark):
         file_path).cache()
     df.createOrReplaceTempView("nyc_taxi")
 
-    res = spark.sql("select buildingtext_dropoff as wkt, passenger_count as w from nyc_taxi")
+    res = spark.sql("select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from nyc_taxi")
 
     # 1-9 test color_gradient
     # 1 blue_to_red
@@ -830,6 +831,56 @@ def run_test_choropleth_map(spark):
     assert run_diff_png(baseline_png19, png_path + "test_choropleth_map_nyc_19-1.png")
     assert run_diff_png(baseline_png19, png_path + "test_choropleth_map_nyc_19-2.png")
 
+
+def run_test_icon_viz(spark):
+    # file 0_5M_nyc_taxi_and_building.csv could be obtained from arctern-turoial warehouse under zilliztech account. The link on github is https://github.com/zilliztech/arctern-tutorial
+    # file 0_10000_nyc_taxi_and_building.csv is from file 0_5M_nyc_taxi_and_building.csv first 10000 lines
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
+        "trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, "
+        "dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, "
+        "buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        file_path).cache()
+    df.createOrReplaceTempView("nyc_taxi")
+
+    register_funcs(spark)
+    res = spark.sql(
+        "select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
+
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    draw_png_path = dir_path + "/draw_map/taxi.png"
+
+    # 1 size:1024*896
+    vega_1 = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, "EPSG:4326")
+    baseline1 = icon_viz(vega_1, res)
+    icon_viz1_1 = icon_viz(vega_1, res)
+    icon_viz1_2 = icon_viz(vega_1, res)
+
+    baseline_png1 = png_path + "icon_viz_nyc_1.png"
+    save_png(baseline1, baseline_png1)
+    save_png(icon_viz1_1, png_path + "test_icon_viz_nyc_1-1.png")
+    save_png(icon_viz1_2, png_path + "test_icon_viz_nyc_1-2.png")
+
+    # 2 size:200*200
+    vega_2 = vega_icon(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, "EPSG:4326")
+    baseline2 = icon_viz(vega_2, res)
+    icon_viz2_1 = icon_viz(vega_2, res)
+    icon_viz2_2 = icon_viz(vega_2, res)
+
+    baseline_png2 = png_path + "icon_viz_nyc_2.png"
+    save_png(baseline2, baseline_png2)
+    save_png(icon_viz2_1, png_path + "test_icon_viz_nyc_2-1.png")
+    save_png(icon_viz2_2, png_path + "test_icon_viz_nyc_2-2.png")
+
+    spark.catalog.dropGlobalTempView("nyc_taxi")
+
+    assert run_diff_png(baseline_png1, png_path + "test_icon_viz_nyc_1-1.png")
+    assert run_diff_png(baseline_png1, png_path + "test_icon_viz_nyc_1-2.png")
+    assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-1.png")
+    assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-2.png")
+
+
 if __name__ == "__main__":
     spark_session = SparkSession \
         .builder \
@@ -842,5 +893,7 @@ if __name__ == "__main__":
     run_test_weighted_point_map(spark_session)
     run_test_heat_map(spark_session)
     run_test_choropleth_map(spark_session)
+    run_test_icon_viz(spark_session)
 
     spark_session.stop()
+    
