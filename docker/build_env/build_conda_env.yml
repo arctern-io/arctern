@@ -1,5 +1,6 @@
 name: arctern
 dependencies:
+- conda-forge::python=3.7.6
 - conda-forge::gdal=3.0.4
 - conda-forge::pyarrow=0.16.0
 - conda-forge::gtest=1.10.0
