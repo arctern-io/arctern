@@ -1,5 +1,8 @@
 version: '3.5'
 
+volumes:
+  amd64-ubuntu18.04-cache:
+
 services:
   conda-build:
     # Usage:
