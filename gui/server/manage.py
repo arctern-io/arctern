@@ -15,22 +15,30 @@ limitations under the License.
 """
 
 
+import logging
 import getopt
 import sys
 from pathlib import Path
 import json
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from app import service as app_service
+from app import scope as app_scope
+from app.common import log
 
 APP = Flask(__name__)
 
 APP.register_blueprint(app_service.API)
+APP.register_blueprint(app_scope.API)
 
 CORS(APP, resources=r'/*')
 
+@APP.errorhandler(Exception)
+def exception_handler(e):
+    log.INSTANCE.error('exception: {}'.format(str(e)))
+    return jsonify(status='error', code=-1, message=str(e))
 
 def usage():
     """
@@ -43,6 +51,8 @@ def usage():
     print('-i: ip address')
     print('-p: http port')
     print('-c: json config to be loaded')
+    print('--logfile=: path/to/logfile, default: ./log.txt')
+    print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
 if __name__ == '__main__':
@@ -50,9 +60,19 @@ if __name__ == '__main__':
     IP = "0.0.0.0"
     PORT = 8080
     JSON_CONFIG = None
+    LOG_FILE = "log.txt"
+    LOG_LEVEL = logging.INFO
+
+    _LEVEL_DICT_ = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warn': logging.WARN,
+        'error': logging.ERROR,
+        'fatal': logging.FATAL
+    }
 
     try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:')
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         usage()
@@ -70,6 +90,12 @@ if __name__ == '__main__':
             PORT = arg
         elif opt == '-c':
             JSON_CONFIG = arg
+        elif opt == '--logfile':
+            LOG_FILE = arg
+        elif opt == '--loglevel':
+            LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
+
+    log.set_file(LOG_FILE, LOG_LEVEL)
 
     if JSON_CONFIG:
         json_file = Path(JSON_CONFIG)

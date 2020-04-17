@@ -17,6 +17,7 @@ __all__ = [
     "weighted_pointmap",
     "heatmap",
     "choroplethmap",
+    "icon_viz",
 ]
 
 def print_partitions(df):
@@ -105,7 +106,8 @@ def weighted_pointmap(vega, df):
             def render_agg_UDF(batch_iter):
                 for pdf in batch_iter:
                     dd = pdf.groupby([col_point])
-                    dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                    ll = [col_color, col_stroke]
+                    dd = dd[ll].agg(['sum']).reset_index()
                     dd.columns = [col_point, col_color, col_stroke]
                     yield dd
 
@@ -158,7 +160,8 @@ def weighted_pointmap(vega, df):
         def render_agg_UDF(batch_iter):
             for pdf in batch_iter:
                 dd = pdf.groupby([col_point])
-                dd = dd[col_color, col_stroke].agg(['sum']).reset_index()
+                ll = [col_color, col_stroke]
+                dd = dd[ll].agg(['sum']).reset_index()
                 dd.columns = [col_point, col_color, col_stroke]
                 yield dd
 
@@ -292,4 +295,34 @@ def choroplethmap(vega, df):
     agg_df = agg_df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
+    return hex_data
+
+def icon_viz(vega, df):
+    if df.rdd.isEmpty():
+        return None
+
+    if len(df.schema.names) != 1:
+        return None
+
+    col_point = df.schema.names[0]
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, col, lit
+    from ._wrapper_func import TransformAndProjection, Projection
+    coor = vega.coor()
+    bounding_box = vega.bounding_box()
+    height = vega.height()
+    width = vega.width()
+    top_left = 'POINT (' + str(bounding_box[0]) +' '+ str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) +' '+ str(bounding_box[1]) + ')'
+    if coor != 'EPSG:3857':
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
+    else:
+        df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point))
+
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def iconviz(point, conf=vega):
+        from arctern import icon_viz
+        return icon_viz(conf, point)
+
+    df = df.rdd.coalesce(1, shuffle=True).toDF()
+    hex_data = df.agg(iconviz(df[col_point])).collect()[0][0]
     return hex_data

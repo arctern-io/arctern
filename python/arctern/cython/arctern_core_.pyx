@@ -45,6 +45,9 @@ def heat_map(vega, points, weights):
 def choropleth_map(vega,region_boundaries, weights):
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(region_boundaries), pyarrow_unwrap_array(weights), vega))
 
+def icon_viz(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(points), vega))
+
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
 
@@ -62,6 +65,9 @@ def ST_GeomFromText(object text):
 
 def ST_AsText(object text):
     return pyarrow_wrap_array(arctern_core_pxd.ST_AsText(pyarrow_unwrap_array(text)))
+
+def ST_AsGeoJSON(object text):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_AsGeoJSON(pyarrow_unwrap_array(text)))
 
 def ST_Intersection(object left_geometries,object right_geometries):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Intersection(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
@@ -110,6 +116,9 @@ def ST_Within(object geo_arr1,object geo_arr2):
 
 def ST_Distance(object geo_arr1,object geo_arr2):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Distance(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
+def ST_DistanceSphere(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_DistanceSphere(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
 
 def ST_Area(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Area(pyarrow_unwrap_array(geo_arr)))

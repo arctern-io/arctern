@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: disable=too-many-lines
 
 __all__ = [
     "ST_Point",
@@ -30,6 +31,7 @@ __all__ = [
     "ST_Intersects",
     "ST_Within",
     "ST_Distance",
+    "ST_DistanceSphere",
     "ST_Area",
     "ST_Centroid",
     "ST_Length",
@@ -45,10 +47,12 @@ __all__ = [
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "ST_AsText",
+    "ST_AsGeoJSON",
     "point_map",
     "weighted_point_map",
     "heat_map",
     "choropleth_map",
+    "icon_viz",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -63,14 +67,14 @@ def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
 
-    :type x: pyarrow.array.double
+    :type x: pandas.Series.float64
     :param x: Abscissa of the point.
 
-    :type y: pyarrow.array.double
+    :type y: pandas.Series.float64
     :param y: Ordinate of the point.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -93,11 +97,11 @@ def ST_GeomFromGeoJSON(json):
     """
     Constructs a geometry object from the GeoJSON representation.
 
-    :type json: pyarrow.array.string
+    :type json: pandas.Series.object
     :param json: Geometries organized as json
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -117,11 +121,11 @@ def ST_GeomFromText(text):
     """
     Constructs a geometry object from the OGC Well-Known text representation.
 
-    :type json: pyarrow.array.string
+    :type json: pandas.Series.object
     :param json: Geometries organized as wkt
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -141,11 +145,11 @@ def ST_AsText(text):
     """
     Returns the Well-Known Text representation of the geometry.
 
-    :type text: pyarrow.array.string
+    :type text: pandas.Series.object
     :param text: Geometries organized as WKB.
 
     :return: Geometries organized as WKT.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -161,6 +165,30 @@ def ST_AsText(text):
     rs = arctern_core_.ST_AsText(geo)
     return rs.to_pandas()
 
+def ST_AsGeoJSON(text):
+    """
+    Returns the GeoJSON representation of the geometry.
+
+    :type text: pyarrow.array.string
+    :param text: Geometries organized as WKB.
+
+    :return: Geometries organized as GeoJSON.
+    :rtype: pyarrow.array.string
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> data = pandas.Series(["POLYGON ((0 0,0 1,1 1,1 0,0 0))"])
+      >>> string_ptr = arctern.ST_AsGeoJSON(arctern.ST_GeomFromText(data))
+      >>> print(string_ptr)
+          0    { "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }
+          dtype: object
+    """
+    import pyarrow as pa
+    geo = pa.array(text, type='binary')
+    rs = arctern_core_.ST_AsGeoJSON(geo)
+    return rs.to_pandas()
+
 def ST_Intersection(left, right):
     """
     Calculate the point set intersection of geometries.
@@ -168,14 +196,14 @@ def ST_Intersection(left, right):
     For every (left, right) pair with the same offset value in left and right,
     calculate a geometry that represents their point set intersection.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -197,11 +225,11 @@ def ST_IsValid(geos):
     """
     For each item in geometries, check if it is of valid geometry format.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -228,14 +256,14 @@ def ST_PrecisionReduce(geos, precision):
     Note, the operation is performed NOT in "inplace" manner, i.e., new geometries
     in arrow::Array format will be construted and extra memory will be allocated.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKT.
 
     :type precision: uint32
     :param geos: The number to reduce the decimals places to.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -260,14 +288,14 @@ def ST_Equals(left, right):
     if they are "spatially equal". "Spatially equal" here means two geometries represent
     the same geometry structure.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -294,14 +322,14 @@ def ST_Touches(left, right):
     if they "touch". "Touch" here means two geometries have common points, and the
     common points locate only on their boundaries.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -328,14 +356,14 @@ def ST_Overlaps(left, right):
     if they "spatially overlap". "Spatially overlap" here means two geometries
     intersect but one does not completely contain another.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -364,14 +392,14 @@ def ST_Crosses(left, right):
     the geometries must not be the empty set and must have a dimensionality less than
     the maximum dimension of the two input geometries.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -398,18 +426,17 @@ def ST_IsSimple(geos):
     that a geometry has no anomalous geometric points such as self intersection or
     self tangency.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> rst = arctern.ST_IsSimple(arctern.ST_GeomFromText(data))
-      >>> rst = arctern.ST_IsSimple(data)
       >>> print(rst)
           0    true
           1    true
@@ -424,11 +451,11 @@ def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -452,11 +479,11 @@ def ST_MakeValid(geos):
     intervention. This function returns geometries which are validated. Note, new
     geometries are construted in arrow::Array format, so extra memory will be allocated.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -480,14 +507,14 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     Note simplified geometries with be construted in arrow::Array format, so extra
     memory will be allocated.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :type distance_tolerance: double
     :param distance_tolerance: The precision of the simplified geometry.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -508,20 +535,20 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
-    :type min_x: pyarrow.array.double
+    :type min_x: pandas.Series.float64
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
 
-    :type min_y: pyarrow.array.double
+    :type min_y: pandas.Series.float64
     :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
 
-    :type max_x: pyarrow.array.double
+    :type max_x: pandas.Series.float64
     :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
 
-    :type max_y: pyarrow.array.double
+    :type max_y: pandas.Series.float64
     :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -552,14 +579,14 @@ def ST_Contains(left, right):
     of right_geometry lie in the exterior of left_geometry and at least one point of
     the interior of right_geometry lies in the interior of left_geometry.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -585,14 +612,14 @@ def ST_Intersects(left, right):
     For every (left, right) pair with the same offset value in left and right, check
     if left and right shares any portion of space.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -620,14 +647,14 @@ def ST_Within(left, right):
     exterior of right and at least one point of the interior of left lies in the interior
     of right.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of booleans.
-    :rtype: pyarrow.array.boolean
+    :rtype: pandas.Series.bool
 
     :example:
       >>> import pandas
@@ -653,14 +680,14 @@ def ST_Distance(left, right):
     For every (left, right) pair with the same offset value in left and right,
     calculates the minimum 2D Cartesian (planar) distance between left and right.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of double.
-    :rtype: pyarrow.array.double
+    :rtype: pandas.Series.float64
 
     :example:
       >>> import pandas
@@ -683,6 +710,44 @@ def ST_Distance(left, right):
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
     return rs.to_pandas()
 
+def ST_DistanceSphere(left, right):
+    """
+    Returns minimum distance in meters between two lon/lat points.
+    Uses a spherical earth and radius derived from the spheroid defined by the SRID.
+
+    For every (left, right) pair with the same offset value in left and right,
+    calculates the minimum spherical distance between left and right.
+
+    :type left: pandas.Series.object
+    :param left: Geometries organized as WKB.
+
+    :type right: pandas.Series.object
+    :param right: Geometries organized as WKB.
+
+    :return: An array of double.
+    :rtype: pandas.Series.float64
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> p11 = "POINT(10 2)"
+      >>> p12 = "POINT(10 2)"
+      >>> data1 = pandas.Series([p11, p12])
+      >>> p21 = "POINT(10 2)"
+      >>> p22 = "POINT(10 2)"
+      >>> data2 = pandas.Series([p21, p22])
+      >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+      >>> print(rst)
+          0    1.0
+          1    2.0
+          dtype: float64
+    """
+    import pyarrow as pa
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
+    rs = arctern_core_.ST_DistanceSphere(arr_left, arr_right)
+    return rs.to_pandas()
+
 def ST_Area(geos):
     """
     Calculate the area of geometry.
@@ -690,11 +755,11 @@ def ST_Area(geos):
     For every geometry in geometries, calculate the 2D Cartesian (planar) area
     of geometry.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: An array of double.
-    :rtype: pyarrow.array.double
+    :rtype: pandas.Series.float64
 
     :example:
       >>> import pandas
@@ -718,11 +783,11 @@ def ST_Centroid(geos):
 
     For every geometry in geometries, compute the controid point of geometry.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -746,11 +811,11 @@ def ST_Length(geos):
 
     For every geometry in geometries, calculate the length of geometry.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: An array of double.
-    :rtype: pyarrow.array.double
+    :rtype: pandas.Series.float64
 
     :example:
       >>> import pandas
@@ -786,14 +851,14 @@ def ST_HausdorffDistance(geo1, geo2):
 
     Units are in the units of the spatial reference system of the geometries.
 
-    :type left: pyarrow.array.string
+    :type left: pandas.Series.object
     :param left: Geometries organized as WKB.
 
-    :type right: pyarrow.array.string
+    :type right: pandas.Series.object
     :param right: Geometries organized as WKB.
 
     :return: An array of double.
-    :rtype: pyarrow.array.double
+    :rtype: pandas.Series.float64
 
     :example:
       >>> import pandas
@@ -821,11 +886,11 @@ def ST_ConvexHull(geos):
     Compute the smallest convex geometry that encloses all geometries for a geometry
     in geometries.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -846,11 +911,11 @@ def ST_NPoints(geos):
     """
     Calculates the points number for every geometry in geometries.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return : An array of int64.
-    :rtype : pyarrow.array.int64
+    :rtype : pandas.Series.int64
 
     :example:
       >>> import pandas
@@ -871,11 +936,11 @@ def ST_Envelope(geos):
     """
     Compute the double-precision minimum bounding box geometry for every geometry in geometries.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -912,14 +977,14 @@ def ST_Buffer(geos, distance):
     Returns a geometry that represents all points whose distance from this geos is
     less than or equal to distance.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :type distance: int64
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -940,11 +1005,11 @@ def ST_Union_Aggr(geos):
     """
     This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometry organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -967,11 +1032,11 @@ def ST_Envelope_Aggr(geos):
     Compute the double-precision minimum bounding box geometry for every geometry in geometries,
     then returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometry organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -994,7 +1059,7 @@ def ST_Transform(geos, src, dst):
     Returns a new geometry with its coordinates transformed to a different spatial
     reference system.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :type src: string
@@ -1004,7 +1069,7 @@ def ST_Transform(geos, src, dst):
     :param dst: The target srid of geometries tranfrom to.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -1031,11 +1096,11 @@ def ST_CurveToLine(geos):
     MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
 
-    :type geos: pyarrow.array.string
+    :type geos: pandas.Series.object
     :param geos: Geometries organized as WKB.
 
     :return: Geometries organized as WKB.
-    :rtype: pyarrow.array.string
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -1115,6 +1180,13 @@ def choropleth_map(vega, region_boundaries, weights):
     else:
         arr_c = pa.array(weights, type='int64')
     rs = arctern_core_.choropleth_map(vega_string, arr_wkb, arr_c)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz(vega, points):
+    import pyarrow as pa
+    array_points = pa.array(points, type='binary')
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.icon_viz(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):
