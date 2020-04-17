@@ -21,18 +21,24 @@ import sys
 from pathlib import Path
 import json
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from app import service as app_service
+from app import scope as app_scope
 from app.common import log
 
 APP = Flask(__name__)
 
 APP.register_blueprint(app_service.API)
+APP.register_blueprint(app_scope.API)
 
 CORS(APP, resources=r'/*')
 
+@APP.errorhandler(Exception)
+def exception_handler(e):
+    log.INSTANCE.error('exception: {}'.format(str(e)))
+    return jsonify(status='error', code=-1, message=str(e))
 
 def usage():
     """

@@ -31,6 +31,7 @@ __all__ = [
     "ST_Intersects",
     "ST_Within",
     "ST_Distance",
+    "ST_DistanceSphere",
     "ST_Area",
     "ST_Centroid",
     "ST_Length",
@@ -51,6 +52,7 @@ __all__ = [
     "weighted_point_map",
     "heat_map",
     "choropleth_map",
+    "icon_viz",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -99,7 +101,7 @@ def ST_GeomFromGeoJSON(json):
     :param json: Geometries organized as json
 
     :return: Geometries organized as WKB.
-    :rtype: ppandas.Series.object
+    :rtype: pandas.Series.object
 
     :example:
       >>> import pandas
@@ -435,7 +437,6 @@ def ST_IsSimple(geos):
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> rst = arctern.ST_IsSimple(arctern.ST_GeomFromText(data))
-      >>> rst = arctern.ST_IsSimple(data)
       >>> print(rst)
           0    true
           1    true
@@ -707,6 +708,44 @@ def ST_Distance(left, right):
     arr_left = pa.array(left, type='binary')
     arr_right = pa.array(right, type='binary')
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
+    return rs.to_pandas()
+
+def ST_DistanceSphere(left, right):
+    """
+    Returns minimum distance in meters between two lon/lat points.
+    Uses a spherical earth and radius derived from the spheroid defined by the SRID.
+
+    For every (left, right) pair with the same offset value in left and right,
+    calculates the minimum spherical distance between left and right.
+
+    :type left: pandas.Series.object
+    :param left: Geometries organized as WKB.
+
+    :type right: pandas.Series.object
+    :param right: Geometries organized as WKB.
+
+    :return: An array of double.
+    :rtype: pandas.Series.float64
+
+    :example:
+      >>> import pandas
+      >>> import arctern
+      >>> p11 = "POINT(10 2)"
+      >>> p12 = "POINT(10 2)"
+      >>> data1 = pandas.Series([p11, p12])
+      >>> p21 = "POINT(10 2)"
+      >>> p22 = "POINT(10 2)"
+      >>> data2 = pandas.Series([p21, p22])
+      >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+      >>> print(rst)
+          0    1.0
+          1    2.0
+          dtype: float64
+    """
+    import pyarrow as pa
+    arr_left = pa.array(left, type='binary')
+    arr_right = pa.array(right, type='binary')
+    rs = arctern_core_.ST_DistanceSphere(arr_left, arr_right)
     return rs.to_pandas()
 
 def ST_Area(geos):
@@ -1141,6 +1180,13 @@ def choropleth_map(vega, region_boundaries, weights):
     else:
         arr_c = pa.array(weights, type='int64')
     rs = arctern_core_.choropleth_map(vega_string, arr_wkb, arr_c)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def icon_viz(vega, points):
+    import pyarrow as pa
+    array_points = pa.array(points, type='binary')
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.icon_viz(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def projection(geos, bottom_right, top_left, height, width):

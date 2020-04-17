@@ -147,3 +147,34 @@
     }
   ]
 }
+
+
+{
+  "width": 1900,
+  "height": 1410,
+  "description": "icon",
+  "data": [
+    {
+      "name": "nyc_taxi",
+      "url": "data/nyc_taxi_0_5m.csv"
+    }
+  ],
+  "scales": [
+    {
+      "name": "icon",
+      "type": "linear",
+      "domain": {"data": "nyc_taxi", "field": "c0"}
+    }
+  ],
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
+          "icon_path": {"value": "absolute_path_to_png"},
+          "coordinate_system": {"value": "EPSG:3857"}
+        }
+      }
+    }
+  ]
+}
