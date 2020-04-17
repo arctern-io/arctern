@@ -267,4 +267,3 @@ TYPED_TEST(TypeScan, dispatch) {
 
   dispatch::UnaryExecute<ArrayType>(mask_result, checker_gen(4), checker_gen(1), cases);
 }
-
