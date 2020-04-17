@@ -2423,6 +2423,52 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(22), false);
 }
 
+TEST(geometry_test, test_ST_DistanceSphere) {
+  auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
+    double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
+    double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+                 cos(tolat * 0.017453292519943295769236907684886);
+    return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+  };
+  arrow::DoubleBuilder lat_buider, lon_builder;
+  lat_buider.Append(-73.981153), lon_builder.Append(40.741841);
+  lat_buider.Append(10), lon_builder.Append(20);
+  lat_buider.Append(181), lon_builder.Append(20);
+  lat_buider.Append(-181), lon_builder.Append(20);
+  lat_buider.Append(10), lon_builder.Append(91);
+  lat_buider.Append(10), lon_builder.Append(-91);
+
+  std::shared_ptr<arrow::Array> from_lat, from_lon;
+  lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
+  auto from_point = arctern::gis::ST_Point(from_lat, from_lon);
+
+  lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+
+  std::shared_ptr<arrow::Array> to_lat, to_lon;
+  lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
+  auto to_point = arctern::gis::ST_Point(to_lat, to_lon);
+
+  auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(1), distance(10, 20, 100, 70));
+  ASSERT_TRUE(res_double->IsNull(2));
+  ASSERT_TRUE(res_double->IsNull(3));
+  ASSERT_TRUE(res_double->IsNull(4));
+  ASSERT_TRUE(res_double->IsNull(5));
+}
+
 TEST(geometry_test, test_ST_Distance_Empty) {
   auto l0 = "";
   auto l1 = "POINT EMPTY";

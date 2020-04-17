@@ -20,11 +20,11 @@ requirements:
   build:
     - python ===3.7.6
     - setuptools
-    - pyarctern {{ version }}
+    - arctern {{ version }}
 
   run:
     - python ===3.7.6
-    - pyarctern {{ version }}
+    - arctern {{ version }}
 
 test:
   commands:

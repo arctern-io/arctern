@@ -17,18 +17,13 @@ limitations under the License.
 import json
 from flask import Blueprint, jsonify, request, make_response
 
-from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
-from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
+from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon
+from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz
 
 from server.app import account
 from server.app.common import spark, token, utils, db, log
 
 API = Blueprint('app_api', __name__)
-
-@API.errorhandler(Exception)
-def exception_handler(e):
-    log.INSTANCE.error('exception: {}'.format(str(e)))
-    return jsonify(status='error', code=-1, message=str(e))
 
 def load_data(content):
     if not utils.check_json(content, 'db_name') \
@@ -245,6 +240,16 @@ def db_query():
                 query_params['weighted']['coordinate_system']
             )
             data = weighted_pointmap(vega, res)
+            content['result'] = data
+        elif query_type == 'icon':
+            vega = vega_icon(
+                int(query_params['width']),
+                int(query_params['height']),
+                query_params['icon']['bounding_box'],
+                query_params['icon']['icon_path'],
+                query_params['icon']['coordinate_system']
+            )
+            data = icon_viz(vega, res)
             content['result'] = data
         else:
             return jsonify(status="error",

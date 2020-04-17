@@ -24,13 +24,16 @@ set(render_src
         render/2d/general_2d.cpp
         render/2d/heatmap/heatmap.cpp
         render/2d/heatmap/set_color.cpp
+        render/2d/icon/icon_viz.cpp
         render/utils/vega/vega_scatter_plot/vega_pointmap.cpp
         render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.cpp
         render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
         render/utils/vega/vega.cpp
         render/utils/vega/vega_heatmap/vega_heatmap.cpp
+        render/utils/vega/vega_icon/vega_icon.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
+        render/utils/image/image_loader.cpp
         )
 
 set(cpu_render_src
@@ -60,12 +63,14 @@ set(cuda_gis_src
         gis/cuda/conversion/arrow_encode.cpp
         gis/cuda/common/gis_definitions.cpp
         gis/cuda/common/gis_definitions.cu
+        gis/cuda/tools/bounding_box.cu
         gis/cuda/functor/st_distance.cu
         gis/cuda/functor/st_within.cu
         gis/cuda/functor/st_length.cu
         gis/cuda/functor/st_area.cu
         gis/cuda/functor/st_envelope.cu
         gis/cuda/functor/st_point.cu
+        gis/cuda/functor/st_relate.cu
         gis/cuda/gis_functions.cpp
         )
 
