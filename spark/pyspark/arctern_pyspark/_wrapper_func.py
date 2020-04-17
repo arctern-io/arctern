@@ -424,7 +424,7 @@ def ST_IsValid(geos):
 def ST_PrecisionReduce(geos, precision):
     """
     For the coordinates of the geometry, reduce the number of significant digits
-     to the given number. The last decimal place will be rounded.
+    to the given number. The last decimal place will be rounded.
 
     :type geos: WKB
     :param geos: Geometry
@@ -459,7 +459,7 @@ def ST_PrecisionReduce(geos, precision):
 def ST_Equals(left, right):
     """
     Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
-     the same geometry structure.
+    the same geometry structure.
 
     :type left: WKB
     :param left: Geometry
@@ -496,7 +496,7 @@ def ST_Equals(left, right):
 def ST_Touches(left, right):
     """
     Check whether geometries "touch". "Touch" here means two geometries have common points, and the
-     common points locate only on their boundaries.
+    common points locate only on their boundaries.
 
     :type left: WKB
     :param left: Geometry
@@ -531,7 +531,7 @@ def ST_Touches(left, right):
 def ST_Overlaps(left, right):
     """
     Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
-     intersect but one does not completely contain another.
+    intersect but one does not completely contain another.
 
     :type left: WKB
     :param left: Geometry
@@ -567,9 +567,9 @@ def ST_Overlaps(left, right):
 def ST_Crosses(left, right):
     """
     Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
-     some, but not all interior points in common. The intersection of the interiors of the geometries
-     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
-     input geometries.
+    some, but not all interior points in common. The intersection of the interiors of the geometries
+    must not be the empty set and must have a dimensionality less than the maximum dimension of the two
+    input geometries.
 
     :type left: WKB
     :param left: Geometry
@@ -604,7 +604,7 @@ def ST_Crosses(left, right):
 def ST_IsSimple(geos):
     """
     Check whether geometry is "simple". "Simple" here means that a geometry has no anomalous geometric points
-     such as self intersection or self tangency.
+    such as self intersection or self tangency.
 
     :type geos: WKB
     :param geos: Geometry
@@ -669,7 +669,7 @@ def ST_GeometryType(geos):
 def ST_MakeValid(geos):
     """
     Create a valid representation of the geometry without losing any of the input vertices. If
-     the geometry is already-valid, then nothing will be done.
+    the geometry is already-valid, then nothing will be done.
 
     :type geos: WKB
     :param geos: Geometry
@@ -704,7 +704,7 @@ def ST_MakeValid(geos):
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
-     to the precision that parameter tolerance specifies.
+    to the precision that parameter tolerance specifies.
 
     :type geos: WKB
     :param geos: Geometry
@@ -743,7 +743,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     """
     Construct a polygon(rectangle) geometry from arr_min_x, arr_min_y, arr_max_x,
-     arr_max_y. The edges of polygon are parallel to coordinate axis.
+    arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: double
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
@@ -784,8 +784,8 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 def ST_Contains(left, right):
     """
     Check whether geometry "left" contains geometry "right". "Left contains right" means no points
-     of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
-     in the interior of "left".
+    of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
+    in the interior of "left".
 
     :type left: WKB
     :param left: Geometry
@@ -854,7 +854,7 @@ def ST_Intersects(left, right):
 def ST_Within(left, right):
     """
     Check whether geometry "left" is within geometry "right". "Left within right" means no points of "left" lie in the
-     exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
+    exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
 
     :type left: WKB
     :param left: Geometry
@@ -923,7 +923,7 @@ def ST_Distance(left, right):
 def ST_DistanceSphere(left, right):
     """
     Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
-     and radius derived from the spheroid defined by the SRID.
+    and radius derived from the spheroid defined by the SRID.
 
     :type left: WKB
     :param left: Geometry

@@ -66,13 +66,13 @@ def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
 
-    :type x: Series dtype:float64
+    :type x: Series(dtype: float64)
     :param x: Abscissa of the point.
 
-    :type y: Series dtype:float64
+    :type y: Series(dtype: float64)
     :param y: Ordinate of the point.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -96,10 +96,10 @@ def ST_GeomFromGeoJSON(json):
     """
     Construct geometry from the GeoJSON representation.
 
-    :type json: Series dtype:object
+    :type json: Series(dtype: object)
     :param json: Geometries in json format.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -120,10 +120,10 @@ def ST_GeomFromText(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type json: Series dtype:object
+    :type json: Series(dtype: object)
     :param json: Geometries in WKT form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -144,10 +144,10 @@ def ST_AsText(text):
     """
     Transform the representation of geometry from WKB to WKT.
 
-    :type text: Series dtype:object
+    :type text: Series(dtype: object)
     :param text: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKT form.
 
     :example:
@@ -168,10 +168,10 @@ def ST_AsGeoJSON(text):
     """
     Return the GeoJSON representation of the geometry.
 
-    :type text: Series dtype:object
+    :type text: Series(dtype: object)
     :param text: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in GeoJSON format.
 
     :example:
@@ -192,14 +192,14 @@ def ST_Intersection(left, right):
     """
     Calculate the point set intersection of two geometry objects.
 
-    :type left: Series dtype:object
-    :param left: Geometries in WKB from.
+    :type left: Series(dtype: object)
+    :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
-    :param right: Geometries in WKB from.
+    :type right: Series(dtype: object)
+    :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:object
-    :return: Geometries in WKB from.
+    :rtype: Series(dtype: object)
+    :return: Geometries in WKB form.
 
     :example:
       >>> import pandas
@@ -221,10 +221,10 @@ def ST_IsValid(geos):
     """
     Check if geometry is of valid geometry format.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry is valid.
 
     :example:
@@ -245,15 +245,15 @@ def ST_IsValid(geos):
 def ST_PrecisionReduce(geos, precision):
     """
     For the coordinates of the geometry, reduce the number of significant digits
-     to the given number. The last decimal place will be rounded.
+    to the given number. The last decimal place will be rounded.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
     :type precision: int
-    :param geos: The number to reduce the decimals places to.
+    :param precision: The number to reduce the decimals places to.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -274,15 +274,15 @@ def ST_PrecisionReduce(geos, precision):
 def ST_Equals(left, right):
     """
     Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
-     the same geometry structure.
+    the same geometry structure.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" equals geometry "right".
 
     :example:
@@ -305,15 +305,15 @@ def ST_Equals(left, right):
 def ST_Touches(left, right):
     """
     Check whether geometries "touch". "Touch" here means two geometries have common points, and the
-     common points locate only on their boundaries.
+    common points locate only on their boundaries.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" touches geometry "right".
 
     :example:
@@ -336,15 +336,15 @@ def ST_Touches(left, right):
 def ST_Overlaps(left, right):
     """
     Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
-     intersect but one does not completely contain another.
+    intersect but one does not completely contain another.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" overlap geometry "right".
 
     :example:
@@ -367,17 +367,17 @@ def ST_Overlaps(left, right):
 def ST_Crosses(left, right):
     """
     Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
-     some, but not all interior points in common. The intersection of the interiors of the geometries
-     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
-     input geometries.
+    some, but not all interior points in common. The intersection of the interiors of the geometries
+    must not be the empty set and must have a dimensionality less than the maximum dimension of the two
+    input geometries.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" crosses geometry "right".
 
     :example:
@@ -400,12 +400,12 @@ def ST_Crosses(left, right):
 def ST_IsSimple(geos):
     """
     Check whether geometry is "simple". "Simple" here means that a geometry has no anomalous geometric points
-     such as self intersection or self tangency.
+    such as self intersection or self tangency.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry is simple.
 
     :example:
@@ -427,10 +427,10 @@ def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: The type of geometry, e.g., "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT".
 
     :example:
@@ -451,12 +451,12 @@ def ST_GeometryType(geos):
 def ST_MakeValid(geos):
     """
     Create a valid representation of the geometry without losing any of the input vertices. If
-     the geometry is already-valid, then nothing will be done.
+    the geometry is already-valid, then nothing will be done.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometry if the input geometry is already-valid or can be made valid. Otherwise, NULL.
 
     :example:
@@ -476,15 +476,15 @@ def ST_MakeValid(geos):
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
-     to the precision that parameter tolerance specifies.
+    to the precision that parameter tolerance specifies.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB from.
 
     :type distance_tolerance: double
     :param distance_tolerance: The precision of the simplified geometry.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -506,19 +506,19 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
-    :type min_x: Series dtype:float64
+    :type min_x: Series(dtype: float64)
     :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
 
-    :type min_y: Series dtype:float64
+    :type min_y: Series(dtype: float64)
     :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
 
-    :type max_x: Series dtype:float64
+    :type max_x: Series(dtype: float64)
     :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
 
-    :type max_y: Series dtype:float64
+    :type max_y: Series(dtype: float64)
     :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -544,16 +544,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
 def ST_Contains(left, right):
     """
     Check whether geometry "left" contains geometry "right". "Left contains right" means no points
-     of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
-     in the interior of "left".
+    of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
+    in the interior of "left".
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" contains geometry "right".
 
     :example:
@@ -577,13 +577,13 @@ def ST_Intersects(left, right):
     """
     Check whether two geometries intersect (i.e., share any portion of space).
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" intersects geometry "right".
 
     :example:
@@ -606,15 +606,15 @@ def ST_Intersects(left, right):
 def ST_Within(left, right):
     """
     Check whether geometry "left" is within geometry "right". "Left within right" means no points of "left" lie in the
-     exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
+    exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:bool
+    :rtype: Series(dtype: bool)
     :return: True if geometry "left" within geometry "right".
 
     :example:
@@ -638,13 +638,13 @@ def ST_Distance(left, right):
     """
     Calculates the minimum 2D Cartesian (planar) distance between "left" and "right".
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: The value that represents the distance between geometry "left" and geometry "right".
 
     :example:
@@ -673,13 +673,13 @@ def ST_DistanceSphere(left, right):
     Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
      and radius derived from the spheroid defined by the SRID.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: The value that represents the distance between geometry "left" and geometry "right".
 
     :example:
@@ -707,10 +707,10 @@ def ST_Area(geos):
     """
     Calculate the 2D Cartesian (planar) area of geometry.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: The value that represents the area of geometry.
 
     :example:
@@ -733,10 +733,10 @@ def ST_Centroid(geos):
     """
     Compute the centroid of geometry.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -759,10 +759,10 @@ def ST_Length(geos):
     """
     Calculate the length of linear geometries.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: The value that represents the length of geometry.
 
     :example:
@@ -786,13 +786,13 @@ def ST_HausdorffDistance(geo1, geo2):
     Returns the Hausdorff distance between two geometries, a measure of how similar
     or dissimilar 2 geometries are.
 
-    :type left: Series dtype:object
+    :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
 
-    :type right: Series dtype:object
+    :type right: Series(dtype: object)
     :param right: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: The value that represents the hausdorff distance between geo1 and geo2.
 
     :example:
@@ -818,10 +818,10 @@ def ST_ConvexHull(geos):
     """
     Compute the smallest convex geometry that encloses all geometries in the given geometry.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:float64
+    :rtype: Series(dtype: float64)
     :return: Geometries in WKB form.
 
     :example:
@@ -843,10 +843,10 @@ def ST_NPoints(geos):
     """
     Calculates the points number for every geometry in geometries.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype : Series object:int
+    :rtype : Series(dtype: int)
     :return : The number of points.
 
     :example:
@@ -868,10 +868,10 @@ def ST_Envelope(geos):
     """
     Compute the double-precision minimum bounding box geometry for the given geometry.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -909,13 +909,13 @@ def ST_Buffer(geos, distance):
     Returns a geometry that represents all points whose distance from this geos is
     less than or equal to "distance".
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
     :type distance: int
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -937,10 +937,10 @@ def ST_Union_Aggr(geos):
     """
     Return a geometry that represents the union of a set of geometries.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -963,10 +963,10 @@ def ST_Envelope_Aggr(geos):
     """
     Compute the double-precision minimum bounding box geometry for the union of given geometries.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -989,7 +989,7 @@ def ST_Transform(geos, src, dst):
     """
     Return a new geometry with its coordinates transformed from spatial reference system "src" to a "dst".
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
     :type src: string
@@ -998,7 +998,7 @@ def ST_Transform(geos, src, dst):
     :type dst: string
     :param dst: The target srid of geometries tranfrom to.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
@@ -1026,10 +1026,10 @@ def ST_CurveToLine(geos):
     MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
 
-    :type geos: Series dtype:object
+    :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype: Series dtype:object
+    :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
 
     :example:
