@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 import logging
 import getopt
 import sys
@@ -23,10 +24,9 @@ import json
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from server.app import service as app_service
-from server.app import scope as app_scope
-from server.app.common import log
-
+from app import service as app_service
+from app import scope as app_scope
+from app.common import log
 
 APP = Flask(__name__)
 
@@ -55,7 +55,7 @@ def usage():
     print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
-def main(argv):
+if __name__ == '__main__':
     IS_DEBUG = True
     IP = "0.0.0.0"
     PORT = 8080
@@ -72,7 +72,7 @@ def main(argv):
     }
 
     try:
-        OPTS, ARGS = getopt.getopt(argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         usage()
@@ -116,8 +116,3 @@ def main(argv):
     else:
         APP.debug = True
         APP.run(host=IP, port=PORT)
-
-
-if __name__ == '__main__':
-    main(sys.argv)
-

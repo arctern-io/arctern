@@ -16,7 +16,7 @@ limitations under the License.
 
 from pyspark.sql import SparkSession
 
-from server.app.common import db
+from app.common import db
 from arctern_pyspark import register_funcs
 
 

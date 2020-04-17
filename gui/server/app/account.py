@@ -19,7 +19,7 @@ from pathlib import Path
 
 import os
 dirpath = os.path.split(os.path.realpath(__file__))[0]
-DB = dirpath + '/account.db'
+DB = dirpath + '/../data/account.db'
 
 
 class Account:

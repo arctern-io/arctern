@@ -16,8 +16,8 @@ import json
 
 from flask import Blueprint, jsonify, request, redirect, url_for
 
-from server.app.common import utils, log
-from server.app import codegen
+from app.common import utils, log
+from app import codegen
 
 API = Blueprint("scope_api", __name__)
 

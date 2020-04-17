@@ -20,8 +20,8 @@ from flask import Blueprint, jsonify, request, make_response
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz
 
-from server.app import account
-from server.app.common import spark, token, utils, db, log
+from app import account
+from app.common import spark, token, utils, db, log
 
 API = Blueprint('app_api', __name__)
 
