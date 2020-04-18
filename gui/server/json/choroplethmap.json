@@ -2,7 +2,6 @@
     "scope": "scope1",
     "session": "spark",
     "sql": "select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from nyc_taxi",
-    "type": "choropleth",
     "params": {
         "width": 1024,
         "height": 896,

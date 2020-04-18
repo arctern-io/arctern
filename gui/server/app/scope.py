@@ -29,10 +29,13 @@ _SCOPE = {}
 @API.route('/scope', methods=['POST'])
 def create_scope():
     log.INSTANCE.info("POST /scope: {}".format(request.json))
-    
-    scope = request.json.get("scope")
-    if scope in _SCOPE:
-        return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
+
+    if request.json is None:
+        scope = str(uuid.uuid1()).replace("-", "")
+    else:
+        scope = request.json.get("scope")
+        if scope in _SCOPE:
+            return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
     if scope is None:
         scope = str(uuid.uuid1()).replace("-", "")
     _SCOPE[scope] = dict()
@@ -48,6 +51,10 @@ def remove_scope(scope_name):
 
     if scope_name not in _SCOPE:
         return jsonify(status="error", code=-1, message="scope {} not found!".format(scope_name))
+    # keep compability with old api
+    # todo: find why incompability happend
+    # stop_code = 'spark.stop()'
+    # exec(stop_code, _SCOPE[scope_name])
     del _SCOPE[scope_name]
     return jsonify(status="success", code=200, message="remove scope {} successfully!".format(scope_name))
 
