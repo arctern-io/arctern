@@ -26,6 +26,7 @@
 #include <cudart_platform.h>
 #include <device_launch_parameters.h>
 
+#include <algorithm>
 #include <cmath>
 
 #include "gis/cuda/common/kernel_config.h"

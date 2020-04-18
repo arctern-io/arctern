@@ -216,7 +216,45 @@ def test_plot7():
     arctern.plot(ax, df,
                  color=['orange', 'green'],
                  marker='^',
+                 markersize=[100],
+                 linewidth=[None, 7, 8],
+                 linestyle=[None, 'dashed', 'dashdot'],
+                 edgecolor=[None, None, 'red'],
+                 facecolor=[None, None, 'black'])
+    ax.grid()
+    fig.savefig(file_name)
+    file_size = os.path.getsize(file_name)
+    file_size = file_size / 1024
+    # print(file_size)
+    assert 20 <= file_size <= 30
+
+def test_plot8():
+    raw_data = []
+    raw_data.append('point(0 0)')
+    raw_data.append('linestring(0 10, 5 5, 10 0)')
+    raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+    raw_data.append("GEOMETRYCOLLECTION(" \
+                    "polygon((1 1,1 2,2 2,2 1,1 1))," \
+                    "linestring(0 1, 5 6, 10 11)," \
+                    "POINT(4 7))")
+
+    arr_wkt = pandas.Series(raw_data)
+    arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
+
+    file_name = "/tmp/test_plot8.png"
+
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+    if os.path.exists(file_name):
+        assert False
+
+    fig, ax = plt.subplots()
+    arctern.plot(ax, arr_wkb,
+                 color=['orange', 'green'],
+                 marker='^',
                  markersize=100,
+                 alpha=0.6,
                  linewidth=[None, 7, 8],
                  linestyle=[None, 'dashed', 'dashdot'],
                  edgecolor=[None, None, 'red'],
