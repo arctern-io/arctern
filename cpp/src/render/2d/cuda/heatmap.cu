@@ -156,7 +156,7 @@ void set_colors_gpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
     colors[c_offset++] = color_r;
     colors[c_offset++] = color_g;
     colors[c_offset++] = color_b;
-    colors[c_offset++] = value;
+    colors[c_offset++] = value * 3;
   }
 
   free(kernel);
