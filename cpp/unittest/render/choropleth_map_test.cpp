@@ -1333,3 +1333,363 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
 //  auto wkb = arctern::render::WktToWkb(string_array);
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
+
+TEST(CHOROPLETHMAP_TEST, MEAN) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, SUM) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, MAX) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, MIN) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, COUNT) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, STD) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
