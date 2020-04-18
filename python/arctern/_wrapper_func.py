@@ -252,7 +252,7 @@ def ST_PrecisionReduce(geos, precision):
     :param geos: Geometries in WKB form.
 
     :type precision: int
-    :param precision: The number to reduce the decimals places to.
+    :param precision: The number to of ignificant digits.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
