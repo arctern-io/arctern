@@ -300,13 +300,13 @@ def run_st_distance_sphere(spark):
 
 def run_st_area(spark):
     test_data = []
-    test_data.extend([('POLYGON((10 20,10 30,20 30,30 10))',)])
-    test_data.extend([('POLYGON((10 20,10 40,30 40,40 10))',)])
+    test_data.extend([('MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))',)])
+    test_data.extend([('POLYGON((10 20,10 40,30 40,10 20))',)])
     area_df = spark.createDataFrame(data=test_data, schema=['geos']).cache()
     area_df.createOrReplaceTempView("area")
     rs = spark.sql("select ST_Area(ST_GeomFromText(geos)) from area").collect()
-    assert rs[0][0] == 200
-    assert rs[1][0] == 600
+    assert rs[0][0] == 4.5
+    assert rs[1][0] == 200
 
 def run_st_centroid(spark):
     test_data = []
