@@ -62,7 +62,33 @@ __all__ = [
 import base64
 from . import arctern_core_
 
+def arctern_udf(func):
+    import pandas as pd
+    pd_series_type = type(pd.Series([None]))
+    def inner_udf(*args):
+        if len(args) == 1:
+            if isinstance(args[0], pd_series_type):
+                return func(args[0])
+            return func(pd.Series([args[0]]))
 
+        if len(args) == 2:
+            left = args[0]
+            right = args[1]
+            if isinstance(left, pd_series_type) and isinstance(right, pd_series_type):
+                return func(left, right)
+            if isinstance(left, pd_series_type) and not isinstance(right, pd_series_type):
+                right_args = pd.Series([right for _ in range(0, len(left))])
+                return func(left, right_args)
+            if not isinstance(left, pd_series_type) and isinstance(right, pd_series_type):
+                left_args = pd.Series([left for _ in range(0, len(right))])
+                return func(left_args, right)
+            return func(pd.Series([left]), pd.Series([right]))
+
+        raise RuntimeError(f"Expect one input or two inputs, current input size = {len(args)}")
+
+    return inner_udf
+
+@arctern_udf
 def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
