@@ -20,8 +20,6 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda update --all -y && \
     conda create -n arctern -c conda-forge -q \
     --file /arctern/ci/yaml/conda_env_cpp.yml && \
-    conda install -n arctern -c conda-forge matplotlib && \
-    conda install -n arctern -c conda-forge descartes && \
     conda clean --all -y && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
