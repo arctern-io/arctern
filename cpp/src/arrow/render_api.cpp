@@ -15,13 +15,13 @@
  */
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <algorithm>
 
 #include "render/render_builder.h"
 
