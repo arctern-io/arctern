@@ -755,7 +755,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     :param max_x: The maximum value of x coordinate of the rectangles.
 
     :type max_y: double
-    :param max_y: The maximum value of x coordinate of the rectangles.
+    :param max_y: The maximum value of y coordinate of the rectangles.
 
     :rtype: WKB
     :return: Geometry
