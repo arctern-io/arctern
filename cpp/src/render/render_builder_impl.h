@@ -30,12 +30,12 @@ namespace arctern {
 namespace render {
 
 AggType agg_type(std::string type) {
-  if (type == "avg") return AggType::AVG;
+  if (type == "mean") return AggType::AVG;
   if (type == "sum") return AggType::SUM;
   if (type == "max") return AggType::MAX;
   if (type == "min") return AggType::MIN;
   if (type == "count") return AggType::COUNT;
-  if (type == "stddev") return AggType::STDDEV;
+  if (type == "std") return AggType::STDDEV;
   std::string err_msg = "unknow agg type = " + type;
   throw std::runtime_error(err_msg);
 }
