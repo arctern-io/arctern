@@ -508,16 +508,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: Series(dtype: float64)
-    :param min_x: The x axis coordinates of the lower geo1 vertical of the rectangles.
+    :param min_x: The minimum value of x coordinate of the rectangles.
 
     :type min_y: Series(dtype: float64)
-    :param min_y: The y axis coordinates of the lower geo1 vertical of the rectangles.
+    :param min_y: The minimum value of y coordinate of the rectangles.
 
     :type max_x: Series(dtype: float64)
-    :param max_x: The x axis coordinates of the upper geo2 vertical of the rectangles.
+    :param max_x: The maximum value of x coordinate of the rectangles.
 
     :type max_y: Series(dtype: float64)
-    :param max_y: The y axis coordinates of the upper geo2 vertical of the rectangles.
+    :param max_y: The maximum value of y coordinate of the rectangles.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.

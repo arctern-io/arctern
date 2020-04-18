@@ -95,9 +95,9 @@ def ST_PointFromText(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT (30 10)',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_PointFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_PointFromText(geos)) from data").show(100,0)
       +---------------------------------+
       |ST_AsText(ST_PointFromText(data))|
       +---------------------------------+
@@ -125,9 +125,9 @@ def ST_PolygonFromText(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_PolygonFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_PolygonFromText(geos)) from data").show(100,0)
       +-----------------------------------+
       |ST_AsText(ST_PolygonFromText(data))|
       +-----------------------------------+
@@ -155,9 +155,9 @@ def ST_LineStringFromText(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('LINESTRING (0 0, 0 1, 1 1, 1 0)',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_LineStringFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_LineStringFromText(geos)) from data").show(100,0)
       +--------------------------------------+
       |ST_AsText(ST_LineStringFromText(data))|
       +--------------------------------------+
@@ -185,9 +185,9 @@ def ST_GeomFromWKT(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromWKT(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromWKT(geos)) from data").show(100,0)
       +-------------------------------+
       |ST_AsText(ST_GeomFromWKT(data))|
       +-------------------------------+
@@ -215,11 +215,11 @@ def ST_GeomFromText(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(geos)) from data").show(100,0)
       +--------------------------------+
-      |ST_AsText(ST_GeomFromText(data))|
+      |ST_AsText(ST_GeomFromText(geos))|
       +--------------------------------+
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
@@ -245,11 +245,11 @@ def ST_AsText(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromText(geos)) from data").show(100,0)
       +--------------------------------+
-      |ST_AsText(ST_GeomFromText(data))|
+      |ST_AsText(ST_GeomFromText(geos))|
       +--------------------------------+
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
@@ -275,11 +275,11 @@ def ST_AsGeoJSON(geos):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
-      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["data"]).cache()
+      >>> data_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> data_df.createOrReplaceTempView("data")
-      >>> spark_session.sql("select ST_AsGeoJSON(ST_GeomFromText(data)) from data").show(100,0)
+      >>> spark_session.sql("select ST_AsGeoJSON(ST_GeomFromText(geos)) from data").show(100,0)
       +------------------------------------------------------------------------------------------------------------------+
-      |ST_AsGeoJSON(ST_GeomFromText(data))                                                                               |
+      |ST_AsGeoJSON(ST_GeomFromText(geos))                                                                               |
       +------------------------------------------------------------------------------------------------------------------+
       |{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }|
       +------------------------------------------------------------------------------------------------------------------+
@@ -340,11 +340,11 @@ def ST_GeomFromGeoJSON(json):
       >>> test_data.extend([("{\"type\":\"Point\",\"coordinates\":[1,2]}",)])
       >>> test_data.extend([("{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}",)])
       >>> test_data.extend([("{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",)])
-      >>> json_df = spark_session.createDataFrame(data=test_data, schema=["json"]).cache()
+      >>> json_df = spark_session.createDataFrame(data=test_data, schema=["geos"]).cache()
       >>> json_df.createOrReplaceTempView("json")
-      >>> spark_session.sql("select ST_AsText(ST_GeomFromGeoJSON(json)) from json").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_GeomFromGeoJSON(geos)) from json").show(100,0)
       +-----------------------------------+
-      |ST_AsText(ST_GeomFromGeoJSON(json))|
+      |ST_AsText(ST_GeomFromGeoJSON(geos))|
       +-----------------------------------+
       |POINT (1 2)                        |
       |LINESTRING (1 2,4 5,7 8)           |
@@ -746,16 +746,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: double
-    :param min_x: The x axis coordinates of the lower geo1 vertical of the rectangles.
+    :param min_x: The minimum value of x coordinate of the rectangles.
 
     :type min_y: double
-    :param min_y: The y axis coordinates of the lower geo1 vertical of the rectangles.
+    :param min_y: The minimum value of y coordinate of the rectangles.
 
     :type max_x: double
-    :param max_x: The x axis coordinates of the upper geo2 vertical of the rectangles.
+    :param max_x: The maximum value of x coordinate of the rectangles.
 
     :type max_y: double
-    :param max_y: The y axis coordinates of the upper geo2 vertical of the rectangles.
+    :param max_y: The maximum value of x coordinate of the rectangles.
 
     :rtype: WKB
     :return: Geometry
