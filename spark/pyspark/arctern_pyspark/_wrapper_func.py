@@ -1289,7 +1289,7 @@ def ST_Transform(geos, src_rs, dst_rs):
     Return a new geometry with its coordinates transformed from spatial reference system "src_rs" to a "dst_rs".
 
     :type geos: WKB
-    :param geos: Geometries organized as WKB.
+    :param geos: Geometry
 
     :type src_rs: string
     :param src_rs: The current srid of geometries.
