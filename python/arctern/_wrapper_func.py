@@ -345,7 +345,7 @@ def ST_Overlaps(left, right):
     :param right: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" overlap geometry "right".
+    :return: True if geometry "left" overlaps geometry "right".
 
     :example:
       >>> import pandas
@@ -671,7 +671,7 @@ def ST_Distance(left, right):
 def ST_DistanceSphere(left, right):
     """
     Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
-     and radius derived from the spheroid defined by the SRID.
+    and radius derived from the spheroid defined by the SRID.
 
     :type left: Series(dtype: object)
     :param left: Geometries in WKB form.
@@ -846,8 +846,8 @@ def ST_NPoints(geos):
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :rtype : Series(dtype: int)
-    :return : The number of points.
+    :rtype: Series(dtype: int)
+    :return: The number of points.
 
     :example:
       >>> import pandas
@@ -941,7 +941,7 @@ def ST_Union_Aggr(geos):
     :param geos: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
-    :return: Geometries in WKB form.
+    :return: Geometry in WKB form.
 
     :example:
       >>> import pandas
@@ -967,7 +967,7 @@ def ST_Envelope_Aggr(geos):
     :param geos: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
-    :return: Geometries in WKB form.
+    :return: Geometry in WKB form.
 
     :example:
       >>> import pandas

@@ -1121,8 +1121,8 @@ def ST_NPoints(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :rtype : int
-    :return : The number of points.
+    :rtype: int
+    :return: The number of points.
 
     :example:
       >>> from pyspark.sql import SparkSession
