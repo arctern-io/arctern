@@ -1,4 +1,4 @@
-gdal=3.0.4
-arrow-cpp=0.16.0
-gtest=1.10.0
-rapidjson=1.1.0
+gdal=3.0.4=py38h172510d_4
+pyarrow=0.16.0=py38hd02d5f2_2
+gtest=1.10.0=hc9558a2_2
+rapidjson=1.1.0=he1b5a44_1002
