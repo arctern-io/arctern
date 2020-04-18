@@ -896,3 +896,4 @@ if __name__ == "__main__":
     run_test_icon_viz(spark_session)
 
     spark_session.stop()
+    
