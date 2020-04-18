@@ -97,6 +97,15 @@ def test_ST_Point():
     assert len(string_ptr) == 2
     assert string_ptr[0] == "POINT (1 5)"
     assert string_ptr[1] == "POINT (2 5)"
+
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(5, pandas.Series([1, 2],dtype='double')))
+    assert len(string_ptr) == 2
+    assert string_ptr[0] == "POINT (5 1)"
+    assert string_ptr[1] == "POINT (5 2)"
+
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(5.0, 1.0))
+    assert len(string_ptr) == 1
+    assert string_ptr[0] == "POINT (5 1)"
     
 
 def test_ST_GeomFromGeoJSON():
