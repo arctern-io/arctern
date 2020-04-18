@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+# Copygeo2 (C) 2019-2020 Zilliz. All geo2s reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -189,15 +189,15 @@ def ST_AsGeoJSON(text):
     rs = arctern_core_.ST_AsGeoJSON(geo)
     return rs.to_pandas()
 
-def ST_Intersection(left, right):
+def ST_Intersection(geo1, geo2):
     """
     Calculate the point set intersection of two geometry objects.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
@@ -213,9 +213,9 @@ def ST_Intersection(left, right):
           dtype: object
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Intersection(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Intersection(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
 def ST_IsValid(geos):
@@ -272,19 +272,19 @@ def ST_PrecisionReduce(geos, precision):
     rs = arctern_core_.ST_PrecisionReduce(arr_geos, precision)
     return rs.to_pandas()
 
-def ST_Equals(left, right):
+def ST_Equals(geo1, geo2):
     """
     Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
     the same geometry structure.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" equals geometry "right".
+    :return: True if geometry "geo1" equals geometry "geo2".
 
     :example:
       >>> import pandas
@@ -298,24 +298,24 @@ def ST_Equals(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Equals(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Equals(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Touches(left, right):
+def ST_Touches(geo1, geo2):
     """
     Check whether geometries "touch". "Touch" here means two geometries have common points, and the
     common points locate only on their boundaries.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" touches geometry "right".
+    :return: True if geometry "geo1" touches geometry "geo2".
 
     :example:
       >>> import pandas
@@ -329,24 +329,24 @@ def ST_Touches(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Touches(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Touches(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Overlaps(left, right):
+def ST_Overlaps(geo1, geo2):
     """
     Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
     intersect but one does not completely contain another.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" overlaps geometry "right".
+    :return: True if geometry "geo1" overlaps geometry "geo2".
 
     :example:
       >>> import pandas
@@ -360,26 +360,26 @@ def ST_Overlaps(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Overlaps(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Overlaps(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Crosses(left, right):
+def ST_Crosses(geo1, geo2):
     """
     Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
     some, but not all interior points in common. The intersection of the interiors of the geometries
     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
     input geometries.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" crosses geometry "right".
+    :return: True if geometry "geo1" crosses geometry "geo2".
 
     :example:
       >>> import pandas
@@ -393,9 +393,9 @@ def ST_Crosses(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Crosses(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Crosses(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
 def ST_IsSimple(geos):
@@ -508,16 +508,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: Series(dtype: float64)
-    :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
+    :param min_x: The x axis coordinates of the lower geo1 vertical of the rectangles.
 
     :type min_y: Series(dtype: float64)
-    :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
+    :param min_y: The y axis coordinates of the lower geo1 vertical of the rectangles.
 
     :type max_x: Series(dtype: float64)
-    :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
+    :param max_x: The x axis coordinates of the upper geo2 vertical of the rectangles.
 
     :type max_y: Series(dtype: float64)
-    :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
+    :param max_y: The y axis coordinates of the upper geo2 vertical of the rectangles.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
@@ -542,20 +542,20 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     rs = arctern_core_.ST_PolygonFromEnvelope(arr_min_x, arr_min_y, arr_max_x, arr_max_y)
     return rs.to_pandas()
 
-def ST_Contains(left, right):
+def ST_Contains(geo1, geo2):
     """
-    Check whether geometry "left" contains geometry "right". "Left contains right" means no points
-    of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
-    in the interior of "left".
+    Check whether geometry "geo1" contains geometry "geo2". "geo1 contains geo2" means no points
+    of "geo2" lie in the exterior of "geo1" and at least one point of the interior of "geo2" lies
+    in the interior of "geo1".
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" contains geometry "right".
+    :return: True if geometry "geo1" contains geometry "geo2".
 
     :example:
       >>> import pandas
@@ -569,23 +569,23 @@ def ST_Contains(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Contains(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Contains(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Intersects(left, right):
+def ST_Intersects(geo1, geo2):
     """
     Check whether two geometries intersect (i.e., share any portion of space).
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" intersects geometry "right".
+    :return: True if geometry "geo1" intersects geometry "geo2".
 
     :example:
       >>> import pandas
@@ -599,24 +599,24 @@ def ST_Intersects(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Intersects(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Intersects(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Within(left, right):
+def ST_Within(geo1, geo2):
     """
-    Check whether geometry "left" is within geometry "right". "Left within right" means no points of "left" lie in the
-    exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
+    Check whether geometry "geo1" is within geometry "geo2". "geo1 within geo2" means no points of "geo1" lie in the
+    exterior of "geo2" and at least one point of the interior of "geo1" lies in the interior of "geo2".
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: bool)
-    :return: True if geometry "left" within geometry "right".
+    :return: True if geometry "geo1" within geometry "geo2".
 
     :example:
       >>> import pandas
@@ -630,23 +630,23 @@ def ST_Within(left, right):
           dtype: bool
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Within(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Within(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_Distance(left, right):
+def ST_Distance(geo1, geo2):
     """
-    Calculates the minimum 2D Cartesian (planar) distance between "left" and "right".
+    Calculates the minimum 2D Cartesian (planar) distance between "geo1" and "geo2".
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: float64)
-    :return: The value that represents the distance between geometry "left" and geometry "right".
+    :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
       >>> import pandas
@@ -664,24 +664,24 @@ def ST_Distance(left, right):
           dtype: float64
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_Distance(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_Distance(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
-def ST_DistanceSphere(left, right):
+def ST_DistanceSphere(geo1, geo2):
     """
     Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
     and radius derived from the spheroid defined by the SRID.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: float64)
-    :return: The value that represents the distance between geometry "left" and geometry "right".
+    :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
       >>> import pandas
@@ -699,9 +699,9 @@ def ST_DistanceSphere(left, right):
           dtype: float64
     """
     import pyarrow as pa
-    arr_left = pa.array(left, type='binary')
-    arr_right = pa.array(right, type='binary')
-    rs = arctern_core_.ST_DistanceSphere(arr_left, arr_right)
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    rs = arctern_core_.ST_DistanceSphere(arr_geo1, arr_geo2)
     return rs.to_pandas()
 
 def ST_Area(geos):
@@ -787,11 +787,11 @@ def ST_HausdorffDistance(geo1, geo2):
     Returns the Hausdorff distance between two geometries, a measure of how similar
     or dissimilar 2 geometries are.
 
-    :type left: Series(dtype: object)
-    :param left: Geometries in WKB form.
+    :type geo1: Series(dtype: object)
+    :param geo1: Geometries in WKB form.
 
-    :type right: Series(dtype: object)
-    :param right: Geometries in WKB form.
+    :type geo2: Series(dtype: object)
+    :param geo2: Geometries in WKB form.
 
     :rtype: Series(dtype: float64)
     :return: The value that represents the hausdorff distance between geo1 and geo2.
@@ -1120,21 +1120,21 @@ def icon_viz(vega, points):
     rs = arctern_core_.icon_viz(vega_string, array_points)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def projection(geos, bottom_right, top_left, height, width):
+def projection(geos, bottom_geo2, top_geo1, height, width):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    bounding_box_min = bytes(bottom_right, encoding="utf8")
-    bounding_box_max = bytes(top_left, encoding="utf8")
+    bounding_box_min = bytes(bottom_geo2, encoding="utf8")
+    bounding_box_max = bytes(top_geo1, encoding="utf8")
     rs = arctern_core_.projection(arr_geos, bounding_box_min, bounding_box_max, height, width)
     return rs.to_pandas()
 
-def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
+def transform_and_projection(geos, src_rs, dst_rs, bottom_geo2, top_geo1, height, width):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     src = bytes(src_rs, encoding="utf8")
     dst = bytes(dst_rs, encoding="utf8")
-    bounding_box_min = bytes(bottom_right, encoding="utf8")
-    bounding_box_max = bytes(top_left, encoding="utf8")
+    bounding_box_min = bytes(bottom_geo2, encoding="utf8")
+    bounding_box_max = bytes(top_geo1, encoding="utf8")
     rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_min, bounding_box_max, height, width)
     return rs.to_pandas()
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+# Copygeo2 (C) 2019-2020 Zilliz. All geo2s reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,12 +61,12 @@ import arctern
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def Projection(geos, bottom_right, top_left, height, width):
-    return arctern.projection(geos, bottom_right[0], top_left[0], height[0], width[0])
+def Projection(geos, bottom_geo2, top_geo1, height, width):
+    return arctern.projection(geos, bottom_geo2[0], top_geo1[0], height[0], width[0])
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def TransformAndProjection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
-    return arctern.transform_and_projection(geos, src_rs[0], dst_rs[0], bottom_right[0], top_left[0], height[0], width[0])
+def TransformAndProjection(geos, src_rs, dst_rs, bottom_geo2, top_geo1, height, width):
+    return arctern.transform_and_projection(geos, src_rs[0], dst_rs[0], bottom_geo2[0], top_geo1[0], height[0], width[0])
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def WktToWkb(wkts):
@@ -354,15 +354,15 @@ def ST_GeomFromGeoJSON(json):
     return arctern.ST_GeomFromGeoJSON(json)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_Intersection(left, right):
+def ST_Intersection(geo1, geo2):
     """
     Calculate the point set intersection of two geometry objects.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: WKB
     :return: Geometry that represents the point set intersection.
@@ -376,17 +376,17 @@ def ST_Intersection(left, right):
       >>> test_data = []
       >>> test_data.extend([('POINT(0 0)', 'LINESTRING ( 2 0, 0 2 )')])
       >>> test_data.extend([('POINT(0 0)', 'LINESTRING ( 0 0, 2 2 )')])
-      >>> intersection_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> intersection_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> intersection_df.createOrReplaceTempView("intersection")
-      >>> spark_session.sql("select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from intersection").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_Intersection(ST_GeomFromText(geo1), ST_GeomFromText(geo2))) from intersection").show(100,0)
       +-------------------------------------------------------------------------+
-      |ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)))|
+      |ST_AsText(ST_Intersection(ST_GeomFromText(geo1), ST_GeomFromText(geo2)))|
       +-------------------------------------------------------------------------+
       |GEOMETRYCOLLECTION EMPTY                                                 |
       |POINT (0 0)                                                              |
       +-------------------------------------------------------------------------+
     """
-    return arctern.ST_Intersection(left, right)
+    return arctern.ST_Intersection(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_IsValid(geos):
@@ -456,19 +456,19 @@ def ST_PrecisionReduce(geos, precision):
     return arctern.ST_PrecisionReduce(geos, precision[0])
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Equals(left, right):
+def ST_Equals(geo1, geo2):
     """
     Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
     the same geometry structure.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" equals geometry "right".
+    :return: True if geometry "geo1" equals geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -479,33 +479,33 @@ def ST_Equals(left, right):
       >>> test_data.extend([('LINESTRING(0 0, 10 10)', 'LINESTRING(0 0, 5 5, 10 10)')])
       >>> test_data.extend([('LINESTRING(10 10, 0 0)', 'LINESTRING(0 0, 5 5, 10 10)')])
       >>> test_data.extend([('LINESTRING(0 0, 10 10)', 'LINESTRING(0 0, 5 5, 8 5)')])
-      >>> equals_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> equals_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> equals_df.createOrReplaceTempView("equals")
-      >>> spark_session.sql("select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from equals").show(100,0)
+      >>> spark_session.sql("select ST_Equals(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from equals").show(100,0)
       +--------------------------------------------------------+
-      |ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Equals(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +--------------------------------------------------------+
       |true                                                    |
       |true                                                    |
       |false                                                   |
       +--------------------------------------------------------+
     """
-    return arctern.ST_Equals(left, right)
+    return arctern.ST_Equals(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Touches(left, right):
+def ST_Touches(geo1, geo2):
     """
     Check whether geometries "touch". "Touch" here means two geometries have common points, and the
     common points locate only on their boundaries.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" touches geometry "right".
+    :return: True if geometry "geo1" touches geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -515,32 +515,32 @@ def ST_Touches(left, right):
       >>> test_data = []
       >>> test_data.extend([('LINESTRING(0 0, 1 1, 0 2)', 'POINT(1 1)')])
       >>> test_data.extend([('LINESTRING(0 0, 1 1, 0 2)', 'POINT(0 2)')])
-      >>> touches_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> touches_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> touches_df.createOrReplaceTempView("touches")
-      >>> spark_session.sql("select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from touches").show(100,0)
+      >>> spark_session.sql("select ST_Touches(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from touches").show(100,0)
       +---------------------------------------------------------+
-      |ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Touches(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +---------------------------------------------------------+
       |false                                                    |
       |true                                                     |
       +---------------------------------------------------------+
     """
-    return arctern.ST_Touches(left, right)
+    return arctern.ST_Touches(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Overlaps(left, right):
+def ST_Overlaps(geo1, geo2):
     """
     Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
     intersect but one does not completely contain another.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" overlap geometry "right".
+    :return: True if geometry "geo1" overlap geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -550,35 +550,35 @@ def ST_Overlaps(left, right):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))', 'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))')])
       >>> test_data.extend([('POINT(1 0.5)', 'LINESTRING(1 0, 1 1, 3 5)')])
-      >>> overlaps_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> overlaps_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> overlaps_df.createOrReplaceTempView("overlaps")
-      >>> spark.sql("select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from overlaps").show(100,0)
+      >>> spark.sql("select ST_Overlaps(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from overlaps").show(100,0)
       +----------------------------------------------------------+
-      |ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Overlaps(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +----------------------------------------------------------+
       |true                                                      |
       |false                                                     |
       +----------------------------------------------------------+
     """
-    return arctern.ST_Overlaps(left, right)
+    return arctern.ST_Overlaps(geo1, geo2)
 
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Crosses(left, right):
+def ST_Crosses(geo1, geo2):
     """
     Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
     some, but not all interior points in common. The intersection of the interiors of the geometries
     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
     input geometries.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" crosses geometry "right".
+    :return: True if geometry "geo1" crosses geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -588,17 +588,17 @@ def ST_Crosses(left, right):
       >>> test_data = []
       >>> test_data.extend([('MULTIPOINT((1 3), (4 1), (4 3))', 'POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))')])
       >>> test_data.extend([('POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))', 'POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))')])
-      >>> crosses_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> crosses_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> crosses_df.createOrReplaceTempView("crosses")
-      >>> spark_session.sql("select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from crosses").show(100,0)
+      >>> spark_session.sql("select ST_Crosses(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from crosses").show(100,0)
       +---------------------------------------------------------+
-      |ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Crosses(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +---------------------------------------------------------+
       |true                                                     |
       |false                                                    |
       +---------------------------------------------------------+
     """
-    return arctern.ST_Crosses(left, right)
+    return arctern.ST_Crosses(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_IsSimple(geos):
@@ -746,16 +746,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
     :type min_x: double
-    :param min_x: The x axis coordinates of the lower left vertical of the rectangles.
+    :param min_x: The x axis coordinates of the lower geo1 vertical of the rectangles.
 
     :type min_y: double
-    :param min_y: The y axis coordinates of the lower left vertical of the rectangles.
+    :param min_y: The y axis coordinates of the lower geo1 vertical of the rectangles.
 
     :type max_x: double
-    :param max_x: The x axis coordinates of the upper right vertical of the rectangles.
+    :param max_x: The x axis coordinates of the upper geo2 vertical of the rectangles.
 
     :type max_y: double
-    :param max_y: The y axis coordinates of the upper right vertical of the rectangles.
+    :param max_y: The y axis coordinates of the upper geo2 vertical of the rectangles.
 
     :rtype: WKB
     :return: Geometry
@@ -781,20 +781,20 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     return arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Contains(left, right):
+def ST_Contains(geo1, geo2):
     """
-    Check whether geometry "left" contains geometry "right". "Left contains right" means no points
-    of "right" lie in the exterior of "left" and at least one point of the interior of "right" lies
-    in the interior of "left".
+    Check whether geometry "geo1" contains geometry "geo2". "geo1 contains geo2" means no points
+    of "geo2" lie in the exterior of "geo1" and at least one point of the interior of "geo2" lies
+    in the interior of "geo1".
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" contains geometry "right".
+    :return: True if geometry "geo1" contains geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -804,31 +804,31 @@ def ST_Contains(left, right):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((-1 3,2 1,0 -3,-1 3))','POLYGON((0 2,1 1,0 -1,0 2))')])
       >>> test_data.extend([('POLYGON((0 2,1 1,0 -1,0 2))','POLYGON((-1 3,2 1,0 -3,-1 3))')])
-      >>> contains_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> contains_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> contains_df.createOrReplaceTempView("contains")
-      >>> spark_session.sql("select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from contains").show(100,0)
+      >>> spark_session.sql("select ST_Contains(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from contains").show(100,0)
       +----------------------------------------------------------+
-      |ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Contains(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +----------------------------------------------------------+
       |true                                                      |
       |false                                                     |
       +----------------------------------------------------------+
     """
-    return arctern.ST_Contains(left, right)
+    return arctern.ST_Contains(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Intersects(left, right):
+def ST_Intersects(geo1, geo2):
     """
     Check whether two geometries intersect (i.e., share any portion of space).
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" intersects geometry "right".
+    :return: True if geometry "geo1" intersects geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -838,32 +838,32 @@ def ST_Intersects(left, right):
       >>> test_data = []
       >>> test_data.extend([('POINT(0 0)', 'LINESTRING ( 0 0, 0 2 )')])
       >>> test_data.extend([('POINT(0 0)','LINESTRING ( 2 0, 0 2 )')])
-      >>> intersects_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> intersects_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> intersects_df.createOrReplaceTempView("intersects")
-      >>> spark_session.sql("select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from intersects").show(100,0)
+      >>> spark_session.sql("select ST_Intersects(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from intersects").show(100,0)
       +------------------------------------------------------------+
-      |ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Intersects(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +------------------------------------------------------------+
       |true                                                        |
       |false                                                       |
       +------------------------------------------------------------+
     """
-    return arctern.ST_Intersects(left, right)
+    return arctern.ST_Intersects(geo1, geo2)
 
 @pandas_udf("boolean", PandasUDFType.SCALAR)
-def ST_Within(left, right):
+def ST_Within(geo1, geo2):
     """
-    Check whether geometry "left" is within geometry "right". "Left within right" means no points of "left" lie in the
-    exterior of "right" and at least one point of the interior of "left" lies in the interior of "right".
+    Check whether geometry "geo1" is within geometry "geo2". "geo1 within geo2" means no points of "geo1" lie in the
+    exterior of "geo2" and at least one point of the interior of "geo1" lies in the interior of "geo2".
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: boolean
-    :return: True if geometry "left" within geometry "right".
+    :return: True if geometry "geo1" within geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -873,31 +873,31 @@ def ST_Within(left, right):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((2 2, 7 2, 7 5, 2 5, 2 2))','POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))')])
       >>> test_data.extend([('POLYGON((0 2, 5 2, 5 5, 0 5, 0 2))','POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))')])
-      >>> within_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> within_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> within_df.createOrReplaceTempView("within")
-      >>> spark_session.sql("select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from within").show(100,0)
+      >>> spark_session.sql("select ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from within").show(100,0)
       +--------------------------------------------------------+
-      |ST_Within(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +--------------------------------------------------------+
       |true                                                    |
       |false                                                   |
       +--------------------------------------------------------+
     """
-    return arctern.ST_Within(left, right)
+    return arctern.ST_Within(geo1, geo2)
 
 @pandas_udf("double", PandasUDFType.SCALAR)
-def ST_Distance(left, right):
+def ST_Distance(geo1, geo2):
     """
-    Calculates the minimum 2D Cartesian (planar) distance between "left" and "right".
+    Calculates the minimum 2D Cartesian (planar) distance between "geo1" and "geo2".
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: double
-    :return: The value that represents the distance between geometry "left" and geometry "right".
+    :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -907,32 +907,32 @@ def ST_Distance(left, right):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((-1 -1,2 2,0 1,-1 -1))','POLYGON((5 2,7 4,5 5,5 2))')])
       >>> test_data.extend([('POINT(31.75 31.25)','LINESTRING(32 32,32 35,40.5 35,32 35,32 32)')])
-      >>> distance_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> distance_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> distance_df.createOrReplaceTempView("distance")
-      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance").show(100,0)
+      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance").show(100,0)
       +----------------------------------------------------------+
-      |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +----------------------------------------------------------+
       |3                                                         |
       |0.7905694150420949                                        |
       +----------------------------------------------------------+
     """
-    return arctern.ST_Distance(left, right)
+    return arctern.ST_Distance(geo1, geo2)
 
 @pandas_udf("double", PandasUDFType.SCALAR)
-def ST_DistanceSphere(left, right):
+def ST_DistanceSphere(geo1, geo2):
     """
     Returns minimum distance in meters between two lon/lat points.Uses a spherical earth
     and radius derived from the spheroid defined by the SRID.
 
-    :type left: WKB
-    :param left: Geometry
+    :type geo1: WKB
+    :param geo1: Geometry
 
-    :type right: WKB
-    :param right: Geometry
+    :type geo2: WKB
+    :param geo2: Geometry
 
     :rtype: double
-    :return: The value that represents the distance between geometry "left" and geometry "right".
+    :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -942,17 +942,17 @@ def ST_DistanceSphere(left, right):
       >>> test_data = []
       >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
       >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
-      >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+      >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> distance_sphere_df.createOrReplaceTempView("distance_sphere")
-      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance_sphere").show(100,0)
+      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
       +----------------------------------------------------------+
-      |ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right))|
+      |ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +----------------------------------------------------------+
       |3                                                         |
       |0.7905694150420949                                        |
       +----------------------------------------------------------+
     """
-    return arctern.ST_DistanceSphere(left, right)
+    return arctern.ST_DistanceSphere(geo1, geo2)
 
 @pandas_udf("double", PandasUDFType.SCALAR)
 def ST_Area(geos):
