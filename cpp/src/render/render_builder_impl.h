@@ -17,7 +17,6 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>

@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 #include "render/render_builder.h"
 
