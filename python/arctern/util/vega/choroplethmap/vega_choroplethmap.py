@@ -115,3 +115,6 @@ class VegaChoroplethMap:
 
     def width(self):
         return self._width
+
+    def aggregation_type(self):
+        return self._aggregation_type
