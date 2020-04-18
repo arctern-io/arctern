@@ -2,3 +2,4 @@ Flask==1.1.1
 waitress==1.4.3
 Flask-HTTPAuth==3.3.0
 flask-cors==3.0.8
+pandas==1.0.3
