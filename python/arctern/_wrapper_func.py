@@ -81,7 +81,7 @@ def arctern_udf(*arg_types):
                 if arg_type is None:
                     func_args.append(warpper_args[func_arg_idx])
                 else:
-                    assert isinstance(arg_type,str)
+                    assert isinstance(arg_type, str)
                     if len(arg_type) == 0:
                         func_args.append(warpper_args[func_arg_idx])
                     elif isinstance(warpper_args[func_arg_idx], pd_series_type):
@@ -93,14 +93,14 @@ def arctern_udf(*arg_types):
                         arg = pd.Series([warpper_args[func_arg_idx] for _ in range(array_len)], dtype=arg_type)
                         func_args.append(arg)
                 func_arg_idx = func_arg_idx + 1
-            while(func_arg_idx < len(warpper_args)):
+            while func_arg_idx < len(warpper_args):
                 func_args.append(warpper_args[func_arg_idx])
                 func_arg_idx = func_arg_idx + 1
             return func(*func_args)
         return wrapper
     return decorate
 
-@arctern_udf('double','double')
+@arctern_udf('double', 'double')
 def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
