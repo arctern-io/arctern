@@ -93,12 +93,12 @@ def test_ST_Point():
     assert string_ptr[0] == "POINT (1.3 3.8)"
     assert string_ptr[1] == "POINT (2.5 4.9)"
 
-    string_ptr = arctern.ST_AsText(arctern.ST_Point(pandas.Series([1, 2],dtype='double') , 5))
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(pandas.Series([1, 2], dtype='double') , 5))
     assert len(string_ptr) == 2
     assert string_ptr[0] == "POINT (1 5)"
     assert string_ptr[1] == "POINT (2 5)"
 
-    string_ptr = arctern.ST_AsText(arctern.ST_Point(5, pandas.Series([1, 2],dtype='double')))
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(5, pandas.Series([1, 2], dtype='double')))
     assert len(string_ptr) == 2
     assert string_ptr[0] == "POINT (5 1)"
     assert string_ptr[1] == "POINT (5 2)"
