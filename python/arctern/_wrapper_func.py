@@ -88,6 +88,8 @@ def arctern_udf(*arg_types):
                         assert len(warpper_args[func_arg_idx]) == array_len
                         func_args.append(warpper_args[func_arg_idx])
                     else:
+                        if arg_type == 'binary':
+                            arg_type = 'object'
                         arg = pd.Series([warpper_args[func_arg_idx] for _ in range(array_len)], dtype=arg_type)
                         func_args.append(arg)
                 func_arg_idx = func_arg_idx + 1

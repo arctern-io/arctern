@@ -138,8 +138,9 @@ def test_ST_GeomFromText():
     assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
     assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
-    str_ptr = arctern.ST_AsText(arctern.ST_GeomFromText('POINT (1 2)'))
-    assert str_ptr[0] == "POINT (1 2)"
+    wkb_array = arctern.ST_GeomFromText('POINT (1 2)')
+    wkt_array = arctern.ST_AsText(wkb_array[0])
+    assert wkt_array[0] == "POINT (1 2)"
 
 def test_ST_Contains():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
