@@ -130,6 +130,7 @@ def ST_Point(x, y):
     return rs.to_pandas()
 
 
+@arctern_udf('string')
 def ST_GeomFromGeoJSON(json):
     """
     Constructs a geometry object from the GeoJSON representation.
@@ -155,6 +156,7 @@ def ST_GeomFromGeoJSON(json):
     return rs.to_pandas()
 
 
+@arctern_udf('string')
 def ST_GeomFromText(text):
     """
     Constructs a geometry object from the OGC Well-Known text representation.
@@ -179,7 +181,7 @@ def ST_GeomFromText(text):
     rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
 
-
+@arctern_udf('binary')
 def ST_AsText(text):
     """
     Returns the Well-Known Text representation of the geometry.
@@ -204,7 +206,7 @@ def ST_AsText(text):
     rs = arctern_core_.ST_AsText(geo)
     return rs.to_pandas()
 
-
+@arctern_udf('binary')
 def ST_AsGeoJSON(text):
     """
     Returns the GeoJSON representation of the geometry.
