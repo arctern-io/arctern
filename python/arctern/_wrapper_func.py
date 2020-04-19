@@ -63,13 +63,13 @@ import base64
 from . import arctern_core_
 
 def arctern_udf(*arg_types):
-    from functools import wraps
-    import pandas as pd
-    pd_series_type = type(pd.Series([None]))
-
     def decorate(func):
+        from functools import wraps
+
         @wraps(func)
         def wrapper(*warpper_args):
+            import pandas as pd
+            pd_series_type = type(pd.Series([None]))
             array_len = 1
             for arg in warpper_args:
                 if isinstance(arg, pd_series_type):
