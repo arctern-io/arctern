@@ -62,7 +62,45 @@ __all__ = [
 import base64
 from . import arctern_core_
 
+def arctern_udf(*arg_types):
+    def decorate(func):
+        from functools import wraps
 
+        @wraps(func)
+        def wrapper(*warpper_args):
+            import pandas as pd
+            pd_series_type = type(pd.Series([None]))
+            array_len = 1
+            for arg in warpper_args:
+                if isinstance(arg, pd_series_type):
+                    array_len = len(arg)
+                    break
+            func_args = []
+            func_arg_idx = 0
+            for arg_type in arg_types:
+                if arg_type is None:
+                    func_args.append(warpper_args[func_arg_idx])
+                else:
+                    assert isinstance(arg_type, str)
+                    if len(arg_type) == 0:
+                        func_args.append(warpper_args[func_arg_idx])
+                    elif isinstance(warpper_args[func_arg_idx], pd_series_type):
+                        assert len(warpper_args[func_arg_idx]) == array_len
+                        func_args.append(warpper_args[func_arg_idx])
+                    else:
+                        if arg_type == 'binary':
+                            arg_type = 'object'
+                        arg = pd.Series([warpper_args[func_arg_idx] for _ in range(array_len)], dtype=arg_type)
+                        func_args.append(arg)
+                func_arg_idx = func_arg_idx + 1
+            while func_arg_idx < len(warpper_args):
+                func_args.append(warpper_args[func_arg_idx])
+                func_arg_idx = func_arg_idx + 1
+            return func(*func_args)
+        return wrapper
+    return decorate
+
+@arctern_udf('double', 'double')
 def ST_Point(x, y):
     """
     Construct Point geometries according to the coordinates.
@@ -93,6 +131,8 @@ def ST_Point(x, y):
     rs = arctern_core_.ST_Point(arr_x, arr_y)
     return rs.to_pandas()
 
+
+@arctern_udf('string')
 def ST_GeomFromGeoJSON(json):
     """
     Constructs a geometry object from the GeoJSON representation.
@@ -117,6 +157,8 @@ def ST_GeomFromGeoJSON(json):
     rs = arctern_core_.ST_GeomFromGeoJSON(geo)
     return rs.to_pandas()
 
+
+@arctern_udf('string')
 def ST_GeomFromText(text):
     """
     Constructs a geometry object from the OGC Well-Known text representation.
@@ -141,6 +183,7 @@ def ST_GeomFromText(text):
     rs = arctern_core_.ST_GeomFromText(geo)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_AsText(text):
     """
     Returns the Well-Known Text representation of the geometry.
@@ -165,6 +208,7 @@ def ST_AsText(text):
     rs = arctern_core_.ST_AsText(geo)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_AsGeoJSON(text):
     """
     Returns the GeoJSON representation of the geometry.
@@ -189,6 +233,7 @@ def ST_AsGeoJSON(text):
     rs = arctern_core_.ST_AsGeoJSON(geo)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Intersection(left, right):
     """
     Calculate the point set intersection of geometries.
@@ -221,6 +266,7 @@ def ST_Intersection(left, right):
     rs = arctern_core_.ST_Intersection(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_IsValid(geos):
     """
     For each item in geometries, check if it is of valid geometry format.
@@ -246,6 +292,7 @@ def ST_IsValid(geos):
     rs = arctern_core_.ST_IsValid(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary', '')
 def ST_PrecisionReduce(geos, precision):
     """
     Reduce the precision of geometry.
@@ -280,6 +327,7 @@ def ST_PrecisionReduce(geos, precision):
     rs = arctern_core_.ST_PrecisionReduce(arr_geos, precision)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Equals(left, right):
     """
     Check whether geometries are "spatially equal".
@@ -314,6 +362,7 @@ def ST_Equals(left, right):
     rs = arctern_core_.ST_Equals(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Touches(left, right):
     """
     Check whether geometries "touch".
@@ -348,6 +397,7 @@ def ST_Touches(left, right):
     rs = arctern_core_.ST_Touches(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Overlaps(left, right):
     """
     Check whether geometries "spatially overlap".
@@ -382,6 +432,7 @@ def ST_Overlaps(left, right):
     rs = arctern_core_.ST_Overlaps(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Crosses(left, right):
     """
     Check whether geometries "spatially cross".
@@ -418,6 +469,7 @@ def ST_Crosses(left, right):
     rs = arctern_core_.ST_Crosses(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_IsSimple(geos):
     """
     Check whether geometry is "simple".
@@ -447,6 +499,7 @@ def ST_IsSimple(geos):
     rs = arctern_core_.ST_IsSimple(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_GeometryType(geos):
     """
     For each geometry in geometries, return a string that indicates is type.
@@ -472,6 +525,7 @@ def ST_GeometryType(geos):
     rs = arctern_core_.ST_GeometryType(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_MakeValid(geos):
     """
     For every geometry in geometries, create a valid representation of it without
@@ -499,6 +553,7 @@ def ST_MakeValid(geos):
     rs = arctern_core_.ST_MakeValid(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
     For each geometry in geometries create a "simplified" version for it according
@@ -530,6 +585,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     rs = arctern_core_.ST_SimplifyPreserveTopology(arr_geos, distance_tolerance)
     return rs.to_pandas()
 
+@arctern_udf('double', 'double', 'double', 'double')
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     """
     Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
@@ -570,6 +626,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     rs = arctern_core_.ST_PolygonFromEnvelope(arr_min_x, arr_min_y, arr_max_x, arr_max_y)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Contains(left, right):
     """
     Check whether a geometry contain another geometry.
@@ -605,6 +662,7 @@ def ST_Contains(left, right):
     rs = arctern_core_.ST_Contains(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Intersects(left, right):
     """
     Check whether two geometries intersect.
@@ -638,6 +696,7 @@ def ST_Intersects(left, right):
     rs = arctern_core_.ST_Intersects(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Within(left, right):
     """
     Check whether a geometry is within another geometry.
@@ -673,6 +732,7 @@ def ST_Within(left, right):
     rs = arctern_core_.ST_Within(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_Distance(left, right):
     """
     Calculate the distance between two geometries.
@@ -710,6 +770,7 @@ def ST_Distance(left, right):
     rs = arctern_core_.ST_Distance(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_DistanceSphere(left, right):
     """
     Returns minimum distance in meters between two lon/lat points.
@@ -748,6 +809,7 @@ def ST_DistanceSphere(left, right):
     rs = arctern_core_.ST_DistanceSphere(arr_left, arr_right)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Area(geos):
     """
     Calculate the area of geometry.
@@ -777,6 +839,7 @@ def ST_Area(geos):
     rs = arctern_core_.ST_Area(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Centroid(geos):
     """
     Compute the centroid of geometry.
@@ -805,6 +868,7 @@ def ST_Centroid(geos):
     rs = arctern_core_.ST_Centroid(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Length(geos):
     """
     Calculate the length of linear geometries.
@@ -833,6 +897,7 @@ def ST_Length(geos):
     rs = arctern_core_.ST_Length(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary', 'binary')
 def ST_HausdorffDistance(geo1, geo2):
     """
     Returns the Hausdorff distance between two geometries, a measure of how similar
@@ -879,6 +944,7 @@ def ST_HausdorffDistance(geo1, geo2):
     rs = arctern_core_.ST_HausdorffDistance(arr1, arr2)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_ConvexHull(geos):
     """
     Compute the convex hull of geometry.
@@ -907,6 +973,7 @@ def ST_ConvexHull(geos):
     rs = arctern_core_.ST_ConvexHull(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_NPoints(geos):
     """
     Calculates the points number for every geometry in geometries.
@@ -932,6 +999,7 @@ def ST_NPoints(geos):
     rs = arctern_core_.ST_NPoints(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Envelope(geos):
     """
     Compute the double-precision minimum bounding box geometry for every geometry in geometries.
@@ -972,6 +1040,7 @@ def ST_Envelope(geos):
     rs = arctern_core_.ST_Envelope(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Buffer(geos, distance):
     """
     Returns a geometry that represents all points whose distance from this geos is
@@ -1001,6 +1070,7 @@ def ST_Buffer(geos, distance):
     rs = arctern_core_.ST_Buffer(arr_geos, distance)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Union_Aggr(geos):
     """
     This function returns a MULTI geometry or NON-MULTI geometry from a set of geometries.
@@ -1027,6 +1097,7 @@ def ST_Union_Aggr(geos):
     rs = arctern_core_.ST_Union_Aggr(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Envelope_Aggr(geos):
     """
     Compute the double-precision minimum bounding box geometry for every geometry in geometries,
@@ -1054,6 +1125,7 @@ def ST_Envelope_Aggr(geos):
     rs = arctern_core_.ST_Envelope_Aggr(arr_geos)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_Transform(geos, src, dst):
     """
     Returns a new geometry with its coordinates transformed to a different spatial
@@ -1090,6 +1162,7 @@ def ST_Transform(geos, src, dst):
     rs = arctern_core_.ST_Transform(arr_geos, src, dst)
     return rs.to_pandas()
 
+@arctern_udf('binary')
 def ST_CurveToLine(geos):
     """
     Converts a CIRCULAR STRING to regular LINESTRING or CURVEPOLYGON to POLYGON or
@@ -1132,24 +1205,24 @@ def weighted_point_map(vega, points, **kwargs):
     if (color_weights is None and size_weights is None):
         rs = arctern_core_.weighted_point_map(vega_string, array_points)
     elif (color_weights is not None and size_weights is not None):
-        if isinstance(color_weights[0], float):
+        if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
 
-        if isinstance(size_weights[0], float):
+        if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
         rs = arctern_core_.weighted_color_size_point_map(vega_string, array_points, arr_c, arr_s)
     elif (color_weights is None and size_weights is not None):
-        if isinstance(size_weights[0], float):
+        if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
         rs = arctern_core_.weighted_size_point_map(vega_string, array_points, arr_s)
     else:
-        if isinstance(color_weights[0], float):
+        if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
@@ -1162,7 +1235,7 @@ def heat_map(vega, points, weights):
     array_points = pa.array(points, type='binary')
     vega_string = vega.build().encode('utf-8')
 
-    if isinstance(weights[0], float):
+    if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
@@ -1175,7 +1248,7 @@ def choropleth_map(vega, region_boundaries, weights):
     arr_wkb = pa.array(region_boundaries, type='binary')
     vega_string = vega.build().encode('utf-8')
 
-    if isinstance(weights[0], float):
+    if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
