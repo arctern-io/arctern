@@ -93,6 +93,21 @@ def test_ST_Point():
     assert string_ptr[0] == "POINT (1.3 3.8)"
     assert string_ptr[1] == "POINT (2.5 4.9)"
 
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(pandas.Series([1, 2], dtype='double'), 5))
+    assert len(string_ptr) == 2
+    assert string_ptr[0] == "POINT (1 5)"
+    assert string_ptr[1] == "POINT (2 5)"
+
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(5, pandas.Series([1, 2], dtype='double')))
+    assert len(string_ptr) == 2
+    assert string_ptr[0] == "POINT (5 1)"
+    assert string_ptr[1] == "POINT (5 2)"
+
+    string_ptr = arctern.ST_AsText(arctern.ST_Point(5.0, 1.0))
+    assert len(string_ptr) == 1
+    assert string_ptr[0] == "POINT (5 1)"
+
+
 def test_ST_GeomFromGeoJSON():
     j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
     j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
@@ -122,6 +137,10 @@ def test_ST_GeomFromText():
     assert str_ptr[0] == "POINT (1 2)"
     assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
     assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+
+    wkb_array = arctern.ST_GeomFromText('POINT (1 2)')
+    wkt_array = arctern.ST_AsText(wkb_array[0])
+    assert wkt_array[0] == "POINT (1 2)"
 
 def test_ST_Contains():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
