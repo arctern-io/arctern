@@ -1205,24 +1205,24 @@ def weighted_point_map(vega, points, **kwargs):
     if (color_weights is None and size_weights is None):
         rs = arctern_core_.weighted_point_map(vega_string, array_points)
     elif (color_weights is not None and size_weights is not None):
-        if isinstance(color_weights[0], float):
+        if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
 
-        if isinstance(size_weights[0], float):
+        if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
         rs = arctern_core_.weighted_color_size_point_map(vega_string, array_points, arr_c, arr_s)
     elif (color_weights is None and size_weights is not None):
-        if isinstance(size_weights[0], float):
+        if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
         rs = arctern_core_.weighted_size_point_map(vega_string, array_points, arr_s)
     else:
-        if isinstance(color_weights[0], float):
+        if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
@@ -1235,7 +1235,7 @@ def heat_map(vega, points, weights):
     array_points = pa.array(points, type='binary')
     vega_string = vega.build().encode('utf-8')
 
-    if isinstance(weights[0], float):
+    if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
@@ -1248,7 +1248,7 @@ def choropleth_map(vega, region_boundaries, weights):
     arr_wkb = pa.array(region_boundaries, type='binary')
     vega_string = vega.build().encode('utf-8')
 
-    if isinstance(weights[0], float):
+    if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
