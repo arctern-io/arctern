@@ -219,7 +219,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
         input_c[i] = *max_element(result_c[i].begin(), result_c[i].end());
-        input_s[i] = *max_element(result_s[i].begin(), result_c[i].end());
+        input_s[i] = *max_element(result_s[i].begin(), result_s[i].end());
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
