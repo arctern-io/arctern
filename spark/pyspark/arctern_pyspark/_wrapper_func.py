@@ -703,14 +703,13 @@ def ST_MakeValid(geos):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
-    For each geometry in geometries create a "simplified" version for it according
-    to the precision that parameter tolerance specifies.
+    Returns a "simplified" version of the given geometry using the Douglas-Peucker algorithm.
 
     :type geos: WKB
     :param geos: Geometry
 
     :type distance_tolerance: double
-    :param distance_tolerance: The precision of the simplified geometry.
+    :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
 
     :rtype: WKB
     :return: Geometry
@@ -1090,8 +1089,8 @@ def ST_ConvexHull(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :return: Geometry
     :rtype: WKB
+    :return: Geometry
 
     :example:
       >>> from pyspark.sql import SparkSession

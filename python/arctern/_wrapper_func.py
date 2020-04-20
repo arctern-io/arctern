@@ -526,14 +526,13 @@ def ST_MakeValid(geos):
 @arctern_udf('binary')
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     """
-    For each geometry in geometries create a "simplified" version for it according
-    to the precision that parameter tolerance specifies.
+    Returns a "simplified" version of the given geometry using the Douglas-Peucker algorithm.
 
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB from.
 
     :type distance_tolerance: double
-    :param distance_tolerance: The precision of the simplified geometry.
+    :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
