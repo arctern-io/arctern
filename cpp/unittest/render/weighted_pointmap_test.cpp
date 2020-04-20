@@ -3915,6 +3915,516 @@ TEST(POINTMAP_WKT_TEST, DOUBLE) {
   arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
 }
 
+TEST(POINTMAP_WKT_TEST, MEAN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, SUM) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, MAX) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, MIN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, COUNT) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, STD) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
 TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT8) {
   // param1: wkt string
   std::string wkt1 = "POINT (10 10)";
@@ -4645,6 +5155,450 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, DOUBLE) {
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
       "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MEAN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, SUM) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MAX) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MIN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, COUNT) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, STD) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
