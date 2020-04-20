@@ -118,8 +118,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
   const auto& result_wkb = data.first;
   const auto& result_weight = data.second;
 
@@ -207,8 +207,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
   const auto& result_wkb = std::get<0>(agg_res);
   const auto& result_c = std::get<1>(agg_res);
   const auto& result_s = std::get<2>(agg_res);
@@ -301,6 +301,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
                                             const std::string& conf) {
   auto data = weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
+
   std::vector<uint32_t> input_x(num_point);
   std::vector<uint32_t> input_y(num_point);
   std::vector<T> input_c(num_point);
@@ -310,17 +311,16 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
   const auto& result_wkb = data.first;
   const auto& result_weight = data.second;
 
   switch (type_agg) {
     case AggType::MAX: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         input_c[i] = *max_element(result_weight[i].begin(), result_weight[i].end());
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
@@ -328,9 +328,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     }
     case AggType::MIN: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         input_c[i] = *min_element(result_weight[i].begin(), result_weight[i].end());
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
@@ -338,9 +337,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     }
     case AggType::COUNT: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         input_c[i] = result_weight[i].size();
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
@@ -348,9 +346,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     }
     case AggType::SUM: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         input_c[i] = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
@@ -358,9 +355,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     }
     case AggType::STDDEV: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         T sum = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
         T mean = sum / result_weight[i].size();
         T accum = 0;
@@ -373,9 +369,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
     }
     case AggType::AVG: {
       for (int i = 0; i < num_point; i++) {
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(result_wkb[i]);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
         T sum_data = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
         input_c[i] = sum_data / result_weight[i].size();
         OGRGeometryFactory::destroyGeometry(result_wkb[i]);
@@ -393,6 +388,7 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
     const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
   auto data = weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.second.size();
+
   std::vector<T> input_c(num_geo);
 
   rapidjson::Document document;
@@ -400,10 +396,10 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
-  std::size_t i = 0;
+
   const auto& result_weight = data.second;
+  std::size_t i = 0;
 
   switch (type_agg) {
     case AggType::MAX: {
@@ -450,8 +446,7 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
     }
   }
 
-  auto result = choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
-  return result;
+  return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
 std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,

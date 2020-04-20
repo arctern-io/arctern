@@ -43,26 +43,6 @@ enum AggType {
   AVG,
 };
 
-struct hash_func {
-  size_t operator()(OGRGeometry* geo) const {
-    auto type = wkbFlatten(geo->getGeometryType());
-    if (type == wkbPoint) {
-      return (std::hash<uint32_t>()(geo->toPoint()->getX()) ^
-              std::hash<uint32_t>()(geo->toPoint()->getY()));
-    } else if (type == wkbPolygon) {
-      auto ring = geo->toPolygon()->getExteriorRing();
-      auto ring_size = ring->getNumPoints();
-      size_t hash_value = 0;
-      for (int i = 0; i < ring_size; i++) {
-        hash_value +=
-            std::hash<uint32_t>()(ring->getX(i)) ^ std::hash<uint32_t>()(ring->getY(i));
-      }
-      return hash_value;
-    }
-    return 0;
-  }
-};
-
 std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
                                          const std::string& bottom_right,
                                          const std::string& top_left, const int& height,
