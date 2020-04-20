@@ -17,7 +17,6 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -39,39 +38,6 @@ AggType agg_type(std::string type) {
   if (type == "std") return AggType::STDDEV;
   std::string err_msg = "unknow agg type = " + type;
   throw std::runtime_error(err_msg);
-}
-
-template <typename T>
-T aggregation(std::string type, std::vector<T> weight) {
-  T result = 0;
-  AggType type_agg = agg_type(type);
-  switch (type_agg) {
-    case AggType::MAX: {
-      return *max_element(weight.begin(), weight.end());
-    }
-    case AggType::MIN: {
-      return *min_element(weight.begin(), weight.end());
-    }
-    case AggType::COUNT: {
-      return weight.size();
-    }
-    case AggType::SUM: {
-      return accumulate(weight.begin(), weight.end(), 0);
-    }
-    case AggType::STDDEV: {
-      T sum = accumulate(weight.begin(), weight.end(), 0);
-      T mean = sum / weight.size();
-      T accum = 0;
-      std::for_each(std::begin(weight), std::end(weight),
-                    [&](const T d) { accum += (d - mean) * (d - mean); });
-      return sqrt(accum / weight.size());
-    }
-    case AggType::AVG: {
-      T sum_data = accumulate(weight.begin(), weight.end(), 0);
-      return sum_data / weight.size();
-    }
-  }
-  return 0;
 }
 
 void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
@@ -112,8 +78,7 @@ std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& ge
 
   for (int32_t i = 0; i < len; i++) {
     if (wkt_geometries->IsNull(i)) {
-      std::string nullstr = "";
-      CHECK_ARROW(builder.Append(nullstr));
+      CHECK_ARROW(builder.Append(""));
       continue;
     }
     OGRGeometry* geo = nullptr;
@@ -199,8 +164,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 
   for (int32_t i = 0; i < len; i++) {
     if (wkt_geometries->IsNull(i)) {
-      std::string nullstr = "";
-      CHECK_ARROW(builder.Append(nullstr));
+      CHECK_ARROW(builder.Append(""));
       continue;
     }
     OGRGeometry* geo = nullptr;
@@ -275,7 +239,6 @@ std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
     std::string geo_wkb = geo_arr->GetString(i);
     OGRGeometry* res_geo;
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
-    auto type = wkbFlatten(res_geo->getGeometryType());
     if (results.find(res_geo) == results.end()) {
       std::vector<T> weight;
       weight.emplace_back(c_arr[i]);
