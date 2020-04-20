@@ -20,6 +20,7 @@
 #include <memory>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -223,7 +224,7 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 }
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
+std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::shared_ptr<arrow::Array>& geos,
     const std::shared_ptr<arrow::Array>& arr_c) {
   auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
@@ -234,25 +235,36 @@ std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
   assert(geo_type == arrow::Type::BINARY);
   assert(geos_size == c_size);
 
-  std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> results;
+  std::unordered_map<std::string, std::vector<T>> wkb_map;
   for (size_t i = 0; i < geos_size; i++) {
     std::string geo_wkb = geo_arr->GetString(i);
-    OGRGeometry* res_geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
-    if (results.find(res_geo) == results.end()) {
+    if (wkb_map.find(geo_wkb) == wkb_map.end()) {
       std::vector<T> weight;
       weight.emplace_back(c_arr[i]);
-      results[res_geo] = weight;
+      wkb_map[geo_wkb] = weight;
     } else {
-      auto& weight = results[res_geo];
+      auto& weight = wkb_map[geo_wkb];
       weight.emplace_back(c_arr[i]);
     }
   }
-  return results;
+
+  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
+  std::vector<std::vector<T>> results_weight(wkb_map.size());
+  int i = 0;
+  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
+    results_wkb[i] = res_geo;
+    results_weight[i] = iter->second;
+    i++;
+  }
+
+  return std::make_pair(results_wkb, results_weight);
 }
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func>
+std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
+           std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
                            const std::shared_ptr<arrow::Array>& arr_c,
                            const std::shared_ptr<arrow::Array>& arr_s) {
@@ -272,26 +284,39 @@ weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
   assert(c_size == s_size);
 
   using vector_pair = std::pair<std::vector<T>, std::vector<T>>;
-  std::unordered_map<OGRGeometry*, vector_pair, hash_func> results;
+  std::unordered_map<std::string, vector_pair> wkb_map;
 
   for (size_t i = 0; i < geos_size; i++) {
     std::string geo_wkb = geo_arr->GetString(i);
-    OGRGeometry* res_geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
-    if (results.find(res_geo) == results.end()) {
+    if (wkb_map.find(geo_wkb) == wkb_map.end()) {
       std::vector<T> weight_c;
       std::vector<T> weight_s;
       weight_c.emplace_back(c_arr[i]);
       weight_s.emplace_back(s_arr[i]);
-      results[res_geo] = std::make_pair(weight_c, weight_s);
+      wkb_map[geo_wkb] = std::make_pair(weight_c, weight_s);
     } else {
-      auto& weight_c = results[res_geo].first;
-      auto& weight_s = results[res_geo].second;
+      auto& weight_c = wkb_map[geo_wkb].first;
+      auto& weight_s = wkb_map[geo_wkb].second;
       weight_c.emplace_back(c_arr[i]);
       weight_s.emplace_back(s_arr[i]);
     }
   }
-  return results;
+
+  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
+  std::vector<std::vector<T>> results_weight_c(wkb_map.size());
+  std::vector<std::vector<T>> results_weight_s(wkb_map.size());
+
+  int i = 0;
+  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
+    results_wkb[i] = res_geo;
+    results_weight_c[i] = iter->second.first;
+    results_weight_s[i] = iter->second.second;
+    i++;
+  }
+
+  return std::make_tuple(results_wkb, results_weight_c, results_weight_s);
 }
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,

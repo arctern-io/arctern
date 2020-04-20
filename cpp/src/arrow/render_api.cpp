@@ -106,102 +106,87 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_weighted_pointmap(
     const std::shared_ptr<arrow::Array>& points, const std::shared_ptr<arrow::Array>& arr,
     const std::string& conf) {
-  auto agg_res = weight_agg<T>(points, arr);
-  auto num_point = agg_res.size();
+  auto data = weight_agg<T>(points, arr);
+  auto num_point = data.first.size();
 
   std::vector<uint32_t> input_x(num_point);
   std::vector<uint32_t> input_y(num_point);
-  std::vector<T> input(num_point);
+  std::vector<T> input_c(num_point);
 
   rapidjson::Document document;
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
+  const auto& result_wkb = data.first;
+  const auto& result_weight = data.second;
+
   switch (type_agg) {
     case AggType::MAX: {
-      size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        input[i++] = *max_element(weight.begin(), weight.end());
-        OGRGeometryFactory::destroyGeometry(geo);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *max_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::MIN: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        input[i++] = *min_element(weight.begin(), weight.end());
-        OGRGeometryFactory::destroyGeometry(geo);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *min_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::COUNT: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        input[i++] = weight.size();
-        OGRGeometryFactory::destroyGeometry(geo);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::SUM: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        input[i++] = accumulate(weight.begin(), weight.end(), 0);
-        OGRGeometryFactory::destroyGeometry(geo);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::STDDEV: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        T sum = accumulate(weight.begin(), weight.end(), 0);
-        T mean = sum / weight.size();
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        T mean = sum / result_weight[i].size();
         T accum = 0;
-        std::for_each(std::begin(weight), std::end(weight),
+        std::for_each(std::begin(result_weight[i]), std::end(result_weight[i]),
                       [&](const T d) { accum += (d - mean) * (d - mean); });
-        input[i++] = sqrt(accum / weight.size());
-        OGRGeometryFactory::destroyGeometry(geo);
+        input_c[i] = sqrt(accum / result_weight[i].size());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::AVG: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight = data.second;
-        T sum_data = accumulate(weight.begin(), weight.end(), 0);
-        input[i++] = sum_data / weight.size();
-        OGRGeometryFactory::destroyGeometry(geo);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum_data = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        input_c[i] = sum_data / result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
   }
 
-  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input[0], num_point, conf);
+  return weighted_pointmap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
 }
 
 template <typename T>
@@ -210,7 +195,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
     const std::shared_ptr<arrow::Array>& arr_c,
     const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf) {
   auto agg_res = weight_agg_multiple_column<T>(points, arr_c, arr_s);
-  auto num_point = agg_res.size();
+  auto num_point = std::get<0>(agg_res).size();
 
   std::vector<uint32_t> input_x(num_point);
   std::vector<uint32_t> input_y(num_point);
@@ -222,111 +207,85 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
+  const auto& result_wkb = std::get<0>(agg_res);
+  const auto& result_c = std::get<1>(agg_res);
+  const auto& result_s = std::get<2>(agg_res);
+
   switch (type_agg) {
     case AggType::MAX: {
-      size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
-        input_c[i] = *max_element(weight_c.begin(), weight_c.end());
-        input_s[i] = *max_element(weight_s.begin(), weight_s.end());
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *max_element(result_c[i].begin(), result_c[i].end());
+        input_s[i] = *max_element(result_s[i].begin(), result_s[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::MIN: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
-        input_c[i] = *min_element(weight_c.begin(), weight_c.end());
-        input_s[i] = *min_element(weight_s.begin(), weight_s.end());
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *min_element(result_c[i].begin(), result_c[i].end());
+        input_s[i] = *min_element(result_c[i].begin(), result_c[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::COUNT: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
-        input_c[i] = weight_c.size();
-        input_s[i] = weight_s.size();
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_c[i].size();
+        input_s[i] = result_c[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::SUM: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
-        input_c[i] = accumulate(weight_c.begin(), weight_c.end(), 0);
-        input_s[i] = accumulate(weight_s.begin(), weight_s.end(), 0);
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        input_s[i] = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::STDDEV: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
 
-        T sum_c = accumulate(weight_c.begin(), weight_c.end(), 0);
-        T mean_c = sum_c / weight_c.size();
+        T sum_c = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        T mean_c = sum_c / result_c[i].size();
         T accum_c = 0;
-        std::for_each(std::begin(weight_c), std::end(weight_c),
+        std::for_each(std::begin(result_c[i]), std::end(result_c[i]),
                       [&](const T d) { accum_c += (d - mean_c) * (d - mean_c); });
-        input_c[i] = sqrt(accum_c / weight_c.size());
+        input_c[i] = sqrt(accum_c / result_c[i].size());
 
-        T sum_s = accumulate(weight_s.begin(), weight_s.end(), 0);
-        T mean_s = sum_s / weight_s.size();
+        T sum_s = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        T mean_s = sum_s / result_c[i].size();
         T accum_s = 0;
-        std::for_each(std::begin(weight_s), std::end(weight_s),
+        std::for_each(std::begin(result_c[i]), std::end(result_c[i]),
                       [&](const T d) { accum_s += (d - mean_s) * (d - mean_s); });
-        input_s[i] = sqrt(accum_s / weight_s.size());
+        input_s[i] = sqrt(accum_s / result_c[i].size());
 
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::AVG: {
-      std::size_t i = 0;
-      for (auto& data : agg_res) {
-        auto& geo = data.first;
-        input_x[i] = geo->toPoint()->getX();
-        input_y[i] = geo->toPoint()->getY();
-        auto weight_c = data.second.first;
-        auto weight_s = data.second.second;
-        T sum_data_c = accumulate(weight_c.begin(), weight_c.end(), 0);
-        T sum_data_s = accumulate(weight_s.begin(), weight_s.end(), 0);
-        input_c[i] = sum_data_c / weight_c.size();
-        input_s[i] = sum_data_s / weight_s.size();
-        OGRGeometryFactory::destroyGeometry(geo);
-        i++;
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum_data_c = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        T sum_data_s = accumulate(result_c[i].begin(), result_c[i].end(), 0);
+        input_c[i] = sum_data_c / result_c[i].size();
+        input_s[i] = sum_data_s / result_c[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
@@ -341,7 +300,8 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
                                             const std::shared_ptr<arrow::Array>& arr_c,
                                             const std::string& conf) {
   auto data = weight_agg<T>(points, arr_c);
-  auto num_point = data.size();
+  auto num_point = data.first.size();
+
   std::vector<uint32_t> input_x(num_point);
   std::vector<uint32_t> input_y(num_point);
   std::vector<T> input_c(num_point);
@@ -351,113 +311,74 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
+  const auto& result_wkb = data.first;
+  const auto& result_weight = data.second;
+
   switch (type_agg) {
     case AggType::MAX: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      auto ite2 = data.end();
-      for (; ite1 != ite2;) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        input_c[i++] = *max_element(weight.begin(), weight.end());
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *max_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::MIN: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      auto ite2 = data.end();
-      for (; ite1 != ite2;) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        input_c[i++] = *min_element(weight.begin(), weight.end());
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *min_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::COUNT: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      auto ite2 = data.end();
-      for (; ite1 != ite2;) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        input_c[i++] = weight.size();
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::SUM: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      auto ite2 = data.end();
-      for (; ite1 != ite2;) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        input_c[i++] = accumulate(weight.begin(), weight.end(), 0);
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::STDDEV: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      for (; data.begin() != data.end();) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        T sum = accumulate(weight.begin(), weight.end(), 0);
-        T mean = sum / weight.size();
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        T mean = sum / result_weight[i].size();
         T accum = 0;
-        std::for_each(std::begin(weight), std::end(weight),
+        std::for_each(std::begin(result_weight[i]), std::end(result_weight[i]),
                       [&](const T d) { accum += (d - mean) * (d - mean); });
-        input_c[i++] = sqrt(accum / weight.size());
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+        input_c[i] = sqrt(accum / result_weight[i].size());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
     case AggType::AVG: {
-      std::size_t i = 0;
-      auto ite1 = data.begin();
-      auto ite2 = data.end();
-      for (; ite1 != ite2;) {
-        auto geo = ite1->first;
-        auto rst_pointer = reinterpret_cast<OGRPoint*>(geo);
-        input_x[i] = rst_pointer->getX();
-        input_y[i] = rst_pointer->getY();
-        auto weight = ite1->second;
-        T sum_data = accumulate(weight.begin(), weight.end(), 0);
-        input_c[i++] = sum_data / weight.size();
-        OGRGeometryFactory::destroyGeometry(geo);
-        data.erase(ite1++);
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum_data = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        input_c[i] = sum_data / result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
       }
       break;
     }
   }
 
-  data.clear();
   return heatmap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
 }
 
@@ -466,8 +387,8 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
     const std::shared_ptr<arrow::Array>& arr_wkb,
     const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
   auto data = weight_agg<T>(arr_wkb, arr_c);
-  auto num_geo = data.size();
-  std::vector<OGRGeometry*> input_wkb(num_geo);
+  auto num_geo = data.second.size();
+
   std::vector<T> input_c(num_geo);
 
   rapidjson::Document document;
@@ -475,73 +396,57 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-
   AggType type_agg = agg_type(agg);
+
+  const auto& result_weight = data.second;
+  std::size_t i = 0;
+
   switch (type_agg) {
     case AggType::MAX: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        input_c[i++] = *max_element(weight.begin(), weight.end());
+      for (auto& item : result_weight) {
+        input_c[i++] = *max_element(item.begin(), item.end());
       }
       break;
     }
     case AggType::MIN: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        input_c[i++] = *min_element(weight.begin(), weight.end());
+      for (auto& item : result_weight) {
+        input_c[i++] = *min_element(item.begin(), item.end());
       }
       break;
     }
     case AggType::COUNT: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        input_c[i++] = weight.size();
+      for (auto& item : result_weight) {
+        input_c[i++] = item.size();
       }
       break;
     }
     case AggType::SUM: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        input_c[i++] = accumulate(weight.begin(), weight.end(), 0);
+      for (auto& item : result_weight) {
+        input_c[i++] = accumulate(item.begin(), item.end(), 0);
       }
       break;
     }
     case AggType::STDDEV: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        T sum = accumulate(weight.begin(), weight.end(), 0);
-        T mean = sum / weight.size();
+      for (auto& item : result_weight) {
+        T sum = accumulate(item.begin(), item.end(), 0);
+        T mean = sum / item.size();
         T accum = 0;
-        std::for_each(std::begin(weight), std::end(weight),
+        std::for_each(std::begin(item), std::end(item),
                       [&](const T d) { accum += (d - mean) * (d - mean); });
-        input_c[i++] = sqrt(accum / weight.size());
+        input_c[i++] = sqrt(accum / item.size());
       }
       break;
     }
     case AggType::AVG: {
-      std::size_t i = 0;
-      for (auto ite1 = data.begin(); ite1 != data.end(); ite1++) {
-        input_wkb[i] = ite1->first;
-        auto weight = ite1->second;
-        T sum_data = accumulate(weight.begin(), weight.end(), 0);
-        input_c[i++] = sum_data / weight.size();
+      for (auto& item : result_weight) {
+        T sum_data = accumulate(item.begin(), item.end(), 0);
+        input_c[i++] = sum_data / item.size();
       }
       break;
     }
   }
 
-  auto result = choroplethmap<T>(input_wkb, &input_c[0], num_geo, conf);
-  return result;
+  return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
 std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
