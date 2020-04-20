@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -73,12 +74,13 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
     const std::string& top_left, const int& height, const int& width);
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
+std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::shared_ptr<arrow::Array>& geos,
     const std::shared_ptr<arrow::Array>& arr_c);
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func>
+std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
+           std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
                            const std::shared_ptr<arrow::Array>& arr_c,
                            const std::shared_ptr<arrow::Array>& arr_s);
