@@ -112,7 +112,7 @@ def ST_Point(x, y):
     :param y: Ordinate of the point.
 
     :rtype: Series(dtype: object)
-    :return: Geometries in WKB form.
+    :return: Point in WKB form.
 
     :example:
       >>> import pandas
