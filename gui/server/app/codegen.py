@@ -17,11 +17,7 @@ def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
     from app.common import config as app_config
-    if app_config.INSTANCE.get("spark") is None:
-        master_addr = "local[*]"
-    master_addr = app_config.INSTANCE.get("spark", "master-addr")
-    master_addr = master_addr or "local[*]"
-    print("master-addr:", master_addr)
+    master_addr = app_config.INSTANCE.get("spark", "master-addr", fallback="local[*]")
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 

@@ -144,7 +144,6 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
-        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -166,7 +165,6 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
-        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -186,7 +184,6 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
-        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -208,7 +205,6 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
-        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
