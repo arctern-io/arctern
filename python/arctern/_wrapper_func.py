@@ -486,7 +486,7 @@ def ST_GeometryType(geos):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.ST_AsText(arctern.ST_GeometryType(arctern.ST_GeomFromText(data)))
+      >>> rst = arctern.ST_GeometryType(arctern.ST_GeomFromText(data))
       >>> print(rst)
           0    ST_POLYGON
           1    ST_POLYGON
