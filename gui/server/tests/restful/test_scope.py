@@ -31,6 +31,7 @@ class TestScope():
     def test_create_scope(self, host, port):
         url = "http://" + host + ":" + port + "/scope"
         r = requests.post(url=url)
+        print(r.text)
         assert r.status_code == 200
         global SCOPE
         SCOPE = r.json()['scope']
@@ -71,6 +72,7 @@ class TestScope():
             ]
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
 
     # TODO: neccessary for /savetable? not convenient for cleaning up
@@ -79,6 +81,7 @@ class TestScope():
     def test_table_schema(self, host, port):
         url = "http://" + host + ":" + port + "/table/schema?table={}&scope={}".format(original_table_name, SCOPE)
         r = requests.get(url=url)
+        print(r.text)
         assert r.status_code == 200
         assert len(r.json()['schema']) == 16
 
@@ -92,6 +95,7 @@ class TestScope():
             "collect_result": "1"
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert len(r.json()['result']) == 1
         assert r.json()['result'][0]['num_rows'] == _get_line_count(csv_path) - 1
@@ -107,6 +111,7 @@ class TestScope():
             "collect_result": "1"
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert len(r.json()['result']) == limit
 
@@ -119,6 +124,7 @@ class TestScope():
             "collect_result": "0"
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
 
     @pytest.mark.run(order=7)
@@ -138,6 +144,7 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -159,6 +166,7 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -178,6 +186,7 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -199,6 +208,7 @@ class TestScope():
             }
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
         assert r.json()["result"] is not None
 
@@ -218,8 +228,10 @@ class TestScope():
             "collect_result": "0"
         }
         r = requests.post(url=url, json=payload1)
+        print(r.text)
         assert r.status_code == 200
         r = requests.post(url=url, json=payload2)
+        print(r.text)
         assert r.status_code == 200
 
     @pytest.mark.run(order=12)
@@ -248,6 +260,7 @@ print("Pi is roughly %f" % (4.0 * count / n))
             "command": command
         }
         r = requests.post(url=url, json=payload)
+        print(r.text)
         assert r.status_code == 200
 
     @pytest.mark.run(order=13)
@@ -255,4 +268,5 @@ print("Pi is roughly %f" % (4.0 * count / n))
         scope = SCOPE
         url = "http://" + host + ":" + port + "/scope/" + scope
         r = requests.delete(url=url)
+        print(r.text)
         assert r.status_code == 200

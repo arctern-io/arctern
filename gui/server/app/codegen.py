@@ -21,6 +21,7 @@ def generate_session_code(session_name="spark"):
         master_addr = "local[*]"
     master_addr = app_config.INSTANCE.get("spark", "master-addr")
     master_addr = master_addr or "local[*]"
+    print("master-addr:", master_addr)
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
