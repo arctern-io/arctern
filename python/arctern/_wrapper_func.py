@@ -301,7 +301,7 @@ def ST_PrecisionReduce(geos, precision):
     :param precision: The number to of ignificant digits.
 
     :rtype: Series(dtype: object)
-    :return: Geometries in WKB form.
+    :return: Geometry with reduced precision.
 
     :example:
       >>> import pandas
@@ -971,7 +971,7 @@ def ST_Buffer(geos, distance):
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :type distance: int
+    :type distance: double
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: Series(dtype: object)

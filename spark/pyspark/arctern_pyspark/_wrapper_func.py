@@ -1188,16 +1188,16 @@ def ST_Envelope(geos):
 
 # TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_Buffer(geos, dfDist):
+def ST_Buffer(geos, distance):
     """
     Return a geometry that represents all points whose distance from the given geometry is
-    less than or equal to "dfDist".
+    less than or equal to "distance".
 
     :type geos: WKB
     :param geos: Geometry
 
-    :type ofDist: int
-    :param ofDist: The maximum distance of the returned geometry from the given geometry.
+    :type distance: double
+    :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: WKB
     :return: Geometry
@@ -1218,7 +1218,7 @@ def ST_Buffer(geos, dfDist):
       |POLYGON EMPTY                                 |
       +----------------------------------------------+
     """
-    return arctern.ST_Buffer(geos, dfDist[0])
+    return arctern.ST_Buffer(geos, distance[0])
 
 @pandas_udf("binary", PandasUDFType.GROUPED_AGG)
 def ST_Union_Aggr(geos):
