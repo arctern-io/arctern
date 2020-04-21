@@ -13,14 +13,17 @@
 # limitations under the License.
 
 import sys
-import cv2
-import matplotlib.pyplot as plt
+
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from pyspark.sql.types import *
+from pyspark.sql import SparkSession
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot
 
-from pyspark.sql.types import *
-from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+import cv2
 
 png_path = sys.path[0] + "/draw_map/"
 

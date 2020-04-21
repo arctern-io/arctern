@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 import pandas
-import matplotlib.pyplot as plt
 import arctern
+import matplotlib.pyplot as plt
 
 def test_plot1():
     raw_data = []
@@ -41,7 +41,7 @@ def test_plot1():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb)
+    arctern.plot(ax, arr_wkb)
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
@@ -66,7 +66,7 @@ def test_plot2():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb, color=['red', 'blue', 'black'], marker='^', markersize=100)
+    arctern.plot(ax, arr_wkb, color=['red', 'blue', 'black'], marker='^', markersize=100)
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
@@ -92,7 +92,7 @@ def test_plot3():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb,
+    arctern.plot(ax, arr_wkb,
                       color=['green', 'red', 'black', 'orange'],
                       linewidth=[5, 6, 7, 8],
                       linestyle=['solid', 'dashed', 'dashdot', 'dotted'])
@@ -121,7 +121,7 @@ def test_plot4():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb,
+    arctern.plot(ax, arr_wkb,
                       edgecolor=['green', 'red', 'black', 'orange'],
                       linewidth=[5, 6, 7, 8],
                       linestyle=['solid', 'dashed', 'dashdot', 'dotted'],
@@ -149,7 +149,7 @@ def test_plot5():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb)
+    arctern.plot(ax, arr_wkb)
     ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
@@ -178,7 +178,7 @@ def test_plot6():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb,
+    arctern.plot(ax, arr_wkb,
                       color=['orange', 'green'],
                       marker='^',
                       markersize=100,
@@ -216,7 +216,7 @@ def test_plot7():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, df,
+    arctern.plot(ax, df,
                       color=['orange', 'green'],
                       marker='^',
                       markersize=[100],
@@ -253,7 +253,7 @@ def test_plot8():
         assert False
 
     fig, ax = plt.subplots()
-    arctern.plot.plot(ax, arr_wkb,
+    arctern.plot(ax, arr_wkb,
                       color=['orange', 'green'],
                       marker='^',
                       markersize=100,
