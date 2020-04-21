@@ -192,7 +192,7 @@ class TestScope():
         url = "http://" + host + ":" + port + "/choroplethmap"
         payload = {
             "scope": SCOPE,
-            "sql": "select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from {}".format(table_name),
+            "sql": "select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w from {} where (buildingtext_dropoff!='')".format(table_name),
             "params": {
                 "width": 1024,
                 "height": 896,

@@ -52,6 +52,7 @@ find . -name \*.py \
 	-and -not -path ./cpp/\* \
 	-and -not -path ./ci/\* \
 	-and -not -path ./doc/\* \
+	-and -not -path ./gui/client/\* \
 	-and -not -path ./docker/\* \
 | sed 's/./\\&/g' \
 | xargs pylint -j 4 -ry --msg-template='{path}:{line}:{column}: {msg_id}: {msg} ({symbol})' --ignore="" \
