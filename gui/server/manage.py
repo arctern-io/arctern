@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=logging-format-interpolation
 
 import logging
 import getopt
@@ -68,7 +69,7 @@ def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, JSON_CONFIG=None, LOG_FILE="/tm
         else:
             with open(JSON_CONFIG, 'r') as f:
                 content = json.load(f)
-                status, code, message = app_service.load_data(content)
+                _, code, message = app_service.load_data(content)
                 print(message)
                 if code != 200:
                     sys.exit(0)

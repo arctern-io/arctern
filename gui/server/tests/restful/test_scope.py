@@ -33,7 +33,7 @@ class TestScope():
         r = requests.post(url=url)
         print(r.text)
         assert r.status_code == 200
-        global SCOPE
+        global SCOPE # pylint: disable=global-statement
         SCOPE = r.json()['scope']
 
     @pytest.mark.run(order=2)

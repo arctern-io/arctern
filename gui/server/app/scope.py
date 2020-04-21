@@ -14,9 +14,9 @@ limitations under the License.
 import uuid
 import json
 
-from flask import Blueprint, jsonify, request, redirect, url_for
+from flask import Blueprint, jsonify, request
 
-from app.common import utils, log
+from app.common import log
 from app import codegen
 
 API = Blueprint("scope_api", __name__)
@@ -25,6 +25,10 @@ API = Blueprint("scope_api", __name__)
 # if zeppelin is required later, we need a map between scope of server and notebook of zeppelin.
 # Maybe the map should be persistent in sqlite or any other database.
 _SCOPE = {}
+
+# pylint: disable=logging-format-interpolation
+# pylint: disable=exec-used
+# pylint: disable=eval-used
 
 @API.route('/scope', methods=['POST'])
 def create_scope():
@@ -85,7 +89,7 @@ def load_file():
     session = request.json.get('session')
     if session is None:
         session = 'spark'
-    
+
     tables = request.json.get('tables')
     for table in tables:
         load_code = codegen.generate_load_code(table, session)
@@ -176,7 +180,7 @@ def query():
             result=[json.loads(row) for row in json_res],
             message="execute sql successfully!",
         )
-    
+
     # just run sql
     code = codegen.generate_run_sql_code(sql, session)
     exec(code, _SCOPE[scope])
@@ -257,4 +261,3 @@ def weighted_pointmap():
         code=code,
         result=result,
     )
-

@@ -55,11 +55,11 @@ def generate_load_code(table, session_name="spark"):
         for key, value in options.items():
             load_code += '.option("{}", "{}")'.format(key, value)
         load_code += '.load("{}")\n'.format(path)
-        load_code += '{}_df.createOrReplaceTempView("{}")\n'.format(table_name, table_name)
+        load_code += '{0}_df.createOrReplaceTempView("{0}")\n'.format(table_name)
     elif 'sql' in table:
         sql = table.get('sql')
         load_code = '{}_df = {}.sql("{}")\n'.format(table_name, session_name, sql)
-        load_code += '{}_df.createOrReplaceTempView("{}")\n'.format(table_name, table_name)
+        load_code += '{0}_df.createOrReplaceTempView("{0}")\n'.format(table_name)
     return load_code
 
 def generate_save_code(table, session_name="spark"):

@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=unused-argument
 
+import json
 import pytest
 import requests
-import json
 
 def _db_id(host, port, headers):
     url = 'http://' + host + ':' + port + '/dbs'

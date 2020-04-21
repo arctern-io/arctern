@@ -16,7 +16,6 @@ limitations under the License.
 
 # pylint: disable=redefined-outer-name
 
-import json
 import pytest
 import requests
 
