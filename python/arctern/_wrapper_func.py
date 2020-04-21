@@ -1085,7 +1085,7 @@ def ST_Transform(geos, from_srid, to_srid):
 @arctern_udf('binary')
 def ST_CurveToLine(geos):
     """
-    Convert curves in a geometry to approximate linear representation, e,g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON, and
+    Convert curves in a geometry to approximate linear representation, e.g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON, and
     MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices that can't support
     CIRCULARSTRING geometry types.
 
