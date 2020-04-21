@@ -1,6 +1,8 @@
-# import geojson
+import geojson
 import shapely.wkt
-# from shapely.geometry import 
+# from shapely.geometry import
+
+# pylint: disable=redefined-outer-name
 
 s = '''POLYGON ((23.314208 37.768469, 24.039306 37.768469, 24.039306 38.214372, 23.314208 38.214372, 23.314208 37.768469))'''
 
@@ -36,20 +38,21 @@ if __name__ == '__main__':
         # arr = [load_wkt(x) for x in lines]
     # for x in lines:
     #     print(x.strip())
-    
+
     with open('bf.csv', 'r') as f:
         lines = f.readlines()
         res = [x for x in lines if not x.startswith('xxxxx')]
-    
+
     with open('bfnew.csv', 'w') as f:
         for x in res:
             f.writelines(x)
-    exit(0)    
-    with open('./expected/results/st_transform.out', 'r') as f:
-        lines = f.readlines()
-        brr = [load_wkt(x) for x in lines]
-    
-    for a, b in zip(arr, brr):
-        print(a.equals(b))
+    import sys
+    sys.exit()
+    #with open('./expected/results/st_transform.out', 'r') as f:
+    #    lines = f.readlines()
+    #    brr = [load_wkt(x) for x in lines]
+
+    #for a, b in zip(arr, brr):
+    #    print(a.equals(b))
 # w = "MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))"
 # print(to_geojson(w))
