@@ -14,9 +14,11 @@
 
 import os
 import sys
-from shapely import wkt
+
 from ogr import Geometry
 from ogr import CreateGeometryFromWkt
+from shapely import wkt
+
 from util import get_tests, is_empty, is_geometry, is_geometrycollection
 from util import arc_distance
 from util import ARCTERN_RESULT, EXPECTED_RESULT
@@ -177,6 +179,8 @@ def compare_geometry(config, geometry_x, geometry_y):
         result = arct.equals_exact(pgis, EPOCH)
         return result
 
+    return False
+
 
 def compare_geometrycollection(config, geometry_x, geometry_y):
     """Compare whether 2 geometrycollections is 'equal'."""
@@ -194,6 +198,8 @@ def compare_geometrycollection(config, geometry_x, geometry_y):
         pgis = wkt.loads(geometry_y)
         result = arct.equals(pgis)
         return result
+
+    return False
 
 
 def compare_floats(config, geometry_x, geometry_y):
@@ -269,19 +275,20 @@ def convert_str(strr):
     """Convert a string to float, if it's not a float value, return string to represent itself."""
     if strr.lower() == 'true' or strr.lower() == 't':
         return True
-    elif strr.lower() == 'false' or strr.lower() == 'f':
+    if strr.lower() == 'false' or strr.lower() == 'f':
         return False
 
     try:
         float_value = float(strr)
         return float_value
     except ValueError as ex:
-        # print(repr(ex))
-        pass
+        print(repr(ex))
 
     return strr
 
 
+# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
 def compare_one(config, result, expect):
     """Compare 1 line of arctern result and expected."""
     value_x = result[1]
@@ -306,29 +313,29 @@ def compare_one(config, result, expect):
             if (is_empty(newvalue_x) and is_empty(newvalue_y)):
                 return True
 
-            elif is_geometry(newvalue_x) and is_geometry(newvalue_y):
+            if is_geometry(newvalue_x) and is_geometry(newvalue_y):
                 one_result_flag = compare_geometry(config, newvalue_x,
                                                    newvalue_y)
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
 
-            elif is_geometrycollection(newvalue_x) and is_geometrycollection(
+            if is_geometrycollection(newvalue_x) and is_geometrycollection(
                     newvalue_y):
                 one_result_flag = compare_geometrycollection(
                     config, newvalue_x, newvalue_y)
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
-            else:
-                if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
-                    one_result_flag = (newvalue_x == newvalue_y)
-                    if not one_result_flag:
-                        print(result[0], newvalue_x, expect[0], newvalue_y)
-                    return one_result_flag
 
-                # print(result[0], newvalue_x, expect[0], newvalue_y)
-                return False
+            if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
+                one_result_flag = (newvalue_x == newvalue_y)
+                if not one_result_flag:
+                    print(result[0], newvalue_x, expect[0], newvalue_y)
+                return one_result_flag
+
+            # print(result[0], newvalue_x, expect[0], newvalue_y)
+            return False
 
         if isinstance(newvalue_x, (int, float)):
             return compare_floats(config, newvalue_x, newvalue_y)
