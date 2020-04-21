@@ -18,8 +18,6 @@ RUN cd /arctern/spark/pyspark && \
 
 COPY gui/server /arctern/gui/server
 
-RUN chmod 777 /arctern/gui/server
-
 RUN cd /arctern/gui/server && \
     python3.7 -m pip --no-cache-dir install -r requirements.txt
 

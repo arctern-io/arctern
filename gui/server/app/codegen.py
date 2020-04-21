@@ -28,6 +28,7 @@ def generate_session_code(session_name="spark"):
     session_code += '{} = SparkSession.builder'.format(session_name)
     session_code += '.appName("{}")'.format(app_name)
     session_code += '.master("{}")'.format(master_addr)
+    session_code += '.config("spark.sql.warehouse.dir", "/tmp")'
     session_code += '.config("spark.driver.host", "{}")'.format(localhost_ip)
     session_code += '.config("spark.sql.execution.arrow.pyspark.enabled", "true")'
     session_code += '.getOrCreate()\n'
