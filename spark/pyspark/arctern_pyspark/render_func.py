@@ -310,8 +310,7 @@ def choroplethmap(vega, df):
         from arctern import choropleth_map
         return choropleth_map(conf, wkb, w)
 
-    agg_df = df.where("%s != ''" % col_polygon)
-    agg_df = agg_df.mapInPandas(render_agg_UDF)
+    agg_df = df.mapInPandas(render_agg_UDF)
     agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = agg_df.agg(choroplethmap_wkb(agg_df[col_polygon], agg_df[col_count])).collect()[0][0]
     return hex_data
