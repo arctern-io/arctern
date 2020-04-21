@@ -221,7 +221,7 @@ def test_query(load, host, port, headers, dbid, table_name):
         'query': {
             'sql': '''
             select ST_GeomFromText(buildingtext_dropoff) as wkt, passenger_count as w
-            from {}
+            from {} where (buildingtext_dropoff!='')
             '''.format(table_name),
             'type': 'choropleth',
             'params': {

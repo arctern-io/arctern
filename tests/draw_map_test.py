@@ -13,10 +13,13 @@
 # limitations under the License.
 
 import sys
-import cv2
-
 from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
+
+from pyspark.sql import SparkSession
+
+# pylint: disable=c-extension-no-member
+import cv2
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
@@ -24,8 +27,6 @@ from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
 from arctern_pyspark import icon_viz
-
-from pyspark.sql import SparkSession
 
 file_path = sys.path[0] + "/data/0_10000_nyc_taxi_and_building.csv"
 png_path = sys.path[0] + "/draw_map/"
@@ -65,6 +66,7 @@ def run_diff_png(baseline_png, compared_png, precision=0.0005):
 
     return ((float)(diff_point_num) / (float)(baseline_size)) <= precision
 
+# pylint: disable=too-many-statements
 def run_test_point_map(spark):
     # file 0_5M_nyc_taxi_and_building.csv could be obtained from arctern-turoial warehouse under zilliztech account. The link on github is https://github.com/zilliztech/arctern-tutorial
     # file 0_10000_nyc_taxi_and_building.csv is from file 0_5M_nyc_taxi_and_building.csv first 10000 lines
@@ -161,6 +163,7 @@ def run_test_point_map(spark):
     assert run_diff_png(baseline_png6, png_path + "test_point_map_nyc_6-1.png")
     assert run_diff_png(baseline_png6, png_path + "test_point_map_nyc_6-2.png")
 
+# pylint: disable=too-many-statements
 def run_test_weighted_point_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
@@ -466,6 +469,7 @@ def run_test_weighted_point_map(spark):
     assert run_diff_png(baseline_png4_5, png_path + "test_weighted_point_map_nyc_4_5-1.png")
     assert run_diff_png(baseline_png4_5, png_path + "test_weighted_point_map_nyc_4_5-2.png")
 
+# pylint: disable=too-many-statements
 def run_test_heat_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
@@ -547,6 +551,7 @@ def run_test_heat_map(spark):
     assert run_diff_png(baseline_png5, png_path + "test_heat_map_nyc_5-1.png", 0.2)
     assert run_diff_png(baseline_png5, png_path + "test_heat_map_nyc_5-2.png", 0.2)
 
+# pylint: disable=too-many-statements
 def run_test_choropleth_map(spark):
     df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
         "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
@@ -896,4 +901,3 @@ if __name__ == "__main__":
     run_test_icon_viz(spark_session)
 
     spark_session.stop()
-    

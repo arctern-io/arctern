@@ -2,6 +2,8 @@ version: '3.7'
 
 services:
   regression:
+    # Usage:
+    #   docker-compose run --rm regression
     image: ${ARCTERN_REPO}:${ARCTERN_TAG}
     volumes:
       - ../..:/arctern
@@ -16,7 +18,15 @@ services:
           cpus: '0.5'
           memory: 200M
   restful-regression:
-    image: ${PYTEST_REPO}:${PYTEST_TAG}
+    # Usage:
+    #   docker-compose build restful-regression
+    #   docker-compose run --rm restful-regression
+    image: ${RESTFUL_PYTEST_REPO}:${RESTFUL_PYTEST_TAG}
+    build:
+      context: ../..
+      dockerfile: docker/test_env/restful-pytest.dockerfile
+      cache_from:
+        - ${RESTFUL_PYTEST_REPO}:${RESTFUL_PYTEST_TAG}
     environment:
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
