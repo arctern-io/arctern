@@ -16,7 +16,12 @@ services:
           cpus: '0.5'
           memory: 200M
   restful-regression:
-    image: ${PYTEST_REPO}:${PYTEST_TAG}
+    image: ${RESTFUL_PYTEST_REPO}:${RESTFUL_PYTEST_TAG}
+    build:
+      context: ../..
+      dockerfile: docker/test_env/restful-pytest.dockerfile
+      cache_from:
+        - ${RESTFUL_PYTEST_REPO}:${RESTFUL_PYTEST_TAG}
     environment:
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
