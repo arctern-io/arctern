@@ -19,11 +19,12 @@ import sys
 from pyspark.sql.types import *
 from pyspark.sql import SparkSession
 
+import matplotlib.pyplot as plt
+# pylint: disable=c-extension-no-member
+import cv2
+
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot
-
-import matplotlib.pyplot as plt
-import cv2
 
 png_path = sys.path[0] + "/draw_map/"
 

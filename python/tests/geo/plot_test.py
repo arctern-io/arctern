@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 import pandas
-import arctern
 import matplotlib.pyplot as plt
+import arctern
 
 def test_plot1():
     raw_data = []

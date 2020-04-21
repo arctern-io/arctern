@@ -13,11 +13,13 @@
 # limitations under the License.
 
 import sys
-
 from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
 
 from pyspark.sql import SparkSession
+
+# pylint: disable=c-extension-no-member
+import cv2
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
@@ -25,8 +27,6 @@ from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
 from arctern_pyspark import icon_viz
-
-import cv2
 
 file_path = sys.path[0] + "/data/0_10000_nyc_taxi_and_building.csv"
 png_path = sys.path[0] + "/draw_map/"
