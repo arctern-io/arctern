@@ -790,7 +790,7 @@ def ST_Centroid(geos):
     :param geos: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
-    :return: Geometries in WKB form.
+    :return: The centroid of geometry in WKB form..
 
     :example:
       >>> import pandas
@@ -1047,18 +1047,18 @@ def ST_Envelope_Aggr(geos):
     return rs.to_pandas()
 
 @arctern_udf('binary')
-def ST_Transform(geos, src, dst):
+def ST_Transform(geos, from_srid, to_srid):
     """
     Return a new geometry with its coordinates transformed from spatial reference system "src" to a "dst".
 
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :type src: string
-    :param src: The current srid of geometries.
+    :type from_srid: string
+    :param from_srid: The current srid of geometries.
 
-    :type dst: string
-    :param dst: The target srid of geometries tranfrom to.
+    :type to_srid: string
+    :param to_srid: The target srid of geometries tranfrom to.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
@@ -1076,8 +1076,8 @@ def ST_Transform(geos, src, dst):
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    src = bytes(src, encoding="utf8")
-    dst = bytes(dst, encoding="utf8")
+    src = bytes(from_srid, encoding="utf8")
+    dst = bytes(to_srid, encoding="utf8")
 
     rs = arctern_core_.ST_Transform(arr_geos, src, dst)
     return rs.to_pandas()
