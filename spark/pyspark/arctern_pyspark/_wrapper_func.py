@@ -993,7 +993,7 @@ def ST_Centroid(geos):
     :param geos: Geometry
 
     :rtype: WKB
-    :return: Geometry
+    :return: The centroid of geometry in WKB form.
 
     :example:
       >>> from pyspark.sql import SparkSession
@@ -1188,16 +1188,16 @@ def ST_Envelope(geos):
 
 # TODO: ST_Buffer, how to polymorphicly define the behaviour of spark udf
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_Buffer(geos, dfDist):
+def ST_Buffer(geos, distance):
     """
     Return a geometry that represents all points whose distance from the given geometry is
-    less than or equal to "dfDist".
+    less than or equal to "distance".
 
     :type geos: WKB
     :param geos: Geometry
 
-    :type ofDist: int
-    :param ofDist: The maximum distance of the returned geometry from the given geometry.
+    :type distance: double
+    :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: WKB
     :return: Geometry
@@ -1218,7 +1218,7 @@ def ST_Buffer(geos, dfDist):
       |POLYGON EMPTY                                 |
       +----------------------------------------------+
     """
-    return arctern.ST_Buffer(geos, dfDist[0])
+    return arctern.ST_Buffer(geos, distance[0])
 
 @pandas_udf("binary", PandasUDFType.GROUPED_AGG)
 def ST_Union_Aggr(geos):
@@ -1283,18 +1283,18 @@ def ST_Envelope_Aggr(geos):
     return rst[0]
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_Transform(geos, src_rs, dst_rs):
+def ST_Transform(geos, from_srid, to_srid):
     """
     Return a new geometry with its coordinates transformed from spatial reference system "src_rs" to a "dst_rs".
 
     :type geos: WKB
     :param geos: Geometry
 
-    :type src_rs: string
-    :param src_rs: The current srid of geometries.
+    :type from_srid: string
+    :param from_srid: The current srid of geometries.
 
-    :type dst_rs: string
-    :param dst_rs: The target srid of geometries tranfrom to.
+    :type to_srid: string
+    :param to_srid: The target srid of geometries tranfrom to.
 
     :rtype: WKB
     :return: Geometry
@@ -1315,7 +1315,7 @@ def ST_Transform(geos, src_rs, dst_rs):
       |POINT (1113194.90793274 1118889.97485796)                               |
       +------------------------------------------------------------------------+
     """
-    return arctern.ST_Transform(geos, src_rs[0], dst_rs[0])
+    return arctern.ST_Transform(geos, from_srid[0], to_srid[0])
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_CurveToLine(geos):
