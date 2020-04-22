@@ -20,7 +20,6 @@ import requests
 original_table_name = "raw_data"
 table_name = "nyctaxi"
 csv_path = "/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv"
-csv_path = "/home/ljq/work/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv"
 SCOPE = "nyc_taxi"
 
 def _get_line_count(file):
