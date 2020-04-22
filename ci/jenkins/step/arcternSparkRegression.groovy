@@ -16,7 +16,7 @@ try {
         if ("${SEMVER}" == "master") {
             withCredentials([usernamePassword(credentialsId: "${params.DOCKER_CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 sh "docker login -u ${USERNAME} -p ${PASSWORD} ${params.DOKCER_REGISTRY_URL}"
-                sh "docker-compose push restful-regression"
+                sh "docker-compose push --ignore-push-failures restful-regression"
                 sh "docker logout ${params.DOKCER_REGISTRY_URL}"
             }
         }
