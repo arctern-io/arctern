@@ -14,9 +14,9 @@ limitations under the License.
 import uuid
 import json
 
-from flask import Blueprint, jsonify, request, redirect, url_for
+from flask import Blueprint, jsonify, request
 
-from app.common import utils, log
+from app.common import log
 from app import codegen
 
 API = Blueprint("scope_api", __name__)
@@ -26,13 +26,20 @@ API = Blueprint("scope_api", __name__)
 # Maybe the map should be persistent in sqlite or any other database.
 _SCOPE = {}
 
+# pylint: disable=logging-format-interpolation
+# pylint: disable=exec-used
+# pylint: disable=eval-used
+
 @API.route('/scope', methods=['POST'])
 def create_scope():
     log.INSTANCE.info("POST /scope: {}".format(request.json))
-    
-    scope = request.json.get("scope")
-    if scope in _SCOPE:
-        return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
+
+    if request.json is None:
+        scope = str(uuid.uuid1()).replace("-", "")
+    else:
+        scope = request.json.get("scope")
+        if scope in _SCOPE:
+            return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
     if scope is None:
         scope = str(uuid.uuid1()).replace("-", "")
     _SCOPE[scope] = dict()
@@ -48,6 +55,10 @@ def remove_scope(scope_name):
 
     if scope_name not in _SCOPE:
         return jsonify(status="error", code=-1, message="scope {} not found!".format(scope_name))
+    # keep compability with old api
+    # todo: find why incompability happend
+    # stop_code = 'spark.stop()'
+    # exec(stop_code, _SCOPE[scope_name])
     del _SCOPE[scope_name]
     return jsonify(status="success", code=200, message="remove scope {} successfully!".format(scope_name))
 
@@ -78,7 +89,7 @@ def load_file():
     session = request.json.get('session')
     if session is None:
         session = 'spark'
-    
+
     tables = request.json.get('tables')
     for table in tables:
         load_code = codegen.generate_load_code(table, session)
@@ -169,7 +180,7 @@ def query():
             result=[json.loads(row) for row in json_res],
             message="execute sql successfully!",
         )
-    
+
     # just run sql
     code = codegen.generate_run_sql_code(sql, session)
     exec(code, _SCOPE[scope])
@@ -250,4 +261,3 @@ def weighted_pointmap():
         code=code,
         result=result,
     )
-

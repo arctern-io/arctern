@@ -16,7 +16,6 @@ limitations under the License.
 
 # pylint: disable=redefined-outer-name
 
-import json
 import pytest
 import requests
 
@@ -57,16 +56,3 @@ def headers(token):
     auth_header = {}
     auth_header['Authorization'] = 'Token ' + str(token)
     return auth_header
-
-@pytest.fixture(scope='session', autouse=True)
-def load_data(host, port, db_config, headers):
-    url = 'http://' + host + ':' + port + '/load'
-    with open(db_config, 'r') as f:
-        content = json.load(f)
-    response = requests.post(
-        url=url,
-        headers=headers,
-        json=content
-    )
-    assert response.status_code == 200
-    assert response.json()['message'] == 'load data succeed!'

@@ -219,8 +219,8 @@ pipeline {
                     ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
                     TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                     ARCTERN_TAG = "${TAG_NAME}"
-                    PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/library/pytest"
-                    PYTEST_TAG = "v0.1.0"
+                    RESTFUL_PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/${PROJECT_NAME}/restful-pytest"
+                    RESTFUL_PYTEST_TAG = "latest"
                 }
 
                 stages {

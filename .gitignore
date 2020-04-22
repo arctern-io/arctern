@@ -159,3 +159,5 @@ node_modules
 
 #/gui/server
 gui/server/log.txt
+gui/server/metastore_db/
+gui/server/spark-warehouse/

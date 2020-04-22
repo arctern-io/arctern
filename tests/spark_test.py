@@ -12,16 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession
-from arctern_pyspark import register_funcs
-from pyspark.sql.types import *
-from pyspark.sql.functions import col
+# pylint: disable=too-many-lines
+# pylint: disable=redefined-outer-name
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
 
-import random
 import shutil
 import os
 import json
-import sys
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql.functions import col
+
+from arctern_pyspark import register_funcs
 
 base_dir = './data/'
 
@@ -40,9 +44,10 @@ def read_data(spark, base_dir, data):
     ext = os.path.splitext(data)[1][1:]
     if ext == 'json':
         return spark.read.json(get_data(base_dir, data)).cache()
-    elif ext == 'csv':
+    if ext == 'csv':
         # return spark.read.csv(get_data(base_dir, data)).cache()
         return spark.read.format('csv').options(header='true', sep='|').load(get_data(base_dir, data)).cache()
+    return None
 
 def to_txt(file_dir, df):
     df.write.text(file_dir)
@@ -216,7 +221,7 @@ def run_test_st_intersection_curve(spark):
     rs = spark.sql(sql).cache()
     #rs.printSchema()
     #rs.show()
-    save_result("results/%s" % table_name, rs)    
+    save_result("results/%s" % table_name, rs)
 
 def run_test_st_convexhull(spark):
     data = "convexhull.csv"
