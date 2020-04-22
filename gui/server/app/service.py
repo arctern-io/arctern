@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=logging-format-interpolation
+
 import json
-from flask import Blueprint, jsonify, request, make_response
+from flask import Blueprint, jsonify, request
 
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon
 from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz

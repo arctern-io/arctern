@@ -21,7 +21,7 @@ INSTANCE = logging.getLogger()
 
 def set_file(path, level=logging.DEBUG):
     INSTANCE.setLevel(level)
-    handler = RotatingFileHandler(path, maxBytes = 10*1024*1024, backupCount = 30)
+    handler = RotatingFileHandler(path, maxBytes=10*1024*1024, backupCount=30)
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(filename)s[%(lineno)d] %(message)s')
     handler.setFormatter(formatter)
     INSTANCE.addHandler(handler)
@@ -33,5 +33,3 @@ if __name__ == '__main__':
     INSTANCE.warning("start test")
     INSTANCE.error("start test")
     INSTANCE.fatal("start test")
-
-
