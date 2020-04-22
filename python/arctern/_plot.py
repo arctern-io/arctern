@@ -237,57 +237,69 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
 
 def plot(ax, geoms, **style_kwds):
     """
-     Plots a collection of geometries to `ax`
+    Plot a collection of geometries to `ax`. Parameters 'linewidth', 'linestyle', 'edgecolor',
+    'facecolor', 'color', 'marker', 'markersize' are used to describe the style of plotted figure.
 
-     :type ax: matplotlib.axes.Axes
-     :parms ax: The axes where geometries will be plotted
+    For geometry types `Polygon` and `MultiPolygon`, only 'linewidth', 'linestyle', 'edgecolor',
+    'facecolor' are effective.
 
-     :type geoms: pandas.core.series.Series or pandas.core.frame.DataFrame
-     :parms geoms: sequence of geometries
+    For geometry types `Linestring` and `MultiLinestring`, only 'color', 'linewidth', 'linestyle' are effective.
 
-     :type **style_kwds: dict
-     :parms **style_kwds: optional, collection of plot style
-         `Polygon` and `MultiPolygon`:
-             linewidth
-             linestyle
-             edgecolor
-             facecolor
-         `LineString` and `MultiLineString`:
-             color
-             linewidth
-             linestyle
-         `Point` and `MultiPoint`:
-             color
-             marker
-             markersize
-     :example:
-         import pandas
-         import matplotlib.pyplot as plt
-         import arctern
+    For geometry types `Point` and `MultiPoint`, only 'color', 'marker', 'markersize' are effective.
 
-         raw_data = []
-         raw_data.append('point(0 0)')
-         raw_data.append('linestring(0 10, 5 5, 10 0)')
-         raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
-         raw_data.append("GEOMETRYCOLLECTION(" \
-                         "polygon((1 1,1 2,2 2,2 1,1 1))," \
-                         "linestring(0 1, 5 6, 10 11)," \
-                         "POINT(4 7))")
-         arr_wkt = pandas.Series(raw_data)
-         arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
-         df = pandas.DataFrame({'wkb':arr_wkb})
+    :type ax: matplotlib.axes.Axes
+    :param ax: The axes where geometries will be plotted.
 
-         fig, ax = plt.subplots()
-         arctern.plot(ax, df,
-                      color=['orange', 'green'],
-                      marker='^',
-                      markersize=100,
-                      linewidth=[None, 7, 8],
-                      linestyle=[None, 'dashed', 'dashdot'],
-                      edgecolor=[None, None, 'red'],
-                      facecolor=[None, None, 'black'])
-         ax.grid()
-         fig.savefig('/tmp/plot_test.png')
+    :type geoms: Series or DataFrame
+    :param geoms: sequence of geometries.
+
+    :type linewidth: list(float)
+    :param linewidth: The width of line, the default value is 1.0.
+
+    :type linestyle: list(string)
+    :param linestyle: The style of the line， the default value is '-'.
+
+    :type edgecolor: list(string)
+    :param edgecolor: The edge color of the geometry, the default value is 'black'.
+
+    :type facecolor: list(string)
+    :param facecolor: The color of the face of the geometry, the default value is 'C0'.
+
+    :type color: list(string)
+    :param color: The color of the geometry, the default value is 'C0'.
+
+    :type marker: string
+    :param marker: The shape of point, the default value is 'o'.
+
+    :type markersize: double
+    :param markersize:  The size of points, the default value is 6.0.
+
+    :example:
+       >>> import pandas
+       >>> import matplotlib.pyplot as plt
+       >>> import arctern
+       >>> raw_data = []
+       >>> raw_data.append('point(0 0)')
+       >>> raw_data.append('linestring(0 10, 5 5, 10 0)')
+       >>> raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+       >>> raw_data.append("GEOMETRYCOLLECTION("
+                           "polygon((1 1,1 2,2 2,2 1,1 1)),"
+                           "linestring(0 1, 5 6, 10 11),"
+                           "POINT(4 7))")
+       >>> arr_wkt = pandas.Series(raw_data)
+       >>> arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
+       >>> df = pandas.DataFrame({'wkb':arr_wkb})
+       >>> fig, ax = plt.subplots()
+       >>> arctern.plot(ax, df,
+                        color=['orange', 'green', 'blue', 'red'],
+                        marker='^',
+                        markersize=100,
+                        linewidth=[None, 7, 8, 5],
+                        linestyle=[None, 'dashed', 'dashdot', None],
+                        edgecolor=[None, None, 'red', None],
+                        facecolor=[None, None, 'black', None])
+       >>> ax.grid()
+       >>> fig.savefig('/tmp/plot_test.png')
     """
     import pandas.core.series
     if isinstance(geoms, pandas.core.series.Series):
