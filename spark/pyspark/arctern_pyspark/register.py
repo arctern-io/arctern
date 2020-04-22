@@ -22,8 +22,7 @@ def _get_funcs_in_module(module):
 
 def register_funcs(spark):
     """
-    This is the core of whole package, It uses py4j to run wrapper which takes existing SparkSession
-    and register all User Defined Functions by Arctern developers, for this SparkSession.
+    Register all functions provided by Arctern for the given SparkSession.
 
     :param spark: pyspark.sql.SparkSession, spark session instance.
 
