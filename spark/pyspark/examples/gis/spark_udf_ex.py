@@ -71,7 +71,7 @@ def run_st_asgeojson(spark):
     data_df.createOrReplaceTempView("data")
     rs = spark.sql("select ST_AsGeoJSON(ST_PolygonFromText(data)) from data").collect()
     assert rs[0][0] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
-    
+
 def run_st_precision_reduce(spark):
     test_data = []
     test_data.extend([('POINT (10.777 11.888)',)])

@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
+
 from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
+
+from pyspark.sql import SparkSession
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap
@@ -21,10 +25,6 @@ from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
 from arctern_pyspark import icon_viz
-
-from pyspark.sql import SparkSession
-
-import time
 
 def draw_point_map(spark):
     start_time = time.time()
@@ -112,9 +112,9 @@ def draw_choropleth_map(spark):
     df.createOrReplaceTempView("nyc_taxi")
 
     register_funcs(spark)
-    res = spark.sql("select ST_GeomFromText(buildingtext_dropoff) as polygon, passenger_count as w from nyc_taxi")
+    res = spark.sql("select ST_GeomFromText(buildingtext_dropoff) as polygon, passenger_count as w from nyc_taxi where (buildingtext_dropoff!='')")
 
-    vega1 = vega_choroplethmap(1900, 1410, bounding_box=[-73.994092, 40.753893, -73.977588, 40.759642], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326') 
+    vega1 = vega_choroplethmap(1900, 1410, bounding_box=[-73.994092, 40.753893, -73.977588, 40.759642], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     res1 = choroplethmap(vega1, res)
     save_png(res1, '/tmp/choroplethmap1.png')
 
