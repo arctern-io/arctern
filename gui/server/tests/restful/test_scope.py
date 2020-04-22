@@ -136,7 +136,7 @@ class TestScope():
             "params": {
                 "width": 1024,
                 "height": 896,
-                "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
+                "bounding_box": [-80.37976, 35.191296, -70.714099, 45.897445],
                 "coordinate_system": "EPSG:4326",
                 "point_color": "#2DEF4A",
                 "point_size": 3,
@@ -156,7 +156,7 @@ class TestScope():
             "params": {
                 "width": 1024,
                 "height": 896,
-                "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
+                "bounding_box": [-80.37976, 35.191296, -70.714099, 45.897445],
                 "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [0, 2],
                 "size_bound": [0, 10],
@@ -177,7 +177,7 @@ class TestScope():
             "params": {
                 "width": 1024,
                 "height": 896,
-                "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
+                "bounding_box": [-80.37976, 35.191296, -70.714099, 45.897445],
                 "coordinate_system": "EPSG:4326",
                 "map_zoom_level": 10,
                 "aggregation_type": "sum"
@@ -196,7 +196,7 @@ class TestScope():
             "params": {
                 "width": 1024,
                 "height": 896,
-                "bounding_box": [-75.37976, 40.191296, -71.714099, 41.897445],
+                "bounding_box": [-80.37976, 35.191296, -70.714099, 45.897445],
                 "coordinate_system": "EPSG:4326",
                 "color_gradient": ["#0000FF", "#FF0000"],
                 "color_bound": [2.5, 5],
