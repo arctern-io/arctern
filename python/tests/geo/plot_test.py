@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import pandas
 import matplotlib.pyplot as plt
+import pandas
 import arctern
 
 def test_plot1():
