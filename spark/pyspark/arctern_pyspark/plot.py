@@ -49,7 +49,7 @@ def plot(ax, geoms, **style_kwds):
     :param marker: The shape of point, the default value is 'o'.
 
     :type markersize: double
-    :param markersize:  The size of points, the default value is 6.0.
+    :param markersize: The size of points, the default value is 6.0.
 
     :example:
        >>> from arctern_pyspark import register_funcs

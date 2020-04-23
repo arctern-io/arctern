@@ -33,7 +33,7 @@ services:
       - ../../gui/server:/arctern/gui/server
     working_dir: /arctern/gui/server/tests/restful
     command: &flask-test
-      ["pytest", "--host", "flask", "--port", "8080", "--config", "/arctern/gui/server/db.json", "-p", "no:cacheprovider"]
+      ["pytest", "--host", "flask", "--port", "8080", "--config", "/arctern/gui/server/db.json", "-p", "no:cacheprovider", "-s"]
     deploy:
       resources:
         limits:

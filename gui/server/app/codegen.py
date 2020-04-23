@@ -16,7 +16,8 @@ import uuid
 def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
-    master_addr = "local[*]"
+    from app.common import config as app_config
+    master_addr = app_config.INSTANCE.get("spark", "master-addr", fallback="local[*]")
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
@@ -27,6 +28,7 @@ def generate_session_code(session_name="spark"):
     session_code += '{} = SparkSession.builder'.format(session_name)
     session_code += '.appName("{}")'.format(app_name)
     session_code += '.master("{}")'.format(master_addr)
+    session_code += '.config("spark.sql.warehouse.dir", "/tmp")'
     session_code += '.config("spark.driver.host", "{}")'.format(localhost_ip)
     session_code += '.config("spark.sql.execution.arrow.pyspark.enabled", "true")'
     session_code += '.getOrCreate()\n'
@@ -54,11 +56,11 @@ def generate_load_code(table, session_name="spark"):
         for key, value in options.items():
             load_code += '.option("{}", "{}")'.format(key, value)
         load_code += '.load("{}")\n'.format(path)
-        load_code += '{}_df.createOrReplaceTempView("{}")\n'.format(table_name, table_name)
+        load_code += '{0}_df.createOrReplaceTempView("{0}")\n'.format(table_name)
     elif 'sql' in table:
         sql = table.get('sql')
         load_code = '{}_df = {}.sql("{}")\n'.format(table_name, session_name, sql)
-        load_code += '{}_df.createOrReplaceTempView("{}")\n'.format(table_name, table_name)
+        load_code += '{0}_df.createOrReplaceTempView("{0}")\n'.format(table_name)
     return load_code
 
 def generate_save_code(table, session_name="spark"):

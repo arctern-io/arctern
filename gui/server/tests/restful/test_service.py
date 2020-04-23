@@ -15,12 +15,13 @@ limitations under the License.
 """
 
 # pylint: disable=redefined-outer-name
+# pylint: disable=unused-argument
 
+import json
 import pytest
 import requests
 
-@pytest.fixture(scope='function')
-def dbid(host, port, headers):
+def _db_id(host, port, headers):
     url = 'http://' + host + ':' + port + '/dbs'
     response = requests.get(
          url=url,
@@ -28,8 +29,58 @@ def dbid(host, port, headers):
     )
     return response.json()['data'][0]['id']
 
+@pytest.fixture(scope="module")
+def load(host, port, db_config, headers):
+    print("setup")
+    url = 'http://' + host + ':' + port + '/load'
+    with open(db_config, 'r') as f:
+        content = json.load(f)
+    response = requests.post(
+        url=url,
+        headers=headers,
+        json=content
+    )
+    assert response.status_code == 200
+    assert response.json()['message'] == 'load data succeed!'
+    yield
+    print("teardown")
+    db_id = _db_id(host, port, headers)
+    url = "http://" + host + ":" + port + "/db/query"
+    payload = {
+        "id": db_id,
+        "query": {
+            "type": "sql",
+            "sql": "drop table if exists nyc_taxi",
+            "collect_result": "0"
+        }
+    }
+    response = requests.post(
+        url=url,
+        headers=headers,
+        json=payload,
+    )
+    assert response.status_code == 200
+    payload = {
+        "id": db_id,
+        "query": {
+            "type": "sql",
+            "sql": "drop table if exists old_nyc_taxi",
+            "collect_result": "0"
+        }
+    }
+    response = requests.post(
+        url=url,
+        headers=headers,
+        json=payload,
+    )
+    assert response.status_code == 200
+
 @pytest.fixture(scope='function')
-def table_name(host, port, headers, dbid):
+def dbid(load, host, port, headers):
+    return _db_id(host, port, headers)
+
+@pytest.fixture(scope='function')
+def table_name(load, host, port, headers, dbid):
     url = 'http://' + host + ':' + port + '/db/tables'
     response = requests.post(
         url=url,
@@ -38,7 +89,7 @@ def table_name(host, port, headers, dbid):
     )
     return response.json()['data'][0]
 
-def test_dbs(host, port, headers):
+def test_dbs(load, host, port, headers):
     url = 'http://' + host + ':' + port + '/dbs'
     response = requests.get(
          url=url,
@@ -46,7 +97,7 @@ def test_dbs(host, port, headers):
     )
     assert response.status_code == 200
 
-def test_tables(host, port, headers, dbid):
+def test_tables(load, host, port, headers, dbid):
     url = 'http://' + host + ':' + port + '/db/tables'
     # case 1: no id keyword in request.json
     response = requests.post(
@@ -77,7 +128,7 @@ def test_tables(host, port, headers, dbid):
 
     # TODO: check nonexistent id
 
-def test_table_info(host, port, headers, dbid, table_name):
+def test_table_info(load, host, port, headers, dbid, table_name):
     url = 'http://' + host + ':' + port + '/db/table/info'
     # case 1: no id and table keyword in request.json
     response = requests.post(
@@ -96,7 +147,7 @@ def test_table_info(host, port, headers, dbid, table_name):
     )
     assert response.status_code == 200
 
-def test_query(host, port, headers, dbid, table_name):
+def test_query(load, host, port, headers, dbid, table_name):
     url = 'http://' + host + ':' + port + '/db/query'
     # case 1: pointmap
     pointmap_request_dict = {
