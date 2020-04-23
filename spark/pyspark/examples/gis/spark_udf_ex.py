@@ -495,4 +495,6 @@ if __name__ == "__main__":
     run_st_astext(spark_session)
     run_st_asgeojson(spark_session)
 
+    print("\033[1;32;40mAll tests of arctern have passed!\033[0m")
+
     spark_session.stop()
