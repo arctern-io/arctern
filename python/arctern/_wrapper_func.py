@@ -1132,6 +1132,7 @@ def point_map(vega, points, transform=True):
     rs = arctern_core_.point_map(vega_string, geos)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
+# pylint: disable=too-many-branches
 def weighted_point_map(vega, points, transform=True, **kwargs):
     import pyarrow as pa
     color_weights = kwargs.get('color_weights', None)
