@@ -6,6 +6,7 @@ dir ("ci/scripts") {
     } else {
         sh "/bin/bash --login -c './cpp_build.sh -t ${params.BUILD_TYPE} -e \"arctern\" -l -u --coverage'"
     }
+    sh "/bin/bash --login -c './run_pylint.sh -e \"arctern\"'"
     sh "/bin/bash --login -c './python_build.sh -e \"arctern\"'"
 
     withCredentials([usernamePassword(credentialsId: "${params.JFROG_CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
