@@ -293,10 +293,10 @@ def ST_Point(x, y):
     """
     Construct point according to the coordinates.
 
-    :type x: double
+    :type x: float
     :param x: Abscissa of the point.
 
-    :type y: double
+    :type y: float
     :param y: Ordinate of the point.
 
     :rtype: WKB
@@ -710,7 +710,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :type geos: WKB
     :param geos: Geometry
 
-    :type distance_tolerance: double
+    :type distance_tolerance: float
     :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
 
     :rtype: WKB
@@ -746,16 +746,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     Construct a polygon(rectangle) geometry from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
-    :type min_x: double
+    :type min_x: float
     :param min_x: The minimum value of x coordinate of the rectangles.
 
-    :type min_y: double
+    :type min_y: float
     :param min_y: The minimum value of y coordinate of the rectangles.
 
-    :type max_x: double
+    :type max_x: float
     :param max_x: The maximum value of x coordinate of the rectangles.
 
-    :type max_y: double
+    :type max_y: float
     :param max_y: The maximum value of y coordinate of the rectangles.
 
     :rtype: WKB
@@ -897,7 +897,7 @@ def ST_Distance(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
@@ -932,7 +932,7 @@ def ST_DistanceSphere(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
@@ -963,7 +963,7 @@ def ST_Area(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the area of geometry.
 
     :example:
@@ -1025,7 +1025,7 @@ def ST_Length(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the length of geometry.
 
     :example:
@@ -1060,7 +1060,7 @@ def ST_HausdorffDistance(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the hausdorff distance between geo1 and geo2.
 
     :example:
@@ -1198,7 +1198,7 @@ def ST_Buffer(geos, distance):
     :type geos: WKB
     :param geos: Geometry
 
-    :type distance: double
+    :type distance: float
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: WKB

@@ -531,7 +531,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB from.
 
-    :type distance_tolerance: double
+    :type distance_tolerance: float
     :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
 
     :rtype: Series(dtype: object)
@@ -971,7 +971,7 @@ def ST_Buffer(geos, distance):
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
 
-    :type distance: double
+    :type distance: float
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: Series(dtype: object)
