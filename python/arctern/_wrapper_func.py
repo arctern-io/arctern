@@ -257,6 +257,7 @@ def ST_AsGeoJSON(text):
     geo = pa.array(text, type='binary')
     return arctern_caller(arctern_core_.ST_AsGeoJSON, geo)
 
+@arctern_udf('binary', 'binary')
 def ST_Intersection(geo1, geo2):
     """
     Calculate the point set intersection of two geometry objects.
@@ -339,6 +340,7 @@ def ST_PrecisionReduce(geos, precision):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_PrecisionReduce, arr_geos, precision)
 
+@arctern_udf('binary', 'binary')
 def ST_Equals(geo1, geo2):
     """
     Check whether geometries are "spatially equal". "Spatially equal" here means two geometries represent
@@ -369,6 +371,7 @@ def ST_Equals(geo1, geo2):
     arr_geo2 = pa.array(geo2, type='binary')
     return arctern_caller(arctern_core_.ST_Equals, arr_geo1, arr_geo2)
 
+@arctern_udf('binary', 'binary')
 def ST_Touches(geo1, geo2):
     """
     Check whether geometries "touch". "Touch" here means two geometries have common points, and the
@@ -399,6 +402,7 @@ def ST_Touches(geo1, geo2):
     arr_geo2 = pa.array(geo2, type='binary')
     return arctern_caller(arctern_core_.ST_Touches, arr_geo1, arr_geo2)
 
+@arctern_udf('binary', 'binary')
 def ST_Overlaps(geo1, geo2):
     """
     Check whether geometries "spatially overlap". "Spatially overlap" here means two geometries
@@ -429,6 +433,7 @@ def ST_Overlaps(geo1, geo2):
     arr_geo2 = pa.array(geo2, type='binary')
     return arctern_caller(arctern_core_.ST_Overlaps, arr_geo1, arr_geo2)
 
+@arctern_udf('binary', 'binary')
 def ST_Crosses(geo1, geo2):
     """
     Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
@@ -1020,7 +1025,10 @@ def ST_Union_Aggr(geos):
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    return arctern_caller(arctern_core_.ST_Union_Aggr, arr_geos)
+    result = arctern_caller(arctern_core_.ST_Union_Aggr, arr_geos)
+    if len(result) > 1:
+        return arctern_caller(arctern_core_.ST_Union_Aggr, result)
+    return result
 
 @arctern_udf('binary')
 def ST_Envelope_Aggr(geos):
@@ -1046,7 +1054,10 @@ def ST_Envelope_Aggr(geos):
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    return arctern_caller(arctern_core_.ST_Envelope_Aggr, arr_geos)
+    result = arctern_caller(arctern_core_.ST_Envelope_Aggr, arr_geos)
+    if len(result) > 1:
+        return arctern_caller(arctern_core_.ST_Envelope_Aggr, result)
+    return result
 
 @arctern_udf('binary')
 def ST_Transform(geos, from_srid, to_srid):
