@@ -112,16 +112,17 @@ def arctern_caller(func, *func_args):
     if num_chunks <= 1:
         result = func(*func_args)
         return result.to_pandas()
+
+    result_total = None
     for chunk_idx in range(num_chunks):
         args = []
-        result_total = None
         for arg in func_args:
             # pylint: disable=c-extension-no-member
             if isinstance(arg, pyarrow.lib.ChunkedArray):
-                args.append(arg[chunk_idx])
+                args.append(arg.chunks[chunk_idx])
             else:
                 args.append(arg)
-        result = func(*func_args)
+        result = func(*args)
         if result_total is None:
             result_total = result.to_pandas()
         else:
