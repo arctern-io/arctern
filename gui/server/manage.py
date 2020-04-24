@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=logging-format-interpolation
 
 import logging
 import getopt
@@ -55,6 +56,31 @@ def usage():
     print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
+# pylint: disable=too-many-branches
+# pylint: disable=redefined-outer-name
+def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, JSON_CONFIG=None, LOG_FILE="/tmp/arctern_server_log.txt", LOG_LEVEL=logging.INFO):
+    log.set_file(LOG_FILE, LOG_LEVEL)
+
+    if JSON_CONFIG:
+        json_file = Path(JSON_CONFIG)
+        if not json_file.is_file():
+            print("error: config %s doesn't exist!" % (JSON_CONFIG))
+            sys.exit(0)
+        else:
+            with open(JSON_CONFIG, 'r') as f:
+                content = json.load(f)
+                _, code, message = app_service.load_data(content)
+                print(message)
+                if code != 200:
+                    sys.exit(0)
+
+    if not IS_DEBUG:
+        from waitress import serve
+        serve(APP, host=IP, port=PORT)
+    else:
+        APP.debug = True
+        APP.run(host=IP, port=PORT)
+
 if __name__ == '__main__':
     IS_DEBUG = True
     IP = "0.0.0.0"
@@ -95,24 +121,4 @@ if __name__ == '__main__':
         elif opt == '--loglevel':
             LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
 
-    log.set_file(LOG_FILE, LOG_LEVEL)
-
-    if JSON_CONFIG:
-        json_file = Path(JSON_CONFIG)
-        if not json_file.is_file():
-            print("error: config %s doesn't exist!" % (JSON_CONFIG))
-            sys.exit(0)
-        else:
-            with open(JSON_CONFIG, 'r') as f:
-                content = json.load(f)
-                status, code, message = app_service.load_data(content)
-                print(message)
-                if code != 200:
-                    sys.exit(0)
-
-    if not IS_DEBUG:
-        from waitress import serve
-        serve(APP, host=IP, port=PORT)
-    else:
-        APP.debug = True
-        APP.run(host=IP, port=PORT)
+    main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
