@@ -946,7 +946,7 @@ def ST_DistanceSphere(geo1, geo2):
       >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> distance_sphere_df.createOrReplaceTempView("distance_sphere")
       >>> spark_session.sql("select ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
-      +---------------------------------------------------------------+               
+      +---------------------------------------------------------------+
       |ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
       +---------------------------------------------------------------+
       |0.0                                                            |

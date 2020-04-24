@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import arctern
 import pandas
 from osgeo import ogr
-
+import arctern
 
 def test_ST_IsValid():
     data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
