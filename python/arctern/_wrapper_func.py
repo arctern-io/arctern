@@ -422,7 +422,7 @@ def ST_Overlaps(geo1, geo2):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+      >>> rst = arctern.ST_Overlaps(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    false
           1    false
@@ -436,7 +436,7 @@ def ST_Overlaps(geo1, geo2):
 @arctern_udf('binary', 'binary')
 def ST_Crosses(geo1, geo2):
     """
-    Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
+    Check whether geometries "spatially cross". "Spatially cross" here means two geometries have
     some, but not all interior points in common. The intersection of the interiors of the geometries
     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
     input geometries.
@@ -455,7 +455,7 @@ def ST_Crosses(geo1, geo2):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+      >>> rst = arctern.ST_Crosses(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
       >>> print(rst)
           0    false
           1    false
@@ -559,10 +559,11 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :example:
       >>> import pandas
       >>> import arctern
-      >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-      >>> rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(arctern.ST_GeomFromText(data), 10000))
+      >>> data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","CIRCULARSTRING (0 0,1 1,2 0)"])
+      >>> rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(arctern.ST_GeomFromText(data), 1))
       >>> print(rst)
           0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
+          1               LINESTRING (0 0,2 0)
           dtype: object
     """
     import pyarrow as pa
@@ -758,12 +759,12 @@ def ST_DistanceSphere(geo1, geo2):
       >>> p12 = "POINT(10 2)"
       >>> data1 = pandas.Series([p11, p12])
       >>> p21 = "POINT(10 2)"
-      >>> p22 = "POINT(10 2)"
+      >>> p22 = "POINT(10 3)"
       >>> data2 = pandas.Series([p21, p22])
       >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
-          0    1.0
-          1    2.0
+          0         1.0
+          1    111226.3
           dtype: float64
     """
     import pyarrow as pa
