@@ -100,6 +100,34 @@ def arctern_udf(*arg_types):
         return wrapper
     return decorate
 
+def arctern_caller(func, *func_args):
+    import pyarrow
+    num_chunks = 1
+    for arg in func_args:
+        # pylint: disable=c-extension-no-member
+        if isinstance(arg, pyarrow.lib.ChunkedArray):
+            num_chunks = len(arg.chunks)
+            break
+
+    if num_chunks <= 1:
+        result = func(*func_args)
+        return result.to_pandas()
+    for chunk_idx in range(num_chunks):
+        args = []
+        result_total = None
+        for arg in func_args:
+            # pylint: disable=c-extension-no-member
+            if isinstance(arg, pyarrow.lib.ChunkedArray):
+                args.append(arg[chunk_idx])
+            else:
+                args.append(arg)
+        result = func(*func_args)
+        if result_total is None:
+            result_total = result.to_pandas()
+        else:
+            result_total = result_total.append(result.to_pandas(), ignore_index=True)
+    return result_total
+
 @arctern_udf('double', 'double')
 def ST_Point(x, y):
     """
@@ -128,8 +156,7 @@ def ST_Point(x, y):
     import pyarrow as pa
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
-    rs = arctern_core_.ST_Point(arr_x, arr_y)
-    return rs.to_pandas()
+    return arctern_caller(arctern_core_.ST_Point, arr_x, arr_y)
 
 
 @arctern_udf('string')
@@ -180,8 +207,7 @@ def ST_GeomFromText(text):
     """
     import pyarrow as pa
     geo = pa.array(text, type='string')
-    rs = arctern_core_.ST_GeomFromText(geo)
-    return rs.to_pandas()
+    return arctern_caller(arctern_core_.ST_GeomFromText, geo)
 
 @arctern_udf('binary')
 def ST_AsText(text):
