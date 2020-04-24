@@ -48,11 +48,11 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "point_map",
-    "weighted_point_map",
-    "heat_map",
-    "choropleth_map",
-    "icon_viz",
+    "point_map_layer",
+    "weighted_point_map_layer",
+    "heat_map_layer",
+    "choropleth_map_layer",
+    "icon_viz_layer",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -1108,7 +1108,7 @@ def ST_CurveToLine(geos):
     rs = arctern_core_.ST_CurveToLine(arr_geos)
     return rs.to_pandas()
 
-def point_map(vega, points, transform=True):
+def point_map_layer(vega, points, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1133,7 +1133,7 @@ def point_map(vega, points, transform=True):
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 # pylint: disable=too-many-branches
-def weighted_point_map(vega, points, transform=True, **kwargs):
+def weighted_point_map_layer(vega, points, transform=True, **kwargs):
     import pyarrow as pa
     color_weights = kwargs.get('color_weights', None)
     size_weights = kwargs.get('size_weights', None)
@@ -1185,7 +1185,7 @@ def weighted_point_map(vega, points, transform=True, **kwargs):
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def heat_map(vega, points, weights, transform=True):
+def heat_map_layer(vega, points, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1215,7 +1215,7 @@ def heat_map(vega, points, weights, transform=True):
     rs = arctern_core_.heat_map(vega_string, geos, arr_c)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def choropleth_map(vega, region_boundaries, weights, transform=True):
+def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(region_boundaries, type='binary')
 
@@ -1244,7 +1244,7 @@ def choropleth_map(vega, region_boundaries, weights, transform=True):
     rs = arctern_core_.choropleth_map(vega_string, geos, arr_c)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def icon_viz(vega, points, transform=True):
+def icon_viz_layer(vega, points, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
