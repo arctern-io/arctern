@@ -1026,8 +1026,8 @@ def ST_Union_Aggr(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     result = arctern_caller(arctern_core_.ST_Union_Aggr, arr_geos)
-    if len(result) > 1:
-        return arctern_caller(arctern_core_.ST_Union_Aggr, result)
+    while len(result) > 1:
+        result = arctern_caller(arctern_core_.ST_Union_Aggr, result)
     return result
 
 @arctern_udf('binary')
@@ -1055,8 +1055,8 @@ def ST_Envelope_Aggr(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     result = arctern_caller(arctern_core_.ST_Envelope_Aggr, arr_geos)
-    if len(result) > 1:
-        return arctern_caller(arctern_core_.ST_Envelope_Aggr, result)
+    while len(result) > 1:
+        result = arctern_caller(arctern_core_.ST_Envelope_Aggr, result)
     return result
 
 @arctern_udf('binary')
