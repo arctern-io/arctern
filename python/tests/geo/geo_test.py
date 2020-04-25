@@ -29,31 +29,93 @@ def test_ST_PrecisionReduce():
     assert rst[1] == "POINT (2.66 4.45)"
 
 def test_ST_Intersection():
-    data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+    data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","POINT (0 1)"])
+    data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))","POINT (0 1)"])
     rst = arctern.ST_AsText(arctern.ST_Intersection(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
+    assert len(rst) == 2
     assert rst[0] == "LINESTRING (2 2,2 1)"
+    assert rst[1] == "POINT (0 1)"
+
+    rst = arctern.ST_AsText(arctern.ST_Intersection(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POINT (0 1)")[0]))
+    assert len(rst) == 2
+    assert rst[0] == "GEOMETRYCOLLECTION EMPTY"
+    assert rst[1] == "POINT (0 1)"
+
+    rst = arctern.ST_AsText(arctern.ST_Intersection(arctern.ST_GeomFromText("POINT (0 1)")[0],arctern.ST_GeomFromText(data1)))
+    assert len(rst) == 2
+    assert rst[0] == "GEOMETRYCOLLECTION EMPTY"
+    assert rst[1] == "POINT (0 1)"
+    
+    rst = arctern.ST_AsText(arctern.ST_Intersection(arctern.ST_GeomFromText("POINT (0 1)")[0],arctern.ST_GeomFromText("POINT (0 1)")[0]))
+    assert len(rst) == 1
+    assert rst[0] == "POINT (0 1)"
+
 
 def test_ST_Equals():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = arctern.ST_Equals(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
     assert rst[0] == 1
     assert rst[1] == 0
+
+    rst = arctern.ST_Equals(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 2
+    assert rst[0] == 1
+    assert rst[1] == 0
+    
+    rst = arctern.ST_Equals(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
+    assert rst[0] == 1
+    assert rst[1] == 0
+    
+    rst = arctern.ST_Equals(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 1
 
 def test_ST_Touches():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = arctern.ST_Touches(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
     assert rst[0] == 0
     assert rst[1] == 1
+    
+    rst = arctern.ST_Touches(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 1
+
+    rst = arctern.ST_Touches(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 1
+
+    rst = arctern.ST_Touches(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 0 
 
 def test_ST_Overlaps():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = arctern.ST_Overlaps(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
     assert rst[0] == 0
     assert rst[1] == 0
+
+    rst = arctern.ST_Overlaps(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 0
+
+    rst = arctern.ST_Overlaps(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 0
+
+    rst = arctern.ST_Overlaps(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 0
 
 def test_ST_Crosses():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
@@ -154,10 +216,29 @@ def test_ST_Contains():
     p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
     data2 = pandas.Series([p21, p22, p23, p24])
     rst = arctern.ST_Contains(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+    assert len(rst) == 4
     assert rst[0] == 1
     assert rst[1] == 0
     assert rst[2] == 1
     assert rst[3] == 0
+
+    rst = arctern.ST_Contains(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 1
+    assert rst[2] == 1
+    assert rst[3] == 1
+
+    rst = arctern.ST_Contains(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText(data1))
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 0
+    assert rst[2] == 1
+    assert rst[3] == 0
+
+    rst = arctern.ST_Contains(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 1
 
 def test_ST_Intersects():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
@@ -178,6 +259,24 @@ def test_ST_Intersects():
     assert rst[2] == 1
     assert rst[3] == 0
 
+    rst = arctern.ST_Intersects(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 1
+    assert rst[2] == 1
+    assert rst[3] == 0
+
+    rst = arctern.ST_Intersects(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText(data1))
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 1
+    assert rst[2] == 1
+    assert rst[3] == 0
+
+    rst = arctern.ST_Contains(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 1
+
 def test_ST_Within():
     p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
     p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
@@ -192,10 +291,29 @@ def test_ST_Within():
     data2 = pandas.Series([p21, p22, p23, p24])
 
     rst = arctern.ST_Within(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
+    assert len(rst) == 4
     assert rst[0] == 0
     assert rst[1] == 0
     assert rst[2] == 0
     assert rst[3] == 0
+
+    rst = arctern.ST_Within(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 0
+    assert rst[2] == 1
+    assert rst[3] == 0
+
+    rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText(data1))
+    assert len(rst) == 4
+    assert rst[0] == 0
+    assert rst[1] == 0
+    assert rst[2] == 0
+    assert rst[3] == 0
+
+    rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 1
 
 def test_ST_Distance():
     p11 = "LINESTRING(9 0,9 2)"
@@ -207,9 +325,23 @@ def test_ST_Distance():
     data2 = pandas.Series([p21, p22])
 
     rst = arctern.ST_Distance(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
-
+    assert len(rst) == 2
     assert rst[0] == 1.0
     assert rst[1] == 2.0
+
+    rst = arctern.ST_Distance(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText(data1))
+    assert len(rst) == 2
+    assert rst[0] == 1.0
+    assert rst[1] == 2.0
+
+    rst = arctern.ST_Distance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 2
+    assert rst[0] == 1.0
+    assert rst[1] == 2.0
+
+    rst = arctern.ST_Distance(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0], arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 0.0
 
 def test_ST_DistanceSphere():
     import math
@@ -251,14 +383,29 @@ def test_ST_Length():
     assert rst[1] == 3.0
 
 def test_ST_HausdorffDistance():
+    import math
     data1 = ["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"]
     data2 = ["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"]
     data1 = pandas.Series(data1)
     data2 = pandas.Series(data2)
     rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
-
+    assert len(rst) == 2
     assert rst[0] == 1
     assert rst[1] == 1
+
+    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POINT(0 0)")[0])
+    assert len(rst) == 2
+    assert math.isclose(rst[0],math.sqrt(2),rel_tol=1e-5)
+    assert rst[1] == 0
+
+    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
+    assert math.isclose(rst[0],2,rel_tol=1e-5)
+    assert rst[1] == 1.0
+
+    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText("POINT(0 0)")[0])
+    assert len(rst) == 1
+    assert rst[0] == 0
 
 def test_ST_ConvexHull():
     data = ["POINT (1.1 101.1)"]
