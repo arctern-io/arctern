@@ -8,6 +8,7 @@ cpp/build/*
 cpp/src/common/version.h
 *.so
 *.swp
+*.swo
 .vscode/
 cpp/cmake-build-debug/
 cpp/cmake-build-debug/*
