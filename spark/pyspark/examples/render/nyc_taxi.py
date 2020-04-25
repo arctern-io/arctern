@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import time
+from pyspark.sql import SparkSession
 
 from arctern.util import save_png
 from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
 
-from pyspark.sql import SparkSession
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import heatmap

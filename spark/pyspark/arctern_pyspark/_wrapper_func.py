@@ -568,7 +568,7 @@ def ST_Overlaps(geo1, geo2):
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Crosses(geo1, geo2):
     """
-    Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
+    Check whether geometries "spatially cross". "Spatially cross" here means two geometries have
     some, but not all interior points in common. The intersection of the interiors of the geometries
     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
     input geometries.
@@ -723,18 +723,18 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([(
-          'POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25))',
+          'CIRCULARSTRING (0 0,1 1,2 0)',
           )])
       >>> test_data.extend([(
           'LINESTRING(250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)',
           )])
       >>> simplify_preserve_topology_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 1)) from simplify_preserve_topology").show(100,0)
       +----------------------------------------------------------------------------+
       |ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10))           |
       +----------------------------------------------------------------------------+
-      |POLYGON ((8 25,28 22,15 11,33 3,56 30,47 44,35 36,43 19,24 39,8 25))        |
+      |LINESTRING (0 0,2 0)                                                        |
       |LINESTRING (250 250,280 290,300 230,340 300,360 260,440 310,470 360,604 286)|
       +----------------------------------------------------------------------------+
     """
@@ -942,16 +942,16 @@ def ST_DistanceSphere(geo1, geo2):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
-      >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
+      >>> test_data.extend([('POINT(31.75 31.25)','POINT(32.75 31.25)')])
       >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> distance_sphere_df.createOrReplaceTempView("distance_sphere")
-      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
-      +----------------------------------------------------------+
-      |ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
-      +----------------------------------------------------------+
-      |3                                                         |
-      |0.7905694150420949                                        |
-      +----------------------------------------------------------+
+      >>> spark_session.sql("select ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
+      +---------------------------------------------------------------+
+      |ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
+      +---------------------------------------------------------------+
+      |0.0                                                            |
+      |95088.35938555223                                              |
+      +---------------------------------------------------------------+
     """
     return arctern.ST_DistanceSphere(geo1, geo2)
 
