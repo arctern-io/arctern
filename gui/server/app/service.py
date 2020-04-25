@@ -14,18 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=logging-format-interpolation
+
 import json
 from flask import Blueprint, jsonify, request
 
-from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap
-from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap
+from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon
+from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz
 
 from app import account
-from app.common import spark, token, utils
+from app.common import spark, token, utils, db, log
 
 API = Blueprint('app_api', __name__)
-
-DB_MAP = {}
 
 def load_data(content):
     if not utils.check_json(content, 'db_name') \
@@ -36,7 +36,7 @@ def load_data(content):
     db_type = content['type']
     table_meta = content['tables']
 
-    for _, db_instance in DB_MAP.items():
+    for _, db_instance in db.CENTER.items():
         if db_name == db_instance.name():
             db_instance.load(table_meta)
             return ('success', 200, 'load data succeed!')
@@ -44,7 +44,7 @@ def load_data(content):
     if db_type == 'spark':
         db_instance = spark.Spark(content)
         db_instance.load(table_meta)
-        DB_MAP[str(db_instance.id())] = db_instance
+        db.CENTER[db_instance.id()] = db_instance
         return ('success', 200, 'load data succeed!')
 
     return ('error', -1, 'sorry, but unsupported db type!')
@@ -55,6 +55,7 @@ def load():
     """
     use this function to load data
     """
+    log.INSTANCE.info('POST /load: {}'.format(request.json))
     status, code, message = load_data(request.json)
     return jsonify(status=status, code=code, message=message)
 
@@ -63,6 +64,8 @@ def login():
     """
     login handler
     """
+    log.INSTANCE.info('POST /login: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'username') \
             or \
             not utils.check_json(request.json, 'password'):
@@ -83,6 +86,8 @@ def login():
     content['token'] = token.create(request.json['username'], expired)
     content['expired'] = expired
 
+    log.INSTANCE.info('/login: user: {}, toke: {}'.format(username, content['token']))
+
     return jsonify(status='success', code=200, data=content)
 
 
@@ -92,9 +97,11 @@ def dbs():
     """
     /dbs handler
     """
+    log.INSTANCE.info('GET /dbs:')
+
     content = []
 
-    for _, db_instance in DB_MAP.items():
+    for _, db_instance in db.CENTER.items():
         info = {}
         info['id'] = db_instance.id()
         info['name'] = db_instance.name()
@@ -110,10 +117,12 @@ def db_tables():
     """
     /db/tables handler
     """
+    log.INSTANCE.info('POST /db/tables: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id'):
         return jsonify(status='error', code=-1, message='json error: id is not exist')
 
-    db_instance = DB_MAP.get(str(request.json['id']), None)
+    db_instance = db.CENTER.get(str(request.json['id']), None)
     if db_instance:
         content = db_instance.table_list()
         return jsonify(status="success", code=200, data=content)
@@ -127,13 +136,15 @@ def db_table_info():
     """
     /db/table/info handler
     """
+    log.INSTANCE.info('POST /db/table/info: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'table'):
         return jsonify(status='error', code=-1, message='query format error')
 
     content = []
 
-    db_instance = DB_MAP.get(str(request.json['id']), None)
+    db_instance = db.CENTER.get(str(request.json['id']), None)
     if db_instance:
         if request.json['table'] not in db_instance.table_list():
             return jsonify(status="error", code=-1, message='the table {} is not in this db!'.format(request.json['table']))
@@ -153,6 +164,8 @@ def db_query():
     """
     /db/query handler
     """
+    log.INSTANCE.info('POST /db/query: {}'.format(request.json))
+
     if not utils.check_json(request.json, 'id') \
             or not utils.check_json(request.json, 'query') \
             or not utils.check_json(request.json['query'], 'type') \
@@ -166,7 +179,7 @@ def db_query():
     content['sql'] = query_sql
     content['err'] = False
 
-    db_instance = DB_MAP.get(str(request.json['id']), None)
+    db_instance = db.CENTER.get(str(request.json['id']), None)
     if db_instance is None:
         return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
@@ -189,47 +202,60 @@ def db_query():
                 int(query_params['width']),
                 int(query_params['height']),
                 query_params['point']['bounding_box'],
-                int(query_params['point']['stroke_width']),
-                query_params['point']['stroke'],
+                int(query_params['point']['point_size']),
+                query_params['point']['point_color'],
                 float(query_params['point']['opacity']),
-                query_params['point']['coordinate'])
-            data = pointmap(res, vega)
+                query_params['point']['coordinate_system'])
+            data = pointmap(vega, res)
             content['result'] = data
         elif query_type == 'heat':
             vega = vega_heatmap(
                 int(query_params['width']),
                 int(query_params['height']),
-                float(query_params['heat']['map_scale']),
                 query_params['heat']['bounding_box'],
-                query_params['heat']['coordinate'])
-            data = heatmap(res, vega)
+                float(query_params['heat']['map_zoom_level']),
+                query_params['heat']['coordinate_system'],
+                query_params['heat']['aggregation_type'])
+            data = heatmap(vega, res)
             content['result'] = data
         elif query_type == 'choropleth':
             vega = vega_choroplethmap(
                 int(query_params['width']),
                 int(query_params['height']),
                 query_params['choropleth']['bounding_box'],
-                query_params['choropleth']['color_style'],
-                query_params['choropleth']['rule'],
+                query_params['choropleth']['color_gradient'],
+                query_params['choropleth']['color_bound'],
                 float(query_params['choropleth']['opacity']),
-                query_params['choropleth']['coordinate'])
-            data = choroplethmap(res, vega)
+                query_params['choropleth']['coordinate_system'],
+                query_params['choropleth']['aggregation_type'])
+            data = choroplethmap(vega, res)
             content['result'] = data
         elif query_type == 'weighted':
             vega = vega_weighted_pointmap(
                 int(query_params['width']),
                 int(query_params['height']),
                 query_params['weighted']['bounding_box'],
-                query_params['weighted']['color'],
-                query_params['weighted']['color_ruler'],
-                query_params['weighted']['stroke_ruler'],
+                query_params['weighted']['color_gradient'],
+                query_params['weighted']['color_bound'],
+                query_params['weighted']['size_bound'],
                 float(query_params['weighted']['opacity']),
-                query_params['weighted']['coordinate']
+                query_params['weighted']['coordinate_system']
             )
-            data = weighted_pointmap(res, vega)
+            data = weighted_pointmap(vega, res)
+            content['result'] = data
+        elif query_type == 'icon':
+            vega = vega_icon(
+                int(query_params['width']),
+                int(query_params['height']),
+                query_params['icon']['bounding_box'],
+                query_params['icon']['icon_path'],
+                query_params['icon']['coordinate_system']
+            )
+            data = icon_viz(vega, res)
             content['result'] = data
         else:
             return jsonify(status="error",
                            code=-1,
                            message='{} not support'.format(query_type))
+
     return jsonify(status="success", code=200, data=content)

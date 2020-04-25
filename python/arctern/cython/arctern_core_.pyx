@@ -18,50 +18,35 @@
 from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
 cimport arctern_core__ as arctern_core_pxd
 
-def projection(geos, bottom_right, top_left, int height, int width):
+def projection(geos, bottom_right, top_left, height, width):
     return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
 
-def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
+def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
 
-def point_map_wkb(points, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), conf))
+def point_map(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), vega))
 
-def weighted_point_map_wkb_0_0(points, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), conf))
+def weighted_point_map(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), vega))
 
-def weighted_point_map_wkb_1_0(points, conf, cs):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), conf))
+def weighted_color_point_map(vega, points, color_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), vega))
 
-def weighted_point_map_wkb_0_1(points, conf, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(ss), conf))
+def weighted_size_point_map(vega, points, size_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(size_weights), vega))
 
-def weighted_point_map_wkb_1_1(points, conf, cs, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
+def weighted_color_size_point_map(vega, points, color_weights, size_weights):
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), pyarrow_unwrap_array(size_weights), vega))
 
-def weighted_point_map_0_0(arr_x, arr_y, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
+def heat_map(vega, points, weights):
+    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(weights), vega))
 
-def weighted_point_map_0_1(arr_x, arr_y, conf, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(ss), conf))
+def choropleth_map(vega,region_boundaries, weights):
+    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(region_boundaries), pyarrow_unwrap_array(weights), vega))
 
-def weighted_point_map_1_0(arr_x, arr_y, conf, cs):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), conf))
-
-def weighted_point_map_1_1(arr_x, arr_y, conf, cs, ss):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(cs), pyarrow_unwrap_array(ss), conf))
-
-def heat_map_wkb(points, arr_c, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(arr_c), conf))
-
-def point_map(arr_x, arr_y, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), conf))
-
-def heat_map(arr_x, arr_y, arr_c, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(arr_x), pyarrow_unwrap_array(arr_y), pyarrow_unwrap_array(arr_c), conf))
-
-def choropleth_map(arr_wkt, arr_count, conf):
-    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(arr_wkt), pyarrow_unwrap_array(arr_count), conf))
+def icon_viz(vega, points):
+    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(points), vega))
 
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
@@ -80,6 +65,9 @@ def ST_GeomFromText(object text):
 
 def ST_AsText(object text):
     return pyarrow_wrap_array(arctern_core_pxd.ST_AsText(pyarrow_unwrap_array(text)))
+
+def ST_AsGeoJSON(object text):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_AsGeoJSON(pyarrow_unwrap_array(text)))
 
 def ST_Intersection(object left_geometries,object right_geometries):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Intersection(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
@@ -128,6 +116,9 @@ def ST_Within(object geo_arr1,object geo_arr2):
 
 def ST_Distance(object geo_arr1,object geo_arr2):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Distance(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+
+def ST_DistanceSphere(object geo_arr1,object geo_arr2):
+    return pyarrow_wrap_array(arctern_core_pxd.ST_DistanceSphere(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
 
 def ST_Area(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Area(pyarrow_unwrap_array(geo_arr)))

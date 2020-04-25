@@ -11,7 +11,7 @@ done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 LIBARCTERN_FILE=${LIBARCTERN_FILE:="libarctern"}
-PYARCTERN_FILE=${PYARCTERN_FILE:="pyarctern"}
+PYARCTERN_FILE=${PYARCTERN_FILE:="arctern"}
 ARCTERN_SPARK_FILE=${ARCTERN_SPARK_FILE:="arctern-spark"}
 ARCTERN_CHANNEL=${ARCTERN_CHANNEL:="arctern-dev"}
 
@@ -29,5 +29,5 @@ else
 conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${PYARCTERN_FILE} ${ARCTERN_SPARK_FILE}
 fi
 
-conda install -y -q -n arctern pyyaml
+conda install -y -q -n arctern -c conda-forge pyyaml shapely
 conda clean --all -y

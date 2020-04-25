@@ -1,0 +1,14 @@
+{
+    "scope": "scope1",
+    "tables": [
+        {
+            "sql": "select * from old_nyc_taxi",
+            "format": "csv",
+            "path": "/tmp/aha.csv",
+            "options": {
+                "header": "True",
+                "delimiter": ","
+            }
+        }
+    ]
+}

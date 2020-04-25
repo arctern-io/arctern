@@ -73,7 +73,7 @@ if __name__== "__main__":
     res = heatmap(res, vega)
     save_png(res, '/tmp/heatmap.png')
 
-    spark.catalog.dropGlobalTempView("nyc_taxi")
+    spark.catalog.dropTempView("nyc_taxi")
 
     spark.stop()
 ```
@@ -139,7 +139,6 @@ support@zilliz.com
 ##### ZILLIZ官方公众号
 
 <img src="./doc/img/v0.1.0_intro/zilliz.png" width = "200" align=left>
-
 
 
 

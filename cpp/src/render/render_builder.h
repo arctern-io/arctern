@@ -20,12 +20,14 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "render/2d/choropleth_map/choropleth_map.h"
 #include "render/2d/heatmap/heatmap.h"
+#include "render/2d/icon/icon_viz.h"
 #include "render/2d/scatter_plot/pointmap.h"
 #include "render/2d/scatter_plot/weighted_pointmap.h"
 
@@ -41,26 +43,6 @@ enum AggType {
   AVG,
 };
 
-struct hash_func {
-  size_t operator()(OGRGeometry* geo) const {
-    auto type = wkbFlatten(geo->getGeometryType());
-    if (type == wkbPoint) {
-      return (std::hash<uint32_t>()(geo->toPoint()->getX()) ^
-              std::hash<uint32_t>()(geo->toPoint()->getY()));
-    } else if (type == wkbPolygon) {
-      auto ring = geo->toPolygon()->getExteriorRing();
-      auto ring_size = ring->getNumPoints();
-      size_t hash_value = 0;
-      for (int i = 0; i < ring_size; i++) {
-        hash_value +=
-            std::hash<uint32_t>()(ring->getX(i)) ^ std::hash<uint32_t>()(ring->getY(i));
-      }
-      return hash_value;
-    }
-    return 0;
-  }
-};
-
 std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
                                          const std::string& bottom_right,
                                          const std::string& top_left, const int& height,
@@ -72,12 +54,13 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
     const std::string& top_left, const int& height, const int& width);
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::vector<T>, hash_func> weight_agg(
+std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::shared_ptr<arrow::Array>& geos,
     const std::shared_ptr<arrow::Array>& arr_c);
 
 template <typename T>
-std::unordered_map<OGRGeometry*, std::pair<std::vector<T>, std::vector<T>>, hash_func>
+std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
+           std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
                            const std::shared_ptr<arrow::Array>& arr_c,
                            const std::shared_ptr<arrow::Array>& arr_s);
@@ -107,6 +90,9 @@ template <typename T>
 std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf);
+
+std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
+                                     int64_t num_vertices, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern

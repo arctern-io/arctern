@@ -63,10 +63,10 @@ TEST(CHOROPLETHMAP_TEST, BLUE_TO_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -123,10 +123,10 @@ TEST(CHOROPLETHMAP_TEST, SKYBLUE_TO_WHITE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"skyblue_to_white\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#B4E7F5\", \"#FFFFFF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -183,10 +183,10 @@ TEST(CHOROPLETHMAP_TEST, GREEN_YELLOW_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"green_yellow_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#4D904F\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -243,10 +243,10 @@ TEST(CHOROPLETHMAP_TEST, BLUE_WHITE_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_white_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#1984C5\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -303,10 +303,10 @@ TEST(CHOROPLETHMAP_TEST, WHITE_BLUE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"white_blue\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#E2E2E2\", \"#115F9A\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -363,10 +363,10 @@ TEST(CHOROPLETHMAP_TEST, BLUE_GREEN_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_green_yellow\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#115F9A\", \"#D0F401\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -423,10 +423,10 @@ TEST(CHOROPLETHMAP_TEST, BLUE_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_transparency\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#0000FF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -483,10 +483,10 @@ TEST(CHOROPLETHMAP_TEST, RED_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"red_transparency\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF0000\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -543,10 +543,10 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"purple_to_yellow\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF00FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -557,7 +557,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
   arctern::render::choropleth_map(wkb, color_array, vega);
 }
 
-// TEST(CHOROPLETHMAP_TEST, INVALID_COLOR_STYLE_TEST) {
+// TEST(CHOROPLETHMAP_TEST, INVALID_color_gradient_TEST) {
 //  // param1: wkt string
 //  std::string wkt_string1 =
 //      "POLYGON (("
@@ -603,8 +603,8 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
 //      "        \"enter\": {\n"
 //      "          \"bounding_box\": {\"value\": "
 //      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-//      "          \"color_style\": {\"value\": \"xxxxxx\"},\n"
-//      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+//      "          \"color_gradient\": {\"value\": \"xxxxxx\"},\n"
+//      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
 //      "          \"opacity\": {\"value\": 1.0}\n"
 //      "        }\n"
 //      "      }\n"
@@ -662,8 +662,8 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
 //      "        \"enter\": {\n"
 //      "          \"bounding_box\": {\"value\": "
 //      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-//      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-//      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+//      "          \"color_gradient\": {\"value\": \"blue_to_red\"},\n"
+//      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
 //      "          \"opacity\": {\"value\": \"INVALID_NUMBER\"}\n"
 //      "        }\n"
 //      "      }\n"
@@ -721,10 +721,10 @@ TEST(CHOROPLETHMAP_TEST, INT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -781,10 +781,10 @@ TEST(CHOROPLETHMAP_TEST, INT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -841,10 +841,10 @@ TEST(CHOROPLETHMAP_TEST, INT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -901,10 +901,10 @@ TEST(CHOROPLETHMAP_TEST, INT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -961,10 +961,10 @@ TEST(CHOROPLETHMAP_TEST, UINT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1021,10 +1021,10 @@ TEST(CHOROPLETHMAP_TEST, UINT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1081,10 +1081,10 @@ TEST(CHOROPLETHMAP_TEST, UINT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1141,10 +1141,10 @@ TEST(CHOROPLETHMAP_TEST, UINT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1201,10 +1201,10 @@ TEST(CHOROPLETHMAP_TEST, FLOAT) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1261,10 +1261,10 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": {\"value\": "
       "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -1321,8 +1321,8 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
 //      "        \"enter\": {\n"
 //      "          \"bounding_box\": {\"value\": "
 //      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
-//      "          \"color_style\": {\"value\": \"blue_to_red\"},\n"
-//      "          \"ruler\": {\"value\": [2.5, 5]},\n"
+//      "          \"color_gradient\": {\"value\": \"blue_to_red\"},\n"
+//      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
 //      "          \"opacity\": {\"value\": 1.0}\n"
 //      "        }\n"
 //      "      }\n"
@@ -1333,3 +1333,363 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
 //  auto wkb = arctern::render::WktToWkb(string_array);
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
+
+TEST(CHOROPLETHMAP_TEST, MEAN) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, SUM) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, MAX) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, MIN) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, COUNT) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}
+
+TEST(CHOROPLETHMAP_TEST, STD) {
+  // param1: wkt string
+  std::string wkt_string1 =
+      "POLYGON (("
+      "200 200, "
+      "200 300, "
+      "300 300, "
+      "300 200, "
+      "200 200))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::choropleth_map(wkb, color_array, vega);
+}

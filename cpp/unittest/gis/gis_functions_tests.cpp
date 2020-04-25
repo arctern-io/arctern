@@ -2259,6 +2259,38 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
+TEST(geometry_test, test_ST_Within2) {
+  auto circle = "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))";
+
+  arrow::StringBuilder str_builder;
+  str_builder.Append("point(1.414 0)");
+  str_builder.Append("point(1.5 0)");
+  str_builder.Append("point(0.5 0)");
+  str_builder.Append("point(2 3)");
+  str_builder.Append("point(0 0)");
+
+  std::shared_ptr<arrow::Array> pointer_array;
+  str_builder.Finish(&pointer_array);
+
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append(circle);
+  str_builder.Append("curvepolygon(circularstring(-1 -1, 1 1, 1.4141 0))");
+
+  std::shared_ptr<arrow::Array> circle_array;
+  str_builder.Finish(&circle_array);
+
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
+                                     arctern::gis::ST_GeomFromText(circle_array));
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), true);
+  ASSERT_EQ(res_bool->Value(1), false);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), false);
+}
+
 TEST(geometry_test, test_ST_Within) {
   auto l1 = "POINT (1 0)";
   auto l2 = "POINT (1 3)";
@@ -2389,6 +2421,52 @@ TEST(geometry_test, test_ST_Within) {
   ASSERT_EQ(res_bool->Value(20), true);
   ASSERT_EQ(res_bool->Value(21), false);
   ASSERT_EQ(res_bool->Value(22), false);
+}
+
+TEST(geometry_test, test_ST_DistanceSphere) {
+  auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
+    double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
+    double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(fromlat * 0.017453292519943295769236907684886) *
+                 cos(tolat * 0.017453292519943295769236907684886);
+    return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
+  };
+  arrow::DoubleBuilder lat_buider, lon_builder;
+  lat_buider.Append(-73.981153), lon_builder.Append(40.741841);
+  lat_buider.Append(10), lon_builder.Append(20);
+  lat_buider.Append(181), lon_builder.Append(20);
+  lat_buider.Append(-181), lon_builder.Append(20);
+  lat_buider.Append(10), lon_builder.Append(91);
+  lat_buider.Append(10), lon_builder.Append(-91);
+
+  std::shared_ptr<arrow::Array> from_lat, from_lon;
+  lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
+  auto from_point = arctern::gis::ST_Point(from_lat, from_lon);
+
+  lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(100), lon_builder.Append(70);
+
+  std::shared_ptr<arrow::Array> to_lat, to_lon;
+  lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
+  auto to_point = arctern::gis::ST_Point(to_lat, to_lon);
+
+  auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
+  auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
+
+  ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
+  EXPECT_DOUBLE_EQ(res_double->Value(1), distance(10, 20, 100, 70));
+  ASSERT_TRUE(res_double->IsNull(2));
+  ASSERT_TRUE(res_double->IsNull(3));
+  ASSERT_TRUE(res_double->IsNull(4));
+  ASSERT_TRUE(res_double->IsNull(5));
 }
 
 TEST(geometry_test, test_ST_Distance_Empty) {
@@ -3391,6 +3469,35 @@ TEST(geometry_test, test_ST_CurveToLine) {
   ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");
 }
 
+TEST(geometry_test, test_ST_AsGeoJSON) {
+  auto j0 = R"({"type":"Point","coordinates":[1,2]})";
+  auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
+  auto j2 = R"({"type":"Polygon","coordinates":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]})";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(j0));
+  builder.Append(std::string(j1));
+  builder.Append(std::string(j2));
+  builder.AppendNull();
+  builder.Append(std::string(""));
+  builder.Finish(&input);
+
+  auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input));
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0),
+            R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
+  ASSERT_EQ(
+      res_str->GetString(1),
+      R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");
+  ASSERT_EQ(
+      res_str->GetString(2),
+      R"({ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] })");
+  ASSERT_TRUE(res_str->IsNull(3));
+  ASSERT_TRUE(res_str->IsNull(4));
+}
+
 TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   auto j0 = R"({"type":"Point","coordinates":[1,2]})";
   auto j1 = R"({"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]})";
@@ -3410,6 +3517,38 @@ TEST(geometry_test, test_ST_GeomFromGeoJSON) {
   ASSERT_EQ(res_str->GetString(1), "LINESTRING (1 2,4 5,7 8)");
   ASSERT_EQ(res_str->GetString(2), "POLYGON ((0 0,0 1,1 1,1 0,0 0))");
   ASSERT_TRUE(res_str->IsNull(3));
+}
+
+TEST(geometry_test, test_ST_GeomFromText2) {
+  auto p0 = "LINESTRING(0 0,1.23e-11 1.45e-12)";
+  auto p1 = "LINESTRING(0 0,1.343e-12 1.78e-12)";
+  auto p2 = "LINESTRING(-1.12e-08 -9.2e-08,1.2134e-10 1.423e-10)";
+  auto p3 = "POINT(1.132321e-12 2.3123123e-12)";
+  auto p4 = "POINT(1.1e-11 1.567)";
+  auto p5 = "POLYGON((1e-11 1e-11,3.231 1.098,3.765 9.555,1 7,1e-11 1e-11))";
+
+  arrow::StringBuilder builder;
+  std::shared_ptr<arrow::Array> input;
+  builder.Append(std::string(p0));
+  builder.Append(std::string(p1));
+  builder.Append(std::string(p2));
+  builder.Append(std::string(p3));
+  builder.Append(std::string(p4));
+  builder.Append(std::string(p5));
+
+  builder.Finish(&input);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_GeomFromText(input));
+  auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
+
+  ASSERT_EQ(res_str->GetString(0), "LINESTRING (0 0,0.0000000000123 0.00000000000145)");
+  ASSERT_EQ(res_str->GetString(1), "LINESTRING (0 0,0.000000000001343 0.00000000000178)");
+  ASSERT_EQ(res_str->GetString(2),
+            "LINESTRING (-0.0000000112 -0.000000092,0.00000000012134 0.0000000001423)");
+  ASSERT_EQ(res_str->GetString(3), "POINT (0.000000000001132 0.000000000002312)");
+  ASSERT_EQ(res_str->GetString(4), "POINT (0.000000000011 1.567)");
+  ASSERT_EQ(res_str->GetString(5),
+            "POLYGON ((0.00000000001 0.00000000001,3.231 1.098,3.765 9.555,1 "
+            "7,0.00000000001 0.00000000001))");
 }
 
 TEST(geometry_test, test_ST_GeomFromText) {

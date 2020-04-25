@@ -1,10 +1,9 @@
-# import sys
 import os
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from osgeo.ogr import *
 from yaml import full_load
 from shapely import wkt
-# import geojson
-# from osgeo import ogr
-from osgeo.ogr import *
 
 
 EPOCH = 1e-6
@@ -63,6 +62,7 @@ def line_to_points(geom):
         arr = points.split(',')
         xs = ['POINT (%s)' % x.strip() for x in arr]
         return xs
+    return None
 
 
 def polygon_to_points(geom):
@@ -72,12 +72,14 @@ def polygon_to_points(geom):
         xs = ['POINT (%s)' % x.strip().replace(
             '(', '').replace(')', '') for x in arr]
         return xs
+    return None
 
 
 def geometrycollection_tolist(geom):
     if is_geometrycollection(geom):
         gc = wkt.loads(geom)
         return [x.to_wkt() for x in list(gc)]
+    return None
 
 
 def point_distance(geox, geoy):
@@ -85,6 +87,7 @@ def point_distance(geox, geoy):
         p = wkt.loads(geox)
         g = wkt.loads(geoy)
         return p.distance(g)
+    return None
 
 
 def linestring_distance(geox, geoy):
@@ -93,6 +96,7 @@ def linestring_distance(geox, geoy):
         distance_arr = [point_distance(x, geoy) for x in xs]
 
         return max(distance_arr)
+    return None
 
 
 def polygon_distance(geox, geoy):
@@ -101,6 +105,7 @@ def polygon_distance(geox, geoy):
         distance_arr = [point_distance(x, geoy) for x in xs]
 
         return max(distance_arr)
+    return None
 
 
 def geometry_distance(geox, geoy):
@@ -138,10 +143,12 @@ def arc_distance(geox, geoy):
         return max(distance_arr)
 
     if is_geometry(geoy) and is_geometrycollection(geox):
-        return arc_distance(geoy, geox)
+        return arc_distance(geoy, geox) # pylint: disable=arguments-out-of-order
 
     if is_geometry(geox) and is_geometry(geoy):
         return geometry_distance(geox, geoy)
+
+    return None
 
 
 # def to_geojson(wkt_str):

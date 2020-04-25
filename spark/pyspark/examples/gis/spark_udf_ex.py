@@ -64,6 +64,14 @@ def run_st_astext(spark):
     rs = spark.sql("select ST_AsText(ST_PolygonFromText(data)) from data").collect()
     assert rs[0][0] == 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
 
+def run_st_asgeojson(spark):
+    test_data = []
+    test_data.extend([('POLYGON ((0 0,0 1,1 1,1 0,0 0))',)])
+    data_df = spark.createDataFrame(data=test_data, schema=["data"]).cache()
+    data_df.createOrReplaceTempView("data")
+    rs = spark.sql("select ST_AsGeoJSON(ST_PolygonFromText(data)) from data").collect()
+    assert rs[0][0] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
+
 def run_st_precision_reduce(spark):
     test_data = []
     test_data.extend([('POINT (10.777 11.888)',)])
@@ -278,15 +286,27 @@ def run_st_distance(spark):
     assert rs[0][0] == 3
     assert rs[1][0] == 0.7905694150420949
 
+def run_st_distance_sphere(spark):
+    test_data = []
+    test_data.extend([(
+        'POINT(-73.981153 40.741841)',
+        'POINT(-73.99016751859183 40.729884354626904)'
+    )])
+    distance_sphere_df = spark.createDataFrame(data=test_data, schema=["left", "right"]).cache()
+    distance_sphere_df.createOrReplaceTempView("distance_sphere")
+    rs = spark.sql("select ST_DistanceSphere(ST_GeomFromText(left), ST_GeomFromText(right)) from distance_sphere").collect()
+
+    assert abs(rs[0][0]-1531) < 1
+
 def run_st_area(spark):
     test_data = []
-    test_data.extend([('POLYGON((10 20,10 30,20 30,30 10))',)])
-    test_data.extend([('POLYGON((10 20,10 40,30 40,40 10))',)])
+    test_data.extend([('MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))',)])
+    test_data.extend([('POLYGON((10 20,10 40,30 40,10 20))',)])
     area_df = spark.createDataFrame(data=test_data, schema=['geos']).cache()
     area_df.createOrReplaceTempView("area")
     rs = spark.sql("select ST_Area(ST_GeomFromText(geos)) from area").collect()
-    assert rs[0][0] == 200
-    assert rs[1][0] == 600
+    assert rs[0][0] == 4.5
+    assert rs[1][0] == 200
 
 def run_st_centroid(spark):
     test_data = []
@@ -453,6 +473,7 @@ if __name__ == "__main__":
     run_st_intersects(spark_session)
     run_st_within(spark_session)
     run_st_distance(spark_session)
+    run_st_distance_sphere(spark_session)
     run_st_area(spark_session)
     run_st_centroid(spark_session)
     run_st_length(spark_session)
@@ -472,5 +493,8 @@ if __name__ == "__main__":
     run_st_geomfromwkt(spark_session)
     run_st_geomfromtext(spark_session)
     run_st_astext(spark_session)
+    run_st_asgeojson(spark_session)
+
+    print("\033[1;32;40mAll tests of arctern have passed!\033[0m")
 
     spark_session.stop()

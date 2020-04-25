@@ -30,15 +30,15 @@ if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
     anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${LIBARCTERN_FILE}
 fi
 
-if [ "$UPLOAD_PYARCTERN" == "1" ]; then
-    export PYARCTERN_FILE=`conda build conda/recipes/pyarctern -c conda-forge -c defaults --output`
+if [ "$UPLOAD_ARCTERN" == "1" ]; then
+    export ARCTERN_FILE=`conda build conda/recipes/arctern -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
-    test -e ${PYARCTERN_FILE}
-    echo "Upload pyarctern..."
-    echo ${PYARCTERN_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${PYARCTERN_FILE}
+    test -e ${ARCTERN_FILE}
+    echo "Upload arctern..."
+    echo ${ARCTERN_FILE}
+    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
 fi
 
 if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then

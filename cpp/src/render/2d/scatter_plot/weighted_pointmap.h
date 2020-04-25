@@ -35,7 +35,7 @@ class WeightedPointMap : public General2D {
                    size_t num_vertices);
 
   WeightedPointMap(uint32_t* vertices_x, uint32_t* vertices_y, T* color_count,
-                   T* stroke_width, size_t num_vertices);
+                   T* size_count, size_t num_vertices);
 
   uint8_t* Render() final;
 
@@ -47,25 +47,25 @@ class WeightedPointMap : public General2D {
   VegaWeightedPointmap& mutable_weighted_point_vega() { return weighted_point_vega_; }
 
  private:
-  void ShaderSingleColorSingleStroke();
+  void ShaderSingleColorSingleSize();
 
-  void ShaderMultipleColorSingleStroke();
+  void ShaderMultipleColorSingleSize();
 
-  void ShaderSingleColorMultipleStroke();
+  void ShaderSingleColorMultipleSize();
 
-  void ShaderMultipleColorMultipleStroke();
+  void ShaderMultipleColorMultipleSize();
 
-  void DrawSingleColorSingleStroke();
+  void DrawSingleColorSingleSize();
 
-  void DrawMultipleColorSingleStroke();
+  void DrawMultipleColorSingleSize();
 
-  void DrawSingleColorMultipleStroke();
+  void DrawSingleColorMultipleSize();
 
-  void DrawMultipleColorMultipleStroke();
+  void DrawMultipleColorMultipleSize();
 
   void SetColor(T* ptr);
 
-  void SetStroke(T* ptr);
+  void SetPointSize(T* ptr);
 
  private:
 #ifdef USE_GPU
@@ -76,7 +76,7 @@ class WeightedPointMap : public General2D {
   uint32_t* vertices_y_;
   T* unknown_;
   T* color_count_;
-  T* stroke_count_;
+  T* size_count_;
   size_t num_vertices_;
   std::vector<float> colors_;
   VegaWeightedPointmap weighted_point_vega_;
