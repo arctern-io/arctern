@@ -17,9 +17,9 @@
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
 
+import json
 import shutil
 import os
-import json
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
