@@ -121,8 +121,23 @@ def test_ST_Crosses():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     data2 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = arctern.ST_Crosses(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
     assert rst[0] == 0
     assert rst[1] == 0
+
+    rst = arctern.ST_Crosses(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText(data2))
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 0
+
+    rst = arctern.ST_Crosses(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 2
+    assert rst[0] == 0
+    assert rst[1] == 0
+
+    rst = arctern.ST_Crosses(arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0], arctern.ST_GeomFromText("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    assert len(rst) == 1
+    assert rst[0] == 0 
 
 def test_ST_IsSimple():
     data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
@@ -354,9 +369,25 @@ def test_ST_DistanceSphere():
     data2 = pandas.Series([p21, p22])
 
     rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
-
+    assert len(rst) == 2
     assert abs(rst[0]-1531) < 1
     assert math.isnan(rst[1])
+
+    data = pandas.Series(["POINT(0 0)"])
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data), arctern.ST_GeomFromText("POINT(0 0)")[0])
+    assert len(rst) == 1
+    assert math.isclose(rst[0],0.0,rel_tol=1e-5)
+
+    data = pandas.Series(["POINT(0 0)"])
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText(data))
+    assert len(rst) == 1
+    assert math.isclose(rst[0],0.0,rel_tol=1e-5)
+
+    data = pandas.Series(["POINT(0 0)"])
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText("POINT(0 0)")[0])
+    assert len(rst) == 1
+    assert math.isclose(rst[0],0.0,rel_tol=1e-5)
+
 
 def test_ST_Area():
     data = ["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"]
