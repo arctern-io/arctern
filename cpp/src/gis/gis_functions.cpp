@@ -45,11 +45,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
-    const std::shared_ptr<arrow::Array>& min_x_values,
-    const std::shared_ptr<arrow::Array>& min_y_values,
-    const std::shared_ptr<arrow::Array>& max_x_values,
-    const std::shared_ptr<arrow::Array>& max_y_values) {
+std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
+    const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values) {
   return gdal::ST_PolygonFromEnvelope(min_x_values, min_y_values, max_x_values,
                                       max_y_values);
 }

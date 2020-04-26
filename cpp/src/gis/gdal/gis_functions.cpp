@@ -285,52 +285,48 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
   return result_array;
 }
 
-std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
-    const std::shared_ptr<arrow::Array>& min_x_values,
-    const std::shared_ptr<arrow::Array>& min_y_values,
-    const std::shared_ptr<arrow::Array>& max_x_values,
-    const std::shared_ptr<arrow::Array>& max_y_values) {
-  assert(min_x_values->length() == max_x_values->length());
-  assert(min_y_values->length() == max_y_values->length());
-  assert(min_x_values->length() == min_y_values->length());
-  auto len = min_x_values->length();
-
-  auto min_x_double_values =
-      std::static_pointer_cast<const arrow::DoubleArray>(min_x_values);
-  auto min_y_double_values =
-      std::static_pointer_cast<const arrow::DoubleArray>(min_y_values);
-  auto max_x_double_values =
-      std::static_pointer_cast<const arrow::DoubleArray>(max_x_values);
-  auto max_y_double_values =
-      std::static_pointer_cast<const arrow::DoubleArray>(max_y_values);
-
-  arrow::BinaryBuilder builder;
+std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
+    const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values){
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{min_x_values,
+                                                                     min_y_values,
+                                                                     max_x_values,
+                                                                     max_y_values};
+  std::vector<ChunkArrayIdx<double>> idx_list(4);
+  ChunkArrayBuilder<arrow::BinaryBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+  bool is_null;
   OGRPolygon empty;
-  auto empty_size = empty.WkbSize();
-  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
-  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
 
-  for (int32_t i = 0; i < len; i++) {
-    if ((min_x_double_values->Value(i) > max_x_double_values->Value(i)) ||
-        (min_y_double_values->Value(i) > max_y_double_values->Value(i))) {
-      builder.Append(empty_wkb, empty_size);
-    } else {
-      OGRLinearRing ring;
-      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-      ring.addPoint(min_x_double_values->Value(i), max_y_double_values->Value(i));
-      ring.addPoint(max_x_double_values->Value(i), max_y_double_values->Value(i));
-      ring.addPoint(max_x_double_values->Value(i), min_y_double_values->Value(i));
-      ring.addPoint(min_x_double_values->Value(i), min_y_double_values->Value(i));
-      ring.closeRings();
-      OGRPolygon polygon;
-      polygon.addRing(&ring);
-      AppendWkbNDR(builder, &polygon);
+  while(GetNextValue(array_list, idx_list, is_null)){
+    if(is_null){
+      builder.array_builder.AppendNull();
+    }else{
+      if((idx_list[0].item_value > idx_list[2].item_value) ||
+          (idx_list[1].item_value > idx_list[3].item_value)){
+        auto array_ptr = AppendWkb(builder, &empty);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
+      }
+      else{
+        OGRLinearRing ring;
+        ring.addPoint(idx_list[0].item_value, idx_list[1].item_value);
+        ring.addPoint(idx_list[0].item_value, idx_list[3].item_value);
+        ring.addPoint(idx_list[2].item_value, idx_list[3].item_value);
+        ring.addPoint(idx_list[2].item_value, idx_list[1].item_value);
+        ring.addPoint(idx_list[0].item_value, idx_list[1].item_value);
+        ring.closeRings();
+        OGRPolygon polygon;
+        polygon.addRing(&ring);
+        auto array_ptr = AppendWkb(builder, &polygon);
+      }
     }
   }
-  CPLFree(empty_wkb);
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(

@@ -119,6 +119,8 @@
   builder.Append(std::string(p33));    \
   builder.Finish(&input);
 
+using dbl_array_t = std::vector<std::shared_ptr<arrow::Array>>;
+
 TEST(geometry_test, make_point_from_double) {
   arrow::DoubleBuilder builder_x;
   arrow::DoubleBuilder builder_y;
@@ -133,8 +135,8 @@ TEST(geometry_test, make_point_from_double) {
   builder_x.Finish(&ptr_x);
   builder_y.Finish(&ptr_y);
 
-  std::vector<std::shared_ptr<arrow::Array>> array_x{ptr_x};
-  std::vector<std::shared_ptr<arrow::Array>> array_y{ptr_y};
+  dbl_array_t array_x{ptr_x};
+  dbl_array_t array_y{ptr_y};
 
   auto point_arr = arctern::gis::ST_AsText(arctern::gis::ST_Point(array_x, array_y)[0]);
   auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
@@ -240,7 +242,7 @@ TEST(geometry_test, test_ST_Point) {
   }
   std::shared_ptr<arrow::Array> x_array;
   CHECK_ARROW(x_builder.Finish(&x_array));
-  std::vector<std::shared_ptr<arrow::Array>> point_x;
+  dbl_array_t point_x;
   for (int i = 0; i < 600; ++i) point_x.push_back(x_array);
 
   arrow::DoubleBuilder y_builder;
@@ -249,7 +251,7 @@ TEST(geometry_test, test_ST_Point) {
   }
   std::shared_ptr<arrow::Array> y_array;
   CHECK_ARROW(y_builder.Finish(&y_array));
-  std::vector<std::shared_ptr<arrow::Array>> point_y;
+  dbl_array_t point_y;
   for (int i = 0; i < 6000; ++i) point_y.push_back(y_array);
 
   auto result = arctern::gis::ST_Point(point_x, point_y);
@@ -2477,8 +2479,8 @@ TEST(geometry_test, test_ST_DistanceSphere) {
 
   std::shared_ptr<arrow::Array> from_lat, from_lon;
   lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
-  std::vector<std::shared_ptr<arrow::Array>> from_lat_array{from_lat};
-  std::vector<std::shared_ptr<arrow::Array>> from_lon_array{from_lon};
+  dbl_array_t from_lat_array{from_lat};
+  dbl_array_t from_lon_array{from_lon};
   auto from_point = arctern::gis::ST_Point(from_lat_array, from_lon_array)[0];
 
   lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
@@ -2490,8 +2492,8 @@ TEST(geometry_test, test_ST_DistanceSphere) {
 
   std::shared_ptr<arrow::Array> to_lat, to_lon;
   lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
-  std::vector<std::shared_ptr<arrow::Array>> to_lat_array{to_lat};
-  std::vector<std::shared_ptr<arrow::Array>> to_lon_array{to_lon};
+  dbl_array_t to_lat_array{to_lat};
+  dbl_array_t to_lon_array{to_lon};
   auto to_point = arctern::gis::ST_Point(to_lat_array, to_lon_array)[0];
 
   auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
@@ -3458,7 +3460,7 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_max_builder.Finish(&y_max);
 
   auto res = arctern::gis::ST_AsText(
-      arctern::gis::ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max));
+      arctern::gis::ST_PolygonFromEnvelope(dbl_array_t{x_min}, dbl_array_t{y_min}, dbl_array_t{x_max}, dbl_array_t{y_max})[0]);
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
