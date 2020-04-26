@@ -238,6 +238,24 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
   return true;
 }
 
+template <typename T>
+bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>> &array_list,
+                  std::vector<ChunkArrayIdx<T>> &idx_list,
+                  bool &is_null){
+  is_null = false;
+  bool ret_val;
+  for(int i=0; i<array_list.size(); ++i){
+    auto cur_val = GetNextValue(array_list[i], idx_list[i]);
+    if(i == 0){
+      ret_val = cur_val;
+    }else if(cur_val != ret_val){
+        throw std::runtime_error("incorrect input data");
+    }
+    is_null |= idx_list[i].is_null;
+  }
+  return ret_val;
+}
+
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Point(
@@ -268,26 +286,6 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
   result_array.push_back(array_ptr);
   return result_array;
 }
-
-// std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-//                                        const std::shared_ptr<arrow::Array>& y_values) {
-//   assert(x_values->length() == y_values->length());
-//   auto len = x_values->length();
-//   auto x_double_values = std::static_pointer_cast<arrow::DoubleArray>(x_values);
-//   auto y_double_values = std::static_pointer_cast<arrow::DoubleArray>(y_values);
-//   OGRPoint point;
-//   char* wkt = nullptr;
-//   arrow::BinaryBuilder builder;
-
-//   for (int32_t i = 0; i < len; i++) {
-//     point.setX(x_double_values->Value(i));
-//     point.setY(y_double_values->Value(i));
-//     AppendWkbNDR(builder, &point);
-//   }
-//   std::shared_ptr<arrow::Array> results;
-//   CHECK_ARROW(builder.Finish(&results));
-//   return results;
-// }
 
 std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
     const std::shared_ptr<arrow::Array>& min_x_values,
