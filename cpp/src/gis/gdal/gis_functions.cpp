@@ -241,8 +241,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
   ChunkArrayIdx x_idx, y_idx;
   double x_val, y_val;
   OGRPoint point;
-  char* wkt = nullptr;
-  arrow::BinaryBuilder builder;
+  ChunkArrayBuilder<arrow::BinaryBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
 
   do{
     double x_ret = GetNextValue(x_values_raw, x_idx, x_val);
@@ -250,15 +250,17 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
     if(x_ret && y_ret){
       point.setX(x_val);
       point.setY(y_val);
-      AppendWkbNDR(builder, &point);
+      auto array_ptr = AppendWkb(builder, &point);
+      if(array_ptr!=nullptr) result_array.push_back(array_ptr);
     }else if(x_ret || y_ret){
       throw std::runtime_error("incorrect input data"); 
     }else break;
   }while(true);
 
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return std::vector<std::shared_ptr<arrow::Array>>{results};
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 // std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
