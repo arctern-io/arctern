@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
-from libcpp.string cimport (string)
+from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 
 cdef extern from "render.h" namespace "arctern::render":
@@ -30,7 +31,7 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 
 cdef extern from "gis.h" namespace "arctern::gis":
-    shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
+    vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x,const vector[shared_ptr[CArray]] &ptr_y) except +
     shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
     shared_ptr[CArray] ST_GeomFromText(const shared_ptr[CArray] &text) except +
     shared_ptr[CArray] ST_AsText(const shared_ptr[CArray] &text) except +

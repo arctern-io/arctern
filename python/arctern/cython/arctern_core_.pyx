@@ -15,7 +15,8 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from libcpp.vector cimport vector
 cimport arctern_core__ as arctern_core_pxd
 
 def projection(geos, bottom_right, top_left, height, width):
@@ -55,7 +56,16 @@ def wkb2wkt(arr_wkb):
     return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
 
 def ST_Point(object arr_x,object arr_y):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
+    cdef vector[shared_ptr[CArray]] points_x;
+    for arr in arr_x:
+        points_x.push_back(pyarrow_unwrap_array(arr))
+    
+    cdef vector[shared_ptr[CArray]] points_y;
+    for arr in arr_y:
+        points_y.push_back(pyarrow_unwrap_array(arr))
+
+    points = arctern_core_pxd.ST_Point(points_x, points_y)
+    return [pyarrow_wrap_array(ptr) for ptr in points]
 
 def ST_GeomFromGeoJSON(object json):
     return pyarrow_wrap_array(arctern_core_pxd.ST_GeomFromGeoJSON(pyarrow_unwrap_array(json)))

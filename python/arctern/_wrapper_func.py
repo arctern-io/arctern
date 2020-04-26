@@ -129,6 +129,20 @@ def arctern_caller(func, *func_args):
             result_total = result_total.append(result.to_pandas(), ignore_index=True)
     return result_total
 
+def _to_arrow_array_list(arrow_array):
+    if hasattr(arrow_array,'chunks'):
+        return [array for array in arrow_array.chunks]
+    return [arrow_array]
+
+def _to_pandas_series(array_list):
+    result = None
+    for array in array_list:
+        if result is None:
+            result = array.to_pandas()
+        else:
+            result = result.append(array.to_pandas(), ignore_index=True)
+    return result
+
 @arctern_udf('double', 'double')
 def ST_Point(x, y):
     """
@@ -157,8 +171,10 @@ def ST_Point(x, y):
     import pyarrow as pa
     arr_x = pa.array(x, type='double')
     arr_y = pa.array(y, type='double')
-    return arctern_caller(arctern_core_.ST_Point, arr_x, arr_y)
-
+    arr_x = _to_arrow_array_list(arr_x)
+    arr_y = _to_arrow_array_list(arr_y)
+    result = arctern_core_.ST_Point(arr_x, arr_y)
+    return _to_pandas_series(result)
 
 @arctern_udf('string')
 def ST_GeomFromGeoJSON(json):
