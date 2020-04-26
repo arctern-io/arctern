@@ -226,6 +226,8 @@ macro(build_stb)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${STB_TAR_NAME} WORKING_DIRECTORY ${STB_PREFIX})
 	file(COPY ${STB_PREFIX}/stb-${STB_VERSION}/stb_image_write.h
 	    DESTINATION ${STB_INCLUDE_DIR})
+    file(COPY ${STB_PREFIX}/stb-${STB_VERSION}/stb_image.h
+            DESTINATION ${STB_INCLUDE_DIR})
     endif ()
 endmacro()
 

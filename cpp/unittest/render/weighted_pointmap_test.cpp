@@ -71,9 +71,9 @@ TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"#FFD700\"},\n"
-      "          \"color_ruler\": {\"value\": [-1, -1]},\n"
-      "          \"stroke_ruler\": {\"value\": [5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FFD700\"]},\n"
+      "          \"color_bound\": {\"value\": [-1, -1]},\n"
+      "          \"size_bound\": {\"value\": [5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -148,9 +148,9 @@ TEST(POINTMAP_RAW_POINT_TEST, MULTIPLE_COLOR_SINGLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [8]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2, 5]},\n"
+      "          \"size_bound\": {\"value\": [8]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -225,9 +225,9 @@ TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_MULTIPLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"#FFD700\"},\n"
-      "          \"color_ruler\": {\"value\": [-1, -1]},\n"
-      "          \"stroke_ruler\": {\"value\": [0, 10]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FFD700\"]},\n"
+      "          \"color_bound\": {\"value\": [-1, -1]},\n"
+      "          \"size_bound\": {\"value\": [0, 10]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -313,9 +313,9 @@ TEST(POINTMAP_RAW_POINT_TEST, MULTIPLE_COLOR_MULTIPLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -401,9 +401,9 @@ TEST(POINTMAP_RAW_POINT_TEST, INT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -489,9 +489,9 @@ TEST(POINTMAP_RAW_POINT_TEST, INT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -577,9 +577,9 @@ TEST(POINTMAP_RAW_POINT_TEST, INT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -665,9 +665,9 @@ TEST(POINTMAP_RAW_POINT_TEST, INT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -753,9 +753,9 @@ TEST(POINTMAP_RAW_POINT_TEST, UINT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -841,9 +841,9 @@ TEST(POINTMAP_RAW_POINT_TEST, UINT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -929,9 +929,9 @@ TEST(POINTMAP_RAW_POINT_TEST, UINT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1017,9 +1017,9 @@ TEST(POINTMAP_RAW_POINT_TEST, UINT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1105,9 +1105,9 @@ TEST(POINTMAP_RAW_POINT_TEST, FLOAT) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1193,9 +1193,9 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1270,9 +1270,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1347,9 +1347,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1424,9 +1424,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1501,9 +1501,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1578,9 +1578,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1655,9 +1655,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1732,9 +1732,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1809,9 +1809,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1886,9 +1886,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, FLOAT) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -1963,9 +1963,9 @@ TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, DOUBLE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2051,9 +2051,9 @@ TEST(POINTMAP_RAW_POINT_TEST, BLUE_TO_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2139,9 +2139,9 @@ TEST(POINTMAP_RAW_POINT_TEST, SKYBLUE_TO_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"skyblue_to_white\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#B4E7F5\", \"#FFFFFF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2227,9 +2227,9 @@ TEST(POINTMAP_RAW_POINT_TEST, PURPLE_TO_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"purple_to_yellow\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF00FF\", \"#FFFF00\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2315,9 +2315,9 @@ TEST(POINTMAP_RAW_POINT_TEST, RED_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"red_transparency\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF0000\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2403,9 +2403,9 @@ TEST(POINTMAP_RAW_POINT_TEST, BLUE_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_transparency\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#0000FF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2491,9 +2491,9 @@ TEST(POINTMAP_RAW_POINT_TEST, BLUE_GREEN_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_green_yellow\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#115F9A\", \"#D0F401\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2579,9 +2579,9 @@ TEST(POINTMAP_RAW_POINT_TEST, WHITE_BLUE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"white_blue\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#E2E2E2\", \"#115F9A\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2667,9 +2667,9 @@ TEST(POINTMAP_RAW_POINT_TEST, BLUE_WHITE_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_white_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#1984C5\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2755,9 +2755,9 @@ TEST(POINTMAP_RAW_POINT_TEST, GREEN_YELLOW_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"green_yellow_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#4D904F\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -2816,12 +2816,12 @@ TEST(POINTMAP_WKT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"#FFD700\"},\n"
-      "          \"color_ruler\": {\"value\": [-1, -1]},\n"
-      "          \"stroke_ruler\": {\"value\": [5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FFD700\"]},\n"
+      "          \"color_bound\": {\"value\": [-1, -1]},\n"
+      "          \"size_bound\": {\"value\": [5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -2890,12 +2890,12 @@ TEST(POINTMAP_WKT_TEST, MULTIPLE_COLOR_SINGLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [8]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2, 5]},\n"
+      "          \"size_bound\": {\"value\": [8]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -2964,12 +2964,12 @@ TEST(POINTMAP_WKT_TEST, SINGLE_COLOR_MULTIPLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"#FFD700\"},\n"
-      "          \"color_ruler\": {\"value\": [-1, -1]},\n"
-      "          \"stroke_ruler\": {\"value\": [0, 10]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FFD700\"]},\n"
+      "          \"color_bound\": {\"value\": [-1, -1]},\n"
+      "          \"size_bound\": {\"value\": [0, 10]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3049,12 +3049,12 @@ TEST(POINTMAP_WKT_TEST, MULTIPLE_COLOR_MULTIPLE_POINTSIZE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3134,12 +3134,12 @@ TEST(POINTMAP_WKT_TEST, INT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3219,12 +3219,12 @@ TEST(POINTMAP_WKT_TEST, INT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3304,12 +3304,12 @@ TEST(POINTMAP_WKT_TEST, INT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3389,12 +3389,12 @@ TEST(POINTMAP_WKT_TEST, INT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3474,12 +3474,12 @@ TEST(POINTMAP_WKT_TEST, UINT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3559,12 +3559,12 @@ TEST(POINTMAP_WKT_TEST, UINT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3644,12 +3644,12 @@ TEST(POINTMAP_WKT_TEST, UINT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3729,12 +3729,12 @@ TEST(POINTMAP_WKT_TEST, UINT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3814,12 +3814,12 @@ TEST(POINTMAP_WKT_TEST, FLOAT) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3899,12 +3899,522 @@ TEST(POINTMAP_WKT_TEST, DOUBLE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, MEAN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, SUM) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, MAX) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, MIN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, COUNT) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, s_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST, STD) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: point size
+  arrow::DoubleBuilder point_size_builder;
+  status = point_size_builder.Append(2);
+  status = point_size_builder.Append(4);
+  status = point_size_builder.Append(6);
+  status = point_size_builder.Append(8);
+  status = point_size_builder.Append(10);
+
+  std::shared_ptr<arrow::DoubleArray> s_array;
+  status = point_size_builder.Finish(&s_array);
+
+  // param4: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -3973,12 +4483,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4047,12 +4557,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4121,12 +4631,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4195,12 +4705,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4269,12 +4779,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT8) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4343,12 +4853,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT16) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4417,12 +4927,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT32) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4491,12 +5001,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT64) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4565,12 +5075,12 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, FLOAT) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4639,12 +5149,456 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, DOUBLE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MEAN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"mean\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, SUM) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MAX) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MIN) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"min\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, COUNT) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"count\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::render::WktToWkb(string_array);
+  arctern::render::weighted_point_map(wkb, c_array, vega);
+}
+
+TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, STD) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (10 10)";
+  std::string wkt2 = "POINT (30 30)";
+  std::string wkt3 = "POINT (50 50)";
+  std::string wkt4 = "POINT (70 70)";
+  std::string wkt5 = "POINT (90 90)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(1);
+  status = color_builder.Append(2);
+  status = color_builder.Append(3);
+  status = color_builder.Append(4);
+  status = color_builder.Append(5);
+
+  std::shared_ptr<arrow::DoubleArray> c_array;
+  status = color_builder.Finish(&c_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 300,\n"
+      "  \"height\": 200,\n"
+      "  \"description\": \"weighted_pointmap\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"x\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"longitude_pickup\"}\n"
+      "    },\n"
+      "    {\n"
+      "      \"name\": \"y\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"latitude_pickup\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"shape\": {\"value\": \"circle\"},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
+      "          \"aggregation_type\": {\"value\": \"std\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4724,12 +5678,12 @@ TEST(POINTMAP_WKT_TEST, BLUE_TO_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_to_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4809,12 +5763,12 @@ TEST(POINTMAP_WKT_TEST, SKYBLUE_TO_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"skyblue_to_white\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#B4E7F5\", \"#FFFFFF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4894,12 +5848,12 @@ TEST(POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"purple_to_yellow\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF00FF\", \"#FFFF00\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -4979,12 +5933,12 @@ TEST(POINTMAP_WKT_TEST, RED_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"red_transparency\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#FF0000\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -5064,12 +6018,12 @@ TEST(POINTMAP_WKT_TEST, BLUE_TRANSPARENCY) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_transparency\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#0000FF\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -5149,12 +6103,12 @@ TEST(POINTMAP_WKT_TEST, BLUE_GREEN_YELLOW) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_green_yellow\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#115F9A\", \"#D0F401\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -5234,12 +6188,12 @@ TEST(POINTMAP_WKT_TEST, WHITE_BLUE) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"white_blue\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#E2E2E2\", \"#115F9A\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -5319,12 +6273,12 @@ TEST(POINTMAP_WKT_TEST, BLUE_WHITE_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"blue_white_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#1984C5\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"
@@ -5404,12 +6358,12 @@ TEST(POINTMAP_WKT_TEST, GREEN_YELLOW_RED) {
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
       "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"color\": {\"value\": \"green_yellow_red\"},\n"
-      "          \"color_ruler\": {\"value\": [2.5, 5]},\n"
-      "          \"stroke_ruler\": {\"value\": [2.5, 5]},\n"
+      "          \"color_gradient\": {\"value\": [\"#4D904F\", \"#C23728\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"size_bound\": {\"value\": [2.5, 5]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
-      "          \"color_agg\": {\"value\": \"sum\"}\n"
+      "          \"aggregation_type\": {\"value\": \"sum\"}\n"
       "        }\n"
       "      }\n"
       "    }\n"

@@ -109,21 +109,31 @@ template <typename T>
 void ChoroplethMap<T>::SetColor() {
   colors_.resize(num_buildings_ * 4);
 
-  auto count_start = choropleth_vega_.ruler().first;
-  auto count_end = choropleth_vega_.ruler().second;
+  auto count_start = choropleth_vega_.color_bound().first;
+  auto count_end = choropleth_vega_.color_bound().second;
   auto count_range = count_end - count_start;
 
   size_t c_offset = 0;
   for (auto i = 0; i < num_buildings_; i++) {
-    auto count = count_[i] >= count_start ? count_[i] : count_start;
-    count = count_[i] <= count_end ? count : count_end;
-    auto ratio = (count - count_start) / count_range;
-    auto circle_params_2d =
-        ColorGradient::GetCircleParams(choropleth_vega_.color_style(), ratio);
-    colors_[c_offset++] = circle_params_2d.color.r;
-    colors_[c_offset++] = circle_params_2d.color.g;
-    colors_[c_offset++] = circle_params_2d.color.b;
-    colors_[c_offset++] = choropleth_vega_.opacity();
+    auto color_gradient = choropleth_vega_.color_gradient();
+    if (color_gradient.size() == 1) {
+      auto color = color_gradient[0];
+      colors_[c_offset++] = color.r;
+      colors_[c_offset++] = color.g;
+      colors_[c_offset++] = color.b;
+      colors_[c_offset++] = color.a;
+    } else {
+      auto count = count_[i] >= count_start ? count_[i] : count_start;
+      count = count_[i] <= count_end ? count : count_end;
+      auto ratio = (count - count_start) / count_range;
+      auto color_start = color_gradient[0];
+      auto color_end = color_gradient[1];
+      auto color = ColorGradient::GetColor(color_start, color_end, ratio);
+      colors_[c_offset++] = color.r;
+      colors_[c_offset++] = color.g;
+      colors_[c_offset++] = color.b;
+      colors_[c_offset++] = color.a;
+    }
   }
 }
 

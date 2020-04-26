@@ -44,6 +44,10 @@ std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
 
 std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);
 
+std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
+
+std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+
 /***************************** GEOMETRY ACCESSOR *****************************/
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);
@@ -92,6 +96,10 @@ std::shared_ptr<arrow::Array> ST_CurveToLine(
     const std::shared_ptr<arrow::Array>& geometries);
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
+
+std::shared_ptr<arrow::Array> ST_DistanceSphere(
+    const std::shared_ptr<arrow::Array>& point_left,
+    const std::shared_ptr<arrow::Array>& point_right);
 
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_left,
                                           const std::shared_ptr<arrow::Array>& geo_right);

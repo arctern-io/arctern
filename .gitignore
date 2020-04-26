@@ -8,6 +8,7 @@ cpp/build/*
 cpp/src/common/version.h
 *.so
 *.swp
+*.swo
 .vscode/
 cpp/cmake-build-debug/
 cpp/cmake-build-debug/*
@@ -156,3 +157,8 @@ tests/draw_map/test*.png
 
 #/gui/client
 node_modules
+
+#/gui/server
+gui/server/log.txt
+gui/server/metastore_db/
+gui/server/spark-warehouse/

@@ -63,7 +63,7 @@ void set_colors_cpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
   memset(pix_count, 0, window_size * sizeof(float));
   SetCountValue_cpu<T>(pix_count, input_x, input_y, input_c, num, width, height);
 
-  double scale = vega_heat_map.map_scale() * 0.4;
+  double scale = vega_heat_map.map_zoom_level() * 0.4;
   int d = pow(2, scale);
   float kernel_size = d * 2 + 3;
 
@@ -95,7 +95,7 @@ void set_colors_cpu(float* colors, uint32_t* input_x, uint32_t* input_y, T* inpu
     colors[c_offset++] = color_r;
     colors[c_offset++] = color_g;
     colors[c_offset++] = color_b;
-    colors[c_offset++] = value;
+    colors[c_offset++] = value * 3;
   }
 
   free(pix_count);

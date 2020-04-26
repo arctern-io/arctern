@@ -21,12 +21,10 @@ requirements:
     - python ===3.7.6
     - setuptools
     - arctern {{ version }}
-    - pyarrow ==0.16.0
 
   run:
     - python ===3.7.6
     - arctern {{ version }}
-    - pyarrow ==0.16.0
 
 test:
   commands:

@@ -19,6 +19,7 @@ set(render_tests_src
 		choropleth_map_test.cpp
 		coordinate_projection_test.cpp
 		weighted_pointmap_test.cpp
+		iconviz_test.cpp
 		)
 
 add_executable(render_tests ${render_tests_src})

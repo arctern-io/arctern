@@ -1,0 +1,12 @@
+name: arctern
+dependencies:
+- conda-forge::gdal=3.0.4
+- conda-forge::pyarrow=0.16.0
+- conda-forge::gtest=1.10.0
+- conda-forge::rapidjson=1.1.0
+- conda-forge::Cython=0.29.15
+- conda-forge::pytest=5.3.5
+- conda-forge::pylint=2.4.4
+- conda-forge::opencv=4.2
+- conda-forge::matplotlib=3.2.1
+- conda-forge::descartes=1.1.0

@@ -40,8 +40,8 @@ void PointMap::Draw() {
   glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
           1);
 
-  glPointSize(point_vega_.circle_params().radius);
-  auto& color = point_vega_.circle_params().color;
+  glPointSize(point_vega_.point_params().point_size);
+  auto& color = point_vega_.point_params().color;
   glColor4f(color.r, color.g, color.b, color.a);
   glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -151,8 +151,8 @@ void PointMap::Shader() {
   glUseProgram(shader_program);
   auto window_params = window()->window_params();
   glUniform2f(2, window_params.width(), window_params.height());
-  auto point_format = point_vega_.circle_params();
-  glUniform1f(3, point_format.radius);
+  auto point_format = point_vega_.point_params();
+  glUniform1f(3, point_format.point_size);
   glUniform4f(4, point_format.color.r, point_format.color.g, point_format.color.b,
               point_format.color.a);
 }

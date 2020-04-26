@@ -60,6 +60,9 @@ def heat_map(arr_x, arr_y, arr_c, conf):
 def choropleth_map(arr_wkt, arr_count, conf):
     pass
 
+def icon_viz(points, conf):
+    pass
+
 def wkt2wkb(arr_wkt):
     pass
 
@@ -121,6 +124,9 @@ def ST_Within(object geo_arr1,object geo_arr2):
     pass
 
 def ST_Distance(object geo_arr1,object geo_arr2):
+    pass
+
+def ST_DistanceSphere(object geo_arr1,object geo_arr2):
     pass
 
 def ST_Area(object geo_arr):
