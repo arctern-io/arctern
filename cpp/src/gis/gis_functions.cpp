@@ -20,10 +20,8 @@
 #include "gis/cuda/gis_functions.h"
 #include "gis/dispatch/dispatch.h"
 #endif
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <vector>
 
 #include "common/version.h"
 #include "gis/api.h"
