@@ -242,14 +242,13 @@ template <typename T>
 bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>> &array_list,
                   std::vector<ChunkArrayIdx<T>> &idx_list,
                   bool &is_null){
-  is_null = false;
-  bool ret_val;
-  for(int i=0; i<array_list.size(); ++i){
+  auto ret_val = GetNextValue(array_list[0], idx_list[0]);
+  is_null = idx_list[0].is_null;
+
+  for(int i=1; i<array_list.size(); ++i){
     auto cur_val = GetNextValue(array_list[i], idx_list[i]);
-    if(i == 0){
-      ret_val = cur_val;
-    }else if(cur_val != ret_val){
-        throw std::runtime_error("incorrect input data");
+    if(cur_val != ret_val){
+      throw std::runtime_error("incorrect input data");
     }
     is_null |= idx_list[i].is_null;
   }
@@ -261,25 +260,24 @@ bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>> &array
 std::vector<std::shared_ptr<arrow::Array>> ST_Point(
     const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
     const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
-  ChunkArrayIdx<double> x_idx, y_idx;
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{x_values_raw, y_values_raw};
+  std::vector<ChunkArrayIdx<double>> idx_list(2);
+
   OGRPoint point;
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;
   std::vector<std::shared_ptr<arrow::Array>> result_array;
+  bool is_null;
 
-  do {
-    double x_ret = GetNextValue(x_values_raw, x_idx);
-    double y_ret = GetNextValue(y_values_raw, y_idx);
-    if (x_ret && y_ret) {
-      point.setX(x_idx.item_value);
-      point.setY(y_idx.item_value);
+  while(GetNextValue(array_list, idx_list, is_null)){
+    if(is_null){
+      builder.array_builder.AppendNull();
+    }else{
+      point.setX(idx_list[0].item_value);
+      point.setY(idx_list[1].item_value);
       auto array_ptr = AppendWkb(builder, &point);
       if (array_ptr != nullptr) result_array.push_back(array_ptr);
-    } else if (x_ret || y_ret) {
-      throw std::runtime_error("incorrect input data");
-    } else {
-      break;
     }
-  } while (true);
+  }
 
   std::shared_ptr<arrow::Array> array_ptr;
   CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
