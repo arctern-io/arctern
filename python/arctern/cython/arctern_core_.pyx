@@ -56,11 +56,11 @@ def wkb2wkt(arr_wkb):
     return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
 
 def ST_Point(object arr_x,object arr_y):
-    cdef vector[shared_ptr[CArray]] points_x;
+    cdef vector[shared_ptr[CArray]] points_x
     for arr in arr_x:
         points_x.push_back(pyarrow_unwrap_array(arr))
     
-    cdef vector[shared_ptr[CArray]] points_y;
+    cdef vector[shared_ptr[CArray]] points_y
     for arr in arr_y:
         points_y.push_back(pyarrow_unwrap_array(arr))
 
@@ -113,7 +113,21 @@ def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(arctern_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
 
 def ST_PolygonFromEnvelope(object min_x,object min_y,object max_x,object max_y):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_PolygonFromEnvelope(pyarrow_unwrap_array(min_x),pyarrow_unwrap_array(min_y),pyarrow_unwrap_array(max_x),pyarrow_unwrap_array(max_y)))
+    cdef vector[shared_ptr[CArray]] min_x_arr
+    for arr in min_x:
+        min_x_arr.push_back(pyarrow_unwrap_array(arr))
+    cdef vector[shared_ptr[CArray]] min_y_arr
+    for arr in min_y:
+        min_y_arr.push_back(pyarrow_unwrap_array(arr))
+    cdef vector[shared_ptr[CArray]] max_x_arr
+    for arr in max_x:
+        max_x_arr.push_back(pyarrow_unwrap_array(arr))
+    cdef vector[shared_ptr[CArray]] max_y_arr
+    for arr in max_y:
+        max_y_arr.push_back(pyarrow_unwrap_array(arr))
+
+    result = arctern_core_pxd.ST_PolygonFromEnvelope(min_x_arr, min_y_arr, max_x_arr, max_y_arr)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Contains(object ptr_x,object ptr_y):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Contains(pyarrow_unwrap_array(ptr_x),pyarrow_unwrap_array(ptr_y)))

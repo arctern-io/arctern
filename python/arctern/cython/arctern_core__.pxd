@@ -31,7 +31,9 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 
 cdef extern from "gis.h" namespace "arctern::gis":
-    vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x,const vector[shared_ptr[CArray]] &ptr_y) except +
+    vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
+                                        const vector[shared_ptr[CArray]] &ptr_y) except +
+
     shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
     shared_ptr[CArray] ST_GeomFromText(const shared_ptr[CArray] &text) except +
     shared_ptr[CArray] ST_AsText(const shared_ptr[CArray] &text) except +
@@ -47,7 +49,12 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_MakeValid(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_SimplifyPreserveTopology(const shared_ptr[CArray] &geometries, double distanceTolerance) except +
-    shared_ptr[CArray] ST_PolygonFromEnvelope(const shared_ptr[CArray] &min_x,const shared_ptr[CArray] &min_y,const shared_ptr[CArray] &max_x,const shared_ptr[CArray] &max_y) except +
+
+    vector[shared_ptr[CArray]] ST_PolygonFromEnvelope(const vector[shared_ptr[CArray]] &min_x, \
+                                                      const vector[shared_ptr[CArray]] &min_y, \
+                                                      const vector[shared_ptr[CArray]] &max_x, \
+                                                      const vector[shared_ptr[CArray]] &max_y) except +
+    
     shared_ptr[CArray] ST_Contains(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
     shared_ptr[CArray] ST_Intersects(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
     shared_ptr[CArray] ST_Within(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +

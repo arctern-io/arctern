@@ -624,7 +624,12 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     arr_min_y = pa.array(min_y, type='double')
     arr_max_x = pa.array(max_x, type='double')
     arr_max_y = pa.array(max_y, type='double')
-    return arctern_caller(arctern_core_.ST_PolygonFromEnvelope, arr_min_x, arr_min_y, arr_max_x, arr_max_y)
+    arr_min_x = _to_arrow_array_list(arr_min_x)
+    arr_min_y = _to_arrow_array_list(arr_min_y)
+    arr_max_x = _to_arrow_array_list(arr_max_x)
+    arr_max_y = _to_arrow_array_list(arr_max_y)
+    result = arctern_core_.ST_PolygonFromEnvelope(arr_min_x, arr_min_y, arr_max_x, arr_max_y)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Contains(geo1, geo2):

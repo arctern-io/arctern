@@ -74,11 +74,11 @@ std::shared_ptr<arrow::Array> ST_MakeValid(
 std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
     const std::shared_ptr<arrow::Array>& geometries, double distanceTolerance);
 
-std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
-    const std::shared_ptr<arrow::Array>& min_x,
-    const std::shared_ptr<arrow::Array>& min_y,
-    const std::shared_ptr<arrow::Array>& max_x,
-    const std::shared_ptr<arrow::Array>& max_y);
+std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
+    const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values);
 
 std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& ptr_x,
                                           const std::shared_ptr<arrow::Array>& ptr_y);
