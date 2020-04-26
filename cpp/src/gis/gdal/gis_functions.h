@@ -29,8 +29,9 @@ namespace gdal {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values);
+std::vector<std::shared_ptr<arrow::Array>> ST_Point(
+    const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw);
 
 std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
     const std::shared_ptr<arrow::Array>& min_x_values,

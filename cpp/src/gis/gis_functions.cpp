@@ -33,10 +33,10 @@ namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(
-    const std::shared_ptr<arrow::Array>& x_values_raw,
-    const std::shared_ptr<arrow::Array>& y_values_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Point(
+    const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
+#if defined(USE_GPU) && 0
   auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_values_raw);
   auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_values_raw);
   return cuda::ST_Point(x_values, y_values);

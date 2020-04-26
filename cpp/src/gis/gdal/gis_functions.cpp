@@ -170,27 +170,80 @@ BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
   return results;
 }
 
+struct ChunkArrayIdx {
+  int chunk_idx = 0;
+  int array_idx = 0;
+  bool is_null = false;
+};
+
+bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
+                  ChunkArrayIdx& idx, double& item_val) {
+  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
+  int len = chunk_array[idx.chunk_idx]->length();
+  if (idx.array_idx >= len) {
+    idx.chunk_idx++;
+    idx.array_idx = 0;
+    return GetNextValue(chunk_array, idx, item_val);
+  }
+  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
+    idx.array_idx++;
+     idx.is_null = true;
+    return true;
+  }
+  auto double_array = std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
+  item_val = double_array->Value(idx.array_idx);
+  idx.array_idx++;
+  idx.is_null = false;
+  return true;
+}
+
 /************************ GEOMETRY CONSTRUCTOR ************************/
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values) {
-  assert(x_values->length() == y_values->length());
-  auto len = x_values->length();
-  auto x_double_values = std::static_pointer_cast<arrow::DoubleArray>(x_values);
-  auto y_double_values = std::static_pointer_cast<arrow::DoubleArray>(y_values);
+std::vector<std::shared_ptr<arrow::Array>> ST_Point(
+    const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw){
+  ChunkArrayIdx x_idx, y_idx;
+  double x_val, y_val;
   OGRPoint point;
   char* wkt = nullptr;
   arrow::BinaryBuilder builder;
 
-  for (int32_t i = 0; i < len; i++) {
-    point.setX(x_double_values->Value(i));
-    point.setY(y_double_values->Value(i));
-    AppendWkbNDR(builder, &point);
-  }
+  do{
+    double x_ret = GetNextValue(x_values_raw, x_idx, x_val);
+    double y_ret = GetNextValue(y_values_raw, y_idx, y_val);
+    if(x_ret && y_ret){
+      point.setX(x_val);
+      point.setY(y_val);
+      AppendWkbNDR(builder, &point);
+    }else if(x_ret || y_ret){
+      throw std::runtime_error("incorrect input data"); 
+    }else break;
+  }while(true);
+
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
-  return results;
+  return std::vector<std::shared_ptr<arrow::Array>>{results};
 }
+
+// std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
+//                                        const std::shared_ptr<arrow::Array>& y_values) {
+//   assert(x_values->length() == y_values->length());
+//   auto len = x_values->length();
+//   auto x_double_values = std::static_pointer_cast<arrow::DoubleArray>(x_values);
+//   auto y_double_values = std::static_pointer_cast<arrow::DoubleArray>(y_values);
+//   OGRPoint point;
+//   char* wkt = nullptr;
+//   arrow::BinaryBuilder builder;
+
+//   for (int32_t i = 0; i < len; i++) {
+//     point.setX(x_double_values->Value(i));
+//     point.setY(y_double_values->Value(i));
+//     AppendWkbNDR(builder, &point);
+//   }
+//   std::shared_ptr<arrow::Array> results;
+//   CHECK_ARROW(builder.Finish(&results));
+//   return results;
+// }
 
 std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
     const std::shared_ptr<arrow::Array>& min_x_values,
