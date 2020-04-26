@@ -144,7 +144,7 @@ inline std::shared_ptr<arrow::Array> AppendWkb(ChunkArrayBuilder<arrow::BinaryBu
         builder.array_size = 0;
       }
       CHECK_ARROW(builder.array_builder.Append(wkb, wkb_size));
-
+      builder.array_size += wkb_size;
     }
     CPLFree(wkb);
   }
