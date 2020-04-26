@@ -235,25 +235,31 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 
 TEST(geometry_test, test_ST_Point) {
   arrow::DoubleBuilder x_builder;
-  for (int i = 0; i < 100 * 10000; ++i) {
+  for (int i = 0; i < 10 * 10000; ++i) {
     CHECK_ARROW(x_builder.Append(0));
   }
   std::shared_ptr<arrow::Array> x_array;
   CHECK_ARROW(x_builder.Finish(&x_array));
   std::vector<std::shared_ptr<arrow::Array>> point_x;
-  for (int i = 0; i < 100; ++i) point_x.push_back(x_array);
+  for (int i = 0; i < 600; ++i) point_x.push_back(x_array);
 
   arrow::DoubleBuilder y_builder;
-  for (int i = 0; i < 10 * 10000; ++i) {
+  for (int i = 0; i <  10000; ++i) {
     CHECK_ARROW(y_builder.Append(0));
   }
   std::shared_ptr<arrow::Array> y_array;
   CHECK_ARROW(y_builder.Finish(&y_array));
   std::vector<std::shared_ptr<arrow::Array>> point_y;
-  for (int i = 0; i < 1000; ++i) point_y.push_back(y_array);
+  for (int i = 0; i < 6000; ++i) point_y.push_back(y_array);
 
   auto result = arctern::gis::ST_Point(point_x, point_y);
-  std::cout << result.size() << std::endl;
+  int64_t total_len = 0;
+  for(auto &array : result){
+    auto len = array->length();
+    std::cout << "len = " << len << std::endl;
+    total_len += len;
+  }
+  ASSERT_EQ(total_len, 6000*10000);
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
