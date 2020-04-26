@@ -130,8 +130,8 @@ def arctern_caller(func, *func_args):
     return result_total
 
 def _to_arrow_array_list(arrow_array):
-    if hasattr(arrow_array,'chunks'):
-        return [array for array in arrow_array.chunks]
+    if hasattr(arrow_array, 'chunks'):
+        return list(arrow_array.chunks)
     return [arrow_array]
 
 def _to_pandas_series(array_list):
