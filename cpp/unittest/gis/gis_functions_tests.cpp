@@ -244,7 +244,7 @@ TEST(geometry_test, test_ST_Point) {
   for (int i = 0; i < 600; ++i) point_x.push_back(x_array);
 
   arrow::DoubleBuilder y_builder;
-  for (int i = 0; i <  10000; ++i) {
+  for (int i = 0; i < 10000; ++i) {
     CHECK_ARROW(y_builder.Append(0));
   }
   std::shared_ptr<arrow::Array> y_array;
@@ -254,12 +254,12 @@ TEST(geometry_test, test_ST_Point) {
 
   auto result = arctern::gis::ST_Point(point_x, point_y);
   int64_t total_len = 0;
-  for(auto &array : result){
+  for (auto& array : result) {
     auto len = array->length();
     std::cout << "len = " << len << std::endl;
     total_len += len;
   }
-  ASSERT_EQ(total_len, 6000*10000);
+  ASSERT_EQ(total_len, 6000 * 10000);
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
