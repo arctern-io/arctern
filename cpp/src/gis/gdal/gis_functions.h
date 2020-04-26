@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "arrow/api.h"
 #include "arrow/array.h"

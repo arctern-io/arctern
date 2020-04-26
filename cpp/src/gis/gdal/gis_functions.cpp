@@ -115,18 +115,20 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   }
 }
 
-template <typename T, typename Enable=void>
-struct ChunkArrayBuilder{
-  static constexpr int64_t CAPACITY = 1024*1024*1024;
+template <typename T, typename Enable = void>
+struct ChunkArrayBuilder {
+  static constexpr int64_t CAPACITY = 1024 * 1024 * 1024;
 };
 
 template <typename T>
-struct ChunkArrayBuilder<T, typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value>::type>{
+struct ChunkArrayBuilder<
+    T, typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value>::type> {
   T array_builder;
   int64_t array_size = 0;
 };
 
-inline std::shared_ptr<arrow::Array> AppendWkb(ChunkArrayBuilder<arrow::BinaryBuilder> &builder, const OGRGeometry* geo){
+inline std::shared_ptr<arrow::Array> AppendWkb(
+    ChunkArrayBuilder<arrow::BinaryBuilder>& builder, const OGRGeometry* geo) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
   if (geo == nullptr) {
     builder.array_builder.AppendNull();
@@ -139,7 +141,7 @@ inline std::shared_ptr<arrow::Array> AppendWkb(ChunkArrayBuilder<arrow::BinaryBu
     if (err_code != OGRERR_NONE) {
       builder.array_builder.AppendNull();
     } else {
-      if(builder.array_size + wkb_size > ChunkArrayBuilder<void>::CAPACITY){
+      if (builder.array_size + wkb_size > ChunkArrayBuilder<void>::CAPACITY) {
         CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
         builder.array_size = 0;
       }
@@ -223,10 +225,11 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
   }
   if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
     idx.array_idx++;
-     idx.is_null = true;
+    idx.is_null = true;
     return true;
   }
-  auto double_array = std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
+  auto double_array =
+      std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
   item_val = double_array->Value(idx.array_idx);
   idx.array_idx++;
   idx.is_null = false;
@@ -237,25 +240,27 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Point(
     const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
-    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw){
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
   ChunkArrayIdx x_idx, y_idx;
   double x_val, y_val;
   OGRPoint point;
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;
   std::vector<std::shared_ptr<arrow::Array>> result_array;
 
-  do{
+  do {
     double x_ret = GetNextValue(x_values_raw, x_idx, x_val);
     double y_ret = GetNextValue(y_values_raw, y_idx, y_val);
-    if(x_ret && y_ret){
+    if (x_ret && y_ret) {
       point.setX(x_val);
       point.setY(y_val);
       auto array_ptr = AppendWkb(builder, &point);
-      if(array_ptr!=nullptr) result_array.push_back(array_ptr);
-    }else if(x_ret || y_ret){
-      throw std::runtime_error("incorrect input data"); 
-    }else break;
-  }while(true);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
+    } else if (x_ret || y_ret) {
+      throw std::runtime_error("incorrect input data");
+    } else {
+      break;
+    }
+  } while (true);
 
   std::shared_ptr<arrow::Array> array_ptr;
   CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
