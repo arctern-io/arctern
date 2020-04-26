@@ -289,27 +289,24 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
     const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
     const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
     const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
-    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values){
-  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{min_x_values,
-                                                                     min_y_values,
-                                                                     max_x_values,
-                                                                     max_y_values};
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values) {
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{
+      min_x_values, min_y_values, max_x_values, max_y_values};
   std::vector<ChunkArrayIdx<double>> idx_list(4);
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;
   std::vector<std::shared_ptr<arrow::Array>> result_array;
   bool is_null;
   OGRPolygon empty;
 
-  while(GetNextValue(array_list, idx_list, is_null)){
-    if(is_null){
+  while (GetNextValue(array_list, idx_list, is_null)) {
+    if (is_null) {
       builder.array_builder.AppendNull();
-    }else{
-      if((idx_list[0].item_value > idx_list[2].item_value) ||
-          (idx_list[1].item_value > idx_list[3].item_value)){
+    } else {
+      if ((idx_list[0].item_value > idx_list[2].item_value) ||
+          (idx_list[1].item_value > idx_list[3].item_value)) {
         auto array_ptr = AppendWkb(builder, &empty);
         if (array_ptr != nullptr) result_array.push_back(array_ptr);
-      }
-      else{
+      } else {
         OGRLinearRing ring;
         ring.addPoint(idx_list[0].item_value, idx_list[1].item_value);
         ring.addPoint(idx_list[0].item_value, idx_list[3].item_value);

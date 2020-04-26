@@ -3459,8 +3459,8 @@ TEST(geometry_test, test_ST_PolygonFromEnvelope) {
   y_min_builder.Finish(&y_min);
   y_max_builder.Finish(&y_max);
 
-  auto res = arctern::gis::ST_AsText(
-      arctern::gis::ST_PolygonFromEnvelope(dbl_array_t{x_min}, dbl_array_t{y_min}, dbl_array_t{x_max}, dbl_array_t{y_max})[0]);
+  auto res = arctern::gis::ST_AsText(arctern::gis::ST_PolygonFromEnvelope(
+      dbl_array_t{x_min}, dbl_array_t{y_min}, dbl_array_t{x_max}, dbl_array_t{y_max})[0]);
 
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
