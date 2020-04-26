@@ -115,6 +115,42 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
   }
 }
 
+template <typename T, typename Enable=void>
+struct ChunkArrayBuilder{
+  static constexpr int64_t CAPACITY = 1024*1024*1024;
+};
+
+template <typename T>
+struct ChunkArrayBuilder<T, typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value>::type>{
+  T array_builder;
+  int64_t array_size = 0;
+};
+
+inline std::shared_ptr<arrow::Array> AppendWkb(ChunkArrayBuilder<arrow::BinaryBuilder> &builder, const OGRGeometry* geo){
+  std::shared_ptr<arrow::Array> array_ptr = nullptr;
+  if (geo == nullptr) {
+    builder.array_builder.AppendNull();
+  } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
+    builder.array_builder.AppendNull();
+  } else {
+    auto wkb_size = geo->WkbSize();
+    auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
+    if (err_code != OGRERR_NONE) {
+      builder.array_builder.AppendNull();
+    } else {
+      if(builder.array_size + wkb_size > ChunkArrayBuilder<void>::CAPACITY){
+        CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+        builder.array_size = 0;
+      }
+      CHECK_ARROW(builder.array_builder.Append(wkb, wkb_size));
+
+    }
+    CPLFree(wkb);
+  }
+  return array_ptr;
+}
+
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::shared_ptr<typename arrow::Array>>::type

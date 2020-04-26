@@ -233,6 +233,16 @@ std::shared_ptr<arrow::Array> build_linestrings() {
   return line_strings;
 }
 
+TEST(geometry_test, test_ST_Point) {
+  arrow::DoubleBuilder array_builder;
+  for(int i=0; i<100; ++i){
+    CHECK_ARROW(array_builder.Append(0));
+  }
+  std::shared_ptr<arrow::Array> double_array;
+  CHECK_ARROW(array_builder.Finish(&double_array));
+
+}
+
 TEST(geometry_test, test_ST_IsValid2) {
   auto p0 = "POINT (1 8 2 4 )kdjff,";
   auto p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1)),((dkjfkjd0 0,1 -1,3 4,-2 3,0 0))";
