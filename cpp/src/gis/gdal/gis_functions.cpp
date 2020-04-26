@@ -208,7 +208,7 @@ BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
   return results;
 }
 
-template<typename T>
+template <typename T>
 struct ChunkArrayIdx {
   int chunk_idx = 0;
   int array_idx = 0;
@@ -217,7 +217,7 @@ struct ChunkArrayIdx {
 };
 
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
-                  ChunkArrayIdx<double> &idx) {
+                  ChunkArrayIdx<double>& idx) {
   if (idx.chunk_idx >= (int)chunk_array.size()) return false;
   int len = chunk_array[idx.chunk_idx]->length();
   if (idx.array_idx >= len) {
