@@ -208,20 +208,22 @@ BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
   return results;
 }
 
+template<typename T>
 struct ChunkArrayIdx {
   int chunk_idx = 0;
   int array_idx = 0;
   bool is_null = false;
+  T item_value;
 };
 
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
-                  ChunkArrayIdx& idx, double& item_val) {
+                  ChunkArrayIdx<double> &idx) {
   if (idx.chunk_idx >= (int)chunk_array.size()) return false;
   int len = chunk_array[idx.chunk_idx]->length();
   if (idx.array_idx >= len) {
     idx.chunk_idx++;
     idx.array_idx = 0;
-    return GetNextValue(chunk_array, idx, item_val);
+    return GetNextValue(chunk_array, idx);
   }
   if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
     idx.array_idx++;
@@ -230,7 +232,7 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
   }
   auto double_array =
       std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
-  item_val = double_array->Value(idx.array_idx);
+  idx.item_value = double_array->Value(idx.array_idx);
   idx.array_idx++;
   idx.is_null = false;
   return true;
@@ -241,18 +243,17 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
 std::vector<std::shared_ptr<arrow::Array>> ST_Point(
     const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
     const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
-  ChunkArrayIdx x_idx, y_idx;
-  double x_val, y_val;
+  ChunkArrayIdx<double> x_idx, y_idx;
   OGRPoint point;
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;
   std::vector<std::shared_ptr<arrow::Array>> result_array;
 
   do {
-    double x_ret = GetNextValue(x_values_raw, x_idx, x_val);
-    double y_ret = GetNextValue(y_values_raw, y_idx, y_val);
+    double x_ret = GetNextValue(x_values_raw, x_idx);
+    double y_ret = GetNextValue(y_values_raw, y_idx);
     if (x_ret && y_ret) {
-      point.setX(x_val);
-      point.setY(y_val);
+      point.setX(x_idx.item_value);
+      point.setY(y_idx.item_value);
       auto array_ptr = AppendWkb(builder, &point);
       if (array_ptr != nullptr) result_array.push_back(array_ptr);
     } else if (x_ret || y_ret) {
