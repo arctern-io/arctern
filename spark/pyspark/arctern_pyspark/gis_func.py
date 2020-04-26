@@ -35,7 +35,6 @@ def _agg_func_template(df, col_name, st_agg_func):
         return st_agg_func(geos)[0]
 
     agg_df = df.mapInPandas(agg_step1)
-    agg_df = agg_df.coalesce(1)
     ret = agg_df.agg(agg_step2(agg_df['geos'])).collect()[0][0]
     return ret
 
