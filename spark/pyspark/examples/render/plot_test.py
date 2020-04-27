@@ -1,3 +1,5 @@
+# pylint: disable=wrong-import-order
+
 from pyspark.sql.types import StructType, StructField, LongType, StringType
 from pyspark.sql import SparkSession
 
