@@ -142,7 +142,7 @@ def _to_pandas_series(array_list):
             for arr in array:
                 if result is None:
                     result = arr.to_pandas()
-                else
+                else:
                     result = result.append(arr.to_pandas(), ignore_index=True)
         else:
             if result is None:
@@ -232,7 +232,9 @@ def ST_GeomFromText(text):
     """
     import pyarrow as pa
     geo = pa.array(text, type='string')
-    return arctern_caller(arctern_core_.ST_GeomFromText, geo)
+    geo = _to_arrow_array_list(geo)
+    result = [arctern_core_.ST_GeomFromText(g) for g in geo]
+    return _to_pandas_series(result)
 
 @arctern_udf('binary')
 def ST_AsText(text):

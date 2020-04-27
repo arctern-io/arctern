@@ -31,7 +31,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Point(
 std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json);
 
-std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
+    const std::shared_ptr<arrow::Array>& text);
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
 
