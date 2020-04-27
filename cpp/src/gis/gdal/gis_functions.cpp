@@ -124,20 +124,26 @@ struct ChunkArrayBuilder<
 };
 
 inline std::shared_ptr<arrow::Array> AppendString(
-    ChunkArrayBuilder<arrow::StringBuilder>& builder, const char* val) {
+    ChunkArrayBuilder<arrow::StringBuilder>& builder, std::string && str_val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
+  if (builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
+    CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+    builder.array_size = 0;
+  }
+  builder.array_size += str_val.size();
+  CHECK_ARROW(builder.array_builder.Append(std::move(str_val)));
+  return array_ptr;
+}
+
+inline std::shared_ptr<arrow::Array> AppendString(
+    ChunkArrayBuilder<arrow::StringBuilder>& builder, const char* val) {
   if (val == nullptr) {
     builder.array_builder.AppendNull();
+    return nullptr;
   } else {
     auto str_val = std::string(val);
-    if (builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
-      CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
-      builder.array_size = 0;
-    }
-    builder.array_size += str_val.size();
-    CHECK_ARROW(builder.array_builder.Append(std::move(str_val)));
+    return AppendString(builder, std::move(str_val));
   }
-  return array_ptr;
 }
 
 inline std::shared_ptr<arrow::Array> AppendWkb(
