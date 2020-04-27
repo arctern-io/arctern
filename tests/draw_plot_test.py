@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import sys
-
-import matplotlib.pyplot as plt
 # pylint: disable=c-extension-no-member
 import cv2
 
@@ -23,6 +21,8 @@ import cv2
 # pylint: disable=undefined-variable
 from pyspark.sql.types import *
 from pyspark.sql import SparkSession
+
+import matplotlib.pyplot as plt
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot

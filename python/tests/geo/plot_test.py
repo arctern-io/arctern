@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import matplotlib.pyplot as plt
 import pandas
 import arctern
+import matplotlib.pyplot as plt
 
 def test_plot1():
     raw_data = []
