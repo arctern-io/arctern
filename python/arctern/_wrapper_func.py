@@ -198,8 +198,8 @@ def ST_GeomFromGeoJSON(json):
     """
     import pyarrow as pa
     geo = pa.array(json, type='string')
-    return arctern_caller(arctern_core_.ST_GeomFromGeoJSON, geo)
-
+    result = arctern_core_.ST_GeomFromGeoJSON(geo)
+    return _to_pandas_series(result)
 
 @arctern_udf('string')
 def ST_GeomFromText(text):

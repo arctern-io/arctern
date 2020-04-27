@@ -34,7 +34,8 @@ cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
                                         const vector[shared_ptr[CArray]] &ptr_y) except +
 
-    shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
+    vector[shared_ptr[CArray]] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
+
     shared_ptr[CArray] ST_GeomFromText(const shared_ptr[CArray] &text) except +
     shared_ptr[CArray] ST_AsText(const shared_ptr[CArray] &text) except +
     shared_ptr[CArray] ST_AsGeoJSON(const shared_ptr[CArray] &text) except +
