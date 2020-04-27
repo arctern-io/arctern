@@ -124,7 +124,7 @@ struct ChunkArrayBuilder<
 };
 
 inline std::shared_ptr<arrow::Array> AppendString(
-    ChunkArrayBuilder<arrow::StringBuilder>& builder, std::string && str_val) {
+    ChunkArrayBuilder<arrow::StringBuilder>& builder, std::string&& str_val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
   if (builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
     CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
