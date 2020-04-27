@@ -14,17 +14,18 @@
 
 from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
 from libcpp.string cimport (string)
+from libcpp.vector cimport vector
 
 
 cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] projection(const shared_ptr[CArray] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
-    shared_ptr[CArray] transform_and_projection(const shared_ptr[CArray] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
+    shared_ptr[CArray] transform_and_projection(const vector[shared_ptr[CArray]] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     shared_ptr[CArray] point_map(const shared_ptr[CArray] &points,const string &vega) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const string &vega) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &weights,const string &vega) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &color_weights,const shared_ptr[CArray] &size_weights,const string &vega) except +
     shared_ptr[CArray] heat_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &weights,const string &vega) except +
-    shared_ptr[CArray] choropleth_map(const shared_ptr[CArray] &region_boundaries,const shared_ptr[CArray] &weights,const string &vega) except +
+    shared_ptr[CArray] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries,const vector[shared_ptr[CArray]] &weights,const string &vega) except +
     shared_ptr[CArray] icon_viz(const shared_ptr[CArray] &points,const string &conf) except +
     shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except + 
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 

@@ -1230,6 +1230,14 @@ def heat_map_layer(vega, points, weights, transform=True):
 def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(region_boundaries, type='binary')
+    geos_list = []
+    # pylint: disable=c-extension-no-member
+    if isinstance(geos, pa.lib.ChunkedArray):
+        num_chunks = len(geos.chunks)
+        for chunk_idx in range(num_chunks):
+            geos_list.append(geos.chunks[chunk_idx])
+    else:
+        geos_list.append(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1243,17 +1251,38 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos = arctern_core_.transform_and_projection(geos_list, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
             geos = arctern_core_.projection(geos, bounding_box_max, bounding_box_min, height, width)
 
     vega_string = vega.build().encode('utf-8')
 
+    geos_list = []
+    # pylint: disable=c-extension-no-member
+    if isinstance(geos, pa.lib.ChunkedArray):
+        num_chunks = len(geos.chunks)
+        for chunk_idx in range(num_chunks):
+            geos_list.append(geos.chunks[chunk_idx])
+    else:
+        geos_list.append(geos)
+
     if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
-    rs = arctern_core_.choropleth_map(vega_string, geos, arr_c)
+
+    weights_list = []
+    if isinstance(arr_c, pa.lib.ChunkedArray):
+        num_chunks = len(arr_c.chunks)
+        for chunk_idx in range(num_chunks):
+            weights_list.append(arr_c.chunks[chunk_idx])
+    else:
+        weights_list.append(arr_c)
+    print("**************before map****************")
+    print(type(geos_list))
+    print(type(weights_list))
+
+    rs = arctern_core_.choropleth_map(vega_string, geos_list, weights_list)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 def icon_viz_layer(vega, points, transform=True):

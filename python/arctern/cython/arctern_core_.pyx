@@ -17,12 +17,20 @@
 
 from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
 cimport arctern_core__ as arctern_core_pxd
+from libcpp.vector cimport vector
+from pyarrow.lib cimport (shared_ptr, CArray)
 
 def projection(geos, bottom_right, top_left, height, width):
     return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
 
-def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
-    return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(pyarrow_unwrap_array(geos), src_rs, dst_rs, bottom_right, top_left, height, width))
+def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left, height, width):
+    print(geos_array)
+    cdef shared_ptr[CArray] arr
+    cdef vector[shared_ptr[CArray]] geos_vector
+    for geos in geos_array:
+        arr = pyarrow_unwrap_array(geos)
+        geos_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width))
 
 def point_map(vega, points):
     return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), vega))
@@ -42,8 +50,18 @@ def weighted_color_size_point_map(vega, points, color_weights, size_weights):
 def heat_map(vega, points, weights):
     return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(weights), vega))
 
-def choropleth_map(vega,region_boundaries, weights):
-    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(pyarrow_unwrap_array(region_boundaries), pyarrow_unwrap_array(weights), vega))
+def choropleth_map(vega,region_boundaries_arrays, weights_arrays):
+    cdef shared_ptr[CArray] arr
+    cdef vector[shared_ptr[CArray]] region_boundaries_vector
+    cdef vector[shared_ptr[CArray]] weights_vector
+    for region in region_boundaries_arrays:
+        arr = pyarrow_unwrap_array(region)
+        region_boundaries_vector.push_back(arr)
+    for weights in weights_arrays:
+        arr = pyarrow_unwrap_array(weights)
+        weights_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(region_boundaries_vector, weights_vector, vega))
+
 
 def icon_viz(vega, points):
     return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(points), vega))

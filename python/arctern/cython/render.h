@@ -39,6 +39,11 @@ std::shared_ptr<arrow::Array> transform_and_projection(
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width);
 
+std::shared_ptr<arrow::Array> transform_and_projection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geos, const std::string& src_rs,
+    const std::string& dst_rs, const std::string& bottom_right,
+    const std::string& top_left, const int& height, const int& width);
+
 std::shared_ptr<arrow::Array> coordinate_projection(
     const std::shared_ptr<arrow::Array>& points, const std::string top_left,
     const std::string bottom_right, const int height, const int width);
@@ -64,6 +69,10 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 std::shared_ptr<arrow::Array> choropleth_map(
     const std::shared_ptr<arrow::Array>& region_boundaries,
     const std::shared_ptr<arrow::Array>& weights, const std::string& vega);
+
+std::shared_ptr<arrow::Array> choropleth_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& region_boundaries,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights, const std::string& vega);
 
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
                                        const std::string& conf);

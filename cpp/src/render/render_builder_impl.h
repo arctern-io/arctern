@@ -154,11 +154,11 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
 
   arrow::BinaryBuilder builder;
   auto len = geos->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
-
+  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
   double min_x, max_y, max_x, min_y;
   pointXY_from_wkt_with_transform(top_left, min_x, max_y, poCT);
   pointXY_from_wkt_with_transform(bottom_right, max_x, min_y, poCT);
+  std::cout << "transform1-3 "<<std::endl;
   auto coor_width = max_x - min_x;
   auto coor_height = max_y - min_y;
   int32_t output_x, output_y;
@@ -215,11 +215,10 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
       OGRGeometryFactory::destroyGeometry(geo);
     }
   }
-
+ 
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
-  OCTDestroyCoordinateTransformation(poCT);
-
+  OCTDestroyCoordinateTransformation(poCT); 
   return results;
 }
 
