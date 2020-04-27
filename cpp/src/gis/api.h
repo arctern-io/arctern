@@ -41,7 +41,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
     const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
     const std::vector<std::shared_ptr<arrow::Array>>& max_y_values);
 
-std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json);
 
 std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);

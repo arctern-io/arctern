@@ -54,7 +54,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
                                       max_y_values);
 }
 
-std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json) {
   return gdal::ST_GeomFromGeoJSON(json);
 }

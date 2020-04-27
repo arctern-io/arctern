@@ -326,28 +326,32 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
   return result_array;
 }
 
-std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json) {
   auto json_geo = std::static_pointer_cast<arrow::StringArray>(json);
   int len = json_geo->length();
-  arrow::BinaryBuilder builder;
+  ChunkArrayBuilder<arrow::BinaryBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+
   for (int i = 0; i < len; ++i) {
     if (json_geo->IsNull(i)) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else {
       auto str = json_geo->GetString(i);
       auto geo = (OGRGeometry*)OGR_G_CreateGeometryFromJson(str.c_str());
       if (geo != nullptr) {
-        AppendWkbNDR(builder, geo);
+        auto array_ptr = AppendWkb(builder, geo);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
         OGRGeometryFactory::destroyGeometry(geo);
       } else {
-        builder.AppendNull();
+        builder.array_builder.AppendNull();
       }
     }
   }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
