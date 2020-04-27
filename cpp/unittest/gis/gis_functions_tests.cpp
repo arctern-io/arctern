@@ -138,7 +138,8 @@ TEST(geometry_test, make_point_from_double) {
   array_t array_x{ptr_x};
   array_t array_y{ptr_y};
 
-  auto point_arr = arctern::gis::ST_AsText(arctern::gis::ST_Point(array_x, array_y)[0])[0];
+  auto point_arr =
+      arctern::gis::ST_AsText(arctern::gis::ST_Point(array_x, array_y)[0])[0];
   auto point_arr_str = std::static_pointer_cast<arrow::StringArray>(point_arr);
 
   ASSERT_EQ(point_arr_str->length(), 2);
