@@ -354,22 +354,26 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
   return result_array;
 }
 
-std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
   auto geo = std::static_pointer_cast<arrow::StringArray>(text);
   auto len = geo->length();
-  arrow::BinaryBuilder builder;
+  ChunkArrayBuilder<arrow::BinaryBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+
   for (int i = 0; i < len; ++i) {
     auto ogr = Wrapper_createFromWkt(geo, i);
     if (ogr == nullptr) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else {
-      AppendWkbNDR(builder, ogr);
+      auto array_ptr = AppendWkb(builder, ogr);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
     }
     OGRGeometryFactory::destroyGeometry(ogr);
   }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb) {
