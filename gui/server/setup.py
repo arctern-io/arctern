@@ -22,7 +22,6 @@ setup(
     author_email="support@zilliz.com",
     description="arctern demo server",
     packages=find_packages(),
-    data_files=['server/data/0_5M_nyc_taxi_and_building.csv', 'server/data/account.db'],
-    scripts=['server/arctern-server'],
+    scripts=['arctern_server/arctern-server'],
     python_requires='>=3.6',
 )

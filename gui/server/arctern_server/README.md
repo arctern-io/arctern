@@ -168,7 +168,7 @@ token: yes
         {
             "name": "old_nyc_taxi",
             "format": "csv",
-            "path": "/home/ljq/work/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "path": "/home/ljq/work/arctern/gui/server/arctern_server/data/0_5M_nyc_taxi_and_building.csv",
             "options": {
                 "header": "True",
                 "delimiter": ","
@@ -215,7 +215,7 @@ token: yes
 举个例子：
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YourToken" -d @./arctern/gui/server/db.json http://127.0.0.1:8080/load
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YourToken" -d @./arctern/gui/server/arctern_server/db.json http://127.0.0.1:8080/load
 ```
 
 ### /dbs 获取数据库列表
@@ -645,14 +645,14 @@ curl --location --request POST 'http://localhost:8080/db/query' \
 启动server：
 
 ```shell
-cd arctern/gui/server
+cd arctern/gui/server/arctern_server
 python manage.py -r 
 ```
 
 运行restful api test：
 
 ```shell
-cd arctern/gui/server/tests/restful
+cd arctern/gui/server/arctern_server/tests/restful
 pytest --host=localhost --port=8080 --config=../../db.json
 ```
 

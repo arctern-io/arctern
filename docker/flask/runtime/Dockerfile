@@ -16,14 +16,14 @@ RUN cd /arctern/spark/pyspark && \
     python setup.py install && \
     cd / && rm -rf /arctern/spark
 
-COPY gui/server /arctern/gui/server
+COPY gui/server/arctern_server /arctern/gui/server/arctern_server
 
-RUN cd /arctern/gui/server && \
+RUN cd /arctern/gui/server/arctern_server && \
     python3.7 -m pip --no-cache-dir install -r requirements.txt
 
 EXPOSE 8080
 
-WORKDIR /arctern/gui/server
+WORKDIR /arctern/gui/server/arctern_server
 
 # use login shell when running the container
 CMD ["python", "manage.py", "-r"]
