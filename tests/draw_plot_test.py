@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+# pylint: disable=wrong-import-order
 
-import matplotlib.pyplot as plt
+import sys
 # pylint: disable=c-extension-no-member
 import cv2
 
@@ -23,6 +23,8 @@ import cv2
 # pylint: disable=undefined-variable
 from pyspark.sql.types import *
 from pyspark.sql import SparkSession
+
+import matplotlib.pyplot as plt
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot

@@ -196,6 +196,7 @@ def render(payload, render_type):
         "heatmap": codegen.generate_heatmap_code,
         "choroplethmap": codegen.generate_choropleth_map_code,
         "weighted_pointmap": codegen.generate_weighted_map_code,
+        "icon_viz": codegen.generate_icon_viz_code,
     }
 
     log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
@@ -256,6 +257,15 @@ def choroplethmap():
 @API.route('/weighted_pointmap', methods=['POST'])
 def weighted_pointmap():
     status, code, result = render(request.json, 'weighted_pointmap')
+    return jsonify(
+        status=status,
+        code=code,
+        result=result,
+    )
+
+@API.route('/icon_viz', methods=['POST'])
+def icon_viz():
+    status, code, result = render(request.json, 'icon_viz')
     return jsonify(
         status=status,
         code=code,
