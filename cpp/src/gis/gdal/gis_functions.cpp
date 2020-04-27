@@ -354,7 +354,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
   return result_array;
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
+    const std::shared_ptr<arrow::Array>& text) {
   auto geo = std::static_pointer_cast<arrow::StringArray>(text);
   auto len = geo->length();
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;

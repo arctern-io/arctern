@@ -136,11 +136,19 @@ def _to_arrow_array_list(arrow_array):
 
 def _to_pandas_series(array_list):
     result = None
+
     for array in array_list:
-        if result is None:
-            result = array.to_pandas()
+        if isinstance(array, list):
+            for arr in array:
+                if result is None:
+                    result = arr.to_pandas()
+                else
+                    result = result.append(arr.to_pandas(), ignore_index=True)
         else:
-            result = result.append(array.to_pandas(), ignore_index=True)
+            if result is None:
+                result = array.to_pandas()
+            else:
+                result = result.append(array.to_pandas(), ignore_index=True)
     return result
 
 @arctern_udf('double', 'double')
@@ -198,7 +206,8 @@ def ST_GeomFromGeoJSON(json):
     """
     import pyarrow as pa
     geo = pa.array(json, type='string')
-    result = arctern_core_.ST_GeomFromGeoJSON(geo)
+    geo = _to_arrow_array_list(geo)
+    result = [arctern_core_.ST_GeomFromGeoJSON(g) for g in geo]
     return _to_pandas_series(result)
 
 @arctern_udf('string')

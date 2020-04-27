@@ -59,7 +59,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
   return gdal::ST_GeomFromGeoJSON(json);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
+    const std::shared_ptr<arrow::Array>& text) {
   return gdal::ST_GeomFromText(text);
 }
 
