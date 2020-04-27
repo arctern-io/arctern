@@ -64,7 +64,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
   return gdal::ST_GeomFromText(text);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_AsText(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsText(
+    const std::shared_ptr<arrow::Array>& wkb) {
   return gdal::ST_AsText(wkb);
 }
 

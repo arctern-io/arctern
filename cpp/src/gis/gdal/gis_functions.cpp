@@ -418,7 +418,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
   return result_array;
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_AsText(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsText(
+    const std::shared_ptr<arrow::Array>& wkb) {
   auto op = [](ChunkArrayBuilder<arrow::StringBuilder>& builder, OGRGeometry* geo) {
     char* str;
     auto err_code = geo->exportToWkt(&str);
