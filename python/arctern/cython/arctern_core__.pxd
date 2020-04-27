@@ -33,13 +33,11 @@ cdef extern from "render.h" namespace "arctern::render":
 cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
                                         const vector[shared_ptr[CArray]] &ptr_y) except +
-
     vector[shared_ptr[CArray]] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
-
     vector[shared_ptr[CArray]] ST_GeomFromText(const shared_ptr[CArray] &text) except +
-    
+
     shared_ptr[CArray] ST_AsText(const shared_ptr[CArray] &text) except +
-    shared_ptr[CArray] ST_AsGeoJSON(const shared_ptr[CArray] &text) except +
+    vector[shared_ptr[CArray]] ST_AsGeoJSON(const shared_ptr[CArray] &text) except +
     shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries) except +
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_Equals(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +

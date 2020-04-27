@@ -282,7 +282,9 @@ def ST_AsGeoJSON(text):
     """
     import pyarrow as pa
     geo = pa.array(text, type='binary')
-    return arctern_caller(arctern_core_.ST_AsGeoJSON, geo)
+    geo = _to_arrow_array_list(geo)
+    result = [arctern_core_.ST_AsGeoJSON(g) for g in geo]
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Intersection(geo1, geo2):
