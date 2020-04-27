@@ -179,7 +179,9 @@ template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::vector<std::shared_ptr<typename arrow::Array>>>::type
 UnaryOp(const std::shared_ptr<arrow::Array>& array,
-        std::function<std::shared_ptr<typename arrow::Array> (ChunkArrayBuilder<T>&, OGRGeometry*)> op) {
+        std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&,
+                                                             OGRGeometry*)>
+            op) {
   auto wkb = std::static_pointer_cast<arrow::BinaryArray>(array);
   auto len = array->length();
   ChunkArrayBuilder<T> builder;
@@ -191,7 +193,7 @@ UnaryOp(const std::shared_ptr<arrow::Array>& array,
       builder.array_builder.AppendNull();
     } else {
       auto array_ptr = op(builder, geo);
-      if(array_ptr != nullptr) result_array.push_back(array_ptr);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
     }
     OGRGeometryFactory::destroyGeometry(geo);
   }
