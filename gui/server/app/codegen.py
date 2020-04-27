@@ -147,3 +147,14 @@ def generate_weighted_map_code(sql, params, session_name='spark'):
         params.get('coordinate_system')
     )
     return sql_code, vega_code
+
+def generate_icon_viz_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
+    vega_code = 'vega_icon({}, {}, {}, "{}", "{})'.format(
+        int(params.get('width')),
+        int(params.get('height')),
+        params.get('bounding_box'),
+        params.get('icon_path'),
+        params.get('coordinate_system')
+    )
+    return sql_code, vega_code
