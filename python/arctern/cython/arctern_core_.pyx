@@ -76,7 +76,8 @@ def ST_GeomFromText(object text):
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_AsText(object text):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_AsText(pyarrow_unwrap_array(text)))
+    result = arctern_core_pxd.ST_AsText(pyarrow_unwrap_array(text))
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_AsGeoJSON(object text):
     result = arctern_core_pxd.ST_AsGeoJSON(pyarrow_unwrap_array(text))

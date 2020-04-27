@@ -258,7 +258,9 @@ def ST_AsText(text):
     """
     import pyarrow as pa
     geo = pa.array(text, type='binary')
-    return arctern_caller(arctern_core_.ST_AsText, geo)
+    geo = _to_arrow_array_list(geo)
+    result = [arctern_core_.ST_AsText(g) for g in geo]
+    return _to_pandas_series(result)
 
 @arctern_udf('binary')
 def ST_AsGeoJSON(text):
