@@ -3523,7 +3523,7 @@ TEST(geometry_test, test_ST_AsGeoJSON) {
   builder.Append(std::string(""));
   builder.Finish(&input);
 
-  auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input)[0]);
+  auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input)[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0),

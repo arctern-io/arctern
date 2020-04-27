@@ -68,7 +68,7 @@ std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb
   return gdal::ST_AsText(wkb);
 }
 
-std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
   return gdal::ST_AsGeoJSON(wkb);
 }
 

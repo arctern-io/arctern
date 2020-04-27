@@ -48,7 +48,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
 
 std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
 
-std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
 
 /***************************** GEOMETRY ACCESSOR *****************************/
 

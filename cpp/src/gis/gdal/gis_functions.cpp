@@ -21,12 +21,8 @@
 #include "gis/parser.h"
 #include "utils/check_status.h"
 
-#include <assert.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -126,6 +122,23 @@ struct ChunkArrayBuilder<
   T array_builder;
   int64_t array_size = 0;
 };
+
+inline std::shared_ptr<arrow::Array> AppendString(
+  ChunkArrayBuilder<arrow::StringBuilder>& builder, const char* val) {
+  std::shared_ptr<arrow::Array> array_ptr = nullptr;
+  if(val == nullptr){
+    builder.array_builder.AppendNull();
+  } else {
+    auto str_val = std::string(val);
+    if(builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
+      CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+      builder.array_size = 0;
+    }
+    builder.array_size += str_val.size();
+    CHECK_ARROW(builder.array_builder.Append(std::move(str_val)));
+  }
+  return array_ptr;
+}
 
 inline std::shared_ptr<arrow::Array> AppendWkb(
     ChunkArrayBuilder<arrow::BinaryBuilder>& builder, const OGRGeometry* geo) {
@@ -419,15 +432,17 @@ std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb
   return UnaryOp<arrow::StringBuilder>(wkb, op);
 }
 
-std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
-  auto op = [](arrow::StringBuilder& builder, OGRGeometry* geo) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+  auto op = [](ChunkArrayBuilder<arrow::StringBuilder>& builder, OGRGeometry* geo) {
     char* str = geo->exportToJson();
+    std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if (str == nullptr) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else {
-      builder.Append(std::string(str));
+      array_ptr = AppendString(builder, str);
       CPLFree(str);
     }
+    return array_ptr;
   };
   return UnaryOp<arrow::StringBuilder>(wkb, op);
 }
