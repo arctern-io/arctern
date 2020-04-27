@@ -213,6 +213,28 @@ class TestScope():
         # assert r.json()["result"] is not None
 
     @pytest.mark.run(order=11)
+    def test_icon_viz(self, host, port):
+        url = "http://" + host + ":" + port + "/icon_viz"
+        import os
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        png_path = dir_path + "/taxi.png"
+        payload = {
+            "scope": SCOPE,
+            "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point from {} where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))".format(table_name),
+            "params": {
+                'width': 1024,
+                'height': 896,
+                'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                'coordinate_system': 'EPSG:4326',
+                'icon_path': png_path
+            }
+        }
+        r = requests.post(url=url, json=payload)
+        assert r.status_code == 200
+        print(r.text)
+        # assert r.json()["result"] is not None
+
+    @pytest.mark.run(order=12)
     def test_drop_table(self, host, port):
         url = "http://" + host + ":" + port + '/query'
         sql1 = "drop table if exists {}".format(table_name)
@@ -234,7 +256,7 @@ class TestScope():
         print(r.text)
         assert r.status_code == 200
 
-    @pytest.mark.run(order=12)
+    @pytest.mark.run(order=13)
     def test_command(self, host, port):
         url = "http://" + host + ":" + port + '/command'
         command = """
@@ -263,7 +285,7 @@ print("Pi is roughly %f" % (4.0 * count / n))
         print(r.text)
         assert r.status_code == 200
 
-    @pytest.mark.run(order=13)
+    @pytest.mark.run(order=14)
     def test_remove_scope(self, host, port):
         scope = SCOPE
         url = "http://" + host + ":" + port + "/scope/" + scope
