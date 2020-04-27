@@ -124,13 +124,13 @@ struct ChunkArrayBuilder<
 };
 
 inline std::shared_ptr<arrow::Array> AppendString(
-  ChunkArrayBuilder<arrow::StringBuilder>& builder, const char* val) {
+    ChunkArrayBuilder<arrow::StringBuilder>& builder, const char* val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
-  if(val == nullptr){
+  if (val == nullptr) {
     builder.array_builder.AppendNull();
   } else {
     auto str_val = std::string(val);
-    if(builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
+    if (builder.array_size + str_val.size() > ChunkArrayBuilder<void>::CAPACITY) {
       CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
       builder.array_size = 0;
     }
@@ -432,7 +432,8 @@ std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb
   return UnaryOp<arrow::StringBuilder>(wkb, op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(
+    const std::shared_ptr<arrow::Array>& wkb) {
   auto op = [](ChunkArrayBuilder<arrow::StringBuilder>& builder, OGRGeometry* geo) {
     char* str = geo->exportToJson();
     std::shared_ptr<arrow::Array> array_ptr = nullptr;
