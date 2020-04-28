@@ -156,6 +156,18 @@ inline std::shared_ptr<arrow::Array> AppendBoolean(
   return array_ptr;
 }
 
+inline std::shared_ptr<arrow::Array> AppendDouble(
+    ChunkArrayBuilder<arrow::DoubleBuilder>& builder, double val) {
+  std::shared_ptr<arrow::Array> array_ptr = nullptr;
+  if (builder.array_size  + sizeof(val) > ChunkArrayBuilder<void>::CAPACITY) {
+    CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+    builder.array_size = 0;
+  }
+  builder.array_builder.Append(val);
+  builder.array_size += sizeof(val);
+  return array_ptr;
+}
+
 inline std::shared_ptr<arrow::Array> AppendString(
     ChunkArrayBuilder<arrow::StringBuilder>& builder, std::string&& str_val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
@@ -871,9 +883,9 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_DistanceSphere(
-    const std::shared_ptr<arrow::Array>& point_left,
-    const std::shared_ptr<arrow::Array>& point_right) {
+std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
+    const std::vector<std::shared_ptr<arrow::Array>>& point_left,
+    const std::vector<std::shared_ptr<arrow::Array>>& point_right) {
   auto distance = [](double fromlon, double fromlat, double tolon, double tolat) {
     double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
     double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
@@ -886,9 +898,10 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
     return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
   };
 
-  auto op = [&distance](arrow::DoubleBuilder& builder, OGRGeometry* g1, OGRGeometry* g2) {
+  auto op = [&distance](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* g1, OGRGeometry* g2) {
+    std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else {
       auto p1 = reinterpret_cast<OGRPoint*>(g1);
       auto p2 = reinterpret_cast<OGRPoint*>(g2);
@@ -898,11 +911,12 @@ std::shared_ptr<arrow::Array> ST_DistanceSphere(
       double tolon = p2->getY();
       if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
           (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
-        builder.AppendNull();
+        builder.array_builder.AppendNull();
       } else {
-        builder.Append(distance(fromlat, fromlon, tolat, tolon));
+        array_ptr = AppendDouble(builder, distance(fromlat, fromlon, tolat, tolon));
       }
     }
+    return array_ptr;
   };
   return BinaryOp<arrow::DoubleBuilder>(point_left, point_right, op);
 }
