@@ -35,6 +35,7 @@ std::vector<OGRGeometry*> GeometryExtraction(
 
   int index = 0;
   for (const auto& arr : arrs) {
+    assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
       OGRGeometry* geo = nullptr;
@@ -50,6 +51,27 @@ std::vector<OGRGeometry*> GeometryExtraction(
   }
 
   return geos_res;
+}
+
+std::vector<std::string> WkbExtraction(
+    const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
+  int total_size = 0;
+  for (const auto& arr : arrs) {
+    total_size += arr->length();
+  }
+  std::vector<std::string> wkb_res(total_size);
+
+  int index = 0;
+  for (const auto& arr : arrs) {
+    assert(arr->type_id() == arrow::Type::BINARY);
+    auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
+    for (int i = 0; i < wkb_geometries->length(); i++) {
+      wkb_res[index] = wkb_geometries->GetString(i);
+      index++;
+    }
+  }
+
+  return wkb_res;
 }
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(

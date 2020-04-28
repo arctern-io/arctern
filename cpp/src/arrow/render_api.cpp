@@ -384,9 +384,9 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>&
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_choroplethmap(
-    const std::shared_ptr<arrow::Array>& arr_wkb,
-    const std::shared_ptr<arrow::Array>& arr_c, const std::string& conf) {
+std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
+                                                  const std::vector<T>& arr_c,
+                                                  const std::string& conf) {
   auto data = weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.second.size();
 
@@ -962,10 +962,9 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
 std::shared_ptr<arrow::Array> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs_wkb,
     const std::vector<std::shared_ptr<arrow::Array>>& arrs_c, const std::string& conf) {
-  const auto& wkb_vec = GeometryExtraction(arrs_wkb);
-  auto num_buildings = wkb_vec.size();
-  auto arr_c = WeightExtraction<int>(arrs_c);
-  return out_pic(choroplethmap<int>(wkb_vec, arr_c, num_buildings, conf));
+  const auto& wkb_vec = WkbExtraction(arrs_wkb);
+  const auto& arr_c = WeightExtraction<int>(arrs_c);
+  return out_pic(render_choroplethmap<int>(wkb_vec, arr_c, conf));
 }
 
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,

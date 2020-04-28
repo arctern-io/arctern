@@ -59,6 +59,10 @@ std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::shared_ptr<arrow::Array>& arr_c);
 
 template <typename T>
+std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
+    const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c);
+
+template <typename T>
 std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
            std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,

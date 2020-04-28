@@ -241,6 +241,38 @@ std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
 }
 
 template <typename T>
+std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
+    const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c) {
+  assert(wkb_arr.size() == arr_c.size());
+
+  std::unordered_map<std::string, std::vector<T>> wkb_map;
+  for (size_t i = 0; i < wkb_arr.size(); i++) {
+    std::string wkb = wkb_arr[i];
+    if (wkb_map.find(wkb) == wkb_map.end()) {
+      std::vector<T> weight;
+      weight.emplace_back(arr_c[i]);
+      wkb_map[wkb] = weight;
+    } else {
+      auto& weight = wkb_map[wkb];
+      weight.emplace_back(arr_c[i]);
+    }
+  }
+
+  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
+  std::vector<std::vector<T>> results_weight(wkb_map.size());
+  int i = 0;
+  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
+    OGRGeometry* res_geo;
+    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
+    results_wkb[i] = res_geo;
+    results_weight[i] = iter->second;
+    i++;
+  }
+
+  return std::make_pair(results_wkb, results_weight);
+}
+
+template <typename T>
 std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
            std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,

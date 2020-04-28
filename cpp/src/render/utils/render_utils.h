@@ -26,18 +26,21 @@ namespace render {
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
+std::vector<std::string> WkbExtraction(
+    const std::vector<std::shared_ptr<arrow::Array>>& arrs);
+
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
     const std::vector<OGRGeometry*>& geos, int arrays_size);
 
 template <typename T>
-T* WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
+std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
   int total_size = 0;
 
   for (const auto& arr : arrs) {
     total_size += arr->length();
   }
 
-  auto res = (T*)malloc(total_size * sizeof(T));
+  std::vector<T> res(total_size);
 
   int offset = 0;
   for (const auto& arr : arrs) {
@@ -45,7 +48,7 @@ T* WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
     //    auto numeric_arr = std::static_pointer_cast<arrow::NumericArray<T>>(arr);
     //    (T*)numeric_arr->data()->GetValues(1);
     auto ptr = (T*)arr->data()->GetValues<T>(1);
-    std::memcpy(res + offset, ptr, arr->length() * sizeof(T));
+    std::memcpy(res.data() + offset, ptr, arr->length() * sizeof(T));
     offset += arr->length();
   }
 

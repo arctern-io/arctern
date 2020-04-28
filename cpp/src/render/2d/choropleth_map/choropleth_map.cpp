@@ -50,13 +50,6 @@ template class ChoroplethMap<float>;
 template class ChoroplethMap<double>;
 
 template <typename T>
-ChoroplethMap<T>::~ChoroplethMap() {
-  if (count_ != nullptr) {
-    free(count_);
-  }
-}
-
-template <typename T>
 ChoroplethMap<T>::ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, T* count,
                                 int64_t num_buildings)
     : choropleth_wkb_(std::move(choropleth_wkb)),
@@ -77,7 +70,7 @@ void ChoroplethMap<T>::Draw() {
 
   for (int i = 0; i < num_buildings_; i++) {
     glColor4f(colors_[i * 4], colors_[i * 4 + 1], colors_[i * 4 + 2], colors_[i * 4 + 3]);
-    glBegin(GL_LINES);
+    glBegin(GL_POLYGON);
     for (int j = 0; j < buildings_x_[i].size(); j++) {
       glVertex2d(buildings_x_[i][j], buildings_y_[i][j]);
     }
