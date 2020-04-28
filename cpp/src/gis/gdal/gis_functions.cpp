@@ -123,6 +123,18 @@ struct ChunkArrayBuilder<
   int64_t array_size = 0;
 };
 
+inline std::shared_ptr<arrow::Array> AppendBoolean(
+    ChunkArrayBuilder<arrow::BooleanBuilder>& builder, bool val) {
+  std::shared_ptr<arrow::Array> array_ptr = nullptr;
+  if (builder.array_size / 8 >= ChunkArrayBuilder<void>::CAPACITY) {
+    CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+    builder.array_size = 0;
+  }
+  builder.array_builder.Append(val);
+  ++builder.array_size;
+  return array_ptr;
+}
+
 inline std::shared_ptr<arrow::Array> AppendString(
     ChunkArrayBuilder<arrow::StringBuilder>& builder, std::string&& str_val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
