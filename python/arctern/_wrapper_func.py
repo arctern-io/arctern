@@ -1036,7 +1036,9 @@ def ST_Buffer(geos, distance):
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    return arctern_caller(arctern_core_.ST_Buffer, arr_geos, distance)
+    arr_geos = _to_arrow_array_list(arr_geos)
+    result = [arctern_core_.ST_Buffer(g, distance) for g in arr_geos]
+    return _to_pandas_series(result)
 
 @arctern_udf('binary')
 def ST_Union_Aggr(geos):

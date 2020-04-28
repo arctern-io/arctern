@@ -177,8 +177,11 @@ def ST_Envelope(object geo_arr):
 
 def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
     if n_quadrant_segments is not None:
-        return pyarrow_wrap_array(arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist,n_quadrant_segments))
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist))
+        result = arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist,n_quadrant_segments)
+        return [pyarrow_wrap_array(ptr) for ptr in result]
+    else:
+        result = arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist)
+        return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Union_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Union_Aggr(pyarrow_unwrap_array(geo_arr)))

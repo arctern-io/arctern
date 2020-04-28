@@ -118,7 +118,7 @@ std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& ge
 
 std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& geo_arr);
 
-std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
+std::vector<std::shared_ptr<arrow::Array>> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
                                         double buffer_distance,
                                         int n_quadrant_segments = 30);
 
