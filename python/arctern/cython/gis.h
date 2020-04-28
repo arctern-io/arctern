@@ -44,9 +44,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);
 
-std::shared_ptr<arrow::Array> ST_Equals(
-    const std::shared_ptr<arrow::Array>& left_geometries,
-    const std::shared_ptr<arrow::Array>& right_geometries);
+std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
+    const std::vector<std::shared_ptr<arrow::Array>>& left_geometries,
+    const std::vector<std::shared_ptr<arrow::Array>>& right_geometries);
 
 std::shared_ptr<arrow::Array> ST_Touches(
     const std::shared_ptr<arrow::Array>& left_geometries,

@@ -42,7 +42,10 @@ cdef extern from "gis.h" namespace "arctern::gis":
                                                const vector[shared_ptr[CArray]] &right_geometries) except +
 
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries) except +
-    shared_ptr[CArray] ST_Equals(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Equals(const vector[shared_ptr[CArray]] &left_geometries, \
+                                         const vector[shared_ptr[CArray]] &right_geometries) except +
+
     shared_ptr[CArray] ST_Touches(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
     shared_ptr[CArray] ST_Overlaps(const shared_ptr[CArray] &left_geometries,const shared_ptr[CArray] &right_geometries) except +
     shared_ptr[CArray] ST_Crosses(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
