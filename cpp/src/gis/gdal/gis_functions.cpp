@@ -923,9 +923,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
-  const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-  const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
       builder.array_builder.AppendNull();
