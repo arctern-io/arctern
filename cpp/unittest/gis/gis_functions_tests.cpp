@@ -262,6 +262,7 @@ TEST(geometry_test, test_ST_Point) {
     std::cout << "array len = " << len << std::endl;
     total_len += len;
   }
+  ASSERT_GT(result.size(), 1);
   ASSERT_EQ(total_len, 100 * 10000);
 }
 
@@ -2584,7 +2585,7 @@ TEST(geometry_test, test_ST_Distance2){
     std::cout << "array length = " << ptr->length() << std::endl;
     total_len += ptr->length();
   }
-
+  ASSERT_GT(rst.size(), 1);
   ASSERT_EQ(total_len, 3000000);
 }
 
