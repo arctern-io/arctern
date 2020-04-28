@@ -179,7 +179,14 @@ def ST_Length(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Length(pyarrow_unwrap_array(geo_arr)))
 
 def ST_HausdorffDistance(object geo1, object geo2):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_HausdorffDistance(pyarrow_unwrap_array(geo1),pyarrow_unwrap_array(geo2)))
+    cdef vector[shared_ptr[CArray]] arr_1
+    for arr in geo1:
+        arr_1.push_back(pyarrow_unwrap_array(arr))
+    cdef vector[shared_ptr[CArray]] arr_2
+    for arr in geo2:
+        arr_2.push_back(pyarrow_unwrap_array(arr))
+    result = arctern_core_pxd.ST_HausdorffDistance(arr_1, arr_2)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_ConvexHull(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_ConvexHull(pyarrow_unwrap_array(geo_arr)))
