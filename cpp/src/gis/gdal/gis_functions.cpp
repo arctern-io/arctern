@@ -159,7 +159,7 @@ inline std::shared_ptr<arrow::Array> AppendBoolean(
 inline std::shared_ptr<arrow::Array> AppendDouble(
     ChunkArrayBuilder<arrow::DoubleBuilder>& builder, double val) {
   std::shared_ptr<arrow::Array> array_ptr = nullptr;
-  if (builder.array_size  + sizeof(val) > ChunkArrayBuilder<void>::CAPACITY) {
+  if (builder.array_size + sizeof(val) > ChunkArrayBuilder<void>::CAPACITY) {
     CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
     builder.array_size = 0;
   }
@@ -898,7 +898,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
     return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
   };
 
-  auto op = [&distance](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* g1, OGRGeometry* g2) {
+  auto op = [&distance](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* g1,
+                        OGRGeometry* g2) {
     std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if ((g1->getGeometryType() != wkbPoint) || (g2->getGeometryType() != wkbPoint)) {
       builder.array_builder.AppendNull();
