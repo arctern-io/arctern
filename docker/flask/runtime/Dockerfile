@@ -26,4 +26,5 @@ EXPOSE 8080
 WORKDIR /arctern/gui/server/arctern_server
 
 # use login shell when running the container
+ENV PYTHONPATH=/arctern/gui/server:$PYTHONPATH
 CMD ["python", "manage.py", "-r"]
