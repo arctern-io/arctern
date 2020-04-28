@@ -100,16 +100,16 @@ inline OGRGeometry* Wrapper_CurveToLine(OGRGeometry* geo, HasCurveVisitor* has_c
   return geo;
 }
 
-inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
-  char* str;
-  auto err_code = OGR_G_ExportToWkt(geo, &str);
-  if (err_code != OGRERR_NONE) {
-    std::string err_msg =
-        "failed to export to wkt, error code = " + std::to_string(err_code);
-    throw std::runtime_error(err_msg);
-  }
-  return str;
-}
+// inline char* Wrapper_OGR_G_ExportToWkt(OGRGeometry* geo) {
+//   char* str;
+//   auto err_code = OGR_G_ExportToWkt(geo, &str);
+//   if (err_code != OGRERR_NONE) {
+//     std::string err_msg =
+//         "failed to export to wkt, error code = " + std::to_string(err_code);
+//     throw std::runtime_error(err_msg);
+//   }
+//   return str;
+// }
 
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   if (geo == nullptr) {
@@ -330,38 +330,38 @@ UnaryOp(const std::shared_ptr<arrow::Array>& array,
   return result_array;
 }
 
-template <typename T>
-typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
-                        std::shared_ptr<typename arrow::Array>>::type
-BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
-         const std::shared_ptr<arrow::Array>& geo2,
-         std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
-         std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
-  auto len = geo1->length();
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  T builder;
-  for (int i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
-    if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
-      builder.AppendNull();
-    } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      if (null_op == nullptr) {
-        builder.AppendNull();
-      } else {
-        null_op(builder, ogr1, ogr2);
-      }
-    } else {
-      op(builder, ogr1, ogr2);
-    }
-    OGRGeometryFactory::destroyGeometry(ogr1);
-    OGRGeometryFactory::destroyGeometry(ogr2);
-  }
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
-}
+// template <typename T>
+// typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
+//                         std::shared_ptr<typename arrow::Array>>::type
+// BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
+//          const std::shared_ptr<arrow::Array>& geo2,
+//          std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
+//          std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
+//   auto len = geo1->length();
+//   auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
+//   auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
+//   T builder;
+//   for (int i = 0; i < len; ++i) {
+//     auto ogr1 = Wrapper_createFromWkb(wkt1, i);
+//     auto ogr2 = Wrapper_createFromWkb(wkt2, i);
+//     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+//       builder.AppendNull();
+//     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+//       if (null_op == nullptr) {
+//         builder.AppendNull();
+//       } else {
+//         null_op(builder, ogr1, ogr2);
+//       }
+//     } else {
+//       op(builder, ogr1, ogr2);
+//     }
+//     OGRGeometryFactory::destroyGeometry(ogr1);
+//     OGRGeometryFactory::destroyGeometry(ogr2);
+//   }
+//   std::shared_ptr<arrow::Array> results;
+//   CHECK_ARROW(builder.Finish(&results));
+//   return results;
+// }
 
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
