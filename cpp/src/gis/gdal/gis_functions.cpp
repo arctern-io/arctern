@@ -229,6 +229,8 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
   if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
     idx.array_idx++;
     idx.is_null = true;
+    idx.item_value.data_ptr = nullptr;
+    idx.item_value.wkb_size = 0;
     return true;
   }
   auto binary_array =
