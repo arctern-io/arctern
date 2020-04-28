@@ -1159,7 +1159,9 @@ def ST_CurveToLine(geos):
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
-    return arctern_caller(arctern_core_.ST_CurveToLine, arr_geos)
+    arr_geos = _to_arrow_array_list(arr_geos)
+    result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
+    return _to_pandas_series(result)
 
 def point_map_layer(vega, points, transform=True):
     import pyarrow as pa

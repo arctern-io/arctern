@@ -174,7 +174,8 @@ def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Transform(pyarrow_unwrap_array(geo_arr),src_rs,dst_rs))
 
 def ST_CurveToLine(object geo_arr):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr)))
+    result = arctern_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr))
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))

@@ -112,7 +112,7 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
                                            const std::string& src_rs,
                                            const std::string& dst_rs);
 
-std::shared_ptr<arrow::Array> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos);
+std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos);
 
 std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo_arr);
 
