@@ -3504,7 +3504,7 @@ TEST(geometry_test, test_ST_CurveToLine) {
   builder.Finish(&input_data);
 
   auto res = arctern::gis::ST_AsText(
-      arctern::gis::ST_CurveToLine(arctern::gis::ST_GeomFromText(input_data)[0]))[0];
+      arctern::gis::ST_CurveToLine(arctern::gis::ST_GeomFromText(input_data)[0])[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0).substr(0, 7), "POLYGON");

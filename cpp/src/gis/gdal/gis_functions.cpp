@@ -765,12 +765,13 @@ std::shared_ptr<arrow::Array> ST_Transform(
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_CurveToLine(
+std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
     const std::shared_ptr<arrow::Array>& geometries) {
-  auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+  auto op = [](ChunkArrayBuilder<arrow::BinaryBuilder>& builder, OGRGeometry* geo) {
     auto line = geo->getLinearGeometry();
-    AppendWkbNDR(builder, line);
+    auto array_ptr = AppendWkb(builder, line);
     OGRGeometryFactory::destroyGeometry(line);
+    return array_ptr;
   };
   return UnaryOp<arrow::BinaryBuilder>(geometries, op);
 }
