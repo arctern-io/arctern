@@ -276,11 +276,11 @@ struct ChunkArrayIdx {
 };
 
 struct WkbItem {
-  const void * data_ptr;
+  const void* data_ptr;
   int wkb_size;
-  OGRGeometry* ToGeometry(){
-    if(data_ptr == nullptr) return nullptr;
-    if(wkb_size <= 0) return nullptr;
+  OGRGeometry* ToGeometry() {
+    if (data_ptr == nullptr) return nullptr;
+    if (wkb_size <= 0) return nullptr;
     OGRGeometry* geo = nullptr;
     auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, wkb_size);
     if (err_code != OGRERR_NONE) return nullptr;
@@ -302,7 +302,8 @@ bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
     idx.is_null = true;
     return true;
   }
-  auto binary_array = std::static_pointer_cast<arrow::BinaryArray>(chunk_array[idx.chunk_idx]);
+  auto binary_array =
+      std::static_pointer_cast<arrow::BinaryArray>(chunk_array[idx.chunk_idx]);
   arrow::BinaryArray::offset_type wkb_size;
   auto data_ptr = binary_array->GetValue(idx.array_idx, &wkb_size);
   idx.item_value.data_ptr = data_ptr;
@@ -625,7 +626,7 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-    const std::vector<std::shared_ptr<arrow::Array>>& geo2){
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
   std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{geo1, geo2};
   std::vector<ChunkArrayIdx<WkbItem>> idx_list(2);
   ChunkArrayBuilder<arrow::BinaryBuilder> builder;
@@ -634,7 +635,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
   auto has_curve = new HasCurveVisitor;
   OGRGeometryCollection empty;
 
-  while(GetNextValue(array_list, idx_list, is_null)){
+  while (GetNextValue(array_list, idx_list, is_null)) {
     auto ogr1 = idx_list[0].item_value.ToGeometry();
     auto ogr2 = idx_list[1].item_value.ToGeometry();
 
