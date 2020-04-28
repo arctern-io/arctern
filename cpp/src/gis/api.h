@@ -70,7 +70,7 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 
 /**************************** GEOMETRY PROCESSING ****************************/
 
-std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
+std::vector<std::shared_ptr<arrow::Array>> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
                                         double buffer_distance,
                                         int n_quadrant_segments = 30);
 

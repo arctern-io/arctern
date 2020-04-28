@@ -3343,10 +3343,10 @@ TEST(geometry_test, test_ST_Buffer) {
   builder.Finish(&input);
 
   auto res = arctern::gis::ST_AsText(
-      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input)[0], 0))[0];
+      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input)[0], 0)[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   auto res1 = arctern::gis::ST_AsText(
-      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input)[0], 1, 2))[0];
+      arctern::gis::ST_Buffer(arctern::gis::ST_GeomFromText(input)[0], 1, 2)[0])[0];
   auto res1_str = std::static_pointer_cast<arrow::StringArray>(res1);
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON EMPTY");

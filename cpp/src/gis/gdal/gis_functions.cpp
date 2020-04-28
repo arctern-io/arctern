@@ -560,13 +560,14 @@ std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& a
 }
 
 /************************ GEOMETRY PROCESSING ************************/
-std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& array,
+std::vector<std::shared_ptr<arrow::Array>>  ST_Buffer(const std::shared_ptr<arrow::Array>& array,
                                         double buffer_distance, int n_quadrant_segments) {
-  auto op = [&buffer_distance, &n_quadrant_segments](arrow::BinaryBuilder& builder,
+  auto op = [&buffer_distance, &n_quadrant_segments](ChunkArrayBuilder<arrow::BinaryBuilder>& builder,
                                                      OGRGeometry* geo) {
     auto buffer = geo->Buffer(buffer_distance, n_quadrant_segments);
-    AppendWkbNDR(builder, buffer);
+    auto array_ptr = AppendWkb(builder, buffer);
     OGRGeometryFactory::destroyGeometry(buffer);
+    return array_ptr;
   };
   return UnaryOp<arrow::BinaryBuilder>(array, op);
 }
