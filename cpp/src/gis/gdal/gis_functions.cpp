@@ -41,6 +41,27 @@ namespace gdal {
 //   return centroid;
 // }
 
+template <typename T>
+struct ChunkArrayIdx {
+  int chunk_idx = 0;
+  int array_idx = 0;
+  bool is_null = false;
+  T item_value;
+};
+
+struct WkbItem {
+  const void* data_ptr;
+  int wkb_size;
+  OGRGeometry* ToGeometry() {
+    if (data_ptr == nullptr) return nullptr;
+    if (wkb_size <= 0) return nullptr;
+    OGRGeometry* geo = nullptr;
+    auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, wkb_size);
+    if (err_code != OGRERR_NONE) return nullptr;
+    return geo;
+  }
+};
+
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
@@ -184,6 +205,70 @@ inline std::shared_ptr<arrow::Array> AppendWkb(
   return array_ptr;
 }
 
+
+bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
+                  ChunkArrayIdx<WkbItem>& idx) {
+  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
+  int len = chunk_array[idx.chunk_idx]->length();
+  if (idx.array_idx >= len) {
+    idx.chunk_idx++;
+    idx.array_idx = 0;
+    return GetNextValue(chunk_array, idx);
+  }
+  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
+    idx.array_idx++;
+    idx.is_null = true;
+    return true;
+  }
+  auto binary_array =
+      std::static_pointer_cast<arrow::BinaryArray>(chunk_array[idx.chunk_idx]);
+  arrow::BinaryArray::offset_type wkb_size;
+  auto data_ptr = binary_array->GetValue(idx.array_idx, &wkb_size);
+  idx.item_value.data_ptr = data_ptr;
+  idx.item_value.wkb_size = wkb_size;
+  idx.array_idx++;
+  idx.is_null = (idx.item_value.wkb_size > 0);
+  return true;
+}
+
+bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
+                  ChunkArrayIdx<double>& idx) {
+  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
+  int len = chunk_array[idx.chunk_idx]->length();
+  if (idx.array_idx >= len) {
+    idx.chunk_idx++;
+    idx.array_idx = 0;
+    return GetNextValue(chunk_array, idx);
+  }
+  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
+    idx.array_idx++;
+    idx.is_null = true;
+    return true;
+  }
+  auto double_array =
+      std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
+  idx.item_value = double_array->Value(idx.array_idx);
+  idx.array_idx++;
+  idx.is_null = false;
+  return true;
+}
+
+template <typename T>
+bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>>& array_list,
+                  std::vector<ChunkArrayIdx<T>>& idx_list, bool& is_null) {
+  auto ret_val = GetNextValue(array_list[0], idx_list[0]);
+  is_null = idx_list[0].is_null;
+
+  for (int i = 1; i < array_list.size(); ++i) {
+    auto cur_val = GetNextValue(array_list[i], idx_list[i]);
+    if (cur_val != ret_val) {
+      throw std::runtime_error("incorrect input data");
+    }
+    is_null |= idx_list[i].is_null;
+  }
+  return ret_val;
+}
+
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::shared_ptr<typename arrow::Array>>::type
@@ -305,90 +390,6 @@ BinaryOp(const std::vector<std::shared_ptr<typename arrow::Array>>& geo1,
   CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
   result_array.push_back(array_ptr);
   return result_array;
-}
-
-template <typename T>
-struct ChunkArrayIdx {
-  int chunk_idx = 0;
-  int array_idx = 0;
-  bool is_null = false;
-  T item_value;
-};
-
-struct WkbItem {
-  const void* data_ptr;
-  int wkb_size;
-  OGRGeometry* ToGeometry() {
-    if (data_ptr == nullptr) return nullptr;
-    if (wkb_size <= 0) return nullptr;
-    OGRGeometry* geo = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, wkb_size);
-    if (err_code != OGRERR_NONE) return nullptr;
-    return geo;
-  }
-};
-
-bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
-                  ChunkArrayIdx<WkbItem>& idx) {
-  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
-  int len = chunk_array[idx.chunk_idx]->length();
-  if (idx.array_idx >= len) {
-    idx.chunk_idx++;
-    idx.array_idx = 0;
-    return GetNextValue(chunk_array, idx);
-  }
-  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
-    idx.array_idx++;
-    idx.is_null = true;
-    return true;
-  }
-  auto binary_array =
-      std::static_pointer_cast<arrow::BinaryArray>(chunk_array[idx.chunk_idx]);
-  arrow::BinaryArray::offset_type wkb_size;
-  auto data_ptr = binary_array->GetValue(idx.array_idx, &wkb_size);
-  idx.item_value.data_ptr = data_ptr;
-  idx.item_value.wkb_size = wkb_size;
-  idx.array_idx++;
-  idx.is_null = (idx.item_value.wkb_size > 0);
-  return true;
-}
-
-bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
-                  ChunkArrayIdx<double>& idx) {
-  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
-  int len = chunk_array[idx.chunk_idx]->length();
-  if (idx.array_idx >= len) {
-    idx.chunk_idx++;
-    idx.array_idx = 0;
-    return GetNextValue(chunk_array, idx);
-  }
-  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
-    idx.array_idx++;
-    idx.is_null = true;
-    return true;
-  }
-  auto double_array =
-      std::static_pointer_cast<arrow::DoubleArray>(chunk_array[idx.chunk_idx]);
-  idx.item_value = double_array->Value(idx.array_idx);
-  idx.array_idx++;
-  idx.is_null = false;
-  return true;
-}
-
-template <typename T>
-bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>>& array_list,
-                  std::vector<ChunkArrayIdx<T>>& idx_list, bool& is_null) {
-  auto ret_val = GetNextValue(array_list[0], idx_list[0]);
-  is_null = idx_list[0].is_null;
-
-  for (int i = 1; i < array_list.size(); ++i) {
-    auto cur_val = GetNextValue(array_list[i], idx_list[i]);
-    if (cur_val != ret_val) {
-      throw std::runtime_error("incorrect input data");
-    }
-    is_null |= idx_list[i].is_null;
-  }
-  return ret_val;
 }
 
 /************************ GEOMETRY CONSTRUCTOR ************************/
