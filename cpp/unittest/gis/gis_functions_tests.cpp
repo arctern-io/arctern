@@ -2483,7 +2483,7 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
   array_t from_lat_array{from_lat};
   array_t from_lon_array{from_lon};
-  auto from_point = arctern::gis::ST_Point(from_lat_array, from_lon_array)[0];
+  auto from_point = arctern::gis::ST_Point(from_lat_array, from_lon_array);
 
   lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
   lat_buider.Append(100), lon_builder.Append(70);
@@ -2496,9 +2496,9 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
   array_t to_lat_array{to_lat};
   array_t to_lon_array{to_lon};
-  auto to_point = arctern::gis::ST_Point(to_lat_array, to_lon_array)[0];
+  auto to_point = arctern::gis::ST_Point(to_lat_array, to_lon_array);
 
-  auto res = arctern::gis::ST_DistanceSphere(from_point, to_point);
+  auto res = arctern::gis::ST_DistanceSphere(from_point, to_point)[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
