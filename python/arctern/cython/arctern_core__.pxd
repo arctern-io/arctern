@@ -46,9 +46,15 @@ cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Equals(const vector[shared_ptr[CArray]] &left_geometries, \
                                          const vector[shared_ptr[CArray]] &right_geometries) except +
 
-    shared_ptr[CArray] ST_Touches(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
-    shared_ptr[CArray] ST_Overlaps(const shared_ptr[CArray] &left_geometries,const shared_ptr[CArray] &right_geometries) except +
-    shared_ptr[CArray] ST_Crosses(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
+    vector[shared_ptr[CArray]] ST_Touches(const vector[shared_ptr[CArray]] &left_geometries, \
+                                          const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Overlaps(const vector[shared_ptr[CArray]] &left_geometries, \
+                                           const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Crosses(const vector[shared_ptr[CArray]] &left_geometries, \
+                                          const vector[shared_ptr[CArray]] &right_geometries) except +
+
     shared_ptr[CArray] ST_IsSimple(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot) except +
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries) except +
@@ -60,9 +66,14 @@ cdef extern from "gis.h" namespace "arctern::gis":
                                                       const vector[shared_ptr[CArray]] &max_x, \
                                                       const vector[shared_ptr[CArray]] &max_y) except +
     
-    shared_ptr[CArray] ST_Contains(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
-    shared_ptr[CArray] ST_Intersects(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
-    shared_ptr[CArray] ST_Within(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
+    vector[shared_ptr[CArray]] ST_Contains(const vector[shared_ptr[CArray]] &ptr_x, \
+                                           const vector[shared_ptr[CArray]] &ptr_y) except +
+
+    vector[shared_ptr[CArray]] ST_Intersects(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                             const vector[shared_ptr[CArray]] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_Within(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                         const vector[shared_ptr[CArray]] &geo_arr2) except +
 
     vector[shared_ptr[CArray]] ST_Distance(const vector[shared_ptr[CArray]] &geo_arr1, \
                                            const vector[shared_ptr[CArray]] &geo_arr2) except +

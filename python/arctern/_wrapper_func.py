@@ -437,7 +437,10 @@ def ST_Touches(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Touches, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Touches(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Overlaps(geo1, geo2):
@@ -468,7 +471,10 @@ def ST_Overlaps(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Overlaps, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Overlaps(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Crosses(geo1, geo2):
@@ -501,7 +507,10 @@ def ST_Crosses(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Crosses, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Crosses(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary')
 def ST_IsSimple(geos):
@@ -682,7 +691,10 @@ def ST_Contains(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Contains, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Contains(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Intersects(geo1, geo2):
@@ -712,7 +724,10 @@ def ST_Intersects(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Intersects, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Intersects(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Within(geo1, geo2):
@@ -743,7 +758,10 @@ def ST_Within(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Within, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Within(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_Distance(geo1, geo2):

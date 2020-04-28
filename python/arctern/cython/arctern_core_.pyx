@@ -107,13 +107,34 @@ def ST_Equals(object left_geometries,object right_geometries):
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Touches(object left_geometries,object right_geometries):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Touches(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Touches(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Overlaps(object left_geometries,object right_geometries):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Overlaps(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Overlaps(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Crosses(object left_geometries,object right_geometries):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Crosses(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Crosses(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_IsSimple(object geometries):
     return pyarrow_wrap_array(arctern_core_pxd.ST_IsSimple(pyarrow_unwrap_array(geometries)))
@@ -147,14 +168,35 @@ def ST_PolygonFromEnvelope(object min_x,object min_y,object max_x,object max_y):
     result = arctern_core_pxd.ST_PolygonFromEnvelope(min_x_arr, min_y_arr, max_x_arr, max_y_arr)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def ST_Contains(object ptr_x,object ptr_y):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Contains(pyarrow_unwrap_array(ptr_x),pyarrow_unwrap_array(ptr_y)))
+def ST_Contains(object left_geometries,object right_geometries):
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Contains(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def ST_Intersects(object geo_arr1,object geo_arr2):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Intersects(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+def ST_Intersects(object left_geometries,object right_geometries):
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Intersects(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def ST_Within(object geo_arr1,object geo_arr2):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Within(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+def ST_Within(object left_geometries,object right_geometries):
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Within(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Distance(object geo_arr1,object geo_arr2):
     cdef vector[shared_ptr[CArray]] arr_1
