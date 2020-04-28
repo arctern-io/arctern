@@ -959,9 +959,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
  * ***********************************************/
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
-  const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-  const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
       return AppendBoolean(builder, true);
     } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
@@ -970,9 +971,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
       return AppendBoolean(builder, false);
     }
   };
-  auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) { 
-    return AppendBoolean(builder, false);
-  };
+  auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+                    OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
