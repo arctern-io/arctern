@@ -861,8 +861,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
     const std::vector<std::shared_ptr<arrow::Array>>& geo1,
     const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
   auto geos_ctx = OGRGeometry::createGEOSContext();
-  auto op = [&geos_ctx](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* ogr1,
-                        OGRGeometry* ogr2) {
+  auto op = [&geos_ctx](ChunkArrayBuilder<arrow::DoubleBuilder>& builder,
+                        OGRGeometry* ogr1, OGRGeometry* ogr2) {
     std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
       builder.array_builder.AppendNull();
