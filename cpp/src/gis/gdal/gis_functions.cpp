@@ -857,14 +857,15 @@ std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geo
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_HausdorffDistance(
-    const std::shared_ptr<arrow::Array>& geo1,
-    const std::shared_ptr<arrow::Array>& geo2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
   auto geos_ctx = OGRGeometry::createGEOSContext();
-  auto op = [&geos_ctx](arrow::DoubleBuilder& builder, OGRGeometry* ogr1,
+  auto op = [&geos_ctx](ChunkArrayBuilder<arrow::DoubleBuilder>& builder, OGRGeometry* ogr1,
                         OGRGeometry* ogr2) {
+    std::shared_ptr<arrow::Array> array_ptr = nullptr;
     if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else {
       auto geos1 = ogr1->exportToGEOS(geos_ctx);
       auto geos2 = ogr2->exportToGEOS(geos_ctx);
@@ -875,8 +876,9 @@ std::shared_ptr<arrow::Array> ST_HausdorffDistance(
       }
       GEOSGeom_destroy_r(geos_ctx, geos1);
       GEOSGeom_destroy_r(geos_ctx, geos2);
-      builder.Append(dist);
+      array_ptr = AppendDouble(builder, dist);
     }
+    return array_ptr;
   };
   auto results = BinaryOp<arrow::DoubleBuilder>(geo1, geo2, op);
   OGRGeometry::freeGEOSContext(geos_ctx);

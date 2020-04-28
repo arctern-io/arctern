@@ -2844,8 +2844,8 @@ TEST(geometry_test, test_ST_HausdorffDistance2) {
   builder_r.Finish(&input_r);
 
   auto res =
-      arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input_l)[0],
-                                         arctern::gis::ST_GeomFromText(input_r)[0]);
+      arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input_l),
+                                         arctern::gis::ST_GeomFromText(input_r))[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_TRUE(std::abs(res_double->Value(0) - 1.4142135623731) < 1e-8);
@@ -2895,8 +2895,8 @@ TEST(geometry_test, test_ST_HausdorffDistance) {
   builder1.Finish(&input1);
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input1)[0],
-                                                arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_HausdorffDistance(arctern::gis::ST_GeomFromText(input1),
+                                                arctern::gis::ST_GeomFromText(input2))[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), 1);

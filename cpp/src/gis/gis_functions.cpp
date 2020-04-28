@@ -221,9 +221,9 @@ std::shared_ptr<arrow::Array> ST_Length(
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_HausdorffDistance(
-    const std::shared_ptr<arrow::Array>& geo1,
-    const std::shared_ptr<arrow::Array>& geo2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
   return gdal::ST_HausdorffDistance(geo1, geo2);
 }
 
