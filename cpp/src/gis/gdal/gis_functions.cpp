@@ -268,6 +268,46 @@ BinaryOp(const std::shared_ptr<arrow::Array>& geo1,
 }
 
 template <typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
+                        std::vector<std::shared_ptr<typename arrow::Array>>>::type
+BinaryOp(const std::vector<std::shared_ptr<typename arrow::Array>>& geo1,
+         const std::vector<std::shared_ptr<typename arrow::Array>>& geo2,
+         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&, OGRGeometry*, OGRGeometry*)> op,
+         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
+
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{geo1, geo2};
+  std::vector<ChunkArrayIdx<WkbItem>> idx_list(2);
+  ChunkArrayBuilder<T> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+  bool is_null;
+
+  while(GetNextValue(array_list, idx_list, is_null)){
+    auto ogr1 = idx_list[0].item_value.ToGeometry();
+    auto ogr2 = idx_list[1].item_value.ToGeometry();
+    if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+      builder.array_builder.AppendNull();
+    } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      if (null_op == nullptr) {
+        builder.array_builder.AppendNull();
+      } else {
+        auto array_ptr = null_op(builder, ogr1, ogr2);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
+      }
+    } else {
+      auto array_ptr = op(builder, ogr1, ogr2);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+    OGRGeometryFactory::destroyGeometry(ogr2);
+  }
+
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
+}
+
+template <typename T>
 struct ChunkArrayIdx {
   int chunk_idx = 0;
   int array_idx = 0;
