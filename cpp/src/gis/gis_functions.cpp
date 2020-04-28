@@ -235,40 +235,40 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
   return gdal::ST_Equals(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Touches(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Touches(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Overlaps(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Overlaps(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Crosses(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Crosses(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Contains(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Contains(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Intersects(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Intersects(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Within(
-    const std::shared_ptr<arrow::Array>& geo_left_raw,
-    const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
