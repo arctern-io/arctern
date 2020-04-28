@@ -229,9 +229,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
-std::shared_ptr<arrow::Array> ST_Equals(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Equals(geometries_1, geometries_2);
 }
 
