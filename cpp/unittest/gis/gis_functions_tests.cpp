@@ -1379,8 +1379,8 @@ TEST(geometry_test, test_ST_Touches) {
   builder2.Append(std::string(r62));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Touches(arctern::gis::ST_GeomFromText(input1)[0],
-                                      arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Touches(arctern::gis::ST_GeomFromText(input1),
+                                      arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), false);
@@ -1560,8 +1560,8 @@ TEST(geometry_test, test_ST_Overlaps) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Overlaps(arctern::gis::ST_GeomFromText(input1)[0],
-                                       arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Overlaps(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), false);
@@ -1648,8 +1648,8 @@ TEST(geometry_test, test_ST_Crosses) {
   builder2.Append(std::string(r12));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Crosses(arctern::gis::ST_GeomFromText(input1)[0],
-                                      arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Crosses(arctern::gis::ST_GeomFromText(input1),
+                                      arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -1935,8 +1935,8 @@ TEST(geometry_test, test_ST_Contains) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Contains(arctern::gis::ST_GeomFromText(input1)[0],
-                                       arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Contains(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2239,8 +2239,8 @@ TEST(geometry_test, test_ST_Intersects) {
   // builder2.Append(std::string(r62));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Intersects(arctern::gis::ST_GeomFromText(input1)[0],
-                                         arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Intersects(arctern::gis::ST_GeomFromText(input1),
+                                         arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2317,8 +2317,8 @@ TEST(geometry_test, test_ST_Within2) {
   std::shared_ptr<arrow::Array> circle_array;
   str_builder.Finish(&circle_array);
 
-  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array)[0],
-                                     arctern::gis::ST_GeomFromText(circle_array)[0]);
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
+                                     arctern::gis::ST_GeomFromText(circle_array))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
@@ -2430,8 +2430,8 @@ TEST(geometry_test, test_ST_Within) {
   builder2.Append(std::string(r23));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1)[0],
-                                     arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1),
+                                     arctern::gis::ST_GeomFromText(input2))[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
