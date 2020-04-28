@@ -48,17 +48,17 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& left_geometries,
     const std::vector<std::shared_ptr<arrow::Array>>& right_geometries);
 
-std::shared_ptr<arrow::Array> ST_Touches(
-    const std::shared_ptr<arrow::Array>& left_geometries,
-    const std::shared_ptr<arrow::Array>& right_geometries);
+std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
+    const std::vector<std::shared_ptr<arrow::Array>>& left_geometries,
+    const std::vector<std::shared_ptr<arrow::Array>>& right_geometries);
 
-std::shared_ptr<arrow::Array> ST_Overlaps(
-    const std::shared_ptr<arrow::Array>& left_geometries,
-    const std::shared_ptr<arrow::Array>& right_geometries);
+std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
+    const std::vector<std::shared_ptr<arrow::Array>>& left_geometries,
+    const std::vector<std::shared_ptr<arrow::Array>>& right_geometries);
 
-std::shared_ptr<arrow::Array> ST_Crosses(
-    const std::shared_ptr<arrow::Array>& left_geometries,
-    const std::shared_ptr<arrow::Array>& right_geometries);
+std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
+    const std::vector<std::shared_ptr<arrow::Array>>& left_geometries,
+    const std::vector<std::shared_ptr<arrow::Array>>& right_geometries);
 
 std::shared_ptr<arrow::Array> ST_IsSimple(
     const std::shared_ptr<arrow::Array>& geometries);
@@ -81,15 +81,17 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
     const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
     const std::vector<std::shared_ptr<arrow::Array>>& max_y_values);
 
-std::shared_ptr<arrow::Array> ST_Contains(const std::shared_ptr<arrow::Array>& ptr_x,
-                                          const std::shared_ptr<arrow::Array>& ptr_y);
+std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
+    const std::vector<std::shared_ptr<arrow::Array>>& ptr_x,
+    const std::vector<std::shared_ptr<arrow::Array>>& ptr_y);
 
-std::shared_ptr<arrow::Array> ST_Intersects(
-    const std::shared_ptr<arrow::Array>& geo_arr1,
-    const std::shared_ptr<arrow::Array>& geo_arr2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_arr2);
 
-std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo_arr1,
-                                        const std::shared_ptr<arrow::Array>& geo_arr2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_arr2);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
