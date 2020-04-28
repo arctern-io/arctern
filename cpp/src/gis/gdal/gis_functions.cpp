@@ -205,7 +205,6 @@ inline std::shared_ptr<arrow::Array> AppendWkb(
   return array_ptr;
 }
 
-
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
                   ChunkArrayIdx<WkbItem>& idx) {
   if (idx.chunk_idx >= (int)chunk_array.size()) return false;
@@ -357,16 +356,19 @@ typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::vector<std::shared_ptr<typename arrow::Array>>>::type
 BinaryOp(const std::vector<std::shared_ptr<typename arrow::Array>>& geo1,
          const std::vector<std::shared_ptr<typename arrow::Array>>& geo2,
-         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&, OGRGeometry*, OGRGeometry*)> op,
-         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
-
+         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&,
+                                                              OGRGeometry*, OGRGeometry*)>
+             op,
+         std::function<std::shared_ptr<typename arrow::Array>(ChunkArrayBuilder<T>&,
+                                                              OGRGeometry*, OGRGeometry*)>
+             null_op = nullptr) {
   std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{geo1, geo2};
   std::vector<ChunkArrayIdx<WkbItem>> idx_list(2);
   ChunkArrayBuilder<T> builder;
   std::vector<std::shared_ptr<arrow::Array>> result_array;
   bool is_null;
 
-  while(GetNextValue(array_list, idx_list, is_null)){
+  while (GetNextValue(array_list, idx_list, is_null)) {
     auto ogr1 = idx_list[0].item_value.ToGeometry();
     auto ogr2 = idx_list[1].item_value.ToGeometry();
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
