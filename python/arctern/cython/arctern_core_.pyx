@@ -153,7 +153,14 @@ def ST_Distance(object geo_arr1,object geo_arr2):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Distance(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
 
 def ST_DistanceSphere(object geo_arr1,object geo_arr2):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_DistanceSphere(pyarrow_unwrap_array(geo_arr1),pyarrow_unwrap_array(geo_arr2)))
+    cdef vector[shared_ptr[CArray]] arr_1
+    for arr in geo_arr1:
+        arr_1.push_back(pyarrow_unwrap_array(arr))
+    cdef vector[shared_ptr[CArray]] arr_2
+    for arr in geo_arr2:
+        arr_2.push_back(pyarrow_unwrap_array(arr))
+    result = arctern_core_pxd.ST_DistanceSphere(arr_1, arr_2)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Area(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Area(pyarrow_unwrap_array(geo_arr)))

@@ -94,8 +94,9 @@ std::shared_ptr<arrow::Array> ST_Within(const std::shared_ptr<arrow::Array>& geo
 std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_arr1,
                                           const std::shared_ptr<arrow::Array>& geo_arr2);
 
-std::shared_ptr<arrow::Array> ST_DistanceSphere(const std::shared_ptr<arrow::Array>& point_left,
-                                                const std::shared_ptr<arrow::Array>& point_right);
+std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
+    const std::vector<std::shared_ptr<arrow::Array>>& point_left,
+    const std::vector<std::shared_ptr<arrow::Array>>& point_right);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geo_arr);
 
