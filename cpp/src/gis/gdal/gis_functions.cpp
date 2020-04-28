@@ -56,12 +56,12 @@ inline OGRGeometry* Wrapper_createFromWkt(
 inline OGRGeometry* Wrapper_createFromWkb(
     const std::shared_ptr<arrow::BinaryArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
-  arrow::BinaryArray::offset_type offset;
-  auto data_ptr = array->GetValue(idx, &offset);
-  if (offset <= 0) return nullptr;
+  arrow::BinaryArray::offset_type wkb_size;
+  auto data_ptr = array->GetValue(idx, &wkb_size);
+  if (wkb_size <= 0) return nullptr;
 
   OGRGeometry* geo = nullptr;
-  auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, offset);
+  auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, wkb_size);
   if (err_code != OGRERR_NONE) return nullptr;
   return geo;
 }
@@ -274,6 +274,43 @@ struct ChunkArrayIdx {
   bool is_null = false;
   T item_value;
 };
+
+struct WkbItem {
+  const void * data_ptr;
+  int wkb_size;
+  OGRGeometry* ToGeometry(){
+    if(data_ptr == nullptr) return nullptr;
+    if(wkb_size <= 0) return nullptr;
+    OGRGeometry* geo = nullptr;
+    auto err_code = OGRGeometryFactory::createFromWkb(data_ptr, nullptr, &geo, wkb_size);
+    if (err_code != OGRERR_NONE) return nullptr;
+    return geo;
+  }
+};
+
+bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
+                  ChunkArrayIdx<WkbItem>& idx) {
+  if (idx.chunk_idx >= (int)chunk_array.size()) return false;
+  int len = chunk_array[idx.chunk_idx]->length();
+  if (idx.array_idx >= len) {
+    idx.chunk_idx++;
+    idx.array_idx = 0;
+    return GetNextValue(chunk_array, idx);
+  }
+  if (chunk_array[idx.chunk_idx]->IsNull(idx.array_idx)) {
+    idx.array_idx++;
+    idx.is_null = true;
+    return true;
+  }
+  auto binary_array = std::static_pointer_cast<arrow::BinaryArray>(chunk_array[idx.chunk_idx]);
+  arrow::BinaryArray::offset_type wkb_size;
+  auto data_ptr = binary_array->GetValue(idx.array_idx, &wkb_size);
+  idx.item_value.data_ptr = data_ptr;
+  idx.item_value.wkb_size = wkb_size;
+  idx.array_idx++;
+  idx.is_null = (idx.item_value.wkb_size > 0);
+  return true;
+}
 
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
                   ChunkArrayIdx<double>& idx) {
@@ -586,37 +623,39 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array>& geo1,
-                                              const std::shared_ptr<arrow::Array>& geo2) {
-  auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
-  auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
-  auto len = wkt1->length();
-  arrow::BinaryBuilder builder;
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2){
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{geo1, geo2};
+  std::vector<ChunkArrayIdx<WkbItem>> idx_list(2);
+  ChunkArrayBuilder<arrow::BinaryBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+  bool is_null;
   auto has_curve = new HasCurveVisitor;
-
   OGRGeometryCollection empty;
-  auto empty_size = empty.WkbSize();
-  auto empty_wkb = static_cast<unsigned char*>(CPLMalloc(empty_size));
-  empty.exportToWkb(OGRwkbByteOrder::wkbNDR, empty_wkb);
 
-  for (int i = 0; i < len; ++i) {
-    auto ogr1 = Wrapper_createFromWkb(wkt1, i);
-    auto ogr2 = Wrapper_createFromWkb(wkt2, i);
+  while(GetNextValue(array_list, idx_list, is_null)){
+    auto ogr1 = idx_list[0].item_value.ToGeometry();
+    auto ogr2 = idx_list[1].item_value.ToGeometry();
+
     ogr1 = Wrapper_CurveToLine(ogr1, has_curve);
     ogr2 = Wrapper_CurveToLine(ogr2, has_curve);
 
     if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
-      builder.AppendNull();
+      builder.array_builder.AppendNull();
     } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-      builder.Append(empty_wkb, empty_size);
+      auto array_ptr = AppendWkb(builder, &empty);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
     } else {
       auto rst = ogr1->Intersection(ogr2);
       if (rst == nullptr) {
-        builder.AppendNull();
+        builder.array_builder.AppendNull();
       } else if (rst->IsEmpty()) {
-        builder.Append(empty_wkb, empty_size);
+        auto array_ptr = AppendWkb(builder, &empty);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
       } else {
-        AppendWkbNDR(builder, rst);
+        auto array_ptr = AppendWkb(builder, rst);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
       }
       OGRGeometryFactory::destroyGeometry(rst);
     }
@@ -625,11 +664,11 @@ std::shared_ptr<arrow::Array> ST_Intersection(const std::shared_ptr<arrow::Array
   }
 
   delete has_curve;
-  CPLFree(empty_wkb);
 
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  return results;
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 std::shared_ptr<arrow::Array> ST_MakeValid(const std::shared_ptr<arrow::Array>& array) {

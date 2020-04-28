@@ -125,9 +125,9 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   return gdal::ST_PrecisionReduce(geometries, precision);
 }
 
-std::shared_ptr<arrow::Array> ST_Intersection(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Intersection(geometries_1, geometries_2);
 }
 
