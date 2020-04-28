@@ -315,7 +315,10 @@ def ST_Intersection(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
-    return arctern_caller(arctern_core_.ST_Intersection, arr_geo1, arr_geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Intersection(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 @arctern_udf('binary')
 def ST_IsValid(geos):

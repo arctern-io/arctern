@@ -38,9 +38,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_AsText(const std::shared_ptr<arrow
 
 std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
 
-std::shared_ptr<arrow::Array> ST_Intersection(
-    const std::shared_ptr<arrow::Array>& left_geometries,
-    const std::shared_ptr<arrow::Array>& right_geometries);
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
 std::shared_ptr<arrow::Array> ST_IsValid(const std::shared_ptr<arrow::Array>& geometries);
 

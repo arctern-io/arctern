@@ -84,7 +84,14 @@ def ST_AsGeoJSON(object text):
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Intersection(object left_geometries,object right_geometries):
-    return pyarrow_wrap_array(arctern_core_pxd.ST_Intersection(pyarrow_unwrap_array(left_geometries),pyarrow_unwrap_array(right_geometries)))
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Intersection(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_IsValid(object geometries):
     return pyarrow_wrap_array(arctern_core_pxd.ST_IsValid(pyarrow_unwrap_array(geometries)))
