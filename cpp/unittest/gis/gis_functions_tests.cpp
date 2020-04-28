@@ -265,11 +265,14 @@ TEST(geometry_test, test_ST_Point) {
   ASSERT_GT(result.size(), 1);
   ASSERT_EQ(total_len, 100 * 10000);
 
+  total_len = 0;
   auto json_result = arctern::gis::ST_AsGeoJSON(result[0]);
-  for(auto &array : json_result){
+  for (auto& array : json_result) {
     std::cout << "json result len = " << array->length() << std::endl;
+    total_len += array->length();
   }
-
+  ASSERT_GT(json_result.size(), 1);
+  ASSERT_EQ(total_len, result[0]->length());
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
@@ -2548,7 +2551,7 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
 }
 
-TEST(geometry_test, test_ST_Distance2){
+TEST(geometry_test, test_ST_Distance2) {
   arrow::StringBuilder data_builder;
   std::shared_ptr<arrow::Array> data_array;
 
@@ -2564,30 +2567,30 @@ TEST(geometry_test, test_ST_Distance2){
   auto wkb_ptr2 = wkt_ptr->GetValue(0, &wkb_size2);
 
   arrow::BinaryBuilder binary_builder;
-  for(int i=0; i<1000000; ++i){
+  for (int i = 0; i < 1000000; ++i) {
     binary_builder.Append(wkb_ptr1, wkb_size1);
   }
   std::shared_ptr<arrow::Array> left_base;
   binary_builder.Finish(&left_base);
 
-  for(int i=0; i<100000; ++i){
+  for (int i = 0; i < 100000; ++i) {
     binary_builder.Append(wkb_ptr2, wkb_size2);
   }
   std::shared_ptr<arrow::Array> right_base;
   binary_builder.Finish(&right_base);
 
   std::vector<std::shared_ptr<arrow::Array>> left_input;
-  for(int i=0; i<3; ++i) left_input.push_back(left_base);
+  for (int i = 0; i < 3; ++i) left_input.push_back(left_base);
 
   std::vector<std::shared_ptr<arrow::Array>> right_input;
-  for(int i=0; i<30; ++i) right_input.push_back(right_base);
+  for (int i = 0; i < 30; ++i) right_input.push_back(right_base);
 
   std::cout << "left length = " << left_base->length() << std::endl;
   std::cout << "right length = " << right_base->length() << std::endl;
 
   auto rst = arctern::gis::ST_Distance(left_input, right_input);
   int64_t total_len = 0;
-  for(auto &ptr : rst){
+  for (auto& ptr : rst) {
     std::cout << "array length = " << ptr->length() << std::endl;
     total_len += ptr->length();
   }

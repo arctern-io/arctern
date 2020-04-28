@@ -134,7 +134,7 @@ inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) 
 
 template <typename T, typename Enable = void>
 struct ChunkArrayBuilder {
-  static constexpr int64_t CAPACITY = _ARROW_ARRAY_SIZE; //Debug: 16M, Release 1G
+  static constexpr int64_t CAPACITY = _ARROW_ARRAY_SIZE;  // Debug: 16M, Release 1G
   // static constexpr int64_t CAPACITY = 1024 * 1024 * 1024;
 };
 
