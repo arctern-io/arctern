@@ -239,7 +239,7 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 TEST(geometry_test, test_ST_Point) {
   arrow::DoubleBuilder x_builder;
   for (int i = 0; i < 10 * 10000; ++i) {
-    CHECK_ARROW(x_builder.Append(0));
+    CHECK_ARROW(x_builder.Append(1.23456789012345));
   }
   std::shared_ptr<arrow::Array> x_array;
   CHECK_ARROW(x_builder.Finish(&x_array));
@@ -248,7 +248,7 @@ TEST(geometry_test, test_ST_Point) {
 
   arrow::DoubleBuilder y_builder;
   for (int i = 0; i < 10000; ++i) {
-    CHECK_ARROW(y_builder.Append(0));
+    CHECK_ARROW(y_builder.Append(1.2345678902345));
   }
   std::shared_ptr<arrow::Array> y_array;
   CHECK_ARROW(y_builder.Finish(&y_array));
@@ -264,6 +264,12 @@ TEST(geometry_test, test_ST_Point) {
   }
   ASSERT_GT(result.size(), 1);
   ASSERT_EQ(total_len, 100 * 10000);
+
+  auto json_result = arctern::gis::ST_AsGeoJSON(result[0]);
+  for(auto &array : json_result){
+    std::cout << "json result len = " << array->length() << std::endl;
+  }
+
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
