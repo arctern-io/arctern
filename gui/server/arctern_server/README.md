@@ -39,6 +39,7 @@ python setup.py install
 运行一下命令可以启动web服务
 
 ```bash
+export PYTHONPATH=arctern/gui/server:$PYTHONPATH
 python manage.py -r
 ```
 
@@ -56,6 +57,7 @@ python manage.py -r
 如果期望服务器启动，自动加载数据
 
 ```bash
+export PYTHONPATH=arctern/gui/server:$PYTHONPATH
 python manage.py -r -c path/to/db.json
 ```
 
@@ -646,6 +648,7 @@ curl --location --request POST 'http://localhost:8080/db/query' \
 
 ```shell
 cd arctern/gui/server/arctern_server
+export PYTHONPATH=arctern/gui/server:$PYTHONPATH
 python manage.py -r 
 ```
 
