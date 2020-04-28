@@ -60,7 +60,9 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Contains(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
     shared_ptr[CArray] ST_Intersects(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
     shared_ptr[CArray] ST_Within(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
-    shared_ptr[CArray] ST_Distance(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_Distance(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                           const vector[shared_ptr[CArray]] &geo_arr2) except +
 
     vector[shared_ptr[CArray]] ST_DistanceSphere(const vector[shared_ptr[CArray]] &geo_arr1, \
                                                  const vector[shared_ptr[CArray]] &geo_arr2) except +
