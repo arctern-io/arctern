@@ -343,8 +343,8 @@ TEST(geometry_test, test_ST_Intersection2) {
   builder_l.Finish(&array_l);
   builder_r.Finish(&array_r);
 
-  auto res = arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(array_l)[0],
-                                           arctern::gis::ST_GeomFromText(array_r)[0]);
+  auto res = arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(array_l),
+                                           arctern::gis::ST_GeomFromText(array_r))[0];
   // auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
   // std::cout << res_str->GetString(0) << std::endl;
 
@@ -624,8 +624,8 @@ TEST(geometry_test, test_ST_Intersection) {
   builder2.Finish(&input2);
 
   auto res = arctern::gis::ST_AsText(
-      arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(input1)[0],
-                                    arctern::gis::ST_GeomFromText(input2)[0]))[0];
+      arctern::gis::ST_Intersection(arctern::gis::ST_GeomFromText(input1),
+                                    arctern::gis::ST_GeomFromText(input2))[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POINT (0 1)");
