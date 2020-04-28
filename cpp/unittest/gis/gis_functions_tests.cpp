@@ -244,7 +244,7 @@ TEST(geometry_test, test_ST_Point) {
   std::shared_ptr<arrow::Array> x_array;
   CHECK_ARROW(x_builder.Finish(&x_array));
   array_t point_x;
-  for (int i = 0; i < 600; ++i) point_x.push_back(x_array);
+  for (int i = 0; i < 10; ++i) point_x.push_back(x_array);
 
   arrow::DoubleBuilder y_builder;
   for (int i = 0; i < 10000; ++i) {
@@ -253,16 +253,16 @@ TEST(geometry_test, test_ST_Point) {
   std::shared_ptr<arrow::Array> y_array;
   CHECK_ARROW(y_builder.Finish(&y_array));
   array_t point_y;
-  for (int i = 0; i < 6000; ++i) point_y.push_back(y_array);
+  for (int i = 0; i < 100; ++i) point_y.push_back(y_array);
 
   auto result = arctern::gis::ST_Point(point_x, point_y);
   int64_t total_len = 0;
   for (auto& array : result) {
     auto len = array->length();
-    std::cout << "len = " << len << std::endl;
+    std::cout << "array len = " << len << std::endl;
     total_len += len;
   }
-  ASSERT_EQ(total_len, 6000 * 10000);
+  ASSERT_EQ(total_len, 100 * 10000);
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
@@ -2570,22 +2570,22 @@ TEST(geometry_test, test_ST_Distance2){
   binary_builder.Finish(&right_base);
 
   std::vector<std::shared_ptr<arrow::Array>> left_input;
-  for(int i=0; i<135; ++i) left_input.push_back(left_base);
+  for(int i=0; i<3; ++i) left_input.push_back(left_base);
 
   std::vector<std::shared_ptr<arrow::Array>> right_input;
-  for(int i=0; i<1350; ++i) right_input.push_back(right_base);
+  for(int i=0; i<30; ++i) right_input.push_back(right_base);
 
   std::cout << "left length = " << left_base->length() << std::endl;
   std::cout << "right length = " << right_base->length() << std::endl;
 
-  auto rst = arctern::gis::ST_DistanceSphere(left_input, right_input);
+  auto rst = arctern::gis::ST_Distance(left_input, right_input);
   int64_t total_len = 0;
   for(auto &ptr : rst){
     std::cout << "array length = " << ptr->length() << std::endl;
     total_len += ptr->length();
   }
 
-  ASSERT_EQ(total_len, 135000000);
+  ASSERT_EQ(total_len, 3000000);
 }
 
 TEST(geometry_test, test_ST_Distance) {
