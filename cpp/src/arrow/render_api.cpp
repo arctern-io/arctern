@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "render/render_builder.h"
+#include "render/utils/render_utils.h"
 
 #include "arrow/render_api.h"
 
@@ -449,129 +450,6 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
-template <class T1, class T2>
-void concate_array (const std::vector<std::shared_ptr<arrow::Array>>& arrs, T1& builder) {
-    std::cout << "vector size " << arrs.size()<<std::endl;
-    for(size_t i = 0; i < arrs.size(); i++) {
-      auto length = arrs[i]->length();
-      auto array = std::static_pointer_cast<T2>(arrs[i]);
-      std::cout << "done cast " << i <<"th pointer "<< array <<std::endl;
-      auto type = arrs[i]->type_id();
-      for(size_t j = 0; j < length; j++) {
-        auto element = array->Value(j);
-        // std::cout << "element:[ " <<j << "]" << "=" << element <<std::endl;
-        builder.Append(element);
-      }
-    }
-}
-
-template <class T1, class T2>
-void concate_array2 (const std::vector<std::shared_ptr<arrow::Array>>& arrs, T1& builder) {
-    std::cout << "vector size " << arrs.size()<<std::endl;
-    for(size_t i = 0; i < arrs.size(); i++) {
-      auto length = arrs[i]->length();
-      auto array = std::static_pointer_cast<T2>(arrs[i]);
-      std::cout << "done cast " << i <<"th pointer "<< array <<std::endl;
-      auto type = arrs[i]->type_id();
-      for(size_t j = 0; j < length; j++) {
-        auto element = array->GetString(j);
-        // std::cout << "element:[ " <<j << "]" << "=" << element <<std::endl;
-        builder.Append(element);
-      }
-    }
-}
-
-std::shared_ptr<arrow::Array> data_trans(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
-  assert(!arrs.empty());
-  auto type = arrs[0]->type_id();
-  std::cout << "pointer arrs[0] " << arrs[0] << std::endl;
-  std::shared_ptr<arrow::Array> result;
-  switch (type)
-  {
-    case arrow::Type::BINARY: {
-      arrow::BinaryBuilder builder;
-      concate_array2<arrow::BinaryBuilder, arrow::BinaryArray>(arrs, builder);
-      std::cout << "before finish "<<std::endl;
-      auto status = builder.Finish(&result);
-      std::cout << "after finish, geo type " << (std::static_pointer_cast<arrow::FixedSizeBinaryArray>(result))->byte_width()<<std::endl;
-      return result;
-    }
-    case arrow::Type::STRING: {
-      arrow::StringBuilder builder;
-      concate_array2<arrow::StringBuilder, arrow::StringArray>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::INT8: {
-      arrow::Int8Builder builder;
-      concate_array<arrow::Int8Builder, arrow::Int8Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::INT16: {
-      arrow::Int16Builder builder;
-      concate_array<arrow::Int16Builder, arrow::Int16Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::INT32: {
-      arrow::Int32Builder builder;
-      concate_array<arrow::Int32Builder, arrow::Int32Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::INT64: {
-      arrow::Int64Builder builder;
-      concate_array<arrow::Int64Builder, arrow::Int64Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::UINT8: {
-      arrow::UInt8Builder builder;
-      concate_array<arrow::UInt8Builder, arrow::UInt8Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::UINT16: {
-      arrow::UInt16Builder builder;
-      concate_array<arrow::UInt16Builder, arrow::UInt16Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::UINT32: {
-      arrow::UInt32Builder builder;
-      concate_array<arrow::UInt32Builder, arrow::UInt32Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::UINT64: {
-      arrow::UInt64Builder builder;
-      concate_array<arrow::UInt64Builder, arrow::UInt64Array>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::FLOAT: {
-      arrow::FloatBuilder builder;
-      concate_array<arrow::FloatBuilder, arrow::FloatArray>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    case arrow::Type::DOUBLE: {
-      arrow::DoubleBuilder builder;
-      concate_array<arrow::DoubleBuilder, arrow::DoubleArray>(arrs, builder);
-      auto status = builder.Finish(&result);
-      return result;
-    }
-    default:
-      std::string err_msg = "type error while concate vector arrow, type = " +
-                            std::to_string(type);
-      throw std::runtime_error(err_msg);
-  }
-}
-
-
-
-
 std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
                                          const std::string& bottom_right,
                                          const std::string& top_left, const int& height,
@@ -579,21 +457,17 @@ std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& ge
   return Projection(geos, bottom_right, top_left, height, width);
 }
 
-std::shared_ptr<arrow::Array> transform_and_projection(
+const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width) {
-  auto geo = data_trans(geos);
-  return TransformAndProjection(geo, src_rs, dst_rs, bottom_right, top_left, height,
-                              width);
-}
-
-std::shared_ptr<arrow::Array> transform_and_projection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
-    const std::string& dst_rs, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width) {
-  return TransformAndProjection(geos, src_rs, dst_rs, bottom_right, top_left, height,
-                                width);
+  std::cout << "c++ trans enter c++" << std::endl;
+  const auto& geo = GeometryExtraction(geos);
+  std::cout << "c++ geo extract ok" << std::endl;
+  TransformAndProjection(geo, src_rs, dst_rs, bottom_right, top_left, height, width);
+  std::cout << "c++ transform and proj ok" << std::endl;
+  const auto& res = GeometryExport(geo, geos.size());
+  return res;
 }
 
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
@@ -1085,76 +959,13 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
   }
 }
 
-
-std::shared_ptr<arrow::Array> choropleth_map(const std::shared_ptr<arrow::Array>& arr_wkb,
-                                             const std::shared_ptr<arrow::Array>& arr_c,
-                                             const std::string& conf) { 
-  
-  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(arr_wkb);
-  auto geo_size = arr_wkb->length();
-  auto wkb_type = arr_wkb->type_id();
-  assert(wkb_type == arrow::Type::BINARY);
-
-  std::pair<uint8_t*, int64_t> result;
-  auto c_size = arr_c->length();
-  auto c_type = arr_c->type_id();
-  assert(geo_size == c_size);
-  switch (c_type) {
-    case arrow::Type::INT8: {
-      result = render_choroplethmap<int8_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT16: {
-      result = render_choroplethmap<int16_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT32: {
-      result = render_choroplethmap<int32_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT64: {
-      result = render_choroplethmap<int64_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT8: {
-      result = render_choroplethmap<uint8_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT16: {
-      result = render_choroplethmap<uint16_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT32: {
-      result = render_choroplethmap<uint32_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT64: {
-      result = render_choroplethmap<uint64_t>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::FLOAT: {
-      result = render_choroplethmap<float>(arr_wkb, arr_c, conf);
-      break;
-    }
-    case arrow::Type::DOUBLE: {
-      result = render_choroplethmap<double>(arr_wkb, arr_c, conf);
-      break;
-    }
-    default:
-      std::string err_msg = "type error of count while running choropleth map, type = " +
-                            std::to_string(c_type);
-      throw std::runtime_error(err_msg);
-  }
-  return out_pic(result);
-}
-
 std::shared_ptr<arrow::Array> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs_wkb,
-    const std::vector<std::shared_ptr<arrow::Array>>& arrs_c, 
-    const std::string& conf){
-  auto arr_wkb = data_trans(arrs_wkb);
-  auto arr_c = data_trans(arrs_c); 
-  return choropleth_map(arr_wkb, arr_c, conf);
+    const std::vector<std::shared_ptr<arrow::Array>>& arrs_c, const std::string& conf) {
+  const auto& wkb_vec = GeometryExtraction(arrs_wkb);
+  auto num_buildings = wkb_vec.size();
+  auto arr_c = WeightExtraction<int>(arrs_c);
+  return out_pic(choroplethmap<int>(wkb_vec, arr_c, num_buildings, conf));
 }
 
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,

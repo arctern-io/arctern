@@ -39,7 +39,7 @@ std::shared_ptr<arrow::Array> transform_and_projection(
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width);
 
-std::shared_ptr<arrow::Array> transform_and_projection(
+const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width);

@@ -31,6 +31,8 @@ class ChoroplethMap : public General2D {
  public:
   ChoroplethMap() = delete;
 
+  ~ChoroplethMap();
+
   ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, T* count, int64_t num_vertices);
 
   uint8_t* Render() final;

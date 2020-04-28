@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "render/utils/render_utils.h"
 #include "utils/check_status.h"
 
 namespace arctern {
@@ -133,10 +134,10 @@ std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& ge
   return results;
 }
 
-std::shared_ptr<arrow::Array> TransformAndProjection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
-    const std::string& dst_rs, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width) {
+void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
+                            const std::string& src_rs, const std::string& dst_rs,
+                            const std::string& bottom_right, const std::string& top_left,
+                            const int& height, const int& width) {
   OGRSpatialReference oSrcSRS;
   oSrcSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   if (oSrcSRS.SetFromUserInput(src_rs.c_str()) != OGRERR_NONE) {
@@ -153,25 +154,18 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
   void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
 
   arrow::BinaryBuilder builder;
-  auto len = geos->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::BinaryArray>(geos);
+  auto len = geos.size();
+
   double min_x, max_y, max_x, min_y;
   pointXY_from_wkt_with_transform(top_left, min_x, max_y, poCT);
   pointXY_from_wkt_with_transform(bottom_right, max_x, min_y, poCT);
-  std::cout << "transform1-3 "<<std::endl;
+
   auto coor_width = max_x - min_x;
   auto coor_height = max_y - min_y;
   int32_t output_x, output_y;
 
   for (int32_t i = 0; i < len; i++) {
-    if (wkt_geometries->IsNull(i)) {
-      CHECK_ARROW(builder.Append(""));
-      continue;
-    }
-    OGRGeometry* geo = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkb(
-        wkt_geometries->GetString(i).c_str(), nullptr, &geo);
-    if (err_code) continue;
+    auto geo = geos[i];
     if (geo == nullptr) {
       CHECK_ARROW(builder.AppendNull());
     } else {
@@ -201,25 +195,10 @@ std::shared_ptr<arrow::Array> TransformAndProjection(
         std::string err_msg = "unsupported geometry type, type = " + std::to_string(type);
         throw std::runtime_error(err_msg);
       }
-
-      auto sz = geo->WkbSize();
-      std::vector<char> str(sz);
-      err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
-      if (err_code != OGRERR_NONE) {
-        std::string err_msg =
-            "failed to export to wkt, error code = " + std::to_string(err_code);
-        throw std::runtime_error(err_msg);
-      }
-
-      CHECK_ARROW(builder.Append(str.data(), str.size()));
-      OGRGeometryFactory::destroyGeometry(geo);
     }
   }
- 
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-  OCTDestroyCoordinateTransformation(poCT); 
-  return results;
+
+  OCTDestroyCoordinateTransformation(poCT);
 }
 
 template <typename T>

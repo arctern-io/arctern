@@ -1120,6 +1120,81 @@ def ST_CurveToLine(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_CurveToLine, arr_geos)
 
+
+# def render_caller(func, geos, *func_args):
+#     import pyarrow
+#     num_chunks = 1
+#     # pylint: disable=c-extension-no-member
+#     if isinstance(geos, pyarrow.lib.ChunkedArray):
+#         num_chunks = len(geos.chunks)
+#
+#     if num_chunks <= 1:
+#         result = func(*func_args)
+#         return result.to_pandas()
+#
+#     result_total = None
+#     for chunk_idx in range(num_chunks):
+#         args = []
+#         # pylint: disable=c-extension-no-member
+#         if isinstance(geos, pyarrow.lib.ChunkedArray):
+#             args.append(geos.chunks[chunk_idx])
+#         else:
+#             args.append(geos)
+#         result = func(*args)
+#         if result_total is None:
+#             result_total = result.to_pandas()
+#         else:
+#             result_total = result_total.append(result.to_pandas(), ignore_index=True)
+#     return result_total
+
+
+def projection(geos, bottom_right, top_left, height, width):
+    import pyarrow as pa
+    arr_geos = pa.array(geos, type='binary')
+    bounding_box_max = bytes(bottom_right, encoding="utf8")
+    bounding_box_min = bytes(top_left, encoding="utf8")
+    rs = arctern_core_.projection(arr_geos, bounding_box_max, bounding_box_min, height, width)
+    return rs.to_pandas()
+
+
+def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
+    import pyarrow as pa
+    import pandas as pd
+    arr_geos = pa.array(geos, type='binary')
+    src = bytes(src_rs, encoding="utf8")
+    dst = bytes(dst_rs, encoding="utf8")
+
+    bounding_box_max = bytes(bottom_right, encoding="utf8")
+    bounding_box_min = bytes(top_left, encoding="utf8")
+
+    pd_rs = pd.Series()
+
+    # pylint: disable=c-extension-no-member
+    if isinstance(arr_geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(arr_geos.num_chunks):
+            rs = arctern_core_.transform_and_projection(arr_geos.chunk(chunk_idx), src, dst, bounding_box_max, bounding_box_min, height, width)
+            pd_rs.append(rs.to_pandas)
+    else:
+        rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_max, bounding_box_min, height, width)
+        pd_rs.append(rs.to_pandas)
+
+    return pd_rs.to_pandas()
+
+
+def wkt2wkb(arr_wkt):
+    import pyarrow as pa
+    wkts = pa.array(arr_wkt, type='string')
+    rs = arctern_core_.wkt2wkb(wkts)
+    return rs.to_pandas()
+
+
+def wkb2wkt(arr_wkb):
+    import pyarrow as pa
+    wkbs = pa.array(arr_wkb, type='binary')
+    rs = arctern_core_.wkb2wkt(wkbs)
+    return rs.to_pandas()
+
+
 def point_map_layer(vega, points, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
@@ -1143,6 +1218,7 @@ def point_map_layer(vega, points, transform=True):
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.point_map(vega_string, geos)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+
 
 # pylint: disable=too-many-branches
 def weighted_point_map_layer(vega, points, transform=True, **kwargs):
@@ -1197,6 +1273,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
+
 def heat_map_layer(vega, points, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
@@ -1227,63 +1304,61 @@ def heat_map_layer(vega, points, weights, transform=True):
     rs = arctern_core_.heat_map(vega_string, geos, arr_c)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
+
 def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(region_boundaries, type='binary')
-    geos_list = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        num_chunks = len(geos.chunks)
-        for chunk_idx in range(num_chunks):
-            geos_list.append(geos.chunks[chunk_idx])
-    else:
-        geos_list.append(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
         bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
         height = vega.height()
         width = vega.width()
         coor = vega.coor()
+
         src = bytes(coor, encoding="utf8")
         dst = bytes('EPSG:3857', encoding="utf8")
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
-        if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_list, src, dst, bounding_box_max, bounding_box_min, height, width)
+
+        print("data prepare ok")
+        # transform and projection handler
+        geos_rs = []
+        if isinstance(geos, pa.lib.ChunkedArray):
+            for chunk_idx in range(geos.num_chunks):
+                geos_rs.append(geos.chunk(chunk_idx))
         else:
-            geos = arctern_core_.projection(geos, bounding_box_max, bounding_box_min, height, width)
+            geos_rs.append(geos)
+        if coor != 'EPSG:3857':
+            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            print(type(geos))
+        else:
+            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     vega_string = vega.build().encode('utf-8')
 
-    geos_list = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        num_chunks = len(geos.chunks)
-        for chunk_idx in range(num_chunks):
-            geos_list.append(geos.chunks[chunk_idx])
-    else:
-        geos_list.append(geos)
-
+    print("transform done")
+    # weights handler
     if weights.dtypes == 'float64':
         arr_c = pa.array(weights, type='double')
     else:
         arr_c = pa.array(weights, type='int64')
 
-    weights_list = []
+    weights_rs = []
     if isinstance(arr_c, pa.lib.ChunkedArray):
-        num_chunks = len(arr_c.chunks)
-        for chunk_idx in range(num_chunks):
-            weights_list.append(arr_c.chunks[chunk_idx])
+        for chunk_idx in range(arr_c.num_chunks):
+            weights_rs.append(arr_c.chunk(chunk_idx))
     else:
-        weights_list.append(arr_c)
-    print("**************before map****************")
-    print(type(geos_list))
-    print(type(weights_list))
+        weights_rs.append(arr_c)
 
-    rs = arctern_core_.choropleth_map(vega_string, geos_list, weights_list)
+    print("weights handle done")
+
+    rs = arctern_core_.choropleth_map(vega_string, geos, weights_rs)
+    print("draw map, Done!!!")
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+
 
 def icon_viz_layer(vega, points, transform=True):
     import pyarrow as pa
@@ -1308,33 +1383,3 @@ def icon_viz_layer(vega, points, transform=True):
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.icon_viz(vega_string, geos)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
-
-def projection(geos, bottom_right, top_left, height, width):
-    import pyarrow as pa
-    arr_geos = pa.array(geos, type='binary')
-    bounding_box_max = bytes(bottom_right, encoding="utf8")
-    bounding_box_min = bytes(top_left, encoding="utf8")
-    rs = arctern_core_.projection(arr_geos, bounding_box_max, bounding_box_min, height, width)
-    return rs.to_pandas()
-
-def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
-    import pyarrow as pa
-    arr_geos = pa.array(geos, type='binary')
-    src = bytes(src_rs, encoding="utf8")
-    dst = bytes(dst_rs, encoding="utf8")
-    bounding_box_max = bytes(bottom_right, encoding="utf8")
-    bounding_box_min = bytes(top_left, encoding="utf8")
-    rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_max, bounding_box_min, height, width)
-    return rs.to_pandas()
-
-def wkt2wkb(arr_wkt):
-    import pyarrow as pa
-    wkts = pa.array(arr_wkt, type='string')
-    rs = arctern_core_.wkt2wkb(wkts)
-    return rs.to_pandas()
-
-def wkb2wkt(arr_wkb):
-    import pyarrow as pa
-    wkbs = pa.array(arr_wkb, type='binary')
-    rs = arctern_core_.wkb2wkt(wkbs)
-    return rs.to_pandas()
