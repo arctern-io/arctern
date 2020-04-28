@@ -105,9 +105,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
     const std::vector<std::shared_ptr<arrow::Array>>& point_left,
     const std::vector<std::shared_ptr<arrow::Array>>& point_right);
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
 

@@ -2532,8 +2532,8 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   builder1.Finish(&input1);
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1)[0],
-                                       arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2))[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   ASSERT_EQ(res_double->IsNull(0), true);
@@ -2643,8 +2643,8 @@ TEST(geometry_test, test_ST_Distance) {
   builder2.Append(std::string(r21));
   builder2.Finish(&input2);
 
-  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1)[0],
-                                       arctern::gis::ST_GeomFromText(input2)[0]);
+  auto res = arctern::gis::ST_Distance(arctern::gis::ST_GeomFromText(input1),
+                                       arctern::gis::ST_GeomFromText(input2))[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
 
   EXPECT_DOUBLE_EQ(res_double->Value(0), sqrt(2));

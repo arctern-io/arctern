@@ -170,10 +170,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
   return gdal::ST_DistanceSphere(point_left, point_right);
 }
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geo_left_raw,
-    const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
   auto gpu_supported_type = {WkbTypes::kPoint};
