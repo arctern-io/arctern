@@ -2541,6 +2541,53 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
 }
 
+TEST(geometry_test, test_ST_Distance2){
+  arrow::StringBuilder data_builder;
+  std::shared_ptr<arrow::Array> data_array;
+
+  data_builder.Append(std::string("POINT (0 0)"));
+  data_builder.Append(std::string("POINT (1 1)"));
+  data_builder.Finish(&data_array);
+
+  auto point_wkt_array = arctern::gis::ST_GeomFromText(data_array)[0];
+  auto wkt_ptr = std::static_pointer_cast<arrow::BinaryArray>(point_wkt_array);
+  arrow::BinaryArray::offset_type wkb_size1;
+  arrow::BinaryArray::offset_type wkb_size2;
+  auto wkb_ptr1 = wkt_ptr->GetValue(0, &wkb_size1);
+  auto wkb_ptr2 = wkt_ptr->GetValue(0, &wkb_size2);
+
+  arrow::BinaryBuilder binary_builder;
+  for(int i=0; i<1000000; ++i){
+    binary_builder.Append(wkb_ptr1, wkb_size1);
+  }
+  std::shared_ptr<arrow::Array> left_base;
+  binary_builder.Finish(&left_base);
+
+  for(int i=0; i<100000; ++i){
+    binary_builder.Append(wkb_ptr2, wkb_size2);
+  }
+  std::shared_ptr<arrow::Array> right_base;
+  binary_builder.Finish(&right_base);
+
+  std::vector<std::shared_ptr<arrow::Array>> left_input;
+  for(int i=0; i<135; ++i) left_input.push_back(left_base);
+
+  std::vector<std::shared_ptr<arrow::Array>> right_input;
+  for(int i=0; i<1350; ++i) right_input.push_back(right_base);
+
+  std::cout << "left length = " << left_base->length() << std::endl;
+  std::cout << "right length = " << right_base->length() << std::endl;
+
+  auto rst = arctern::gis::ST_DistanceSphere(left_input, right_input);
+  int64_t total_len = 0;
+  for(auto &ptr : rst){
+    std::cout << "array length = " << ptr->length() << std::endl;
+    total_len += ptr->length();
+  }
+
+  ASSERT_EQ(total_len, 135000000);
+}
+
 TEST(geometry_test, test_ST_Distance) {
   auto l1 = "POINT (0 0)";
   auto l2 = "POINT (0 0)";
