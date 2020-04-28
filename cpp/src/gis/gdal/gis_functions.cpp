@@ -976,19 +976,23 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Touches(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                         const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
-     return AppendBoolean(builder, ogr1->Touches(ogr2) != 0);
+std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
+    return AppendBoolean(builder, ogr1->Touches(ogr2) != 0);
   };
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                          const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     return AppendBoolean(builder, ogr1->Overlaps(ogr2) != 0);
   };
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
@@ -996,9 +1000,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(const std::vector<std::sh
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                         const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     return AppendBoolean(builder, ogr1->Crosses(ogr2) != 0);
   };
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
@@ -1006,9 +1012,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(const std::vector<std::sha
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Contains(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                          const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     return AppendBoolean(builder, ogr1->Contains(ogr2) != 0);
   };
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
@@ -1016,9 +1024,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Contains(const std::vector<std::sh
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                            const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     return AppendBoolean(builder, ogr1->Intersects(ogr2) != 0);
   };
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
@@ -1026,9 +1036,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(const std::vector<std::
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Within(const std::vector<std::shared_ptr<arrow::Array>>& geo1,
-                                        const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
-  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
     bool flag = true;
     std::shared_ptr<arrow::Array> ret_ptr = nullptr;
     do {
