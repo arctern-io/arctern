@@ -51,9 +51,9 @@ std::shared_ptr<arrow::Array> coordinate_projection(
 std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
                                         const std::string& vega);
 
-std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
-                                       const std::shared_ptr<arrow::Array>& weights,
-                                       const std::string& vega);
+std::shared_ptr<arrow::Array> heat_map(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+                                       const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+                                       const std::string& conf);
 
 std::shared_ptr<arrow::Array> weighted_point_map(
     const std::shared_ptr<arrow::Array>& points, const std::string& vega);

@@ -297,8 +297,8 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_heatmap(const std::shared_ptr<arrow::Array>& points,
-                                            const std::shared_ptr<arrow::Array>& arr_c,
+std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& points,
+                                            const std::vector<T>& arr_c,
                                             const std::string& conf) {
   auto data = weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
@@ -834,63 +834,12 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& points,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
+std::shared_ptr<arrow::Array> heat_map(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+                                       const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
                                        const std::string& conf) {
-  auto points_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
-  auto wkb_type = points->type_id();
-  assert(wkb_type == arrow::Type::BINARY);
-
-  std::pair<uint8_t*, int64_t> result;
-  auto c_type = arr_c->type_id();
-  switch (c_type) {
-    case arrow::Type::INT8: {
-      result = render_heatmap<int8_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT16: {
-      result = render_heatmap<int16_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT32: {
-      result = render_heatmap<int32_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::INT64: {
-      result = render_heatmap<int64_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT8: {
-      result = render_heatmap<uint8_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT16: {
-      result = render_heatmap<uint16_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT32: {
-      result = render_heatmap<uint32_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::UINT64: {
-      result = render_heatmap<uint64_t>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::FLOAT: {
-      result = render_heatmap<float>(points, arr_c, conf);
-      break;
-    }
-    case arrow::Type::DOUBLE: {
-      result = render_heatmap<double>(points, arr_c, conf);
-      break;
-    }
-    default:
-      std::string err_msg =
-          "type error of count while running heat map, type = " + std::to_string(c_type);
-      throw std::runtime_error(err_msg);
-  }
-
-  return out_pic(result);
+  const auto& wkb_vec = WkbExtraction(points_vector);
+  const auto& arr_c = WeightExtraction<int>(weights_vector);
+  return out_pic(render_heatmap<int>(wkb_vec, arr_c, conf));
 }
 
 std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
@@ -960,10 +909,10 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
 }
 
 std::shared_ptr<arrow::Array> choropleth_map(
-    const std::vector<std::shared_ptr<arrow::Array>>& arrs_wkb,
-    const std::vector<std::shared_ptr<arrow::Array>>& arrs_c, const std::string& conf) {
-  const auto& wkb_vec = WkbExtraction(arrs_wkb);
-  const auto& arr_c = WeightExtraction<int>(arrs_c);
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector, const std::string& conf) {
+  const auto& wkb_vec = WkbExtraction(polygons_vector);
+  const auto& arr_c = WeightExtraction<int>(weights_vector);
   return out_pic(render_choroplethmap<int>(wkb_vec, arr_c, conf));
 }
 

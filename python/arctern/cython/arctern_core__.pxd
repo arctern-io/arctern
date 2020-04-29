@@ -24,11 +24,11 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const string &vega) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &weights,const string &vega) except +
     shared_ptr[CArray] weighted_point_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &color_weights,const shared_ptr[CArray] &size_weights,const string &vega) except +
-    shared_ptr[CArray] heat_map(const shared_ptr[CArray] &points,const shared_ptr[CArray] &weights,const string &vega) except +
-    shared_ptr[CArray] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries,const vector[shared_ptr[CArray]] &weights,const string &vega) except +
-    shared_ptr[CArray] icon_viz(const vector[shared_ptr[CArray]] &points_list,const string &conf) except +
-    shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except + 
-    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
+    shared_ptr[CArray] heat_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    shared_ptr[CArray] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    shared_ptr[CArray] icon_viz(const vector[shared_ptr[CArray]] &points_vector, const string &conf) except +
+    shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except +
+    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except +
 
 cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +

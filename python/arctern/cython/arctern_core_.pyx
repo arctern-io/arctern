@@ -55,18 +55,27 @@ def weighted_size_point_map(vega, points, size_weights):
 def weighted_color_size_point_map(vega, points, color_weights, size_weights):
     return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), pyarrow_unwrap_array(size_weights), vega))
 
-def heat_map(vega, points, weights):
-    return pyarrow_wrap_array(arctern_core_pxd.heat_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(weights), vega))
+def heat_map(vega, points_list, weights_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    cdef vector[shared_ptr[CArray]] weights_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    for weights in weights_list:
+        arr = pyarrow_unwrap_array(weights)
+        weights_vector.push_back(arr)
 
-def choropleth_map(vega,region_boundaries_arrays, weights_arrays):
+    return pyarrow_wrap_array(arctern_core_pxd.heat_map(points_vector, weights_vector, vega))
+
+def choropleth_map(vega,region_boundaries_list, weights_list):
     # wrapper input
     cdef shared_ptr[CArray] arr
     cdef vector[shared_ptr[CArray]] region_boundaries_vector
     cdef vector[shared_ptr[CArray]] weights_vector
-    for region in region_boundaries_arrays:
+    for region in region_boundaries_list:
         arr = pyarrow_unwrap_array(region)
         region_boundaries_vector.push_back(arr)
-    for weights in weights_arrays:
+    for weights in weights_list:
         arr = pyarrow_unwrap_array(weights)
         weights_vector.push_back(arr)
 
