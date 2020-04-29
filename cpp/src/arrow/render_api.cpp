@@ -453,11 +453,8 @@ const std::vector<std::shared_ptr<arrow::Array>> projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos,
     const std::string& bottom_right, const std::string& top_left, const int& height,
     const int& width) {
-  std::cout << "c++ proj enter c++" << std::endl;
   const auto& geo_vec = GeometryExtraction(geos);
-  std::cout << "c++ geo extract ok" << std::endl;
   Projection(geo_vec, bottom_right, top_left, height, width);
-  std::cout << "c++ proj ok" << std::endl;
   const auto& res = GeometryExport(geo_vec, geos.size());
   return res;
 }
@@ -466,13 +463,9 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos, const std::string& src_rs,
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width) {
-  std::cout << "c++ trans enter c++" << std::endl;
   const auto& geo_vec = GeometryExtraction(geos);
-  std::cout << "c++ geo extract ok" << std::endl;
   TransformAndProjection(geo_vec, src_rs, dst_rs, bottom_right, top_left, height, width);
-  std::cout << "c++ transform and proj ok" << std::endl;
   const auto& res = GeometryExport(geo_vec, geos.size());
-  std::cout << "c++ GeometryExport ok" << std::endl;
   return res;
 }
 
@@ -480,7 +473,6 @@ std::shared_ptr<arrow::Array> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
-  std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();
 
   std::vector<uint32_t> input_x(num_of_point);
@@ -520,7 +512,6 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
-  std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();
 
   std::vector<uint32_t> input_x(num_of_point);
@@ -939,7 +930,6 @@ std::shared_ptr<arrow::Array> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
-  std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();
 
   std::vector<uint32_t> input_x(num_of_point);
@@ -954,7 +944,6 @@ std::shared_ptr<arrow::Array> icon_viz(
     input_y[i] = rs_pointer->getY();
   }
 
-  std::cout << "c++ enter draw map" << std::endl;
   auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
 
   return out_pic(result);

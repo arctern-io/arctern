@@ -32,7 +32,7 @@ std::vector<OGRGeometry*> GeometryExtraction(
     total_size += arr->length();
   }
   std::vector<OGRGeometry*> geos_res(total_size);
-  std::cout << "total_size = " << total_size << std::endl;
+
   int index = 0;
   for (const auto& arr : arrs) {
     assert(arr->type_id() == arrow::Type::BINARY);
