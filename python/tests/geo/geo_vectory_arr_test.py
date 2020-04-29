@@ -31,6 +31,7 @@ def test_ST_Intersection():
     rst = arctern.ST_Intersection(data1, data2)
     assert len(rst) == 40000000
 
+
 def test_ST_Equals():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
@@ -98,6 +99,7 @@ def test_ST_Point():
     rst = arctern.ST_Point(data1, data2)
     assert len(rst) == 40000000
 
+
 def test_ST_Contains():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
@@ -123,7 +125,6 @@ def test_ST_Intersects():
 
     data1 = pandas.Series(arr1)
     data2 = pandas.Series(arr2)
-    print('------>  size: {:.2f}GB'.format(sys.getsizeof(data1)/1024**3))
     rst = arctern.ST_Intersects(data1, data2)
     assert len(rst) == 40000000
 
@@ -182,6 +183,7 @@ def test_ST_HausdorffDistance():
     data2 = pandas.Series(arr2)
     rst = arctern.ST_HausdorffDistance(data1, data2)
     assert len(rst) == 40000000
+
 
 def test_ST_PolygonFromEnvelope():
     x_min = pandas.Series([0.0 for x in range(1, 4000001)])
