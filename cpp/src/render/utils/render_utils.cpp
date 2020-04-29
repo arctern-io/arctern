@@ -28,11 +28,13 @@ namespace render {
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
   int total_size = 0;
+  std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
   for (const auto& arr : arrs) {
     total_size += arr->length();
   }
+  std::cout << "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy" << std::endl;
   std::vector<OGRGeometry*> geos_res(total_size);
-
+  std::cout << "total_size = " << total_size << std::endl;
   int index = 0;
   for (const auto& arr : arrs) {
     assert(arr->type_id() == arrow::Type::BINARY);
