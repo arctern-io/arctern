@@ -1129,6 +1129,7 @@ def projection(geos, bottom_right, top_left, height, width):
     bounding_box_min = bytes(top_left, encoding="utf8")
 
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))
@@ -1191,6 +1192,7 @@ def point_map_layer(vega, points, transform=True):
 
     # transform and projection handler
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))
@@ -1233,6 +1235,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
     # transform and projection handler
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))
@@ -1317,6 +1320,7 @@ def heat_map_layer(vega, points, weights, transform=True):
 
     # transform and projection handler
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))
@@ -1367,6 +1371,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
 
     # transform and projection handler
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))
@@ -1418,6 +1423,7 @@ def icon_viz_layer(vega, points, transform=True):
 
     # transform and projection handler
     geos_rs = []
+    # pylint: disable=c-extension-no-member
     if isinstance(geos, pa.lib.ChunkedArray):
         for chunk_idx in range(geos.num_chunks):
             geos_rs.append(geos.chunk(chunk_idx))

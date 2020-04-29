@@ -19,7 +19,7 @@
 
 #include "arrow/render_api.h"
 
-//TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
+// TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -85,7 +85,7 @@
 //  arctern::render::weighted_point_map(x_array, y_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST, MULTIPLE_COLOR_SINGLE_POINTSIZE) {
+// TEST(POINTMAP_RAW_POINT_TEST, MULTIPLE_COLOR_SINGLE_POINTSIZE) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -162,7 +162,7 @@
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_MULTIPLE_POINTSIZE) {
+// TEST(POINTMAP_RAW_POINT_TEST, SINGLE_COLOR_MULTIPLE_POINTSIZE) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1207,7 +1207,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
   arctern::render::weighted_point_map(x_array, y_array, c_array, s_array, vega);
 }
 
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT8) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT8) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1284,7 +1284,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT16) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT16) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1361,7 +1361,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT32) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT32) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1438,7 +1438,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT64) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, INT64) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1515,7 +1515,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT8) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT8) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1592,7 +1592,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT16) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT16) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1669,7 +1669,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT32) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT32) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1746,7 +1746,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT64) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, UINT64) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1823,7 +1823,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, FLOAT) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, FLOAT) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -1900,7 +1900,7 @@ TEST(POINTMAP_RAW_POINT_TEST, DOUBLE) {
 //  arctern::render::weighted_point_map(x_array, y_array, c_array, vega);
 //}
 //
-//TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, DOUBLE) {
+// TEST(POINTMAP_RAW_POINT_TEST_MULTIPLE_COLOR, DOUBLE) {
 //  // param1: x, y
 //  arrow::UInt32Builder x_builder;
 //  auto status = x_builder.Append(10);
@@ -3257,7 +3257,7 @@ TEST(POINTMAP_WKT_TEST, INT16) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3347,7 +3347,7 @@ TEST(POINTMAP_WKT_TEST, INT32) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3437,7 +3437,7 @@ TEST(POINTMAP_WKT_TEST, INT64) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3527,7 +3527,7 @@ TEST(POINTMAP_WKT_TEST, UINT8) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3617,7 +3617,7 @@ TEST(POINTMAP_WKT_TEST, UINT16) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3707,7 +3707,7 @@ TEST(POINTMAP_WKT_TEST, UINT32) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3797,7 +3797,7 @@ TEST(POINTMAP_WKT_TEST, UINT64) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3887,7 +3887,7 @@ TEST(POINTMAP_WKT_TEST, FLOAT) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -3973,11 +3973,11 @@ TEST(POINTMAP_WKT_TEST, DOUBLE) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  
+
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4067,7 +4067,7 @@ TEST(POINTMAP_WKT_TEST, MEAN) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4157,7 +4157,7 @@ TEST(POINTMAP_WKT_TEST, SUM) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4247,7 +4247,7 @@ TEST(POINTMAP_WKT_TEST, MAX) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4337,7 +4337,7 @@ TEST(POINTMAP_WKT_TEST, MIN) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4427,7 +4427,7 @@ TEST(POINTMAP_WKT_TEST, COUNT) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4517,7 +4517,7 @@ TEST(POINTMAP_WKT_TEST, STD) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -4595,7 +4595,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT8) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -4673,7 +4673,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT16) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -4751,7 +4751,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT32) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -4829,7 +4829,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT64) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -4907,7 +4907,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT8) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -4985,7 +4985,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT16) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5063,7 +5063,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT32) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5141,7 +5141,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT64) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5219,7 +5219,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, FLOAT) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5297,7 +5297,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, DOUBLE) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5375,7 +5375,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MEAN) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5450,10 +5450,10 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, SUM) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  
+
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5531,7 +5531,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MAX) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5609,7 +5609,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MIN) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5687,7 +5687,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, COUNT) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5765,7 +5765,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, STD) {
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, vega);
 }
 
@@ -5855,7 +5855,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_TO_RED) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -5945,7 +5945,7 @@ TEST(POINTMAP_WKT_TEST, SKYBLUE_TO_RED) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6035,7 +6035,7 @@ TEST(POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6125,7 +6125,7 @@ TEST(POINTMAP_WKT_TEST, RED_TRANSPARENCY) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6215,7 +6215,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_TRANSPARENCY) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6305,7 +6305,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_GREEN_YELLOW) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6395,7 +6395,7 @@ TEST(POINTMAP_WKT_TEST, WHITE_BLUE) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6485,7 +6485,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_WHITE_RED) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }
 
@@ -6575,6 +6575,6 @@ TEST(POINTMAP_WKT_TEST, GREEN_YELLOW_RED) {
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
-  
+
   arctern::render::weighted_point_map(point_vec, color_vec, size_vec, vega);
 }

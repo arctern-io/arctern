@@ -15,7 +15,8 @@
  */
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-#include <iostream>
+#include <string>
+#include <memory>
 #include <vector>
 
 #include "arrow/render_api.h"
