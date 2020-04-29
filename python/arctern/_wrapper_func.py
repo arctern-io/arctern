@@ -1369,6 +1369,8 @@ def heat_map_layer(vega, points, weights, transform=True):
 
     weights_rs = []
     if isinstance(arr, pa.lib.ChunkedArray):
+        print("num_chunks:")
+        print(arr.num_chunks)
         for chunk_idx in range(arr.num_chunks):
             weights_rs.append(arr.chunk(chunk_idx))
     else:

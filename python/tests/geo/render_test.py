@@ -131,8 +131,8 @@ def test_heat_map():
 
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
-    points = arctern.ST_Point(arr_x, arr_y)
     arr_c = pandas.Series(c_data)
+    points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_heatmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], map_zoom_level=13.0, coordinate_system='EPSG:4326')
     heat_map1 = arctern.heat_map_layer(vega, points, arr_c)
