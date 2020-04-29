@@ -292,7 +292,10 @@ TEST(POINTMAP_TEST, WKT_POINT_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::point_map(wkb, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+
+  arctern::render::point_map(point_vec, vega);
 }
 
 // TEST(POINTMAP_TEST, WKT_POINT_INVALID_JSON_TEST) {

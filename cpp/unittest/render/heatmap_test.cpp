@@ -1002,7 +1002,11 @@ TEST(HEATMAP_TEST, WKT_POINT_INT8_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
@@ -1069,7 +1073,11 @@ TEST(HEATMAP_TEST, WKT_POINT_INT16_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
@@ -1136,7 +1144,11 @@ TEST(HEATMAP_TEST, WKT_POINT_INT32_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
@@ -1203,7 +1215,11 @@ TEST(HEATMAP_TEST, WKT_POINT_INT64_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
@@ -1270,7 +1286,11 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT8_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
@@ -1337,7 +1357,11 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT16_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
@@ -1404,7 +1428,11 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT32_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
@@ -1471,7 +1499,11 @@ TEST(HEATMAP_TEST, WKT_POINT_UINT64_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
@@ -1538,7 +1570,11 @@ TEST(HEATMAP_TEST, WKT_POINT_FLOAT_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
@@ -1605,7 +1641,11 @@ TEST(HEATMAP_TEST, WKT_POINT_DOUBLE_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 // TEST(HEATMAP_TEST, WKT_POINT_INVALID_DATA_TYPE_TEST) {
@@ -1806,7 +1846,11 @@ TEST(HEATMAP_TEST, MEAN) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, SUM) {
@@ -1873,7 +1917,11 @@ TEST(HEATMAP_TEST, SUM) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, MAX) {
@@ -1940,7 +1988,11 @@ TEST(HEATMAP_TEST, MAX) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, MIN) {
@@ -2007,7 +2059,11 @@ TEST(HEATMAP_TEST, MIN) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, COUNT) {
@@ -2074,7 +2130,11 @@ TEST(HEATMAP_TEST, COUNT) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
 
 TEST(HEATMAP_TEST, STD) {
@@ -2141,5 +2201,9 @@ TEST(HEATMAP_TEST, STD) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::heat_map(wkb, color_array, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+
+  arctern::render::heat_map(point_vec, color_vec, vega);
 }
