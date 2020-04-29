@@ -1298,6 +1298,7 @@ def point_map_layer(vega, points, transform=True):
 
 
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def weighted_point_map_layer(vega, points, transform=True, **kwargs):
     import pyarrow as pa
     color_weights = kwargs.get('color_weights', None)
