@@ -1338,6 +1338,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
     if color_weights is None and size_weights is None:
         rs = arctern_core_.weighted_point_map(vega_string, geos_rs)
+
     elif color_weights is not None and size_weights is not None:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
@@ -1360,6 +1361,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         else:
             size_weights_rs.append(arr_s)
         rs = arctern_core_.weighted_color_size_point_map(vega_string, geos_rs, color_weights_rs, size_weights_rs)
+
     elif color_weights is None and size_weights is not None:
         if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
@@ -1372,6 +1374,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         else:
             size_weights_rs.append(arr_s)
         rs = arctern_core_.weighted_size_point_map(vega_string, geos_rs, size_weights_rs)
+
     else:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
