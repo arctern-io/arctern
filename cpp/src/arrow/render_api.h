@@ -40,7 +40,7 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
                                         const std::shared_ptr<arrow::Array>& arr_y,
                                         const std::string& conf);
 
-std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& points,
+std::shared_ptr<arrow::Array> point_map(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
                                         const std::string& conf);
 
 // two args api: point_map(wkt, conf)
@@ -82,7 +82,7 @@ std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_
                                        const std::shared_ptr<arrow::Array>& arr_y,
                                        const std::string& conf);
 
-std::shared_ptr<arrow::Array> icon_viz(const std::vector<std::shared_ptr<arrow::Array>>& points,
+std::shared_ptr<arrow::Array> icon_viz(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
                                        const std::string& conf);
 
 }  // namespace render

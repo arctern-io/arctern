@@ -40,8 +40,12 @@ def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left,
         res.append(pyarrow_wrap_array(output_geos[i]))
     return res
 
-def point_map(vega, points):
-    return pyarrow_wrap_array(arctern_core_pxd.point_map(pyarrow_unwrap_array(points), vega))
+def point_map(vega, points_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.point_map(points_vector, vega))
 
 def weighted_point_map(vega, points):
     return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), vega))
@@ -64,12 +68,9 @@ def heat_map(vega, points_list, weights_list):
     for weights in weights_list:
         arr = pyarrow_unwrap_array(weights)
         weights_vector.push_back(arr)
-
     return pyarrow_wrap_array(arctern_core_pxd.heat_map(points_vector, weights_vector, vega))
 
 def choropleth_map(vega,region_boundaries_list, weights_list):
-    # wrapper input
-    cdef shared_ptr[CArray] arr
     cdef vector[shared_ptr[CArray]] region_boundaries_vector
     cdef vector[shared_ptr[CArray]] weights_vector
     for region in region_boundaries_list:
@@ -78,7 +79,6 @@ def choropleth_map(vega,region_boundaries_list, weights_list):
     for weights in weights_list:
         arr = pyarrow_unwrap_array(weights)
         weights_vector.push_back(arr)
-
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(region_boundaries_vector, weights_vector, vega))
 
 
