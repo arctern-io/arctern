@@ -17,7 +17,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="arctern_server",
-    version="0.0.2.8.3",
+    version="0.0.3",
     author="Zilliz",
     author_email="support@zilliz.com",
     description="arctern demo server",
