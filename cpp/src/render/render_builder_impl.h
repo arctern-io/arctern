@@ -275,40 +275,28 @@ std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
 template <typename T>
 std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
            std::vector<std::vector<T>>>
-weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
-                           const std::shared_ptr<arrow::Array>& arr_c,
-                           const std::shared_ptr<arrow::Array>& arr_s) {
-  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
-
-  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
-  auto s_arr = (T*)arr_s->data()->GetValues<T>(1);
-
-  auto geo_type = geos->type_id();
-  assert(geo_type == arrow::Type::BINARY);
-
-  auto geos_size = geos->length();
-  auto c_size = arr_c->length();
-  auto s_size = arr_s->length();
-
-  assert(geos_size == c_size);
-  assert(c_size == s_size);
+weight_agg_multiple_column(const std::vector<std::string>& geos,
+                           const std::vector<T>& arr_c,
+                           const std::vector<T>& arr_s) {
+  assert(geos.size() == arr_c.size());
+  assert(arr_c.size() == arr_s.size());
 
   using vector_pair = std::pair<std::vector<T>, std::vector<T>>;
   std::unordered_map<std::string, vector_pair> wkb_map;
 
-  for (size_t i = 0; i < geos_size; i++) {
-    std::string geo_wkb = geo_arr->GetString(i);
+  for (size_t i = 0; i < geos.size(); i++) {
+    std::string geo_wkb = geos[i];
     if (wkb_map.find(geo_wkb) == wkb_map.end()) {
       std::vector<T> weight_c;
       std::vector<T> weight_s;
-      weight_c.emplace_back(c_arr[i]);
-      weight_s.emplace_back(s_arr[i]);
+      weight_c.emplace_back(arr_c[i]);
+      weight_s.emplace_back(arr_s[i]);
       wkb_map[geo_wkb] = std::make_pair(weight_c, weight_s);
     } else {
       auto& weight_c = wkb_map[geo_wkb].first;
       auto& weight_s = wkb_map[geo_wkb].second;
-      weight_c.emplace_back(c_arr[i]);
-      weight_s.emplace_back(s_arr[i]);
+      weight_c.emplace_back(arr_c[i]);
+      weight_s.emplace_back(arr_s[i]);
     }
   }
 
