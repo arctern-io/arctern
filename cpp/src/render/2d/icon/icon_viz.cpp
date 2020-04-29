@@ -52,6 +52,7 @@ void IconViz::Draw() {
   }
 
   for (int i = 0; i < num_icons_; i++) {
+    printf("%d", i);
     glRasterPos2f(vertices_x_[i], vertices_y_[i]);
     glDrawPixels(image_buffer.image_params.width, image_buffer.image_params.height,
                  GL_RGBA, GL_UNSIGNED_BYTE, image_buffer.buffer);

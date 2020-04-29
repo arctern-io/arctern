@@ -967,26 +967,26 @@ std::shared_ptr<arrow::Array> choropleth_map(
   return out_pic(render_choroplethmap<int>(wkb_vec, arr_c, conf));
 }
 
-std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
+std::shared_ptr<arrow::Array> icon_viz(const std::vector<std::shared_ptr<arrow::Array>>& points,
                                        const std::string& conf) {
-  auto point_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
-  auto num_icons = points->length();
-  auto wkb_type = points->type_id();
-  assert(wkb_type == arrow::Type::BINARY);
+  const auto& wkb_vec = WkbExtraction(points);
+  std::cout << "wkb extraction, done" << std::endl;
+  auto num_of_point = wkb_vec.size();
 
-  std::vector<uint32_t> input_x(num_icons);
-  std::vector<uint32_t> input_y(num_icons);
+  std::vector<uint32_t> input_x(num_of_point);
+  std::vector<uint32_t> input_y(num_of_point);
 
   OGRGeometry* res_geo = nullptr;
-  for (size_t i = 0; i < num_icons; i++) {
-    std::string geo_wkb = point_arr->GetString(i);
+  for (size_t i = 0; i < num_of_point; i++) {
+    std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = rs_pointer->getX();
     input_y[i] = rs_pointer->getY();
   }
 
-  auto result = iconviz(&input_x[0], &input_y[0], num_icons, conf);
+  std::cout << "c++ enter draw map" << std::endl;
+  auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
 
   return out_pic(result);
 }

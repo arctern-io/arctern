@@ -1323,6 +1323,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
+        # TODO: delete
         print("data prepare ok")
         # transform and projection handler
         geos_rs = []
@@ -1331,6 +1332,8 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
                 geos_rs.append(geos.chunk(chunk_idx))
         else:
             geos_rs.append(geos)
+
+        # transform and projection
         if coor != 'EPSG:3857':
             geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
             print(type(geos))
@@ -1368,18 +1371,36 @@ def icon_viz_layer(vega, points, transform=True):
         bounding_box = vega.bounding_box()
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
         bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
         height = vega.height()
         width = vega.width()
         coor = vega.coor()
+
         src = bytes(coor, encoding="utf8")
         dst = bytes('EPSG:3857', encoding="utf8")
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
-        if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos, src, dst, bounding_box_max, bounding_box_min, height, width)
+
+        # TODO: delete
+        print("data prepare ok")
+        # transform and projection handler
+        geos_rs = []
+        if isinstance(geos, pa.lib.ChunkedArray):
+            print("chunk num:")
+            print(geos.num_chunks)
+            for chunk_idx in range(geos.num_chunks):
+                geos_rs.append(geos.chunk(chunk_idx))
         else:
-            geos = arctern_core_.projection(geos, bounding_box_max, bounding_box_min, height, width)
+            geos_rs.append(geos)
+
+        # transform and projection
+        if coor != 'EPSG:3857':
+            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+        else:
+            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     vega_string = vega.build().encode('utf-8')
+
     rs = arctern_core_.icon_viz(vega_string, geos)
+    print("draw map, Done!!!")
     return base64.b64encode(rs.buffers()[1].to_pybytes())

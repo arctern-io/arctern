@@ -73,8 +73,13 @@ def choropleth_map(vega,region_boundaries_arrays, weights_arrays):
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(region_boundaries_vector, weights_vector, vega))
 
 
-def icon_viz(vega, points):
-    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(pyarrow_unwrap_array(points), vega))
+def icon_viz(vega, points_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+
+    return pyarrow_wrap_array(arctern_core_pxd.icon_viz(points_vector, vega))
 
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))

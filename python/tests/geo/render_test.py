@@ -159,29 +159,30 @@ def test_choropleth_map():
     choropleth_map1 = arctern.choropleth_map_layer(vega, arr_wkb, arr_count)
     save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")
 
-# def test_icon_viz():
-#     x_data = []
-#     y_data = []
-#
-#     x_data.append(-73.96524)
-#     x_data.append(-73.96118)
-#     x_data.append(-73.97324)
-#     x_data.append(-73.98456)
-#
-#     y_data.append(40.73747)
-#     y_data.append(40.74507)
-#     y_data.append(40.75890)
-#     y_data.append(40.77654)
-#
-#     arr_x = pandas.Series(x_data)
-#     arr_y = pandas.Series(y_data)
-#     points = arctern.ST_Point(arr_x, arr_y)
-#
-#     import os
-#     dir_path = os.path.dirname(os.path.realpath(__file__))
-#     png_path = dir_path + "/../images/taxi.png"
-#
-#     vega = vega_icon(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], icon_path=png_path, coordinate_system="EPSG:4326")
-#
-#     icon_buf = arctern.icon_viz_layer(vega, points)
-#     save_png(icon_buf, "/tmp/test_icon_viz.png")
+
+def test_icon_viz():
+    x_data = []
+    y_data = []
+
+    x_data.append(-73.96524)
+    x_data.append(-73.96118)
+    x_data.append(-73.97324)
+    x_data.append(-73.98456)
+
+    y_data.append(40.73747)
+    y_data.append(40.74507)
+    y_data.append(40.75890)
+    y_data.append(40.77654)
+
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    points = arctern.ST_Point(arr_x, arr_y)
+
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    png_path = dir_path + "/../images/taxi.png"
+
+    vega = vega_icon(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], icon_path=png_path, coordinate_system="EPSG:4326")
+
+    icon_buf = arctern.icon_viz_layer(vega, points)
+    save_png(icon_buf, "/tmp/test_icon_viz.png")
