@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
-from libcpp.string cimport (string)
+from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 
 cdef extern from "render.h" namespace "arctern::render":
@@ -30,38 +31,73 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except + 
 
 cdef extern from "gis.h" namespace "arctern::gis":
-    shared_ptr[CArray] ST_Point(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
-    shared_ptr[CArray] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
-    shared_ptr[CArray] ST_GeomFromText(const shared_ptr[CArray] &text) except +
-    shared_ptr[CArray] ST_AsText(const shared_ptr[CArray] &text) except +
-    shared_ptr[CArray] ST_AsGeoJSON(const shared_ptr[CArray] &text) except +
-    shared_ptr[CArray] ST_Intersection(shared_ptr[CArray] &left_geometries,shared_ptr[CArray] &right_geometries) except +
+    vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
+                                        const vector[shared_ptr[CArray]] &ptr_y) except +
+    vector[shared_ptr[CArray]] ST_GeomFromGeoJSON(const shared_ptr[CArray] &json) except +
+    vector[shared_ptr[CArray]] ST_GeomFromText(const shared_ptr[CArray] &text) except +
+    vector[shared_ptr[CArray]] ST_AsText(const shared_ptr[CArray] &text) except +
+    vector[shared_ptr[CArray]] ST_AsGeoJSON(const shared_ptr[CArray] &text) except +
+
+    vector[shared_ptr[CArray]] ST_Intersection(const vector[shared_ptr[CArray]] &left_geometries, \
+                                               const vector[shared_ptr[CArray]] &right_geometries) except +
+
     shared_ptr[CArray] ST_IsValid(const shared_ptr[CArray] &geometries) except +
-    shared_ptr[CArray] ST_Equals(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
-    shared_ptr[CArray] ST_Touches(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
-    shared_ptr[CArray] ST_Overlaps(const shared_ptr[CArray] &left_geometries,const shared_ptr[CArray] &right_geometries) except +
-    shared_ptr[CArray] ST_Crosses(const shared_ptr[CArray] &left_geometries, const shared_ptr[CArray] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Equals(const vector[shared_ptr[CArray]] &left_geometries, \
+                                         const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Touches(const vector[shared_ptr[CArray]] &left_geometries, \
+                                          const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Overlaps(const vector[shared_ptr[CArray]] &left_geometries, \
+                                           const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    vector[shared_ptr[CArray]] ST_Crosses(const vector[shared_ptr[CArray]] &left_geometries, \
+                                          const vector[shared_ptr[CArray]] &right_geometries) except +
+
     shared_ptr[CArray] ST_IsSimple(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot) except +
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_MakeValid(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_SimplifyPreserveTopology(const shared_ptr[CArray] &geometries, double distanceTolerance) except +
-    shared_ptr[CArray] ST_PolygonFromEnvelope(const shared_ptr[CArray] &min_x,const shared_ptr[CArray] &min_y,const shared_ptr[CArray] &max_x,const shared_ptr[CArray] &max_y) except +
-    shared_ptr[CArray] ST_Contains(const shared_ptr[CArray] &ptr_x,const shared_ptr[CArray] &ptr_y) except +
-    shared_ptr[CArray] ST_Intersects(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
-    shared_ptr[CArray] ST_Within(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
-    shared_ptr[CArray] ST_Distance(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
-    shared_ptr[CArray] ST_DistanceSphere(const shared_ptr[CArray] &geo_arr1,const shared_ptr[CArray] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_PolygonFromEnvelope(const vector[shared_ptr[CArray]] &min_x, \
+                                                      const vector[shared_ptr[CArray]] &min_y, \
+                                                      const vector[shared_ptr[CArray]] &max_x, \
+                                                      const vector[shared_ptr[CArray]] &max_y) except +
+    
+    vector[shared_ptr[CArray]] ST_Contains(const vector[shared_ptr[CArray]] &ptr_x, \
+                                           const vector[shared_ptr[CArray]] &ptr_y) except +
+
+    vector[shared_ptr[CArray]] ST_Intersects(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                             const vector[shared_ptr[CArray]] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_Within(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                         const vector[shared_ptr[CArray]] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_Distance(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                           const vector[shared_ptr[CArray]] &geo_arr2) except +
+
+    vector[shared_ptr[CArray]] ST_DistanceSphere(const vector[shared_ptr[CArray]] &geo_arr1, \
+                                                 const vector[shared_ptr[CArray]] &geo_arr2) except +
+
     shared_ptr[CArray] ST_Area(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Centroid(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Length(const shared_ptr[CArray] &geo_arr) except +
-    shared_ptr[CArray] ST_HausdorffDistance(const shared_ptr[CArray] &geo1,const shared_ptr[CArray] &geo2) except +
+
+    vector[shared_ptr[CArray]] ST_HausdorffDistance(vector[shared_ptr[CArray]] &geo1, \
+                                                    vector[shared_ptr[CArray]] &geo2) except +
+
     shared_ptr[CArray] ST_ConvexHull(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs) except +
-    shared_ptr[CArray] ST_CurveToLine(const shared_ptr[CArray] &geo_arr) except +
+
+    vector[shared_ptr[CArray]] ST_CurveToLine(const shared_ptr[CArray] &geo_arr) except +
+
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr) except +
-    shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist) except +
-    shared_ptr[CArray] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist, int n_quadrant_segments) except +
+
+    vector[shared_ptr[CArray]] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist) except +
+    vector[shared_ptr[CArray]] ST_Buffer(const shared_ptr[CArray] &geo_arr, double dfDist, int n_quadrant_segments) except +
+
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr) except +
