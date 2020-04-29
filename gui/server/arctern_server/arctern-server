@@ -20,7 +20,7 @@ import logging
 import getopt
 import sys
 
-import arctern_server
+from arctern_server import manage
 
 if __name__ == '__main__':
     IS_DEBUG = True
@@ -42,12 +42,12 @@ if __name__ == '__main__':
         OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
-        usage()
+        manage.usage()
         sys.exit(2)
 
     for opt, arg in OPTS:
         if opt == '-h':
-            usage()
+            manage.usage()
             sys.exit()
         elif opt == '-r':
             IS_DEBUG = False
@@ -62,4 +62,4 @@ if __name__ == '__main__':
         elif opt == '--loglevel':
             LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
 
-    arctern_server.manage.main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
+    manage.main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
