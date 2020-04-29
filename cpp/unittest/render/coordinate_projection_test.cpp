@@ -45,10 +45,11 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   // param5: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.753893)";
 
-  auto arr = arctern::render::transform_and_projection(wkb, src_ts, dst_rs, bottom_right,
+  std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
+  auto arr = arctern::render::transform_and_projection(vec, src_ts, dst_rs, bottom_right,
                                                        top_left, 200, 300);
 
-  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr[0]);
   auto res1 = str_arr->GetString(0);
   auto res2 = str_arr->GetString(1);
 
@@ -103,10 +104,12 @@ TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
   // param5: bottom_right
   std::string bottom_right = "POINT (-73.977588 40.753893)";
 
-  auto arr = arctern::render::transform_and_projection(wkb, src_ts, dst_rs, bottom_right,
+  std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
+
+  auto arr = arctern::render::transform_and_projection(vec, src_ts, dst_rs, bottom_right,
                                                        top_left, 200, 300);
 
-  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr[0]);
 }
 
 TEST(PROJECTION_TEST, POINT_TEST) {
@@ -129,9 +132,10 @@ TEST(PROJECTION_TEST, POINT_TEST) {
 
   auto wkb = arctern::render::WktToWkb(string_array);
 
-  auto arr = arctern::render::projection(wkb, bottom_right, top_left, 200, 300);
+  std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
+  auto arr = arctern::render::projection(vec, bottom_right, top_left, 200, 300);
 
-  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr[0]);
 
   auto res1 = str_arr->GetString(0);
   auto res2 = str_arr->GetString(1);
@@ -172,9 +176,10 @@ TEST(PROJECTION_TEST, POLYGON_TEST) {
 
   auto wkb = arctern::render::WktToWkb(string_array);
 
-  auto arr = arctern::render::projection(wkb, bottom_right, top_left, 200, 300);
+  std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
+  auto arr = arctern::render::projection(vec, bottom_right, top_left, 200, 300);
 
-  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr);
+  auto str_arr = std::static_pointer_cast<arrow::BinaryArray>(arr[0]);
 
   auto res = str_arr->GetString(0);
 
