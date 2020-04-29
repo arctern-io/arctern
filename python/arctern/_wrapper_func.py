@@ -1136,10 +1136,10 @@ def projection(geos, bottom_right, top_left, height, width):
         geos_rs.append(geos)
 
     geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
-    pd_rs = geos[0]
+    pd_rs = geos[0].to_pandas()
     if len(geos) >= 2:
         for i in range(1, len(geos)):
-            pd_rs.append(geos[i])
+            pd_rs.append(geos[i].to_pandas())
 
     return pd_rs
 
@@ -1162,12 +1162,15 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     else:
         geos_rs.append(geos)
 
+    print("python enter transform")
     geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
-    pd_rs = geos[0]
+    pd_rs = geos[0].to_pandas()
     if len(geos) >= 2:
         for i in range(1, len(geos)):
-            pd_rs.append(geos[i])
+            pd_rs.append(geos[i].to_pandas())
 
+    print("python transform done")
+    print(type(pd_rs))
     return pd_rs
 
 
@@ -1189,6 +1192,17 @@ def point_map_layer(vega, points, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
+    # TODO: delete
+    print("data prepare ok")
+    # transform and projection handler
+    geos_rs = []
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            geos_rs.append(geos.chunk(chunk_idx))
+    else:
+        print("only one chunk")
+        geos_rs.append(geos)
+
     if transform:
         bounding_box = vega.bounding_box()
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
@@ -1203,28 +1217,15 @@ def point_map_layer(vega, points, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
-        # TODO: delete
-        print("data prepare ok")
-        # transform and projection handler
-        geos_rs = []
-        if isinstance(geos, pa.lib.ChunkedArray):
-            print("chunk num:")
-            print(geos.num_chunks)
-            for chunk_idx in range(geos.num_chunks):
-                geos_rs.append(geos.chunk(chunk_idx))
-        else:
-            print("only one chunk")
-            geos_rs.append(geos)
-
         # transform and projection
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
-            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
     print("transform done")
 
     vega_string = vega.build().encode('utf-8')
-    rs = arctern_core_.point_map(vega_string, geos)
+    rs = arctern_core_.point_map(vega_string, geos_rs)
     print("draw map, Done!!!")
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
@@ -1238,6 +1239,16 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
     geos = pa.array(points, type='binary')
 
+    # TODO: delete
+    print("data prepare ok")
+    # transform and projection handler
+    geos_rs = []
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            geos_rs.append(geos.chunk(chunk_idx))
+    else:
+        geos_rs.append(geos)
+
     if transform:
         bounding_box = vega.bounding_box()
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
@@ -1252,27 +1263,14 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
-        # TODO: delete
-        print("data prepare ok")
-        # transform and projection handler
-        geos_rs = []
-        if isinstance(geos, pa.lib.ChunkedArray):
-            print("chunk num:")
-            print(geos.num_chunks)
-            for chunk_idx in range(geos.num_chunks):
-                geos_rs.append(geos.chunk(chunk_idx))
-        else:
-            print("only one chunk")
-            geos_rs.append(geos)
-
         # transform and projection
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
-            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     if color_weights is None and size_weights is None:
-        rs = arctern_core_.weighted_point_map(vega_string, geos)
+        rs = arctern_core_.weighted_point_map(vega_string, geos_rs)
     elif color_weights is not None and size_weights is not None:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
@@ -1295,7 +1293,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         else:
             size_weights_rs.append(arr_s)
         print("weights handle done")
-        rs = arctern_core_.weighted_color_size_point_map(vega_string, geos, color_weights_rs, size_weights_rs)
+        rs = arctern_core_.weighted_color_size_point_map(vega_string, geos_rs, color_weights_rs, size_weights_rs)
     elif color_weights is None and size_weights is not None:
         if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
@@ -1308,7 +1306,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         else:
             size_weights_rs.append(arr_s)
         print("weights handle done")
-        rs = arctern_core_.weighted_size_point_map(vega_string, geos, size_weights_rs)
+        rs = arctern_core_.weighted_size_point_map(vega_string, geos_rs, size_weights_rs)
     else:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
@@ -1321,7 +1319,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         else:
             color_weights_rs.append(arr_c)
         print("weights handle done")
-        rs = arctern_core_.weighted_color_point_map(vega_string, geos, color_weights_rs)
+        rs = arctern_core_.weighted_color_point_map(vega_string, geos_rs, color_weights_rs)
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
@@ -1329,6 +1327,16 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 def heat_map_layer(vega, points, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
+
+    # TODO: delete
+    print("data prepare ok")
+    # transform and projection handler
+    geos_rs = []
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            geos_rs.append(geos.chunk(chunk_idx))
+    else:
+        geos_rs.append(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1344,21 +1352,11 @@ def heat_map_layer(vega, points, weights, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
-        # TODO: delete
-        print("data prepare ok")
-        # transform and projection handler
-        geos_rs = []
-        if isinstance(geos, pa.lib.ChunkedArray):
-            for chunk_idx in range(geos.num_chunks):
-                geos_rs.append(geos.chunk(chunk_idx))
-        else:
-            geos_rs.append(geos)
-
         # transform and projection
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
-            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     print("transform done")
     # weights handler
@@ -1378,13 +1376,23 @@ def heat_map_layer(vega, points, weights, transform=True):
     print("weights handle done")
 
     vega_string = vega.build().encode('utf-8')
-    rs = arctern_core_.heat_map(vega_string, geos, weights_rs)
+    rs = arctern_core_.heat_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
 
 def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(region_boundaries, type='binary')
+
+    # TODO: delete
+    print("data prepare ok")
+    # transform and projection handler
+    geos_rs = []
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            geos_rs.append(geos.chunk(chunk_idx))
+    else:
+        geos_rs.append(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1400,22 +1408,11 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
-        # TODO: delete
-        print("data prepare ok")
-        # transform and projection handler
-        geos_rs = []
-        if isinstance(geos, pa.lib.ChunkedArray):
-            for chunk_idx in range(geos.num_chunks):
-                geos_rs.append(geos.chunk(chunk_idx))
-        else:
-            geos_rs.append(geos)
-
         # transform and projection
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
-            print(type(geos))
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
-            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     vega_string = vega.build().encode('utf-8')
 
@@ -1435,7 +1432,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
 
     print("weights handle done")
 
-    rs = arctern_core_.choropleth_map(vega_string, geos, weights_rs)
+    rs = arctern_core_.choropleth_map(vega_string, geos_rs, weights_rs)
     print("draw map, Done!!!")
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
@@ -1443,6 +1440,16 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
 def icon_viz_layer(vega, points, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
+
+    # TODO: delete
+    print("data prepare ok")
+    # transform and projection handler
+    geos_rs = []
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            geos_rs.append(geos.chunk(chunk_idx))
+    else:
+        geos_rs.append(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1458,28 +1465,15 @@ def icon_viz_layer(vega, points, transform=True):
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
 
-        # TODO: delete
-        print("data prepare ok")
-        # transform and projection handler
-        geos_rs = []
-        if isinstance(geos, pa.lib.ChunkedArray):
-            print("chunk num:")
-            print(geos.num_chunks)
-            for chunk_idx in range(geos.num_chunks):
-                geos_rs.append(geos.chunk(chunk_idx))
-        else:
-            print("only one chunk")
-            geos_rs.append(geos)
-
         # transform and projection
         if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
         else:
-            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
     print("transform done")
     vega_string = vega.build().encode('utf-8')
 
-    rs = arctern_core_.icon_viz(vega_string, geos)
+    rs = arctern_core_.icon_viz(vega_string, geos_rs)
     print("draw map, Done!!!")
     return base64.b64encode(rs.buffers()[1].to_pybytes())

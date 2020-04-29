@@ -472,6 +472,7 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
   TransformAndProjection(geo_vec, src_rs, dst_rs, bottom_right, top_left, height, width);
   std::cout << "c++ transform and proj ok" << std::endl;
   const auto& res = GeometryExport(geo_vec, geos.size());
+  std::cout << "c++ GeometryExport ok" << std::endl;
   return res;
 }
 
@@ -588,8 +589,9 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       return out_pic(render_weighted_pointmap<double>(wkb_vec, arr_c, conf));
     }
     default:
-      std::string err_msg = "type error of count while running weighted_pointmap, type = " +
-                            std::to_string(weight_data_type);
+      std::string err_msg =
+          "type error of count while running weighted_pointmap, type = " +
+          std::to_string(weight_data_type);
       throw std::runtime_error(err_msg);
   }
 }
@@ -655,8 +657,9 @@ std::shared_ptr<arrow::Array> weighted_point_map(
       return out_pic(render_weighted_pointmap<double>(wkb_vec, arr_c, arr_s, conf));
     }
     default:
-      std::string err_msg = "type error of count while running weighted_pointmap, type = " +
-                            std::to_string(weight_data_type);
+      std::string err_msg =
+          "type error of count while running weighted_pointmap, type = " +
+          std::to_string(weight_data_type);
       throw std::runtime_error(err_msg);
   }
 }
