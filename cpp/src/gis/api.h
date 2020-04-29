@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "arrow/api.h"
 #include "arrow/array.h"
@@ -30,23 +31,27 @@ namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(const std::shared_ptr<arrow::Array>& x_values,
-                                       const std::shared_ptr<arrow::Array>& y_values);
+std::vector<std::shared_ptr<arrow::Array>> ST_Point(
+    const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw);
 
-std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
-    const std::shared_ptr<arrow::Array>& min_x_values,
-    const std::shared_ptr<arrow::Array>& min_y_values,
-    const std::shared_ptr<arrow::Array>& max_x_values,
-    const std::shared_ptr<arrow::Array>& max_y_values);
+std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
+    const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values);
 
-std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json);
 
-std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text);
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
+    const std::shared_ptr<arrow::Array>& text);
 
-std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb);
+std::vector<std::shared_ptr<arrow::Array>> ST_AsText(
+    const std::shared_ptr<arrow::Array>& wkb);
 
-std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb);
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(
+    const std::shared_ptr<arrow::Array>& wkb);
 
 /***************************** GEOMETRY ACCESSOR *****************************/
 
@@ -65,16 +70,16 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 
 /**************************** GEOMETRY PROCESSING ****************************/
 
-std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
-                                        double buffer_distance,
-                                        int n_quadrant_segments = 30);
+std::vector<std::shared_ptr<arrow::Array>> ST_Buffer(
+    const std::shared_ptr<arrow::Array>& geometries, double buffer_distance,
+    int n_quadrant_segments = 30);
 
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t precision);
 
-std::shared_ptr<arrow::Array> ST_Intersection(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
 std::shared_ptr<arrow::Array> ST_MakeValid(
     const std::shared_ptr<arrow::Array>& geometries);
@@ -92,54 +97,56 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
                                            const std::string& src_rs,
                                            const std::string& dst_rs);
 
-std::shared_ptr<arrow::Array> ST_CurveToLine(
+std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
     const std::shared_ptr<arrow::Array>& geometries);
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_DistanceSphere(
-    const std::shared_ptr<arrow::Array>& point_left,
-    const std::shared_ptr<arrow::Array>& point_right);
+std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
+    const std::vector<std::shared_ptr<arrow::Array>>& point_left,
+    const std::vector<std::shared_ptr<arrow::Array>>& point_right);
 
-std::shared_ptr<arrow::Array> ST_Distance(const std::shared_ptr<arrow::Array>& geo_left,
-                                          const std::shared_ptr<arrow::Array>& geo_right);
+std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right);
 
 std::shared_ptr<arrow::Array> ST_Area(const std::shared_ptr<arrow::Array>& geometries);
 
 std::shared_ptr<arrow::Array> ST_Length(const std::shared_ptr<arrow::Array>& geometries);
 
-std::shared_ptr<arrow::Array> ST_HausdorffDistance(
-    const std::shared_ptr<arrow::Array>& geo1, const std::shared_ptr<arrow::Array>& geo2);
+std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2);
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
-std::shared_ptr<arrow::Array> ST_Equals(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Touches(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Overlaps(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Crosses(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Contains(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Intersects(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
-std::shared_ptr<arrow::Array> ST_Within(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2);
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
