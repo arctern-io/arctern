@@ -19,7 +19,7 @@ from libcpp.vector cimport vector
 
 cdef extern from "render.h" namespace "arctern::render":
     # func api:
-    shared_ptr[CArray] projection(const shared_ptr[CArray] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
+    const vector[shared_ptr[CArray]] projection(const vector[shared_ptr[CArray]] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     const vector[shared_ptr[CArray]] transform_and_projection(const vector[shared_ptr[CArray]] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except +
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except +

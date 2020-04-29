@@ -23,12 +23,21 @@ cimport arctern_core__ as arctern_core_pxd
 
 
 # render func api:
-def projection(geos, bottom_right, top_left, height, width):
-    return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
-
-def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left, height, width):
+def projection(geos_list, bottom_right, top_left, height, width):
     cdef vector[shared_ptr[CArray]] geos_vector
-    for geos in geos_array:
+    for geos in geos_list:
+        arr = pyarrow_unwrap_array(geos)
+        geos_vector.push_back(arr)
+    cdef vector[shared_ptr[CArray]] output_geos
+    output_geos = arctern_core_pxd.projection(geos_vector, bottom_right, top_left, height, width)
+    res = []
+    for i in range(output_geos.size()):
+        res.append(pyarrow_wrap_array(output_geos[i]))
+    return res
+
+def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, height, width):
+    cdef vector[shared_ptr[CArray]] geos_vector
+    for geos in geos_list:
         arr = pyarrow_unwrap_array(geos)
         geos_vector.push_back(arr)
     cdef vector[shared_ptr[CArray]] output_geos

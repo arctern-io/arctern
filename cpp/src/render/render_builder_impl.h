@@ -62,33 +62,19 @@ void pointXY_from_wkt(const std::string& wkt, double& x, double& y) {
   OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
-std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
-                                         const std::string& bottom_right,
-                                         const std::string& top_left, const int& height,
-                                         const int& width) {
-  arrow::BinaryBuilder builder;
-
-  auto len = geos->length();
-  auto wkt_geometries = std::static_pointer_cast<arrow::StringArray>(geos);
-
+void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
+                const std::string& top_left, const int& height, const int& width) {
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
   pointXY_from_wkt(top_left, top_left_x, top_left_y);
   pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
+
   auto coordinate_width = bottom_right_x - top_left_x;
   auto coordinate_height = top_left_y - bottom_right_y;
-  uint32_t output_x, output_y;
 
-  for (int32_t i = 0; i < len; i++) {
-    if (wkt_geometries->IsNull(i)) {
-      CHECK_ARROW(builder.Append(""));
-      continue;
-    }
-    OGRGeometry* geo = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkb(
-        wkt_geometries->GetString(i).c_str(), nullptr, &geo);
-    if (err_code) continue;
+  uint32_t output_x, output_y;
+  for (auto geo : geos) {
     if (geo == nullptr) {
-      CHECK_ARROW(builder.AppendNull());
+      continue;
     } else {
       // projection
       auto type = wkbFlatten(geo->getGeometryType());
@@ -113,25 +99,8 @@ std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& ge
         std::string err_msg = "unsupported geometry type, type = " + std::to_string(type);
         throw std::runtime_error(err_msg);
       }
-
-      auto sz = geo->WkbSize();
-      std::vector<char> str(sz);
-      err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
-      if (err_code != OGRERR_NONE) {
-        std::string err_msg =
-            "failed to export to wkt, error code = " + std::to_string(err_code);
-        throw std::runtime_error(err_msg);
-      }
-
-      CHECK_ARROW(builder.Append(str.data(), str.size()));
-      OGRGeometryFactory::destroyGeometry(geo);
     }
   }
-
-  std::shared_ptr<arrow::Array> results;
-  CHECK_ARROW(builder.Finish(&results));
-
-  return results;
 }
 
 void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
@@ -151,10 +120,8 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
     std::string err_msg = "faild to tranform with targetCRS = " + dst_rs;
     throw std::runtime_error(err_msg);
   }
-  void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
 
-  arrow::BinaryBuilder builder;
-  auto len = geos.size();
+  void* poCT = OCTNewCoordinateTransformation(&oSrcSRS, &oDstS);
 
   double min_x, max_y, max_x, min_y;
   pointXY_from_wkt_with_transform(top_left, min_x, max_y, poCT);
@@ -162,12 +129,11 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
 
   auto coor_width = max_x - min_x;
   auto coor_height = max_y - min_y;
-  int32_t output_x, output_y;
 
-  for (int32_t i = 0; i < len; i++) {
-    auto geo = geos[i];
+  int32_t output_x, output_y;
+  for (auto geo : geos) {
     if (geo == nullptr) {
-      CHECK_ARROW(builder.AppendNull());
+      continue;
     } else {
       // 1. transform
       CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
@@ -243,7 +209,8 @@ std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
 template <typename T>
 std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c) {
-  std::cout << "wkb size = " << wkb_arr.size() << ", arr_c.size = " << arr_c.size() << std::endl;
+  std::cout << "wkb size = " << wkb_arr.size() << ", arr_c.size = " << arr_c.size()
+            << std::endl;
   assert(wkb_arr.size() == arr_c.size());
 
   std::unordered_map<std::string, std::vector<T>> wkb_map;

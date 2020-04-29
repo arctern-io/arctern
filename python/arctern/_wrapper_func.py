@@ -1123,17 +1123,30 @@ def ST_CurveToLine(geos):
 
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
-    arr_geos = pa.array(geos, type='binary')
+    import pandas as pd
+    geos = pa.array(geos, type='binary')
+
     bounding_box_max = bytes(bottom_right, encoding="utf8")
     bounding_box_min = bytes(top_left, encoding="utf8")
-    rs = arctern_core_.projection(arr_geos, bounding_box_max, bounding_box_min, height, width)
-    return rs.to_pandas()
+
+    pd_rs = pd.Series()
+
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            rs = arctern_core_.projection(geos.chunk(chunk_idx), bounding_box_max, bounding_box_min, height, width)
+            pd_rs.append(rs.to_pandas)
+    else:
+        rs = arctern_core_.projection(geos, bounding_box_max, bounding_box_min, height, width)
+        pd_rs.append(rs.to_pandas)
+
+    return pd_rs
 
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
     import pyarrow as pa
     import pandas as pd
-    arr_geos = pa.array(geos, type='binary')
+    geos = pa.array(geos, type='binary')
+
     src = bytes(src_rs, encoding="utf8")
     dst = bytes(dst_rs, encoding="utf8")
 
@@ -1143,15 +1156,15 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     pd_rs = pd.Series()
 
     # pylint: disable=c-extension-no-member
-    if isinstance(arr_geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(arr_geos.num_chunks):
-            rs = arctern_core_.transform_and_projection(arr_geos.chunk(chunk_idx), src, dst, bounding_box_max, bounding_box_min, height, width)
+    if isinstance(geos, pa.lib.ChunkedArray):
+        for chunk_idx in range(geos.num_chunks):
+            rs = arctern_core_.transform_and_projection(geos.chunk(chunk_idx), src, dst, bounding_box_max, bounding_box_min, height, width)
             pd_rs.append(rs.to_pandas)
     else:
-        rs = arctern_core_.transform_and_projection(arr_geos, src, dst, bounding_box_max, bounding_box_min, height, width)
+        rs = arctern_core_.transform_and_projection(geos, src, dst, bounding_box_max, bounding_box_min, height, width)
         pd_rs.append(rs.to_pandas)
 
-    return pd_rs.to_pandas()
+    return pd_rs
 
 
 def wkt2wkb(arr_wkt):

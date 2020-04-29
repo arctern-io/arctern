@@ -449,11 +449,17 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
   return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
-std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
-                                         const std::string& bottom_right,
-                                         const std::string& top_left, const int& height,
-                                         const int& width) {
-  return Projection(geos, bottom_right, top_left, height, width);
+const std::vector<std::shared_ptr<arrow::Array>> projection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geos,
+    const std::string& bottom_right, const std::string& top_left, const int& height,
+    const int& width) {
+  std::cout << "c++ proj enter c++" << std::endl;
+  const auto& geo_vec = GeometryExtraction(geos);
+  std::cout << "c++ geo extract ok" << std::endl;
+  Projection(geo_vec, bottom_right, top_left, height, width);
+  std::cout << "c++ proj ok" << std::endl;
+  const auto& res = GeometryExport(geo_vec, geos.size());
+  return res;
 }
 
 const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
@@ -461,11 +467,11 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width) {
   std::cout << "c++ trans enter c++" << std::endl;
-  const auto& geo = GeometryExtraction(geos);
+  const auto& geo_vec = GeometryExtraction(geos);
   std::cout << "c++ geo extract ok" << std::endl;
-  TransformAndProjection(geo, src_rs, dst_rs, bottom_right, top_left, height, width);
+  TransformAndProjection(geo_vec, src_rs, dst_rs, bottom_right, top_left, height, width);
   std::cout << "c++ transform and proj ok" << std::endl;
-  const auto& res = GeometryExport(geo, geos.size());
+  const auto& res = GeometryExport(geo_vec, geos.size());
   return res;
 }
 

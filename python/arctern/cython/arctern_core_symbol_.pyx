@@ -17,10 +17,10 @@
 
 
 # render func api:
-def projection(geos, bottom_right, top_left, height, width):
+def projection(geos_list, bottom_right, top_left, height, width):
     pass
 
-def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left, height, width):
+def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, height, width):
     pass
 
 def wkt2wkb(arr_wkt):
