@@ -471,6 +471,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
         OGRPolygon polygon;
         polygon.addRing(&ring);
         auto array_ptr = AppendWkb(builder, &polygon);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
       }
     }
   }
