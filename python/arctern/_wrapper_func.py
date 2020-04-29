@@ -1121,33 +1121,6 @@ def ST_CurveToLine(geos):
     return arctern_caller(arctern_core_.ST_CurveToLine, arr_geos)
 
 
-# def render_caller(func, geos, *func_args):
-#     import pyarrow
-#     num_chunks = 1
-#     # pylint: disable=c-extension-no-member
-#     if isinstance(geos, pyarrow.lib.ChunkedArray):
-#         num_chunks = len(geos.chunks)
-#
-#     if num_chunks <= 1:
-#         result = func(*func_args)
-#         return result.to_pandas()
-#
-#     result_total = None
-#     for chunk_idx in range(num_chunks):
-#         args = []
-#         # pylint: disable=c-extension-no-member
-#         if isinstance(geos, pyarrow.lib.ChunkedArray):
-#             args.append(geos.chunks[chunk_idx])
-#         else:
-#             args.append(geos)
-#         result = func(*args)
-#         if result_total is None:
-#             result_total = result.to_pandas()
-#         else:
-#             result_total = result_total.append(result.to_pandas(), ignore_index=True)
-#     return result_total
-
-
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
@@ -1252,43 +1225,86 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         bounding_box = vega.bounding_box()
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
         bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
         height = vega.height()
         width = vega.width()
         coor = vega.coor()
+
         src = bytes(coor, encoding="utf8")
         dst = bytes('EPSG:3857', encoding="utf8")
         bounding_box_min = bytes(top_left, encoding="utf8")
         bounding_box_max = bytes(bottom_right, encoding="utf8")
-        if coor != 'EPSG:3857':
-            geos = arctern_core_.transform_and_projection(geos, src, dst, bounding_box_max, bounding_box_min, height, width)
-        else:
-            geos = arctern_core_.projection(geos, bounding_box_max, bounding_box_min, height, width)
 
-    if (color_weights is None and size_weights is None):
+        # TODO: delete
+        print("data prepare ok")
+        # transform and projection handler
+        geos_rs = []
+        if isinstance(geos, pa.lib.ChunkedArray):
+            print("chunk num:")
+            print(geos.num_chunks)
+            for chunk_idx in range(geos.num_chunks):
+                geos_rs.append(geos.chunk(chunk_idx))
+        else:
+            print("only one chunk")
+            geos_rs.append(geos)
+
+        # transform and projection
+        if coor != 'EPSG:3857':
+            geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+        else:
+            geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+
+    if color_weights is None and size_weights is None:
         rs = arctern_core_.weighted_point_map(vega_string, geos)
-    elif (color_weights is not None and size_weights is not None):
+    elif color_weights is not None and size_weights is not None:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
-
         if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
-        rs = arctern_core_.weighted_color_size_point_map(vega_string, geos, arr_c, arr_s)
-    elif (color_weights is None and size_weights is not None):
+        color_weights_rs = []
+        size_weights_rs = []
+        if isinstance(arr_c, pa.lib.ChunkedArray):
+            for chunk_idx in range(arr_c.num_chunks):
+                color_weights_rs.append(arr_c.chunk(chunk_idx))
+        else:
+            color_weights_rs.append(arr_c)
+        if isinstance(arr_s, pa.lib.ChunkedArray):
+            for chunk_idx in range(arr_s.num_chunks):
+                size_weights_rs.append(arr_s.chunk(chunk_idx))
+        else:
+            size_weights_rs.append(arr_s)
+        print("weights handle done")
+        rs = arctern_core_.weighted_color_size_point_map(vega_string, geos, color_weights_rs, size_weights_rs)
+    elif color_weights is None and size_weights is not None:
         if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
-        rs = arctern_core_.weighted_size_point_map(vega_string, geos, arr_s)
+        size_weights_rs = []
+        if isinstance(arr_s, pa.lib.ChunkedArray):
+            for chunk_idx in range(arr_s.num_chunks):
+                size_weights_rs.append(arr_s.chunk(chunk_idx))
+        else:
+            size_weights_rs.append(arr_s)
+        print("weights handle done")
+        rs = arctern_core_.weighted_size_point_map(vega_string, geos, size_weights_rs)
     else:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
-        rs = arctern_core_.weighted_color_point_map(vega_string, geos, arr_c)
+        color_weights_rs = []
+        if isinstance(arr_c, pa.lib.ChunkedArray):
+            for chunk_idx in range(arr_c.num_chunks):
+                color_weights_rs.append(arr_c.chunk(chunk_idx))
+        else:
+            color_weights_rs.append(arr_c)
+        print("weights handle done")
+        rs = arctern_core_.weighted_color_point_map(vega_string, geos, color_weights_rs)
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 

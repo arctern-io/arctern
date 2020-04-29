@@ -27,18 +27,13 @@ def projection(geos, bottom_right, top_left, height, width):
     return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
 
 def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left, height, width):
-    # input
-    # cdef shared_ptr[CArray] arr
     cdef vector[shared_ptr[CArray]] geos_vector
     for geos in geos_array:
         arr = pyarrow_unwrap_array(geos)
         geos_vector.push_back(arr)
-    # output
     cdef vector[shared_ptr[CArray]] output_geos
     output_geos = arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width)
     res = []
-    print("output_geos size:")
-    print(output_geos.size())
     for i in range(output_geos.size()):
         res.append(pyarrow_wrap_array(output_geos[i]))
     return res
