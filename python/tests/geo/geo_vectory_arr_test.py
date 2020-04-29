@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pandas
-from osgeo import ogr
 import arctern
 
 
@@ -115,7 +114,6 @@ def test_ST_Contains():
 
 
 def test_ST_Intersects():
-    import sys
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
