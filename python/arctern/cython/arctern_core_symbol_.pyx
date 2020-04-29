@@ -15,52 +15,12 @@
 # cython: language_level=3
 # distutils: language = c++
 
-def projection(geos, bottom_right, top_left, int height, int width):
+
+# render func api:
+def projection(geos, bottom_right, top_left, height, width):
     pass
 
-def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, int height, int width):
-    pass
-
-def point_map_wkb(points, conf):
-    pass
-
-def weighted_point_map_wkb_0_0(points, conf):
-    pass
-
-def weighted_point_map_wkb_1_0(points, conf, cs):
-    pass
-
-def weighted_point_map_wkb_0_1(points, conf, ss):
-    pass
-
-def weighted_point_map_wkb_1_1(points, conf, cs, ss):
-    pass
-
-def weighted_point_map_0_0(arr_x, arr_y, conf):
-    pass
-
-def weighted_point_map_0_1(arr_x, arr_y, conf, ss):
-    pass
-
-def weighted_point_map_1_0(arr_x, arr_y, conf, cs):
-    pass
-
-def weighted_point_map_1_1(arr_x, arr_y, conf, cs, ss):
-    pass
-
-def heat_map_wkb(points, arr_c, conf):
-    pass
-
-def point_map(arr_x, arr_y, conf):
-    pass
-
-def heat_map(arr_x, arr_y, arr_c, conf):
-    pass
-
-def choropleth_map(arr_wkt, arr_count, conf):
-    pass
-
-def icon_viz(points, conf):
+def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left, height, width):
     pass
 
 def wkt2wkb(arr_wkt):
@@ -69,6 +29,35 @@ def wkt2wkb(arr_wkt):
 def wkb2wkt(arr_wkb):
     pass
 
+
+# render drawing api:
+def point_map(vega, points_list):
+    pass
+
+def weighted_point_map(vega, points_list):
+    pass
+
+def weighted_color_point_map(vega, points_list, color_list):
+    pass
+
+def weighted_size_point_map(vega, points, size_list):
+    pass
+
+def weighted_color_size_point_map(vega, points, color_list, size_list):
+    pass
+
+def heat_map(vega, points_list, weights_list):
+    pass
+
+def choropleth_map(vega,region_boundaries_list, weights_list):
+    pass
+
+def icon_viz(vega, points_list):
+    pass
+
+
+
+# gis api
 def ST_Point(object arr_x,object arr_y):
     pass
 

@@ -192,8 +192,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
 
 template <typename T>
 std::pair<uint8_t*, int64_t> render_weighted_pointmap(
-    const std::vector<std::string>& points,
-    const std::vector<T>& arr_c,
+    const std::vector<std::string>& points, const std::vector<T>& arr_c,
     const std::vector<T>& arr_s, const std::string& conf) {
   auto agg_res = weight_agg_multiple_column<T>(points, arr_c, arr_s);
   auto num_point = std::get<0>(agg_res).size();
@@ -470,8 +469,9 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
   return res;
 }
 
-std::shared_ptr<arrow::Array> point_map(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
-                                        const std::string& conf) {
+std::shared_ptr<arrow::Array> point_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();
@@ -510,7 +510,8 @@ std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr
 }
 
 std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::vector<std::shared_ptr<arrow::Array>>& points_vector, const std::string& conf) {
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();
@@ -532,7 +533,8 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 }
 
 std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::vector<std::shared_ptr<arrow::Array>>& points_vector, const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   const auto& arr_c = WeightExtraction<int>(weights_vector);
@@ -541,11 +543,13 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 }
 
 std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::vector<std::shared_ptr<arrow::Array>>& points_vector, const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
-    const std::vector<std::shared_ptr<arrow::Array>>& point_size_weights_vector, const std::string& conf) {
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   const auto& arr_c = WeightExtraction<int>(color_weights_vector);
-  const auto& arr_s = WeightExtraction<int>(point_size_weights_vector);
+  const auto& arr_s = WeightExtraction<int>(size_weights_vector);
   const auto& render_result = render_weighted_pointmap<int>(wkb_vec, arr_c, arr_s, conf);
   return out_pic(render_result);
 }
@@ -644,9 +648,10 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> heat_map(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
-                                       const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
-                                       const std::string& conf) {
+std::shared_ptr<arrow::Array> heat_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   const auto& arr_c = WeightExtraction<int>(weights_vector);
   return out_pic(render_heatmap<int>(wkb_vec, arr_c, conf));
@@ -720,14 +725,16 @@ std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_
 
 std::shared_ptr<arrow::Array> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
-    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector, const std::string& conf) {
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(polygons_vector);
   const auto& arr_c = WeightExtraction<int>(weights_vector);
   return out_pic(render_choroplethmap<int>(wkb_vec, arr_c, conf));
 }
 
-std::shared_ptr<arrow::Array> icon_viz(const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
-                                       const std::string& conf) {
+std::shared_ptr<arrow::Array> icon_viz(
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
   std::cout << "wkb extraction, done" << std::endl;
   auto num_of_point = wkb_vec.size();

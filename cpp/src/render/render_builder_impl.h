@@ -243,6 +243,7 @@ std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
 template <typename T>
 std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
     const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c) {
+  std::cout << "wkb size = " << wkb_arr.size() << ", arr_c.size = " << arr_c.size() << std::endl;
   assert(wkb_arr.size() == arr_c.size());
 
   std::unordered_map<std::string, std::vector<T>> wkb_map;
@@ -276,8 +277,7 @@ template <typename T>
 std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
            std::vector<std::vector<T>>>
 weight_agg_multiple_column(const std::vector<std::string>& geos,
-                           const std::vector<T>& arr_c,
-                           const std::vector<T>& arr_s) {
+                           const std::vector<T>& arr_c, const std::vector<T>& arr_s) {
   assert(geos.size() == arr_c.size());
   assert(arr_c.size() == arr_s.size());
 

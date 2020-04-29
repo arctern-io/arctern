@@ -16,10 +16,13 @@
 # distutils: language = c++
 
 from pyarrow.lib cimport (pyarrow_wrap_array, pyarrow_unwrap_array)
-cimport arctern_core__ as arctern_core_pxd
 from libcpp.vector cimport vector
 from pyarrow.lib cimport (shared_ptr, CArray)
 
+cimport arctern_core__ as arctern_core_pxd
+
+
+# render func api:
 def projection(geos, bottom_right, top_left, height, width):
     return pyarrow_wrap_array(arctern_core_pxd.projection(pyarrow_unwrap_array(geos), bottom_right, top_left, height, width))
 
@@ -40,6 +43,14 @@ def transform_and_projection(geos_array, src_rs, dst_rs, bottom_right, top_left,
         res.append(pyarrow_wrap_array(output_geos[i]))
     return res
 
+def wkt2wkb(arr_wkt):
+    return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
+
+def wkb2wkt(arr_wkb):
+    return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
+
+
+# render drawing api:
 def point_map(vega, points_list):
     cdef vector[shared_ptr[CArray]] points_vector
     for points in points_list:
@@ -47,17 +58,49 @@ def point_map(vega, points_list):
         points_vector.push_back(arr)
     return pyarrow_wrap_array(arctern_core_pxd.point_map(points_vector, vega))
 
-def weighted_point_map(vega, points):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), vega))
+def weighted_point_map(vega, points_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(points_vector, vega))
 
-def weighted_color_point_map(vega, points, color_weights):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), vega))
+def weighted_color_point_map(vega, points_list, color_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    cdef vector[shared_ptr[CArray]] color_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    for color in color_list:
+        arr = pyarrow_unwrap_array(color)
+        color_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(points_vector, color_vector, vega))
 
-def weighted_size_point_map(vega, points, size_weights):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(size_weights), vega))
+def weighted_size_point_map(vega, points_list, size_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    cdef vector[shared_ptr[CArray]] size_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    for size in size_list:
+        arr = pyarrow_unwrap_array(size)
+        size_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(points_vector, size_vector, vega))
 
-def weighted_color_size_point_map(vega, points, color_weights, size_weights):
-    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(pyarrow_unwrap_array(points), pyarrow_unwrap_array(color_weights), pyarrow_unwrap_array(size_weights), vega))
+def weighted_color_size_point_map(vega, points_list, color_list, size_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    cdef vector[shared_ptr[CArray]] color_vector
+    cdef vector[shared_ptr[CArray]] size_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    for color in color_list:
+        arr = pyarrow_unwrap_array(color)
+        color_vector.push_back(arr)
+    for size in size_list:
+        arr = pyarrow_unwrap_array(size)
+        size_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.weighted_point_map(points_vector, color_vector, size_vector, vega))
 
 def heat_map(vega, points_list, weights_list):
     cdef vector[shared_ptr[CArray]] points_vector
@@ -81,7 +124,6 @@ def choropleth_map(vega,region_boundaries_list, weights_list):
         weights_vector.push_back(arr)
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(region_boundaries_vector, weights_vector, vega))
 
-
 def icon_viz(vega, points_list):
     cdef vector[shared_ptr[CArray]] points_vector
     for points in points_list:
@@ -90,12 +132,9 @@ def icon_viz(vega, points_list):
 
     return pyarrow_wrap_array(arctern_core_pxd.icon_viz(points_vector, vega))
 
-def wkt2wkb(arr_wkt):
-    return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
 
-def wkb2wkt(arr_wkb):
-    return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
 
+# gis api:
 def ST_Point(object arr_x,object arr_y):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Point(pyarrow_unwrap_array(arr_x),pyarrow_unwrap_array(arr_y)))
 
