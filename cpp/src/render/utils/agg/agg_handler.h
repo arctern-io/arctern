@@ -21,6 +21,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
+#include <utility>
 
 #include "arrow/array.h"
 

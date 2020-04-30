@@ -17,7 +17,7 @@
 
 #include "arrow/render_api.h"
 
-//TEST(POINTMAP_TEST, RAW_POINT_TEST) {
+// TEST(POINTMAP_TEST, RAW_POINT_TEST) {
 //  // param1: x, y
 //  std::vector<uint32_t> x{50, 51, 52, 53, 54};
 //  std::vector<uint32_t> y{50, 51, 52, 53, 54};
@@ -63,7 +63,7 @@
 //  arctern::render::pointmap(x.data(), y.data(), 5, vega);
 //}
 //
-//TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
+// TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
 //  // param1: x, y
 //  std::vector<uint32_t> x{50, 51, 52, 53, 54};
 //  std::vector<uint32_t> y{50, 51, 52, 53, 54};
