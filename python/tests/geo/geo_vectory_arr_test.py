@@ -228,10 +228,10 @@ def ST_HausdorffDistance():
 
 
 def ST_PolygonFromEnvelope():
-    x_min = pandas.Series([0.0 for x in range(1, 4000001)])
-    x_max = pandas.Series([1.0 for x in range(1, 4000001)])
-    y_min = pandas.Series([2.0 for x in range(1, 4000001)])
-    y_max = pandas.Series([3.0 for x in range(1, 4000001)])
+    x_min = pandas.Series([0.0 for x in range(1, 40000001)])
+    x_max = pandas.Series([1.0 for x in range(1, 40000001)])
+    y_min = pandas.Series([2.0 for x in range(1, 40000001)])
+    y_max = pandas.Series([3.0 for x in range(1, 40000001)])
 
     rst = arctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max)
-    assert len(rst) == 4000000
+    assert len(rst) == 40000000
