@@ -19,10 +19,10 @@
 #include <ogrsf_frmts.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "arrow/array.h"
 
