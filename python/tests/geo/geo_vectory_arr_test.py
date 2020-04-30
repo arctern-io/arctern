@@ -16,7 +16,51 @@ import pandas
 import arctern
 
 
-def test_ST_Intersection():
+def test_suite():
+    from multiprocessing import Process
+    import time
+    p1 = Process(target=ST_Intersection)
+    p2 = Process(target=ST_Equals)
+    p3 = Process(target=ST_Touches)
+    p4 = Process(target=ST_Overlaps)
+    p5 = Process(target=ST_Crosses)
+    p6 = Process(target=ST_Point)
+    p7 = Process(target=ST_Contains)
+    p8 = Process(target=ST_Intersects)
+    p9 = Process(target=ST_Distance)
+    p10 = Process(target=ST_DistanceSphere)
+    p11 = Process(target=ST_HausdorffDistance)
+    p12 = Process(target=ST_PolygonFromEnvelope)
+    start = time.time()
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    p5.start()
+    p6.start()
+    p7.start()
+    p8.start()
+    p9.start()
+    p10.start()
+    p11.start()
+    p12.start()
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    p5.join()
+    p6.join()
+    p7.join()
+    p8.join()
+    p9.join()
+    p10.join()
+    p11.join()
+    p12.join()
+    end = time.time()
+    print('Task runs %0.2f seconds.' % ((end - start)))
+
+
+def ST_Intersection():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -31,7 +75,7 @@ def test_ST_Intersection():
     assert len(rst) == 40000000
 
 
-def test_ST_Equals():
+def ST_Equals():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -45,7 +89,7 @@ def test_ST_Equals():
     assert len(rst) == 40000000
 
 
-def test_ST_Touches():
+def ST_Touches():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -59,7 +103,7 @@ def test_ST_Touches():
     assert len(rst) == 40000000
 
 
-def test_ST_Overlaps():
+def ST_Overlaps():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -73,7 +117,7 @@ def test_ST_Overlaps():
     assert len(rst) == 40000000
 
 
-def test_ST_Crosses():
+def ST_Crosses():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -87,7 +131,7 @@ def test_ST_Crosses():
     assert len(rst) == 40000000
 
 
-def test_ST_Point():
+def ST_Point():
     geo1 = 1.1
     geo2 = 2.1
     arr1 = [geo1 for x in range(1, 40000001)]
@@ -99,7 +143,7 @@ def test_ST_Point():
     assert len(rst) == 40000000
 
 
-def test_ST_Contains():
+def ST_Contains():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -113,7 +157,7 @@ def test_ST_Contains():
     assert len(rst) == 40000000
 
 
-def test_ST_Intersects():
+def ST_Intersects():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -127,7 +171,7 @@ def test_ST_Intersects():
     assert len(rst) == 40000000
 
 
-def test_ST_Within():
+def ST_Within():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -141,7 +185,7 @@ def test_ST_Within():
     assert len(rst) == 40000000
 
 
-def test_ST_Distance():
+def ST_Distance():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -155,7 +199,7 @@ def test_ST_Distance():
     assert len(rst) == 40000000
 
 
-def test_ST_DistanceSphere():
+def ST_DistanceSphere():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -169,7 +213,7 @@ def test_ST_DistanceSphere():
     assert len(rst) == 40000000
 
 
-def test_ST_HausdorffDistance():
+def ST_HausdorffDistance():
     geo1 = "POLYGON ((113.66220266388723 22.39277623851494, 114.58136061218778 22.39277623851494, 114.58136061218778 22.92800492531275 ,113.66220266388723 22.92800492531275, 113.66220266388723 22.39277623851494))"
     geo2 = "POINT (1 1)"
     geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
@@ -183,7 +227,7 @@ def test_ST_HausdorffDistance():
     assert len(rst) == 40000000
 
 
-def test_ST_PolygonFromEnvelope():
+def ST_PolygonFromEnvelope():
     x_min = pandas.Series([0.0 for x in range(1, 4000001)])
     x_max = pandas.Series([1.0 for x in range(1, 4000001)])
     y_min = pandas.Series([2.0 for x in range(1, 4000001)])
