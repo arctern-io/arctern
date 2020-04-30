@@ -449,6 +449,171 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(
   return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
+template <typename T>
+std::pair<uint8_t*, int64_t> render_squaremap(const std::shared_ptr<arrow::Array>& points,
+                                            const std::shared_ptr<arrow::Array>& arr_c,
+                                            const std::string& conf) {
+  auto data = weight_agg<T>(points, arr_c);
+  auto num_point = data.first.size();
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+
+  rapidjson::Document document;
+  document.Parse(conf.c_str());
+  rapidjson::Value mark_enter;
+  mark_enter = document["marks"][0]["encode"]["enter"];
+  auto agg = mark_enter["aggregation_type"]["value"].GetString();
+  AggType type_agg = agg_type(agg);
+
+  const auto& result_wkb = data.first;
+  const auto& result_weight = data.second;
+
+  switch (type_agg) {
+    case AggType::MAX: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *max_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::MIN: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = *min_element(result_weight[i].begin(), result_weight[i].end());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::COUNT: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::SUM: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::STDDEV: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        T mean = sum / result_weight[i].size();
+        T accum = 0;
+        std::for_each(std::begin(result_weight[i]), std::end(result_weight[i]),
+                      [&](const T d) { accum += (d - mean) * (d - mean); });
+        input_c[i] = sqrt(accum / result_weight[i].size());
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::AVG: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        T sum_data = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
+        input_c[i] = sum_data / result_weight[i].size();
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+  }
+
+  return squaremap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> render_squaremap(const std::shared_ptr<arrow::Array>& points,
+                                            const std::string& conf) {
+  auto data = weight_agg(points);
+  auto num_point = data.first.size();
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+
+  rapidjson::Document document;
+  document.Parse(conf.c_str());
+  rapidjson::Value mark_enter;
+  mark_enter = document["marks"][0]["encode"]["enter"];
+  auto agg = mark_enter["aggregation_type"]["value"].GetString();
+  AggType type_agg = agg_type(agg);
+
+  const auto& result_wkb = data.first;
+  const auto& result_weight = data.second;
+
+  switch (type_agg) {
+    case AggType::MAX: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = 1;
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::MIN: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = 1;
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::COUNT: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_weight[i];
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::SUM: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = result_weight[i];
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::STDDEV: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = 0;
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+    case AggType::AVG: {
+      for (int i = 0; i < num_point; i++) {
+        input_x[i] = result_wkb[i]->toPoint()->getX();
+        input_y[i] = result_wkb[i]->toPoint()->getY();
+        input_c[i] = 1;
+        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      }
+      break;
+    }
+  }
+
+  return squaremap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
+}
+
 std::shared_ptr<arrow::Array> projection(const std::shared_ptr<arrow::Array>& geos,
                                          const std::string& bottom_right,
                                          const std::string& top_left, const int& height,
@@ -1054,6 +1219,79 @@ std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_
   auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
 
   return out_pic(iconviz(input_x, input_y, x_length, conf));
+}
+
+std::shared_ptr<arrow::Array> square_map(const std::shared_ptr<arrow::Array>& points,
+                                         const std::shared_ptr<arrow::Array>& weights,
+                                         const std::string& conf) {
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
+  auto geo_size = points->length();
+  auto geo_type = points->type_id();
+  assert(geo_type == arrow::Type::BINARY);
+
+  std::pair<uint8_t*, int64_t> result;
+  auto c_size = weights->length();
+  auto c_type = weights->type_id();
+  assert(geo_size == c_size);
+  switch (c_type) {
+    case arrow::Type::INT8: {
+      result = render_squaremap<int8_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::INT16: {
+      result = render_squaremap<int16_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::INT32: {
+      result = render_squaremap<int32_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::INT64: {
+      result = render_squaremap<int64_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::UINT8: {
+      result = render_squaremap<uint8_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::UINT16: {
+      result = render_squaremap<uint16_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::UINT32: {
+      result = render_squaremap<uint32_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::UINT64: {
+      result = render_squaremap<uint64_t>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::FLOAT: {
+      result = render_squaremap<float>(points, weights, conf);
+      break;
+    }
+    case arrow::Type::DOUBLE: {
+      result = render_squaremap<double>(points, weights, conf);
+      break;
+    }
+    default:
+      std::string err_msg = "type error of count while running choropleth map, type = " +
+                            std::to_string(c_type);
+      throw std::runtime_error(err_msg);
+  }
+  return out_pic(result);
+}
+
+std::shared_ptr<arrow::Array> square_map(const std::shared_ptr<arrow::Array>& points,
+                                         const std::string& conf) {
+  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(points);
+  auto geo_size = points->length();
+  auto geo_type = points->type_id();
+  assert(geo_type == arrow::Type::BINARY);
+
+  std::pair<uint8_t*, int64_t> result;
+  result = render_squaremap<int>(points, conf);
+  return out_pic(result);
 }
 
 }  // namespace render

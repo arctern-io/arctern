@@ -85,5 +85,11 @@ std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_
 std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& points,
                                        const std::string& conf);
 
+std::shared_ptr<arrow::Array> square_map(const std::shared_ptr<arrow::Array>& points,
+                                         const std::shared_ptr<arrow::Array>& weights,
+                                         const std::string& conf);
+
+std::pair<uint8_t*, int64_t> render_squaremap(const std::shared_ptr<arrow::Array>& points,
+                                              const std::string& conf);
 }  // namespace render
 }  // namespace arctern
