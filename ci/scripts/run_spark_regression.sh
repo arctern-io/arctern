@@ -53,5 +53,5 @@ pushd ${TESTS_DIR}
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
 python collect_results.py
 python compare.py
-python geo_vectory_arr_test.py
+python test_vectory_impl.py 
 popd
