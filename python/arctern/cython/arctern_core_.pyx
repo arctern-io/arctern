@@ -27,11 +27,8 @@ def projection(geos_list, bottom_right, top_left, height, width):
         arr = pyarrow_unwrap_array(geos)
         geos_vector.push_back(arr)
     cdef vector[shared_ptr[CArray]] output_geos
-    output_geos = arctern_core_pxd.projection(geos_vector, bottom_right, top_left, height, width)
-    res = []
-    for i in range(output_geos.size()):
-        res.append(pyarrow_wrap_array(output_geos[i]))
-    return res
+    result = arctern_core_pxd.projection(geos_vector, bottom_right, top_left, height, width)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, height, width):
     cdef vector[shared_ptr[CArray]] geos_vector
@@ -39,11 +36,8 @@ def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, 
         arr = pyarrow_unwrap_array(geos)
         geos_vector.push_back(arr)
     cdef vector[shared_ptr[CArray]] output_geos
-    output_geos = arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width)
-    res = []
-    for i in range(output_geos.size()):
-        res.append(pyarrow_wrap_array(output_geos[i]))
-    return res
+    result = arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def wkt2wkb(arr_wkt):
     return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))

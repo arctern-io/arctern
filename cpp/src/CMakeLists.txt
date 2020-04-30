@@ -26,6 +26,7 @@ set(render_src
         render/2d/heatmap/set_color.cpp
         render/2d/icon/icon_viz.cpp
         render/utils/render_utils.cpp
+        render/utils/agg/agg_handler.cpp
         render/utils/vega/vega_scatter_plot/vega_pointmap.cpp
         render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.cpp
         render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp

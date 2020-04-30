@@ -20,6 +20,7 @@ set(render_tests_src
 		coordinate_projection_test.cpp
 		weighted_pointmap_test.cpp
 		iconviz_test.cpp
+		render_builder_api_test.cpp
 		)
 
 add_executable(render_tests ${render_tests_src})
