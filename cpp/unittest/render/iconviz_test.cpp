@@ -138,5 +138,8 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::icon_viz(wkb, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+
+  arctern::render::icon_viz(point_vec, vega);
 }

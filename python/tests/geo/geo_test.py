@@ -555,6 +555,14 @@ def test_ST_Buffer():
 
     assert rst[0] == expect
 
+def test_ST_PolygonFromEnvelope2():
+    x_min = pandas.Series([0.0 for x in range(1, 40000001)])
+    x_max = pandas.Series([1.0 for x in range(1, 40000001)])
+    y_min = pandas.Series([2.0 for x in range(1, 40000001)])
+    y_max = pandas.Series([3.0 for x in range(1, 40000001)])
+
+    rst = arctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max)
+    assert len(rst) == 40000000
 
 def test_ST_PolygonFromEnvelope():
     x_min = pandas.Series([0.0])
