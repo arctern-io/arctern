@@ -16,99 +16,98 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
-#include "render/render_builder.h"
 
-TEST(POINTMAP_TEST, RAW_POINT_TEST) {
-  // param1: x, y
-  std::vector<uint32_t> x{50, 51, 52, 53, 54};
-  std::vector<uint32_t> y{50, 51, 52, 53, 54};
-
-  // param2: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 300,\n"
-      "  \"height\": 200,\n"
-      "  \"description\": \"circle_2d\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"data\",\n"
-      "      \"url\": \"data/data.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"x\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
-      "    },\n"
-      "    {\n"
-      "      \"name\": \"y\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"point_color\": {\"value\": \"#ff0000\"},\n"
-      "          \"point_size\": {\"value\": 30},\n"
-      "          \"opacity\": {\"value\": 0.5}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::pointmap(x.data(), y.data(), 5, vega);
-}
-
-TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
-  // param1: x, y
-  std::vector<uint32_t> x{50, 51, 52, 53, 54};
-  std::vector<uint32_t> y{50, 51, 52, 53, 54};
-
-  // param2: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 300,\n"
-      "  \"height\": 200,\n"
-      "  \"description\": \"circle_2d\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"data\",\n"
-      "      \"url\": \"data/data.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"x\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
-      "    },\n"
-      "    {\n"
-      "      \"name\": \"y\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"shape\": {\"value\": \"circle\"},\n"
-      "          \"point_color\": {\"value\": \"#xxxxxx\"},\n"
-      "          \"point_size\": {\"value\": 30},\n"
-      "          \"opacity\": {\"value\": 0.5}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::pointmap(x.data(), y.data(), 5, vega);
-}
+//TEST(POINTMAP_TEST, RAW_POINT_TEST) {
+//  // param1: x, y
+//  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+//  std::vector<uint32_t> y{50, 51, 52, 53, 54};
+//
+//  // param2: conf
+//  const std::string vega =
+//      "{\n"
+//      "  \"width\": 300,\n"
+//      "  \"height\": 200,\n"
+//      "  \"description\": \"circle_2d\",\n"
+//      "  \"data\": [\n"
+//      "    {\n"
+//      "      \"name\": \"data\",\n"
+//      "      \"url\": \"data/data.csv\"\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"scales\": [\n"
+//      "    {\n"
+//      "      \"name\": \"x\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+//      "    },\n"
+//      "    {\n"
+//      "      \"name\": \"y\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"marks\": [\n"
+//      "    {\n"
+//      "      \"encode\": {\n"
+//      "        \"enter\": {\n"
+//      "          \"shape\": {\"value\": \"circle\"},\n"
+//      "          \"point_color\": {\"value\": \"#ff0000\"},\n"
+//      "          \"point_size\": {\"value\": 30},\n"
+//      "          \"opacity\": {\"value\": 0.5}\n"
+//      "        }\n"
+//      "      }\n"
+//      "    }\n"
+//      "  ]\n"
+//      "}";
+//
+//  arctern::render::pointmap(x.data(), y.data(), 5, vega);
+//}
+//
+//TEST(POINTMAP_TEST, INVALID_COLOR_TEST) {
+//  // param1: x, y
+//  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+//  std::vector<uint32_t> y{50, 51, 52, 53, 54};
+//
+//  // param2: conf
+//  const std::string vega =
+//      "{\n"
+//      "  \"width\": 300,\n"
+//      "  \"height\": 200,\n"
+//      "  \"description\": \"circle_2d\",\n"
+//      "  \"data\": [\n"
+//      "    {\n"
+//      "      \"name\": \"data\",\n"
+//      "      \"url\": \"data/data.csv\"\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"scales\": [\n"
+//      "    {\n"
+//      "      \"name\": \"x\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+//      "    },\n"
+//      "    {\n"
+//      "      \"name\": \"y\",\n"
+//      "      \"type\": \"linear\",\n"
+//      "      \"domain\": {\"data\": \"data\", \"field\": \"c1\"}\n"
+//      "    }\n"
+//      "  ],\n"
+//      "  \"marks\": [\n"
+//      "    {\n"
+//      "      \"encode\": {\n"
+//      "        \"enter\": {\n"
+//      "          \"shape\": {\"value\": \"circle\"},\n"
+//      "          \"point_color\": {\"value\": \"#xxxxxx\"},\n"
+//      "          \"point_size\": {\"value\": 30},\n"
+//      "          \"opacity\": {\"value\": 0.5}\n"
+//      "        }\n"
+//      "      }\n"
+//      "    }\n"
+//      "  ]\n"
+//      "}";
+//
+//  arctern::render::pointmap(x.data(), y.data(), 5, vega);
+//}
 
 // TEST(POINTMAP_TEST, RAW_POINT_INVALID_JSON_TEST) {
 //  auto bit_map = new uint8_t{0xff};

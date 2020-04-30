@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "render/render_builder.h"
+#include "render/utils/agg/agg_handler.h"
 #include "render/utils/render_utils.h"
 
 #include "arrow/render_api.h"
@@ -107,7 +108,7 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_weighted_pointmap(
     const std::vector<std::string>& points, const std::vector<T>& weights,
     const std::string& conf) {
-  auto data = weight_agg<T>(points, weights);
+  auto data = AggHandler::weight_agg<T>(points, weights);
   auto num_point = data.first.size();
 
   std::vector<uint32_t> input_x(num_point);
@@ -119,13 +120,13 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-  AggType type_agg = agg_type(agg);
+  AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
   const auto& result_wkb = data.first;
   const auto& result_weight = data.second;
 
   switch (type_agg) {
-    case AggType::MAX: {
+    case AggHandler::AggType::MAX: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -134,7 +135,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::MIN: {
+    case AggHandler::AggType::MIN: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -143,7 +144,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::COUNT: {
+    case AggHandler::AggType::COUNT: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -152,7 +153,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::SUM: {
+    case AggHandler::AggType::SUM: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -161,7 +162,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::STDDEV: {
+    case AggHandler::AggType::STDDEV: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -175,7 +176,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::AVG: {
+    case AggHandler::AggType::AVG: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -194,7 +195,7 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_weighted_pointmap(
     const std::vector<std::string>& points, const std::vector<T>& arr_c,
     const std::vector<T>& arr_s, const std::string& conf) {
-  auto agg_res = weight_agg_multiple_column<T>(points, arr_c, arr_s);
+  auto agg_res = AggHandler::weight_agg_multiple_column<T>(points, arr_c, arr_s);
   auto num_point = std::get<0>(agg_res).size();
 
   std::vector<uint32_t> input_x(num_point);
@@ -207,14 +208,14 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-  AggType type_agg = agg_type(agg);
+  AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
   const auto& result_wkb = std::get<0>(agg_res);
   const auto& result_c = std::get<1>(agg_res);
   const auto& result_s = std::get<2>(agg_res);
 
   switch (type_agg) {
-    case AggType::MAX: {
+    case AggHandler::AggType::MAX: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -224,7 +225,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::MIN: {
+    case AggHandler::AggType::MIN: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -234,7 +235,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::COUNT: {
+    case AggHandler::AggType::COUNT: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -244,7 +245,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::SUM: {
+    case AggHandler::AggType::SUM: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -254,7 +255,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::STDDEV: {
+    case AggHandler::AggType::STDDEV: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -277,7 +278,7 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
       }
       break;
     }
-    case AggType::AVG: {
+    case AggHandler::AggType::AVG: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -299,7 +300,7 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& points,
                                             const std::vector<T>& arr_c,
                                             const std::string& conf) {
-  auto data = weight_agg<T>(points, arr_c);
+  auto data = AggHandler::weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
 
   std::vector<uint32_t> input_x(num_point);
@@ -311,13 +312,13 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-  AggType type_agg = agg_type(agg);
+  AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
   const auto& result_wkb = data.first;
   const auto& result_weight = data.second;
 
   switch (type_agg) {
-    case AggType::MAX: {
+    case AggHandler::AggType::MAX: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -326,7 +327,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
       }
       break;
     }
-    case AggType::MIN: {
+    case AggHandler::AggType::MIN: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -335,7 +336,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
       }
       break;
     }
-    case AggType::COUNT: {
+    case AggHandler::AggType::COUNT: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -344,7 +345,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
       }
       break;
     }
-    case AggType::SUM: {
+    case AggHandler::AggType::SUM: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -353,7 +354,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
       }
       break;
     }
-    case AggType::STDDEV: {
+    case AggHandler::AggType::STDDEV: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -367,7 +368,7 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
       }
       break;
     }
-    case AggType::AVG: {
+    case AggHandler::AggType::AVG: {
       for (int i = 0; i < num_point; i++) {
         input_x[i] = result_wkb[i]->toPoint()->getX();
         input_y[i] = result_wkb[i]->toPoint()->getY();
@@ -386,7 +387,7 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
                                                   const std::vector<T>& arr_c,
                                                   const std::string& conf) {
-  auto data = weight_agg<T>(arr_wkb, arr_c);
+  auto data = AggHandler::weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.second.size();
 
   std::vector<T> input_c(num_geo);
@@ -396,37 +397,37 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-  AggType type_agg = agg_type(agg);
+  AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
   const auto& result_weight = data.second;
   std::size_t i = 0;
 
   switch (type_agg) {
-    case AggType::MAX: {
+    case AggHandler::AggType::MAX: {
       for (auto& item : result_weight) {
         input_c[i++] = *max_element(item.begin(), item.end());
       }
       break;
     }
-    case AggType::MIN: {
+    case AggHandler::AggType::MIN: {
       for (auto& item : result_weight) {
         input_c[i++] = *min_element(item.begin(), item.end());
       }
       break;
     }
-    case AggType::COUNT: {
+    case AggHandler::AggType::COUNT: {
       for (auto& item : result_weight) {
         input_c[i++] = item.size();
       }
       break;
     }
-    case AggType::SUM: {
+    case AggHandler::AggType::SUM: {
       for (auto& item : result_weight) {
         input_c[i++] = accumulate(item.begin(), item.end(), 0);
       }
       break;
     }
-    case AggType::STDDEV: {
+    case AggHandler::AggType::STDDEV: {
       for (auto& item : result_weight) {
         T sum = accumulate(item.begin(), item.end(), 0);
         T mean = sum / item.size();
@@ -437,7 +438,7 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
       }
       break;
     }
-    case AggType::AVG: {
+    case AggHandler::AggType::AVG: {
       for (auto& item : result_weight) {
         T sum_data = accumulate(item.begin(), item.end(), 0);
         input_c[i++] = sum_data / item.size();

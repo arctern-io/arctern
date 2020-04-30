@@ -16,53 +16,6 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
-#include "render/render_builder.h"
-
-TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
-  // param1: x, y
-  std::vector<uint32_t> x{100, 200, 300, 400, 500};
-  std::vector<uint32_t> y{100, 200, 300, 400, 500};
-
-  std::string path = __FILE__;
-  path.resize(path.size() - 16);
-  std::string icon_path = path + "images/taxi.png";
-
-  // param2: conf
-  const std::string vega =
-      "{\n"
-      "  \"width\": 800,\n"
-      "  \"height\": 600,\n"
-      "  \"description\": \"icon\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"nyc_taxi\",\n"
-      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"icon\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"icon_path\": {\"value\": \"" +
-      icon_path +
-      "\"},\n"
-      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::iconviz(x.data(), y.data(), 5, vega);
-}
 
 TEST(ICON_VIZ_TEST, WKT_TEST) {
   // param1: wkt string

@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "arrow/render_api.h"
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace render {
@@ -57,6 +58,11 @@ std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>
 
   return res;
 }
+
+void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
+                                     void* poCT);
+
+void pointXY_from_wkt(const std::string& wkt, double& x, double& y);
 
 }  // namespace render
 }  // namespace arctern
