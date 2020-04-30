@@ -16,36 +16,18 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "render/render_builder.h"
 
 TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
   // param1: x, y
-  arrow::UInt32Builder x_builder;
-  auto status = x_builder.Append(0);
-  status = x_builder.Append(100);
-  status = x_builder.Append(200);
-  status = x_builder.Append(300);
-  status = x_builder.Append(400);
-  status = x_builder.Append(500);
-
-  std::shared_ptr<arrow::UInt32Array> x_array;
-  status = x_builder.Finish(&x_array);
-
-  arrow::UInt32Builder y_builder;
-  status = y_builder.Append(0);
-  status = y_builder.Append(100);
-  status = y_builder.Append(200);
-  status = y_builder.Append(300);
-  status = y_builder.Append(400);
-  status = y_builder.Append(500);
-
-  std::shared_ptr<arrow::UInt32Array> y_array;
-  status = y_builder.Finish(&y_array);
+  std::vector<uint32_t> x{100, 200, 300, 400, 500};
+  std::vector<uint32_t> y{100, 200, 300, 400, 500};
 
   std::string path = __FILE__;
   path.resize(path.size() - 16);
   std::string icon_path = path + "images/taxi.png";
 
-  // param2: vega
+  // param2: conf
   const std::string vega =
       "{\n"
       "  \"width\": 800,\n"
@@ -79,7 +61,7 @@ TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::icon_viz(x_array, y_array, vega);
+  arctern::render::iconviz(x.data(), y.data(), 5, vega);
 }
 
 TEST(ICON_VIZ_TEST, WKT_TEST) {
@@ -103,7 +85,7 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
   path.resize(path.size() - 16);
   std::string icon_path = path + "images/taxi.png";
 
-  // param2: vega
+  // param2: conf
   const std::string vega =
       "{\n"
       "  \"width\": 800,\n"

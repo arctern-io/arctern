@@ -16,55 +16,17 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "render/render_builder.h"
 
 TEST(HEATMAP_TEST, RAW_POINT_INT8_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<int8_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (int8_t*)malloc(5 * sizeof(int8_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(int8_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::int8(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -99,57 +61,18 @@ TEST(HEATMAP_TEST, RAW_POINT_INT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<int8_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_INT16_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<int16_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (int16_t*)malloc(5 * sizeof(int16_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(int16_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::int16(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -184,57 +107,18 @@ TEST(HEATMAP_TEST, RAW_POINT_INT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<int16_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_INT32_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<int32_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(data_type, 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (int32_t*)malloc(5 * sizeof(int32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(int32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::int32(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -269,57 +153,18 @@ TEST(HEATMAP_TEST, RAW_POINT_INT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<int32_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_INT64_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<int64_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (int64_t*)malloc(5 * sizeof(int64_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(int64_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::int64(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -354,57 +199,18 @@ TEST(HEATMAP_TEST, RAW_POINT_INT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<int64_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_UINT8_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<uint8_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (uint8_t*)malloc(5 * sizeof(uint8_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(uint8_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::uint8(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -439,57 +245,18 @@ TEST(HEATMAP_TEST, RAW_POINT_UINT8_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<uint8_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_UINT16_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<uint16_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (uint16_t*)malloc(5 * sizeof(uint16_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(uint16_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::uint16(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -524,57 +291,18 @@ TEST(HEATMAP_TEST, RAW_POINT_UINT16_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<uint16_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_UINT32_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<uint32_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -609,57 +337,18 @@ TEST(HEATMAP_TEST, RAW_POINT_UINT32_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<uint32_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_UINT64_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<uint64_t> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (uint64_t*)malloc(5 * sizeof(uint64_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(uint64_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::uint64(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -694,57 +383,18 @@ TEST(HEATMAP_TEST, RAW_POINT_UINT64_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<uint64_t>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_FLOAT_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<float> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (float*)malloc(5 * sizeof(float));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(float));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::float32(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -779,57 +429,18 @@ TEST(HEATMAP_TEST, RAW_POINT_FLOAT_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<float>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 TEST(HEATMAP_TEST, RAW_POINT_DOUBLE_TEST) {
-  auto bit_map = new uint8_t{0xff};
+  // param1: x, y
+  std::vector<uint32_t> x{50, 51, 52, 53, 54};
+  std::vector<uint32_t> y{50, 51, 52, 53, 54};
 
-  auto data_type = arrow::uint32();
+  // param2: count
+  std::vector<double> c{50, 51, 52, 53, 54};
 
-  auto buff_data1 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data1[i] = i + 50;
-  }
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, 1 * sizeof(uint8_t));
-  auto buffer1 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data1, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers1;
-  buffers1.emplace_back(buffer0);
-  buffers1.emplace_back(buffer1);
-  auto array_data1 = arrow::ArrayData::Make(data_type, 5, buffers1);
-  auto array1 = arrow::MakeArray(array_data1);
-
-  auto bit_map2 = new uint8_t{0xff};
-
-  auto buff_data2 = (uint32_t*)malloc(5 * sizeof(uint32_t));
-  for (int i = 0; i < 5; ++i) {
-    buff_data2[i] = i + 50;
-  }
-  auto buffer20 = std::make_shared<arrow::Buffer>(bit_map2, 1 * sizeof(uint8_t));
-  auto buffer21 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data2, 5 * sizeof(uint32_t));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers2;
-  buffers2.emplace_back(buffer20);
-  buffers2.emplace_back(buffer21);
-  auto array_data2 = arrow::ArrayData::Make(arrow::uint32(), 5, buffers2);
-  auto array2 = arrow::MakeArray(array_data2);
-
-  auto bit_map3 = new uint8_t{0xff};
-
-  auto buff_data3 = (double*)malloc(5 * sizeof(double));
-  for (int i = 0; i < 5; ++i) {
-    buff_data3[i] = i + 50;
-  }
-  auto buffer30 = std::make_shared<arrow::Buffer>(bit_map3, 1 * sizeof(uint8_t));
-  auto buffer31 =
-      std::make_shared<arrow::Buffer>((uint8_t*)buff_data3, 5 * sizeof(double));
-  std::vector<std::shared_ptr<arrow::Buffer>> buffers3;
-  buffers3.emplace_back(buffer30);
-  buffers3.emplace_back(buffer31);
-  auto array_data3 = arrow::ArrayData::Make(arrow::float64(), 5, buffers3);
-  auto array3 = arrow::MakeArray(array_data3);
-
+  // param3: conf
   const std::string vega =
       "{\n"
       "  \"width\": 300,\n"
@@ -864,7 +475,7 @@ TEST(HEATMAP_TEST, RAW_POINT_DOUBLE_TEST) {
       "  ]\n"
       "}";
 
-  arctern::render::heat_map(array1, array2, array3, vega);
+  arctern::render::heatmap<double>(x.data(), y.data(), c.data(), 5, vega);
 }
 
 // TEST(HEATMAP_TEST, RAW_POINT_INVALID_DATA_TYPE_TEST) {

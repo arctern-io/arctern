@@ -491,23 +491,6 @@ std::shared_ptr<arrow::Array> point_map(
   return out_pic(result);
 }
 
-std::shared_ptr<arrow::Array> point_map(const std::shared_ptr<arrow::Array>& arr_x,
-                                        const std::shared_ptr<arrow::Array>& arr_y,
-                                        const std::string& conf) {
-  auto x_length = arr_x->length();
-  auto y_length = arr_y->length();
-  auto x_type = arr_x->type_id();
-  auto y_type = arr_y->type_id();
-  assert(x_length == y_length);
-  assert(x_type == arrow::Type::UINT32);
-  assert(y_type == arrow::Type::UINT32);
-
-  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
-  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
-
-  return out_pic(pointmap(input_x, input_y, x_length, conf));
-}
-
 std::shared_ptr<arrow::Array> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
@@ -655,100 +638,6 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
-    const std::shared_ptr<arrow::Array>& arr_x,
-    const std::shared_ptr<arrow::Array>& arr_y,
-    const std::shared_ptr<arrow::Array>& arr_c,
-    const std::shared_ptr<arrow::Array>& arr_s, const std::string& conf) {
-  auto x_length = arr_x->length();
-  auto y_length = arr_y->length();
-  auto c_length = arr_c->length();
-  auto s_length = arr_c->length();
-
-  auto x_type = arr_x->type_id();
-  auto y_type = arr_y->type_id();
-  auto c_type = arr_c->type_id();
-  auto s_type = arr_c->type_id();
-
-  assert(x_length == y_length);
-  assert(x_length == c_length);
-  assert(c_length == s_length);
-  assert(x_type == arrow::Type::UINT32);
-  assert(y_type == arrow::Type::UINT32);
-  assert(c_type == s_type);
-
-  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
-  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
-
-  switch (c_type) {
-    case arrow::Type::INT8: {
-      auto input_c = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (int8_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<int8_t>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::INT16: {
-      auto input_c = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (int16_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<int16_t>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::INT32: {
-      auto input_c = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (int32_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<int32_t>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::INT64: {
-      auto input_c = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (int64_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<int64_t>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::UINT8: {
-      auto input_c = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (uint8_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<uint8_t>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::UINT16: {
-      auto input_c = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (uint16_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(weighted_pointmap<uint16_t>(input_x, input_y, input_c, input_s,
-                                                 x_length, conf));
-    }
-    case arrow::Type::UINT32: {
-      auto input_c = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (uint32_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(weighted_pointmap<uint32_t>(input_x, input_y, input_c, input_s,
-                                                 x_length, conf));
-    }
-    case arrow::Type::UINT64: {
-      auto input_c = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (uint64_t*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(weighted_pointmap<uint64_t>(input_x, input_y, input_c, input_s,
-                                                 x_length, conf));
-    }
-    case arrow::Type::FLOAT: {
-      auto input_c = (float*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (float*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<float>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    case arrow::Type::DOUBLE: {
-      auto input_c = (double*)arr_c->data()->GetValues<uint8_t>(1);
-      auto input_s = (double*)arr_s->data()->GetValues<uint8_t>(1);
-      return out_pic(
-          weighted_pointmap<double>(input_x, input_y, input_c, input_s, x_length, conf));
-    }
-    default:
-      std::string err_msg =
-          "type error of count while running weighted_pointmap, type = " +
-          std::to_string(c_type);
-      throw std::runtime_error(err_msg);
-  }
-}
-
 std::shared_ptr<arrow::Array> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
@@ -801,72 +690,6 @@ std::shared_ptr<arrow::Array> heat_map(
     default:
       std::string err_msg = "type error of count while running heatmap, type = " +
                             std::to_string(weight_data_type);
-      throw std::runtime_error(err_msg);
-  }
-}
-
-std::shared_ptr<arrow::Array> heat_map(const std::shared_ptr<arrow::Array>& arr_x,
-                                       const std::shared_ptr<arrow::Array>& arr_y,
-                                       const std::shared_ptr<arrow::Array>& arr_c,
-                                       const std::string& conf) {
-  auto x_length = arr_x->length();
-  auto y_length = arr_y->length();
-  auto c_length = arr_c->length();
-  auto x_type = arr_x->type_id();
-  auto y_type = arr_y->type_id();
-  auto c_type = arr_c->type_id();
-  assert(x_length == y_length);
-  assert(x_length == c_length);
-  assert(x_type == arrow::Type::UINT32);
-  assert(y_type == arrow::Type::UINT32);
-
-  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
-  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
-
-  switch (c_type) {
-    case arrow::Type::INT8: {
-      auto input_c_int8 = (int8_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<int8_t>(input_x, input_y, input_c_int8, x_length, conf));
-    }
-    case arrow::Type::INT16: {
-      auto input_c_int16 = (int16_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<int16_t>(input_x, input_y, input_c_int16, x_length, conf));
-    }
-    case arrow::Type::INT32: {
-      auto input_c_int32 = (int32_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<int32_t>(input_x, input_y, input_c_int32, x_length, conf));
-    }
-    case arrow::Type::INT64: {
-      auto input_c_int64 = (int64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<int64_t>(input_x, input_y, input_c_int64, x_length, conf));
-    }
-    case arrow::Type::UINT8: {
-      auto input_c_uint8 = (uint8_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<uint8_t>(input_x, input_y, input_c_uint8, x_length, conf));
-    }
-    case arrow::Type::UINT16: {
-      auto input_c_uint16 = (uint16_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<uint16_t>(input_x, input_y, input_c_uint16, x_length, conf));
-    }
-    case arrow::Type::UINT32: {
-      auto input_c_uint32 = (uint32_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<uint32_t>(input_x, input_y, input_c_uint32, x_length, conf));
-    }
-    case arrow::Type::UINT64: {
-      auto input_c_uint64 = (uint64_t*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<uint64_t>(input_x, input_y, input_c_uint64, x_length, conf));
-    }
-    case arrow::Type::FLOAT: {
-      auto input_c_float = (float*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<float>(input_x, input_y, input_c_float, x_length, conf));
-    }
-    case arrow::Type::DOUBLE: {
-      auto input_c_double = (double*)arr_c->data()->GetValues<uint8_t>(1);
-      return out_pic(heatmap<double>(input_x, input_y, input_c_double, x_length, conf));
-    }
-    default:
-      std::string err_msg =
-          "type error of count while running heatmap, type = " + std::to_string(c_type);
       throw std::runtime_error(err_msg);
   }
 }
@@ -947,24 +770,6 @@ std::shared_ptr<arrow::Array> icon_viz(
   auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
 
   return out_pic(result);
-}
-
-std::shared_ptr<arrow::Array> icon_viz(const std::shared_ptr<arrow::Array>& arr_x,
-                                       const std::shared_ptr<arrow::Array>& arr_y,
-                                       const std::string& conf) {
-  auto x_length = arr_x->length();
-  auto y_length = arr_y->length();
-  auto x_type = arr_x->type_id();
-  auto y_type = arr_y->type_id();
-
-  assert(x_length == y_length);
-  assert(x_type == arrow::Type::UINT32);
-  assert(y_type == arrow::Type::UINT32);
-
-  auto input_x = (uint32_t*)arr_x->data()->GetValues<uint8_t>(1);
-  auto input_y = (uint32_t*)arr_y->data()->GetValues<uint8_t>(1);
-
-  return out_pic(iconviz(input_x, input_y, x_length, conf));
 }
 
 }  // namespace render
