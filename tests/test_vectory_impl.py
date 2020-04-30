@@ -236,5 +236,6 @@ def ST_PolygonFromEnvelope():
     rst = arctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max)
     assert len(rst) == 40000000
 
+
 if __name__ == "__main__":
-     test_suite()
+    test_suite()
