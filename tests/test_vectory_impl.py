@@ -19,6 +19,7 @@ import arctern
 def test_suite():
     from multiprocessing import Process
     import time
+    assert 1 == 0
     p1 = Process(target=ST_Intersection)
     p2 = Process(target=ST_Equals)
     p3 = Process(target=ST_Touches)
