@@ -158,7 +158,7 @@ tests/draw_map/test*.png
 #/gui/client
 node_modules
 
-#/gui/server
-gui/server/log.txt
-gui/server/metastore_db/
-gui/server/spark-warehouse/
+#/gui/server/arctern_server
+gui/server/arctern_server/log.txt
+gui/server/arctern_server/metastore_db/
+gui/server/arctern_server/spark-warehouse/

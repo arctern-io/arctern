@@ -30,44 +30,24 @@
 #include "render/2d/icon/icon_viz.h"
 #include "render/2d/scatter_plot/pointmap.h"
 #include "render/2d/scatter_plot/weighted_pointmap.h"
-#include "render/2d/squaremap/square_map.h"
+#include "render/2d/fishnet_map/fishnet_map.h"
 
 namespace arctern {
 namespace render {
 
-enum AggType {
-  SUM = 0,
-  MIN,
-  MAX,
-  COUNT,
-  STDDEV,
-  AVG,
-};
+void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
+                const std::string& top_left, const int& height, const int& width);
+
 
 std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
                                          const std::string& bottom_right,
                                          const std::string& top_left, const int& height,
                                          const int& width);
 
-std::shared_ptr<arrow::Array> TransformAndProjection(
-    const std::shared_ptr<arrow::Array>& geos, const std::string& src_rs,
-    const std::string& dst_rs, const std::string& bottom_right,
-    const std::string& top_left, const int& height, const int& width);
-
-template <typename T>
-std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
-    const std::shared_ptr<arrow::Array>& geos,
-    const std::shared_ptr<arrow::Array>& arr_c);
-
-std::pair<std::vector<OGRGeometry*>, std::vector<int>> weight_agg(
-    const std::shared_ptr<arrow::Array>& geos);
-
-template <typename T>
-std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
-           std::vector<std::vector<T>>>
-weight_agg_multiple_column(const std::shared_ptr<arrow::Array>& geos,
-                           const std::shared_ptr<arrow::Array>& arr_c,
-                           const std::shared_ptr<arrow::Array>& arr_s);
+void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
+                            const std::string& src_rs, const std::string& dst_rs,
+                            const std::string& bottom_right, const std::string& top_left,
+                            const int& height, const int& width);
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                       int64_t num_vertices, const std::string& conf);
@@ -99,7 +79,7 @@ std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
                                      int64_t num_vertices, const std::string& conf);
 
 template <typename T>
-std::pair<uint8_t*, int64_t> squaremap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                                int64_t num_vertices,
                                                const std::string& conf);
 

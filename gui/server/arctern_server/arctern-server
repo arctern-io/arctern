@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+"""
+Copyright (C) 2019-2020 Zilliz. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS S" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import logging
+import getopt
+import sys
+
+from arctern_server import manage
+
+if __name__ == '__main__':
+    IS_DEBUG = True
+    IP = "0.0.0.0"
+    PORT = 8080
+    JSON_CONFIG = None
+    LOG_FILE = "/tmp/arctern_server_log.txt"
+    LOG_LEVEL = logging.INFO
+
+    _LEVEL_DICT_ = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warn': logging.WARN,
+        'error': logging.ERROR,
+        'fatal': logging.FATAL
+    }
+
+    try:
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
+    except getopt.GetoptError as _e:
+        print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
+        manage.usage()
+        sys.exit(2)
+
+    for opt, arg in OPTS:
+        if opt == '-h':
+            manage.usage()
+            sys.exit()
+        elif opt == '-r':
+            IS_DEBUG = False
+        elif opt == '-i':
+            IP = arg
+        elif opt == "-p":
+            PORT = arg
+        elif opt == '-c':
+            JSON_CONFIG = arg
+        elif opt == '--logfile':
+            LOG_FILE = arg
+        elif opt == '--loglevel':
+            LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
+
+    manage.main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)

@@ -20,10 +20,8 @@
 #include "gis/cuda/gis_functions.h"
 #include "gis/dispatch/dispatch.h"
 #endif
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <vector>
 
 #include "common/version.h"
 #include "gis/api.h"
@@ -35,10 +33,10 @@ namespace gis {
 
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
-std::shared_ptr<arrow::Array> ST_Point(
-    const std::shared_ptr<arrow::Array>& x_values_raw,
-    const std::shared_ptr<arrow::Array>& y_values_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Point(
+    const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
+#if defined(USE_GPU) && 0
   auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_values_raw);
   auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_values_raw);
   return cuda::ST_Point(x_values, y_values);
@@ -47,29 +45,32 @@ std::shared_ptr<arrow::Array> ST_Point(
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_PolygonFromEnvelope(
-    const std::shared_ptr<arrow::Array>& min_x_values,
-    const std::shared_ptr<arrow::Array>& min_y_values,
-    const std::shared_ptr<arrow::Array>& max_x_values,
-    const std::shared_ptr<arrow::Array>& max_y_values) {
+std::vector<std::shared_ptr<arrow::Array>> ST_PolygonFromEnvelope(
+    const std::vector<std::shared_ptr<arrow::Array>>& min_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& min_y_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_x_values,
+    const std::vector<std::shared_ptr<arrow::Array>>& max_y_values) {
   return gdal::ST_PolygonFromEnvelope(min_x_values, min_y_values, max_x_values,
                                       max_y_values);
 }
 
-std::shared_ptr<arrow::Array> ST_GeomFromGeoJSON(
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromGeoJSON(
     const std::shared_ptr<arrow::Array>& json) {
   return gdal::ST_GeomFromGeoJSON(json);
 }
 
-std::shared_ptr<arrow::Array> ST_GeomFromText(const std::shared_ptr<arrow::Array>& text) {
+std::vector<std::shared_ptr<arrow::Array>> ST_GeomFromText(
+    const std::shared_ptr<arrow::Array>& text) {
   return gdal::ST_GeomFromText(text);
 }
 
-std::shared_ptr<arrow::Array> ST_AsText(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsText(
+    const std::shared_ptr<arrow::Array>& wkb) {
   return gdal::ST_AsText(wkb);
 }
 
-std::shared_ptr<arrow::Array> ST_AsGeoJSON(const std::shared_ptr<arrow::Array>& wkb) {
+std::vector<std::shared_ptr<arrow::Array>> ST_AsGeoJSON(
+    const std::shared_ptr<arrow::Array>& wkb) {
   return gdal::ST_AsGeoJSON(wkb);
 }
 
@@ -113,8 +114,9 @@ std::shared_ptr<arrow::Array> ST_Envelope(
 
 /**************************** GEOMETRY PROCESSING ****************************/
 
-std::shared_ptr<arrow::Array> ST_Buffer(const std::shared_ptr<arrow::Array>& geometries,
-                                        double buffer_distance, int n_quadrant_segments) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Buffer(
+    const std::shared_ptr<arrow::Array>& geometries, double buffer_distance,
+    int n_quadrant_segments) {
   return gdal::ST_Buffer(geometries, buffer_distance, n_quadrant_segments);
 }
 
@@ -123,9 +125,9 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   return gdal::ST_PrecisionReduce(geometries, precision);
 }
 
-std::shared_ptr<arrow::Array> ST_Intersection(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Intersection(geometries_1, geometries_2);
 }
 
@@ -155,23 +157,23 @@ std::shared_ptr<arrow::Array> ST_Transform(
   return gdal::ST_Transform(geometries, src_rs, dst_rs);
 }
 
-std::shared_ptr<arrow::Array> ST_CurveToLine(
+std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
     const std::shared_ptr<arrow::Array>& geometries) {
   return gdal::ST_CurveToLine(geometries);
 }
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
-std::shared_ptr<arrow::Array> ST_DistanceSphere(
-    const std::shared_ptr<arrow::Array>& point_left,
-    const std::shared_ptr<arrow::Array>& point_right) {
+std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
+    const std::vector<std::shared_ptr<arrow::Array>>& point_left,
+    const std::vector<std::shared_ptr<arrow::Array>>& point_right) {
   return gdal::ST_DistanceSphere(point_left, point_right);
 }
 
-std::shared_ptr<arrow::Array> ST_Distance(
-    const std::shared_ptr<arrow::Array>& geo_left_raw,
-    const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
   auto gpu_supported_type = {WkbTypes::kPoint};
@@ -219,54 +221,54 @@ std::shared_ptr<arrow::Array> ST_Length(
 #endif
 }
 
-std::shared_ptr<arrow::Array> ST_HausdorffDistance(
-    const std::shared_ptr<arrow::Array>& geo1,
-    const std::shared_ptr<arrow::Array>& geo2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
   return gdal::ST_HausdorffDistance(geo1, geo2);
 }
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
-std::shared_ptr<arrow::Array> ST_Equals(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Equals(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Touches(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Touches(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Overlaps(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Overlaps(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Crosses(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Crosses(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Contains(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Contains(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Intersects(
-    const std::shared_ptr<arrow::Array>& geometries_1,
-    const std::shared_ptr<arrow::Array>& geometries_2) {
+std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
   return gdal::ST_Intersects(geometries_1, geometries_2);
 }
 
-std::shared_ptr<arrow::Array> ST_Within(
-    const std::shared_ptr<arrow::Array>& geo_left_raw,
-    const std::shared_ptr<arrow::Array>& geo_right_raw) {
-#if defined(USE_GPU)
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
+#if defined(USE_GPU) && 0
   auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
   auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
