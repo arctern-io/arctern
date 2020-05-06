@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# pylint: disable=wrong-import-order
+
 import os
-import matplotlib.pyplot as plt
 import pandas
 import arctern
+import matplotlib.pyplot as plt
 
 def test_plot1():
     raw_data = []

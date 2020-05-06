@@ -29,8 +29,8 @@ export HOME=$PROJECT_ROOT_PATH
 cd $PROJECT_ROOT_PATH
 
 # Get latest tag and number of commits since tag
-# export GIT_DESCRIBE_TAG=`git describe --abbrev=0 --tags`
-# export GIT_DESCRIBE_NUMBER=`git rev-list ${GIT_DESCRIBE_TAG}..HEAD --count`
+export GIT_DESCRIBE_TAG=`git describe --abbrev=0 --tags`
+export GIT_DESCRIBE_NUMBER=`git rev-list ${GIT_DESCRIBE_TAG}..HEAD --count`
 
 # If nightly build, append current YYMMDD to version
 if [[ "$BUILD_MODE" = "nightly" ]] ; then
