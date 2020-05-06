@@ -6,6 +6,9 @@ from matplotlib.pyplot import MultipleLocator
 # pylint: disable=redefined-outer-name
 # pylint: disable=exec-used
 
+def normalize_arr(normalize_lambda,arr):
+    return list(map(normalize_lambda,arr))
+
 def fetch_log_files(directory):
     log_files = []
     files = os.listdir(directory)
@@ -185,6 +188,7 @@ if __name__ == "__main__":
         res_arr = 'res_' + func_name
         # plot
         cur_res_arr = locals()[res_arr]
+        cur_res_arr=normalize_arr(lambda x:(x-min(cur_res_arr))/(max(cur_res_arr)-min(cur_res_arr)),cur_res_arr)
         if cur_res_arr:
             plot_perf_regression(func_name, cur_res_arr)
             plot_num = plot_num + 1
