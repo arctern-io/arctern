@@ -73,5 +73,10 @@ std::shared_ptr<arrow::Array> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
+std::shared_ptr<arrow::Array> fishnet_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::string& conf);
+
 }  // namespace render
 }  // namespace arctern

@@ -53,6 +53,7 @@ __all__ = [
     "heat_map_layer",
     "choropleth_map_layer",
     "icon_viz_layer",
+    "fishnet_map_layer",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -1445,4 +1446,46 @@ def icon_viz_layer(vega, points, transform=True):
     vega_string = vega.build().encode('utf-8')
 
     rs = arctern_core_.icon_viz(vega_string, geos_rs)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def fishnet_map_layer(vega, points, weights, transform=True):
+    import pyarrow as pa
+    geos = pa.array(points, type='binary')
+
+    # transform and projection handler
+    geos_rs = _to_arrow_array_list(geos)
+
+    if transform:
+        bounding_box = vega.bounding_box()
+        top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
+        bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
+        # height = vega.height()
+        # width = vega.width()
+        cell_size = vega.cell_size()
+        height = int(vega.height() / cell_size)
+        width = int(vega.width() / cell_size)
+        coor = vega.coor()
+
+        src = bytes(coor, encoding="utf8")
+        dst = bytes('EPSG:3857', encoding="utf8")
+        bounding_box_min = bytes(top_left, encoding="utf8")
+        bounding_box_max = bytes(bottom_right, encoding="utf8")
+
+        # transform and projection
+        if coor != 'EPSG:3857':
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+        else:
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+
+    # weights handler
+    if weights.dtypes == 'float64':
+        arr = pa.array(weights, type='double')
+    else:
+        arr = pa.array(weights, type='int64')
+
+    weights_rs = _to_arrow_array_list(arr)
+
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
