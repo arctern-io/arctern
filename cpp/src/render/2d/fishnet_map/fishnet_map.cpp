@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -48,8 +48,8 @@ template class FishNetMap<float>;
 template class FishNetMap<double>;
 
 template <typename T>
-FishNetMap<T>::FishNetMap(uint32_t* input_x, uint32_t* input_y,
-                          T* count, int64_t num_vertices)
+FishNetMap<T>::FishNetMap(uint32_t* input_x, uint32_t* input_y, T* count,
+                          int64_t num_vertices)
     : vertices_x_(input_x),
       vertices_y_(input_y),
       count_(count),
@@ -64,7 +64,7 @@ FishNetMap<T>::~FishNetMap() {
 
 template <typename T>
 void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
-                    int64_t num, VegaFishNetMap& vega_fishnet_map) {
+                int64_t num, VegaFishNetMap& vega_fishnet_map) {
   WindowParams window_params = vega_fishnet_map.window_params();
   int64_t width = window_params.width();
   int64_t height = window_params.height();
@@ -73,7 +73,7 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
   int cell_spacing = vega_fishnet_map.cell_spacing();
 
   std::vector<T> weights(num);
-  memcpy(&weights[0], input_c, num*sizeof(T));
+  memcpy(&weights[0], input_c, num * sizeof(T));
   std::sort(weights.begin(), weights.end());
   int max = (int)(num * 99 / 100);
   T max_pix = weights[max];
@@ -87,17 +87,17 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
     float color_r, color_g, color_b;
     color_gradient.getColorAtValue(value, color_r, color_g, color_b);
 
-    if (input_y[i] * cell_size >= height || input_x[i]* cell_size >= width) {
+    if (input_y[i] * cell_size >= height || input_x[i] * cell_size >= width) {
       continue;
     }
     int index = cell_size * input_y[i] * width + input_x[i] * cell_size;
     for (int m = 0; m < cell_size - cell_spacing; m++) {
       for (int n = 0; n < cell_size - cell_spacing; n++) {
-          int index_in = (index + m * width + n) * 4;
-          colors[index_in++] = color_r;
-          colors[index_in++] = color_g;
-          colors[index_in++] = color_b;
-          colors[index_in++] = vega_fishnet_map.opacity();
+        int index_in = (index + m * width + n) * 4;
+        colors[index_in++] = color_r;
+        colors[index_in++] = color_g;
+        colors[index_in++] = color_b;
+        colors[index_in++] = vega_fishnet_map.opacity();
       }
     }
   }

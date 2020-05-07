@@ -452,8 +452,8 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
 
 template <typename T>
 std::pair<uint8_t*, int64_t> render_fishnetmap(const std::vector<std::string>& points,
-                                            const std::vector<T>& arr_c,
-                                            const std::string& conf) {
+                                               const std::vector<T>& arr_c,
+                                               const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
 

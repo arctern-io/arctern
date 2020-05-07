@@ -34,9 +34,9 @@ class VegaFishNetMap : public Vega {
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
 
-  int cell_size() { return cell_size_;}
+  int cell_size() { return cell_size_; }
 
-  int cell_spacing() { return cell_spacing_;}
+  int cell_spacing() { return cell_spacing_; }
 
   const double& opacity() const { return opacity_; }
 

@@ -18,7 +18,6 @@
 #include "render/2d/general_2d.h"
 #include "render/utils/vega/vega_fishnet_map/vega_fishnet_map.h"
 
-
 namespace arctern {
 namespace render {
 
