@@ -197,6 +197,7 @@ def render(payload, render_type):
         "choroplethmap": codegen.generate_choropleth_map_code,
         "weighted_pointmap": codegen.generate_weighted_map_code,
         "icon_viz": codegen.generate_icon_viz_code,
+        "fishnetmap": codegen.generate_fishnetmap_code,
     }
 
     log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
