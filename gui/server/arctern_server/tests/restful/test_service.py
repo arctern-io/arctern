@@ -331,13 +331,14 @@ def test_query(load, host, port, headers, dbid, table_name):
             'params': {
                 'width': 1024,
                 'height': 896,
-                'weighted': {
+                'fishnet': {
                     'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
                     'color_gradient': ["#0000FF", "#FF0000"],
                     'cell_size': 5,
                     'cell_spacing': 2,
                     'opacity': 1.0,
-                    'coordinate_system': 'EPSG:4326'
+                    'coordinate_system': 'EPSG:4326',
+                    'aggregation_type': 'sum'
                 }
             }
         }

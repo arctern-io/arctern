@@ -259,9 +259,9 @@ def db_query():
                 int(query_params['height']),
                 query_params['fishnet']['bounding_box'],
                 query_params['fishnet']['color_gradient'],
-                query_params['fishnet']['cell_size'],
-                query_params['fishnet']['cell_spacing'],
-                query_params['fishnet']['opacity'],
+                int(query_params['fishnet']['cell_size']),
+                int(query_params['fishnet']['cell_spacing']),
+                float(query_params['fishnet']['opacity']),
                 query_params['fishnet']['coordinate_system'],
                 query_params['fishnet']['aggregation_type']
             )

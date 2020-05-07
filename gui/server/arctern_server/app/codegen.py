@@ -22,7 +22,7 @@ def generate_session_code(session_name="spark"):
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
     session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap\n'
-    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnet_map\n'
+    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap\n'
     session_code += 'from arctern_pyspark import register_funcs\n'
     session_code += 'from pyspark.sql import SparkSession\n'
     session_code += '{} = SparkSession.builder'.format(session_name)
