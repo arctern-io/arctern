@@ -60,7 +60,7 @@ def perf_stability_alarm(func_name, res_func_arr):
     # print("Performance test standard deviation of %s: "%func_name,end='')
     # print(std_deviation)
     if std_deviation > std_threshold:
-        print(warning_str+'--->'+str(std_deviation))
+        print(warning_str + '--->' + str(std_deviation))
         # print perf_test result
         # print('perf_test result for ' + str(func_name) + ' :')
         # print(res_func_arr)
