@@ -31,37 +31,6 @@
 namespace arctern {
 namespace render {
 
-AggType agg_type(std::string type) {
-  if (type == "mean") return AggType::AVG;
-  if (type == "sum") return AggType::SUM;
-  if (type == "max") return AggType::MAX;
-  if (type == "min") return AggType::MIN;
-  if (type == "count") return AggType::COUNT;
-  if (type == "std") return AggType::STDDEV;
-  std::string err_msg = "unknow agg type = " + type;
-  throw std::runtime_error(err_msg);
-}
-
-void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
-                                     void* poCT) {
-  OGRGeometry* res_geo = nullptr;
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
-  CHECK_GDAL(OGR_G_Transform(res_geo, (OGRCoordinateTransformation*)poCT));
-  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-  x = rst_pointer->getX();
-  y = rst_pointer->getY();
-  OGRGeometryFactory::destroyGeometry(res_geo);
-}
-
-void pointXY_from_wkt(const std::string& wkt, double& x, double& y) {
-  OGRGeometry* res_geo = nullptr;
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
-  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
-  x = rst_pointer->getX();
-  y = rst_pointer->getY();
-  OGRGeometryFactory::destroyGeometry(res_geo);
-}
-
 void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
                 const std::string& top_left, const int& height, const int& width) {
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
@@ -137,7 +106,6 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
     } else {
       // 1. transform
       CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
-
       // 2. projection
       auto type = wkbFlatten(geo->getGeometryType());
       if (type == wkbPoint) {
@@ -165,121 +133,6 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
   }
 
   OCTDestroyCoordinateTransformation(poCT);
-}
-
-template <typename T>
-std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
-    const std::shared_ptr<arrow::Array>& geos,
-    const std::shared_ptr<arrow::Array>& arr_c) {
-  auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
-  auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
-  auto geos_size = geos->length();
-  auto geo_type = geos->type_id();
-  auto c_size = arr_c->length();
-  assert(geo_type == arrow::Type::BINARY);
-  assert(geos_size == c_size);
-
-  std::unordered_map<std::string, std::vector<T>> wkb_map;
-  for (size_t i = 0; i < geos_size; i++) {
-    std::string geo_wkb = geo_arr->GetString(i);
-    if (wkb_map.find(geo_wkb) == wkb_map.end()) {
-      std::vector<T> weight;
-      weight.emplace_back(c_arr[i]);
-      wkb_map[geo_wkb] = weight;
-    } else {
-      auto& weight = wkb_map[geo_wkb];
-      weight.emplace_back(c_arr[i]);
-    }
-  }
-
-  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
-  std::vector<std::vector<T>> results_weight(wkb_map.size());
-  int i = 0;
-  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
-    OGRGeometry* res_geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
-    results_wkb[i] = res_geo;
-    results_weight[i] = iter->second;
-    i++;
-  }
-
-  return std::make_pair(results_wkb, results_weight);
-}
-
-template <typename T>
-std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
-    const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c) {
-  assert(wkb_arr.size() == arr_c.size());
-
-  std::unordered_map<std::string, std::vector<T>> wkb_map;
-  for (size_t i = 0; i < wkb_arr.size(); i++) {
-    std::string wkb = wkb_arr[i];
-    if (wkb_map.find(wkb) == wkb_map.end()) {
-      std::vector<T> weight;
-      weight.emplace_back(arr_c[i]);
-      wkb_map[wkb] = weight;
-    } else {
-      auto& weight = wkb_map[wkb];
-      weight.emplace_back(arr_c[i]);
-    }
-  }
-
-  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
-  std::vector<std::vector<T>> results_weight(wkb_map.size());
-  int i = 0;
-  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
-    OGRGeometry* res_geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
-    results_wkb[i] = res_geo;
-    results_weight[i] = iter->second;
-    i++;
-  }
-
-  return std::make_pair(results_wkb, results_weight);
-}
-
-template <typename T>
-std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
-           std::vector<std::vector<T>>>
-weight_agg_multiple_column(const std::vector<std::string>& geos,
-                           const std::vector<T>& arr_c, const std::vector<T>& arr_s) {
-  assert(geos.size() == arr_c.size());
-  assert(arr_c.size() == arr_s.size());
-
-  using vector_pair = std::pair<std::vector<T>, std::vector<T>>;
-  std::unordered_map<std::string, vector_pair> wkb_map;
-
-  for (size_t i = 0; i < geos.size(); i++) {
-    std::string geo_wkb = geos[i];
-    if (wkb_map.find(geo_wkb) == wkb_map.end()) {
-      std::vector<T> weight_c;
-      std::vector<T> weight_s;
-      weight_c.emplace_back(arr_c[i]);
-      weight_s.emplace_back(arr_s[i]);
-      wkb_map[geo_wkb] = std::make_pair(weight_c, weight_s);
-    } else {
-      auto& weight_c = wkb_map[geo_wkb].first;
-      auto& weight_s = wkb_map[geo_wkb].second;
-      weight_c.emplace_back(arr_c[i]);
-      weight_s.emplace_back(arr_s[i]);
-    }
-  }
-
-  std::vector<OGRGeometry*> results_wkb(wkb_map.size());
-  std::vector<std::vector<T>> results_weight_c(wkb_map.size());
-  std::vector<std::vector<T>> results_weight_s(wkb_map.size());
-
-  int i = 0;
-  for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
-    OGRGeometry* res_geo;
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
-    results_wkb[i] = res_geo;
-    results_weight_c[i] = iter->second.first;
-    results_weight_s[i] = iter->second.second;
-    i++;
-  }
-
-  return std::make_tuple(results_wkb, results_weight_c, results_weight_s);
 }
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
@@ -394,6 +247,21 @@ std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t n
 
   const auto& render = icon_viz.Render();
   const auto& ret_size = icon_viz.output_image_size();
+  return std::make_pair(render, ret_size);
+}
+
+template <typename T>
+std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                        int64_t num_vertices, const std::string& conf) {
+  VegaFishNetMap vega_fishnet_map(conf);
+  if (!vega_fishnet_map.is_valid()) {
+    return std::make_pair(nullptr, -1);
+  }
+
+  FishNetMap<T> fishnet_map(arr_x, arr_y, arr, num_vertices);
+  fishnet_map.mutable_fishnet_vega() = vega_fishnet_map;
+  const auto& render = fishnet_map.Render();
+  const auto& ret_size = fishnet_map.output_image_size();
   return std::make_pair(render, ret_size);
 }
 

@@ -104,5 +104,25 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
   return arrays;
 }
 
+void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
+                                     void* poCT) {
+  OGRGeometry* res_geo = nullptr;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
+  CHECK_GDAL(OGR_G_Transform(res_geo, (OGRCoordinateTransformation*)poCT));
+  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+  x = rst_pointer->getX();
+  y = rst_pointer->getY();
+  OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
+void pointXY_from_wkt(const std::string& wkt, double& x, double& y) {
+  OGRGeometry* res_geo = nullptr;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &res_geo));
+  auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
+  x = rst_pointer->getX();
+  y = rst_pointer->getY();
+  OGRGeometryFactory::destroyGeometry(res_geo);
+}
+
 }  // namespace render
 }  // namespace arctern

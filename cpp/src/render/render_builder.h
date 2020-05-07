@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "render/2d/choropleth_map/choropleth_map.h"
+#include "render/2d/fishnet_map/fishnet_map.h"
 #include "render/2d/heatmap/heatmap.h"
 #include "render/2d/icon/icon_viz.h"
 #include "render/2d/scatter_plot/pointmap.h"
@@ -34,37 +35,18 @@
 namespace arctern {
 namespace render {
 
-enum AggType {
-  SUM = 0,
-  MIN,
-  MAX,
-  COUNT,
-  STDDEV,
-  AVG,
-};
-
 void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
                 const std::string& top_left, const int& height, const int& width);
+
+std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width);
 
 void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
                             const std::string& src_rs, const std::string& dst_rs,
                             const std::string& bottom_right, const std::string& top_left,
                             const int& height, const int& width);
-
-template <typename T>
-std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
-    const std::shared_ptr<arrow::Array>& geos,
-    const std::shared_ptr<arrow::Array>& arr_c);
-
-template <typename T>
-std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
-    const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c);
-
-template <typename T>
-std::tuple<std::vector<OGRGeometry*>, std::vector<std::vector<T>>,
-           std::vector<std::vector<T>>>
-weight_agg_multiple_column(const std::vector<std::string>& geos,
-                           const std::vector<T>& arr_c, const std::vector<T>& arr_s);
 
 std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                       int64_t num_vertices, const std::string& conf);
@@ -94,6 +76,10 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
 
 std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
                                      int64_t num_vertices, const std::string& conf);
+
+template <typename T>
+std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                        int64_t num_vertices, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern
