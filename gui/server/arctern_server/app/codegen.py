@@ -158,3 +158,18 @@ def generate_icon_viz_code(sql, params, session_name='spark'):
         params.get('coordinate_system')
     )
     return sql_code, vega_code
+
+def generate_fishnetmap_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
+    vega_code = 'vega_fishnetmap({}, {}, {}, {}, {}, {}, {}, "{}", "{}")'.format(
+        int(params.get('width')),
+        int(params.get('height')),
+        params.get('bounding_box'),
+        params.get('color_gradient'),
+        int(params.get('cell_size')),
+        int(params.get('cell_spacing')),
+        float(params.get('opacity')),
+        params.get('coordinate_system'),
+        params.get('aggregation_type')
+    )
+    return sql_code, vega_code

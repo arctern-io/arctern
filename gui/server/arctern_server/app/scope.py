@@ -271,3 +271,12 @@ def icon_viz():
         code=code,
         result=result,
     )
+
+@API.route('/fishnetmap', methods=['POST'])
+def fishnetmap():
+    status, code, result = render(request.json, 'fishnetmap')
+    return jsonify(
+        status=status,
+        code=code,
+        result=result,
+    )
