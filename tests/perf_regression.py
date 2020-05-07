@@ -193,9 +193,9 @@ if __name__ == "__main__":
         res_arr = 'res_' + func_name
         # plot
         cur_res_arr = locals()[res_arr]
-        min = min(cur_res_arr)
-        max = max(cur_res_arr)
-        cur_res_arr = normalize_arr(lambda x: (x - min) / (max - min), cur_res_arr)
+        min_item = min(cur_res_arr)
+        max_item = max(cur_res_arr)
+        cur_res_arr = normalize_arr(lambda x: (x - min_item) / (max_item - min_item), cur_res_arr)
         if cur_res_arr:
             plot_perf_regression(func_name, cur_res_arr)
             plot_num = plot_num + 1
