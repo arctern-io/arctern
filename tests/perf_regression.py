@@ -60,7 +60,7 @@ def perf_stability_alarm(func_name, res_func_arr):
     # print("Performance test standard deviation of %s: "%func_name,end='')
     # print(std_deviation)
     if std_deviation > std_threshold:
-        print(warning_str)
+        print(warning_str+'--->'+str(std_deviation))
         # print perf_test result
         # print('perf_test result for ' + str(func_name) + ' :')
         # print(res_func_arr)
@@ -169,7 +169,7 @@ func_list_arr = ['st_geomfromgeojson',
 log_dir = 'perf/log/'
 plot_dir = 'perf/picture/'
 # Performance regression standard deviation accuracy tolerance
-std_threshold = 3.0
+std_threshold = 0.4
 
 # main invocation
 if __name__ == "__main__":
@@ -189,18 +189,20 @@ if __name__ == "__main__":
     plot_num = 0
     plot_failed_func = []
     alarm_func = []
+    min_item = 0.0
+    max_item = 0.0
     for func_name in func_list_arr:
         res_arr = 'res_' + func_name
         # plot
         cur_res_arr = locals()[res_arr]
-        min_item = min(cur_res_arr)
-        max_item = max(cur_res_arr)
-        cur_res_arr = normalize_arr(lambda x: (x - min_item) / (max_item - min_item), cur_res_arr)
         if cur_res_arr:
+            min_item = min(cur_res_arr)
+            max_item = max(cur_res_arr)
+            cur_res_arr = normalize_arr(lambda x: (x - min_item) / (max_item - min_item), cur_res_arr)
             plot_perf_regression(func_name, cur_res_arr)
             plot_num = plot_num + 1
             # performance test stability
-            if perf_stability_alarm(func_name, locals()[res_arr]):
+            if perf_stability_alarm(func_name, cur_res_arr):
                 alarm_num = alarm_num + 1
                 alarm_func.append(func_name)
         else:
