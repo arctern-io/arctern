@@ -20,7 +20,7 @@ import json
 from flask import Blueprint, jsonify, request
 
 from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap
-from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnet_map
+from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap
 
 from arctern_server.app import account
 from arctern_server.app.common import spark, token, utils, db, log
@@ -265,7 +265,7 @@ def db_query():
                 query_params['fishnet']['coordinate_system'],
                 query_params['fishnet']['aggregation_type']
             )
-            data = fishnet_map(vega, res)
+            data = fishnetmap(vega, res)
             content['result'] = data
         else:
             return jsonify(status="error",
