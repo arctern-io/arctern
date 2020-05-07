@@ -65,7 +65,8 @@ class AggHandler {
     int i = 0;
     for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
       OGRGeometry* res_geo;
-      CHECK_GDAL(OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
+      CHECK_GDAL(
+          OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
       results_wkb[i] = res_geo;
       results_weight[i] = iter->second;
       i++;

@@ -30,10 +30,10 @@ class ColorGradient {
   static Color GetColor(Color color_start, Color color_end, double ratio);
 
   ColorGradient() { createDefaultHeatMapGradient(); }
-  ColorGradient(int a) { createSquareMapGradient(); }
+  ColorGradient(std::vector<Color> color) { createSquareMapGradient(std::vector<Color> color); }
 
   void createDefaultHeatMapGradient();
-  void createSquareMapGradient();
+  void createSquareMapGradient(std::vector<Color> color);
 
   void getColorAtValue(const float value, float& red, float& green, float& blue);
 };

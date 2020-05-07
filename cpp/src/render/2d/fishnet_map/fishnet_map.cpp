@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -47,7 +48,8 @@ template class FishNetMap<float>;
 template class FishNetMap<double>;
 
 template <typename T>
-FishNetMap<T>::FishNetMap(uint32_t* input_x, uint32_t* input_y, T* count, int64_t num_vertices)
+FishNetMap<T>::FishNetMap(uint32_t* input_x, uint32_t* input_y,
+                          T* count, int64_t num_vertices)
     : vertices_x_(input_x),
       vertices_y_(input_y),
       count_(count),
@@ -80,15 +82,15 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
   ColorGradient color_gradient;
   color_gradient.createDefaultHeatMapGradient();
 
-  for(int i = 0; i < num; i++) {
+  for (int i = 0; i < num; i++) {
     float value = input_c[i] > max_pix ? 1.0f : (input_c[i] - min_pix) / count_range;
     float color_r, color_g, color_b;
     color_gradient.getColorAtValue(value, color_r, color_g, color_b);
 
-    if((input_y[i] * cell_size)>=height || (input_x[i]* cell_size) >= width) continue;
+    if ((input_y[i] * cell_size)>=height || (input_x[i]* cell_size) >= width) continue;
     int index = cell_size * input_y[i] * width + input_x[i] * cell_size;
-    for(int m = 0; m < cell_size - cell_spacing; m++) {
-      for(int n = 0; n < cell_size - cell_spacing; n++) {
+    for (int m = 0; m < cell_size - cell_spacing; m++) {
+      for (int n = 0; n < cell_size - cell_spacing; n++) {
           int index_in = (index + m * width + n) * 4;
           colors[index_in++] = color_r;
           colors[index_in++] = color_g;
@@ -259,7 +261,7 @@ void FishNetMap<T>::Shader() {
 template <typename T>
 uint8_t* FishNetMap<T>::Render() {
   WindowsInit(fishnet_vega_.window_params());
-  DataInit(); 
+  DataInit();
 #ifdef USE_GPU
   Shader();
 #endif

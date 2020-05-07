@@ -26,7 +26,7 @@ namespace arctern {
 namespace render {
 
 class VegaFishNetMap : public Vega {
- public:
+  
  public:
   VegaFishNetMap() = default;
 

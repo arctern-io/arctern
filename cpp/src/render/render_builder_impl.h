@@ -253,18 +253,18 @@ std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t n
 template <typename T>
 std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                                int64_t num_vertices,
-                                               const std::string& conf){                                               
+                                               const std::string& conf){
   VegaFishNetMap vega_fishnet_map(conf);
   if (!vega_fishnet_map.is_valid()) {
     return std::make_pair(nullptr, -1);
   }
 
   FishNetMap<T> fishnet_map(arr_x, arr_y, arr, num_vertices);
-  fishnet_map.mutable_fishnet_vega() = vega_fishnet_map;  
+  fishnet_map.mutable_fishnet_vega() = vega_fishnet_map;
   const auto& render = fishnet_map.Render();
   const auto& ret_size = fishnet_map.output_image_size();
   return std::make_pair(render, ret_size);
-  
 }
+
 }  // namespace render
 }  // namespace arctern
