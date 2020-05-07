@@ -87,7 +87,9 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
     float color_r, color_g, color_b;
     color_gradient.getColorAtValue(value, color_r, color_g, color_b);
 
-    if ((input_y[i] * cell_size)>=height || (input_x[i]* cell_size) >= width) continue;
+    if (input_y[i] * cell_size >= height || input_x[i]* cell_size >= width) {
+      continue;
+    }
     int index = cell_size * input_y[i] * width + input_x[i] * cell_size;
     for (int m = 0; m < cell_size - cell_spacing; m++) {
       for (int n = 0; n < cell_size - cell_spacing; n++) {
