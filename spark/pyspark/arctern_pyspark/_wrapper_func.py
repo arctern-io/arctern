@@ -59,8 +59,8 @@ __all__ = [
     "WkbToWkt",
 ]
 
-import arctern
 from pyspark.sql.functions import pandas_udf, PandasUDFType
+import arctern
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def Projection(geos, bottom_geo2, top_geo1, height, width):
@@ -293,10 +293,10 @@ def ST_Point(x, y):
     """
     Construct point according to the coordinates.
 
-    :type x: double
+    :type x: float
     :param x: Abscissa of the point.
 
-    :type y: double
+    :type y: float
     :param y: Ordinate of the point.
 
     :rtype: WKB
@@ -568,7 +568,7 @@ def ST_Overlaps(geo1, geo2):
 @pandas_udf("boolean", PandasUDFType.SCALAR)
 def ST_Crosses(geo1, geo2):
     """
-    Check whether geometries "spatially cross". "Spatially cross" here means two the geometries have
+    Check whether geometries "spatially cross". "Spatially cross" here means two geometries have
     some, but not all interior points in common. The intersection of the interiors of the geometries
     must not be the empty set and must have a dimensionality less than the maximum dimension of the two
     input geometries.
@@ -710,7 +710,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     :type geos: WKB
     :param geos: Geometry
 
-    :type distance_tolerance: double
+    :type distance_tolerance: float
     :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
 
     :rtype: WKB
@@ -723,18 +723,18 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([(
-          'POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25))',
+          'CIRCULARSTRING (0 0,1 1,2 0)',
           )])
       >>> test_data.extend([(
           'LINESTRING(250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)',
           )])
       >>> simplify_preserve_topology_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology").show(100,0)
+      >>> spark_session.sql("select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 1)) from simplify_preserve_topology").show(100,0)
       +----------------------------------------------------------------------------+
       |ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10))           |
       +----------------------------------------------------------------------------+
-      |POLYGON ((8 25,28 22,15 11,33 3,56 30,47 44,35 36,43 19,24 39,8 25))        |
+      |LINESTRING (0 0,2 0)                                                        |
       |LINESTRING (250 250,280 290,300 230,340 300,360 260,440 310,470 360,604 286)|
       +----------------------------------------------------------------------------+
     """
@@ -746,16 +746,16 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     Construct a polygon(rectangle) geometry from arr_min_x, arr_min_y, arr_max_x,
     arr_max_y. The edges of polygon are parallel to coordinate axis.
 
-    :type min_x: double
+    :type min_x: float
     :param min_x: The minimum value of x coordinate of the rectangles.
 
-    :type min_y: double
+    :type min_y: float
     :param min_y: The minimum value of y coordinate of the rectangles.
 
-    :type max_x: double
+    :type max_x: float
     :param max_x: The maximum value of x coordinate of the rectangles.
 
-    :type max_y: double
+    :type max_y: float
     :param max_y: The maximum value of y coordinate of the rectangles.
 
     :rtype: WKB
@@ -897,7 +897,7 @@ def ST_Distance(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
@@ -932,7 +932,7 @@ def ST_DistanceSphere(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the distance between geometry "geo1" and geometry "geo2".
 
     :example:
@@ -942,16 +942,16 @@ def ST_DistanceSphere(geo1, geo2):
       >>> register_funcs(spark_session)
       >>> test_data = []
       >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
-      >>> test_data.extend([('POINT(31.75 31.25)','POINT(31.75 31.25)')])
+      >>> test_data.extend([('POINT(31.75 31.25)','POINT(32.75 31.25)')])
       >>> distance_sphere_df = spark_session.createDataFrame(data=test_data, schema=["geo1", "geo2"]).cache()
       >>> distance_sphere_df.createOrReplaceTempView("distance_sphere")
-      >>> spark_session.sql("select ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
-      +----------------------------------------------------------+
-      |ST_Distance(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
-      +----------------------------------------------------------+
-      |3                                                         |
-      |0.7905694150420949                                        |
-      +----------------------------------------------------------+
+      >>> spark_session.sql("select ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from distance_sphere").show(100,0)
+      +---------------------------------------------------------------+
+      |ST_DistanceSphere(ST_GeomFromText(geo1), ST_GeomFromText(geo2))|
+      +---------------------------------------------------------------+
+      |0.0                                                            |
+      |95088.35938555223                                              |
+      +---------------------------------------------------------------+
     """
     return arctern.ST_DistanceSphere(geo1, geo2)
 
@@ -963,7 +963,7 @@ def ST_Area(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the area of geometry.
 
     :example:
@@ -1025,7 +1025,7 @@ def ST_Length(geos):
     :type geos: WKB
     :param geos: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the length of geometry.
 
     :example:
@@ -1060,7 +1060,7 @@ def ST_HausdorffDistance(geo1, geo2):
     :type geo2: WKB
     :param geo2: Geometry
 
-    :rtype: double
+    :rtype: float
     :return: The value that represents the hausdorff distance between geo1 and geo2.
 
     :example:
@@ -1198,7 +1198,7 @@ def ST_Buffer(geos, distance):
     :type geos: WKB
     :param geos: Geometry
 
-    :type distance: double
+    :type distance: float
     :param distance: The maximum distance of the returned geometry from the given geometry.
 
     :rtype: WKB

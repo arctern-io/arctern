@@ -18,8 +18,8 @@ from flask_httpauth import HTTPTokenAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import BadSignature, SignatureExpired
 
-from app import account
-from app.common import utils
+from arctern_server.app import account
+from arctern_server.app.common import utils
 
 # -H "Authorization: Token <jws-token>"
 AUTH = HTTPTokenAuth(scheme='Token')
