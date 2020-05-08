@@ -15,7 +15,6 @@ import io
 import base64
 from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
 import arctern
-import pandas
 
 def _get_recom_size(dx, dy, target=(1600, 1600)):
     scale_x = target[0] / dx
@@ -74,6 +73,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
+# pylint: disable=too-many-arguments
 def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box,
                                     coordinate_system='EPSG:4326',
                                     color_gradient=["#115f9a", "#d0f400"],
@@ -108,8 +108,9 @@ def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, \
-        color_bound=color_bound, size_bound=size_bound, opacity=opacity, coordinate_system=coordinate_system)
-    hexstr = weighted_point_map_layer(vega, points, color_weights=color_weights, size_weights=size_weights)
+        color_bound=color_bound, size_bound=size_bound, opacity=opacity, \
+        coordinate_system=coordinate_system, aggregation_type=aggregation_type)
+    hexstr = arctern.weighted_point_map_layer(vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -147,7 +148,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     map_zoom_level = _calc_zoom(bbox, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level, coordinate_system=coordinate_system)
-    hexstr = heat_map_layer(vega, points, weights)
+    hexstr = arctern.heat_map_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -179,7 +180,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound, opacity=opacity, coordinate_system=coordinate_system)
-    hexstr = choropleth_map_layer(vega, region_boundaries, weights)
+    hexstr = arctern.choropleth_map_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -188,8 +189,8 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 def plot_iconviz(ax, points, icon_path, bounding_box,
-                                    coordinate_system='EPSG:4326',
-                                    extra_contextily_params=dict()):
+                 coordinate_system='EPSG:4326',
+                 **extra_contextily_params):
     """
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
@@ -209,7 +210,7 @@ def plot_iconviz(ax, points, icon_path, bounding_box,
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, coordinate_system=coordinate_system)
-    hexstr = icon_viz_layer(vega, points)
+    hexstr = arctern.icon_viz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
