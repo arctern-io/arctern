@@ -353,9 +353,8 @@ def fishnetmap(vega, df):
     top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
     bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
 
-    cell_size = vega.cell_size()
-    height = int(vega.height() / cell_size)
-    width = int(vega.width() / cell_size)
+    height = vega.height()
+    width = vega.width()
     coor = vega.coor()
     aggregation_type = vega.aggregation_type()
 

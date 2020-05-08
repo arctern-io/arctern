@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -57,8 +58,6 @@ FishNetMap<T>::FishNetMap(uint32_t* input_x, uint32_t* input_y, T* count,
 
 template <typename T>
 FishNetMap<T>::~FishNetMap() {
-  free(vertices_x_);
-  free(vertices_y_);
   free(colors_);
 }
 
@@ -71,6 +70,7 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
   int64_t window_size = width * height;
   int cell_size = vega_fishnet_map.cell_size();
   int cell_spacing = vega_fishnet_map.cell_spacing();
+  int block_size = cell_size + cell_spacing;
 
   std::vector<T> weights(num);
   memcpy(&weights[0], input_c, num * sizeof(T));
@@ -79,27 +79,20 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
   T max_pix = weights[max];
   T min_pix = weights[0];
   T count_range = max_pix - min_pix;
+  
   ColorGradient color_gradient;
   color_gradient.createDefaultHeatMapGradient();
 
   for (int i = 0; i < num; i++) {
+    if (input_y[i] * block_size >= height || input_x[i] * block_size >= width) continue;
     float value = input_c[i] > max_pix ? 1.0f : (input_c[i] - min_pix) / count_range;
     float color_r, color_g, color_b;
     color_gradient.getColorAtValue(value, color_r, color_g, color_b);
-
-    if (input_y[i] * cell_size >= height || input_x[i] * cell_size >= width) {
-      continue;
-    }
-    int index = cell_size * input_y[i] * width + input_x[i] * cell_size;
-    for (int m = 0; m < cell_size - cell_spacing; m++) {
-      for (int n = 0; n < cell_size - cell_spacing; n++) {
-        int index_in = (index + m * width + n) * 4;
-        colors[index_in++] = color_r;
-        colors[index_in++] = color_g;
-        colors[index_in++] = color_b;
-        colors[index_in++] = vega_fishnet_map.opacity();
-      }
-    }
+    auto index = i * 4;
+    colors[index++] = color_r;
+    colors[index++] = color_g;
+    colors[index++] = color_b;
+    colors[index++] = vega_fishnet_map.opacity();
   }
 }
 
@@ -110,27 +103,16 @@ void FishNetMap<T>::DataInit() {
   int64_t height = window_params.height();
   int64_t window_size = width * height;
 
-  colors_ = (float*)malloc(window_size * 4 * sizeof(float));
+  colors_ = (float*)malloc(num_vertices_ * 4 * sizeof(float));
   set_colors(colors_, vertices_x_, vertices_y_, count_, num_vertices_, fishnet_vega_);
-  vertices_x_ = (uint32_t*)malloc(window_size * sizeof(uint32_t));
-  vertices_y_ = (uint32_t*)malloc(window_size * sizeof(uint32_t));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      vertices_x_[i * width + j] = j;
-      vertices_y_[i * width + j] = i;
-    }
-  }
-  num_vertices_ = window_size;
 }
 
 template <typename T>
 void FishNetMap<T>::Draw() {
-  //    glEnable(GL_PROGRAM_POINT_SIZE);
   glClear(GL_COLOR_BUFFER_BIT);
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_POINT_SMOOTH);
-
+  glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+  glLineWidth(20);
 #ifdef USE_GPU
   glDrawArrays(GL_POINTS, 0, num_vertices_);
   glFlush();
@@ -138,22 +120,28 @@ void FishNetMap<T>::Draw() {
   glDeleteVertexArrays(1, &VAO_);
   glDeleteBuffers(2, VBO_);
 #else
-  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
-          1);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
+  int width = window()->window_params().width();
+  int height = window()->window_params().height();
+  int cell_size = fishnet_vega_.cell_size();
+  int cell_spacing = fishnet_vega_.cell_spacing();
+  int block_size = cell_size + cell_spacing;
+  double spacing = (double)cell_spacing / 2;
 
-  int offset = 0;
-  std::vector<int32_t> vertices(num_vertices_ * 2);
-  for (auto i = 0; i < num_vertices_; i++) {
-    vertices[offset++] = vertices_x_[i];
-    vertices[offset++] = vertices_y_[i];
+  glOrtho(0, width, 0, height, -1, 1);
+  for (int i = 0; i < num_vertices_; i++) {
+    if (vertices_x_[i] * block_size >= width || vertices_y_[i] * block_size >= height)
+      continue;
+    glColor4f(colors_[i * 4], colors_[i * 4 + 1], colors_[i * 4 + 2], colors_[i * 4 + 3]);
+    glBegin(GL_POLYGON);
+    double x = vertices_x_[i] * block_size;
+    double y = vertices_y_[i] * block_size;
+    glVertex2d(x + (double)cell_size + spacing, y + (double)cell_size + spacing);
+    glVertex2d(x + (double)cell_size + spacing, y + spacing);
+    glVertex2d(x + spacing, y + spacing);
+    glVertex2d(x + spacing, y + (double)cell_size + spacing);
+    glEnd();
   }
-  glColorPointer(4, GL_FLOAT, 0, colors_);
-  glVertexPointer(2, GL_INT, 0, &vertices[0]);
-
-  glDrawArrays(GL_POINTS, 0, num_vertices_);
-  glFlush();
+  glFinish();
 #endif
 }
 
