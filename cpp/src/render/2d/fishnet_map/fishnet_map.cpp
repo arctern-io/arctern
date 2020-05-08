@@ -79,7 +79,7 @@ void set_colors(float* colors, uint32_t* input_x, uint32_t* input_y, T* input_c,
   T max_pix = weights[max];
   T min_pix = weights[0];
   T count_range = max_pix - min_pix;
-  
+
   ColorGradient color_gradient;
   color_gradient.createDefaultHeatMapGradient();
 
