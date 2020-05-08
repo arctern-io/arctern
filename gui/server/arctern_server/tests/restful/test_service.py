@@ -315,3 +315,38 @@ def test_query(load, host, port, headers, dbid, table_name):
     )
     assert response.status_code == 200
     assert response.json()['data']['result'] is not None
+
+    # case 6: fishnet_map
+    fishnet_map_request_dict = {
+        'id': dbid,
+        'query': {
+            'sql': '''
+            select ST_Point(pickup_longitude, pickup_latitude) as point, tip_amount as c
+            from {}
+            where ST_Within(
+                ST_Point(pickup_longitude, pickup_latitude),
+                ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))
+            '''.format(table_name),
+            'type': 'fishnet',
+            'params': {
+                'width': 1024,
+                'height': 896,
+                'fishnet': {
+                    'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
+                    'color_gradient': ["#0000FF", "#FF0000"],
+                    'cell_size': 5,
+                    'cell_spacing': 2,
+                    'opacity': 1.0,
+                    'coordinate_system': 'EPSG:4326',
+                    'aggregation_type': 'sum'
+                }
+            }
+        }
+    }
+    response = requests.post(
+        url=url,
+        json=fishnet_map_request_dict,
+        headers=headers,
+    )
+    assert response.status_code == 200
+    assert response.json()['data']['result'] is not None
