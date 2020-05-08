@@ -16,8 +16,8 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
