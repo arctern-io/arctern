@@ -53,6 +53,7 @@ __all__ = [
     "heat_map_layer",
     "choropleth_map_layer",
     "icon_viz_layer",
+    "fishnet_map_layer",
     "projection",
     "transform_and_projection",
     "wkt2wkb",
@@ -1201,21 +1202,10 @@ def projection(geos, bottom_right, top_left, height, width):
     bounding_box_max = bytes(bottom_right, encoding="utf8")
     bounding_box_min = bytes(top_left, encoding="utf8")
 
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     geos = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
-    pd_rs = geos[0].to_pandas()
-    if len(geos) >= 2:
-        for i in range(1, len(geos)):
-            pd_rs.append(geos[i].to_pandas())
-
-    return pd_rs
+    return _to_pandas_series(geos)
 
 
 def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, height, width):
@@ -1228,21 +1218,10 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     bounding_box_max = bytes(bottom_right, encoding="utf8")
     bounding_box_min = bytes(top_left, encoding="utf8")
 
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     geos = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
-    pd_rs = geos[0].to_pandas()
-    if len(geos) >= 2:
-        for i in range(1, len(geos)):
-            pd_rs.append(geos[i].to_pandas())
-
-    return pd_rs
+    return _to_pandas_series(geos)
 
 
 def wkt2wkb(arr_wkt):
@@ -1264,13 +1243,7 @@ def point_map_layer(vega, points, transform=True):
     geos = pa.array(points, type='binary')
 
     # transform and projection handler
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1308,13 +1281,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
     geos = pa.array(points, type='binary')
 
     # transform and projection handler
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1338,7 +1305,6 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
     if color_weights is None and size_weights is None:
         rs = arctern_core_.weighted_point_map(vega_string, geos_rs)
-
     elif color_weights is not None and size_weights is not None:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
@@ -1348,44 +1314,22 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
-        color_weights_rs = []
-        size_weights_rs = []
-        if isinstance(arr_c, pa.lib.ChunkedArray):
-            for chunk_idx in range(arr_c.num_chunks):
-                color_weights_rs.append(arr_c.chunk(chunk_idx))
-        else:
-            color_weights_rs.append(arr_c)
-        if isinstance(arr_s, pa.lib.ChunkedArray):
-            for chunk_idx in range(arr_s.num_chunks):
-                size_weights_rs.append(arr_s.chunk(chunk_idx))
-        else:
-            size_weights_rs.append(arr_s)
+        color_weights_rs = _to_arrow_array_list(arr_c)
+        size_weights_rs = _to_arrow_array_list(arr_s)
         rs = arctern_core_.weighted_color_size_point_map(vega_string, geos_rs, color_weights_rs, size_weights_rs)
-
     elif color_weights is None and size_weights is not None:
         if size_weights.dtypes == 'float64':
             arr_s = pa.array(size_weights, type='double')
         else:
             arr_s = pa.array(size_weights, type='int64')
-        size_weights_rs = []
-        if isinstance(arr_s, pa.lib.ChunkedArray):
-            for chunk_idx in range(arr_s.num_chunks):
-                size_weights_rs.append(arr_s.chunk(chunk_idx))
-        else:
-            size_weights_rs.append(arr_s)
+        size_weights_rs = _to_arrow_array_list(arr_s)
         rs = arctern_core_.weighted_size_point_map(vega_string, geos_rs, size_weights_rs)
-
     else:
         if color_weights.dtypes == 'float64':
             arr_c = pa.array(color_weights, type='double')
         else:
             arr_c = pa.array(color_weights, type='int64')
-        color_weights_rs = []
-        if isinstance(arr_c, pa.lib.ChunkedArray):
-            for chunk_idx in range(arr_c.num_chunks):
-                color_weights_rs.append(arr_c.chunk(chunk_idx))
-        else:
-            color_weights_rs.append(arr_c)
+        color_weights_rs = _to_arrow_array_list(arr_c)
         rs = arctern_core_.weighted_color_point_map(vega_string, geos_rs, color_weights_rs)
 
     return base64.b64encode(rs.buffers()[1].to_pybytes())
@@ -1396,13 +1340,7 @@ def heat_map_layer(vega, points, weights, transform=True):
     geos = pa.array(points, type='binary')
 
     # transform and projection handler
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1430,12 +1368,7 @@ def heat_map_layer(vega, points, weights, transform=True):
     else:
         arr = pa.array(weights, type='int64')
 
-    weights_rs = []
-    if isinstance(arr, pa.lib.ChunkedArray):
-        for chunk_idx in range(arr.num_chunks):
-            weights_rs.append(arr.chunk(chunk_idx))
-    else:
-        weights_rs.append(arr)
+    weights_rs = _to_arrow_array_list(arr)
 
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.heat_map(vega_string, geos_rs, weights_rs)
@@ -1447,13 +1380,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     geos = pa.array(region_boundaries, type='binary')
 
     # transform and projection handler
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1479,16 +1406,11 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
 
     # weights handler
     if weights.dtypes == 'float64':
-        arr_c = pa.array(weights, type='double')
+        arr = pa.array(weights, type='double')
     else:
-        arr_c = pa.array(weights, type='int64')
+        arr = pa.array(weights, type='int64')
 
-    weights_rs = []
-    if isinstance(arr_c, pa.lib.ChunkedArray):
-        for chunk_idx in range(arr_c.num_chunks):
-            weights_rs.append(arr_c.chunk(chunk_idx))
-    else:
-        weights_rs.append(arr_c)
+    weights_rs = _to_arrow_array_list(arr)
 
     rs = arctern_core_.choropleth_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
@@ -1499,13 +1421,7 @@ def icon_viz_layer(vega, points, transform=True):
     geos = pa.array(points, type='binary')
 
     # transform and projection handler
-    geos_rs = []
-    # pylint: disable=c-extension-no-member
-    if isinstance(geos, pa.lib.ChunkedArray):
-        for chunk_idx in range(geos.num_chunks):
-            geos_rs.append(geos.chunk(chunk_idx))
-    else:
-        geos_rs.append(geos)
+    geos_rs = _to_arrow_array_list(geos)
 
     if transform:
         bounding_box = vega.bounding_box()
@@ -1530,4 +1446,46 @@ def icon_viz_layer(vega, points, transform=True):
     vega_string = vega.build().encode('utf-8')
 
     rs = arctern_core_.icon_viz(vega_string, geos_rs)
+    return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def fishnet_map_layer(vega, points, weights, transform=True):
+    import pyarrow as pa
+    geos = pa.array(points, type='binary')
+
+    # transform and projection handler
+    geos_rs = _to_arrow_array_list(geos)
+
+    if transform:
+        bounding_box = vega.bounding_box()
+        top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
+        bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
+        # height = vega.height()
+        # width = vega.width()
+        cell_size = vega.cell_size()
+        height = int(vega.height() / cell_size)
+        width = int(vega.width() / cell_size)
+        coor = vega.coor()
+
+        src = bytes(coor, encoding="utf8")
+        dst = bytes('EPSG:3857', encoding="utf8")
+        bounding_box_min = bytes(top_left, encoding="utf8")
+        bounding_box_max = bytes(bottom_right, encoding="utf8")
+
+        # transform and projection
+        if coor != 'EPSG:3857':
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+        else:
+            geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
+
+    # weights handler
+    if weights.dtypes == 'float64':
+        arr = pa.array(weights, type='double')
+    else:
+        arr = pa.array(weights, type='int64')
+
+    weights_rs = _to_arrow_array_list(arr)
+
+    vega_string = vega.build().encode('utf-8')
+    rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())

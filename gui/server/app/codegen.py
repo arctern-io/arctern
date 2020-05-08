@@ -21,8 +21,8 @@ def generate_session_code(session_name="spark"):
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
-    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap\n'
-    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap\n'
+    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_fishnetmap\n'
+    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, fishnetmap\n'
     session_code += 'from arctern_pyspark import register_funcs\n'
     session_code += 'from pyspark.sql import SparkSession\n'
     session_code += '{} = SparkSession.builder'.format(session_name)
@@ -145,5 +145,20 @@ def generate_weighted_map_code(sql, params, session_name='spark'):
         params.get('size_bound'),
         float(params.get('opacity')),
         params.get('coordinate_system')
+    )
+    return sql_code, vega_code
+
+def generate_fishnetmap_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
+    vega_code = 'vega_fishnetmap({}, {}, {}, {}, {}, {}, {}, "{}", "{}")'.format(
+        int(params.get('width')),
+        int(params.get('height')),
+        params.get('bounding_box'),
+        params.get('color_gradient'),
+        int(params.get('cell_size')),
+        int(params.get('cell_spacing')),
+        float(params.get('opacity')),
+        params.get('coordinate_system'),
+        params.get('aggregation_type')
     )
     return sql_code, vega_code
