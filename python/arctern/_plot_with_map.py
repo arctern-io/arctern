@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from arctern import *
-import pandas
 import io
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
 import base64
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
+import arctern
+import pandas
 
 def _get_recom_size(dx, dy, target=(1600, 1600)):
     scale_x = target[0] / dx
@@ -26,9 +26,7 @@ def _get_recom_size(dx, dy, target=(1600, 1600)):
     return w, h
 
 def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
-    from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
-    import contextily as cx
+    import pyproj
     if src_coord_sys != dst_coord_sys:
         x0, y0, x1, y1 = bounding_box
         dst_proj = pyproj.Proj(dst_coord_sys)
@@ -43,7 +41,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
                   **extra_contextily_params):
     """
     :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap. 
+    :param ax: Matplotlib axes object on which to add the basemap.
 
     :type points: Series(dtype: object)
     :param points: Points in WKB form
@@ -63,21 +61,20 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
                                                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
     from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     color_hex = colors.to_hex(point_color)
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_pointmap(w, h, bounding_box=[x for x in bounding_box], point_size=point_size, point_color=color_hex, opacity=point_opacity, coordinate_system=coordinate_system)
+    vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size, point_color=color_hex, opacity=point_opacity, coordinate_system=coordinate_system)
     hexstr = arctern.point_map_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
-    
+
     img = plt.imread(f)
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
-    ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
-def plot_weighted_pointmap(ax, points, color_weights, size_weights,bounding_box,
+def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box,
                                     coordinate_system='EPSG:4326',
                                     color_gradient=["#115f9a", "#d0f400"],
                                     color_bound=[0, 0],
@@ -87,7 +84,7 @@ def plot_weighted_pointmap(ax, points, color_weights, size_weights,bounding_box,
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap. 
+    :param ax: Matplotlib axes object on which to add the basemap.
 
     :type points: Series(dtype: object)
     :param points: Points in WKB form
@@ -106,22 +103,22 @@ def plot_weighted_pointmap(ax, points, color_weights, size_weights,bounding_box,
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
-    from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
+    from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, \
         color_bound=color_bound, size_bound=size_bound, opacity=opacity, coordinate_system=coordinate_system)
-    hexstr = weighted_point_map_layer(vega, points, color_weights=df.fare_amount, size_weights=df.total_amount)
+    hexstr = weighted_point_map_layer(vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
-    
+
     img = plt.imread(f)
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
-    ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
-def calc_zoom(bbox, coordinate_system):
+def _calc_zoom(bbox, coordinate_system):
+    import contextily as cx
     bbox = _transform_bbox(bbox, coordinate_system, 'epsg:4326')
     return cx.tile._calculate_zoom(*bbox)
 
@@ -131,7 +128,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap. 
+    :param ax: Matplotlib axes object on which to add the basemap.
 
     :type points: Series(dtype: object)
     :param points: Points in WKB form
@@ -144,20 +141,19 @@ def plot_heatmap(ax, points, weights, bounding_box,
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
                                                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
-    from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
+    from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    map_zoom_level = calc_zoom(bbox, coordinate_system)
+    map_zoom_level = _calc_zoom(bbox, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level, coordinate_system=coordinate_system)
     hexstr = heat_map_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
-    
+
     img = plt.imread(f)
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
-    ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
                                     color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5, 5], opacity=1.0,
@@ -165,7 +161,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap. 
+    :param ax: Matplotlib axes object on which to add the basemap.
 
     :type points: Series(dtype: object)
     :param points: Points in WKB form
@@ -178,19 +174,18 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
                                                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
-    from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
+    from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound, opacity=opacity, coordinate_system=coordinate_system)
     hexstr = choropleth_map_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
-    
+
     img = plt.imread(f)
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
-    ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 def plot_iconviz(ax, points, icon_path, bounding_box,
                                     coordinate_system='EPSG:4326',
@@ -209,16 +204,15 @@ def plot_iconviz(ax, points, icon_path, bounding_box,
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
                                                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
-    from matplotlib import colors, pyplot as plt
-    from pyproj import Proj
+    from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, coordinate_system=coordinate_system)
     hexstr = icon_viz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
-    
+
     img = plt.imread(f)
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
-    ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
