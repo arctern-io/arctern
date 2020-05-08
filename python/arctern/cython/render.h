@@ -65,10 +65,17 @@ std::shared_ptr<arrow::Array> weighted_point_map(
 
 std::shared_ptr<arrow::Array> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& region_boundaries,
-    const std::vector<std::shared_ptr<arrow::Array>>& weights, const std::string& vega);
+    const std::vector<std::shared_ptr<arrow::Array>>& weights,
+    const std::string& vega);
 
 std::shared_ptr<arrow::Array> icon_viz(
-    const std::vector<std::shared_ptr<arrow::Array>>& points, const std::string& conf);
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::string& vega);
+
+std::shared_ptr<arrow::Array> fishnet_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::string& vega);
 
 }  // namespace render
 }  // namespace arctern

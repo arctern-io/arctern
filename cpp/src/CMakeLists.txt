@@ -18,6 +18,7 @@ include_directories(${ARCTERN_THIRDPARTY_SRC})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(render_src
+        render/2d/fishnet_map/fishnet_map.cpp
         render/2d/scatter_plot/pointmap.cpp
         render/2d/scatter_plot/weighted_pointmap.cpp
         render/2d/choropleth_map/choropleth_map.cpp
@@ -25,6 +26,7 @@ set(render_src
         render/2d/heatmap/heatmap.cpp
         render/2d/heatmap/set_color.cpp
         render/2d/icon/icon_viz.cpp
+        render/utils/vega/vega_fishnet_map/vega_fishnet_map.cpp
         render/utils/render_utils.cpp
         render/utils/agg/agg_handler.cpp
         render/utils/vega/vega_scatter_plot/vega_pointmap.cpp

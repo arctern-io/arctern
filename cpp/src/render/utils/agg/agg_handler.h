@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "arrow/array.h"
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace render {
@@ -41,6 +42,38 @@ class AggHandler {
   };
 
   static AggType agg_type(std::string type);
+
+  static std::pair<std::vector<OGRGeometry*>, std::vector<int>> weight_agg(
+      const std::shared_ptr<arrow::Array>& geos) {
+    auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
+    auto geos_size = geos->length();
+    auto geo_type = geos->type_id();
+    assert(geo_type == arrow::Type::BINARY);
+
+    std::unordered_map<std::string, int> wkb_map;
+    for (size_t i = 0; i < geos_size; i++) {
+      std::string geo_wkb = geo_arr->GetString(i);
+      if (wkb_map.find(geo_wkb) == wkb_map.end()) {
+        wkb_map[geo_wkb] = 1;
+      } else {
+        wkb_map[geo_wkb] += 1;
+      }
+    }
+
+    std::vector<OGRGeometry*> results_wkb(wkb_map.size());
+    std::vector<int> results_weight(wkb_map.size());
+    int i = 0;
+    for (auto iter = wkb_map.begin(); iter != wkb_map.end(); iter++) {
+      OGRGeometry* res_geo;
+      CHECK_GDAL(
+          OGRGeometryFactory::createFromWkb(iter->first.c_str(), nullptr, &res_geo));
+      results_wkb[i] = res_geo;
+      results_weight[i] = iter->second;
+      i++;
+    }
+
+    return std::make_pair(results_wkb, results_weight);
+  }
 
   template <typename T>
   static std::pair<std::vector<OGRGeometry*>, std::vector<std::vector<T>>> weight_agg(
