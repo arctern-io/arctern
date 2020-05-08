@@ -45,11 +45,10 @@ class AggHandler {
 
   struct hash_pair {
       template <class T1, class T2>
-      size_t operator()(const std::pair<T1, T2>& point) const
-      {
-          auto hash_x = std::hash<T1>{}(point.first);
-          auto hash_y = std::hash<T2>{}(point.second);
-          return hash_x ^ hash_y;
+      size_t operator()(const std::pair<T1, T2>& point) const {
+        auto hash_x = std::hash<T1>{}(point.first);
+        auto hash_y = std::hash<T2>{}(point.second);
+        return hash_x ^ hash_y;
       }
   };
 
