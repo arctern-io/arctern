@@ -148,7 +148,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    map_zoom_level = _calc_zoom(bbox, coordinate_system)
+    map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level, coordinate_system=coordinate_system)
     hexstr = arctern.heat_map_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
