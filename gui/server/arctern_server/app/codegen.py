@@ -16,13 +16,13 @@ import uuid
 def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
-    from app.common import config as app_config
+    from arctern_server.app.common import config as app_config
     master_addr = app_config.INSTANCE.get("spark", "master-addr", fallback="local[*]")
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
-    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap\n'
-    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap\n'
+    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon\n'
+    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz\n'
     session_code += 'from arctern_pyspark import register_funcs\n'
     session_code += 'from pyspark.sql import SparkSession\n'
     session_code += '{} = SparkSession.builder'.format(session_name)
@@ -79,11 +79,19 @@ def generate_save_code(table, session_name="spark"):
     return save_code
 
 def generate_run_sql_code(sql, session_name='spark'):
-    code = '{}.sql("{}")'.format(session_name, sql)
+    code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon\n'
+    code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz\n'
+    code += 'from arctern_pyspark import register_funcs\n'
+    code += 'register_funcs({})\n'.format(session_name)
+    code += '{}.sql("{}")'.format(session_name, sql)
     return code
 
 def generate_run_for_json_code(sql, session_name='spark'):
-    code = '{}.sql("{}")'.format(session_name, sql)
+    code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon\n'
+    code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz\n'
+    code += 'from arctern_pyspark import register_funcs\n'
+    code += 'register_funcs({})\n'.format(session_name)
+    code += '{}.sql("{}")'.format(session_name, sql)
     code += '.coalesce(1).toJSON().collect()'
     return code
 

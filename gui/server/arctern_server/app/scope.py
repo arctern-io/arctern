@@ -119,7 +119,7 @@ def save_table():
 
 @API.route('/table/schema', methods=['GET'])
 def table_info():
-    log.INSTANCE.info("GET /table: {}".format(request.args))
+    log.INSTANCE.info("GET /table/schema: {}".format(request.args))
 
     scope = request.args.get('scope')
     log.INSTANCE.info("scope: {}".format(scope))
