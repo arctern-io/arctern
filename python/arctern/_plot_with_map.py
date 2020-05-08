@@ -38,9 +38,9 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
         bounding_box = (x0, y0, x1, y1)
     return bounding_box
 
-def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326', 
-                                    point_size=3, point_color='red', point_opacity=1.0, 
-                                    **extra_contextily_params):
+def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
+                  point_size=3, point_color='red', point_opacity=1.0,
+                  **extra_contextily_params):
     """
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap. 
@@ -49,7 +49,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     :param points: Points in WKB form
     :type bounding_box: (float, float, float, float)
     :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                                             value should be of :coordinate_system:
+                        value should be of :coordinate_system:
     :type coordinate_system: str
     :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
     :type point_szie: int
@@ -77,10 +77,10 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
-def plot_weighted_pointmap(ax, points,  color_weights, size_weights,bounding_box,
-                                    coordinate_system='EPSG:4326', 
-                                    color_gradient=["#115f9a", "#d0f400"], 
-                                    color_bound=[0, 0], 
+def plot_weighted_pointmap(ax, points, color_weights, size_weights,bounding_box,
+                                    coordinate_system='EPSG:4326',
+                                    color_gradient=["#115f9a", "#d0f400"],
+                                    color_bound=[0, 0],
                                     size_bound=[3],
                                     opacity=1.0,
                                     aggregation_type="max",
@@ -93,7 +93,7 @@ def plot_weighted_pointmap(ax, points,  color_weights, size_weights,bounding_box
     :param points: Points in WKB form
     :type bounding_box: (float, float, float, float)
     :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                                             value should be of :coordinate_system:
+                         value should be of :coordinate_system:
     :type coordinate_system: str
     :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
     :type point_szie: int
@@ -104,7 +104,7 @@ def plot_weighted_pointmap(ax, points,  color_weights, size_weights,bounding_box
     :param opacity: opacity of point
     :type extra_contextily_params: dict
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                                                    See https://contextily.readthedocs.io/en/latest/reference.html
+                                    See https://contextily.readthedocs.io/en/latest/reference.html
     """
     from matplotlib import colors, pyplot as plt
     from pyproj import Proj
@@ -127,7 +127,7 @@ def calc_zoom(bbox, coordinate_system):
 
 
 def plot_heatmap(ax, points, weights, bounding_box,
-                                    coordinate_system='EPSG:4326', 
+                                    coordinate_system='EPSG:4326',
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -161,7 +161,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
 
 def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
                                     color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5, 5], opacity=1.0,
-                                    coordinate_system='EPSG:4326', 
+                                    coordinate_system='EPSG:4326',
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -171,7 +171,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     :param points: Points in WKB form
     :type bounding_box: (float, float, float, float)
     :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                                             value should be of :coordinate_system:
+                        value should be of :coordinate_system:
     :type coordinate_system: str
     :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
     :type extra_contextily_params: dict
@@ -193,7 +193,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     ax.imshow(img, alpha=img[:,:,3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 def plot_iconviz(ax, points, icon_path, bounding_box,
-                                    coordinate_system='EPSG:4326', 
+                                    coordinate_system='EPSG:4326',
                                     extra_contextily_params=dict()):
     """
     :type ax: AxesSubplot
