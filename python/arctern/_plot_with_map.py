@@ -74,6 +74,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 # pylint: disable=too-many-arguments
+# pylint: disable=dangerous-default-value
 def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box,
                                     coordinate_system='EPSG:4326',
                                     color_gradient=["#115f9a", "#d0f400"],
@@ -118,6 +119,7 @@ def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
+# pylint: disable=protected-access
 def _calc_zoom(bbox, coordinate_system):
     import contextily as cx
     bbox = _transform_bbox(bbox, coordinate_system, 'epsg:4326')
