@@ -16,3 +16,10 @@ from .register import register_funcs
 from .render_func import *
 from .gis_func import *
 from .plot import plot
+
+def version():
+    """
+    :return: version of arctern_pyspark
+    """
+    import arctern
+    return arctern.version()
