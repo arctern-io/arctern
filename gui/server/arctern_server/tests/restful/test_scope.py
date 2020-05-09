@@ -234,29 +234,6 @@ class TestScope():
         print(r.text)
         # assert r.json()["result"] is not None
 
-    @pytest.mark.run(order=11)
-    def test_fishnetmap(self, host, port):
-        url = "http://" + host + ":" + port + "/fishnetmap"
-        payload = {
-            "scope": SCOPE,
-            "sql": "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from {} where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))".format(table_name),
-            "params": {
-                "width": 1024,
-                "height": 896,
-                "bounding_box": [-80.37976, 35.191296, -70.714099, 45.897445],
-                "color_gradient": ["#0000FF", "#FF0000"],
-                "cell_size": 4,
-                "cell_spacing": 1,
-                "opacity": 1.0,
-                "coordinate_system": "EPSG:4326",
-                "aggregation_type": "sum"
-            }
-        }
-        r = requests.post(url=url, json=payload)
-        assert r.status_code == 200
-        print(r.text)
-        # assert r.json()["result"] is not None
-
     @pytest.mark.run(order=12)
     def test_fishnetmap(self, host, port):
         url = "http://" + host + ":" + port + "/fishnetmap"
