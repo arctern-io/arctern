@@ -1448,7 +1448,6 @@ def icon_viz_layer(vega, points, transform=True):
     rs = arctern_core_.icon_viz(vega_string, geos_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-
 def fishnet_map_layer(vega, points, weights, transform=True):
     import pyarrow as pa
     geos = pa.array(points, type='binary')
