@@ -16,7 +16,7 @@ import uuid
 def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
-    from app.common import config as app_config
+    from arctern_server.app.common import config as app_config
     master_addr = app_config.INSTANCE.get("spark", "master-addr", fallback="local[*]")
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
