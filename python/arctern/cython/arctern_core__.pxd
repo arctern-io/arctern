@@ -104,3 +104,4 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr) except +
+    string GIS_Version() except +
