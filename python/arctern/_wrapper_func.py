@@ -58,6 +58,7 @@ __all__ = [
     "transform_and_projection",
     "wkt2wkb",
     "wkb2wkt",
+    "version"
 ]
 
 import base64
@@ -1489,3 +1490,9 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def version():
+    """
+    :return: version of arctern
+    """
+    return arctern_core_.GIS_Version().decode("utf-8")
