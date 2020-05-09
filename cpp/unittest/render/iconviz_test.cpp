@@ -17,71 +17,6 @@
 
 #include "arrow/render_api.h"
 
-TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
-  // param1: x, y
-  arrow::UInt32Builder x_builder;
-  auto status = x_builder.Append(0);
-  status = x_builder.Append(100);
-  status = x_builder.Append(200);
-  status = x_builder.Append(300);
-  status = x_builder.Append(400);
-  status = x_builder.Append(500);
-
-  std::shared_ptr<arrow::UInt32Array> x_array;
-  status = x_builder.Finish(&x_array);
-
-  arrow::UInt32Builder y_builder;
-  status = y_builder.Append(0);
-  status = y_builder.Append(100);
-  status = y_builder.Append(200);
-  status = y_builder.Append(300);
-  status = y_builder.Append(400);
-  status = y_builder.Append(500);
-
-  std::shared_ptr<arrow::UInt32Array> y_array;
-  status = y_builder.Finish(&y_array);
-
-  std::string path = __FILE__;
-  path.resize(path.size() - 16);
-  std::string icon_path = path + "images/taxi.png";
-
-  // param2: vega
-  const std::string vega =
-      "{\n"
-      "  \"width\": 800,\n"
-      "  \"height\": 600,\n"
-      "  \"description\": \"icon\",\n"
-      "  \"data\": [\n"
-      "    {\n"
-      "      \"name\": \"nyc_taxi\",\n"
-      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
-      "    }\n"
-      "  ],\n"
-      "  \"scales\": [\n"
-      "    {\n"
-      "      \"name\": \"icon\",\n"
-      "      \"type\": \"linear\",\n"
-      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
-      "    }\n"
-      "  ],\n"
-      "  \"marks\": [\n"
-      "    {\n"
-      "      \"encode\": {\n"
-      "        \"enter\": {\n"
-      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"icon_path\": {\"value\": \"" +
-      icon_path +
-      "\"},\n"
-      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
-      "        }\n"
-      "      }\n"
-      "    }\n"
-      "  ]\n"
-      "}";
-
-  arctern::render::icon_viz(x_array, y_array, vega);
-}
-
 TEST(ICON_VIZ_TEST, WKT_TEST) {
   // param1: wkt string
   std::string wkt1 = "POINT (100 100)";
@@ -103,7 +38,7 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
   path.resize(path.size() - 16);
   std::string icon_path = path + "images/taxi.png";
 
-  // param2: vega
+  // param2: conf
   const std::string vega =
       "{\n"
       "  \"width\": 800,\n"
@@ -138,5 +73,8 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "}";
 
   auto wkb = arctern::render::WktToWkb(string_array);
-  arctern::render::icon_viz(wkb, vega);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+
+  arctern::render::icon_viz(point_vec, vega);
 }

@@ -11,18 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-from setuptools import find_packages, setup
-
-setup(
-    name="arctern_server",
-    version="0.0.1",
-    author="Zilliz",
-    author_email="support@zilliz.com",
-    description="arctern demo server",
-    packages=find_packages(),
-    data_files=['server/data/0_5M_nyc_taxi_and_building.csv', 'server/data/account.db'],
-    scripts=['server/arctern-server'],
-    python_requires='>=3.6',
-)

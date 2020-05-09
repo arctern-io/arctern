@@ -16,8 +16,8 @@ import json
 
 from flask import Blueprint, jsonify, request
 
-from app.common import log
-from app import codegen
+from arctern_server.app.common import log
+from arctern_server.app import codegen
 
 API = Blueprint("scope_api", __name__)
 
@@ -39,7 +39,7 @@ def create_scope():
     else:
         scope = request.json.get("scope")
         if scope in _SCOPE:
-            return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
+            return jsonify(status="error", code=-1, message="sorry, scope {} already exists!".format(scope))
     if scope is None:
         scope = str(uuid.uuid1()).replace("-", "")
     _SCOPE[scope] = dict()
@@ -196,6 +196,8 @@ def render(payload, render_type):
         "heatmap": codegen.generate_heatmap_code,
         "choroplethmap": codegen.generate_choropleth_map_code,
         "weighted_pointmap": codegen.generate_weighted_map_code,
+        "icon_viz": codegen.generate_icon_viz_code,
+        "fishnetmap": codegen.generate_fishnetmap_code,
     }
 
     log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
@@ -256,6 +258,24 @@ def choroplethmap():
 @API.route('/weighted_pointmap', methods=['POST'])
 def weighted_pointmap():
     status, code, result = render(request.json, 'weighted_pointmap')
+    return jsonify(
+        status=status,
+        code=code,
+        result=result,
+    )
+
+@API.route('/icon_viz', methods=['POST'])
+def icon_viz():
+    status, code, result = render(request.json, 'icon_viz')
+    return jsonify(
+        status=status,
+        code=code,
+        result=result,
+    )
+
+@API.route('/fishnetmap', methods=['POST'])
+def fishnetmap():
+    status, code, result = render(request.json, 'fishnetmap')
     return jsonify(
         status=status,
         code=code,

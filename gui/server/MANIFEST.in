@@ -1,0 +1,3 @@
+include arctern_server/config.ini
+include arctern_server/data/0_5M_nyc_taxi_and_building.csv
+include arctern_server/data/account.db
