@@ -1367,9 +1367,15 @@ def heat_map_layer(vega, points, weights, transform=True):
         arr = pa.array(weights, type='double')
     else:
         arr = pa.array(weights, type='int64')
+<<<<<<< HEAD
 
     weights_rs = _to_arrow_array_list(arr)
 
+=======
+
+    weights_rs = _to_arrow_array_list(arr)
+
+>>>>>>> ba7a29b8faa519602a4078c87c2b11c3275e525f
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.heat_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
@@ -1447,7 +1453,6 @@ def icon_viz_layer(vega, points, transform=True):
 
     rs = arctern_core_.icon_viz(vega_string, geos_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
-
 
 def fishnet_map_layer(vega, points, weights, transform=True):
     import pyarrow as pa
