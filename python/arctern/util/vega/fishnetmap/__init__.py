@@ -11,27 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-set(render_tests_src
-        ${unittest_srcs}
-		pointmap_test.cpp
-	    heatmap_test.cpp
-		choropleth_map_test.cpp
-		coordinate_projection_test.cpp
-		weighted_pointmap_test.cpp
-		iconviz_test.cpp
-		render_builder_api_test.cpp
-		fishnetmap_test.cpp
-		)
-
-add_executable(render_tests ${render_tests_src})
-
-target_link_libraries(render_tests
-        arctern
-        arrow
-        gtest
-        pthread
-        )
-
-install(TARGETS render_tests DESTINATION unittest)
-

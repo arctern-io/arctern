@@ -15,26 +15,42 @@
  */
 #pragma once
 
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "render/utils/color/color.h"
+#include "render/utils/vega/vega.h"
 
 namespace arctern {
 namespace render {
 
-class ColorGradient {
- private:
-  std::vector<Color> color;
-
+class VegaFishNetMap : public Vega {
  public:
-  static Color GetColor(Color color_start, Color color_end, double ratio);
+  VegaFishNetMap() = default;
 
-  ColorGradient() { createDefaultHeatMapGradient(); }
+  explicit VegaFishNetMap(const std::string& json);
 
-  void createDefaultHeatMapGradient();
-  void createSquareMapGradient(std::vector<Color> color);
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
-  void getColorAtValue(const float value, float& red, float& green, float& blue);
+  int cell_size() { return cell_size_; }
+
+  int cell_spacing() { return cell_spacing_; }
+
+  const double& opacity() const { return opacity_; }
+
+  const std::vector<Color>& color_gradient() { return color_gradient_; }
+
+ private:
+  // vega json to vega struct
+  void Parse(const std::string& json) final;
+
+ private:
+  int cell_size_;
+  int cell_spacing_;
+  std::vector<Color> color_gradient_;
+  double opacity_;
 };
 
 }  // namespace render

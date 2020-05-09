@@ -41,6 +41,7 @@ jobs:
         shell: bash
         run: |
           docker-compose build ubuntu-cpp
+          docker rmi $(docker images | grep '<none>' | awk '{print $3}') || exit 0
       - name: Docker Run
         run: |
           docker-compose run ubuntu-cpp

@@ -16,26 +16,26 @@ import pandas
 import arctern
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
 
 
 def test_projection():
-    wkt = ["POINT (-8235193.62386326 4976211.44428777)"]
+    point = arctern.ST_GeomFromText("POINT (-8235193.62386326 4976211.44428777)")[0]
     top_left = "POINT (-8235871.4482427 4976468.32320551)"
     bottom_right = "POINT (-8235147.42627458 4976108.43009739)"
 
-    arr_wkb = pandas.Series(arctern.wkt2wkb(wkt))
+    arr_wkb = pandas.Series([point])
     arctern.projection(arr_wkb, bottom_right, top_left, 200, 300)
 
 
 def test_transfrom_and_projection():
-    wkt = ["POINT (-73.978003 40.754594)"]
+    point = arctern.ST_GeomFromText("POINT (-73.978003 40.754594)")[0]
     top_left = "POINT (-73.984092 40.756342)"
     bottom_right = "POINT (-73.977588 40.753893)"
     src_ts = "EPSG:4326"
     dst_rs = "EPSG:3857"
 
-    arr_wkb = pandas.Series(arctern.wkt2wkb(wkt))
+    arr_wkb = pandas.Series([point])
     arctern.transform_and_projection(arr_wkb, src_ts, dst_rs, bottom_right, top_left, 200, 300)
 
 
@@ -131,8 +131,8 @@ def test_heat_map():
 
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
-    points = arctern.ST_Point(arr_x, arr_y)
     arr_c = pandas.Series(c_data)
+    points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_heatmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], map_zoom_level=13.0, coordinate_system='EPSG:4326')
     heat_map1 = arctern.heat_map_layer(vega, points, arr_c)
@@ -158,6 +158,7 @@ def test_choropleth_map():
     vega = vega_choroplethmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     choropleth_map1 = arctern.choropleth_map_layer(vega, arr_wkb, arr_count)
     save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")
+
 
 def test_icon_viz():
     x_data = []
@@ -185,3 +186,33 @@ def test_icon_viz():
 
     icon_buf = arctern.icon_viz_layer(vega, points)
     save_png(icon_buf, "/tmp/test_icon_viz.png")
+
+def test_fishnet_map():
+    x_data = []
+    y_data = []
+    c_data = []
+
+    x_data.append(-73.96524)
+    x_data.append(-73.96118)
+    x_data.append(-73.97324)
+    x_data.append(-73.98456)
+
+    y_data.append(40.73747)
+    y_data.append(40.74507)
+    y_data.append(40.75890)
+    y_data.append(40.77654)
+
+    c_data.append(10)
+    c_data.append(20)
+    c_data.append(30)
+    c_data.append(40)
+
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    arr_c = pandas.Series(c_data)
+    points = arctern.ST_Point(arr_x, arr_y)
+
+    vega = vega_fishnetmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+    heat_map1 = arctern.fishnet_map_layer(vega, points, arr_c)
+
+    save_png(heat_map1, "/tmp/test_fishnetmap.png")
