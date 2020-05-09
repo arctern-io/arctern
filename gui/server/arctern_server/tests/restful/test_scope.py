@@ -213,7 +213,6 @@ class TestScope():
         # assert r.json()["result"] is not None
 
     @pytest.mark.run(order=11)
-<<<<<<< HEAD:gui/server/arctern_server/tests/restful/test_scope.py
     def test_icon_viz(self, host, port):
         url = "http://" + host + ":" + port + "/icon_viz"
         import os
@@ -236,8 +235,6 @@ class TestScope():
         # assert r.json()["result"] is not None
 
     @pytest.mark.run(order=12)
-=======
->>>>>>> ba7a29b8faa519602a4078c87c2b11c3275e525f:gui/server/tests/restful/test_scope.py
     def test_fishnetmap(self, host, port):
         url = "http://" + host + ":" + port + "/fishnetmap"
         payload = {
