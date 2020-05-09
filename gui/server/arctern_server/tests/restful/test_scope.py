@@ -234,7 +234,7 @@ class TestScope():
         print(r.text)
         # assert r.json()["result"] is not None
 
-    @pytest.mark.run(order=11)
+    @pytest.mark.run(order=12)
     def test_fishnetmap(self, host, port):
         url = "http://" + host + ":" + port + "/fishnetmap"
         payload = {
@@ -257,7 +257,7 @@ class TestScope():
         print(r.text)
         # assert r.json()["result"] is not None
 
-    @pytest.mark.run(order=12)
+    @pytest.mark.run(order=13)
     def test_drop_table(self, host, port):
         url = "http://" + host + ":" + port + '/query'
         sql1 = "drop table if exists {}".format(table_name)
@@ -279,7 +279,7 @@ class TestScope():
         print(r.text)
         assert r.status_code == 200
 
-    @pytest.mark.run(order=13)
+    @pytest.mark.run(order=14)
     def test_command(self, host, port):
         url = "http://" + host + ":" + port + '/command'
         command = """
@@ -308,7 +308,7 @@ print("Pi is roughly %f" % (4.0 * count / n))
         print(r.text)
         assert r.status_code == 200
 
-    @pytest.mark.run(order=14)
+    @pytest.mark.run(order=15)
     def test_remove_scope(self, host, port):
         scope = SCOPE
         url = "http://" + host + ":" + port + "/scope/" + scope
