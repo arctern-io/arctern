@@ -43,6 +43,43 @@ class AggHandler {
 
   static AggType agg_type(std::string type);
 
+  struct hash_pair {
+    template <class T1, class T2>
+    size_t operator()(const std::pair<T1, T2>& point) const {
+      auto hash_x = std::hash<T1>{}(point.first);
+      auto hash_y = std::hash<T2>{}(point.second);
+      return hash_x ^ hash_y;
+    }
+  };
+
+  template <typename T>
+  static std::unordered_map<std::pair<uint32_t, uint32_t>, std::vector<T>, hash_pair>
+  region_agg(const std::vector<std::string>& wkb_arr, const std::vector<T>& arr_c,
+             int region_size) {
+    assert(wkb_arr.size() == arr_c.size());
+
+    std::unordered_map<std::pair<uint32_t, uint32_t>, std::vector<T>, hash_pair> result;
+    for (size_t i = 0; i < wkb_arr.size(); i++) {
+      std::string wkb = wkb_arr[i];
+      OGRGeometry* geo;
+      CHECK_GDAL(OGRGeometryFactory::createFromWkb(wkb.c_str(), nullptr, &geo));
+      uint32_t x = geo->toPoint()->getX() / region_size;
+      uint32_t y = geo->toPoint()->getY() / region_size;
+      OGRGeometryFactory::destroyGeometry(geo);
+      auto point = std::make_pair(x, y);
+      if (result.find(point) == result.end()) {
+        std::vector<T> weight;
+        weight.emplace_back(arr_c[i]);
+        result[point] = weight;
+      } else {
+        auto& weight = result[point];
+        weight.emplace_back(arr_c[i]);
+      }
+    }
+
+    return result;
+  }
+
   static std::pair<std::vector<OGRGeometry*>, std::vector<int>> weight_agg(
       const std::shared_ptr<arrow::Array>& geos) {
     auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);

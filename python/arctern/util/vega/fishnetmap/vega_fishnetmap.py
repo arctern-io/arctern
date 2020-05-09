@@ -92,9 +92,11 @@ class VegaFishNetMap:
     def build(self):
         description = Description(desc="fishnet_map_2d")
         data = Data(name="data", url="/data/data.csv")
-        domain = Scales.Scale.Domain("data", "c0")
-        scale = Scales.Scale("building", "linear", domain)
-        scales = Scales([scale])
+        domain1 = Scales.Scale.Domain("data", "c0")
+        domain2 = Scales.Scale.Domain("data", "c1")
+        scale1 = Scales.Scale("x", "linear", domain1)
+        scale2 = Scales.Scale("y", "linear", domain2)
+        scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               color_gradient=Marks.Encode.Value(self._color_gradient),
                               cell_size=Marks.Encode.Value(self._cell_size),

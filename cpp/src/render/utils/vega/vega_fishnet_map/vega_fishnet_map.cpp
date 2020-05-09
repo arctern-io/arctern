@@ -91,14 +91,14 @@ void VegaFishNetMap::Parse(const std::string& json) {
       !JsonTypeCheck(mark_enter["cell_size"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
-  cell_size_ = mark_enter["cell_size"]["value"].GetInt();
+  cell_size_ = mark_enter["cell_size"]["value"].GetDouble();
 
   if (!JsonLabelCheck(mark_enter, "cell_spacing") ||
       !JsonLabelCheck(mark_enter["cell_spacing"], "value") ||
       !JsonTypeCheck(mark_enter["cell_spacing"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
-  cell_spacing_ = mark_enter["cell_spacing"]["value"].GetInt();
+  cell_spacing_ = mark_enter["cell_spacing"]["value"].GetDouble();
 
   // parse opacity
   if (!JsonLabelCheck(mark_enter, "opacity") ||
