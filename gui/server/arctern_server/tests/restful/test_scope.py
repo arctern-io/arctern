@@ -75,7 +75,7 @@ class TestScope():
         print(r.text)
         assert r.status_code == 200
 
-    # TODO: neccessary for /savetable? not convenient for cleaning up
+    # TODO: neccessary for /savefile? not convenient for cleaning up
 
     @pytest.mark.run(order=3)
     def test_table_schema(self, host, port):
