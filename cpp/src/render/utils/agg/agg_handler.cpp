@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include <vector>
-
-#include "render/utils/color/color.h"
+#include "render/utils/agg/agg_handler.h"
 
 namespace arctern {
 namespace render {
 
-class ColorGradient {
- private:
-  std::vector<Color> color;
-
- public:
-  static Color GetColor(Color color_start, Color color_end, double ratio);
-
-  ColorGradient() { createDefaultHeatMapGradient(); }
-
-  void createDefaultHeatMapGradient();
-  void createSquareMapGradient(std::vector<Color> color);
-
-  void getColorAtValue(const float value, float& red, float& green, float& blue);
-};
+AggHandler::AggType AggHandler::agg_type(std::string type) {
+  if (type == "mean") return AggType::AVG;
+  if (type == "sum") return AggType::SUM;
+  if (type == "max") return AggType::MAX;
+  if (type == "min") return AggType::MIN;
+  if (type == "count") return AggType::COUNT;
+  if (type == "std") return AggType::STDDEV;
+  std::string err_msg = "unknow agg type = " + type;
+  throw std::runtime_error(err_msg);
+}
 
 }  // namespace render
 }  // namespace arctern

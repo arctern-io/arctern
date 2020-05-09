@@ -31,6 +31,14 @@ void ColorGradient::createDefaultHeatMapGradient() {
   color.push_back(Color(1, 0, 0, 1.0f));   // Red.
 }
 
+void ColorGradient::createSquareMapGradient(std::vector<Color> color) {
+  color.clear();
+
+  color.push_back(Color(0, 1, 0, 0.0f));  // Green.
+  color.push_back(Color(1, 1, 0, 0.5f));  // Yellow.
+  color.push_back(Color(1, 0, 0, 1.0f));  // Red.
+}
+
 void ColorGradient::getColorAtValue(const float value, float& red, float& green,
                                     float& blue) {
   if (color.size() == 0) return;
