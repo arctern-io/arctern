@@ -157,7 +157,6 @@ def db_table_info():
 
     return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
-
 # pylint: disable=too-many-branches
 @API.route("/db/query", methods=['POST'])
 @token.AUTH.login_required
