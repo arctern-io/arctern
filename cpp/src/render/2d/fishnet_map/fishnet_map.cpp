@@ -133,12 +133,12 @@ void FishNetMap<T>::Draw() {
       continue;
     glColor4f(colors_[i * 4], colors_[i * 4 + 1], colors_[i * 4 + 2], colors_[i * 4 + 3]);
     glBegin(GL_POLYGON);
-    double x = vertices_x_[i] * block_size;
-    double y = vertices_y_[i] * block_size;
-    glVertex2d(x + (double)cell_size + spacing, y + (double)cell_size + spacing);
-    glVertex2d(x + (double)cell_size + spacing, y + spacing);
-    glVertex2d(x + spacing, y + spacing);
-    glVertex2d(x + spacing, y + (double)cell_size + spacing);
+    double x = vertices_x_[i] * block_size + spacing;
+    double y = vertices_y_[i] * block_size + spacing;
+    glVertex2d(x + (double)cell_size, y + (double)cell_size);
+    glVertex2d(x + (double)cell_size, y);
+    glVertex2d(x, y);
+    glVertex2d(x, y + (double)cell_size);
     glEnd();
   }
   glFinish();

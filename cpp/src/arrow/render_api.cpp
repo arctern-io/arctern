@@ -459,8 +459,8 @@ std::pair<uint8_t*, int64_t> render_fishnetmap(const std::vector<std::string>& p
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
-  auto cell_size = mark_enter["cell_size"]["value"].GetInt();
-  auto cell_spacing = mark_enter["cell_spacing"]["value"].GetInt();
+  int cell_size = mark_enter["cell_size"]["value"].GetDouble();
+  int cell_spacing = mark_enter["cell_spacing"]["value"].GetDouble();
   auto region_size = cell_size + cell_spacing;
   AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
