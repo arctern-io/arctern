@@ -1461,11 +1461,8 @@ def fishnet_map_layer(vega, points, weights, transform=True):
         top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
         bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
 
-        # height = vega.height()
-        # width = vega.width()
-        cell_size = vega.cell_size()
-        height = int(vega.height() / cell_size)
-        width = int(vega.width() / cell_size)
+        height = vega.height()
+        width = vega.width()
         coor = vega.coor()
 
         src = bytes(coor, encoding="utf8")
