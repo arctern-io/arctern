@@ -112,21 +112,16 @@ void FishNetMap<T>::Draw() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
   glLineWidth(20);
-#ifdef USE_GPU
-  glDrawArrays(GL_POINTS, 0, num_vertices_);
-  glFlush();
 
-  glDeleteVertexArrays(1, &VAO_);
-  glDeleteBuffers(2, VBO_);
-#else
   int width = window()->window_params().width();
   int height = window()->window_params().height();
   int cell_size = fishnet_vega_.cell_size();
   int cell_spacing = fishnet_vega_.cell_spacing();
   int block_size = cell_size + cell_spacing;
   double spacing = (double)cell_spacing / 2;
-
+#ifndef USE_GPU
   glOrtho(0, width, 0, height, -1, 1);
+#endif
   for (int i = 0; i < num_vertices_; i++) {
     if (vertices_x_[i] * block_size >= width || vertices_y_[i] * block_size >= height)
       continue;
@@ -141,119 +136,12 @@ void FishNetMap<T>::Draw() {
     glEnd();
   }
   glFinish();
-#endif
 }
-
-#ifdef USE_GPU
-template <typename T>
-void FishNetMap<T>::Shader() {
-  const char* vertexShaderSource =
-      "#version 430 core\n"
-      "layout (location = 0) in uint posX;\n"
-      "layout (location = 1) in uint posY;\n"
-      "layout (location = 2) in vec4 point_color;\n"
-      "layout (location = 3) uniform vec2 screen_info;\n"
-      "out vec4 color;\n"
-      "void main()\n"
-      "{\n"
-      "   float tmp_x = posX;\n"
-      "   float tmp_y = posY;\n"
-      "   gl_Position = vec4(((tmp_x * 2) / screen_info.x) - 1, ((tmp_y * 2) / "
-      "screen_info.y) - 1, 0, 1);\n"
-      "   color=point_color;\n"
-      "}";
-
-  const char* fragmentShaderSource =
-      "#version 430 core\n"
-      "in vec4 color;\n"
-      "out vec4 FragColor;\n"
-      "void main()\n"
-      "{\n"
-      "   FragColor = color;\n"
-      "}";
-
-  int success;
-  int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-#ifdef DEBUG_RENDER
-  if (!success) {
-    std::string err_msg = "vertex shader compile failed";
-    throw std::runtime_error(err_msg);
-  }
-#endif
-  int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-#ifdef DEBUG_RENDER
-  if (!success) {
-    std::string err_msg = "fragment shader compile failed";
-    throw std::runtime_error(err_msg);
-  }
-#endif
-  int shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-#ifdef DEBUG_RENDER
-  if (!success) {
-    std::string err_msg = "shader program link failed";
-    throw std::runtime_error(err_msg);
-  }
-#endif
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
-  glGenVertexArrays(1, &VAO_);
-  glGenBuffers(3, VBO_);
-
-  glBindVertexArray(VAO_);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[0]);
-  glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_x_,
-               GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[1]);
-  glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 1 * sizeof(uint32_t), vertices_y_,
-               GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[2]);
-  glBufferData(GL_ARRAY_BUFFER, num_vertices_ * 4 * sizeof(float), colors_,
-               GL_STATIC_DRAW);
-
-  glGenVertexArrays(1, &VAO_);
-  glBindVertexArray(VAO_);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[0]);
-  glVertexAttribPointer(0, 1, GL_FLOAT, GL_TRUE, 1 * sizeof(uint32_t), (void*)0);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[1]);
-  glVertexAttribPointer(1, 1, GL_FLOAT, GL_TRUE, 1 * sizeof(uint32_t), (void*)0);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_[2]);
-  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 1);
-  glBindVertexArray(1);
-
-  glUseProgram(shaderProgram);
-  glUniform2f(3, window()->window_params().width(), window()->window_params().height());
-  glBindVertexArray(VAO_);
-}
-#endif
 
 template <typename T>
 uint8_t* FishNetMap<T>::Render() {
   WindowsInit(fishnet_vega_.window_params());
   DataInit();
-#ifdef USE_GPU
-  Shader();
-#endif
   Draw();
   Finalize();
   return Output();
