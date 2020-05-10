@@ -17,9 +17,9 @@
 
 #pragma once
 #include <memory>
-#include <vector>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "utils/arrow_alias.h"
 
