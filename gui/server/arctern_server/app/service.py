@@ -19,8 +19,8 @@ limitations under the License.
 import json
 from flask import Blueprint, jsonify, request
 
-from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon
-from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz
+from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap
+from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap
 
 from arctern_server.app import account
 from arctern_server.app.common import spark, token, utils, db, log
@@ -157,7 +157,7 @@ def db_table_info():
 
     return jsonify(status="error", code=-1, message='there is no database whose id equal to ' + str(request.json['id']))
 
-
+# pylint: disable=too-many-branches
 @API.route("/db/query", methods=['POST'])
 @token.AUTH.login_required
 def db_query():
@@ -252,6 +252,20 @@ def db_query():
                 query_params['icon']['coordinate_system']
             )
             data = icon_viz(vega, res)
+            content['result'] = data
+        elif query_type == 'fishnet':
+            vega = vega_fishnetmap(
+                int(query_params['width']),
+                int(query_params['height']),
+                query_params['fishnet']['bounding_box'],
+                query_params['fishnet']['color_gradient'],
+                int(query_params['fishnet']['cell_size']),
+                int(query_params['fishnet']['cell_spacing']),
+                float(query_params['fishnet']['opacity']),
+                query_params['fishnet']['coordinate_system'],
+                query_params['fishnet']['aggregation_type']
+            )
+            data = fishnetmap(vega, res)
             content['result'] = data
         else:
             return jsonify(status="error",

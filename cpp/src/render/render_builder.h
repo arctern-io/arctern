@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "render/2d/choropleth_map/choropleth_map.h"
+#include "render/2d/fishnet_map/fishnet_map.h"
 #include "render/2d/heatmap/heatmap.h"
 #include "render/2d/icon/icon_viz.h"
 #include "render/2d/scatter_plot/pointmap.h"
@@ -36,6 +37,11 @@ namespace render {
 
 void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
                 const std::string& top_left, const int& height, const int& width);
+
+std::shared_ptr<arrow::Array> Projection(const std::shared_ptr<arrow::Array>& geos,
+                                         const std::string& bottom_right,
+                                         const std::string& top_left, const int& height,
+                                         const int& width);
 
 void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
                             const std::string& src_rs, const std::string& dst_rs,
@@ -70,6 +76,10 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
 
 std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
                                      int64_t num_vertices, const std::string& conf);
+
+template <typename T>
+std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                        int64_t num_vertices, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern

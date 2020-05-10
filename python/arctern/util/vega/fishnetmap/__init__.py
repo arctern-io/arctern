@@ -11,15 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from .register import register_funcs
-from .render_func import *
-from .gis_func import *
-from .plot import plot
-
-def version():
-    """
-    :return: version of arctern_pyspark
-    """
-    import arctern
-    return arctern.version()

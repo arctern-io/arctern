@@ -58,7 +58,7 @@ else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
 
-set(LIB_VERSION "0.1.0")
+set(LIB_VERSION "0.2.0")
 
 set(CMAKE_CXX_STANDARD 14)
 if (BUILD_WITH_GPU)

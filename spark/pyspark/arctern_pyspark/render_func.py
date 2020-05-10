@@ -18,6 +18,7 @@ __all__ = [
     "heatmap",
     "choroplethmap",
     "icon_viz",
+    "fishnetmap",
 ]
 
 def pointmap(vega, df):
@@ -332,4 +333,53 @@ def icon_viz(vega, df):
 
     df = df.rdd.coalesce(1, shuffle=True).toDF()
     hex_data = df.agg(iconviz(df[col_point])).collect()[0][0]
+    return hex_data
+
+def fishnetmap(vega, df):
+    if df.rdd.isEmpty():
+        return None
+
+    if len(df.schema.names) != 2:
+        return None
+
+    col_point = df.schema.names[0]
+    col_count = df.schema.names[1]
+
+    from pyspark.sql.functions import pandas_udf, PandasUDFType, lit, col
+    from pyspark.sql.types import (StructType, StructField, BinaryType, IntegerType)
+    from ._wrapper_func import TransformAndProjection, Projection
+
+    bounding_box = vega.bounding_box()
+    top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
+    bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
+    height = vega.height()
+    width = vega.width()
+    coor = vega.coor()
+    aggregation_type = vega.aggregation_type()
+
+    if coor != 'EPSG:3857':
+        df = df.select(TransformAndProjection(col(col_point), lit(str(coor)), lit('EPSG:3857'), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
+    else:
+        df = df.select(Projection(col(col_point), lit(bottom_right), lit(top_left), lit(int(height)), lit(int(width))).alias(col_point), col(col_count))
+
+    agg_schema = StructType([StructField(col_point, BinaryType(), True),
+                             StructField(col_count, IntegerType(), True)])
+
+    @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
+    def render_agg_UDF(batch_iter):
+        for pdf in batch_iter:
+            dd = pdf.groupby([col_point])
+            dd = dd[col_count].agg([aggregation_type]).reset_index()
+            dd.columns = [col_point, col_count]
+            yield dd
+
+    @pandas_udf("string", PandasUDFType.GROUPED_AGG)
+    def fishnetmap_wkb(point, w, conf=vega):
+        from arctern import fishnet_map_layer
+        return fishnet_map_layer(conf, point, w, False)
+
+    agg_df = df.mapInPandas(render_agg_UDF)
+    agg_df = agg_df.rdd.coalesce(1, shuffle=True).toDF()
+    hex_data = agg_df.agg(fishnetmap_wkb(agg_df[col_point], agg_df[col_count])).collect()[0][0]
     return hex_data

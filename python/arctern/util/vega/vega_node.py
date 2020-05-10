@@ -65,7 +65,7 @@ class Description:
     '   building_weighted_2d', 'heatmap_2d', 'get_building_shape'))
     """
     render_type = {"icon_2d", "circle_2d", "multi_color_circles_2d", "weighted_color_circles_2d",
-                   "building_weighted_2d", "heat_map_2d", "get_building_shape"}
+                   "building_weighted_2d", "heat_map_2d", "get_building_shape", "fishnet_map_2d"}
 
     def __init__(self, desc: str):
         if desc not in self.render_type:

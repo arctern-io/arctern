@@ -301,7 +301,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
-std::shared_ptr<std::string> GIS_Version() {
+std::string GIS_Version() {
   const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
 #ifdef USE_GPU
                            "build type : " + CMAKE_BUILD_TYPE + "/GPU \n" +
@@ -310,7 +310,7 @@ std::shared_ptr<std::string> GIS_Version() {
 #endif
                            "build time : " + BUILD_TIME + "\n" +
                            "commit id : " + LAST_COMMIT_ID + "\n";
-  return std::make_shared<std::string>(info);
+  return info;
 }
 
 }  // namespace gis

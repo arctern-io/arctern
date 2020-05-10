@@ -16,7 +16,6 @@ from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-
 cdef extern from "render.h" namespace "arctern::render":
     # func api:
     const vector[shared_ptr[CArray]] projection(const vector[shared_ptr[CArray]] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
@@ -31,8 +30,8 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &color_weights_vector, const vector[shared_ptr[CArray]] &size_weights_vector, const string &vega) except +
     shared_ptr[CArray] heat_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
     shared_ptr[CArray] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
-    shared_ptr[CArray] icon_viz(const vector[shared_ptr[CArray]] &points_vector, const string &conf) except +
-
+    shared_ptr[CArray] icon_viz(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
+    shared_ptr[CArray] fishnet_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
 
 cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
@@ -105,3 +104,4 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr) except +
+    string GIS_Version() except +
