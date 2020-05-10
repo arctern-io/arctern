@@ -163,6 +163,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
 def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
                                     color_gradient, color_bound=None, opacity=1.0,
                                     coordinate_system='EPSG:4326',
+                                    aggregation_type='max'
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -183,7 +184,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound, opacity=opacity, coordinate_system=coordinate_system)
+    vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound, opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
     hexstr = arctern.choropleth_map_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
