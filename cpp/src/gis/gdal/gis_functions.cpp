@@ -408,15 +408,14 @@ BinaryOp(const std::vector<std::shared_ptr<typename arrow::Array>>& geo1,
   return result_array;
 }
 
-
 // old style
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::shared_ptr<typename arrow::Array>>::type
 BinaryOpSingle(const std::shared_ptr<arrow::Array>& geo1,
-         const std::shared_ptr<arrow::Array>& geo2,
-         std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
-         std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
+               const std::shared_ptr<arrow::Array>& geo2,
+               std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
+               std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
   auto len = geo1->length();
   auto wkt1 = std::static_pointer_cast<arrow::BinaryArray>(geo1);
   auto wkt2 = std::static_pointer_cast<arrow::BinaryArray>(geo2);
