@@ -83,7 +83,6 @@ def plot_weighted_pointmap(ax, points, color_weights=None,
                            color_bound=[0, 0],
                            size_bound=[3],
                            opacity=1.0,
-                           aggregation_type="max",
                            **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -112,7 +111,7 @@ def plot_weighted_pointmap(ax, points, color_weights=None,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, \
         color_bound=color_bound, size_bound=size_bound, opacity=opacity, \
-        coordinate_system=coordinate_system, aggregation_type=aggregation_type)
+        coordinate_system=coordinate_system)
     hexstr = arctern.weighted_point_map_layer(vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
