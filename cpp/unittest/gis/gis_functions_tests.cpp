@@ -3803,3 +3803,8 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((-2 -3,-2 4,3 4,3 -3,-2 -3))");
 }
+
+TEST(geometry_test, test_GIS_Version) {
+  auto ver = arctern::gis::GIS_Version();
+  std::cout << ver << std::endl;
+}
