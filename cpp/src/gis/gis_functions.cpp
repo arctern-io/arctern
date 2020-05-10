@@ -177,7 +177,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
 std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
     const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
-#if defined(USE_GPU) && 0
+#if defined(USE_GPU)
   // won't work because gdal api break change
   auto functor = [](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
     auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
@@ -192,7 +192,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 #else
-  return gdal::ST_Distance(geo_left_raws, geo_right_raws);
+  return dispatch::AlignedExecuteBinary(gdal::ST_Distance, geo_left_raws, geo_right_raws);
 #endif
 }
 
@@ -274,24 +274,27 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Within(
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
-#if defined(USE_GPU) && 0
-  auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
-  auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
+#if defined(USE_GPU)
+  auto functor = [](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
+    auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+    auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
-  auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-  auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
+    auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
+    auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
 
-  dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(geo_left, gpu_type_left);
-  mask_result.AppendFilter(geo_right, gpu_type_right);
+    dispatch::MaskResult mask_result;
+    mask_result.AppendFilter(geo_left, gpu_type_left);
+    mask_result.AppendFilter(geo_right, gpu_type_right);
 
-  auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
-      mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
-  return result;
+    auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
+        mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
+    return result;
+  };
+  return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 #else
-  return gdal::ST_Within(geo_left_raw, geo_right_raw);
+  return dispatch::AlignedExecuteBinary(gdal::ST_Within, geo_left_raws, geo_right_raws);
 #endif
 }
 
