@@ -4,10 +4,10 @@
 
 set -e
 
-SOURCE_BRANCH=${SOURCE_BRANCH:=master}
+BRANCH_REGEX='^(master|(branch\-[0-9]+\.[0-9]+\.(x|[0-9]+)))$'
 
 # Restrict uploads to master branch
-if [ "${GIT_BRANCH}" != "${SOURCE_BRANCH}" ]; then
+if [[ ! "${GIT_BRANCH}" =~ ${BRANCH_REGEX} ]]; then
     echo "Skipping upload"
     return 0
 fi

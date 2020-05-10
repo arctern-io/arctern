@@ -622,7 +622,7 @@ def ST_IsSimple(geos):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((1 2, 3 4, 5 6, 1 2))',)])
       >>> test_data.extend([('LINESTRING(1 1,2 2,2 3.5,1 3,1 2,2 1)',)])
-      >>> test_data.extend([('POINT (1 1)')])
+      >>> test_data.extend([('POINT (1 1)',)])
       >>> simple_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simple_df.createOrReplaceTempView("simple")
       >>> spark_session.sql("select ST_IsSimple(ST_GeomFromText(geos)) from simple").show(100,0)
@@ -1247,7 +1247,7 @@ def ST_Union_Aggr(geos):
       +-----------------------------------------------+
       |ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
-      |POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))|
+      |POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))        |
       +-----------------------------------------------+
     """
     rst = arctern.ST_Union_Aggr(geos)
@@ -1306,7 +1306,7 @@ def ST_Transform(geos, from_srid, to_srid):
       >>> from arctern_pyspark import register_funcs
       >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
-      >>>  test_data = []
+      >>> test_data = []
       >>> test_data.extend([('POINT (10 10)',)])
       >>> buffer_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> buffer_df.createOrReplaceTempView("buffer")

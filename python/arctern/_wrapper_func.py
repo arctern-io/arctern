@@ -58,6 +58,7 @@ __all__ = [
     "transform_and_projection",
     "wkt2wkb",
     "wkb2wkt",
+    "version"
 ]
 
 import base64
@@ -308,7 +309,7 @@ def ST_Intersection(geo1, geo2):
       >>> import arctern
       >>> data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
       >>> data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-      >>> string_ptr = arctern.ST_AsText(arctern.ST_Point(data1, data2))
+      >>> string_ptr = arctern.ST_AsText(arctern.ST_Intersection(data1, data2))
       >>> print(string_ptr)
           0    LINESTRING (2 2,2 1)
           dtype: object
@@ -365,7 +366,7 @@ def ST_PrecisionReduce(geos, precision):
       >>> import pandas
       >>> import arctern
       >>> data = pandas.Series(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
-      >>> rst = arctern.arctern.ST_AsText(arctern.ST_PrecisionReduce(arctern.ST_GeomFromText(data), 3))
+      >>> rst = arctern.ST_AsText(arctern.ST_PrecisionReduce(arctern.ST_GeomFromText(data), 3))
       >>> print(rst)
           0    POINT (1.33 2.67)
           1    POINT (2.66 4.45)
@@ -645,7 +646,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
       >>> x_max = pandas.Series([1.0])
       >>> y_min = pandas.Series([0.0])
       >>> y_max = pandas.Series([1.0])
-      >>> rst = arctern.ST_AsText(rctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max))
+      >>> rst = arctern.ST_AsText(arctern.ST_PolygonFromEnvelope(x_min, y_min, x_max, y_max))
       >>> print(rst)
           0    POLYGON ((0 0,0 1,1 1,1 0,0 0))
           dtype: object
@@ -1152,6 +1153,7 @@ def ST_Transform(geos, from_srid, to_srid):
     :example:
       >>> import pandas
       >>> import arctern
+      >>> from osgeo import ogr
       >>> data = ["POINT (10 10)"]
       >>> data = pandas.Series(data)
       >>> rst = arctern.ST_AsText(arctern.ST_Transform(arctern.ST_GeomFromText(data), "EPSG:4326", "EPSG:3857"))
@@ -1185,7 +1187,7 @@ def ST_CurveToLine(geos):
       >>> import arctern
       >>> data = ["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"]
       >>> data = pandas.Series(data)
-      >>> rst = arctern.ST_CurveToLine(arctern.ST_GeomFromText(data))
+      >>> rst = arctern.ST_AsText(arctern.ST_CurveToLine(arctern.ST_GeomFromText(data)))
       >>> assert str(rst[0]).startswith("POLYGON")
     """
     import pyarrow as pa
@@ -1486,3 +1488,9 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
+
+def version():
+    """
+    :return: version of arctern
+    """
+    return arctern_core_.GIS_Version().decode("utf-8")
