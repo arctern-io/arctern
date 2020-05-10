@@ -162,7 +162,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
-                                    color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5, 5], opacity=1.0,
+                                    color_gradient, color_bound=None, opacity=1.0,
                                     coordinate_system='EPSG:4326',
                                     **extra_contextily_params):
     """
