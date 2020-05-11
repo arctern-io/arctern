@@ -9,6 +9,7 @@ on:
       - 'cpp/**'
       - 'python/**'
       - 'spark/**'
+      - 'conda/**'
       - '.github/workflows/conda_build.yml'
       - '!**.md'
       - '!ci/jenkins/**'
