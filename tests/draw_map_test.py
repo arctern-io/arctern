@@ -978,11 +978,11 @@ if __name__ == "__main__":
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-#    run_test_point_map(spark_session)
-#    run_test_weighted_point_map(spark_session)
-#    run_test_heat_map(spark_session)
-#    run_test_choropleth_map(spark_session)
-#    run_test_icon_viz(spark_session)
+    run_test_point_map(spark_session)
+    run_test_weighted_point_map(spark_session)
+    run_test_heat_map(spark_session)
+    run_test_choropleth_map(spark_session)
+    run_test_icon_viz(spark_session)
     run_test_fishnet_map(spark_session)
 
     spark_session.stop()
