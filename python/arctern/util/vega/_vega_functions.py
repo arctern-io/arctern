@@ -121,7 +121,7 @@ def vega_fishnetmap(width,
                    coordinate_system="EPSG:3857",
                    aggregation_type="sum"):
     if color_gradient is None:
-        color_gradient = ["#00FF00", "FF0000"]
+        color_gradient = ["#0000FF", "FF0000"]
     return VegaFishNetMap(width,
                          height,
                          bounding_box,
