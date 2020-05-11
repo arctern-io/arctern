@@ -58,7 +58,7 @@ else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
 
-set(LIB_VERSION "0.1.1")
+set(LIB_VERSION "0.2.0")
 
 set(CMAKE_CXX_STANDARD 14)
 if (BUILD_WITH_GPU)
@@ -116,10 +116,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -Wall -Wno-unused-variabl
 if( CMAKE_BUILD_TYPE STREQUAL "Release" )
     message(STATUS "Building Release version")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_ARROW_ARRAY_SIZE=1073741824") #1G
+
 else()
     message(STATUS "Building Debug version")
     add_definitions(-DDEBUG_RENDER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_ARROW_ARRAY_SIZE=16777216") #16M
+
 endif()
 
 #message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")

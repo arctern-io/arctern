@@ -25,9 +25,9 @@ import json
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from app import service as app_service
-from app import scope as app_scope
-from app.common import log
+from arctern_server.app import service as app_service
+from arctern_server.app import scope as app_scope
+from arctern_server.app.common import log
 
 APP = Flask(__name__)
 

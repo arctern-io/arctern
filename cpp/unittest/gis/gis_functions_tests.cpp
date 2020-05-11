@@ -238,32 +238,46 @@ std::shared_ptr<arrow::Array> build_linestrings() {
 
 TEST(geometry_test, test_ST_Point) {
   arrow::DoubleBuilder x_builder;
-  for (int i = 0; i < 10000; ++i) {
-    CHECK_ARROW(x_builder.Append(0));
+  for (int i = 0; i < 10 * 10000; ++i) {
+    CHECK_ARROW(x_builder.Append(1.23456789012345));
   }
 
   std::shared_ptr<arrow::Array> x_array;
   CHECK_ARROW(x_builder.Finish(&x_array));
   array_t point_x;
-  for (int i = 0; i < 600; ++i) point_x.push_back(x_array);
+  for (int i = 0; i < 10; ++i) point_x.push_back(x_array);
 
   arrow::DoubleBuilder y_builder;
-  for (int i = 0; i < 6000; ++i) {
-    CHECK_ARROW(y_builder.Append(0));
+  for (int i = 0; i < 10000; ++i) {
+    CHECK_ARROW(y_builder.Append(1.2345678902345));
   }
   std::shared_ptr<arrow::Array> y_array;
   CHECK_ARROW(y_builder.Finish(&y_array));
   array_t point_y;
-  for (int i = 0; i < 1000; ++i) point_y.push_back(y_array);
+  for (int i = 0; i < 100; ++i) point_y.push_back(y_array);
 
   auto result = arctern::gis::ST_Point(point_x, point_y);
   int64_t total_len = 0;
   for (auto& array : result) {
     auto len = array->length();
-    std::cout << "len = " << len << std::endl;
+    std::cout << "array len = " << len << std::endl;
     total_len += len;
   }
-  ASSERT_EQ(total_len, 600 * 10000);
+  if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
+    ASSERT_GT(result.size(), 1);
+  }
+  ASSERT_EQ(total_len, 100 * 10000);
+
+  total_len = 0;
+  auto json_result = arctern::gis::ST_AsGeoJSON(result[0]);
+  for (auto& array : json_result) {
+    std::cout << "json result len = " << array->length() << std::endl;
+    total_len += array->length();
+  }
+  if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
+    ASSERT_GT(json_result.size(), 1);
+  }
+  ASSERT_EQ(total_len, result[0]->length());
 }
 
 TEST(geometry_test, test_ST_IsValid2) {
@@ -2540,6 +2554,55 @@ TEST(geometry_test, test_ST_Distance_Empty) {
   ASSERT_EQ(res_double->IsNull(0), true);
   ASSERT_EQ(res_double->IsNull(1), true);
   EXPECT_DOUBLE_EQ(res_double->Value(2), 1);
+}
+
+TEST(geometry_test, test_ST_Distance2) {
+  arrow::StringBuilder data_builder;
+  std::shared_ptr<arrow::Array> data_array;
+
+  data_builder.Append(std::string("POINT (0 0)"));
+  data_builder.Append(std::string("POINT (1 1)"));
+  data_builder.Finish(&data_array);
+
+  auto point_wkt_array = arctern::gis::ST_GeomFromText(data_array)[0];
+  auto wkt_ptr = std::static_pointer_cast<arrow::BinaryArray>(point_wkt_array);
+  arrow::BinaryArray::offset_type wkb_size1;
+  arrow::BinaryArray::offset_type wkb_size2;
+  auto wkb_ptr1 = wkt_ptr->GetValue(0, &wkb_size1);
+  auto wkb_ptr2 = wkt_ptr->GetValue(0, &wkb_size2);
+
+  arrow::BinaryBuilder binary_builder;
+  for (int i = 0; i < 1000000; ++i) {
+    binary_builder.Append(wkb_ptr1, wkb_size1);
+  }
+  std::shared_ptr<arrow::Array> left_base;
+  binary_builder.Finish(&left_base);
+
+  for (int i = 0; i < 100000; ++i) {
+    binary_builder.Append(wkb_ptr2, wkb_size2);
+  }
+  std::shared_ptr<arrow::Array> right_base;
+  binary_builder.Finish(&right_base);
+
+  std::vector<std::shared_ptr<arrow::Array>> left_input;
+  for (int i = 0; i < 3; ++i) left_input.push_back(left_base);
+
+  std::vector<std::shared_ptr<arrow::Array>> right_input;
+  for (int i = 0; i < 30; ++i) right_input.push_back(right_base);
+
+  std::cout << "left length = " << left_base->length() << std::endl;
+  std::cout << "right length = " << right_base->length() << std::endl;
+
+  auto rst = arctern::gis::ST_Distance(left_input, right_input);
+  int64_t total_len = 0;
+  for (auto& ptr : rst) {
+    std::cout << "array length = " << ptr->length() << std::endl;
+    total_len += ptr->length();
+  }
+  if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
+    ASSERT_GT(rst.size(), 1);
+  }
+  ASSERT_EQ(total_len, 3000000);
 }
 
 TEST(geometry_test, test_ST_Distance) {

@@ -59,8 +59,8 @@ __all__ = [
     "WkbToWkt",
 ]
 
-import arctern
 from pyspark.sql.functions import pandas_udf, PandasUDFType
+import arctern
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def Projection(geos, bottom_geo2, top_geo1, height, width):

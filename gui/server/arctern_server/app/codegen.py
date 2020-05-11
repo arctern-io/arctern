@@ -16,13 +16,13 @@ import uuid
 def generate_session_code(session_name="spark"):
     uid = str(uuid.uuid1()).replace("-", "")
     app_name = "app_" + uid
-    from app.common import config as app_config
+    from arctern_server.app.common import config as app_config
     master_addr = app_config.INSTANCE.get("spark", "master-addr", fallback="local[*]")
     import socket
     localhost_ip = socket.gethostbyname(socket.gethostname())
 
-    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_fishnetmap\n'
-    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, fishnetmap\n'
+    session_code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap\n'
+    session_code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap\n'
     session_code += 'from arctern_pyspark import register_funcs\n'
     session_code += 'from pyspark.sql import SparkSession\n'
     session_code += '{} = SparkSession.builder'.format(session_name)
@@ -144,6 +144,17 @@ def generate_weighted_map_code(sql, params, session_name='spark'):
         params.get('color_bound'),
         params.get('size_bound'),
         float(params.get('opacity')),
+        params.get('coordinate_system')
+    )
+    return sql_code, vega_code
+
+def generate_icon_viz_code(sql, params, session_name='spark'):
+    sql_code = generate_run_sql_code(sql, session_name)
+    vega_code = 'vega_icon({}, {}, {}, "{}", "{}")'.format(
+        int(params.get('width')),
+        int(params.get('height')),
+        params.get('bounding_box'),
+        params.get('icon_path'),
         params.get('coordinate_system')
     )
     return sql_code, vega_code

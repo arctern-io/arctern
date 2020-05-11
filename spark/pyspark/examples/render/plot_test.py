@@ -1,7 +1,9 @@
-import matplotlib.pyplot as plt
+# pylint: disable=wrong-import-order
 
 from pyspark.sql.types import StructType, StructField, LongType, StringType
 from pyspark.sql import SparkSession
+
+import matplotlib.pyplot as plt
 
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot
