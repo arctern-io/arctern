@@ -31,9 +31,9 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
       - ../../gui/server:/arctern/gui/server
-    working_dir: /arctern/gui/server/tests/restful
+    working_dir: /arctern/gui/server/arctern_server/tests/restful
     command: &flask-test
-      ["pytest", "--host", "flask", "--port", "8080", "--config", "/arctern/gui/server/db.json", "-p", "no:cacheprovider", "-s"]
+      ["pytest", "--host", "flask", "--port", "8080", "--config", "/arctern/gui/server/arctern_server/db.json", "-p", "no:cacheprovider", "-s"]
     deploy:
       resources:
         limits:

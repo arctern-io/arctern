@@ -31,7 +31,7 @@ def register_funcs(spark):
       >>> from arctern_pyspark import register_funcs
       >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
-      >>>  test_data = []
+      >>> test_data = []
       >>> test_data.extend([('POINT (10 10)',)])
       >>> buffer_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> buffer_df.createOrReplaceTempView("buffer")

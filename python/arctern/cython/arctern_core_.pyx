@@ -351,3 +351,6 @@ def ST_Union_Aggr(object geo_arr):
 
 def ST_Envelope_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Envelope_Aggr(pyarrow_unwrap_array(geo_arr)))
+
+def GIS_Version():
+    return arctern_core_pxd.GIS_Version()
