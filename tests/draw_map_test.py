@@ -970,6 +970,7 @@ def run_test_fishnet_map(spark):
     assert run_diff_png(baseline_png5, png_path + "test_fishnet_map_nyc_5-1.png", 0.2)
     assert run_diff_png(baseline_png5, png_path + "test_fishnet_map_nyc_5-2.png", 0.2)
 
+
 if __name__ == "__main__":
     spark_session = SparkSession \
         .builder \
