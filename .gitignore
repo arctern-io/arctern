@@ -162,3 +162,12 @@ node_modules
 gui/server/arctern_server/log.txt
 gui/server/arctern_server/metastore_db/
 gui/server/arctern_server/spark-warehouse/
+
+# sbt
+scala/bin/
+scala/project/
+scala/target/
+scala/build/
+scala/*.log
+scala/.idea
+scala/.idea/*
