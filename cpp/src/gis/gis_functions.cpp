@@ -188,7 +188,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
     mask_result.AppendFilter(geo_left, gpu_supported_type);
     mask_result.AppendFilter(geo_right, gpu_supported_type);
     auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
-        mask_result, UnwarpBinary(gdal::ST_Distance), cuda::ST_Distance, geo_left, geo_right);
+        mask_result, UnwarpBinary(gdal::ST_Distance), cuda::ST_Distance, geo_left,
+        geo_right);
     return result;
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);

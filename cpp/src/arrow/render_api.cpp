@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "arrow/render_api.h"
+
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -26,8 +29,6 @@
 #include "render/render_builder.h"
 #include "render/utils/agg/agg_handler.h"
 #include "render/utils/render_utils.h"
-
-#include "arrow/render_api.h"
 
 namespace arctern {
 namespace render {

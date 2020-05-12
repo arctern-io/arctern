@@ -15,14 +15,10 @@
  */
 
 #include "gis/gdal/gis_functions.h"
-#include "common/version.h"
-#include "gis/gdal/arctern_geos.h"
-#include "gis/gdal/geometry_visitor.h"
-#include "gis/parser.h"
-#include "utils/check_status.h"
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -30,6 +26,12 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "common/version.h"
+#include "gis/gdal/arctern_geos.h"
+#include "gis/gdal/geometry_visitor.h"
+#include "gis/parser.h"
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace gis {

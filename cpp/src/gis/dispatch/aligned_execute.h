@@ -84,8 +84,9 @@ class ArrowVectorAlignedSlicer {
 };
 
 template <typename Func>
-inline std::vector<ArrayPtr> AlignedExecuteBinary(Func functor, std::vector<ArrayPtr> raw_input1,
-                                           std::vector<ArrayPtr> raw_input2) {
+inline std::vector<ArrayPtr> AlignedExecuteBinary(Func functor,
+                                                  std::vector<ArrayPtr> raw_input1,
+                                                  std::vector<ArrayPtr> raw_input2) {
   dispatch::ArrowVectorAlignedSlicer slicer;
   slicer.Register(raw_input1);
   slicer.Register(raw_input2);
@@ -103,7 +104,8 @@ inline std::vector<ArrayPtr> AlignedExecuteBinary(Func functor, std::vector<Arra
 template <typename Func>
 inline auto UnwarpBinary(Func functor) {
   auto unwarped_func = [functor](const ArrayPtr& left, const ArrayPtr& right) {
-    auto result_vec = functor(std::vector<ArrayPtr>({left}), std::vector<ArrayPtr>({right}));
+    auto result_vec =
+        functor(std::vector<ArrayPtr>({left}), std::vector<ArrayPtr>({right}));
     assert(result_vec.size() == 1);
     return result_vec[0];
   };

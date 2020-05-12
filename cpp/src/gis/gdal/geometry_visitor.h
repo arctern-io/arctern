@@ -17,6 +17,7 @@
 #pragma once
 
 #include <ogr_geometry.h>
+
 #include <string>
 
 namespace arctern {
