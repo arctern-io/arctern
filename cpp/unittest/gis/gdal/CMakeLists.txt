@@ -16,6 +16,7 @@ set(gdal_tests_src
         ${unittest_srcs}
         format_conversion_tests.cpp
         type_scan_tests.cpp
+        dispatch_tests.cpp
         )
 
 add_executable(gdal_tests ${gdal_tests_src})

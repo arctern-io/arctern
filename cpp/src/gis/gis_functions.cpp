@@ -18,7 +18,7 @@
 #include "gis/wkb_types.h"
 #ifdef USE_GPU
 #include "gis/cuda/gis_functions.h"
-#include "gis/dispatch/dispatch.h"
+#include "gis/dispatch/dispatch_tests.h"
 #endif
 #include <string>
 #include <vector>
