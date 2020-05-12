@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "gis/dispatch/dispatch_tests.h"
+#include "gis/dispatch/dispatch.h"
 #include "utils/arrow_alias.h"
 #include "utils/check_status.h"
 #include "utils/function_wrapper.h"

@@ -23,7 +23,7 @@
 #include <random>
 
 #include "arrow/gis_api.h"
-#include "gis/dispatch/dispatch_tests.h"
+#include "gis/dispatch/dispatch.h"
 #include "gis/dispatch/wkb_type_scanner.h"
 #include "gis/dispatch/wkt_type_scanner.h"
 #include "gis/gdal/geometry_cases.h"
