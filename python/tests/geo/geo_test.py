@@ -600,3 +600,7 @@ def test_ST_Envelope_Aggr():
     data = pandas.Series([p1, p2])
     rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(arctern.ST_GeomFromText(data)))
     assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"
+
+
+if __name__ == "__main__":
+    test_ST_Intersection()

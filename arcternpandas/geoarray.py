@@ -11,9 +11,9 @@ from distutils.version import LooseVersion
 
 @register_extension_dtype
 class GeoDtype(ExtensionDtype):
-    type = bytes
+    type = object
     name = "GeoDtype"
-    na_value = None
+    na_value = np.nan
     kind = 'O'
 
     @classmethod
@@ -45,6 +45,42 @@ def from_wkt(data, crs=None):
     """
     # TODO(shengjh): support shaply wkt object?
     return GeoArray(arctern.ST_GeomFromText(data).values, crs)
+
+
+def to_wkt(data):
+    """
+    Convert GeoArray or np.ndarray or list to a numpy object array of wkt formed string.
+    """
+    if not isinstance(data, (GeoArray, np.ndarray, list)):
+        raise ValueError("'data' must be a GeoArray or np.ndarray or list.")
+    return arctern.ST_AsText(data).values
+
+
+def from_wkb(data, crs=None):
+    """
+    Convert a list or array of wkb objects to a GeoArray.
+    :param data: array-like
+            list or array of wkb objects
+    :param crs: string optional
+            Coordinate Reference System of the geometry objects. such as an authority string (eg "EPSG:4326").
+    :return: GeoArray
+    """
+    first_invalid = None
+    for item in data:
+        if item is not None or not item == np.nan:
+            first_invalid = item
+            break
+    if first_invalid is not None:
+        if not isinstance(first_invalid, bytes):
+            raise ValueError("'data' must be bytes type array or list.")
+
+    if not isinstance(data, np.ndarray):
+        arr = np.empty(len(data), dtype=object)
+        arr[:] = data
+    else:
+        arr = data
+
+    return GeoArray(arr, crs=crs)
 
 
 def is_geometry_arry(data):
@@ -81,6 +117,7 @@ class GeoArray(ExtensionArray):
             )
 
         self.data = data
+        # TODO(shengjh): do we need crs in here?
         self._crs = None
         self.crs = crs
 
@@ -94,7 +131,7 @@ class GeoArray(ExtensionArray):
         self._crs = value
 
     @property
-    def dtype(self) -> ExtensionDtype:
+    def dtype(self):
         return self._dtype
 
     def __len__(self):
@@ -116,10 +153,10 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy())
+        return GeoArray(self.data.copy(), crs=self.crs)
 
     def isna(self):
-        return np.array([g is None for g in self.data])
+        return np.array([g is None for g in self.data], dtype=bool)
 
     def _bin_op(self, other, op):
         def convert_values(values):
@@ -128,6 +165,10 @@ class GeoArray(ExtensionArray):
             else:
                 return [values] * len(self)
 
+        if isinstance(other, (pd.Series, pd.Index)):
+            # rely on pandas to unbox and dispatch to us
+            return NotImplemented
+
         lvalue = self.data
         rvalue = convert_values(other)
         if not (len(lvalue)) == len(rvalue):
@@ -135,12 +176,11 @@ class GeoArray(ExtensionArray):
         # artern python api can receive any type data,
         # which can received by pyarrow.array(sequence, iterable, ndarray or Series)
         rst = op(lvalue, rvalue)
-        rst = np.asarray(rst)
+        rst = np.asarray(rst, dtype=bool)
         return rst
 
     def __eq__(self, other):
-        rst = self._bin_op(other, arctern.ST_Equals)
-        return rst
+        return self._bin_op(other, arctern.ST_Equals)
 
     def __ne__(self, other):
         return ~self.__eq__(other)
@@ -162,40 +202,127 @@ class GeoArray(ExtensionArray):
         if isinstance(item, numbers.Integral):
             return self.data[item]
         # array-like, slice
+        if str(pd.__version__) >= LooseVersion("0.26.0.dev"):
+            # for pandas >= 1.0, validate and convert IntegerArray/BooleanArray
+            # to numpy array, pass-through non-array-like indexers
+            item = pd.api.indexers.check_array_indexer(self, item)
+
         if isinstance(item, (Iterable, slice)):
             return GeoArray(self.data[item])
         else:
-            raise TypeError("Index type not supported", item)
+            raise TypeError("Index type not supported ", item)
 
     def __setitem__(self, key, value):
-        # TODO: check this
         if str(pd.__version__) >= LooseVersion("0.26.0.dev"):
             # for pandas >= 1.0, validate and convert IntegerArray/BooleanArray
             # keys to numpy array, pass-through non-array-like indexers
             key = pd.api.indexers.check_array_indexer(self, key)
 
         if isinstance(value, (list, np.ndarray)):
-            value = GeoArray(value)
+            value = from_wkb(value)
         if isinstance(value, GeoArray):
             if isinstance(key, numbers.Integral):
                 raise ValueError("Cannot set a single element with an array")
             self.data[key] = value.data
 
-        if isinstance(value, bytes) or value is None:
+        elif isinstance(value, bytes) or value is None or value == np.nan:
             value = value
             if isinstance(key, (slice, list, np.ndarray)):
-                value_arry = np.empty(1, dtype=bytes)
+                value_arry = np.empty(1, dtype=object)
                 value_arry[:] = [value]
                 self.data[key] = value_arry
             else:
                 self.data[key] = value
         else:
-            raise TypeError("Value should be wkb formed bytes or None, got %s" % str(value))
+            raise TypeError("Value should be array-like bytes  or None, got %s" % str(value))
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-        return GeoArray(scalars)
+
+        return from_wkb(scalars)
 
     def __arrow_array__(self, type=None):
         # convert the underlying array values to a pyarrow Array
         return pyarrow.array(self.data, type=type)
+
+    def __array__(self, dtype=None):
+        """
+        The numpy array interface.
+
+        Returns
+        -------
+        values : numpy array
+        """
+        return self.data
+
+    @classmethod
+    def _concat_same_type(cls, to_concat):
+        """
+        Concatenate multiple array
+
+        Parameters
+        ----------
+        to_concat : sequence of this type
+
+        Returns
+        -------
+        ExtensionArray
+        """
+        data = np.concatenate([ga.data for ga in to_concat])
+        return GeoArray(data, crs=to_concat[0].crs)
+
+    def astype(self, dtype, copy=True):
+        """
+        Cast to a NumPy array with 'dtype'.
+
+        Parameters
+        ----------
+        dtype : str or dtype
+            Typecode or data-type to which the array is cast.
+        copy : bool, default True
+            Whether to copy the data, even if not necessary. If False,
+            a copy is made only if the old dtype does not match the
+            new dtype.
+
+        Returns
+        -------
+        array : ndarray
+            NumPy ndarray with 'dtype' for its dtype.
+        """
+        if isinstance(dtype, GeoDtype):
+            if copy:
+                return self.copy()
+            else:
+                return self
+        elif pd.api.types.is_string_dtype(dtype) and not pd.api.types.is_object_dtype(dtype):
+            # as string type means to wkt formed string
+            return to_wkt(self)
+        else:
+            return np.array(self, dtype=dtype, copy=copy)
+
+    def _formatter(self, boxed=False):
+        """Formatting function for scalar values.
+
+        This is used in the default '__repr__'. The returned formatting
+        function receives instances of your scalar type.
+
+        Parameters
+        ----------
+        boxed: bool, default False
+            An indicated for whether or not your array is being printed
+            within a Series, DataFrame, or Index (True), or just by
+            itself (False). This may be useful if you want scalar values
+            to appear differently within a Series versus on its own (e.g.
+            quoted or not).
+
+        Returns
+        -------
+        Callable[[Any], str]
+            A callable that gets instances of the scalar type and
+            returns a string. By default, :func:`repr` is used
+            when ``boxed=False`` and :func:`str` is used when
+            ``boxed=True``.
+        """
+        if boxed:
+            return lambda x: to_wkt([x])[0]
+        return repr

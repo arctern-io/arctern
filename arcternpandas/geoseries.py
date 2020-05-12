@@ -2,6 +2,7 @@ from pandas import Series
 from arcternpandas.geoarray import GeoArray, GeoDtype, is_geometry_arry
 import arctern
 from warnings import warn
+import numpy as np
 
 
 def _property_op(op, this):
@@ -11,33 +12,37 @@ def _property_op(op, this):
 
 def _unary_op(op, this, *args, **kwargs):
     # type: (function, GeoSeries, args/kwargs) -> GeoSeries
-    crs = kwargs.pop('crs')
+    crs = None
+    if 'crs' in kwargs.keys():
+        crs = kwargs.pop('crs')
     if crs is None:
         crs = this.crs
     return GeoSeries(op(this.values, *args, **kwargs).values, index=this.index, name=this.name, crs=crs)
 
 
 def _delegate_binary_op(op, this, other):
-    # type: (function, GeoSeries, GeoSeries) -> GeoSeries/Series
+    # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries/Series
     if isinstance(other, GeoSeries):
         if not this.index.equals(other.index):
             warn("The indices of the two GeoSeries are different.")
             this, other = this.align(other)
+    elif isinstance(other, bytes):
+        pass
     else:
         raise TypeError(type(this), type(other))
-    data = op(this.values, other.values)
+    data = op(this.values, other)
     return data, this.index
 
 
 def _binary_op(op, this, other):
-    # type: (function, GeoSeries, GeoSeries) -> Series[bool/float]
+    # type: (function, GeoSeries, GeoSeries/bytes) -> Series[bool/float]
     # TODO: support other is single geometry
     data, index = _delegate_binary_op(op, this, other)
     return Series(data.values, index=index)
 
 
 def _binary_geo(op, this, other):
-    # type: (function, GeoSeries, GeoSeries) -> GeoSeries
+    # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data.values, index=index, crs=this.crs)
 
@@ -46,6 +51,9 @@ class GeoSeries(Series):
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, dtype=None, name=None, crs=None, **kwargs):
+        if dtype is not None and not isinstance(dtype, GeoDtype):
+            raise ValueError("'dtype' must be GeoDtype or None.")
+
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
@@ -53,20 +61,32 @@ class GeoSeries(Series):
                 raise ValueError(
                     "CRS mismatch between CRS of the passed geometries and crs."
                 )
-        if isinstance(data, bytes):
+        # scalar wkb or wkt
+        if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
             data = [data] * n
 
         if not is_geometry_arry(data):
             s = Series(data, index=index, name=name, **kwargs)
-            if not s.dtype == object:
+            # find first valid data type
+            first_valid = None
+            for item in s:
+                if item is not None or item != np.nan:
+                    first_valid = item
+                    break
+
+            if isinstance(first_valid, bytes):
+                pass
+            elif isinstance(first_valid, str):
+                s = arctern.ST_GeomFromText(s.values)
+            else:
                 if s.empty:
-                    s = s.astype(bytes)
+                    s = s.astype(object)
                 else:
-                    raise TypeError("Can not use no bytes data to construct GeoSeries.")
+                    raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values, crs=crs)
 
-        super().__init__(data, index=index, dtype=dtype, name=name, **kwargs)
+        super().__init__(data, index=index, name=name, **kwargs)
 
         self.crs = crs
 
@@ -138,16 +158,16 @@ class GeoSeries(Series):
         if crs is None:
             raise ValueError("Can not transform with invalid crs")
         if self.crs is None:
-            raise ValueError("Can not transform native geometries. Set crs for this GeoSeries first.")
+            raise ValueError("Can not transform geometries without crs. Set crs for this GeoSeries first.")
         # crs = CRS.from_user_input(crs)
         # if self.crs.is_exact_same(crs):
         #     return self
         if crs == self.crs:
             return self
-        return _unary_op(arctern.ST_Transform, self, crs=crs, src=self.crs, dst=crs)
+        return _unary_op(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
     def simplify_preserve_to_pology(self, distance_tolerance):
-        return _unary_op(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance=distance_tolerance)
+        return _unary_op(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
 
     def projection(self, bottom_right, top_left, height, width):
         return _unary_op(arctern.projection, self)
@@ -193,3 +213,17 @@ class GeoSeries(Series):
 
     def hausdorff_distance(self, other):
         return _binary_op(arctern.ST_HausdorffDistance, self, other)
+
+    # -------------------------------------------------------------------------
+    # Geometry related binary methods, which return GeoSeries
+    # -------------------------------------------------------------------------
+
+    def intersection(self, other):
+        return _binary_geo(arctern.ST_Intersection, self, other)
+
+    # -------------------------------------------------------------------------
+    # utils
+    # -------------------------------------------------------------------------
+
+    def to_wkt(self):
+        return _property_op(arctern.ST_AsText, self)
