@@ -194,7 +194,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 #else
-  gdal::ST_Distance(geo_left_raws, geo_right_raws);
+  return gdal::ST_Distance(geo_left_raws, geo_right_raws);
 #endif
 }
 
@@ -296,7 +296,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 #else
-  gdal::ST_Within(geo_left_raws, geo_right_raws);
+  return gdal::ST_Within(geo_left_raws, geo_right_raws);
 #endif
 }
 
