@@ -18,21 +18,30 @@ package org.apache.spark.sql.udt
 import org.apache.spark.sql.catalyst.util._
 import org.apache.spark.sql.types._
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.io.{WKBReader, WKBWriter}
+import org.locationtech.jts.io.{WKBReader, WKBWriter, WKTReader, WKTWriter}
 
 class GeometryUDT extends UserDefinedType[Geometry] {
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
 
   override def serialize(obj: Geometry): GenericArrayData = {
-    val wkb: Array[Byte] = new WKBWriter().write(obj)
-    new GenericArrayData(wkb)
+    new GenericArrayData(GeometryUDT.ToWkb(obj))
   }
 
   override def deserialize(datum: Any): Geometry = {
     datum match {
-      case values: ArrayData => new WKBReader().read(values.toByteArray())
+      case values: ArrayData => GeometryUDT.FromWkb(values.toByteArray())
     }
   }
 
   override def userClass: Class[Geometry] = classOf[Geometry]
+}
+
+object GeometryUDT {
+  def ToWkb(obj: Geometry) = new WKBWriter().write(obj)
+
+  def FromWkb(obj: Array[Byte]) = new WKBReader().read(obj)
+
+  def ToWkt(obj: Geometry) = new WKTWriter().write(obj)
+
+  def FromWkt(obj: String) = new WKTReader().read(obj)
 }

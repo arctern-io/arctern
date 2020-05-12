@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import org.scalatest.FunSuite
 import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.log4j.Logger
@@ -45,7 +46,7 @@ class UDTTest extends FunSuite {
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("data")
     val rst = spark.sql("select * from data")
-    rst.show()
+    rst.show(false)
 
     spark.stop()
   }
