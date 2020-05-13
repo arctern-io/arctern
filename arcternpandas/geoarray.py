@@ -67,7 +67,7 @@ def from_wkb(data, crs=None):
     """
     first_invalid = None
     for item in data:
-        if item is not None or not item == np.nan:
+        if item is not None or item is not np.nan:
             first_invalid = item
             break
     if first_invalid is not None:
@@ -87,11 +87,8 @@ def is_geometry_arry(data):
     """
     Check if the data is geometry array like GeoArray, GeoSeries or Series[GeoArray].
     """
-    if isinstance(getattr(data, "dtype", None), GeoDtype):
-        # GeoArray, GeoSeries and Series[GeoArray]
-        return True
-    else:
-        return False
+    # GeoArray, GeoSeries and Series[GeoArray]
+    return isinstance(getattr(data, "dtype", None), GeoDtype)
 
 
 def is_scalar_geometry(data):
@@ -112,9 +109,7 @@ class GeoArray(ExtensionArray):
         elif not isinstance(data, np.ndarray):
             raise TypeError("'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
         elif not data.ndim == 1:
-            raise ValueError(
-                "'data' should be 1-dim array of wkb formed bytes"
-            )
+            raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
         self.data = data
         # TODO(shengjh): do we need crs in here?
@@ -156,7 +151,7 @@ class GeoArray(ExtensionArray):
         return GeoArray(self.data.copy(), crs=self.crs)
 
     def isna(self):
-        return np.array([g is None for g in self.data], dtype=bool)
+        return np.array([g is None or g is np.nan for g in self.data], dtype=bool)
 
     def _bin_op(self, other, op):
         def convert_values(values):
@@ -225,7 +220,7 @@ class GeoArray(ExtensionArray):
                 raise ValueError("Cannot set a single element with an array")
             self.data[key] = value.data
 
-        elif isinstance(value, bytes) or value is None or value == np.nan:
+        elif isinstance(value, bytes) or value is None or value is np.nan:
             value = value
             if isinstance(key, (slice, list, np.ndarray)):
                 value_arry = np.empty(1, dtype=object)
@@ -238,7 +233,6 @@ class GeoArray(ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-
         return from_wkb(scalars)
 
     def __arrow_array__(self, type=None):

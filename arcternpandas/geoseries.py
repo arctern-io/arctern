@@ -6,18 +6,23 @@ import numpy as np
 
 
 def _property_op(op, this):
-    # type: (function, GeoSeries) -> Series[bool/float]
-    return Series(op(this.values).values, index=this.index)
+    # type: (function, GeoSeries) -> Series[bool/float/object]
+    return Series(op(this.values), index=this.index)
+
+
+def _property_geo(op, this):
+    # type: (function, GeoSeries) -> GeoSeries
+    return GeoSeries(op(this.values), index=this.index, crs=this.crs)
 
 
 def _unary_op(op, this, *args, **kwargs):
-    # type: (function, GeoSeries, args/kwargs) -> GeoSeries
+    # type: (function, GeoSeries, args, kwargs) -> GeoSeries
     crs = None
     if 'crs' in kwargs.keys():
         crs = kwargs.pop('crs')
     if crs is None:
         crs = this.crs
-    return GeoSeries(op(this.values, *args, **kwargs).values, index=this.index, name=this.name, crs=crs)
+    return GeoSeries(op(this.values, *args, **kwargs), index=this.index, name=this.name, crs=crs)
 
 
 def _delegate_binary_op(op, this, other):
@@ -38,13 +43,13 @@ def _binary_op(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> Series[bool/float]
     # TODO: support other is single geometry
     data, index = _delegate_binary_op(op, this, other)
-    return Series(data.values, index=index)
+    return Series(data, index=index)
 
 
 def _binary_geo(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries
     data, index = _delegate_binary_op(op, this, other)
-    return GeoSeries(data.values, index=index, crs=this.crs)
+    return GeoSeries(data, index=index, crs=this.crs)
 
 
 class GeoSeries(Series):
@@ -71,14 +76,14 @@ class GeoSeries(Series):
             # find first valid data type
             first_valid = None
             for item in s:
-                if item is not None or item != np.nan:
+                if item is not None or item is not np.nan:
                     first_valid = item
                     break
 
             if isinstance(first_valid, bytes):
                 pass
             elif isinstance(first_valid, str):
-                s = arctern.ST_GeomFromText(s.values)
+                s = arctern.ST_GeomFromText(s)
             else:
                 if s.empty:
                     s = s.astype(object)
@@ -124,11 +129,11 @@ class GeoSeries(Series):
 
     @property
     def centroid(self):
-        return _property_op(arctern.ST_Centroid, self)
+        return _property_geo(arctern.ST_Centroid, self)
 
     @property
     def convex_hull(self):
-        return _property_op(arctern.ST_ConvexHull, self)
+        return _property_geo(arctern.ST_ConvexHull, self)
 
     @property
     def npoints(self):
@@ -136,7 +141,7 @@ class GeoSeries(Series):
 
     @property
     def envelope(self):
-        return _property_op(arctern.ST_Envelope, self)
+        return _property_geo(arctern.ST_Envelope, self)
 
     # -------------------------------------------------------------------------
     # Geometry related unary methods
@@ -180,6 +185,9 @@ class GeoSeries(Series):
 
     def precision_reduce(self, precision):
         return _unary_op(arctern.ST_PrecisionReduce, self, precision)
+
+    def make_valid(self):
+        return _unary_op(arctern.ST_MakeValid, self)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
@@ -227,3 +235,9 @@ class GeoSeries(Series):
 
     def to_wkt(self):
         return _property_op(arctern.ST_AsText, self)
+
+    def to_wkb(self):
+        return _property_op(lambda x: x, self)
+
+    def as_geojson(self):
+        return _property_op(arctern.ST_AsGeoJSON, self)
