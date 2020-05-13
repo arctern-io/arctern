@@ -24,7 +24,6 @@ namespace dispatch {
 
 WkbTypeScanner::WkbTypeScanner(const std::shared_ptr<arrow::BinaryArray>& geometries)
     : geometries_(geometries) {}
-/// fuck
 
 auto WkbTypeScanner::Scan() const -> std::shared_ptr<GeometryTypeMasks> {
   if (types().empty()) {
