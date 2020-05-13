@@ -73,7 +73,7 @@ class GeoSeries(Series):
 
         if not is_geometry_arry(data):
             s = Series(data, index=index, name=name, **kwargs)
-            # find first valid data type
+            # find first valid data
             first_valid = None
             for item in s:
                 if item is not None or item is not np.nan:
@@ -144,7 +144,7 @@ class GeoSeries(Series):
         return _property_geo(arctern.ST_Envelope, self)
 
     # -------------------------------------------------------------------------
-    # Geometry related unary methods
+    # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
     def curve_to_line(self):
@@ -189,6 +189,12 @@ class GeoSeries(Series):
     def make_valid(self):
         return _unary_op(arctern.ST_MakeValid, self)
 
+    def union_aggr(self):
+        return GeoSeries(arctern.ST_Union_Aggr(self))
+
+    def envelope_aggr(self):
+        return GeoSeries(arctern.ST_Envelope_Aggr(self))
+
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
@@ -204,7 +210,7 @@ class GeoSeries(Series):
     def crosses(self, other):
         return _binary_op(arctern.ST_Crosses, self, other)
 
-    def st_equals(self, other):
+    def equals(self, other):
         return _binary_op(arctern.ST_Equals, self, other)
 
     def touches(self, other):

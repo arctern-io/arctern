@@ -431,5 +431,36 @@ def test_ST_Buffer():
 #
 #     assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
-if __name__ == "__main__":
-    test_ST_Transform()
+def test_ST_Union_Aggr():
+    p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
+    p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))"
+    data = GeoSeries([p1, p2])
+    rst = data.union_aggr().to_wkt()
+    assert rst[0] == "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))"
+
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))"
+    data = GeoSeries([p1, p2])
+    rst = data.union_aggr().to_wkt()
+    assert rst[0] == "POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))"
+
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+    data = GeoSeries([p1, p2])
+    rst = data.union_aggr().to_wkt()
+    assert rst[0] == "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))"
+
+    p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
+    p2 = "POINT (2 3)"
+
+    data = GeoSeries([p1, p2])
+    rst = data.union_aggr().to_wkt()
+    assert rst[0] == p1
+
+
+def test_ST_Envelope_Aggr():
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+    data = GeoSeries([p1, p2])
+    rst = data.envelope_aggr().to_wkt()
+    assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"

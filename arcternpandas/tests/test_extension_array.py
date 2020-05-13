@@ -5,14 +5,12 @@ contain no other tests.
 """
 
 import pytest
-from pandas.tests.extension import base as extension_tests
-from arcternpandas.geoarray import GeoArray, GeoDtype, from_wkt
+from pandas.tests.extension import base
+from pandas.tests.extension.conftest import *
+from arcternpandas.geoarray import GeoDtype, from_wkt
 import pandas as pd
 
 
-# -----------------------------------------------------------------------------
-# Required fixtures
-# -----------------------------------------------------------------------------
 @pytest.fixture
 def dtype():
     """A fixture providing the ExtensionDtype to validate."""
@@ -140,22 +138,6 @@ def box_in_series(request):
     return request.param
 
 
-@pytest.fixture(
-    params=[
-        lambda x: 1,
-        lambda x: [1] * len(x),
-        lambda x: pd.Series([1] * len(x)),
-        lambda x: x,
-    ],
-    ids=["scalar", "list", "series", "object"],
-)
-def groupby_apply_op(request):
-    """
-    Functions to test groupby.apply().
-    """
-    return request.param
-
-
 @pytest.fixture(params=[True, False])
 def as_frame(request):
     """
@@ -198,29 +180,7 @@ def as_array(request):
     return request.param
 
 
-# Fixtures defined in pandas/conftest.py that are also needed: defining them
-# here instead of importing for compatibility
-
-
-@pytest.fixture(
-    params=["sum", "max", "min", "mean", "prod", "std", "var", "median", "kurt", "skew"]
-)
-def all_numeric_reductions(request):
-    """
-    Fixture for numeric reduction names
-    """
-    return request.param
-
-
-@pytest.fixture(params=["all", "any"])
-def all_boolean_reductions(request):
-    """
-    Fixture for boolean reduction names
-    """
-    return request.param
-
-
-# only == and != are support for GeometryArray
+# only == and != are support for GeoArray
 @pytest.fixture(params=["__eq__", "__ne__"])
 def all_compare_operators(request):
     """
@@ -231,31 +191,27 @@ def all_compare_operators(request):
     return request.param
 
 
-# -----------------------------------------------------------------------------
-# Inherited tests
-# -----------------------------------------------------------------------------
-
-class TestInterface(extension_tests.BaseInterfaceTests):
+class TestInterface(base.BaseInterfaceTests):
     pass
 
 
-class TestConstructors(extension_tests.BaseConstructorsTests):
+class TestConstructors(base.BaseConstructorsTests):
     pass
 
 
-class TestReshaping(extension_tests.BaseReshapingTests):
+class TestReshaping(base.BaseReshapingTests):
     pass
 
 
-class TestGetitem(extension_tests.BaseGetitemTests):
+class TestGetitem(base.BaseGetitemTests):
     pass
 
 
-class TestSetitem(extension_tests.BaseSetitemTests):
+class TestSetitem(base.BaseSetitemTests):
     pass
 
 
-class TestMissing(extension_tests.BaseMissingTests):
+class TestMissing(base.BaseMissingTests):
     def test_fillna_series(self, data_missing):
         fill_value = data_missing[1]
         ser = pd.Series(data_missing)
@@ -287,7 +243,7 @@ class TestMissing(extension_tests.BaseMissingTests):
         pass
 
 
-class TestComparisonOps(extension_tests.BaseComparisonOpsTests):
+class TestComparisonOps(base.BaseComparisonOpsTests):
     def check_opname(self, s, op_name, other, exc=None):
         # overwriting to indicate ops don't raise an error
         super().check_opname(s, op_name, other, exc=None)
@@ -302,6 +258,31 @@ class TestComparisonOps(extension_tests.BaseComparisonOpsTests):
         self._compare_other(s, data, op_name, other)
 
 
+# class TestArithmeticOps(base.BaseArithmeticOpsTests):
+#     @pytest.mark.skip("skip")
+#     def test_divmod_series_array(self, data, data_for_twos):
+#         pass
+#
+#     def test_add_series_with_extension_array(self, data):
+#         op_name = '__add__'
+#         s = pd.Series(data)
+#         self.check_opname(s, op_name, data, exc=TypeError)
+
+class TestCasting(base.BaseCastingTests):
+    pass
+
+
+class TestGroupby(base.BaseGroupbyTests):
+    pass
+
+
+class TestPrinting(base.BasePrintingTests):
+    pass
+
+
+@pytest.mark.skip("not implemented")
+class TestParsing(base.BaseParsingTests):
+    pass
 
 
 if __name__ == "__main__":
@@ -322,14 +303,11 @@ if __name__ == "__main__":
     na_value = None
     data = data_1()
 
+    op_name = '__rmod__'
+    s = pd.Series(data)
+    import io
 
-    a = data[:3]
-    b = data[2:5]
-    r1, r2 = pd.Series(a).align(pd.Series(b, index=[1, 2, 3]))
-
-    # Assumes that the ctor can take a list of scalars of the type
-    e1 = pd.Series(data._from_sequence(list(a) + [na_value], dtype=data.dtype))
-    e2 = pd.Series(data._from_sequence([na_value] + list(b), dtype=data.dtype))
-    extension_tests.BaseReshapingTests.assert_series_equal(r1, e1)
-
-
+    buf = io.StringIO()
+    pd.DataFrame({"A": data}).info(buf=buf)
+    result = buf.getvalue()
+    assert data.dtype.name in result

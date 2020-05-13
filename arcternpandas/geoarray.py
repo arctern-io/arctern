@@ -144,6 +144,7 @@ class GeoArray(ExtensionArray):
     def ndim(self):
         return len(self.shape)
 
+    @property
     def nbytes(self):
         return self.data.nbytes
 
