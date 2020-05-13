@@ -19,7 +19,7 @@ import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.udt.{GeometryUDT, UdtRegistratorWrapper}
+import org.apache.spark.sql.arctern._
 import org.locationtech.jts.io.WKTReader
 
 class UDTTest extends FunSuite {

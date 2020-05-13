@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.spark.sql.udt
+package org.apache.spark.sql.arctern
 
 import org.apache.spark.sql.catalyst.util._
 import org.apache.spark.sql.types._
