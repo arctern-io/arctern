@@ -217,8 +217,8 @@ def ST_GeomFromText(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type json: Series(dtype: object)
-    :param json: Geometries in WKT form.
+    :type text: Series(dtype: object)
+    :param text: Geometries in WKT form.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKB form.
@@ -239,12 +239,12 @@ def ST_GeomFromText(text):
     return _to_pandas_series(result)
 
 @arctern_udf('binary')
-def ST_AsText(text):
+def ST_AsText(geos):
     """
     Transform the representation of geometry from WKB to WKT.
 
-    :type text: Series(dtype: object)
-    :param text: Geometries in WKB form.
+    :type geos: Series(dtype: object)
+    :param geos: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
     :return: Geometries in WKT form.
@@ -259,18 +259,18 @@ def ST_AsText(text):
           dtype: object
     """
     import pyarrow as pa
-    geo = pa.array(text, type='binary')
+    geo = pa.array(geos, type='binary')
     geo = _to_arrow_array_list(geo)
     result = [arctern_core_.ST_AsText(g) for g in geo]
     return _to_pandas_series(result)
 
 @arctern_udf('binary')
-def ST_AsGeoJSON(text):
+def ST_AsGeoJSON(geos):
     """
     Return the GeoJSON representation of the geometry.
 
-    :type text: Series(dtype: object)
-    :param text: Geometries in WKB form.
+    :type geos: Series(dtype: object)
+    :param geos: Geometries in WKB form.
 
     :rtype: Series(dtype: object)
     :return: Geometries in GeoJSON format.
@@ -285,7 +285,7 @@ def ST_AsGeoJSON(text):
           dtype: object
     """
     import pyarrow as pa
-    geo = pa.array(text, type='binary')
+    geo = pa.array(geos, type='binary')
     geo = _to_arrow_array_list(geo)
     result = [arctern_core_.ST_AsGeoJSON(g) for g in geo]
     return _to_pandas_series(result)
