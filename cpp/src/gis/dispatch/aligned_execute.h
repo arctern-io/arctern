@@ -30,7 +30,7 @@ namespace dispatch {
 using ArrayType = arrow::BinaryArray;
 class ArrowVectorAlignedSlicer {
  public:
-  static constexpr size_t slice_limit = 10L * 1000L * 1000L;  // 10 million
+  static constexpr size_t slice_limit = _ARROW_ARRAY_SIZE / 128;
   void Register(const std::vector<ArrayPtr>& vec) {
     size_t sum = 0;
     for (const auto& arr : vec) {
