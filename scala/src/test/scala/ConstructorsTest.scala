@@ -16,24 +16,25 @@
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.arctern._
-import org.locationtech.jts.io.WKTReader
+import org.apache.spark.sql.arctern.expressions.ST_GeomFromText
 
-class UDTTest extends AdapterTest {
-  test("GeometryUDT") {
+class ConstructorsTest extends AdapterTest {
+  test("ST_GeomFromText") {
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
+
     val data = Seq(
-      Row(1, new WKTReader().read("POINT (10 20)")),
-      Row(2, new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
-      Row(3, new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
-      Row(4, new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
-      Row(5, new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"))
+      Row(1, "POINT (10 20)"),
+      Row(2, "LINESTRING (0 0, 10 10, 20 20)"),
+      Row(3, "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
+      Row(4, "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))"),
+      Row(5, "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
     )
 
     val rdd_d = spark.sparkContext.parallelize(data)
-    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geometry", new GeometryUDT, nullable = false)))
+    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("wkt", StringType, nullable = false)))
     val df = spark.createDataFrame(rdd_d, schema)
-    df.createOrReplaceTempView("table_GeometryUDT")
-    val rst = spark.sql("select * from table_GeometryUDT")
+    df.createOrReplaceTempView("table_ST_GeomFromText")
+    val rst = spark.sql("select idx, ST_GeomFromText(wkt) from table_ST_GeomFromText")
 
     rst.show(false)
   }
