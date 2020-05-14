@@ -191,6 +191,30 @@ def all_compare_operators(request):
     return request.param
 
 
+@pytest.fixture(params=[
+    "__add__",
+    "__radd__",
+    '__sub__',
+    '__rsub__',
+    "__mul__",
+    "__rmul__",
+    "__floordiv__",
+    "__rfloordiv__",
+    "__truediv__",
+    "__rtruediv__",
+    "__pow__",
+    "__rpow__",
+    "__mod__",
+    "__rmod__",
+])
+def all_arithmetic_operators(request):
+    return request.param
+
+
+class TestDtype(base.BaseDtypeTests):
+    pass
+
+
 class TestInterface(base.BaseInterfaceTests):
     pass
 
@@ -212,35 +236,7 @@ class TestSetitem(base.BaseSetitemTests):
 
 
 class TestMissing(base.BaseMissingTests):
-    def test_fillna_series(self, data_missing):
-        fill_value = data_missing[1]
-        ser = pd.Series(data_missing)
-
-        result = ser.fillna(fill_value)
-        expected = pd.Series(data_missing._from_sequence([fill_value, fill_value]))
-        self.assert_series_equal(result, expected)
-
-        ## filling with array-like not yet supported
-
-        # Fill with a series
-        # result = ser.fillna(expected)
-        # self.assert_series_equal(result, expected)
-
-        ## Fill with a series not affecting the missing values
-        # result = ser.fillna(ser)
-        # self.assert_series_equal(result, ser)
-
-    @pytest.mark.skip("fillna method not supported")
-    def test_fillna_limit_pad(self, data_missing):
-        pass
-
-    @pytest.mark.skip("fillna method not supported")
-    def test_fillna_limit_backfill(self, data_missing):
-        pass
-
-    @pytest.mark.skip("fillna method not supported")
-    def test_fillna_series_method(self, data_missing, method):
-        pass
+    pass
 
 
 class TestComparisonOps(base.BaseComparisonOpsTests):
@@ -258,22 +254,79 @@ class TestComparisonOps(base.BaseComparisonOpsTests):
         self._compare_other(s, data, op_name, other)
 
 
-# class TestArithmeticOps(base.BaseArithmeticOpsTests):
-#     @pytest.mark.skip("skip")
-#     def test_divmod_series_array(self, data, data_for_twos):
-#         pass
-#
-#     def test_add_series_with_extension_array(self, data):
-#         op_name = '__add__'
-#         s = pd.Series(data)
-#         self.check_opname(s, op_name, data, exc=TypeError)
+class TestArithmeticOps(base.BaseArithmeticOpsTests):
+    @pytest.mark.skip("not implemented")
+    def test_divmod_series_array(self, data, data_for_twos):
+        pass
+
+    def test_arith_series_with_scalar(self, data, all_arithmetic_operators):
+        pass
+
+    def test_arith_series_with_array(self, data, all_arithmetic_operators):
+        # ndarray & other series
+        exc = self.series_array_exc
+        op_name = all_arithmetic_operators
+        # TODO(shengjh): how to solve this?
+        # because we can't prevent 'GeoArray op np.array' when op
+        # is '__add__', '__radd__' or ''.
+        if op_name in ['__add__', '__radd__']:
+            pass
+        else:
+            s = pd.Series(data)
+            self.check_opname(s, op_name, pd.Series([s.iloc[0]] * len(s)), exc=exc)
+
+    def test_add_series_with_extension_array(self, data):
+        op_name = '__add__'
+        s = pd.Series(data)
+        self.check_opname(s, op_name, data, exc=TypeError)
+
 
 class TestCasting(base.BaseCastingTests):
     pass
 
 
+class TestMethods(base.BaseMethodsTests):
+    @pytest.mark.skip("not support value counts")
+    def test_value_counts(self, all_data, dropna):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_sort_values(self, data_for_sorting, ascending):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_sort_values_missing(self, data_missing_for_sorting, ascending):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_argsort(self, data_for_sorting):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_nargsort(self, data_for_sorting):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_sort_values_frame(self, data_for_sorting, ascending):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_argsort_missing(self, data_missing_for_sorting):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_argsort_missing_array(self, data_missing_for_sorting):
+        pass
+
+    @pytest.mark.skip("not support sort")
+    def test_searchsorted(self, data_for_sorting, as_series):
+        pass
+
+
 class TestGroupby(base.BaseGroupbyTests):
-    pass
+    @pytest.mark.skip("not support sort")
+    def test_groupby_extension_agg(self, as_index, data_for_grouping):
+        pass
 
 
 class TestPrinting(base.BasePrintingTests):
@@ -298,16 +351,27 @@ if __name__ == "__main__":
         return ga
 
 
+    def data_for_grouping_1():
+        """Data for factorization, grouping, and unique tests.
+
+        Expected to be like [B, B, NA, NA, A, A, B, C]
+
+        Where A < B < C and NA is missing
+        """
+        return from_wkt([make_point(1, 1),
+                         make_point(1, 1),
+                         None,
+                         None,
+                         make_point(0, 0),
+                         make_point(0, 0),
+                         make_point(1, 1),
+                         make_point(2, 2)])
+
+
     import numpy as np
 
     na_value = None
     data = data_1()
+    data_for_grouping = data_for_grouping_1()
 
-    op_name = '__rmod__'
     s = pd.Series(data)
-    import io
-
-    buf = io.StringIO()
-    pd.DataFrame({"A": data}).info(buf=buf)
-    result = buf.getvalue()
-    assert data.dtype.name in result

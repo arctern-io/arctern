@@ -67,7 +67,7 @@ def from_wkb(data, crs=None):
     """
     first_invalid = None
     for item in data:
-        if item is not None or item is not np.nan:
+        if item is not None and item is not np.nan:
             first_invalid = item
             break
     if first_invalid is not None:
@@ -85,7 +85,7 @@ def from_wkb(data, crs=None):
 
 def is_geometry_arry(data):
     """
-    Check if the data is geometry array like GeoArray, GeoSeries or Series[GeoArray].
+    Check if the data is GeoDtype array like GeoArray, GeoSeries or Series[GeoArray].
     """
     # GeoArray, GeoSeries and Series[GeoArray]
     return isinstance(getattr(data, "dtype", None), GeoDtype)
@@ -93,7 +93,7 @@ def is_geometry_arry(data):
 
 def is_scalar_geometry(data):
     """
-    Check if the data is of bytes dtype.
+    Check if the data is bytes dtype.
     """
     return isinstance(data, bytes)
 
@@ -214,6 +214,8 @@ class GeoArray(ExtensionArray):
             # keys to numpy array, pass-through non-array-like indexers
             key = pd.api.indexers.check_array_indexer(self, key)
 
+        if isinstance(value, pd.Series):
+            value = value.values
         if isinstance(value, (list, np.ndarray)):
             value = from_wkb(value)
         if isinstance(value, GeoArray):
@@ -235,6 +237,12 @@ class GeoArray(ExtensionArray):
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
         return from_wkb(scalars)
+
+    def _values_for_factorize(self):
+        return self.data, None
+
+    def _from_factorized(cls, values, original):
+        return GeoArray(values)
 
     def __arrow_array__(self, type=None):
         # convert the underlying array values to a pyarrow Array

@@ -73,10 +73,11 @@ class GeoSeries(Series):
 
         if not is_geometry_arry(data):
             s = Series(data, index=index, name=name, **kwargs)
+            # TODO(shengjh): can use pandas lib.infer_dtype to make it easier
             # find first valid data
             first_valid = None
             for item in s:
-                if item is not None or item is not np.nan:
+                if item is not None and item is not np.nan:
                     first_valid = item
                     break
 
