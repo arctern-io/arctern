@@ -2,13 +2,16 @@
 This file contains a minimal set of tests for compliance with the extension
 array interface test suite (by inheriting the pandas test suite), and should
 contain no other tests.
+
+The tests in this file are inherited from the BaseExtensionTests, and only
+minimal tweaks should be applied to get the tests passing (by overwriting a
+parent method).
 """
 
-import pytest
+import pandas as pd
 from pandas.tests.extension import base
 from pandas.tests.extension.conftest import *
 from arcternpandas.geoarray import GeoDtype, from_wkt
-import pandas as pd
 
 
 @pytest.fixture
@@ -31,12 +34,6 @@ def data():
     wkt = [make_point(x, x) for x in range(100)]
     ga = from_wkt(wkt)
     return ga
-
-
-@pytest.fixture
-def data_for_twos():
-    """Length-100 array in which all the elements are two."""
-    raise NotImplementedError
 
 
 @pytest.fixture
@@ -76,26 +73,6 @@ def data_repeated(data):
             yield data
 
     return gen
-
-
-@pytest.fixture
-def data_for_sorting():
-    """Length-3 array with a known sort order.
-
-    This should be three items [B, C, A] with
-    A < B < C
-    """
-    raise NotImplementedError
-
-
-@pytest.fixture
-def data_missing_for_sorting():
-    """Length-3 array with a known sort order.
-
-    This should be three items [B, NA, A] with
-    A < B and NA missing.
-    """
-    raise NotImplementedError
 
 
 @pytest.fixture
@@ -211,6 +188,39 @@ def all_arithmetic_operators(request):
     return request.param
 
 
+_all_numeric_reductions = [
+    "sum",
+    "max",
+    "min",
+    "mean",
+    "prod",
+    "std",
+    "var",
+    "median",
+    "kurt",
+    "skew",
+]
+
+
+@pytest.fixture(params=_all_numeric_reductions)
+def all_numeric_reductions(request):
+    """
+    Fixture for numeric reduction names.
+    """
+    return request.param
+
+
+_all_boolean_reductions = ["all", "any"]
+
+
+@pytest.fixture(params=_all_boolean_reductions)
+def all_boolean_reductions(request):
+    """
+    Fixture for boolean reduction names.
+    """
+    return request.param
+
+
 class TestDtype(base.BaseDtypeTests):
     pass
 
@@ -236,6 +246,11 @@ class TestSetitem(base.BaseSetitemTests):
 
 
 class TestMissing(base.BaseMissingTests):
+    """ we don't define any reductions """
+    pass
+
+
+class TestReduce(base.BaseNoReduceTests):
     pass
 
 
@@ -279,10 +294,6 @@ class TestArithmeticOps(base.BaseArithmeticOpsTests):
         op_name = '__add__'
         s = pd.Series(data)
         self.check_opname(s, op_name, data, exc=TypeError)
-
-
-class TestCasting(base.BaseCastingTests):
-    pass
 
 
 class TestMethods(base.BaseMethodsTests):
@@ -329,6 +340,10 @@ class TestGroupby(base.BaseGroupbyTests):
         pass
 
 
+class TestCasting(base.BaseCastingTests):
+    pass
+
+
 class TestPrinting(base.BasePrintingTests):
     pass
 
@@ -368,10 +383,10 @@ if __name__ == "__main__":
                          make_point(2, 2)])
 
 
-    import numpy as np
-
     na_value = None
     data = data_1()
     data_for_grouping = data_for_grouping_1()
 
     s = pd.Series(data)
+    r = s.sum()
+    print(r)
