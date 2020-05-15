@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from osgeo import ogr
-from arcternpandas.geoseries import GeoSeries
+from arctern.geo_series import GeoSeries
 
 
 def test_ST_IsValid():

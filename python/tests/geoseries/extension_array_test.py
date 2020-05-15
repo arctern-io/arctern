@@ -11,7 +11,7 @@ parent method).
 import pandas as pd
 from pandas.tests.extension import base
 from pandas.tests.extension.conftest import *
-from arcternpandas.geoarray import GeoDtype, from_wkt
+from arctern.geo_series.geoarray import GeoDtype, from_wkt
 
 
 @pytest.fixture
@@ -387,6 +387,6 @@ if __name__ == "__main__":
     data = data_1()
     data_for_grouping = data_for_grouping_1()
 
-    s = pd.Series(data)
-    r = s.sum()
-    print(r)
+    df = pd.DataFrame({"A": [1, 1, 2, 2, 3, 3, 1, 4], "B": data_for_grouping})
+    result = df.groupby("B", sort=False).A.mean()
+

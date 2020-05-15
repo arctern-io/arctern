@@ -1,5 +1,5 @@
 from pandas import Series
-from arcternpandas.geoarray import GeoArray, GeoDtype, is_geometry_arry
+from .geoarray import GeoArray, GeoDtype, is_geometry_arry
 import arctern
 from warnings import warn
 import numpy as np

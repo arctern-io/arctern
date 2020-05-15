@@ -13,3 +13,4 @@
 # limitations under the License.
 from ._wrapper_func import *
 from ._plot import *
+from .geoseries import *
