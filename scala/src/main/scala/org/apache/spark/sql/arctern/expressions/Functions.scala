@@ -15,16 +15,20 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
+import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{ArrayType, BooleanType, DataType}
+import org.apache.spark.sql.types.{BooleanType, DataType}
 
 case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
 
   import org.apache.spark.sql.catalyst.expressions.codegen._
   import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
-  override def nullable: Boolean = false
+
+  assert(inputExpr.length == 2)
+
+  override def nullable: Boolean = true
 
   override def eval(input: InternalRow): Any = {}
 
@@ -39,16 +43,9 @@ case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
 
           org.locationtech.jts.geom.Geometry ${ev.value}_geo0 = null;
           org.locationtech.jts.geom.Geometry ${ev.value}_geo1 = null;
-
-          try {
-            ${ev.value}_geo0 = new org.locationtech.jts.io.WKBReader().read(${geo0.value}.toByteArray());
-            ${ev.value}_geo1 = new org.locationtech.jts.io.WKBReader().read(${geo1.value}.toByteArray());
-          } catch(org.locationtech.jts.io.ParseException e) {
-            // TODO: add log here
-            System.out.println(e.toString());
-          }
-          boolean[] result = {${ev.value}_geo0.within(${ev.value}_geo1)};
-          ${CodeGenerator.javaType(ArrayType(BooleanType, containsNull = false))} ${ev.value} = new org.apache.spark.sql.catalyst.util.GenericArrayData(result);
+          ${ev.value}_geo0 = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${geo0.value});
+          ${ev.value}_geo1 = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${geo1.value});
+          ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${ev.value}_geo0.within(${ev.value}_geo1);
           """, FalseLiteral)
   }
 

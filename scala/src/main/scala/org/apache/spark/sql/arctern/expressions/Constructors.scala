@@ -18,14 +18,16 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{ArrayType, DataType, StringType}
+import org.apache.spark.sql.types.{ArrayType, ByteType, DataType}
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends Expression {
 
   import org.apache.spark.sql.catalyst.expressions.codegen._
   import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
-  override def nullable: Boolean = false
+  assert(inputExpr.length == 1)
+
+  override def nullable: Boolean = true
 
   override def eval(input: InternalRow): Any = {}
 
@@ -37,14 +39,8 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends Expression {
           ${wkt.code}
 
           org.locationtech.jts.geom.Geometry ${ev.value}_geo = null;
-          try {
-            ${ev.value}_geo = new org.locationtech.jts.io.WKTReader().read(${wkt.value}.toString());
-          } catch(org.locationtech.jts.io.ParseException e) {
-            // TODO: add log here
-            System.out.println(e.toString());
-          }
-          org.apache.spark.sql.arctern.GeometryUDT ${ev.value}_geo_udt = new org.apache.spark.sql.arctern.GeometryUDT();
-          ${CodeGenerator.javaType(ArrayType(StringType, containsNull = false))} ${ev.value} = ${ev.value}_geo_udt.serialize(${ev.value}_geo);
+          ${ev.value}_geo = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wkt.value}.toString());
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize(${ev.value}_geo);
           """, FalseLiteral)
   }
 

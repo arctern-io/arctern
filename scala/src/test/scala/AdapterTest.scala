@@ -33,7 +33,7 @@ class AdapterTest extends FunSuite with BeforeAndAfterAll {
     UdtRegistratorWrapper.registerUDT()
   }
 
-  override def afterAll {
-    spark.stop()
-  }
+//  override def afterAll {
+//    spark.stop()
+//  }
 }

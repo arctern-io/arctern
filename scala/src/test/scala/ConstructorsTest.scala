@@ -36,6 +36,8 @@ class ConstructorsTest extends AdapterTest {
     df.createOrReplaceTempView("table_ST_GeomFromText")
     val rst = spark.sql("select idx, ST_GeomFromText(wkt) from table_ST_GeomFromText")
 
+//    rst.queryExecution.debug.codegen()
+
     rst.show(false)
   }
 }

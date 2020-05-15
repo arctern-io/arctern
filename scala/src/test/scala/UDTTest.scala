@@ -26,15 +26,25 @@ class UDTTest extends AdapterTest {
       Row(2, new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
       Row(3, new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
       Row(4, new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
-      Row(5, new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"))
+      Row(5, new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(6, null)
     )
 
     val rdd_d = spark.sparkContext.parallelize(data)
-    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geometry", new GeometryUDT, nullable = false)))
+    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geometry", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_GeometryUDT")
     val rst = spark.sql("select * from table_GeometryUDT")
 
-    rst.show(false)
+    val collect = rst.collect()
+    collect.foreach(println)
+    assert(collect(5).isNullAt(1))
+  }
+
+  test("GeomtryUDT_null") {
+    val wkb_null: Array[Byte] = Array(0, 1, 2)
+    val wkt_null: String = "abcdef"
+    assert(GeometryUDT.FromWkb(wkb_null) == null)
+    assert(GeometryUDT.FromWkt(wkt_null) == null)
   }
 }

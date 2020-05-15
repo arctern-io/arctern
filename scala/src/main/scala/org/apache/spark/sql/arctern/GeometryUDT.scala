@@ -18,30 +18,46 @@ package org.apache.spark.sql.arctern
 import org.apache.spark.sql.catalyst.util._
 import org.apache.spark.sql.types._
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.io.{WKBReader, WKBWriter, WKTReader, WKTWriter}
+import org.locationtech.jts.io.{WKBReader, WKBWriter, WKTReader, WKTWriter, ParseException}
 
 class GeometryUDT extends UserDefinedType[Geometry] {
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
 
-  override def serialize(obj: Geometry): GenericArrayData = {
-    new GenericArrayData(GeometryUDT.ToWkb(obj))
-  }
+  override def serialize(obj: Geometry): GenericArrayData = GeometryUDT.GeomSerialize(obj)
 
-  override def deserialize(datum: Any): Geometry = {
-    datum match {
-      case values: ArrayData => GeometryUDT.FromWkb(values.toByteArray())
-    }
-  }
+  override def deserialize(datum: Any): Geometry = GeometryUDT.GeomDeserialize(datum)
 
   override def userClass: Class[Geometry] = classOf[Geometry]
 }
 
 object GeometryUDT {
+  def GeomSerialize(obj: Geometry): GenericArrayData = new GenericArrayData(ToWkb(obj))
+
+  def GeomDeserialize(datum: Any): Geometry = {
+    datum match {
+      case values: ArrayData => FromWkb(values.toByteArray())
+    }
+  }
+
   def ToWkb(obj: Geometry) = new WKBWriter().write(obj)
 
-  def FromWkb(obj: Array[Byte]) = new WKBReader().read(obj)
+  def FromWkb(obj: Array[Byte]): Geometry = {
+    try {
+      new WKBReader().read(obj)
+    }
+    catch {
+      case _: ParseException => null
+    }
+  }
 
   def ToWkt(obj: Geometry) = new WKTWriter().write(obj)
 
-  def FromWkt(obj: String) = new WKTReader().read(obj)
+  def FromWkt(obj: String): Geometry = {
+    try {
+      new WKTReader().read(obj)
+    }
+    catch {
+      case _: ParseException => null
+    }
+  }
 }
