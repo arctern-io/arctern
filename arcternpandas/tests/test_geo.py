@@ -47,12 +47,12 @@ def test_ST_Intersection():
 def test_ST_Equals():
     data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-    rst = data1.st_equals(data2)
+    rst = data1.equals(data2)
     assert len(rst) == 2
     assert rst[0] == 1
     assert rst[1] == 0
 
-    rst = data2.st_equals(GeoSeries("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
+    rst = data2.equals(GeoSeries("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
     assert len(rst) == 2
     assert rst[0] == 1
     assert rst[1] == 0
