@@ -318,7 +318,7 @@ curl --location --request POST 'http://localhost:8080/loadfile' \
 #### Request
 
 - Method: **POST**
-- URL: `/savetable`
+- URL: `/savefile`
 - Headers:
     - `Content-Type: application/json`
 - Body:
@@ -358,9 +358,9 @@ curl --location --request POST 'http://localhost:8080/loadfile' \
 ```python
 import requests
 
-url = "http://localhost:8080/savetable"
+url = "http://localhost:8080/savefile"
 
-payload = "```json\n{\n    \"scope\": \"scope_name\",\n    \"session\": \"session_name\", \n    \"tables\": [\n        {\n            \"sql\": \"select * from table_name\",\n            \"format\": \"csv\",\n            \"path\": \"/path/to/data.csv\",\n            \"options\": {\n                \"header\": \"True\",\n                \"delimiter\": \",\"\n            }\n        }\n    ]\n}"
+payload = "{\n    \"scope\": \"scope_name\",\n    \"session\": \"session_name\", \n    \"tables\": [\n        {\n            \"sql\": \"select * from table_name\",\n            \"format\": \"csv\",\n            \"path\": \"/path/to/data.csv\",\n            \"options\": {\n                \"header\": \"True\",\n                \"delimiter\": \",\"\n            }\n        }\n    ]\n}"
 headers = {
   'Content-Type': 'application/json'
 }
@@ -371,9 +371,9 @@ print(response.text.encode('utf8'))
 ```
 
 ```shell
-curl --location --request POST 'http://localhost:8080/savetable' \
+curl --location --request POST 'http://localhost:8080/savefile' \
 --header 'Content-Type: application/json' \
---data-raw '```json
+--data-raw '
 {
     "scope": "scope_name",
     "session": "session_name", 

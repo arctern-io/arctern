@@ -32,6 +32,7 @@ class ColorGradient {
   ColorGradient() { createDefaultHeatMapGradient(); }
 
   void createDefaultHeatMapGradient();
+  void createSquareMapGradient(std::vector<Color> color);
 
   void getColorAtValue(const float value, float& red, float& green, float& blue);
 };

@@ -49,20 +49,14 @@ def get_paragraph_info(note_id, paragraph_id):
     response = forward.forward_to_zeppelin(request)
     return jsonify(**response)
 
-@API.route('/notebook/job/<note_id>/paragraph/<paragraph_id>', methods=['GET'])
-def get_paragraph_status(note_id, paragraph_id):
-    log.INSTANCE.info("note_id: {}, paragraph_id: {}".format(note_id, paragraph_id))
-    response = forward.forward_to_zeppelin(request)
-    return jsonify(**response)
-
-@API.route('/notebook/job/<note_id>/<paragraph_id>', methods=['POST', 'DELETE'])
+@API.route('/notebook/job/<note_id>/<paragraph_id>', methods=['GET', 'POST', 'DELETE'])
 def run_paragraph_asynchronously(note_id, paragraph_id):
     log.INSTANCE.info("note_id: {}, paragraph_id: {}".format(note_id, paragraph_id))
     response = forward.forward_to_zeppelin(request)
     return jsonify(**response)
     # todo: filter response when request.method == 'POST'
 
-@API.route('/notebook/run/<note_id>/<paragraph_id>', methods=['POST', 'DELETE'])
+@API.route('/notebook/run/<note_id>/<paragraph_id>', methods=['POST'])
 def run_paragraph_synchronously(note_id, paragraph_id):
     log.INSTANCE.info("note_id: {}, paragraph_id: {}".format(note_id, paragraph_id))
     response = forward.forward_to_zeppelin(request)

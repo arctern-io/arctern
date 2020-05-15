@@ -18,6 +18,7 @@ __all__ = [
     "vega_heatmap",
     "vega_choroplethmap",
     "vega_icon",
+    "vega_fishnetmap"
 ]
 
 from arctern.util.vega.pointmap.vega_pointmap import VegaPointMap
@@ -25,6 +26,7 @@ from arctern.util.vega.pointmap.vega_weighted_pointmap import VegaWeightedPointM
 from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
 from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
 from arctern.util.vega.icon.vega_icon import VegaIcon
+from arctern.util.vega.fishnetmap.vega_fishnetmap import VegaFishNetMap
 
 
 def vega_pointmap(width,
@@ -108,3 +110,24 @@ def vega_icon(width, height,
                     bounding_box,
                     icon_path,
                     coordinate_system)
+
+def vega_fishnetmap(width,
+                   height,
+                   bounding_box,
+                   color_gradient=None,
+                   cell_size=4,
+                   cell_spacing=1,
+                   opacity=1.0,
+                   coordinate_system="EPSG:3857",
+                   aggregation_type="sum"):
+    if color_gradient is None:
+        color_gradient = ["#0000FF", "FF0000"]
+    return VegaFishNetMap(width,
+                         height,
+                         bounding_box,
+                         color_gradient,
+                         cell_size,
+                         cell_spacing,
+                         opacity,
+                         coordinate_system,
+                         aggregation_type)

@@ -26,5 +26,5 @@ def forward_to_zeppelin(request):
     log.INSTANCE.info("{} {}, body: {}, args: {}".format(method, url_path, request.json, request.args))
     log.INSTANCE.info("forward to: {}".format(zeppelin_url))
 
-    r = requests.request(method, zeppelin_url, data=request.json, headers=request.headers)
+    r = requests.request(method, zeppelin_url, data=request.data, headers=request.headers)
     return r.json()
