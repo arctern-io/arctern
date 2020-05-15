@@ -79,12 +79,12 @@ def WkbToWkt(wkbs):
     return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PointFromText(geos):
+def ST_PointFromText(text):
     """
     Transform the representation of point from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Point in WKT form.
+    :type text: WKT
+    :param text: Point in WKT form.
 
     :rtype: WKB
     :return: Point in WKB form.
@@ -106,15 +106,15 @@ def ST_PointFromText(geos):
       |POINT (30 10)                    |
       +---------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PolygonFromText(geos):
+def ST_PolygonFromText(text):
     """
     Transform the representation of polygon from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Polygon in WKT form.
+    :type text: WKT
+    :param text: Polygon in WKT form.
 
     :rtype: WKB
     :return: Polygon in WKB form.
@@ -136,15 +136,15 @@ def ST_PolygonFromText(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_LineStringFromText(geos):
+def ST_LineStringFromText(text):
     """
     Transform the representation of linestring from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Linestring in WKT form.
+    :type text: WKT
+    :param text: Linestring in WKT form.
 
     :rtype: WKB
     :return: Linestring in WKB form.
@@ -166,15 +166,15 @@ def ST_LineStringFromText(geos):
       |LINESTRING (0 0, 0 1, 1 1, 1 0)       |
       +--------------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromWKT(geos):
+def ST_GeomFromWKT(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Geometry in WKT form.
+    :type text: WKT
+    :param text: Geometry in WKT form.
 
     :rtype: WKB
     :return: Geometry in WKB form.
@@ -196,15 +196,15 @@ def ST_GeomFromWKT(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))|
       +-------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromText(geos):
+def ST_GeomFromText(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type geo: WKT
-    :param geo: Geometry in WKT form.
+    :type text: WKT
+    :param text: Geometry in WKT form.
 
     :rtype: WKB
     :return: Geometry in WKB form.
@@ -226,15 +226,15 @@ def ST_GeomFromText(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_AsText(geos):
     """
     Transform the representation of geometry from WKB to WKT.
 
-    :type geo: WKB
-    :param geo: Geometry in WKB form.
+    :type geos: WKB
+    :param geos: Geometry in WKB form.
 
     :rtype: WKT
     :return: Geometry in WKT form.
@@ -263,8 +263,8 @@ def ST_AsGeoJSON(geos):
     """
     Return the GeoJSON representation of the geometry.
 
-    :type geo: WKB
-    :param geo: Geometry in WKB form.
+    :type geos: WKB
+    :param geos: Geometry in WKB form.
 
     :rtype: string
     :return: Geometry organized as GeoJSON format.
