@@ -97,9 +97,9 @@ def load_file():
         exec(load_code, _SCOPE[scope])
     return jsonify(status='success', code=200, message='load table successfully!')
 
-@API.route('/savetable', methods=['POST'])
+@API.route('/savefile', methods=['POST'])
 def save_table():
-    log.INSTANCE.info("POST /savetable: {}".format(request.json))
+    log.INSTANCE.info("POST /savefile: {}".format(request.json))
 
     scope = request.json.get('scope')
     log.INSTANCE.info("scope: {}".format(scope))

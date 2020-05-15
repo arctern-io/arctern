@@ -75,14 +75,16 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
 
 # pylint: disable=too-many-arguments
 # pylint: disable=dangerous-default-value
-def plot_weighted_pointmap(ax, points, color_weights, size_weights, bounding_box,
-                                    coordinate_system='EPSG:4326',
-                                    color_gradient=["#115f9a", "#d0f400"],
-                                    color_bound=[0, 0],
-                                    size_bound=[3],
-                                    opacity=1.0,
-                                    aggregation_type="max",
-                                    **extra_contextily_params):
+def plot_weighted_pointmap(ax, points, color_weights=None,
+                           size_weights=None,
+                           bounding_box=None,
+                           coordinate_system='EPSG:4326',
+                           color_gradient=["#115f9a", "#d0f400"],
+                           color_bound=[0, 0],
+                           size_bound=[3],
+                           opacity=1.0,
+                           aggregation_type="max",
+                           **extra_contextily_params):
     """
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.

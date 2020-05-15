@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "arrow/render_api.h"
+
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -26,8 +29,6 @@
 #include "render/render_builder.h"
 #include "render/utils/agg/agg_handler.h"
 #include "render/utils/render_utils.h"
-
-#include "arrow/render_api.h"
 
 namespace arctern {
 namespace render {
@@ -454,81 +455,94 @@ template <typename T>
 std::pair<uint8_t*, int64_t> render_fishnetmap(const std::vector<std::string>& points,
                                                const std::vector<T>& arr_c,
                                                const std::string& conf) {
-  auto data = AggHandler::weight_agg<T>(points, arr_c);
-  auto num_point = data.first.size();
-
-  std::vector<uint32_t> input_x(num_point);
-  std::vector<uint32_t> input_y(num_point);
-  std::vector<T> input_c(num_point);
-
   rapidjson::Document document;
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
   mark_enter = document["marks"][0]["encode"]["enter"];
   auto agg = mark_enter["aggregation_type"]["value"].GetString();
+  int cell_size = mark_enter["cell_size"]["value"].GetDouble();
+  int cell_spacing = mark_enter["cell_spacing"]["value"].GetDouble();
+  auto region_size = cell_size + cell_spacing;
   AggHandler::AggType type_agg = AggHandler::agg_type(agg);
 
-  const auto& result_wkb = data.first;
-  const auto& result_weight = data.second;
+  auto data = AggHandler::region_agg<T>(points, arr_c, region_size);
+  auto num_point = data.size();
+
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+  int i = 0;
 
   switch (type_agg) {
     case AggHandler::AggType::MAX: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        input_c[i] = *max_element(result_weight[i].begin(), result_weight[i].end());
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = *max_element(result_weight.begin(), result_weight.end());
+        i++;
       }
       break;
     }
     case AggHandler::AggType::MIN: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        input_c[i] = *min_element(result_weight[i].begin(), result_weight[i].end());
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = *min_element(result_weight.begin(), result_weight.end());
+        i++;
       }
       break;
     }
     case AggHandler::AggType::COUNT: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        input_c[i] = result_weight[i].size();
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = result_weight.size();
+        i++;
       }
       break;
     }
     case AggHandler::AggType::SUM: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        input_c[i] = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = accumulate(result_weight.begin(), result_weight.end(), 0);
+        i++;
       }
       break;
     }
     case AggHandler::AggType::STDDEV: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        T sum = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
-        T mean = sum / result_weight[i].size();
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        T sum = accumulate(result_weight.begin(), result_weight.end(), 0);
+        T mean = sum / result_weight.size();
         T accum = 0;
-        std::for_each(std::begin(result_weight[i]), std::end(result_weight[i]),
+        std::for_each(std::begin(result_weight), std::end(result_weight),
                       [&](const T d) { accum += (d - mean) * (d - mean); });
-        input_c[i] = sqrt(accum / result_weight[i].size());
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+        input_c[i] = sqrt(accum / result_weight.size());
+        i++;
       }
       break;
     }
     case AggHandler::AggType::AVG: {
-      for (int i = 0; i < num_point; i++) {
-        input_x[i] = result_wkb[i]->toPoint()->getX();
-        input_y[i] = result_wkb[i]->toPoint()->getY();
-        T sum_data = accumulate(result_weight[i].begin(), result_weight[i].end(), 0);
-        input_c[i] = sum_data / result_weight[i].size();
-        OGRGeometryFactory::destroyGeometry(result_wkb[i]);
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        T sum_data = accumulate(result_weight.begin(), result_weight.end(), 0);
+        input_c[i] = sum_data / result_weight.size();
+        i++;
       }
       break;
     }
