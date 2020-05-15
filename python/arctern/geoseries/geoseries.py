@@ -76,7 +76,7 @@ class GeoSeries(Series):
                 data = data.copy()
             else:
                 raise ValueError(
-                    "CRS mismatch between CRS of the passed geometries and crs."
+                    "csr of the passed geometry data is different from crs."
                 )
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
@@ -85,21 +85,15 @@ class GeoSeries(Series):
 
         if not is_geometry_arry(data):
             s = Series(data, index=index, name=name, **kwargs)
-            # TODO(shengjh): can use pandas lib.infer_dtype to make it easier
-            # find first valid data
-            first_valid = None
-            for item in s:
-                if item is not None and item is not np.nan:
-                    first_valid = item
-                    break
-
-            if isinstance(first_valid, bytes):
-                pass
-            elif isinstance(first_valid, str):
-                s = arctern.ST_GeomFromText(s)
+            if s.empty:
+                s = s.astype(bytes)
             else:
-                if s.empty:
-                    s = s.astype(object)
+                from pandas.api.types import infer_dtype
+                inferred = infer_dtype(s, skipna=True)
+                if inferred in ("bytes", "empty"):
+                    pass
+                elif inferred == "string":
+                    s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values)

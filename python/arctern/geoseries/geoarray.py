@@ -73,19 +73,14 @@ def from_wkb(data):
     Convert a list or array of wkb objects to a GeoArray.
     :param data: array-like
             list or array of wkb objects
-    :param crs: string optional
-            Coordinate Reference System of the geometry objects. such as an authority string (eg "EPSG:4326").
     :return: GeoArray
     """
-    first_invalid = None
-    for item in data:
-        if item is not None and item is not np.nan:
-            first_invalid = item
-            break
-    if first_invalid is not None:
-        if not isinstance(first_invalid, bytes):
+    # pandas.infer_type can't infer custom ExtensionDtype
+    if not is_geometry_arry(data) and len(data) != 0:
+        from pandas.api.types import infer_dtype
+        inferred = infer_dtype(data, skipna=True)
+        if inferred not in ("bytes", "empty"):
             raise ValueError("'data' must be bytes type array or list.")
-
     if not isinstance(data, np.ndarray):
         array = np.empty(len(data), dtype=object)
         array[:] = data
