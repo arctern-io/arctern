@@ -25,7 +25,7 @@ parent method).
 import pandas as pd
 from pandas.tests.extension import base
 from pandas.tests.extension.conftest import *
-from arctern.geo_series.geoarray import GeoDtype, from_wkt
+from arctern.geoseries.geoarray import GeoDtype, from_wkt
 
 
 @pytest.fixture

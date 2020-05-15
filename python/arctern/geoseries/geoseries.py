@@ -30,10 +30,9 @@ def _property_geo(op, this):
 
 def _unary_op(op, this, *args, **kwargs):
     # type: (function, GeoSeries, args, kwargs) -> GeoSeries
-    crs = None
     if 'crs' in kwargs.keys():
         crs = kwargs.pop('crs')
-    if crs is None:
+    else:
         crs = this.crs
     return GeoSeries(op(this.values, *args, **kwargs), index=this.index, name=this.name, crs=crs)
 
@@ -165,7 +164,6 @@ class GeoSeries(Series):
         return _unary_op(arctern.ST_CurveToLine, self)
 
     def to_crs(self, crs):
-        # TODO: should we support pyproj CRS?
         """
         Returns a new ``GeoSeries`` with all geometries transformed to a different coordinate reference system.
         The ``crs`` attribute on the current GeoSeries must be set.
@@ -178,9 +176,6 @@ class GeoSeries(Series):
             raise ValueError("Can not transform with invalid crs")
         if self.crs is None:
             raise ValueError("Can not transform geometries without crs. Set crs for this GeoSeries first.")
-        # crs = CRS.from_user_input(crs)
-        # if self.crs.is_exact_same(crs):
-        #     return self
         if crs == self.crs:
             return self
         return _unary_op(arctern.ST_Transform, self, self.crs, crs, crs=crs)
@@ -189,7 +184,7 @@ class GeoSeries(Series):
         return _unary_op(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
 
     def projection(self, bottom_right, top_left, height, width):
-        return _unary_op(arctern.projection, self)
+        return _unary_op(arctern.projection, self, bottom_right, top_left, height, width)
 
     def transform_and_projection(self, src_rs, dst_rs, bottom_right, top_left, height, width):
         return _unary_op(arctern.transform_and_projection, self, src_rs, dst_rs, bottom_right, top_left, height, width)
@@ -261,3 +256,15 @@ class GeoSeries(Series):
 
     def as_geojson(self):
         return _property_op(arctern.ST_AsGeoJSON, self)
+
+    @classmethod
+    def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
+        return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
+
+    @classmethod
+    def point(cls, x, y, crs=None):
+        return cls(arctern.ST_Point(x, y), crs=crs)
+
+    @classmethod
+    def geom_from_geojson(cls, json, crs=None):
+        return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
