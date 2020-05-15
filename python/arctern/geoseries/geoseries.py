@@ -214,7 +214,10 @@ class GeoSeries(Series):
         return _binary_op(arctern.ST_Crosses, self, other)
 
     def equals(self, other):
-        return _binary_op(arctern.ST_Equals, self, other)
+        return self.geom_equals(other).all()
+
+    def geom_equals(self, other):
+        return _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
 
     def touches(self, other):
         return _binary_op(arctern.ST_Touches, self, other)
