@@ -23,7 +23,7 @@ def _get_recom_size(dx, dy, target=(1600, 1600)):
     w = int(dx * scale)
     h = int(dy * scale)
     return w, h
-
+  
 def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     import pyproj
     if src_coord_sys != dst_coord_sys:
@@ -163,7 +163,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
 def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
                                     color_gradient, color_bound=None, opacity=1.0,
                                     coordinate_system='EPSG:4326',
-                                    aggregation_type='max'
+                                    aggregation_type='max', 
                                     **extra_contextily_params):
     """
     :type ax: AxesSubplot
