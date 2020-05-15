@@ -46,4 +46,32 @@ class FunctionsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_Within With Null") {
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)
+
+    val data = Seq(
+      Row(1, null, "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
+      Row(2, "POINT (50 50)", null),
+      Row(3, null, null),
+      Row(4, "POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))", "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geo1", StringType, nullable = true), StructField("geo2", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_Within")
+    val rst = spark.sql("select idx, ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from table_ST_Within")
+
+    //    rst.queryExecution.debug.codegen()
+    val collect = rst.collect()
+
+    assert(collect(0).isNullAt(1))
+    assert(collect(1).isNullAt(1))
+    assert(collect(2).isNullAt(1))
+    assert(collect(3).getBoolean(1) == false)
+
+    rst.show(false)
+  }
 }

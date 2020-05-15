@@ -19,34 +19,60 @@ import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{BooleanType, DataType}
+import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
 case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
 
-  import org.apache.spark.sql.catalyst.expressions.codegen._
-  import org.apache.spark.sql.catalyst.expressions.codegen.Block._
-
-
   assert(inputExpr.length == 2)
 
-  override def nullable: Boolean = true
+  override def nullable: Boolean = inputExpr(0).nullable || inputExpr(1).nullable
 
   override def eval(input: InternalRow): Any = {}
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val geo0 = inputExpr.head.genCode(ctx)
-    val geo1 = inputExpr(1).genCode(ctx)
+    val left = inputExpr(0)
+    val right = inputExpr(1)
 
-    ev.copy(code =
-      code"""
-          ${geo0.code}
-          ${geo1.code}
+    val leftCode = left.genCode(ctx)
+    val rightCode = right.genCode(ctx)
 
-          org.locationtech.jts.geom.Geometry ${ev.value}_geo0 = null;
-          org.locationtech.jts.geom.Geometry ${ev.value}_geo1 = null;
-          ${ev.value}_geo0 = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${geo0.value});
-          ${ev.value}_geo1 = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${geo1.value});
-          ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${ev.value}_geo0.within(${ev.value}_geo1);
+    val resultCode =
+      s"""
+         |org.locationtech.jts.geom.Geometry ${ev.value}_left = null;
+         |org.locationtech.jts.geom.Geometry ${ev.value}_right = null;
+         |${ev.value}_left = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${leftCode.value});
+         |${ev.value}_right = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${rightCode.value});
+         |${ev.value} = ${ev.value}_left.within(${ev.value}_right);
+         |""".stripMargin
+
+    if (nullable) {
+      val nullSafeEval =
+        leftCode.code + ctx.nullSafeExec(left.nullable, leftCode.isNull) {
+          rightCode.code + ctx.nullSafeExec(right.nullable, rightCode.isNull) {
+            s"""
+               |${ev.isNull} = false; // resultCode could change nullability.
+               |$resultCode
+               |""".stripMargin
+          }
+        }
+      ev.copy(code=
+        code"""
+            boolean ${ev.isNull} = true;
+            ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
+            $nullSafeEval
+            """)
+
+    }
+    else {
+      ev.copy(code =
+        code"""
+          ${leftCode.code}
+          ${rightCode.code}
+          ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
+          $resultCode
           """, FalseLiteral)
+    }
   }
 
   override def dataType: DataType = BooleanType

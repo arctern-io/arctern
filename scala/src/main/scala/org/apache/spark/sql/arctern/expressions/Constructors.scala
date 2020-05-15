@@ -19,29 +19,51 @@ import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{ArrayType, ByteType, DataType}
+import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends Expression {
 
-  import org.apache.spark.sql.catalyst.expressions.codegen._
-  import org.apache.spark.sql.catalyst.expressions.codegen.Block._
-
   assert(inputExpr.length == 1)
 
-  override def nullable: Boolean = true
+  override def nullable: Boolean = inputExpr.head.nullable
 
   override def eval(input: InternalRow): Any = {}
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val wkt = inputExpr.head.genCode(ctx)
+    val wktExpr = inputExpr.head
+    val wktGen = inputExpr.head.genCode(ctx)
 
-    ev.copy(code =
-      code"""
-          ${wkt.code}
+    val resultCode =
+      s"""
+         |org.locationtech.jts.geom.Geometry ${ev.value}_geo = null;
+         |${ev.value}_geo = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wktGen.value}.toString());
+         |${ev.value} = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize(${ev.value}_geo);
+       """.stripMargin
 
-          org.locationtech.jts.geom.Geometry ${ev.value}_geo = null;
-          ${ev.value}_geo = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wkt.value}.toString());
-          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize(${ev.value}_geo);
+    if (nullable) {
+      val nullSafeEval =
+        wktGen.code + ctx.nullSafeExec(wktExpr.nullable, wktGen.isNull) {
+          s"""
+             |${ev.isNull} = false; // resultCode could change nullability.
+             |$resultCode
+             |""".stripMargin
+        }
+      ev.copy(code =
+        code"""
+          boolean ${ev.isNull} = true;
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+            """)
+    }
+    else {
+      ev.copy(code =
+        code"""
+          ${wktGen.code}
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $resultCode
           """, FalseLiteral)
+    }
   }
 
   override def dataType: DataType = new GeometryUDT
