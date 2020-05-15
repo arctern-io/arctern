@@ -4,7 +4,7 @@
         {
             "name": "old_nyc_taxi",
             "format": "csv",
-            "path": "/arctern/gui/server/data/0_5M_nyc_taxi_and_building.csv",
+            "path": "/arctern/gui/server/arctern_server/data/0_5M_nyc_taxi_and_building.csv",
             "options": {
                 "header": "True",
                 "delimiter": ","
