@@ -17,9 +17,12 @@ This file contains a minimal set of tests for compliance with the extension
 array interface test suite (by inheriting the pandas test suite), and should
 contain no other tests.
 
-The tests in this file are inherited from the BaseExtensionTests, and only
-minimal tweaks should be applied to get the tests passing (by overwriting a
+The tests in this file are inherited from the BaseExtensionTests provided by pandas,
+and only minimal tweaks should be applied to get the tests passing (by overwriting a
 parent method).
+
+see https://pandas.pydata.org/pandas-docs/stable/development/extending.html#testing-extension-arrays
+for more info.
 """
 
 import pandas as pd

@@ -106,10 +106,6 @@ class GeoSeries(Series):
         # crs = CRS.from_user_input(crs)
         self.crs = crs
 
-    @property
-    def isna(self):
-        return super().isna()
-
     # -------------------------------------------------------------------------
     # Geometry related property
     # -------------------------------------------------------------------------
