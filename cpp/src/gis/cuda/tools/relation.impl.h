@@ -306,6 +306,11 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   return mat;
 }
 
+DEVICE_RUNNABLE Matrix PointRelateToPolygon(double2 left_point, const uint32_t* meta,
+                                            const double* values) {
+
+}
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern
