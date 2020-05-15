@@ -16,6 +16,7 @@ import base64
 from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
 import arctern
 
+
 def _get_recom_size(dx, dy, target=(1600, 1600)):
     scale_x = target[0] / dx
     scale_y = target[1] / dy
@@ -23,6 +24,7 @@ def _get_recom_size(dx, dy, target=(1600, 1600)):
     w = int(dx * scale)
     h = int(dy * scale)
     return w, h
+
 
 def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     import pyproj
@@ -35,8 +37,9 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
         bounding_box = (x0, y0, x1, y1)
     return bounding_box
 
+
 def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
-                  point_size=3, point_color='red', point_opacity=1.0,
+                  point_size=3, point_color='#0000FF', opacity=1.0,
                   **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -52,19 +55,19 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     :type point_szie: int
     :param point_size: size of point
     :type point_color: str
-    :param point_color: specify color, using matplotlib.colors
+    :param point_color: specify color in hex form
     :type opacity: float
     :param opacity: opacity of point
     :type extra_contextily_params: dict
     :param extra_contextily_params: extra parameters for contextily.add_basemap.
                                                                     See https://contextily.readthedocs.io/en/latest/reference.html
     """
-    from matplotlib import colors, pyplot as plt
+    from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
-    color_hex = colors.to_hex(point_color)
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size, point_color=color_hex, opacity=point_opacity, coordinate_system=coordinate_system)
+    vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size,
+                         point_color=point_color, opacity=opacity, coordinate_system=coordinate_system)
     hexstr = arctern.point_map_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -97,8 +100,6 @@ def plot_weighted_pointmap(ax, points, color_weights=None,
     :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
     :type point_szie: int
     :param point_size: size of point
-    :type point_color: str
-    :param point_color: specify color, using matplotlib.colors
     :type opacity: float
     :param opacity: opacity of point
     :type extra_contextily_params: dict
@@ -109,10 +110,11 @@ def plot_weighted_pointmap(ax, points, color_weights=None,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, \
-        color_bound=color_bound, size_bound=size_bound, opacity=opacity, \
-        coordinate_system=coordinate_system)
-    hexstr = arctern.weighted_point_map_layer(vega, points, color_weights=color_weights, size_weights=size_weights)
+    vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
+                                  color_bound=color_bound, size_bound=size_bound, opacity=opacity,
+                                  coordinate_system=coordinate_system)
+    hexstr = arctern.weighted_point_map_layer(
+        vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -121,6 +123,8 @@ def plot_weighted_pointmap(ax, points, color_weights=None,
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 # pylint: disable=protected-access
+
+
 def _calc_zoom(bbox, coordinate_system):
     import contextily as cx
     bbox = _transform_bbox(bbox, coordinate_system, 'epsg:4326')
@@ -128,9 +132,9 @@ def _calc_zoom(bbox, coordinate_system):
 
 
 def plot_heatmap(ax, points, weights, bounding_box,
-                                    coordinate_system='EPSG:4326',
-                                    aggregation_type='max',
-                                    **extra_contextily_params):
+                 coordinate_system='EPSG:4326',
+                 aggregation_type='max',
+                 **extra_contextily_params):
     """
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
@@ -151,7 +155,8 @@ def plot_heatmap(ax, points, weights, bounding_box,
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
-    vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
+    vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level,
+                        aggregation_type=aggregation_type, coordinate_system=coordinate_system)
     hexstr = arctern.heat_map_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -160,11 +165,12 @@ def plot_heatmap(ax, points, weights, bounding_box,
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
-def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
-                                    color_gradient, color_bound=None, opacity=1.0,
-                                    coordinate_system='EPSG:4326',
-                                    aggregation_type='max'
-                                    **extra_contextily_params):
+
+def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
+                       color_gradient, color_bound=None, opacity=1.0,
+                       coordinate_system='EPSG:4326',
+                       aggregation_type='max',
+                       **extra_contextily_params):
     """
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
@@ -184,7 +190,8 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound, opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
+    vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound,
+                              opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
     hexstr = arctern.choropleth_map_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -192,6 +199,7 @@ def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+
 
 def plot_iconviz(ax, points, icon_path, bounding_box,
                  coordinate_system='EPSG:4326',
@@ -214,7 +222,8 @@ def plot_iconviz(ax, points, icon_path, bounding_box,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, coordinate_system=coordinate_system)
+    vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path,
+                     coordinate_system=coordinate_system)
     hexstr = arctern.icon_viz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
