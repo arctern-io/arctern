@@ -15,22 +15,24 @@
 import pandas
 import arctern
 
-from arctern.util import save_png
-
 # rename to arctern.plot later
+# pylint: disable=reimported
 import arctern as ap
+
 
 def _get_matplot():
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    return fig, ax
-    
+    _, ax = plt.subplots(figsize=(10, 6), dpi=200)
+    return ax
+
 
 def _finalize(ax, name):
     import matplotlib.pyplot as plt
+    _ = ax
     plt.savefig("/tmp/plot_with_map_" + name + ".png")
 
-# copy from source, since _func can not be called here
+# copied from source, since _func can not be called here
+# pylint: disable=redefined-outer-name
 def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     import pyproj
     if src_coord_sys != dst_coord_sys:
@@ -44,15 +46,15 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
 
 bounding_box = [-73.998427, 40.730309, -73.954348, 40.780816]
 
-
 def test_contextily():
     import contextily as cx
-    fig, ax = _get_matplot()
+    ax = _get_matplot()
     bbox = _transform_bbox(bounding_box, 'epsg:4326', 'epsg:3857')
-     
+
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax)
     _finalize(ax, "test_contextily")
+
 
 def test_pointmap():
     x_data = []
@@ -70,8 +72,9 @@ def test_pointmap():
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
     points = arctern.ST_Point(arr_x, arr_y)
-    fig, ax = _get_matplot()
-    ap.plot_pointmap(ax, points, bounding_box=bounding_box, point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_pointmap(ax, points, bounding_box=bounding_box, point_size=10,
+                     point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_point_map")
 
 
@@ -107,21 +110,26 @@ def test_weighted_pointmap():
     arr_c = pandas.Series(c_data)
     arr_s = pandas.Series(s_data)
 
-    fig, ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, bounding_box=bounding_box, color_gradient=["#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_weighted_pointmap(ax, points, bounding_box=bounding_box, color_gradient=[
+                              "#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_0_0")
 
-    fig, ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, bounding_box=bounding_box, color_gradient=[
+                              "#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_1_0")
 
-    fig, ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, size_weights=arr_s, bounding_box=bounding_box, color_gradient=["#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_weighted_pointmap(ax, points, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
+                              "#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_0_1")
 
-    fig, ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
+                              "#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_1_1")
+
 
 def test_heatmap():
     x_data = []
@@ -148,28 +156,30 @@ def test_heatmap():
     arr_c = pandas.Series(c_data)
     points = arctern.ST_Point(arr_x, arr_y)
 
-    fig, ax = _get_matplot()
+    ax = _get_matplot()
     ap.plot_heatmap(ax, points, arr_c, bounding_box=bounding_box, coordinate_system='EPSG:4326')
     _finalize(ax, "test_heat_map1")
+
 
 def test_choroplethmap():
     wkt_data = []
     count_data = []
 
     wkt_data.append("POLYGON (("
-      "-73.97324 40.73747, "
-      "-73.96524 40.74507, "
-      "-73.96118 40.75890, "
-      "-73.95556 40.77654, "
-      "-73.97324 40.73747))")
+                    "-73.97324 40.73747, "
+                    "-73.96524 40.74507, "
+                    "-73.96118 40.75890, "
+                    "-73.95556 40.77654, "
+                    "-73.97324 40.73747))")
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
     arr_wkb = arctern.wkt2wkb(arr_wkt)
     arr_count = pandas.Series(count_data)
 
-    fig, ax = _get_matplot()
-    ap.plot_choroplethmap(ax, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
+    ax = _get_matplot()
+    ap.plot_choroplethmap(ax, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=[
+                          "#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     _finalize(ax, "test_choropleth_map1")
 
 
@@ -195,8 +205,9 @@ def test_iconviz():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     png_path = dir_path + "/../images/taxi.png"
 
-    fig, ax = _get_matplot()
-    ap.plot_iconviz(ax, points, bounding_box=bounding_box, icon_path=png_path, coordinate_system="EPSG:4326")
+    ax = _get_matplot()
+    ap.plot_iconviz(ax, points, bounding_box=bounding_box,
+                    icon_path=png_path, coordinate_system="EPSG:4326")
     _finalize(ax, "test_icon_viz")
 
 # def test_fishnet_map():
