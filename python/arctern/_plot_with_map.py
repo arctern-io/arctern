@@ -36,7 +36,7 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     return bounding_box
 
 def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
-                  point_size=3, point_color='red', point_opacity=1.0,
+                  point_size=3, point_color='#0000FF', opacity=1.0,
                   **extra_contextily_params):
     """
     :type ax: AxesSubplot
@@ -52,7 +52,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     :type point_szie: int
     :param point_size: size of point
     :type point_color: str
-    :param point_color: specify color, using matplotlib.colors
+    :param point_color: specify color in hex form
     :type opacity: float
     :param opacity: opacity of point
     :type extra_contextily_params: dict
@@ -62,9 +62,8 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
     from matplotlib import colors, pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
-    color_hex = colors.to_hex(point_color)
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size, point_color=color_hex, opacity=point_opacity, coordinate_system=coordinate_system)
+    vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size, point_color=point_color, opacity=opacity, coordinate_system=coordinate_system)
     hexstr = arctern.point_map_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -160,7 +159,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
-def plot_choropleth_map(ax, region_boundaries, weights, bounding_box,
+def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
                                     color_gradient, color_bound=None, opacity=1.0,
                                     coordinate_system='EPSG:4326',
                                     aggregation_type='max', 
