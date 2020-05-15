@@ -47,7 +47,7 @@ class GeoDtype(ExtensionDtype):
         return GeoArray
 
 
-def from_wkt(data, crs=None):
+def from_wkt(data):
     """
     Convert a list or array of wkt formed string to a GeoArray.
     :param data: array-like
@@ -56,8 +56,7 @@ def from_wkt(data, crs=None):
             Coordinate Reference System of the geometry objects. such as an authority string (eg "EPSG:4326").
     :return: GeoArray
     """
-    # TODO(shengjh): support shaply wkt object?
-    return GeoArray(arctern.ST_GeomFromText(data).values, crs)
+    return GeoArray(arctern.ST_GeomFromText(data).values)
 
 
 def to_wkt(data):
@@ -69,7 +68,7 @@ def to_wkt(data):
     return arctern.ST_AsText(data).values
 
 
-def from_wkb(data, crs=None):
+def from_wkb(data):
     """
     Convert a list or array of wkb objects to a GeoArray.
     :param data: array-like
@@ -88,12 +87,12 @@ def from_wkb(data, crs=None):
             raise ValueError("'data' must be bytes type array or list.")
 
     if not isinstance(data, np.ndarray):
-        arr = np.empty(len(data), dtype=object)
-        arr[:] = data
+        array = np.empty(len(data), dtype=object)
+        array[:] = data
     else:
-        arr = data
+        array = data
 
-    return GeoArray(arr, crs=crs)
+    return GeoArray(array)
 
 
 def is_geometry_arry(data):
@@ -114,29 +113,13 @@ def is_scalar_geometry(data):
 class GeoArray(ExtensionArray):
     _dtype = GeoDtype()
 
-    def __init__(self, data, crs=None):
-        if isinstance(data, self.__class__):
-            if not crs and hasattr(data, "crs"):
-                crs = data.crs
-            data = data
-        elif not isinstance(data, np.ndarray):
+    def __init__(self, data):
+        if not isinstance(data, np.ndarray):
             raise TypeError("'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
         elif not data.ndim == 1:
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
         self.data = data
-        # TODO(shengjh): do we need crs in here?
-        self._crs = None
-        self.crs = crs
-
-    @property
-    def crs(self):
-        return self._crs
-
-    @crs.setter
-    def crs(self, value):
-        # self._crs = None if not value else CRS.from_user_input(value)
-        self._crs = value
 
     @property
     def dtype(self):
@@ -162,7 +145,7 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy(), crs=self.crs)
+        return GeoArray(self.data.copy())
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)
@@ -205,7 +188,7 @@ class GeoArray(ExtensionArray):
         result = take(self.data, indices, allow_fill=allow_fill, fill_value=fill_value)
         if allow_fill and fill_value is None:
             result[pd.isna(result)] = None
-        return GeoArray(result, crs=self.crs)
+        return GeoArray(result)
 
     def __getitem__(self, item):
         if isinstance(item, numbers.Integral):
@@ -239,9 +222,9 @@ class GeoArray(ExtensionArray):
         elif isinstance(value, bytes) or value is None or value is np.nan:
             value = value
             if isinstance(key, (slice, list, np.ndarray)):
-                value_arry = np.empty(1, dtype=object)
-                value_arry[:] = [value]
-                self.data[key] = value_arry
+                value_array = np.empty(1, dtype=object)
+                value_array[:] = [value]
+                self.data[key] = value_array
             else:
                 self.data[key] = value
         else:
@@ -285,7 +268,7 @@ class GeoArray(ExtensionArray):
         ExtensionArray
         """
         data = np.concatenate([ga.data for ga in to_concat])
-        return GeoArray(data, crs=to_concat[0].crs)
+        return GeoArray(data)
 
     def astype(self, dtype, copy=True):
         """

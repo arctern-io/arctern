@@ -102,7 +102,7 @@ class GeoSeries(Series):
                     s = s.astype(object)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values, crs=crs)
+            data = GeoArray(s.values)
 
         super().__init__(data, index=index, name=name, **kwargs)
 
