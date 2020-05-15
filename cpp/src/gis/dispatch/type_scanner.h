@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "gis/wkb_types.h"
+#include "utils/arrow_alias.h"
 
 namespace arctern {
 namespace gis {
@@ -107,6 +108,11 @@ class MaskResult {
     kOnlyTrue,
   };
 
+  MaskResult(Status status) : status_(status) { assert(status != Status::kMixed); }
+
+  MaskResult(std::vector<bool>&& mask)
+      : status_(Status::kMixed), mask_(std::move(mask)) {}
+
   MaskResult() = default;
   MaskResult(const std::shared_ptr<arrow::StringArray>& geometries,
              const GroupedWkbTypes& supported) {
@@ -137,6 +143,8 @@ class MaskResult {
   // valid only when status = kMixed
   std::vector<bool> mask_;
 };
+
+MaskResult RelateMaskGen(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_geo);
 
 }  // namespace dispatch
 }  // namespace gis
