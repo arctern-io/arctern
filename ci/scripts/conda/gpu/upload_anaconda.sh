@@ -4,17 +4,17 @@
 
 set -e
 
-BRANCH_REGEX='^(master|(branch\-[0-9]+\.[0-9]+\.(x|[0-9]+)))$'
+BRANCH_REGEX='^(master|((v|branch\-)[0-9]+\.[0-9]+\.(x|[0-9]+|[0-9]+\-preview[0-9]*)))$'
 
 # Restrict uploads to master branch
 if [[ ! "${GIT_BRANCH}" =~ ${BRANCH_REGEX} ]]; then
     echo "Skipping upload"
-    return 0
+    exit 0
 fi
 
 if [ -z "$MY_UPLOAD_KEY" ]; then
     echo "No upload key"
-    return 0
+    exit 0
 fi
 
 if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
