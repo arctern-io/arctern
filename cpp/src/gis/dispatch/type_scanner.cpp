@@ -103,7 +103,7 @@ MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_
     return MaskResult(MaskResult::Status::kOnlyFalse);
   }
   std::vector<bool> mask(length);
-  int64_t count;
+  int64_t count = 0;
 
   for (int64_t index = 0; index < length; ++index) {
     bool flag = false;

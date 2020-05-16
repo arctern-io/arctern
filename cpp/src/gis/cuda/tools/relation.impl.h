@@ -25,6 +25,9 @@
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 
+#include "gis/cuda/common/gis_definitions.h"
+
+
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -269,7 +272,7 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   return matrix;
 }
 
-DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_size,
+DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int right_size,
                                                const double2* right_points) {
   if (right_size == 0) {
     return Matrix("FFFFFFFF*");
@@ -305,10 +308,75 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
 
   return mat;
 }
+DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2) {
+  return x1 * y2 - x2 * y1;
+}
 
-DEVICE_RUNNABLE Matrix PointRelateToPolygon(double2 left_point, const uint32_t* meta,
-                                            const double* values) {
+DEVICE_RUNNABLE inline double GetX(const double* polygon, int index) {
+  return polygon[2 * index];
+}
 
+DEVICE_RUNNABLE inline double GetY(const double* polygon, int index) {
+  return polygon[2 * index + 1];
+}
+
+struct Point {
+  double x;
+  double y;
+};
+
+struct Iter {
+  const uint32_t* metas;
+  const double* values;
+};
+
+DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(Point point, const double* polygon,
+                                                       int size) {
+  int winding_num = 0;
+  double dx2 = GetX(polygon, size - 1) - point.x;
+  double dy2 = GetY(polygon, size - 1) - point.y;
+  for (int index = 0; index < size; ++index) {
+    auto dx1 = dx2;
+    auto dy1 = dy2;
+    dx2 = GetX(polygon, index) - point.x;
+    dy2 = GetY(polygon, index) - point.y;
+
+    bool ref = dy1 < 0;
+    if (ref != (dy2 < 0)) {
+      bool cmp = IsLeft(dx1, dy1, dx2, dy2) < 0;
+      if (cmp != ref) {
+        winding_num += ref ? 1 : -1;
+      }
+    }
+  }
+  return winding_num != 0;
+}
+
+DEVICE_RUNNABLE inline bool PointInPolygonImpl(Point point, Iter& polygon_iter) {
+  int shape_size = (int)*polygon_iter.metas++;
+  bool final = false;
+  // offsets of value for polygons
+  for (int shape_index = 0; shape_index < shape_size; shape_index++) {
+    int vertex_size = (int)*polygon_iter.metas++;
+    auto is_in = PointInSimplePolygonHelper(point, polygon_iter.values, vertex_size);
+    polygon_iter.values += vertex_size * 2;
+    if (shape_index == 0) {
+      final = is_in;
+    } else {
+      final = final && !is_in;
+    }
+  }
+  return final;
+}
+
+inline DEVICE_RUNNABLE bool PointInPolygon(ConstGpuContext& point,
+                                           ConstGpuContext& polygon, int index) {
+  auto pv = point.get_value_ptr(index);
+  auto iter = Iter{polygon.get_meta_ptr(index), polygon.get_value_ptr(index)};
+  auto result = PointInPolygonImpl(Point{pv[0], pv[1]}, iter);
+  assert(iter.metas == polygon.get_meta_ptr(index + 1));
+  assert(iter.values == polygon.get_value_ptr(index + 1));
+  return result;
 }
 
 }  // namespace cuda
