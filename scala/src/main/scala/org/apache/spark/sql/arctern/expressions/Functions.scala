@@ -59,7 +59,7 @@ abstract class ST_BinaryOp(f: (String, String) => String) extends Expression {
             boolean ${ev.isNull} = true;
             $leftGeoDeclare
             $rightGeoDeclare
-            ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
+            ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
             $nullSafeEval
             """)
 
@@ -71,9 +71,53 @@ abstract class ST_BinaryOp(f: (String, String) => String) extends Expression {
           $rightGeoDeclare
           $leftGeoCode
           $rightGeoCode
-          ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
+          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           ${ev.value} = ${f(leftGeo, rightGeo)};
           """, FalseLiteral)
+    }
+  }
+
+}
+
+abstract class ST_UnaryOp(f: String => String) extends Expression {
+
+  def inputExpr: Expression
+
+  override def nullable: Boolean = inputExpr.nullable
+
+  override def eval(input: InternalRow): Any = {
+    throw new RuntimeException("call implement method")
+  }
+
+  override def children: Seq[Expression] = Seq(inputExpr)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    val inputCode = inputExpr.genCode(ctx)
+
+    val (inputGeo, inputGeoDeclare, inputGeoCode) = CodeGenUtil.extractGeometryConstructor(inputCode.code.toString())
+
+    if (nullable) {
+      val nullSafeEval =
+        inputGeoCode + ctx.nullSafeExec(inputExpr.nullable, inputCode.isNull) {
+          s"""
+             |${ev.isNull} = false; // resultCode could change nullability.
+             |${ev.value} = ${f(inputGeo)};
+             |""".stripMargin
+        }
+      ev.copy(code =
+        code"""
+            boolean ${ev.isNull} = true;
+            $inputGeoDeclare
+            ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+            $nullSafeEval
+            """)
+    } else {
+      ev.copy(code =
+        code"""
+            $inputGeoDeclare
+            ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+            ${ev.value} = ${f(inputGeo)};
+            """, FalseLiteral)
     }
   }
 
