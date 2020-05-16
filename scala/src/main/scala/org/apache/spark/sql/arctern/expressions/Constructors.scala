@@ -17,6 +17,7 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.arctern.CodeGenUtil
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{ArrayType, ByteType, DataType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
@@ -36,7 +37,7 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends Expression {
 
     val resultCode =
       s"""
-         |org.locationtech.jts.geom.Geometry ${ev.value}_geo = null;
+         |${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
          |${ev.value}_geo = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wktGen.value}.toString());
          |${ev.value} = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize(${ev.value}_geo);
        """.stripMargin

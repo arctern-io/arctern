@@ -36,7 +36,7 @@ class FunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("table_ST_Within")
     val rst = spark.sql("select idx, ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from table_ST_Within")
 
-    //    rst.queryExecution.debug.codegen()
+//    rst.queryExecution.debug.codegen()
     val collect = rst.collect()
 
     assert(collect(0).getBoolean(1) == true)
@@ -64,7 +64,7 @@ class FunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("table_ST_Within")
     val rst = spark.sql("select idx, ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from table_ST_Within")
 
-    //    rst.queryExecution.debug.codegen()
+//    rst.queryExecution.debug.codegen()
     val collect = rst.collect()
 
     assert(collect(0).isNullAt(1))

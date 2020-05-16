@@ -15,7 +15,7 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
-import org.apache.spark.sql.arctern.GeometryUDT
+import org.apache.spark.sql.arctern.{CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{BooleanType, DataType}
@@ -37,28 +37,24 @@ case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
     val leftCode = left.genCode(ctx)
     val rightCode = right.genCode(ctx)
 
-    val resultCode =
-      s"""
-         |org.locationtech.jts.geom.Geometry ${ev.value}_left = null;
-         |org.locationtech.jts.geom.Geometry ${ev.value}_right = null;
-         |${ev.value}_left = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${leftCode.value});
-         |${ev.value}_right = ${GeometryUDT.getClass().getName().dropRight(1)}.GeomDeserialize(${rightCode.value});
-         |${ev.value} = ${ev.value}_left.within(${ev.value}_right);
-         |""".stripMargin
+    val (leftGeo, leftGeoDeclare, leftGeoCode) = CodeGenUtil.extractGeometryConstructor(leftCode.code.toString())
+    val (rightGeo, rightGeoDeclare, rightGeoCode) = CodeGenUtil.extractGeometryConstructor(rightCode.code.toString())
 
     if (nullable) {
       val nullSafeEval =
-        leftCode.code + ctx.nullSafeExec(left.nullable, leftCode.isNull) {
-          rightCode.code + ctx.nullSafeExec(right.nullable, rightCode.isNull) {
+        leftGeoCode + ctx.nullSafeExec(left.nullable, leftCode.isNull) {
+          rightGeoCode + ctx.nullSafeExec(right.nullable, rightCode.isNull) {
             s"""
                |${ev.isNull} = false; // resultCode could change nullability.
-               |$resultCode
+               |${ev.value} = ${leftGeo}.within(${rightGeo});
                |""".stripMargin
           }
         }
-      ev.copy(code=
+      ev.copy(code =
         code"""
             boolean ${ev.isNull} = true;
+            $leftGeoDeclare
+            $rightGeoDeclare
             ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
             $nullSafeEval
             """)
@@ -67,10 +63,12 @@ case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
     else {
       ev.copy(code =
         code"""
-          ${leftCode.code}
-          ${rightCode.code}
+          $leftGeoDeclare
+          $rightGeoDeclare
+          $leftGeoCode
+          $rightGeoCode
           ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
-          $resultCode
+          ${ev.value} = $leftGeo.within($rightGeo);
           """, FalseLiteral)
     }
   }
