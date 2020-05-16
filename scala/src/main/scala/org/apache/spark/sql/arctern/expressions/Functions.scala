@@ -15,38 +15,42 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
-import org.apache.spark.sql.arctern.{CodeGenUtil, GeometryUDT}
+import org.apache.spark.sql.arctern.CodeGenUtil
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{BooleanType, DataType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
-case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
+abstract class ST_BinaryOp(f: (String, String) => String) extends Expression {
 
-  assert(inputExpr.length == 2)
+  def leftExpr: Expression
 
-  override def nullable: Boolean = inputExpr(0).nullable || inputExpr(1).nullable
+  def rightExpr: Expression
 
-  override def eval(input: InternalRow): Any = {}
+  override def nullable: Boolean = leftExpr.nullable || rightExpr.nullable
+
+  override def eval(input: InternalRow): Any = {
+    throw new RuntimeException("call implement method")
+  }
+
+  override def children: Seq[Expression] = Seq(leftExpr, rightExpr)
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val left = inputExpr(0)
-    val right = inputExpr(1)
 
-    val leftCode = left.genCode(ctx)
-    val rightCode = right.genCode(ctx)
+    val leftCode = leftExpr.genCode(ctx)
+    val rightCode = rightExpr.genCode(ctx)
 
     val (leftGeo, leftGeoDeclare, leftGeoCode) = CodeGenUtil.extractGeometryConstructor(leftCode.code.toString())
     val (rightGeo, rightGeoDeclare, rightGeoCode) = CodeGenUtil.extractGeometryConstructor(rightCode.code.toString())
 
     if (nullable) {
       val nullSafeEval =
-        leftGeoCode + ctx.nullSafeExec(left.nullable, leftCode.isNull) {
-          rightGeoCode + ctx.nullSafeExec(right.nullable, rightCode.isNull) {
+        leftGeoCode + ctx.nullSafeExec(leftExpr.nullable, leftCode.isNull) {
+          rightGeoCode + ctx.nullSafeExec(rightExpr.nullable, rightCode.isNull) {
             s"""
                |${ev.isNull} = false; // resultCode could change nullability.
-               |${ev.value} = ${leftGeo}.within(${rightGeo});
+               |${ev.value} = ${f(leftGeo, rightGeo)};
                |""".stripMargin
           }
         }
@@ -68,12 +72,21 @@ case class ST_Within(inputExpr: Seq[Expression]) extends Expression {
           $leftGeoCode
           $rightGeoCode
           ${CodeGenerator.javaType(BooleanType)} ${ev.value} = ${CodeGenerator.defaultValue(BooleanType)};
-          ${ev.value} = $leftGeo.within($rightGeo);
+          ${ev.value} = ${f(leftGeo, rightGeo)};
           """, FalseLiteral)
     }
   }
 
-  override def dataType: DataType = BooleanType
+}
 
-  override def children: Seq[Expression] = inputExpr
+
+case class ST_Within(inputExpr: Seq[Expression])
+  extends ST_BinaryOp((left, right) => s"$left.within($right)") {
+  assert(inputExpr.length == 2)
+
+  override def leftExpr: Expression = inputExpr(0)
+
+  override def rightExpr: Expression = inputExpr(1)
+
+  override def dataType: DataType = BooleanType
 }
