@@ -299,7 +299,7 @@ class TestArithmeticOps(base.BaseArithmeticOpsTests):
         exc = self.series_array_exc
         op_name = all_arithmetic_operators
         # TODO(shengjh): how to solve this?
-        # because we can't prevent 'GeoArray op np.array' when op
+        # because we can't prevent 'op(GeoArray,np.array)' when op
         # is '__add__', '__radd__' or ''.
         if op_name in ['__add__', '__radd__']:
             pass

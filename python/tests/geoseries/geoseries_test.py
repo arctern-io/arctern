@@ -1,3 +1,16 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from arctern.geoseries import GeoSeries
 from arctern.geoseries.geoarray import GeoArray, GeoDtype
 from arctern._wrapper_func import *
@@ -92,7 +105,55 @@ class TestConstructor:
             assert s[i] == s[index[0]]
 
 
+class TestType:
+    def setup_method(self):
+        self.s = GeoSeries([make_point(x, x) for x in range(5)])
+
+    def test_head_tail(self):
+        assert_is_geoseries(self.s.head())
+        assert_is_geoseries(self.s.tail())
+
+    def test_slice(self):
+        assert_is_geoseries(self.s[2::5])
+        assert_is_geoseries(self.s[::-1])
+
+    def test_loc_iloc(self):
+        assert_is_geoseries(self.s.loc[1:])
+        assert_is_geoseries(self.s.iloc[:4])
+
+    def test_take(self):
+        assert_is_geoseries(self.s.take([0, 2, 4]))
+
+    def test_geom_method(self):
+        assert_is_geoseries(self.s.buffer(0.2))
+        assert_is_geoseries(self.s.intersection(self.s))
+        assert_is_geoseries(self.s.centroid)
+
+
+class TestCRS:
+    def setup_method(self):
+        self.crs = "epsg:3854"
+        self.s = GeoSeries([make_point(x, x) for x in range(5)], crs=self.crs)
+
+    def test_constrctor(self):
+        assert self.crs == self.s.crs
+
+    def test_series_method(self):
+        assert self.s.head().crs == self.crs
+        assert self.s[:4].crs == self.crs
+        assert self.s.take([1, 3, 4]).crs == self.crs
+        assert self.s[[True, False, True, True, True]].crs == self.crs
+
+    # test methods in GeoSeries will produce GeoSeries as result
+    def test_geom_method(self):
+        self.s.buffer(0.2).crs = self.crs
+        self.s.intersection(self.s).crs = self.crs
+        self.s.centroid.crs = self.crs
+
+
 # other method will be tested in geoarray_test.py
+
+
 class TestPandasMethod:
     def test_missing_values(self):
         s = GeoSeries([make_point(1, 2), None])
@@ -118,12 +179,22 @@ class TestPandasMethod:
         s2 = GeoSeries([make_point(1, 1), None])
         assert s1.equals(s2)
 
-    # def test_
+    def test_unique(self):
+        s1 = GeoSeries([make_point(1, 1), make_point(1, 1), make_point(1, 2), None])
+        assert len(s1.unique()) == 3
+
+
+def test_geo_method_with_missing_value():
+    s1 = GeoSeries([make_point(1, 1), None])
+    s2 = GeoSeries([None, make_point(1, 1)])
+    s3 = GeoSeries([make_point(1, 1), None])
+
+    assert s1.geom_equals(s3).all()
+    assert not s1.geom_equals(s2).any()
 
 
 if __name__ == "__main__":
     from pandas import Series
 
-    s = GeoSeries(['Point (1 2)', None])
-    s1 = GeoSeries([None, None])
-    print(s.to_wkt())
+    s = Series([1, 2, 3, 2, None])
+    print(s.unique())

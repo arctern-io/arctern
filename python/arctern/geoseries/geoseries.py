@@ -110,7 +110,7 @@ class GeoSeries(Series):
     def _constructor(self):
         # Some operations result is not geometry type, we should return Series as constructor
         # (isna, notna)
-        def _try_constructor(data, index=None, crs=None, **kwargs):
+        def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
@@ -249,9 +249,13 @@ class GeoSeries(Series):
         return _binary_op(arctern.ST_Crosses, self, other).astype(bool, copy=False)
 
     def geom_equals(self, other):
+        from pandas.api.types import is_scalar
+        if is_scalar(other):
+            other = self.__class__([other] * len(self))
         result = _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
+        other_na = other.isna()
         for i, value in self.isna().items():
-            if value and other[i] is None:
+            if value and other_na[i]:
                 result[i] = True
         return result
 
