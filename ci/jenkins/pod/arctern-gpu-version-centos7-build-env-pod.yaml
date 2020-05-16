@@ -8,12 +8,12 @@ metadata:
 spec:
   containers:
   - name: arctern-gpu-build-env
-    image: registry.zilliz.com/arctern/arctern-build-env:v0.1.0-centos7-gpu
+    image: registry.zilliz.com/arctern/arctern-build-env:v0.1.1-centos7-gpu
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      value: "199f23eb8ea9d6e1a8ab761aca0c0c9c2f1c6e0826a1e219aad9f729e433be35"
+      value: "920c2bcf05c74f94d0d812ac0444f1422d2ed231a120b2daaf1fae71e0c5a6a2"
     command:
     - cat
     tty: true
