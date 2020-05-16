@@ -20,7 +20,6 @@ import org.apache.spark.sql.arctern.expressions.ST_GeomFromText
 
 class ConstructorsTest extends AdapterTest {
   test("ST_GeomFromText With Null") {
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
 
     val data = Seq(
       Row(1, "POINT (10 20)"),
@@ -45,8 +44,6 @@ class ConstructorsTest extends AdapterTest {
   }
 
   test("ST_GeomFromText") {
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
-
     val data = Seq(
       Row(1, "POINT (10 20)"),
       Row(2, "LINESTRING (0 0, 10 10, 20 20)"),

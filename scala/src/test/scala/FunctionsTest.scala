@@ -20,9 +20,6 @@ import org.apache.spark.sql.arctern.expressions.{ST_GeomFromText, ST_Within}
 
 class FunctionsTest extends AdapterTest {
   test("ST_Within") {
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)
-
     val data = Seq(
       Row(1, "POINT (20 20)", "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
       Row(2, "POINT (50 50)", "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
@@ -48,9 +45,6 @@ class FunctionsTest extends AdapterTest {
   }
 
   test("ST_Within With Null") {
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)
-
     val data = Seq(
       Row(1, null, "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
       Row(2, "POINT (50 50)", null),

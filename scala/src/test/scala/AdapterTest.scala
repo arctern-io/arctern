@@ -16,7 +16,7 @@
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.arctern.UdtRegistratorWrapper
+import org.apache.spark.sql.arctern._
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Suite}
 
 class AdapterTest extends FunSuite with BeforeAndAfterAll {
@@ -31,9 +31,11 @@ class AdapterTest extends FunSuite with BeforeAndAfterAll {
       .getOrCreate()
 
     UdtRegistratorWrapper.registerUDT()
+    UdfRegistrator.register(spark)
+
   }
 
-//  override def afterAll {
-//    spark.stop()
-//  }
+  //  override def afterAll {
+  //    spark.stop()
+  //  }
 }

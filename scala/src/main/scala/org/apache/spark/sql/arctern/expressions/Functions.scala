@@ -15,7 +15,7 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
-import org.apache.spark.sql.arctern.CodeGenUtil
+import org.apache.spark.sql.arctern.{CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{BooleanType, DataType}
@@ -124,13 +124,24 @@ abstract class ST_UnaryOp(f: String => String) extends Expression {
 }
 
 
-case class ST_Within(inputExpr: Seq[Expression])
+case class ST_Within(inputsExpr: Seq[Expression])
   extends ST_BinaryOp((left, right) => s"$left.within($right)") {
-  assert(inputExpr.length == 2)
+  assert(inputsExpr.length == 2)
 
-  override def leftExpr: Expression = inputExpr(0)
+  override def leftExpr: Expression = inputsExpr(0)
 
-  override def rightExpr: Expression = inputExpr(1)
+  override def rightExpr: Expression = inputsExpr(1)
 
   override def dataType: DataType = BooleanType
+}
+
+case class ST_Centroid(inputsExpr: Seq[Expression])
+  extends ST_UnaryOp(geo => s"$geo.getCentroid()") {
+
+  assert(inputsExpr.length == 1)
+
+  override def inputExpr: Expression = inputsExpr(0)
+
+  override def dataType: DataType = new GeometryUDT
+
 }
