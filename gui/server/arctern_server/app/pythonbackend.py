@@ -83,7 +83,8 @@ def generate_pointmap_code(input_data, params):
         float(params.get('opacity')),
         params.get('coordinate_system')
     )
-    return import_code, input_data, vega_code
+    points = input_data.get("points")
+    return import_code, points, vega_code
 
 def generate_weighted_map_code(input_data, params):
     import_code = 'from arctern.util.vega import vega_weighted_pointmap\n'
@@ -101,7 +102,15 @@ def generate_weighted_map_code(input_data, params):
         float(params.get('opacity')),
         params.get('coordinate_system')
     )
-    return import_code, input_data, vega_code
+    params_code = ""
+    params_code += input_data.get("points")
+    color_weights = input_data.get("color_weights")
+    size_weights = input_data.get("size_weights")
+    if color_weights:
+        params_code += ", color_weights={}".format(color_weights)
+    if size_weights:
+        params_code += ", size_weights={}".format(size_weights)
+    return import_code, params_code, vega_code
 
 def generate_heatmap_code(input_data, params):
     import_code = 'from arctern.util.vega import vega_heatmap\n'
@@ -117,7 +126,10 @@ def generate_heatmap_code(input_data, params):
         params.get('coordinate_system'),
         params.get('aggregation_type')
     )
-    return import_code, input_data, vega_code
+    params_code = ""
+    params_code += input_data.get("points")
+    params_code += ", " + input_data.get("weights")
+    return import_code, params_code, vega_code
 
 def generate_choropleth_map_code(input_data, params):
     import_code = 'from arctern.util.vega import vega_choroplethmap\n'
@@ -135,7 +147,10 @@ def generate_choropleth_map_code(input_data, params):
         params.get('coordinate_system'),
         params.get('aggregation_type')
     )
-    return import_code, input_data, vega_code
+    params_code = ""
+    params_code += input_data.get("region_boundaries")
+    params_code += ", " + input_data.get("weights")
+    return import_code, params_code, vega_code
 
 def generate_icon_viz_code(input_data, params):
     import_code = 'from arctern.util.vega import vega_icon\n'
@@ -150,7 +165,8 @@ def generate_icon_viz_code(input_data, params):
         params.get('icon_path'),
         params.get('coordinate_system')
     )
-    return import_code, input_data, vega_code
+    points = input_data.get("points")
+    return import_code, points, vega_code
 
 def generate_fishnetmap_code(input_data, params):
     import_code = 'from arctern.util.vega import vega_fishnetmap\n'
@@ -169,4 +185,7 @@ def generate_fishnetmap_code(input_data, params):
         params.get('coordinate_system'),
         params.get('aggregation_type')
     )
-    return import_code, input_data, vega_code
+    params_code = ""
+    params_code += input_data.get("points")
+    params_code += ", " + input_data.get("weights")
+    return import_code, params_code, vega_code

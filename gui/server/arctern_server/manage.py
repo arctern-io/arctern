@@ -26,7 +26,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 from arctern_server.app import service as app_service
-from arctern_server.app import scope as app_scope
+# from arctern_server.app import scope as app_scope
 from arctern_server.app import interpreter as app_interpreter
 from arctern_server.app import notebook as app_notebook
 from arctern_server.app import function as app_function
@@ -35,7 +35,7 @@ from arctern_server.app.common import log
 APP = Flask(__name__)
 
 APP.register_blueprint(app_service.API)
-APP.register_blueprint(app_scope.API)
+# APP.register_blueprint(app_scope.API)
 APP.register_blueprint(app_interpreter.API)
 APP.register_blueprint(app_notebook.API)
 APP.register_blueprint(app_function.API)
