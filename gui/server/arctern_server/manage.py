@@ -19,8 +19,6 @@ limitations under the License.
 import logging
 import getopt
 import sys
-from pathlib import Path
-import json
 
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -29,6 +27,7 @@ from arctern_server.app import interpreter as app_interpreter
 from arctern_server.app import notebook as app_notebook
 from arctern_server.app import function as app_function
 from arctern_server.app.common import log
+from arctern_server.app import default
 
 APP = Flask(__name__)
 
@@ -61,6 +60,10 @@ def usage():
 # pylint: disable=redefined-outer-name
 def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, LOG_FILE="/tmp/arctern_server_log.txt", LOG_LEVEL=logging.INFO):
     log.set_file(LOG_FILE, LOG_LEVEL)
+
+    default.create_default_interpreter()
+    default.create_default_notebook()
+    default.create_default_paragraph()
 
     if not IS_DEBUG:
         from waitress import serve

@@ -24,6 +24,7 @@ from arctern_server.app.common import log
 from arctern_server.app.common import config as app_config
 from arctern_server.app import codegen
 from arctern_server.app import pythonbackend
+from arctern_server.app import default
 
 API = Blueprint("function_api", __name__)
 
@@ -55,10 +56,10 @@ def _function_forward(code, notebook_id, paragraph_id):
 def load_file_zeppelin_interface():
     log.INSTANCE.info("POST /v3/loadfile: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -84,10 +85,10 @@ def load_file_zeppelin_interface():
 def save_table_zeppelin_interface():
     log.INSTANCE.info("POST /v3/savefile: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -115,10 +116,10 @@ def save_table_zeppelin_interface():
 def table_schema_zeppelin_interface():
     log.INSTANCE.info("GET /v3/table/schema: {}".format(request.args))
 
-    interpreter_type = request.args.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.args.get("notebook")
-    paragraph_id = request.args.get("paragraph")
+    interpreter_type = request.args.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.args.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.args.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.args.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -191,10 +192,10 @@ def table_schema_zeppelin_interface():
 def query_zeppelin_interface():
     log.INSTANCE.info("POST /v3/query: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -241,10 +242,10 @@ def query_zeppelin_interface():
 def render_zeppelin_interface(payload, render_type):
     log.INSTANCE.info("POST /v3/{}: {}".format(render_type, payload))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = payload.get("notebook")
-    paragraph_id = payload.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -358,9 +359,9 @@ def fishnetmap_zeppelin_interface():
 def custom_command_zeppelin_interface():
     log.INSTANCE.info("POST /v3/command: {}".format(request.json))
 
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
