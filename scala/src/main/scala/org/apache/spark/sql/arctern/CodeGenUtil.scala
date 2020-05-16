@@ -15,6 +15,15 @@
  */
 package org.apache.spark.sql.arctern
 
+import org.apache.spark.sql.catalyst.expressions.Expression
+
+abstract class ArcternExpr extends Expression {
+  def isGeometry = dataType match {
+    case _: GeometryUDT => true
+    case _ => false
+  }
+}
+
 object CodeGenUtil {
   def extractGeometryConstructor(codeString: String) = {
     val serialKeyWords = s"${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize"
@@ -59,4 +68,11 @@ object CodeGenUtil {
   }
 
   def mutableGeometryInitCode(geo_name: String) = s"org.locationtech.jts.geom.Geometry $geo_name = null;"
+
+  def serialGeometryCode(geo_code: String) = s"${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize($geo_code);"
+
+  def isGeometry(expr: Expression): Boolean = expr match {
+    case a: ArcternExpr => a.isGeometry
+    case _ => false
+  }
 }

@@ -27,7 +27,8 @@ class ConstructorsTest extends AdapterTest {
       Row(3, "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
       Row(4, "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))"),
       Row(5, "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"),
-      Row(6, null)
+      Row(6, null),
+      Row(7, "plygon(111, 123)")
     )
 
     val rdd_d = spark.sparkContext.parallelize(data)
@@ -36,9 +37,10 @@ class ConstructorsTest extends AdapterTest {
     df.createOrReplaceTempView("table_ST_GeomFromText")
     val rst = spark.sql("select idx, ST_GeomFromText(wkt) from table_ST_GeomFromText")
 
-//    rst.queryExecution.debug.codegen()
+    //    rst.queryExecution.debug.codegen()
 
     assert(rst.collect()(5).isNullAt(1))
+    assert(rst.collect()(6).isNullAt(1))
 
     rst.show(false)
   }
@@ -58,7 +60,7 @@ class ConstructorsTest extends AdapterTest {
     df.createOrReplaceTempView("table_ST_GeomFromText")
     val rst = spark.sql("select idx, ST_GeomFromText(wkt) from table_ST_GeomFromText")
 
-//    rst.queryExecution.debug.codegen()
+    //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
   }
