@@ -62,12 +62,17 @@ class TestConstructor:
         assert_is_geoseries(s)
         tm.assert_series_equal(s, expected_series, check_dtype=False)
 
+    def test_fom_geoarray(self, expected_series):
+        s = GeoSeries(expected_series.values)
+        assert_is_geoseries(s)
+        tm.assert_series_equal(s, expected_series, check_dtype=False)
+
     def test_from_wrong_type_data(self, wrong_type_data):
         with pytest.raises(TypeError):
             GeoSeries(wrong_type_data)
 
     # only support None as na value
-    def test_from_with_none_data(self):
+    def test_from_with_na_data(self):
         s = GeoSeries(['Point (1 2)', None])
         assert_is_geoseries(s)
         assert len(s) == 2
@@ -87,17 +92,38 @@ class TestConstructor:
             assert s[i] == s[index[0]]
 
 
+# other method will be tested in geoarray_test.py
 class TestPandasMethod:
     def test_missing_values(self):
-        s = GeoSeries(['Point (1 2)', None])
+        s = GeoSeries([make_point(1, 2), None])
         assert s[1] is None
         assert s.isna().tolist() == [False, True]
         assert s.notna().tolist() == [True, False]
         assert not s.dropna().isna().any()
+
+        s1 = s.fillna(make_point(1, 1))
+        s1 = s1.to_wkt()
+        assert s1[0] == "POINT (1 2)"
+        assert s1[1] == "POINT (1 1)"
+
+        # fillna with method
+        s1 = s.fillna(method='ffill')
+        assert s1[0] == s1[1]
+
+        s1 = s[::-1].fillna(method="bfill")
+        assert s1[0] == s1[1]
+
+    def test_equals(self):
+        s1 = GeoSeries([make_point(1, 1), None])
+        s2 = GeoSeries([make_point(1, 1), None])
+        assert s1.equals(s2)
+
+    # def test_
 
 
 if __name__ == "__main__":
     from pandas import Series
 
     s = GeoSeries(['Point (1 2)', None])
-    print(s.dropna().isna().all())
+    s1 = GeoSeries([None, None])
+    print(s.to_wkt())

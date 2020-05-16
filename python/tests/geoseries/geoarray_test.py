@@ -263,11 +263,11 @@ class TestSetitem(base.BaseSetitemTests):
 
 
 class TestMissing(base.BaseMissingTests):
-    """ we don't define any reductions """
     pass
 
 
 class TestReduce(base.BaseNoReduceTests):
+    """ we don't define any reductions """
     pass
 
 
@@ -406,4 +406,3 @@ if __name__ == "__main__":
 
     df = pd.DataFrame({"A": [1, 1, 2, 2, 3, 3, 1, 4], "B": data_for_grouping})
     result = df.groupby("B", sort=False).A.mean()
-

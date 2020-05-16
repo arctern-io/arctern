@@ -106,13 +106,52 @@ class GeoSeries(Series):
         # crs = CRS.from_user_input(crs)
         self.crs = crs
 
+    @property
+    def _constructor(self):
+        # Some operations result is not geometry type, we should return Series as constructor
+        # (isna, notna)
+        def _try_constructor(data, index=None, crs=None, **kwargs):
+            try:
+                return GeoSeries(data, index=index, crs=crs, **kwargs)
+            except TypeError:
+                return Series(data, index=index, **kwargs)
+
+        return _try_constructor
+
+    # --------------------------------------------------------------------------
+    # override Series method
+    # --------------------------------------------------------------------------
+    # TODO(shengjh): doc, polygon with different sequence point is equal
+    def equals(self, other):
+        return self.geom_equals(other).all()
+
+    def fillna(
+            self,
+            value=None,
+            method=None,
+            axis=None,
+            inplace=False,
+            limit=None,
+            downcast=None,
+    ):
+        return super().fillna(value, method, axis, inplace, limit, downcast)
+
+    def isna(self):
+        return super().isna()
+
+    def notna(self):
+        return ~self.isna()
+
+    def unique(self):
+        return super().unique()
+
     # -------------------------------------------------------------------------
     # Geometry related property
     # -------------------------------------------------------------------------
 
     @property
     def is_valid(self):
-        return _property_op(arctern.ST_IsValid, self)
+        return _property_op(arctern.ST_IsValid, self).astype(bool, copy=False)
 
     @property
     def length(self):
@@ -120,7 +159,7 @@ class GeoSeries(Series):
 
     @property
     def is_simple(self):
-        return _property_op(arctern.ST_IsSimple, self)
+        return _property_op(arctern.ST_IsSimple, self).astype(bool, copy=False)
 
     @property
     def area(self):
@@ -198,28 +237,29 @@ class GeoSeries(Series):
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
     def intersects(self, other):
-        return _binary_op(arctern.ST_Intersects, self, other)
+        return _binary_op(arctern.ST_Intersects, self, other).astype(bool, copy=False)
 
     def within(self, other):
-        return _binary_op(arctern.ST_Within, self, other)
+        return _binary_op(arctern.ST_Within, self, other).astype(bool, copy=False)
 
     def contains(self, other):
-        return _binary_op(arctern.ST_Contains, self, other)
+        return _binary_op(arctern.ST_Contains, self, other).astype(bool, copy=False)
 
     def crosses(self, other):
-        return _binary_op(arctern.ST_Crosses, self, other)
-
-    def equals(self, other):
-        return self.geom_equals(other).all()
+        return _binary_op(arctern.ST_Crosses, self, other).astype(bool, copy=False)
 
     def geom_equals(self, other):
-        return _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
+        result = _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
+        for i, value in self.isna().items():
+            if value and other[i] is None:
+                result[i] = True
+        return result
 
     def touches(self, other):
-        return _binary_op(arctern.ST_Touches, self, other)
+        return _binary_op(arctern.ST_Touches, self, other).astype(bool, copy=False)
 
     def overlaps(self, other):
-        return _binary_op(arctern.ST_Overlaps, self, other)
+        return _binary_op(arctern.ST_Overlaps, self, other).astype(bool, copy=False)
 
     def distance(self, other):
         return _binary_op(arctern.ST_Distance, self, other)

@@ -76,7 +76,7 @@ def from_wkb(data):
     :return: GeoArray
     """
     # pandas.infer_type can't infer custom ExtensionDtype
-    if not is_geometry_arry(data) and len(data) != 0:
+    if not isinstance(getattr(data, "dtype", None), GeoDtype) and len(data) != 0:
         from pandas.api.types import infer_dtype
         inferred = infer_dtype(data, skipna=True)
         if inferred not in ("bytes", "empty"):
@@ -144,6 +144,48 @@ class GeoArray(ExtensionArray):
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)
+
+    def fillna(self, value=None, method=None, limit=None):
+        from pandas.util._validators import validate_fillna_kwargs
+        value, method = validate_fillna_kwargs(value, method)
+
+        mask = self.isna()
+        from pandas.api.types import is_array_like, infer_dtype
+        if is_array_like(value):
+            if len(value) != len(self):
+                raise ValueError(
+                    f"Length of 'value' does not match. Got ({len(value)}) "
+                    f"expected {len(self)}"
+                )
+            value = value[mask]
+        else:
+            # because pandas infer_type(scalar) cant work on scalar value, we put the value into a list
+            value = [value]
+        if mask.any():
+            if method is not None:
+                from pandas.core.missing import pad_1d
+                from pandas.core.missing import backfill_1d
+                func = pad_1d if method == "pad" else backfill_1d
+                new_values = func(self.astype(object), limit=limit, mask=mask)
+                new_values = self._from_sequence(new_values, dtype=self.dtype)
+                # raise NotImplementedError("not support fillna with method")
+            else:
+                # translate value
+                if not isinstance(getattr(value, "dtype", value), (GeoDtype, type(None))):
+                    inferred_type = infer_dtype(value, skipna=True)
+                    if inferred_type == "string":
+                        value = arctern.ST_GeomFromText(value)
+                    elif inferred_type == "bytes":
+                        pass
+                    else:
+                        raise ValueError("can only fillna with wkt formed string or wkb formed bytes")
+
+                # fill with value
+                new_values = self.copy()
+                new_values[mask] = value
+        else:
+            new_values = self.copy()
+        return new_values
 
     def _bin_op(self, other, op):
         def convert_values(values):
@@ -230,8 +272,10 @@ class GeoArray(ExtensionArray):
         return from_wkb(scalars)
 
     def _values_for_factorize(self):
+        # we store geometry as bytes internally, just return it.
         return self.data, None
 
+    @classmethod
     def _from_factorized(cls, values, original):
         return GeoArray(values)
 
