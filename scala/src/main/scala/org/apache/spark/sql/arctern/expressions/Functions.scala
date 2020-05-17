@@ -22,7 +22,7 @@ import org.apache.spark.sql.types.{BooleanType, DataType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
-abstract class ST_BinaryOp(f: (String, String) => String) extends ArcternExpr {
+abstract class ST_BinaryOp extends ArcternExpr {
 
   def leftExpr: Expression
 
@@ -36,7 +36,7 @@ abstract class ST_BinaryOp(f: (String, String) => String) extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(leftExpr, rightExpr)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: (String, String) => String): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(leftExpr))
     assert(CodeGenUtil.isGeometryExpr(rightExpr))
 
@@ -103,7 +103,7 @@ abstract class ST_BinaryOp(f: (String, String) => String) extends ArcternExpr {
 
 }
 
-abstract class ST_UnaryOp(f: String => String) extends ArcternExpr {
+abstract class ST_UnaryOp extends ArcternExpr {
 
   def expr: Expression
 
@@ -115,7 +115,7 @@ abstract class ST_UnaryOp(f: String => String) extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(expr)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(expr))
 
     val exprCode = expr.genCode(ctx)
@@ -163,23 +163,24 @@ abstract class ST_UnaryOp(f: String => String) extends ArcternExpr {
 }
 
 
-case class ST_Within(inputsExpr: Seq[Expression])
-  extends ST_BinaryOp((left, right) => s"$left.within($right)") {
+case class ST_Within(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr(0)
 
   override def rightExpr: Expression = inputsExpr(1)
 
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.within($right)")
+
   override def dataType: DataType = BooleanType
 }
 
-case class ST_Centroid(inputsExpr: Seq[Expression])
-  extends ST_UnaryOp(geo => s"$geo.getCentroid()") {
-
+case class ST_Centroid(inputsExpr: Seq[Expression])extends ST_UnaryOp {
   assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr(0)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 
