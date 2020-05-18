@@ -281,18 +281,18 @@ def test_ST_DistanceSphere():
     import math
     p11 = "POINT(-73.981153 40.741841)"
     p12 = "POINT(200 10)"
-    data1 = GeoSeries([p11, p12])
+    data1 = GeoSeries([p11, p12], crs="EPSG:4326")
 
     p21 = "POINT(-73.99016751859183 40.729884354626904)"
     p22 = "POINT(10 2)"
-    data2 = GeoSeries([p21, p22])
+    data2 = GeoSeries([p21, p22], crs="EPSG:4326")
 
     rst = data2.distance_sphere(data1)
     assert len(rst) == 2
     assert abs(rst[0] - 1531) < 1
     assert math.isnan(rst[1])
 
-    data = GeoSeries(["POINT(0 0)"])
+    data = GeoSeries(["POINT(0 0)"], crs="EPSG:4326")
     rst = data.distance_sphere(data[0])
     assert len(rst) == 1
     assert math.isclose(rst[0], 0.0, rel_tol=1e-5)
