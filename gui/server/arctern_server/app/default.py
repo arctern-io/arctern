@@ -25,7 +25,99 @@ DEFAULT_NOTEBOOK_NAME = "arctern_default_notebook"
 DEFAULT_NOTEBOOK_ID = ""
 DEFAULT_PARAGRAPH_ID = ""
 
+_python_interpreter_setting_template = {
+    "name": "",
+    "group": "python",
+    "dependencies": [],
+    "interpreterGroup": [
+        {
+            "class": "org.apache.zeppelin.python.PythonInterpreter",
+            "defaultInterpreter": True,
+            "editor": {
+                "completionSupport": True,
+                "editOnDblClick": True,
+                "language": "python"
+            },
+            "name": "python"
+        }
+    ],
+    "properties": {
+        "zeppelin.python": {
+            "description": "Python binary executable path. It is set to python by default.(assume python is in your $PATH)",
+            "name": "zeppelin.python",
+            "type": "string",
+            "value": "python"
+        }
+    },
+    "option": {
+        "remote": True,
+        "port": -1,
+        "perNote": "shared",
+        "perUser": "shared",
+        "isExistingProcess": False,
+        "setPermission": False,
+        "owners": [],
+        "isUserImpersonate": False
+    }
+}
+
+_pyspark_interpreter_setting_template = {
+    "name": "",
+    "group": "spark",
+    "properties": {
+        "SPARK_HOME": {
+            "name": "SPARK_HOME",
+            "value": "",
+            "type": "string",
+            "description": "Location of spark distribution"
+        },
+        "master": {
+            "name": "master",
+            "value": "local[*]",
+            "type": "string",
+            "description": "Spark master uri. local | yarn-client | yarn-cluster | spark master address of standalone mode, ex) spark://master_host:7077"
+        },
+        "PYSPARK_PYTHON": {
+            "name": "PYSPARK_PYTHON",
+            "value": "python",
+            "type": "string",
+            "description": "Python binary executable to use for PySpark in both driver and workers (default is python2.7 if available, otherwise python). Property `spark.pyspark.python` take precedence if it is set"
+        },
+        "PYSPARK_DRIVER_PYTHON": {
+            "name": "PYSPARK_DRIVER_PYTHON",
+            "value": "python",
+            "type": "string",
+            "description": "Python binary executable to use for PySpark in driver only (default is `PYSPARK_PYTHON`). Property `spark.pyspark.driver.python` take precedence if it is set"
+        }
+    },
+    "interpreterGroup": [
+        {
+            "name": "pyspark",
+            "class": "org.apache.zeppelin.spark.PySparkInterpreter",
+            "defaultInterpreter": True,
+            "editor": {
+                "language": "python",
+                "editOnDblClick": False,
+                "completionKey": "TAB",
+                "completionSupport": True
+            }
+        },
+    ],
+    "dependencies": [],
+    "option": {
+        "remote": True,
+        "port": -1,
+        "perNote": "shared",
+        "perUser": "shared",
+        "isExistingProcess": False,
+        "setPermission": False,
+        "owners": [],
+        "isUserImpersonate": False
+    }
+}
+
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-branches
 def create_default_interpreter():
     interpreter_type = app_config.INSTANCE.get("interpreter", "type", fallback="python")
     log.INSTANCE.info("default interpreter type: {}".format(interpreter_type))
@@ -60,14 +152,13 @@ def create_default_interpreter():
             if arctern_setting["group"] != "python":
                 raise Exception("interpreter name already in use, please use other name instead!")
             DEFAULT_INTERPRETER_ID = arctern_setting["id"]
-            arctern_setting["properties"]["zeppelin.python"]["value"] = python_path
-            update_response = requests.put(url=setting_url + "/" + DEFAULT_INTERPRETER_ID, json=arctern_setting)
+            _python_interpreter_setting_template["properties"]["zeppelin.python"]["value"] = python_path
+            update_response = requests.put(url=setting_url + "/" + DEFAULT_INTERPRETER_ID, json=_python_interpreter_setting_template)
             log.INSTANCE.info(update_response.text.encode("utf-8"))
         else:       # create new interpreter setting
-            arctern_setting = all_interpreter["python"]
-            arctern_setting["name"] = DEFAULT_INTERPRETER_NAME
-            arctern_setting["properties"]["zeppelin.python"]["value"] = python_path
-            create_response = requests.post(url=setting_url, json=arctern_setting)
+            _python_interpreter_setting_template["name"] = DEFAULT_INTERPRETER_NAME
+            _python_interpreter_setting_template["properties"]["zeppelin.python"]["value"] = python_path
+            create_response = requests.post(url=setting_url, json=_python_interpreter_setting_template)
             log.INSTANCE.info(create_response.text.encode('utf-8'))
             DEFAULT_INTERPRETER_ID = create_response.json()["body"]["id"]
         DEFAULT_INTERPRETER_NAME = "%" + DEFAULT_INTERPRETER_NAME
@@ -79,22 +170,21 @@ def create_default_interpreter():
         if exists:  # update interpreter setting
             if arctern_setting["group"] != "spark":
                 raise Exception("interpreter name already in use, please use other name instead!")
-            DEFAULT_INTERPRETER_ID = arctern_setting["id"]
-            arctern_setting["name"] = DEFAULT_INTERPRETER_NAME
-            arctern_setting["properties"]["SPARK_HOME"]["value"] = spark_home
-            arctern_setting["properties"]["master"]["value"] = master_addr
-            arctern_setting["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
-            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
-            update_response = requests.put(url=setting_url + "/" + DEFAULT_INTERPRETER_ID, json=arctern_setting)
+            DEFAULT_INTERPRETER_ID = _pyspark_interpreter_setting_template["id"]
+            _pyspark_interpreter_setting_template["name"] = DEFAULT_INTERPRETER_NAME
+            _pyspark_interpreter_setting_template["properties"]["SPARK_HOME"]["value"] = spark_home
+            _pyspark_interpreter_setting_template["properties"]["master"]["value"] = master_addr
+            _pyspark_interpreter_setting_template["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
+            _pyspark_interpreter_setting_template["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
+            update_response = requests.put(url=setting_url + "/" + DEFAULT_INTERPRETER_ID, json=_pyspark_interpreter_setting_template)
             log.INSTANCE.info(update_response.text.encode("utf-8"))
         else:       # create new interpreter setting
-            arctern_setting = all_interpreter["spark"]
-            arctern_setting["name"] = DEFAULT_INTERPRETER_NAME
-            arctern_setting["properties"]["SPARK_HOME"]["value"] = spark_home
-            arctern_setting["properties"]["master"]["value"] = master_addr
-            arctern_setting["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
-            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
-            create_response = requests.post(url=setting_url, json=arctern_setting)
+            _pyspark_interpreter_setting_template["name"] = DEFAULT_INTERPRETER_NAME
+            _pyspark_interpreter_setting_template["properties"]["SPARK_HOME"]["value"] = spark_home
+            _pyspark_interpreter_setting_template["properties"]["master"]["value"] = master_addr
+            _pyspark_interpreter_setting_template["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
+            _pyspark_interpreter_setting_template["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
+            create_response = requests.post(url=setting_url, json=_pyspark_interpreter_setting_template)
             log.INSTANCE.info(create_response.text.encode('utf-8'))
             DEFAULT_INTERPRETER_ID = create_response.json()["body"]["id"]
         DEFAULT_INTERPRETER_NAME = "%" + DEFAULT_INTERPRETER_NAME + ".pyspark"
