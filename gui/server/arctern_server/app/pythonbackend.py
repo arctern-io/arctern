@@ -58,7 +58,9 @@ def generate_save_code(table):
     table_name = table.get("table_name")
 
     if options:
-        save_code = '{0}.to_{1}("{2}", {3})'.format(table_name, file_format, path, **options)
+        uid = str(uuid.uuid1()).replace("-", "")
+        save_code = "options_{} = {}\n".format(uid, options)
+        save_code += '{0}.to_{1}("{2}", **options)'.format(table_name, file_format, path)
     else:
         save_code = '{0}.to_{1}("{2}")'.format(table_name, file_format, path)
     return save_code

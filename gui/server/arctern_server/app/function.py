@@ -110,8 +110,8 @@ def save_table_zeppelin_interface():
         return jsonify(**result)
     return jsonify(status='success', code=200, message='save table successfully!')
 
-# pylint: disable = too-many-branches
-# pylint: disable = too-many-statements
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 @API.route('/table/schema', methods=['GET'])
 def table_schema_zeppelin_interface():
     log.INSTANCE.info("GET /table/schema: {}".format(request.args))
