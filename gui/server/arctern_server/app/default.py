@@ -170,7 +170,7 @@ def create_default_interpreter():
         if exists:  # update interpreter setting
             if arctern_setting["group"] != "spark":
                 raise Exception("interpreter name already in use, please use other name instead!")
-            DEFAULT_INTERPRETER_ID = _pyspark_interpreter_setting_template["id"]
+            DEFAULT_INTERPRETER_ID = arctern_setting["id"]
             _pyspark_interpreter_setting_template["name"] = DEFAULT_INTERPRETER_NAME
             _pyspark_interpreter_setting_template["properties"]["SPARK_HOME"]["value"] = spark_home
             _pyspark_interpreter_setting_template["properties"]["master"]["value"] = master_addr
