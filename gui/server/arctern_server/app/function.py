@@ -201,7 +201,7 @@ def query_zeppelin_interface():
         return jsonify(status="error", code=-1, message="no notebook specific!")
 
     query_code = interpreter_name + "\n\n"
-    sql = request.json.get("sql")
+    sql = request.json["input_data"]["sql"]
 
     collect_result = request.json.get("collect_result")
     if interpreter_type == "pyspark":
