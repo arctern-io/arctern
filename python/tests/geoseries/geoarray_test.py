@@ -300,7 +300,7 @@ class TestArithmeticOps(base.BaseArithmeticOpsTests):
         op_name = all_arithmetic_operators
         # TODO(shengjh): how to solve this?
         # because we can't prevent 'op(GeoArray,np.array)' when op
-        # is '__add__', '__radd__' or ''.
+        # is '__add__' or '__radd__'.
         if op_name in ['__add__', '__radd__']:
             pass
         else:
@@ -369,40 +369,3 @@ class TestPrinting(base.BasePrintingTests):
 class TestParsing(base.BaseParsingTests):
     pass
 
-
-if __name__ == "__main__":
-    def data_1():
-        """Length-100 array for this type.
-
-       * data[0] and data[1] should both be non missing
-       * data[0] and data[1] should not be equal
-       """
-
-        wkt = [make_point(x, x) for x in range(100)]
-        ga = from_wkt(wkt)
-        return ga
-
-
-    def data_for_grouping_1():
-        """Data for factorization, grouping, and unique tests.
-
-        Expected to be like [B, B, NA, NA, A, A, B, C]
-
-        Where A < B < C and NA is missing
-        """
-        return from_wkt([make_point(1, 1),
-                         make_point(1, 1),
-                         None,
-                         None,
-                         make_point(0, 0),
-                         make_point(0, 0),
-                         make_point(1, 1),
-                         make_point(2, 2)])
-
-
-    na_value = None
-    data = data_1()
-    data_for_grouping = data_for_grouping_1()
-
-    df = pd.DataFrame({"A": [1, 1, 2, 2, 3, 3, 1, 4], "B": data_for_grouping})
-    result = df.groupby("B", sort=False).A.mean()

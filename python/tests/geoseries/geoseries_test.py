@@ -152,8 +152,6 @@ class TestCRS:
 
 
 # other method will be tested in geoarray_test.py
-
-
 class TestPandasMethod:
     def test_missing_values(self):
         s = GeoSeries([make_point(1, 2), None])
@@ -191,10 +189,3 @@ def test_geo_method_with_missing_value():
 
     assert s1.geom_equals(s3).all()
     assert not s1.geom_equals(s2).any()
-
-
-if __name__ == "__main__":
-    from pandas import Series
-
-    s = Series([1, 2, 3, 2, None])
-    print(s.unique())
