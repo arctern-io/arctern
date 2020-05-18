@@ -130,6 +130,7 @@ class GeoSeries(Series):
 
         super().__init__(data, index=index, name=name, **kwargs)
 
+        crs = crs.upper() if crs is not None else crs
         self.crs = crs
 
     def set_crs(self, crs):

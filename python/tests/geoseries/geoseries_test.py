@@ -136,19 +136,19 @@ class TestCRS:
         self.s = GeoSeries([make_point(x, x) for x in range(5)], crs=self.crs)
 
     def test_constrctor(self):
-        assert self.crs == self.s.crs
+        assert self.crs.upper() == self.s.crs
 
     def test_series_method(self):
-        assert self.s.head().crs == self.crs
-        assert self.s[:4].crs == self.crs
-        assert self.s.take([1, 3, 4]).crs == self.crs
-        assert self.s[[True, False, True, True, True]].crs == self.crs
+        assert self.s.head().crs == self.crs.upper()
+        assert self.s[:4].crs == self.crs.upper()
+        assert self.s.take([1, 3, 4]).crs == self.crs.upper()
+        assert self.s[[True, False, True, True, True]].crs == self.crs.upper()
 
     # test methods in GeoSeries will produce GeoSeries as result
     def test_geom_method(self):
-        self.s.buffer(0.2).crs = self.crs
-        self.s.intersection(self.s).crs = self.crs
-        self.s.centroid.crs = self.crs
+        self.s.buffer(0.2).crs = self.crs.upper()
+        self.s.intersection(self.s).crs = self.crs.upper()
+        self.s.centroid.crs = self.crs.upper()
 
 
 # other method will be tested in geoarray_test.py
