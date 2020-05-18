@@ -81,19 +81,19 @@ def create_default_interpreter():
                 raise Exception("interpreter name already in use, please use other name instead!")
             DEFAULT_INTERPRETER_ID = arctern_setting["id"]
             arctern_setting["name"] = DEFAULT_INTERPRETER_NAME
-            arctern_setting["properties"]["SPARK_HOME"]["defaultValue"] = spark_home
-            arctern_setting["properties"]["master"]["defaultValue"] = master_addr
-            arctern_setting["properties"]["PYSPARK_PYTHON"]["defaultValue"] = pyspark_python
-            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["defaultValue"] = pyspark_driver_python
+            arctern_setting["properties"]["SPARK_HOME"]["value"] = spark_home
+            arctern_setting["properties"]["master"]["value"] = master_addr
+            arctern_setting["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
+            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
             update_response = requests.put(url=setting_url + "/" + DEFAULT_INTERPRETER_ID, json=arctern_setting)
             log.INSTANCE.info(update_response.text.encode("utf-8"))
         else:       # create new interpreter setting
             arctern_setting = all_interpreter["spark"]
             arctern_setting["name"] = DEFAULT_INTERPRETER_NAME
-            arctern_setting["properties"]["SPARK_HOME"]["defaultValue"] = spark_home
-            arctern_setting["properties"]["master"]["defaultValue"] = master_addr
-            arctern_setting["properties"]["PYSPARK_PYTHON"]["defaultValue"] = pyspark_python
-            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["defaultValue"] = pyspark_driver_python
+            arctern_setting["properties"]["SPARK_HOME"]["value"] = spark_home
+            arctern_setting["properties"]["master"]["value"] = master_addr
+            arctern_setting["properties"]["PYSPARK_PYTHON"]["value"] = pyspark_python
+            arctern_setting["properties"]["PYSPARK_DRIVER_PYTHON"]["value"] = pyspark_driver_python
             create_response = requests.post(url=setting_url, json=arctern_setting)
             log.INSTANCE.info(create_response.text.encode('utf-8'))
             DEFAULT_INTERPRETER_ID = create_response.json()["body"]["id"]
