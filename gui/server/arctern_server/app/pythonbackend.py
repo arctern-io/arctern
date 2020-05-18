@@ -55,6 +55,9 @@ def generate_save_code(table):
     path = table.get("path")
     file_format = table.get("format")
     options = table.get("options")
+    if "header" in options:
+        header = options.get("header")
+        options["header"] = 0 if header == "True" else None
     table_name = table.get("table_name")
 
     if options:
