@@ -543,7 +543,7 @@ def ST_IsSimple(geos):
 @arctern_udf('binary')
 def ST_GeometryType(geos):
     """
-    For each geometry in geometries, return a string that indicates is type.
+    For each geometry in geometries, return a string that indicates it's type.
 
     :type geos: Series(dtype: object)
     :param geos: Geometries in WKB form.
