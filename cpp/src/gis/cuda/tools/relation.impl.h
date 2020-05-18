@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <cassert>
 
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
@@ -312,13 +313,13 @@ DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2)
   return x1 * y2 - x2 * y1;
 }
 
-DEVICE_RUNNABLE inline double GetX(const double* polygon, int index) {
-  return polygon[2 * index];
-}
-
-DEVICE_RUNNABLE inline double GetY(const double* polygon, int index) {
-  return polygon[2 * index + 1];
-}
+//DEVICE_RUNNABLE inline double GetX(const double* polygon, int index) {
+//  return polygon[2 * index];
+//}
+//
+//DEVICE_RUNNABLE inline double GetY(const double* polygon, int index) {
+//  return polygon[2 * index + 1];
+//}
 
 struct Point {
   double x;
@@ -330,16 +331,22 @@ struct Iter {
   const double* values;
 };
 
-DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(Point point, const double* polygon,
+enum class PointInPolygonResult {
+  kIn,
+  kAtEdge,
+  kOut,
+};
+
+DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(Point point, const double2* polygon,
                                                        int size) {
   int winding_num = 0;
-  double dx2 = GetX(polygon, size - 1) - point.x;
-  double dy2 = GetY(polygon, size - 1) - point.y;
+  double dx2 = polygon[size - 1].x - point.x;
+  double dy2 = polygon[size - 1].y - point.y;
   for (int index = 0; index < size; ++index) {
     auto dx1 = dx2;
     auto dy1 = dy2;
-    dx2 = GetX(polygon, index) - point.x;
-    dy2 = GetY(polygon, index) - point.y;
+    dx2 = polygon[index].x - point.x;
+    dy2 = polygon[index].y - point.y;
 
     bool ref = dy1 < 0;
     if (ref != (dy2 < 0)) {
@@ -358,7 +365,7 @@ DEVICE_RUNNABLE inline bool PointInPolygonImpl(Point point, Iter& polygon_iter) 
   // offsets of value for polygons
   for (int shape_index = 0; shape_index < shape_size; shape_index++) {
     int vertex_size = (int)*polygon_iter.metas++;
-    auto is_in = PointInSimplePolygonHelper(point, polygon_iter.values, vertex_size);
+    auto is_in = PointInSimplePolygonHelper(point, (const double2*)polygon_iter.values, vertex_size);
     polygon_iter.values += vertex_size * 2;
     if (shape_index == 0) {
       final = is_in;
@@ -369,7 +376,7 @@ DEVICE_RUNNABLE inline bool PointInPolygonImpl(Point point, Iter& polygon_iter) 
   return final;
 }
 
-inline DEVICE_RUNNABLE bool PointInPolygon(ConstGpuContext& point,
+DEVICE_RUNNABLE inline bool PointInPolygon(ConstGpuContext& point,
                                            ConstGpuContext& polygon, int index) {
   auto pv = point.get_value_ptr(index);
   auto iter = Iter{polygon.get_meta_ptr(index), polygon.get_value_ptr(index)};
