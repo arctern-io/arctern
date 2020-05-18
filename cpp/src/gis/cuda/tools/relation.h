@@ -21,6 +21,8 @@
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/de9im_matrix.h"
 #include "gis/cuda/tools/relation.h"
+#include "gis/cuda/common/gis_definitions.h"
+
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -29,6 +31,11 @@ struct LineRelationResult {
   int CC;             // dimension of RR
   bool is_coveredby;  // is line coveredby LineString
   int cross_count;
+};
+
+struct PointInPolygonResult {
+  bool is_in;
+  bool is_at_edge;
 };
 
 struct KernelBuffer {
@@ -50,6 +57,9 @@ DEVICE_RUNNABLE LineRelationResult LineOnLineString(const double2* line_endpoint
                                                     int right_size,
                                                     const double2* right_points,
                                                     KernelBuffer& buffer);
+
+DEVICE_RUNNABLE PointInPolygonResult PointInPolygon(ConstGpuContext& point,
+                                                    ConstGpuContext& polygon, int index);
 
 }  // namespace cuda
 }  // namespace gis

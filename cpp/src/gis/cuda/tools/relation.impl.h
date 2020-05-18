@@ -23,7 +23,6 @@
 #include <cassert>
 #include <utility>
 
-#include "gis/cuda/common/gis_definitions.h"
 #include "gis/cuda/container/kernel_vector.h"
 #include "gis/cuda/tools/relation.h"
 
@@ -311,16 +310,9 @@ DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2)
   return x1 * y2 - x2 * y1;
 }
 
-
 struct Point {
   double x;
   double y;
-};
-
-enum class PointInPolygonResult {
-  kIn,
-  kAtEdge,
-  kOut,
 };
 
 DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
@@ -345,29 +337,36 @@ DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
   return winding_num != 0;
 }
 
-DEVICE_RUNNABLE inline bool PointInPolygonImpl(double2 point,
-                                               ConstGpuContext::ConstIter& polygon_iter) {
+
+
+DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
+    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
   int shape_size = polygon_iter.read_meta<int>();
-  bool final = false;
+  bool final_is_in = false;
+  bool final_is_at_edge = false;
   // offsets of value for polygons
+
   for (int shape_index = 0; shape_index < shape_size; shape_index++) {
     auto vertex_size = polygon_iter.read_meta<int>();
     auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
 
     auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
-    // auto is_at_edge = PointOnLineString(point, vertex_size, values);
+    auto is_at_edge = !!PointOnLineString(point, vertex_size, values);
+    final_is_at_edge = final_is_at_edge || is_at_edge;
 
     if (shape_index == 0) {
-      final = is_in;
+      final_is_in = is_in;
     } else {
-      final = final && !is_in;
+      final_is_in = final_is_in && !is_in;
     }
   }
-  return final;
+
+  return PointInPolygonResult{final_is_in, final_is_at_edge};
 }
 
-DEVICE_RUNNABLE inline bool PointInPolygon(ConstGpuContext& point,
-                                           ConstGpuContext& polygon, int index) {
+DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygon(ConstGpuContext& point,
+                                                           ConstGpuContext& polygon,
+                                                           int index) {
   auto pv = point.get_value_ptr(index);
   auto iter = polygon.get_iter(index);
 

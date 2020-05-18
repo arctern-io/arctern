@@ -47,6 +47,9 @@ DEVICE_RUNNABLE Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
       result = PointRelateToLineString(left_point, right_size, right_points);
       break;
     }
+    case WkbCategory::kPolygon: {
+
+    }
     default: {
       assert(false);
       result = de9im::INVALID_MATRIX;

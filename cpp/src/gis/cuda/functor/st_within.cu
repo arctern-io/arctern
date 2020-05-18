@@ -47,7 +47,7 @@ __global__ void ST_WithinKernel(ConstGpuContext left, ConstGpuContext right,
     // handle point to point case only
     if (left_tag.get_category() == WkbCategory::kPoint &&
         right_tag.get_category() == WkbCategory::kPolygon) {
-      result[tid] = PointInPolygon(left, right, tid);
+      result[tid] = PointInPolygon(left, right, tid).is_in;
     } else {
       result[tid] = false;
     }
