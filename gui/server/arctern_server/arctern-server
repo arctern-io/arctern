@@ -26,7 +26,6 @@ if __name__ == '__main__':
     IS_DEBUG = True
     IP = "0.0.0.0"
     PORT = 8080
-    JSON_CONFIG = None
     LOG_FILE = "/tmp/arctern_server_log.txt"
     LOG_LEVEL = logging.INFO
 
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     }
 
     try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         manage.usage()
@@ -55,11 +54,9 @@ if __name__ == '__main__':
             IP = arg
         elif opt == "-p":
             PORT = arg
-        elif opt == '-c':
-            JSON_CONFIG = arg
         elif opt == '--logfile':
             LOG_FILE = arg
         elif opt == '--loglevel':
             LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
 
-    manage.main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
+    manage.main(IS_DEBUG, IP, PORT, LOG_FILE, LOG_LEVEL)
