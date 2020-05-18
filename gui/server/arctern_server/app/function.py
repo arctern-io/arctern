@@ -22,8 +22,9 @@ from flask import Blueprint, jsonify, request
 
 from arctern_server.app.common import log
 from arctern_server.app.common import config as app_config
-from arctern_server.app import codegen
+from arctern_server.app import pysparkbackend
 from arctern_server.app import pythonbackend
+from arctern_server.app import default
 
 API = Blueprint("function_api", __name__)
 
@@ -51,14 +52,14 @@ def _function_forward(code, notebook_id, paragraph_id):
     response = requests.post(url=url)
     return response.json()
 
-@API.route('/v3/loadfile', methods=['POST'])
+@API.route('/loadfile', methods=['POST'])
 def load_file_zeppelin_interface():
-    log.INSTANCE.info("POST /v3/loadfile: {}".format(request.json))
+    log.INSTANCE.info("POST /loadfile: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -67,7 +68,7 @@ def load_file_zeppelin_interface():
     tables = request.json.get("tables")
     for table in tables:
         if interpreter_type == "pyspark":
-            load_code += codegen.generate_load_code(table)
+            load_code += pysparkbackend.generate_load_code(table)
         elif interpreter_type == "python":
             load_code += pythonbackend.generate_load_code(table)
         else:
@@ -80,14 +81,14 @@ def load_file_zeppelin_interface():
         return jsonify(**result)
     return jsonify(status='success', code=200, message='load table successfully!')
 
-@API.route('/v3/savefile', methods=['POST'])
+@API.route('/savefile', methods=['POST'])
 def save_table_zeppelin_interface():
-    log.INSTANCE.info("POST /v3/savefile: {}".format(request.json))
+    log.INSTANCE.info("POST /savefile: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -96,7 +97,7 @@ def save_table_zeppelin_interface():
     tables = request.json.get("tables")
     for table in tables:
         if interpreter_type == "pyspark":
-            save_code += codegen.generate_save_code(table)
+            save_code += pysparkbackend.generate_save_code(table)
         elif interpreter_type == "python":
             save_code += pythonbackend.generate_save_code(table)
         else:
@@ -111,14 +112,14 @@ def save_table_zeppelin_interface():
 
 # pylint: disable = too-many-branches
 # pylint: disable = too-many-statements
-@API.route('/v3/table/schema', methods=['GET'])
+@API.route('/table/schema', methods=['GET'])
 def table_schema_zeppelin_interface():
-    log.INSTANCE.info("GET /v3/table/schema: {}".format(request.args))
+    log.INSTANCE.info("GET /table/schema: {}".format(request.args))
 
-    interpreter_type = request.args.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.args.get("notebook")
-    paragraph_id = request.args.get("paragraph")
+    interpreter_type = request.args.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.args.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.args.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.args.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -126,7 +127,7 @@ def table_schema_zeppelin_interface():
     table_name = request.args.get("table")
     table_schema_code = interpreter_name + "\n\n"
     if interpreter_type == "pyspark":
-        table_schema_code += codegen.generate_table_schema_code(table_name)
+        table_schema_code += pysparkbackend.generate_table_schema_code(table_name)
     elif interpreter_type == "python":
         table_schema_code += pythonbackend.generate_table_schema_code(table_name)
     else:
@@ -187,14 +188,14 @@ def table_schema_zeppelin_interface():
         schema=schema,
     )
 
-@API.route('/v3/query', methods=['POST'])
+@API.route('/query', methods=['POST'])
 def query_zeppelin_interface():
-    log.INSTANCE.info("POST /v3/query: {}".format(request.json))
+    log.INSTANCE.info("POST /query: {}".format(request.json))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -205,9 +206,9 @@ def query_zeppelin_interface():
     collect_result = request.json.get("collect_result")
     if interpreter_type == "pyspark":
         if collect_result is None or collect_result == "1":
-            query_code += codegen.generate_run_for_json_code(sql)
+            query_code += pysparkbackend.generate_run_for_json_code(sql)
         else:
-            query_code += codegen.generate_run_sql_code(sql)
+            query_code += pysparkbackend.generate_run_sql_code(sql)
     else:
         raise Exception("Unsupported interpreter type!")
 
@@ -239,12 +240,12 @@ def query_zeppelin_interface():
     )
 
 def render_zeppelin_interface(payload, render_type):
-    log.INSTANCE.info("POST /v3/{}: {}".format(render_type, payload))
+    log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
 
-    interpreter_type = request.json.get("interpreter_type") or "pyspark"
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = payload.get("notebook")
-    paragraph_id = payload.get("paragraph")
+    interpreter_type = request.json.get("interpreter_type") or default.DEFAULT_INTERPRETER_TYPE
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
@@ -252,15 +253,17 @@ def render_zeppelin_interface(payload, render_type):
     render_code = interpreter_name + "\n\n"
     input_data = payload.get("input_data")
     params = payload.get("params")
+    import uuid
+    uid = str(uuid.uuid1()).replace("-", "")
 
     if interpreter_type == "pyspark":
         generate_func = {
-            "pointmap": codegen.generate_pointmap_code,
-            "heatmap": codegen.generate_heatmap_code,
-            "choroplethmap": codegen.generate_choropleth_map_code,
-            "weighted_pointmap": codegen.generate_weighted_map_code,
-            "icon_viz": codegen.generate_icon_viz_code,
-            "fishnetmap": codegen.generate_fishnetmap_code,
+            "pointmap": pysparkbackend.generate_pointmap_code,
+            "heatmap": pysparkbackend.generate_heatmap_code,
+            "choroplethmap": pysparkbackend.generate_choropleth_map_code,
+            "weighted_pointmap": pysparkbackend.generate_weighted_map_code,
+            "icon_viz": pysparkbackend.generate_icon_viz_code,
+            "fishnetmap": pysparkbackend.generate_fishnetmap_code,
         }
         sql_code, vega_code = generate_func[render_type](input_data.get("sql"), params)
 
@@ -269,9 +272,9 @@ def render_zeppelin_interface(payload, render_type):
         for i in range(line_count - 1):
             line = split_code[i]
             render_code += line + "\n"
-        render_code += "res = {}\n".format(split_code[line_count - 1] + "\n")
-        render_code += "vega = {}\n".format(vega_code)
-        render_code += "data = {}(vega, res)\n".format(render_type)
+        render_code += "res_{} = {}\n".format(uid, split_code[line_count - 1] + "\n")
+        render_code += "vega_{} = {}\n".format(uid, vega_code)
+        render_code += "data_{0} = {1}(vega_{0}, res_{0})\n".format(uid, render_type)
     elif interpreter_type == "python":
         generate_func = {
             "pointmap": pythonbackend.generate_pointmap_code,
@@ -291,18 +294,18 @@ def render_zeppelin_interface(payload, render_type):
         }
         import_code, params_code, vega_code = generate_func[render_type](input_data, params)
         render_code += import_code
-        render_code += "vega = {}\n".format(vega_code)
-        render_code += "data = {}(vega, {})\n".format(layer_func[render_type], params_code)
+        render_code += "vega_{} = {}\n".format(uid, vega_code)
+        render_code += "data_{0} = {1}(vega_{0}, {2})\n".format(uid, layer_func[render_type], params_code)
     else:
         raise Exception("Unsupported interpreter type!")
 
 
-    render_code += "imgStr = \"data:image/png;base64,\"\n"
+    render_code += "imgStr_{} = \"data:image/png;base64,\"\n".format(uid)
     if interpreter_type == "pyspark":
-        render_code += "imgStr += data\n"
+        render_code += "imgStr_{0} += data_{0}\n".format(uid)
     elif interpreter_type == "python":
-        render_code += "imgStr += data.decode('utf-8')\n"
-    render_code += "print( \"%html <img src='\" + imgStr + \"'>\" )\n"
+        render_code += "imgStr_{0} += data_{0}.decode('utf-8')\n".format(uid)
+    render_code += "print( \"%html <img src='\" + imgStr_{} + \"'>\" )\n".format(uid)
 
     log.INSTANCE.info("{} code: {}".format(render_type, render_code))
 
@@ -324,43 +327,43 @@ def render_zeppelin_interface(payload, render_type):
         "result": data,
     }
 
-@API.route("/v3/pointmap", methods=['POST'])
+@API.route("/pointmap", methods=['POST'])
 def pointmap_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "pointmap")
     return jsonify(**response)
 
-@API.route("/v3/heatmap", methods=['POST'])
+@API.route("/heatmap", methods=['POST'])
 def heatmap_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "heatmap")
     return jsonify(**response)
 
-@API.route("/v3/choroplethmap", methods=['POST'])
+@API.route("/choroplethmap", methods=['POST'])
 def choroplethmap_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "choroplethmap")
     return jsonify(**response)
 
-@API.route("/v3/weighted_pointmap", methods=['POST'])
+@API.route("/weighted_pointmap", methods=['POST'])
 def weighted_pointmap_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "weighted_pointmap")
     return jsonify(**response)
 
-@API.route("/v3/icon_viz", methods=['POST'])
+@API.route("/icon_viz", methods=['POST'])
 def icon_viz_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "icon_viz")
     return jsonify(**response)
 
-@API.route("/v3/fishnetmap", methods=['POST'])
+@API.route("/fishnetmap", methods=['POST'])
 def fishnetmap_zeppelin_interface():
     response = render_zeppelin_interface(request.json, "fishnetmap")
     return jsonify(**response)
 
-@API.route("/v3/command", methods=['POST'])
+@API.route("/command", methods=['POST'])
 def custom_command_zeppelin_interface():
-    log.INSTANCE.info("POST /v3/command: {}".format(request.json))
+    log.INSTANCE.info("POST /command: {}".format(request.json))
 
-    interpreter_name = request.json.get("interpreter_name") or "%spark.pyspark"
-    notebook_id = request.json.get("notebook")
-    paragraph_id = request.json.get("paragraph")
+    interpreter_name = request.json.get("interpreter_name") or default.DEFAULT_INTERPRETER_NAME
+    notebook_id = request.json.get("notebook") or default.DEFAULT_NOTEBOOK_ID
+    paragraph_id = request.json.get("paragraph") or default.DEFAULT_PARAGRAPH_ID
 
     if notebook_id is None:
         return jsonify(status="error", code=-1, message="no notebook specific!")
