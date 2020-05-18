@@ -20,14 +20,12 @@
 #include <thrust/extrema.h>
 
 #include <algorithm>
-#include <utility>
 #include <cassert>
-
-#include "gis/cuda/container/kernel_vector.h"
-#include "gis/cuda/tools/relation.h"
+#include <utility>
 
 #include "gis/cuda/common/gis_definitions.h"
-
+#include "gis/cuda/container/kernel_vector.h"
+#include "gis/cuda/tools/relation.h"
 
 namespace arctern {
 namespace gis {
@@ -274,7 +272,7 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
 }
 
 DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int right_size,
-                                               const double2* right_points) {
+                                                      const double2* right_points) {
   if (right_size == 0) {
     return Matrix("FFFFFFFF*");
   }
@@ -313,22 +311,10 @@ DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2)
   return x1 * y2 - x2 * y1;
 }
 
-//DEVICE_RUNNABLE inline double GetX(const double* polygon, int index) {
-//  return polygon[2 * index];
-//}
-//
-//DEVICE_RUNNABLE inline double GetY(const double* polygon, int index) {
-//  return polygon[2 * index + 1];
-//}
 
 struct Point {
   double x;
   double y;
-};
-
-struct Iter {
-  const uint32_t* metas;
-  const double* values;
 };
 
 enum class PointInPolygonResult {
@@ -337,8 +323,8 @@ enum class PointInPolygonResult {
   kOut,
 };
 
-DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(Point point, const double2* polygon,
-                                                       int size) {
+DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
+                                                       const double2* polygon) {
   int winding_num = 0;
   double dx2 = polygon[size - 1].x - point.x;
   double dy2 = polygon[size - 1].y - point.y;
@@ -359,14 +345,18 @@ DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(Point point, const double
   return winding_num != 0;
 }
 
-DEVICE_RUNNABLE inline bool PointInPolygonImpl(Point point, Iter& polygon_iter) {
-  int shape_size = (int)*polygon_iter.metas++;
+DEVICE_RUNNABLE inline bool PointInPolygonImpl(double2 point,
+                                               ConstGpuContext::ConstIter& polygon_iter) {
+  int shape_size = polygon_iter.read_meta<int>();
   bool final = false;
   // offsets of value for polygons
   for (int shape_index = 0; shape_index < shape_size; shape_index++) {
-    int vertex_size = (int)*polygon_iter.metas++;
-    auto is_in = PointInSimplePolygonHelper(point, (const double2*)polygon_iter.values, vertex_size);
-    polygon_iter.values += vertex_size * 2;
+    auto vertex_size = polygon_iter.read_meta<int>();
+    auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
+
+    auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
+    // auto is_at_edge = PointOnLineString(point, vertex_size, values);
+
     if (shape_index == 0) {
       final = is_in;
     } else {
@@ -379,10 +369,12 @@ DEVICE_RUNNABLE inline bool PointInPolygonImpl(Point point, Iter& polygon_iter) 
 DEVICE_RUNNABLE inline bool PointInPolygon(ConstGpuContext& point,
                                            ConstGpuContext& polygon, int index) {
   auto pv = point.get_value_ptr(index);
-  auto iter = Iter{polygon.get_meta_ptr(index), polygon.get_value_ptr(index)};
-  auto result = PointInPolygonImpl(Point{pv[0], pv[1]}, iter);
+  auto iter = polygon.get_iter(index);
+
+  auto result = PointInPolygonImpl(double2{pv[0], pv[1]}, iter);
   assert(iter.metas == polygon.get_meta_ptr(index + 1));
   assert(iter.values == polygon.get_value_ptr(index + 1));
+
   return result;
 }
 
