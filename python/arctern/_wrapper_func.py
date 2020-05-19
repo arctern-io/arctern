@@ -71,11 +71,8 @@ def arctern_udf(*arg_types):
         @wraps(func)
         def wrapper(*warpper_args):
             import pandas as pd
-            pd_series_type = type(pd.Series([None]))
             array_len = 1
             for arg in warpper_args:
-                # Objects that are considered list-like are for example Python lists, tuples, sets, NumPy arrays,
-                # Pandas Series and Pandas ExtensionArray.
                 if pd.api.types.is_list_like(arg):
                     array_len = len(arg)
                     break
