@@ -17,6 +17,7 @@
 
 #pragma once
 #include "gis/cuda/common/gis_definitions.h"
+#include "gis/cuda/tools/de9im_matrix.h"
 
 namespace arctern {
 namespace gis {
@@ -24,6 +25,7 @@ namespace cuda {
 
 void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results);
+
 
 }  // namespace cuda
 }  // namespace gis

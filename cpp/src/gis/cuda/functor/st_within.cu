@@ -15,58 +15,27 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//
-// Created by mike on 2/10/20.
-//
-#include <cuda_runtime.h>
-#include <thrust/pair.h>
-
-#include <cmath>
-
-#include "gis/cuda/common/common.h"
 #include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/functor/st_relate.h"
 #include "gis/cuda/functor/st_within.h"
-#include "gis/cuda/tools/relation.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
-namespace {
-
-
-
-__global__ void ST_WithinKernel(ConstGpuContext left, ConstGpuContext right,
-                                bool* result) {
-  auto tid = threadIdx.x + blockIdx.x * blockDim.x;
-  if (tid < left.size) {
-    auto left_tag = left.get_tag(tid);
-    auto right_tag = right.get_tag(tid);
-    // handle 2d case only for now
-    assert(left_tag.get_space_type() == WkbSpaceType::XY);
-    assert(right_tag.get_space_type() == WkbSpaceType::XY);
-    // handle point to point case only
-    if (left_tag.get_category() == WkbCategory::kPoint &&
-        right_tag.get_category() == WkbCategory::kPolygon) {
-      result[tid] = PointInPolygon(left, right, tid).is_in;
-    } else {
-      result[tid] = false;
-    }
-  }
-}
-}  // namespace
 
 void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results) {
-  assert(left_vec.size() == right_vec.size());
+  auto size = left_vec.size();
   auto left_ctx_holder = left_vec.CreateReadGpuContext();
   auto right_ctx_holder = right_vec.CreateReadGpuContext();
-  auto dev_result = GpuMakeUniqueArray<bool>(left_vec.size());
-  {
-    auto config = GetKernelExecConfig(left_vec.size());
-    ST_WithinKernel<<<config.grid_dim, config.block_dim>>>(
-        *left_ctx_holder, *right_ctx_holder, dev_result.get());
-  }
-  GpuMemcpy(host_results, dev_result.get(), left_vec.size());
+  auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
+  auto results = GpuMakeUniqueArray<bool>(size);
+  auto func = [] __device__(de9im::Matrix mat) {
+    return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
+  };
+
+  RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
+  GpuMemcpy(host_results, results.get(), size);
 }
 
 }  // namespace cuda

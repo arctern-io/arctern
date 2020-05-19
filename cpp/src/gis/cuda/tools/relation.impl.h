@@ -337,8 +337,6 @@ DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
   return winding_num != 0;
 }
 
-
-
 DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
     double2 point, ConstGpuContext::ConstIter& polygon_iter) {
   int shape_size = polygon_iter.read_meta<int>();
@@ -360,22 +358,17 @@ DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
       final_is_in = final_is_in && !is_in;
     }
   }
-
+  final_is_in = final_is_in && !final_is_at_edge;
   return PointInPolygonResult{final_is_in, final_is_at_edge};
 }
 
-DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygon(ConstGpuContext& point,
-                                                           ConstGpuContext& polygon,
-                                                           int index) {
-  auto pv = point.get_value_ptr(index);
-  auto iter = polygon.get_iter(index);
-
-  auto result = PointInPolygonImpl(double2{pv[0], pv[1]}, iter);
-  assert(iter.metas == polygon.get_meta_ptr(index + 1));
-  assert(iter.values == polygon.get_value_ptr(index + 1));
-
-  return result;
+DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
+    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
+  auto result = PointInPolygonImpl(point, polygon_iter);
+  return result.is_at_edge ? Matrix("F0FFFFFF*")
+                           : result.is_in ? Matrix("0FFFFFFF*") : Matrix("FF0FFFFF*");
 }
+
 
 }  // namespace cuda
 }  // namespace gis

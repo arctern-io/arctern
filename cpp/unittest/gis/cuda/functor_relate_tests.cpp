@@ -29,6 +29,31 @@
 #include "gis/cuda/tools/de9im_matrix.h"
 using de9im::Matrix;
 
+namespace aux {
+template <std::size_t...>
+struct seq {};
+
+template <std::size_t N, std::size_t... Is>
+struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
+
+template <std::size_t... Is>
+struct gen_seq<0, Is...> : seq<Is...> {};
+
+template <class Ch, class Tr, class Tuple, std::size_t... Is>
+void print_tuple(std::basic_ostream<Ch, Tr>& os, Tuple const& t, seq<Is...>) {
+  using swallow = int[];
+  (void)swallow{0, (void(os << (Is == 0 ? "" : ", ") << std::get<Is>(t)), 0)...};
+}
+}  // namespace aux
+
+template <class Ch, class Tr, class... Args>
+auto operator<<(std::basic_ostream<Ch, Tr>& os, std::tuple<Args...> const& t)
+    -> std::basic_ostream<Ch, Tr>& {
+  os << "(";
+  aux::print_tuple(os, t, aux::gen_seq<sizeof...(Args)>());
+  return os << ")";
+}
+
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -71,18 +96,18 @@ TEST(FunctorRelate, naive) {
   auto right_geo = GeometryVectorFactory::CreateFromWkts(right_vec);
   auto size = left_geo.size();
 
-  for (auto mat : matrix_collection) {
-    vector<uint8_t> host_result(size);
-    auto result = GpuMakeUniqueArray<uint8_t>(size);
-    ST_Relate(left_geo, right_geo, mat, (bool*)result.get());
-    GpuMemcpy(host_result.data(), result.get(), size);
-    for (int i = 0; i < size; ++i) {
-      if (mat == matrices[i]) {
-        ASSERT_EQ(host_result[i], std_result[i]) << left_vec[i] << "\n"
-                                                 << right_vec[i] << "\n"
-                                                 << matrices[i];
-      }
-    }
+  vector<Matrix> host_result(size);
+  auto result = GpuMakeUniqueArray<Matrix>(size);
+  auto lch = left_geo.CreateReadGpuContext();
+  auto rch = right_geo.CreateReadGpuContext();
+  ST_Relate(*lch, *rch, result.get());
+  GpuMemcpy(host_result.data(), result.get(), size);
+  for (int index = 0; index < raw_data.size(); ++index) {
+    auto ref = raw_data[index];
+    auto ref_mat = std::get<2>(ref);
+    auto ref_tf = std::get<3>(ref);
+    auto v = host_result[index].IsMatchTo(ref_mat);
+    EXPECT_EQ(v, ref_tf) << v << " vs " << ref;
   }
 }
 }  // namespace cuda
