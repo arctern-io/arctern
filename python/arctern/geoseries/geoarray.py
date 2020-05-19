@@ -193,7 +193,7 @@ class GeoArray(ExtensionArray):
         def convert_values(values):
             if isinstance(values, ExtensionArray) or pd.api.types.is_list_like(values):
                 return values
-            return [values] * len(self)
+            return np.array([values] * len(self), dtype=object)
 
         if isinstance(other, (pd.Series, pd.Index)):
             # rely on pandas to unbox and dispatch to us
@@ -203,8 +203,7 @@ class GeoArray(ExtensionArray):
         rvalue = convert_values(other)
         if not (len(lvalue)) == len(rvalue):
             raise ValueError("Length between compare doesn't match.")
-        # artern python api can receive any type data,
-        # which can received by pyarrow.array(sequence, iterable, ndarray or Series)
+
         rst = op(lvalue, rvalue)
         rst = np.asarray(rst, dtype=bool)
         return rst
@@ -214,7 +213,8 @@ class GeoArray(ExtensionArray):
         return self._bin_op(other, operator.eq)
 
     def __ne__(self, other):
-        return ~(self.__eq__(other))
+        import operator
+        return self._bin_op(other, operator.ne)
 
     def take(self, indices, allow_fill=False, fill_value=None):
         from pandas.api.extensions import take
