@@ -16,7 +16,7 @@
 // under the License.
 
 #include "gis/cuda/common/gpu_memory.h"
-#include "gis/cuda/functor/st_relate.h"
+#include "gis/cuda/functor/relate_template.h"
 #include "gis/cuda/functor/st_within.h"
 
 namespace arctern {
