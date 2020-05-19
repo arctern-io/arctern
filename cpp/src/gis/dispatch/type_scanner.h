@@ -108,9 +108,11 @@ class MaskResult {
     kOnlyTrue,
   };
 
-  MaskResult(Status status) : status_(status) { assert(status != Status::kMixed); }
+  explicit MaskResult(Status status) : status_(status) {
+    assert(status != Status::kMixed);
+  }
 
-  MaskResult(std::vector<bool>&& mask)
+  explicit MaskResult(std::vector<bool>&& mask)
       : status_(Status::kMixed), mask_(std::move(mask)) {}
 
   MaskResult() = default;
