@@ -25,9 +25,11 @@ see https://pandas.pydata.org/pandas-docs/stable/development/extending.html#test
 for more info.
 """
 
+# pylint: disable=redefined-outer-name
+
 import pandas as pd
 from pandas.tests.extension import base
-from pandas.tests.extension.conftest import *
+import pytest
 from arctern.geoseries.geoarray import GeoDtype, from_wkt
 
 
@@ -65,8 +67,9 @@ def all_data(request, data, data_missing):
     """Parametrized fixture giving 'data' and 'data_missing'"""
     if request.param == "data":
         return data
-    elif request.param == "data_missing":
+    if request.param == "data_missing":
         return data_missing
+    return None
 
 
 @pytest.fixture
@@ -106,6 +109,22 @@ def na_cmp():
 def na_value():
     """The scalar missing value for this type. Default 'None'"""
     return None
+
+
+@pytest.fixture(
+    params=[
+        lambda x: 1,
+        lambda x: [1] * len(x),
+        lambda x: pd.Series([1] * len(x)),
+        lambda x: x,
+    ],
+    ids=["scalar", "list", "series", "object"],
+)
+def groupby_apply_op(request):
+    """
+    Functions to test groupby.apply().
+    """
+    return request.param
 
 
 @pytest.fixture
@@ -268,7 +287,6 @@ class TestMissing(base.BaseMissingTests):
 
 class TestReduce(base.BaseNoReduceTests):
     """ we don't define any reductions """
-    pass
 
 
 class TestComparisonOps(base.BaseComparisonOpsTests):
@@ -331,7 +349,7 @@ class TestMethods(base.BaseMethodsTests):
         pass
 
     @pytest.mark.skip("not support sort")
-    def test_nargsort(self, data_for_sorting):
+    def test_nargsort(self, data_missing_for_sorting, na_position, expected):
         pass
 
     @pytest.mark.skip("not support sort")
@@ -368,4 +386,3 @@ class TestPrinting(base.BasePrintingTests):
 @pytest.mark.skip("not implemented")
 class TestParsing(base.BaseParsingTests):
     pass
-

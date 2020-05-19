@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pandas import Series
-from .geoarray import GeoArray, GeoDtype, is_geometry_arry
-import arctern
+
+# pylint: disable=useless-super-delegation
+
 from warnings import warn
-import numpy as np
+from pandas import Series
+import arctern
+from .geoarray import GeoArray, is_geometry_arry
 
 
 def _property_op(op, this):
@@ -53,7 +55,6 @@ def _delegate_binary_op(op, this, other):
 
 def _binary_op(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> Series[bool/float]
-    # TODO: support other is single geometry
     data, index = _delegate_binary_op(op, this, other)
     return Series(data, index=index)
 
@@ -62,6 +63,7 @@ def _binary_geo(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
+
 
 
 class GeoSeries(Series):

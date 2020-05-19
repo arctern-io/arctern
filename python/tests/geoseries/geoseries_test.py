@@ -11,11 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from arctern.geoseries import GeoSeries
-from arctern.geoseries.geoarray import GeoArray, GeoDtype
-from arctern._wrapper_func import *
+
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=redefined-outer-name
+
 import pytest
-import pandas._testing  as tm
+from pandas.testing import assert_series_equal
+from arctern.geoseries import GeoSeries
+from arctern.geoseries.geoarray import GeoDtype
+from arctern._wrapper_func import ST_GeomFromText
+
 
 
 def make_point(x, y):
@@ -26,8 +31,7 @@ def make_point(x, y):
 def sequence(request):
     if request.param == 'wkt':
         return [make_point(x, x) for x in range(5)]
-    else:
-        return ST_GeomFromText([make_point(x, x) for x in range(5)]).tolist()
+    return ST_GeomFromText([make_point(x, x) for x in range(5)]).tolist()
 
 
 @pytest.fixture(params=[1, 1.0, ('1', '1')])
@@ -39,8 +43,7 @@ def wrong_type_data(request):
 def dic(request):
     if request.param == 'wkt':
         return {x: make_point(x, x) for x in range(5)}
-    else:
-        return {x: ST_GeomFromText(make_point(x, x))[0] for x in range(5)}
+    return {x: ST_GeomFromText(make_point(x, x))[0] for x in range(5)}
 
 
 @pytest.fixture
@@ -58,12 +61,12 @@ class TestConstructor:
     def test_from_sequence(self, sequence, expected_series):
         s = GeoSeries(sequence)
         assert_is_geoseries(s)
-        tm.assert_series_equal(s, expected_series, check_dtype=False)
+        assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_dict(self, dic, expected_series):
         s = GeoSeries(dic)
         assert_is_geoseries(s)
-        tm.assert_series_equal(s, expected_series, check_dtype=False)
+        assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_empty(self):
         s = GeoSeries([])
@@ -73,12 +76,12 @@ class TestConstructor:
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
         assert_is_geoseries(s)
-        tm.assert_series_equal(s, expected_series, check_dtype=False)
+        assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_fom_geoarray(self, expected_series):
         s = GeoSeries(expected_series.values)
         assert_is_geoseries(s)
-        tm.assert_series_equal(s, expected_series, check_dtype=False)
+        assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_wrong_type_data(self, wrong_type_data):
         with pytest.raises(TypeError):

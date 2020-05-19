@@ -60,7 +60,6 @@ __all__ = [
 ]
 
 import base64
-import numpy as np
 from . import arctern_core_
 
 

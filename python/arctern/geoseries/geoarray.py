@@ -11,15 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections.abc import Iterable
+from distutils.version import LooseVersion
+import numbers
 import pyarrow
 from pandas.api.extensions import ExtensionDtype, ExtensionArray
 from pandas.api.extensions import register_extension_dtype
-from collections.abc import Iterable
 import numpy as np
 import pandas as pd
 import arctern
-import numbers
-from distutils.version import LooseVersion
 
 
 @register_extension_dtype
@@ -35,12 +35,12 @@ class GeoDtype(ExtensionDtype):
             raise TypeError(
                 "'construct_from_string' expects a string, got {}".format(type(string))
             )
-        elif string == cls.name:
+        if string == cls.name:
             return cls()
-        else:
-            raise TypeError(
-                "Cannot construct a '{}' from '{}'".format(cls.__name__, string)
-            )
+
+        raise TypeError(
+            "Cannot construct a '{}' from '{}'".format(cls.__name__, string)
+        )
 
     @classmethod
     def construct_array_type(cls):
@@ -110,8 +110,9 @@ class GeoArray(ExtensionArray):
 
     def __init__(self, data):
         if not isinstance(data, np.ndarray):
-            raise TypeError("'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
-        elif not data.ndim == 1:
+            raise TypeError(
+                "'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
+        if not data.ndim == 1:
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
         self.data = data
@@ -178,7 +179,8 @@ class GeoArray(ExtensionArray):
                     elif inferred_type == "bytes":
                         pass
                     else:
-                        raise ValueError("can only fillna with wkt formed string or wkb formed bytes")
+                        raise ValueError(
+                            "can only fillna with wkt formed string or wkb formed bytes")
 
                 # fill with value
                 new_values = self.copy()
@@ -191,8 +193,7 @@ class GeoArray(ExtensionArray):
         def convert_values(values):
             if isinstance(values, ExtensionArray) or pd.api.types.is_list_like(values):
                 return values
-            else:
-                return [values] * len(self)
+            return [values] * len(self)
 
         if isinstance(other, (pd.Series, pd.Index)):
             # rely on pandas to unbox and dispatch to us
@@ -212,7 +213,7 @@ class GeoArray(ExtensionArray):
         return self._bin_op(other, arctern.ST_Equals)
 
     def __ne__(self, other):
-        return ~self.__eq__(other)
+        return ~(self.__eq__(other))
 
     def take(self, indices, allow_fill=False, fill_value=None):
         from pandas.api.extensions import take
@@ -238,8 +239,7 @@ class GeoArray(ExtensionArray):
 
         if isinstance(item, (Iterable, slice)):
             return GeoArray(self.data[item])
-        else:
-            raise TypeError("Index type not supported ", item)
+        raise TypeError("Index type not supported ", item)
 
     def __setitem__(self, key, value):
         if str(pd.__version__) >= LooseVersion("0.26.0.dev"):
@@ -257,7 +257,6 @@ class GeoArray(ExtensionArray):
             self.data[key] = value.data
 
         elif isinstance(value, bytes) or value is None or value is np.nan:
-            value = value
             if isinstance(key, (slice, list, np.ndarray)):
                 value_array = np.empty(1, dtype=object)
                 value_array[:] = [value]
@@ -330,13 +329,11 @@ class GeoArray(ExtensionArray):
         if isinstance(dtype, GeoDtype):
             if copy:
                 return self.copy()
-            else:
-                return self
-        elif pd.api.types.is_string_dtype(dtype) and not pd.api.types.is_object_dtype(dtype):
+            return self
+        if pd.api.types.is_string_dtype(dtype) and not pd.api.types.is_object_dtype(dtype):
             # as string type means to wkt formed string
             return to_wkt(self)
-        else:
-            return np.array(self, dtype=dtype, copy=copy)
+        return np.array(self, dtype=dtype, copy=copy)
 
     def _formatter(self, boxed=False):
         """Formatting function for scalar values.

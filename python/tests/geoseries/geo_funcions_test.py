@@ -172,7 +172,7 @@ def test_ST_AsGeoJSON():
     assert str_ptr[0] == '{ "type": "Point", "coordinates": [ 1.0, 2.0 ] }'
     assert str_ptr[1] == '{ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] }'
     assert str_ptr[
-               2] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
+        2] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
 
 
 def test_ST_Contains():
