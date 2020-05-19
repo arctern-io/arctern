@@ -137,7 +137,7 @@ MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_
   if (count == length) {
     return MaskResult(MaskResult::Status::kOnlyTrue);
   } else if (count == 0) {
-    return MaskResult(MaskResult::Status::kOnlyTrue);
+    return MaskResult(MaskResult::Status::kOnlyFalse);
   } else {
     return MaskResult(std::move(mask));
   }

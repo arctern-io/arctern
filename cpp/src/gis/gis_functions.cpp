@@ -283,12 +283,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
     auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
 
-    auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-    auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
-
-    dispatch::MaskResult mask_result;
-    mask_result.AppendFilter(geo_left, gpu_type_left);
-    mask_result.AppendFilter(geo_right, gpu_type_right);
+    auto mask_result = dispatch::RelateSelector(geo_left, geo_right);
 
     auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
         mask_result, UnwarpBinary(gdal::ST_Within), cuda::ST_Within, geo_left, geo_right);

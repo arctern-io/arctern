@@ -144,7 +144,7 @@ class MaskResult {
   std::vector<bool> mask_;
 };
 
-MaskResult RelateMaskGen(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_geo);
+MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_geo);
 
 }  // namespace dispatch
 }  // namespace gis
