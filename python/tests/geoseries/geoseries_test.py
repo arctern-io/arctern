@@ -201,13 +201,3 @@ def test_geo_method_with_missing_value():
 
     assert s1.geom_equals(s3).all()
     assert not s1.geom_equals(s2).any()
-
-if __name__ == "__main__":
-    s = GeoSeries([make_point(0, 0), make_point(1, 2), None])
-    r = s == s[0]
-    import numpy as np
-    arr = np.array([s[0]], dtype=object)
-    arr1 = np.array([s[0]], dtype=object)
-    print(arr)
-    print(arr1)
-    print(arr == arr1)
