@@ -210,7 +210,8 @@ class GeoArray(ExtensionArray):
         return rst
 
     def __eq__(self, other):
-        return self._bin_op(other, arctern.ST_Equals)
+        import operator
+        return self._bin_op(other, operator.eq)
 
     def __ne__(self, other):
         return ~(self.__eq__(other))

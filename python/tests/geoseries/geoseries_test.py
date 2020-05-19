@@ -22,7 +22,6 @@ from arctern.geoseries.geoarray import GeoDtype
 from arctern._wrapper_func import ST_GeomFromText
 
 
-
 def make_point(x, y):
     return "Point (%s %s)" % (x, y)
 
@@ -181,8 +180,19 @@ class TestPandasMethod:
         assert s1.equals(s2)
 
     def test_unique(self):
-        s1 = GeoSeries([make_point(1, 1), make_point(1, 1), make_point(1, 2), None])
-        assert len(s1.unique()) == 3
+        s = GeoSeries([make_point(1, 1), make_point(1, 1), make_point(1, 2), None])
+        assert len(s.unique()) == 3
+
+    def test_operator(self):
+        # __eq__
+        s = GeoSeries([make_point(1, 1), make_point(1, 2), None])
+        r = s == s[0]
+        assert r.tolist() == [True, False, False]
+
+        # __ne__
+        r = s != s[0]
+        assert r.tolist() == [False, False, False]
+
 
 
 def test_geo_method_with_missing_value():
