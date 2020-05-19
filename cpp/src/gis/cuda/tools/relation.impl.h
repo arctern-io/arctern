@@ -100,7 +100,7 @@ DEVICE_RUNNABLE inline bool IsRange01CoveredBy(
 // use self defined divisor to override default thrust::complex<>::operator/(...)
 // which has terrible property when a is parallel to b.
 DEVICE_RUNNABLE inline thrust::complex<double> safe_divide(thrust::complex<double> a,
-                                           thrust::complex<double> b) {
+                                                           thrust::complex<double> b) {
   auto up = a * thrust::conj(b);
   auto down = b.imag() * b.imag() + b.real() * b.real();
   return up / down;
