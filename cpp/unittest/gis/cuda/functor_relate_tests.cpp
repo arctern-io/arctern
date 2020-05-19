@@ -29,10 +29,10 @@
 #include "gis/cuda/tools/de9im_matrix.h"
 using de9im::Matrix;
 
+// below is for cout << std::tuple, copied from stackoverflow
 namespace aux {
 template <std::size_t...>
 struct seq {};
-
 template <std::size_t N, std::size_t... Is>
 struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
 
@@ -53,6 +53,7 @@ auto operator<<(std::basic_ostream<Ch, Tr>& os, std::tuple<Args...> const& t)
   aux::print_tuple(os, t, aux::gen_seq<sizeof...(Args)>());
   return os << ")";
 }
+// above is for cout << std::tuple, copied from stackoverflow
 
 namespace arctern {
 namespace gis {
