@@ -109,9 +109,8 @@ inline vector<vector<string>> GetTableFromCsv(const string& csv_raw) {
 }
 
 // csv[keys..]
-inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
+inline std::vector<vector<string>> ProjectedTableFromCsv(vector<vector<string>> raw_table,
                                                          const vector<string>& keys) {
-  auto raw_table = GetTableFromCsv(csv_raw);
   auto raw_keys = raw_table[0];
   raw_table.erase(raw_table.begin());
 
@@ -132,4 +131,11 @@ inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
     result.push_back(std::move(line));
   }
   return result;
+}
+
+
+inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
+                                                         const vector<string>& keys) {
+  auto raw_table = GetTableFromCsv(csv_raw);
+  return ProjectedTableFromCsv(std::move(raw_table), keys);
 }

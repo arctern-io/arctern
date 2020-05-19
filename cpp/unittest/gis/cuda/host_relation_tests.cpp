@@ -19,6 +19,8 @@
 
 #include "gis/cuda/test_common/testcase.h"
 #include "gis/cuda/tools/relation.h"
+#include "gis/cuda/functor/st_relate.h"
+#include "gis/test_common/transforms.h"
 using std::vector;
 namespace cu = arctern::gis::cuda;
 using cu::Matrix;

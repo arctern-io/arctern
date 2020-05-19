@@ -76,6 +76,13 @@ TEST(FunctorRelate, naive) {
       {"Point(0 0)", "LineString(0 -1, 0 1)", mat("0FFFFF10*"), true},
       {"Point(0 0)", "LineString(0 0, 0 1)", mat("F0FFFF10*"), true},
       {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
+
+      {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", mat{"F0FFFFFF*"}, true},
+      {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", mat{"0FFFFFFF*"}, true},
+      {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", mat{"FF0FFFFF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", mat{"FFF0FFFF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", mat{"0FFFFFFF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", mat{"FFFFFF0F*"}, true},
   };
   vector<string> left_vec;
   vector<string> right_vec;
