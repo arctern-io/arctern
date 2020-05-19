@@ -133,7 +133,6 @@ inline std::vector<vector<string>> ProjectedTableFromCsv(vector<vector<string>> 
   return result;
 }
 
-
 inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
                                                          const vector<string>& keys) {
   auto raw_table = GetTableFromCsv(csv_raw);
