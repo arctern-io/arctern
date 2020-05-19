@@ -369,7 +369,6 @@ DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
                            : result.is_in ? Matrix("0FFFFFFF*") : Matrix("FF0FFFFF*");
 }
 
-
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

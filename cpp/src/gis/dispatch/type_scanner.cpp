@@ -94,7 +94,6 @@ static constexpr uint64_t bundle(WkbTypes left, WkbTypes right) {
   return ((uint64_t)left << 32) | ((uint64_t)right);
 }
 
-
 // select GPU-enabled
 MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_geo) {
   assert(left_geo->length() == right_geo->length());
@@ -135,14 +134,13 @@ MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_
     count += flag ? 1 : 0;
   }
 
-  if(count == length) {
+  if (count == length) {
     return MaskResult(MaskResult::Status::kOnlyTrue);
-  } else if(count == 0) {
+  } else if (count == 0) {
     return MaskResult(MaskResult::Status::kOnlyTrue);
   } else {
     return MaskResult(std::move(mask));
   }
-
 }
 
 }  // namespace dispatch
