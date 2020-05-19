@@ -70,6 +70,7 @@ set(cuda_gis_src
         gis/cuda/tools/bounding_box.cu
         gis/cuda/functor/st_distance.cu
         gis/cuda/functor/st_within.cu
+        gis/cuda/functor/st_equals.cu
         gis/cuda/functor/st_length.cu
         gis/cuda/functor/st_area.cu
         gis/cuda/functor/st_envelope.cu

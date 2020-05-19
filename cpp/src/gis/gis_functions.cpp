@@ -238,6 +238,23 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
 }
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
+template <typename FuncGdal, typename FuncCuda>
+static auto RelateWrapper(
+    FuncGdal func_gdal, FuncCuda func_cuda,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
+  auto functor = [&](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
+    auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+    auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
+
+    auto mask_result = dispatch::RelateSelector(geo_left, geo_right);
+
+    auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
+        mask_result, UnwarpBinary(func_gdal), func_cuda, geo_left, geo_right);
+    return result;
+  };
+  return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
+}
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
@@ -290,6 +307,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     return result;
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
+//  return RelateWrapper(gdal::ST_Within, cuda::ST_Within, geo_left_raws, geo_right_raws);
 #else
   return gdal::ST_Within(geo_left_raws, geo_right_raws);
 #endif

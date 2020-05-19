@@ -34,6 +34,7 @@
 #include "gis/cuda/functor/st_length.h"
 #include "gis/cuda/functor/st_point.h"
 #include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_equals.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
 
