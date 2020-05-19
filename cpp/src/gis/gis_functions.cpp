@@ -259,7 +259,11 @@ static auto RelateWrapper(
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Equals, cuda::ST_Equals, geometries_1, geometries_2);
+#else
   return gdal::ST_Equals(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
@@ -296,18 +300,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
     const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
 #if defined(USE_GPU)
-  auto functor = [](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
-    auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
-    auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
-
-    auto mask_result = dispatch::RelateSelector(geo_left, geo_right);
-
-    auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
-        mask_result, UnwarpBinary(gdal::ST_Within), cuda::ST_Within, geo_left, geo_right);
-    return result;
-  };
-  return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
-//  return RelateWrapper(gdal::ST_Within, cuda::ST_Within, geo_left_raws, geo_right_raws);
+  return RelateWrapper(gdal::ST_Within, cuda::ST_Within, geo_left_raws, geo_right_raws);
 #else
   return gdal::ST_Within(geo_left_raws, geo_right_raws);
 #endif

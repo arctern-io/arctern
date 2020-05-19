@@ -103,10 +103,8 @@ DoubleArrayPtr ST_Length(const WkbArrayPtr& input_geo);
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
 
-// std::shared_ptr<arrow::Array> ST_Equals(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
-//
+BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo);
+
 // std::shared_ptr<arrow::Array> ST_Touches(
 //    const std::shared_ptr<arrow::Array>& geometries_1,
 //    const std::shared_ptr<arrow::Array>& geometries_2);
