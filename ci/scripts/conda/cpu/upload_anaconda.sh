@@ -49,3 +49,15 @@ if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
     echo ${ARCTERN_SPARK_FILE}
     anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_SPARK_FILE}
 fi
+
+
+if [ "$UPLOAD_ARCTERN_WEBSERVER" == "1" ]; then
+    export ARCTERN_WEBSERVER_FILE=`conda build conda/recipes/arctern-webserver -c conda-forge -c defaults --output`
+    LABEL_OPTION="--label main"
+    echo "LABEL_OPTION=${LABEL_OPTION}"
+
+    test -e ${ARCTERN_WEBSERVER_FILE}
+    echo "Upload arctern-webserver..."
+    echo ${ARCTERN_WEBSERVER_FILE}
+    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_WEBSERVER_FILE}
+fi

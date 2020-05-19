@@ -76,6 +76,9 @@ source ci/scripts/conda/gpu/arctern/build_arctern.sh
 logger "Build conda pkg for arctern-spark..."
 source ci/scripts/conda/gpu/arctern-spark/build_arctern-spark.sh
 
+logger "Build conda pkg for arctern-webserver..."
+source ci/scripts/conda/cpu/arctern-webserver/build_arctern_webserver.sh
+
 ################################################################################
 # UPLOAD - Conda packages
 ################################################################################
