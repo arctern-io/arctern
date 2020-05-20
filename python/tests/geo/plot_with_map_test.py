@@ -210,32 +210,31 @@ def test_iconviz():
                     icon_path=png_path, coordinate_system="EPSG:4326")
     _finalize(ax, "test_icon_viz")
 
-# def test_fishnet_map():
-#     x_data = []
-#     y_data = []
-#     c_data = []
+def test_fishnet_map():
+    x_data = []
+    y_data = []
+    c_data = []
 
-#     x_data.append(-73.96524)
-#     x_data.append(-73.96118)
-#     x_data.append(-73.97324)
-#     x_data.append(-73.98456)
+    x_data.append(-73.96524)
+    x_data.append(-73.96118)
+    x_data.append(-73.97324)
+    x_data.append(-73.98456)
 
-#     y_data.append(40.73747)
-#     y_data.append(40.74507)
-#     y_data.append(40.75890)
-#     y_data.append(40.77654)
+    y_data.append(40.73747)
+    y_data.append(40.74507)
+    y_data.append(40.75890)
+    y_data.append(40.77654)
 
-#     c_data.append(10)
-#     c_data.append(20)
-#     c_data.append(30)
-#     c_data.append(40)
+    c_data.append(10)
+    c_data.append(20)
+    c_data.append(30)
+    c_data.append(40)
 
-#     arr_x = pandas.Series(x_data)
-#     arr_y = pandas.Series(y_data)
-#     arr_c = pandas.Series(c_data)
-#     points = arctern.ST_Point(arr_x, arr_y)
+    arr_x = pandas.Series(x_data)
+    arr_y = pandas.Series(y_data)
+    arr_c = pandas.Series(c_data)
+    points = arctern.ST_Point(arr_x, arr_y)
 
-#     vega = ap.plot_fishnetmap(ax, todo, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
-#     heat_map1 = arctern.fishnet_map_layer(vega, points, arr_c)
-
-#     _finalize(ax, "test_fishnetmap")
+    ax = _get_matplot()
+    vega = ap.plot_fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+    _finalize(ax, "test_fishnetmap")
