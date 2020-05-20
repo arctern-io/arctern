@@ -30,7 +30,7 @@ def _property_geo(op, this):
     return GeoSeries(op(this.values), index=this.index, crs=this.crs)
 
 
-def _unary_op(op, this, *args, **kwargs):
+def _unary_geo(op, this, *args, **kwargs):
     # type: (function, GeoSeries, args, kwargs) -> GeoSeries
     if 'crs' in kwargs.keys():
         crs = kwargs.pop('crs')
@@ -63,6 +63,13 @@ def _binary_geo(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
+
+
+def _validate_crs(crs):
+    if crs is not None and not isinstance(crs, str):
+        raise TypeError("`crs` should be spatial reference identifier string")
+    crs = crs.upper() if crs is not None else crs
+    return crs
 
 
 class GeoSeries(Series):
@@ -130,8 +137,8 @@ class GeoSeries(Series):
 
         super().__init__(data, index=index, name=name, **kwargs)
 
-        crs = crs.upper() if crs is not None else crs
-        self.crs = crs
+        self._crs = None
+        self.set_crs(crs)
 
     def set_crs(self, crs):
         """
@@ -140,8 +147,12 @@ class GeoSeries(Series):
         :type crs: str, optional
         :param crs: SRID(spatial reference identifier) form.
         """
-        crs = crs.upper() if crs is not None else crs
-        self.crs = crs
+        crs = _validate_crs(crs)
+        self._crs = crs
+
+    @property
+    def crs(self):
+        return self._crs
 
     @property
     def _constructor(self):
@@ -433,7 +444,7 @@ class GeoSeries(Series):
         >>> rst = s.curve_to_line().to_wkt()
         >>> assert str(rst[0]).startswith("POLYGON")
         """
-        return _unary_op(arctern.ST_CurveToLine, self)
+        return _unary_geo(arctern.ST_CurveToLine, self)
 
     def to_crs(self, crs):
         """
@@ -461,9 +472,9 @@ class GeoSeries(Series):
             raise ValueError("Can not transform with invalid crs")
         if self.crs is None:
             raise ValueError("Can not transform geometries without crs. Set crs for this GeoSeries first.")
-        if crs == self.crs:
+        if self.crs == crs:
             return self
-        return _unary_op(arctern.ST_Transform, self, self.crs, crs, crs=crs)
+        return _unary_geo(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
     def simplify_preserve_to_pology(self, distance_tolerance):
         """
@@ -483,7 +494,7 @@ class GeoSeries(Series):
         1               LINESTRING (0 0,2 0)
         dtype: GeoDtype
         """
-        return _unary_op(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
+        return _unary_geo(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
 
     def projection(self, bottom_right, top_left, height, width):
         """
@@ -495,10 +506,10 @@ class GeoSeries(Series):
         :param width:
         :return:
         """
-        return _unary_op(arctern.projection, self, bottom_right, top_left, height, width)
+        return _unary_geo(arctern.projection, self, bottom_right, top_left, height, width)
 
     def transform_and_projection(self, src_rs, dst_rs, bottom_right, top_left, height, width):
-        return _unary_op(arctern.transform_and_projection, self, src_rs, dst_rs, bottom_right, top_left, height, width)
+        return _unary_geo(arctern.transform_and_projection, self, src_rs, dst_rs, bottom_right, top_left, height, width)
 
     def buffer(self, distance):
         """
@@ -518,7 +529,7 @@ class GeoSeries(Series):
         0    POLYGON EMPTY
         dtype: GeoDtype
         """
-        return _unary_op(arctern.ST_Buffer, self, distance)
+        return _unary_geo(arctern.ST_Buffer, self, distance)
 
     def precision_reduce(self, precision):
         """
@@ -539,7 +550,7 @@ class GeoSeries(Series):
         1    POINT (2.66 4.45)
         dtype: GeoDtype
         """
-        return _unary_op(arctern.ST_PrecisionReduce, self, precision)
+        return _unary_geo(arctern.ST_PrecisionReduce, self, precision)
 
     def make_valid(self):
         """
@@ -558,7 +569,7 @@ class GeoSeries(Series):
         0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
         dtype: GeoDtype
         """
-        return _unary_op(arctern.ST_MakeValid, self)
+        return _unary_geo(arctern.ST_MakeValid, self)
 
     def union_aggr(self):
         """
@@ -971,7 +982,7 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = crs.upper() if crs is not None else crs
+        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1001,7 +1012,7 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = crs.upper() if crs is not None else crs
+        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1026,5 +1037,5 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = crs.upper() if crs is not None else crs
+        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)

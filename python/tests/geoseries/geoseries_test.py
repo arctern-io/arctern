@@ -148,9 +148,9 @@ class TestCRS:
 
     # test methods in GeoSeries will produce GeoSeries as result
     def test_geom_method(self):
-        self.s.buffer(0.2).crs = self.crs.upper()
-        self.s.intersection(self.s).crs = self.crs.upper()
-        self.s.centroid.crs = self.crs.upper()
+        assert self.s.buffer(0.2).crs == self.crs.upper()
+        assert self.s.intersection(self.s).crs == self.crs.upper()
+        assert self.s.centroid.crs == self.crs.upper()
 
 
 # other method will be tested in geoarray_test.py
