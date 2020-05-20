@@ -31,7 +31,7 @@ void ST_Equals(const GeometryVector& left_vec, const GeometryVector& right_vec,
   auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
   auto results = GpuMakeUniqueArray<bool>(size);
   auto func = [] __device__(de9im::Matrix mat) {
-    return mat.IsMatchTo(de9im::Matrix("T*F**F*FF"));
+    return mat.IsMatchTo(de9im::Matrix("T*F**FFF*"));
   };  // NOLINT
 
   RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
