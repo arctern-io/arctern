@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+#pragma once
 #include "gis/cuda/tools/bounding_box.h"
 
 namespace arctern {
@@ -22,7 +22,8 @@ namespace gis {
 namespace cuda {
 namespace {
 
-DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_iter) {
+DEVICE_RUNNABLE inline int CalcSimplePointCountImpl(WkbTag tag,
+                                                    const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   switch (tag.get_category()) {
     case WkbCategory::kPoint: {
@@ -49,7 +50,7 @@ DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_i
 }
 }  // namespace
 
-DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
+DEVICE_RUNNABLE inline int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   switch (tag.get_category()) {
     case WkbCategory::kPoint:
@@ -77,8 +78,8 @@ DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
   }
 }
 
-DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag,
-                                            ConstGpuContext::ConstIter& iter) {
+DEVICE_RUNNABLE inline BoundingBox CalcBoundingBox(WkbTag tag,
+                                                   ConstGpuContext::ConstIter& iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   auto point_count = CalcPointCount(tag, iter.metas);
   auto value2 = reinterpret_cast<const double2*>(iter.values);
