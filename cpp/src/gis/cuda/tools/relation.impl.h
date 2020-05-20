@@ -24,8 +24,8 @@
 #include <utility>
 
 #include "gis/cuda/container/kernel_vector.h"
+#include "gis/cuda/tools/bounding_box.h"
 #include "gis/cuda/tools/relation.h"
-
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -292,7 +292,7 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int ri
     //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
     return de9im::INVALID_MATRIX;
   }
-
+  
   assert(right_size >= 2);
   Matrix mat;
 
@@ -304,8 +304,11 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int ri
   // endpoints
   auto ep0 = right_points[0];
   auto ep1 = right_points[right_size - 1];
-  int B_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
+  int B_count = (int)IsEqual(left_point, ep0);
 
+  if (right_size > 2) {
+    B_count += (int)IsEqual(left_point, ep1);
+  }
   assert(C_count - B_count >= 0);
   mat->II = C_count - B_count ? State::kDim0 : State::kFalse;
   mat->IB = B_count ? State::kDim0 : State::kFalse;

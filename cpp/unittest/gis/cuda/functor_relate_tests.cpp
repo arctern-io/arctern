@@ -64,6 +64,8 @@ TEST(FunctorRelate, naive) {
   // simple unittest, the complex one is put into host_within_tests.cpp
   using mat = Matrix;
   vector<std::tuple<string, string, Matrix, bool>> raw_data = {
+      {"Point(0 1)", "LINESTRING (0 1, 0 1)", mat("0FFFFF10*"), true},
+      {"Point(0 1)", "LINESTRING (0 0, 0 1, 1 2)", mat("0FFFFF10*"), true},
       {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2)", mat("1FFF0FFF*"), true},
       {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2, 4 2)", mat("1FF00F10*"), true},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF1*"), false},
