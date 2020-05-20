@@ -157,7 +157,7 @@ class GeoSeries(Series):
     @property
     def _constructor(self):
         # Some operations result is not geometry type, we should return Series as constructor
-        # (isna, notna)
+        # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
@@ -488,7 +488,7 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","CIRCULARSTRING (0 0,1 1,2 0)"])
+        >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "CIRCULARSTRING (0 0,1 1,2 0)"])
         >>> s.simplify_preserve_to_pology(1)
         0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
         1               LINESTRING (0 0,2 0)
@@ -623,8 +623,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.intersects(s1)
         0    True
         1    True
@@ -653,8 +653,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.within(s1)
         0    False
         1    False
@@ -675,8 +675,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.contains(s1)
         0     True
         1    False
@@ -702,8 +702,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.crosses(s1)
         0    False
         1    False
@@ -726,8 +726,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.geom_equals(s1)
         0    False
         1    False
@@ -759,8 +759,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.touches(s1)
         0    False
         1     True
@@ -784,8 +784,8 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
         >>> s2.overlaps(s1)
         0    False
         1    False
@@ -1007,7 +1007,7 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> x = Series([1.3, 2.5])
         >>> y = Series([1.3, 2.5])
-        >>> GeoSeries.point(x,y)
+        >>> GeoSeries.point(x, y)
         0    POINT (1.3 1.3)
         1    POINT (2.5 2.5)
         dtype: GeoDtype
