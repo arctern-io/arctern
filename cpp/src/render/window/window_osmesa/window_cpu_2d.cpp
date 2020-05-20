@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <string>
+#include <stdexcept>
 
 #include "render/window/window_osmesa/window_cpu_2d.h"
 
