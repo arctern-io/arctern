@@ -89,13 +89,12 @@ class GeoSeries(Series):
     :param kwargs: Additional arguments passed to the GeoSeries constructor, e.g. ``copy``
 
     :example:
-      >>> import arctern
-      >>> s = arctern.GeoSeries(["POINT(1 1)", "POINT(1 2)"])
-      >>> s
-      0    POINT (1 1)
-      1    POINT (1 2)
-      dtype: GeoDtype
-
+    >>> from arctern import GeoSeries
+    >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+    >>> s
+    0    POINT (1 1)
+    1    POINT (1 2)
+    dtype: GeoDtype
     """
 
     _metadata = ["name"]
@@ -177,10 +176,11 @@ class GeoSeries(Series):
         :return: True if all geometries are the same in both objects, False otherwise.
 
         :example:
-          >>> s1 = GeoSeries(["POINT(1 1)", None])
-          >>> s2 = GeoSeries(["POINT(1 1)", None])
-          >>> s2.equals(s1)
-          True
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POINT(1 1)", None])
+        >>> s2 = GeoSeries(["POINT(1 1)", None])
+        >>> s2.equals(s1)
+        True
         """
         if not isinstance(other, GeoSeries):
             return False
@@ -211,11 +211,12 @@ class GeoSeries(Series):
                 that indicates whether an element is not an NA value.
 
         :example:
-          >>> s = GeoSeries(["Point (1 1)", None])
-          >>> s.isna()
-          0    False
-          1     True
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["Point (1 1)", None])
+        >>> s.isna()
+        0    False
+        1     True
+        dtype: bool
         """
         return super().isna()
 
@@ -230,11 +231,12 @@ class GeoSeries(Series):
                 that indicates whether an element is not an NA value.
 
         :example:
-          >>> s = GeoSeries(["Point (1 1)", None])
-          >>> s.isna()
-          0     True
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT (1 1)", None])
+        >>> s.isna()
+        0    False
+        1     True
+        dtype: bool
         """
         return super().notna()
 
@@ -254,11 +256,12 @@ class GeoSeries(Series):
         :return: True value for geometries that are valid, False otherwise.
 
         :examples:
-          >>> s = GeoSeries(["POINT(1 1)", "POINT(1)"])
-          >>> s.is_valid
-          0     True
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1)"])
+        >>> s.is_valid
+        0     True
+        1    False
+        dtype: bool
         """
         return _property_op(arctern.ST_IsValid, self).astype(bool, copy=False)
 
@@ -271,11 +274,12 @@ class GeoSeries(Series):
         :return: The length of each geometry in the GeoSeries.
 
         :examples:
-          >>> s = GeoSeries(["POINT(1 1)", "LINESTRING (0 0, 0 2)"])
-          >>> s.length
-          0    0.0
-          1    2.0
-          dtype: float64
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "LINESTRING (0 0, 0 2)"])
+        >>> s.length
+        0    0.0
+        1    2.0
+        dtype: float64
         """
         return _property_op(arctern.ST_Length, self)
 
@@ -291,11 +295,12 @@ class GeoSeries(Series):
         :return: True for geometries that are simple, False otherwise.
 
         :examples:
-          >>> s = GeoSeries(["POINT(1 1)", "POINT EMPTY"])
-          >>> s.is_simple
-          0     True
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT EMPTY"])
+        >>> s.is_simple
+        0     True
+        1    False
+        dtype: bool
         """
         return _property_op(arctern.ST_IsSimple, self).astype(bool, copy=False)
 
@@ -308,11 +313,12 @@ class GeoSeries(Series):
         :return: The area of each geometry.
 
         :examples:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.area
-          0    0.0
-          1    4.0
-          dtype: float64
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.area
+        0    0.0
+        1    4.0
+        dtype: float64
         """
         return _property_op(arctern.ST_Area, self)
 
@@ -325,12 +331,12 @@ class GeoSeries(Series):
         :return: The type of geometry, e.g. "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT"
 
         :examples:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.geometry_type
-          0      ST_POINT
-          1    ST_POLYGON
-          dtype: object
-
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.geometry_type
+        0      ST_POINT
+        1    ST_POLYGON
+        dtype: object
         """
         return _property_op(arctern.ST_GeometryType, self)
 
@@ -343,11 +349,12 @@ class GeoSeries(Series):
         :return: The centroid of geometries.
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.centroid
-          0    POINT (1 1)
-          1    POINT (2 2)
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.centroid
+        0    POINT (1 1)
+        1    POINT (2 2)
+        dtype: GeoDtype
         """
         return _property_geo(arctern.ST_Centroid, self)
 
@@ -361,11 +368,12 @@ class GeoSeries(Series):
         :return: Convex Geometries.
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.convex_hull
-          0                        POINT (1 1)
-          1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.convex_hull
+        0                        POINT (1 1)
+        1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
+        dtype: GeoDtype
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
@@ -378,11 +386,12 @@ class GeoSeries(Series):
         :return: The number of points for each geometry.
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.npoints
-          0    1
-          1    5
-          dtype: int64
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.npoints
+        0    1
+        1    5
+        dtype: int64
         """
         return _property_op(arctern.ST_NPoints, self)
 
@@ -395,11 +404,12 @@ class GeoSeries(Series):
         :return: bounding box geometries
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-          >>> s.envelope
-          0                        POINT (1 1)
-          1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.envelope
+        0                        POINT (1 1)
+        1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
+        dtype: GeoDtype
         """
         return _property_geo(arctern.ST_Envelope, self)
 
@@ -418,9 +428,10 @@ class GeoSeries(Series):
         :return: Converted geometries
 
         :example:
-          >>> s = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"])
-          >>> rst = s.curve_to_line().to_wkt()
-          >>> assert str(rst[0]).startswith("POLYGON")
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"])
+        >>> rst = s.curve_to_line().to_wkt()
+        >>> assert str(rst[0]).startswith("POLYGON")
         """
         return _unary_op(arctern.ST_CurveToLine, self)
 
@@ -437,13 +448,14 @@ class GeoSeries(Series):
         :return: Geometries with transformed coordinate reference system.
 
         :example:
-          >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
-          >>> s
-          0    POINT (1 2)
-          dtype: GeoDtype
-          >>> s.to_crs(crs="EPSG:3857")
-          0    POINT (111319.490793274 222684.208505545)
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
+        >>> s
+        0    POINT (1 2)
+        dtype: GeoDtype
+        >>> s.to_crs(crs="EPSG:3857")
+        0    POINT (111319.490793274 222684.208505545)
+        dtype: GeoDtype
         """
         if crs is None:
             raise ValueError("Can not transform with invalid crs")
@@ -464,11 +476,12 @@ class GeoSeries(Series):
         :return: Simplified geometries.
 
         :example:
-          >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","CIRCULARSTRING (0 0,1 1,2 0)"])
-          >>> s.simplify_preserve_to_pology(1)
-          0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
-          1               LINESTRING (0 0,2 0)
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))","CIRCULARSTRING (0 0,1 1,2 0)"])
+        >>> s.simplify_preserve_to_pology(1)
+        0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
+        1               LINESTRING (0 0,2 0)
+        dtype: GeoDtype
         """
         return _unary_op(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
 
@@ -499,10 +512,11 @@ class GeoSeries(Series):
         :return: Geometries.
 
         :example:
-          >>> s = GeoSeries(["POINT (0 1)"])
-          >>> s.buffer(0)
-          0    POLYGON EMPTY
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT (0 1)"])
+        >>> s.buffer(0)
+        0    POLYGON EMPTY
+        dtype: GeoDtype
         """
         return _unary_op(arctern.ST_Buffer, self, distance)
 
@@ -518,11 +532,12 @@ class GeoSeries(Series):
         :return: Geometries with reduced precision.
 
         :example:
-          >>> s = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
-          >>> s.precision_reduce(3)
-          0    POINT (1.33 2.67)
-          1    POINT (2.66 4.45)
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
+        >>> s.precision_reduce(3)
+        0    POINT (1.33 2.67)
+        1    POINT (2.66 4.45)
+        dtype: GeoDtype
         """
         return _unary_op(arctern.ST_PrecisionReduce, self, precision)
 
@@ -537,10 +552,11 @@ class GeoSeries(Series):
         :return: Geometries that are made to valid.
 
         :example:
-          >>> s = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
-          >>> s.make_valid()
-          0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
+        >>> s.make_valid()
+        0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
+        dtype: GeoDtype
         """
         return _unary_op(arctern.ST_MakeValid, self)
 
@@ -552,12 +568,13 @@ class GeoSeries(Series):
         :return: A GeoSeries contains only one geometry.
 
         :example:
-          >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
-          >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
-          >>> s = GeoSeries([p1, p2])
-          >>> s.union_aggr()
-          0    MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> p1 = "POINT(1 2)"
+        >>> p2 = "POINT(1 1)"
+        >>> s = GeoSeries([p1, p2])
+        >>> s.union_aggr()
+        0    MULTIPOINT (1 2,1 1)
+        dtype: GeoDtype
         """
         return GeoSeries(arctern.ST_Union_Aggr(self))
 
@@ -569,12 +586,13 @@ class GeoSeries(Series):
         :return: A GeoSeries contains only one geometry.
 
         :example:
-          >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
-          >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
-          >>> s = GeoSeries([p1, p2])
-          >>> s.envelope_aggr()
-          0    POLYGON ((0 0,0 4,7 4,7 0,0 0))
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+        >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
+        >>> s = GeoSeries([p1, p2])
+        >>> s.envelope_aggr()
+        0    POLYGON ((0 0,0 4,7 4,7 0,0 0))
+        dtype: GeoDtype
         """
         return GeoSeries(arctern.ST_Envelope_Aggr(self))
 
@@ -593,19 +611,20 @@ class GeoSeries(Series):
         :return: A Series with value True if intersected.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.intersects(s1)
-          0    True
-          1    True
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.intersects(s1)
+        0    True
+        1    True
+        dtype: bool
 
-          Alternatively other can be ca scalar bytes object.
+        Alternatively other can be ca scalar bytes object.
 
-          >>> s2.intersects(s1[0])
-          0    True
-          1    True
-          dtype: bool
+        >>> s2.intersects(s1[0])
+        0    True
+        1    True
+        dtype: bool
         """
         return _binary_op(arctern.ST_Intersects, self, other).astype(bool, copy=False)
 
@@ -622,12 +641,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry is within other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.within(s1)
-          0    False
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.within(s1)
+        0    False
+        1    False
+        dtype: bool
         """
         return _binary_op(arctern.ST_Within, self, other).astype(bool, copy=False)
 
@@ -643,12 +663,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry contains other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.contains(s1)
-          0     True
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.contains(s1)
+        0     True
+        1    False
+        dtype: bool
         """
         return _binary_op(arctern.ST_Contains, self, other).astype(bool, copy=False)
 
@@ -669,12 +690,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry crosses other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.crosses(s1)
-          0    False
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.crosses(s1)
+        0    False
+        1    False
+        dtype: bool
         """
         return _binary_op(arctern.ST_Crosses, self, other).astype(bool, copy=False)
 
@@ -692,12 +714,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry is spatially equals to other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.geom_equals(s1)
-          0    False
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.geom_equals(s1)
+        0    False
+        1    False
+        dtype: bool
         """
         from pandas.api.types import is_scalar
         if is_scalar(other):
@@ -724,12 +747,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry touches other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.touches(s1)
-          0    False
-          1     True
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.touches(s1)
+        0    False
+        1     True
+        dtype: bool
         """
         return _binary_op(arctern.ST_Touches, self, other).astype(bool, copy=False)
 
@@ -748,12 +772,13 @@ class GeoSeries(Series):
         :return: A Series with value True if each geometry overlaps other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
-          >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
-          >>> s2.overlaps(s1)
-          0    False
-          1    False
-          dtype: bool
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))","POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))","POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.overlaps(s1)
+        0    False
+        1    False
+        dtype: bool
         """
         return _binary_op(arctern.ST_Overlaps, self, other).astype(bool, copy=False)
 
@@ -769,16 +794,17 @@ class GeoSeries(Series):
         :return: A Series contains the distances between each geometry and other.
 
         :example:
-          >>> p11 = "LINESTRING(9 0,9 2)"
-          >>> p12 = "POINT(10 2)"
-          >>> s1 = GeoSeries([p11, p12])
-          >>> p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-          >>> p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-          >>> s2 = GeoSeries([p21, p22])
-          >>> s2.distance(s1)
-          0    1.0
-          1    2.0
-          dtype: float64
+        >>> from arctern import GeoSeries
+        >>> p11 = "LINESTRING(9 0,9 2)"
+        >>> p12 = "POINT(10 2)"
+        >>> s1 = GeoSeries([p11, p12])
+        >>> p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+        >>> p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+        >>> s2 = GeoSeries([p21, p22])
+        >>> s2.distance(s1)
+        0    1.0
+        1    2.0
+        dtype: float64
         """
         return _binary_op(arctern.ST_Distance, self, other)
 
@@ -798,11 +824,12 @@ class GeoSeries(Series):
         :return: A Series contains the spherical distance between each geometry and other.
 
         :example:
-          >>> s1 = GeoSeries(["POINT(10 2)"], crs="EPSG:4326")
-          >>> s2 = GeoSeries(["POINT(10 3)"], crs="EPSG:4326")
-          >>> s2.distance_sphere(s1)
-          0    111226.3
-          dtype: float64
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POINT(10 2)"], crs="EPSG:4326")
+        >>> s2 = GeoSeries(["POINT(10 3)"], crs="EPSG:4326")
+        >>> s2.distance_sphere(s1)
+        0    111226.3
+        dtype: float64
         """
         if not self.crs == getattr(other, "crs", "EPSG:4326") == "EPSG:4326":
             raise ValueError("Only can calculate spherical distance with 'EPSG:4326' crs.")
@@ -822,12 +849,13 @@ class GeoSeries(Series):
         :return : A Series contains the hausdorff distance between each geometry and other.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
-          >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
-          >>> s2.hausdorff_distance(s1)
-          0    1.0
-          1    1.0
-          dtype: float64
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
+        >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
+        >>> s2.hausdorff_distance(s1)
+        0    1.0
+        1    1.0
+        dtype: float64
         """
         return _binary_op(arctern.ST_HausdorffDistance, self, other)
 
@@ -847,11 +875,12 @@ class GeoSeries(Series):
         :return: A GeoSeries contains geometries.
 
         :example:
-          >>> s1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-          >>> s2 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
-          >>> s2.intersection(s1)
-          0    LINESTRING (2 2,2 1)
-          dtype: GeoDtype
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+        >>> s2 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+        >>> s2.intersection(s1)
+        0    LINESTRING (2 2,2 1)
+        dtype: GeoDtype
         """
         return _binary_geo(arctern.ST_Intersection, self, other)
 
@@ -867,13 +896,14 @@ class GeoSeries(Series):
         :return: A Series contains geometries as WKT formed string.
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)"])
-          >>> s
-          0    POINT (1 1)
-          dtype: GeoDtype
-          >>> s.to_wkt()
-          0    POINT (1 1)
-          dtype: object
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s
+        0    POINT (1 1)
+        dtype: GeoDtype
+        >>> s.to_wkt()
+        0    POINT (1 1)
+        dtype: object
         """
         return _property_op(arctern.ST_AsText, self)
 
@@ -894,13 +924,14 @@ class GeoSeries(Series):
         :return: A Series contains geometries as GeoJSON formed string.
 
         :example:
-          >>> s = GeoSeries(["POINT(1 1)"])
-          >>> s
-          0    POINT (1 1)
-          dtype: GeoDtype
-          >>> s.as_geojson()
-          0    { "type": "Point", "coordinates": [ 1.0, 1.0 ] }
-          dtype: object
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s
+        0    POINT (1 1)
+        dtype: GeoDtype
+        >>> s.as_geojson()
+        0    { "type": "Point", "coordinates": [ 1.0, 1.0 ] }
+        dtype: object
         """
         return _property_op(arctern.ST_AsGeoJSON, self)
 
@@ -929,14 +960,16 @@ class GeoSeries(Series):
         :return: A GeoSeries contains geometries.
 
         :example:
-          >>> min_x = Series([0.0, 1.0])
-          >>> max_x = Series([2.0, 1.5])
-          >>> min_y = Series([0.0, 1.0])
-          >>> max_y = Series([1.0, 1.5])
-          >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
-          0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
-          1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
-          dtype: GeoDtype
+        >>> from pandas import Series
+        >>> from arctern import GeoSeries
+        >>> min_x = Series([0.0, 1.0])
+        >>> max_x = Series([2.0, 1.5])
+        >>> min_y = Series([0.0, 1.0])
+        >>> max_y = Series([1.0, 1.5])
+        >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
+        0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
+        1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
+        dtype: GeoDtype
         """
         crs = crs.upper() if crs is not None else crs
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
@@ -959,12 +992,14 @@ class GeoSeries(Series):
         :return: A GeoSeries contains point geometries.
 
         :example:
-          >>> x = Series([1.3, 2.5])
-          >>> y = Series([1.3, 2.5])
-          >>> GeoSeries.point(x,y)
-          0    POINT (1.3 1.3)
-          1    POINT (2.5 2.5)
-          dtype: GeoDtype
+        >>> from pandas import Series
+        >>> from arctern import GeoSeries
+        >>> x = Series([1.3, 2.5])
+        >>> y = Series([1.3, 2.5])
+        >>> GeoSeries.point(x,y)
+        0    POINT (1.3 1.3)
+        1    POINT (2.5 2.5)
+        dtype: GeoDtype
         """
         crs = crs.upper() if crs is not None else crs
         return cls(arctern.ST_Point(x, y), crs=crs)
@@ -984,10 +1019,12 @@ class GeoSeries(Series):
         :return: A GeoSeries contains geometries.
 
         :example:
-          >>> json = Series(["{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"])
-          >>> GeoSeries.geom_from_geojson(json)
-          0    LINESTRING (1 2,4 5,7 8)
-          dtype: GeoDtype
+        >>> from pandas import Series
+        >>> from arctern import GeoSeries
+        >>> json = Series(["{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"])
+        >>> GeoSeries.geom_from_geojson(json)
+        0    LINESTRING (1 2,4 5,7 8)
+        dtype: GeoDtype
         """
         crs = crs.upper() if crs is not None else crs
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
