@@ -20,6 +20,7 @@
 #include <thrust/extrema.h>
 
 #include <algorithm>
+#include <cassert>
 #include <utility>
 
 #include "gis/cuda/container/kernel_vector.h"
@@ -96,7 +97,16 @@ DEVICE_RUNNABLE inline bool IsRange01CoveredBy(
   return total_range.first <= 0 && 1 <= total_range.second;
 }
 
-// Note: when dealing with linestring, we view it as endpoints included
+// use self defined divisor to override default thrust::complex<>::operator/(...)
+// which has terrible property when a is parallel to b.
+DEVICE_RUNNABLE inline thrust::complex<double> safe_divide(thrust::complex<double> a,
+                                                           thrust::complex<double> b) {
+  auto up = a * thrust::conj(b);
+  auto down = b.imag() * b.imag() + b.real() * b.real();
+  return up / down;
+}
+
+// auto up = Note: when dealing with linestring, we view it as endpoints included
 // linestring, which is collection of endpoints
 DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_endpoints,
                                                            int right_size,
@@ -115,8 +125,9 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   LineRelationResult result{-1, false, 0};
   for (int right_index = 0; right_index < right_size - 1; ++right_index) {
     // do similiar projection
-    auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
-    auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
+    auto rv0 = safe_divide(to_complex(right_points[right_index]) - lv0, lv1);
+    auto tmp = to_complex(right_points[right_index + 1]) - lv0;
+    auto rv1 = safe_divide(tmp, lv1);
     // if projected complex nums are at x axis
     if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
       auto r0 = rv0.real();
@@ -269,8 +280,8 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   return matrix;
 }
 
-DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_size,
-                                               const double2* right_points) {
+DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int right_size,
+                                                      const double2* right_points) {
   if (right_size == 0) {
     return Matrix("FFFFFFFF*");
   }
@@ -304,6 +315,68 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   mat->EB = B_count != 2 ? State::kDim0 : State::kFalse;
 
   return mat;
+}
+DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2) {
+  return x1 * y2 - x2 * y1;
+}
+
+struct Point {
+  double x;
+  double y;
+};
+
+DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
+                                                       const double2* polygon) {
+  int winding_num = 0;
+  double dx2 = polygon[size - 1].x - point.x;
+  double dy2 = polygon[size - 1].y - point.y;
+  for (int index = 0; index < size; ++index) {
+    auto dx1 = dx2;
+    auto dy1 = dy2;
+    dx2 = polygon[index].x - point.x;
+    dy2 = polygon[index].y - point.y;
+
+    bool ref = dy1 < 0;
+    if (ref != (dy2 < 0)) {
+      bool cmp = IsLeft(dx1, dy1, dx2, dy2) < 0;
+      if (cmp != ref) {
+        winding_num += ref ? 1 : -1;
+      }
+    }
+  }
+  return winding_num != 0;
+}
+
+DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
+    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
+  int shape_size = polygon_iter.read_meta<int>();
+  bool final_is_in = false;
+  bool final_is_at_edge = false;
+  // offsets of value for polygons
+
+  for (int shape_index = 0; shape_index < shape_size; shape_index++) {
+    auto vertex_size = polygon_iter.read_meta<int>();
+    auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
+
+    auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
+    auto is_at_edge = !!PointOnLineString(point, vertex_size, values);
+    final_is_at_edge = final_is_at_edge || is_at_edge;
+
+    if (shape_index == 0) {
+      final_is_in = is_in;
+    } else {
+      final_is_in = final_is_in && !is_in;
+    }
+  }
+  final_is_in = final_is_in && !final_is_at_edge;
+  return PointInPolygonResult{final_is_in, final_is_at_edge};
+}
+
+DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
+    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
+  auto result = PointInPolygonImpl(point, polygon_iter);
+  return result.is_at_edge ? Matrix("F0FFFFFF*")
+                           : result.is_in ? Matrix("0FFFFFFF*") : Matrix("FF0FFFFF*");
 }
 
 }  // namespace cuda
