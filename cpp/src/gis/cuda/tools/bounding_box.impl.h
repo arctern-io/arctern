@@ -40,7 +40,7 @@ DEVICE_RUNNABLE inline int CalcSimplePointCountImpl(WkbTag tag,
         auto count = *meta_iter++;
         total_count += count;
       }
-      return polygons;
+      return total_count;
     }
     default: {
       assert(false);
@@ -82,13 +82,12 @@ DEVICE_RUNNABLE inline BoundingBox CalcBoundingBox(WkbTag tag,
                                                    ConstGpuContext::ConstIter& iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   auto point_count = CalcPointCount(tag, iter.metas);
-  auto value2 = reinterpret_cast<const double2*>(iter.values);
+  auto value2 = iter.read_value_ptr<double2>(point_count);
+
   BoundingBox bbox;
   for (auto i = 0; i < point_count; ++i) {
     bbox.Update(value2[i]);
   }
-  constexpr int dimensions = 2;
-  iter.values += dimensions * point_count;
   assert(value2 + point_count == (const double2*)iter.values);
   return bbox;
 }

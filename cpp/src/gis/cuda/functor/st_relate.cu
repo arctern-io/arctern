@@ -42,9 +42,7 @@ DEVICE_RUNNABLE Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
       break;
     }
     case WkbCategory::kLineString: {
-      auto right_size = right_iter.read_meta<int>();
-      auto right_points = right_iter.read_value_ptr<double2>(right_size);
-      result = PointRelateToLineString(left_point, right_size, right_points);
+      result = PointRelateToLineString(left_point, right_iter);
       break;
     }
     case WkbCategory::kPolygon: {
@@ -64,17 +62,17 @@ DEVICE_RUNNABLE Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag
                                           ConstIter& right_iter, KernelBuffer& buffer) {
   assert(right_tag.get_space_type() == WkbSpaceType::XY);
 
-  auto left_size = left_iter.read_meta<int>();
-  auto left_points = left_iter.read_value_ptr<double2>(left_size);
   Matrix result;
   switch (right_tag.get_category()) {
     case WkbCategory::kPoint: {
       auto right_point = right_iter.read_value<double2>();
-      auto mat = PointRelateToLineString(right_point, left_size, left_points);
+      auto mat = PointRelateToLineString(right_point, left_iter);
       result = mat.get_transpose();
       break;
     }
     case WkbCategory::kLineString: {
+      auto left_size = left_iter.read_meta<int>();
+      auto left_points = left_iter.read_value_ptr<double2>(left_size);
       auto right_size = right_iter.read_meta<int>();
       auto right_points = right_iter.read_value_ptr<double2>(right_size);
       result = LineStringRelateToLineString(left_size, left_points, right_size,
@@ -115,16 +113,16 @@ DEVICE_RUNNABLE Matrix RelateOp(const ConstGpuContext& left, const ConstGpuConte
       break;
     }
     default: {
+      assert(false);
       result = de9im::INVALID_MATRIX;
       left_iter = left.get_iter(index + 1);
       break;
     }
   }
-  assert(left_iter.values == left.get_value_ptr(index + 1));
-  assert(left_iter.metas == left.get_meta_ptr(index + 1));
-
   assert(right_iter.values == right.get_value_ptr(index + 1));
   assert(right_iter.metas == right.get_meta_ptr(index + 1));
+  assert(left_iter.values == left.get_value_ptr(index + 1));
+  assert(left_iter.metas == left.get_meta_ptr(index + 1));
 
   return result;
 }

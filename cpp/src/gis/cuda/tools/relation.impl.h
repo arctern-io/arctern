@@ -280,8 +280,9 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   return matrix;
 }
 
-DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int right_size,
-                                                      const double2* right_points) {
+DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, ConstGpuContext::ConstIter& linestring_iter) {
+  auto right_size = linestring_iter.read_meta<int>();
+  auto right_points = linestring_iter.read_value_ptr<double2>(right_size);
   if (right_size == 0) {
     return Matrix("FFFFFFFF*");
   }
@@ -292,7 +293,7 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int ri
     //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
     return de9im::INVALID_MATRIX;
   }
-  
+
   assert(right_size >= 2);
   Matrix mat;
 
@@ -319,6 +320,7 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, int ri
 
   return mat;
 }
+
 DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2) {
   return x1 * y2 - x2 * y1;
 }
@@ -362,7 +364,7 @@ DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
     auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
 
     auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
-    auto is_at_edge = !!PointOnLineString(point, vertex_size, values);
+    auto is_at_edge = PointOnLineString(point, vertex_size, values) != 0;
     final_is_at_edge = final_is_at_edge || is_at_edge;
 
     if (shape_index == 0) {
@@ -377,9 +379,32 @@ DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
 
 DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
     double2 point, ConstGpuContext::ConstIter& polygon_iter) {
+
+  ConstGpuContext::ConstIter polygon_iter_raw = polygon_iter;
+  auto bbox = CalcBoundingBox(WkbTypes::kPolygon, polygon_iter);
+
+  if (!bbox.is_valid()) {
+    printf("inp");
+    return Matrix("FFFFFFFF*");
+  }
+
+  if (bbox.get_xs().is_trivial() && bbox.get_ys().is_trivial()) {
+    // degenerate as point
+    auto iter = polygon_iter_raw;
+    auto de_point = iter.read_value<double2>();
+    if (IsEqual(de_point, point)) {
+      printf("inpn");
+      return Matrix("00FFFFFF*");
+    } else {
+      printf("inpm");
+      return Matrix("FFFFFF21*");
+    }
+  }
+
+  polygon_iter = polygon_iter_raw;
   auto result = PointInPolygonImpl(point, polygon_iter);
-  return result.is_at_edge ? Matrix("F0FFFFFF*")
-                           : result.is_in ? Matrix("0FFFFFFF*") : Matrix("FF0FFFFF*");
+  return result.is_at_edge ? Matrix("F0FFFF21*")
+                           : result.is_in ? Matrix("0FFFFF21*") : Matrix("FF0FFF21*");
 }
 
 }  // namespace cuda

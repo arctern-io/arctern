@@ -69,23 +69,25 @@ TEST(FunctorRelate, naive) {
       {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2)", mat("1FFF0FFF*"), true},
       {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2, 4 2)", mat("1FF00F10*"), true},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF1*"), false},
+
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF2*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF0*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF**"), true},
       {"Point(0 0)", "Point(0 0)", mat("FFFFFFFF*"), false},
       {"Point(0 0)", "Point(0 0)", mat("2FFFFFFF*"), false},
+
       {"Point(0 0)", "Point(0 0)", mat("1FFFFFFF*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFFF*"), true},
-
       {"Point(0 0)", "Point(0 1)", mat("FF0FFF0F*"), true},
       {"Point(0 0)", "LineString(0 -1, 0 1)", mat("0FFFFF10*"), true},
       {"Point(0 0)", "LineString(0 0, 0 1)", mat("F0FFFF10*"), true},
-      {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
 
+      {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
       {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", mat{"F0FFFFFF*"}, true},
       {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", mat{"0FFFFFFF*"}, true},
       {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", mat{"FF0FFFFF*"}, true},
       {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", mat{"FFF0FFFF*"}, true},
+
       {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", mat{"0FFFFFFF*"}, true},
       {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", mat{"FFFFFF0F*"}, true},
   };
