@@ -236,5 +236,5 @@ def test_fishnet_map():
     points = arctern.ST_Point(arr_x, arr_y)
 
     ax = _get_matplot()
-    vega = ap.plot_fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+    ap.plot_fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
     _finalize(ax, "test_fishnetmap")
