@@ -237,7 +237,7 @@ class GeoArray(ExtensionArray):
 
         if isinstance(item, (Iterable, slice)):
             return GeoArray(self.data[item])
-        raise TypeError("Index type not supported ", item)
+        raise TypeError("Index type not supported ", type(item))
 
     def __setitem__(self, key, value):
         if str(pd.__version__) >= LooseVersion("0.26.0.dev"):
@@ -245,24 +245,22 @@ class GeoArray(ExtensionArray):
             # keys to numpy array, pass-through non-array-like indexers
             key = pd.api.indexers.check_array_indexer(self, key)
 
+        scalar_key = pd.api.types.is_scalar(key)
+        scalar_value = pd.api.types.is_scalar(value)
+        if scalar_key and not scalar_value:
+            raise ValueError("setting an array element with a sequence.")
+
         if isinstance(value, pd.Series):
             value = value.values
         if isinstance(value, (list, np.ndarray)):
             value = from_wkb(value)
         if isinstance(value, GeoArray):
-            if isinstance(key, numbers.Integral):
-                raise ValueError("Cannot set a single element with an array")
             self.data[key] = value.data
 
         elif isinstance(value, bytes) or value is None or value is np.nan:
-            if isinstance(key, (slice, list, np.ndarray)):
-                value_array = np.empty(1, dtype=object)
-                value_array[:] = [value]
-                self.data[key] = value_array
-            else:
-                self.data[key] = value
+            self.data[key] = value
         else:
-            raise TypeError("Value should be array-like bytes  or None, got %s" % str(value))
+            raise TypeError("Value should be array-like or scalar value, got %s" % str(value))
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
