@@ -52,8 +52,6 @@ def from_wkt(data):
     Convert a list or array of wkt formed string to a GeoArray.
     :param data: array-like
             list or array of wkt formed string
-    :param crs: string, optional
-            Coordinate Reference System of the geometry objects. such as an authority string (eg "EPSG:4326").
     :return: GeoArray
     """
     return GeoArray(arctern.ST_GeomFromText(data).values)
@@ -92,9 +90,8 @@ def from_wkb(data):
 
 def is_geometry_arry(data):
     """
-    Check if the data is GeoDtype array like GeoArray, GeoSeries or Series[GeoArray].
+    Check if the data is array like, and dtype is `GeoDtype`.
     """
-    # GeoArray, GeoSeries and Series[GeoArray]
     return isinstance(getattr(data, "dtype", None), GeoDtype)
 
 
