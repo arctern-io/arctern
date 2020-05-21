@@ -66,7 +66,7 @@ def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, LOG_FILE="/tmp/arctern_server_l
     default.create_default_notebook()
     default.create_default_paragraph()
 
-    if not IS_DEBUG:
+    if not IS_DEBUG: # release mode
         from waitress import serve
         serve(APP, host=IP, port=PORT)
     else:
