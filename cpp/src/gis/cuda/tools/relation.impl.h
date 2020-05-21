@@ -280,11 +280,13 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   return matrix;
 }
 
-DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, ConstGpuContext::ConstIter& linestring_iter) {
+DEVICE_RUNNABLE inline Matrix PointRelateToLineString(
+    double2 left_point, ConstGpuContext::ConstIter& linestring_iter) {
   auto right_size = linestring_iter.read_meta<int>();
   auto right_points = linestring_iter.read_value_ptr<double2>(right_size);
+
   if (right_size == 0) {
-    return Matrix("FFFFFFFF*");
+    return Matrix("FF0FFFFF*");
   }
 
   if (right_size == 1) {
@@ -293,6 +295,23 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(double2 left_point, ConstG
     //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
     return de9im::INVALID_MATRIX;
   }
+  do {
+    bool is_degenerated = true;
+    auto first_point = right_points[0];
+    for (int i = 1; i < right_size; ++i) {
+      if (!IsEqual(right_points[i], first_point)) {
+        is_degenerated = false;
+        break;
+      }
+    }
+    if (is_degenerated) {
+      if(IsEqual(first_point, left_point)) {
+        return Matrix("0FFFFFFF*");
+      } else {
+        return Matrix("FF0FFF1F*");
+      }
+    }
+  } while (0);
 
   assert(right_size >= 2);
   Matrix mat;
@@ -352,13 +371,16 @@ DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
   return winding_num != 0;
 }
 
-DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
+DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
     double2 point, ConstGpuContext::ConstIter& polygon_iter) {
   int shape_size = polygon_iter.read_meta<int>();
+
+  if (shape_size == 0) {
+    return Matrix("FF0FFFFF*");
+  }
+
   bool final_is_in = false;
   bool final_is_at_edge = false;
-  // offsets of value for polygons
-
   for (int shape_index = 0; shape_index < shape_size; shape_index++) {
     auto vertex_size = polygon_iter.read_meta<int>();
     auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
@@ -374,37 +396,8 @@ DEVICE_RUNNABLE inline PointInPolygonResult PointInPolygonImpl(
     }
   }
   final_is_in = final_is_in && !final_is_at_edge;
-  return PointInPolygonResult{final_is_in, final_is_at_edge};
-}
-
-DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
-    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
-
-  ConstGpuContext::ConstIter polygon_iter_raw = polygon_iter;
-  auto bbox = CalcBoundingBox(WkbTypes::kPolygon, polygon_iter);
-
-  if (!bbox.is_valid()) {
-    printf("inp");
-    return Matrix("FFFFFFFF*");
-  }
-
-  if (bbox.get_xs().is_trivial() && bbox.get_ys().is_trivial()) {
-    // degenerate as point
-    auto iter = polygon_iter_raw;
-    auto de_point = iter.read_value<double2>();
-    if (IsEqual(de_point, point)) {
-      printf("inpn");
-      return Matrix("00FFFFFF*");
-    } else {
-      printf("inpm");
-      return Matrix("FFFFFF21*");
-    }
-  }
-
-  polygon_iter = polygon_iter_raw;
-  auto result = PointInPolygonImpl(point, polygon_iter);
-  return result.is_at_edge ? Matrix("F0FFFF21*")
-                           : result.is_in ? Matrix("0FFFFF21*") : Matrix("FF0FFF21*");
+  return final_is_at_edge ? Matrix("F0FFFF21*")
+                          : final_is_in ? Matrix("0FFFFF21*") : Matrix("FF0FFF21*");
 }
 
 }  // namespace cuda
