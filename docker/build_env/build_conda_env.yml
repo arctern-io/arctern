@@ -10,3 +10,5 @@ dependencies:
 - conda-forge::opencv=4.2
 - conda-forge::matplotlib=3.2.1
 - conda-forge::descartes=1.1.0
+- conda-forge::pyproj=2.6.1.post1
+- conda-forge::contextily=1.0.0

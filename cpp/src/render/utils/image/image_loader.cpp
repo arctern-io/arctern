@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <dirent.h>
+#include <stdexcept>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"

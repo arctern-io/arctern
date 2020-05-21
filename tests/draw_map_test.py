@@ -19,7 +19,7 @@ import cv2
 from pyspark.sql import SparkSession
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon
+from arctern.util.vega import vega_pointmap, vega_heatmap, vega_choroplethmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap
 
 
 from arctern_pyspark import register_funcs
@@ -28,6 +28,7 @@ from arctern_pyspark import pointmap
 from arctern_pyspark import choroplethmap
 from arctern_pyspark import weighted_pointmap
 from arctern_pyspark import icon_viz
+from arctern_pyspark import fishnetmap
 
 file_path = sys.path[0] + "/data/0_10000_nyc_taxi_and_building.csv"
 png_path = sys.path[0] + "/draw_map/"
@@ -886,6 +887,88 @@ def run_test_icon_viz(spark):
     assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-1.png")
     assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-2.png")
 
+# pylint: disable=too-many-statements
+def run_test_fishnet_map(spark):
+    df = spark.read.format("csv").option("header", True).option("delimiter", ",").schema(
+        "VendorID string, tpep_pickup_datetime timestamp, tpep_dropoff_datetime timestamp, passenger_count long, "
+        "trip_distance double, pickup_longitude double, pickup_latitude double, dropoff_longitude double, "
+        "dropoff_latitude double, fare_amount double, tip_amount double, total_amount double, buildingid_pickup long, "
+        "buildingid_dropoff long, buildingtext_pickup string, buildingtext_dropoff string").load(
+        file_path).cache()
+    df.createOrReplaceTempView("nyc_taxi")
+
+    register_funcs(spark)
+    res = spark.sql(
+        "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
+
+    # 1-2 test size
+    # 1 size:1024*896
+    vega_1 = vega_fishnetmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], 4, 1, 1.0, 'EPSG:4326')
+    baseline1 = fishnetmap(vega_1, res)
+    fishnet_map1_1 = fishnetmap(vega_1, res)
+    fishnet_map1_2 = fishnetmap(vega_1, res)
+
+    baseline_png1 = png_path + "fishnet_map_nyc_1.png"
+    save_png(baseline1, baseline_png1)
+    save_png(fishnet_map1_1, png_path + "test_fishnet_map_nyc_1-1.png")
+    save_png(fishnet_map1_2, png_path + "test_fishnet_map_nyc_1-2.png")
+
+    # 2 size:200*200
+    vega_2 = vega_fishnetmap(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], 4, 1, 1.0, 'EPSG:4326')
+    baseline2 = fishnetmap(vega_2, res)
+    fishnet_map2_1 = fishnetmap(vega_2, res)
+    fishnet_map2_2 = fishnetmap(vega_2, res)
+
+    baseline_png2 = png_path + "fishnet_map_nyc_2.png"
+    save_png(baseline2, baseline_png2)
+    save_png(fishnet_map2_1, png_path + "test_fishnet_map_nyc_2-1.png")
+    save_png(fishnet_map2_2, png_path + "test_fishnet_map_nyc_2-2.png")
+
+    # 3 test cell_size
+    vega_3 = vega_fishnetmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], 8, 1, 1.0, 'EPSG:4326')
+    baseline3 = fishnetmap(vega_3, res)
+    fishnet_map3_1 = fishnetmap(vega_3, res)
+    fishnet_map3_2 = fishnetmap(vega_3, res)
+
+    baseline_png3 = png_path + "fishnet_map_nyc_3.png"
+    save_png(baseline3, baseline_png3)
+    save_png(fishnet_map3_1, png_path + "test_fishnet_map_nyc_3-1.png")
+    save_png(fishnet_map3_2, png_path + "test_fishnet_map_nyc_3-2.png")
+
+    # 4 test cell_spacing
+    vega_4 = vega_fishnetmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], 8, 2, 1.0, 'EPSG:4326')
+    baseline4 = fishnetmap(vega_4, res)
+    fishnet_map4_1 = fishnetmap(vega_4, res)
+    fishnet_map4_2 = fishnetmap(vega_4, res)
+
+    baseline_png4 = png_path + "fishnet_map_nyc_4.png"
+    save_png(baseline4, baseline_png4)
+    save_png(fishnet_map4_1, png_path + "test_fishnet_map_nyc_4-1.png")
+    save_png(fishnet_map4_2, png_path + "test_fishnet_map_nyc_4-2.png")
+
+    # 5 test spacity
+    vega_5 = vega_fishnetmap(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], ["#0000FF", "#FF0000"], 4, 1, 0.8, 'EPSG:4326')
+    baseline5 = fishnetmap(vega_5, res)
+    fishnet_map5_1 = fishnetmap(vega_5, res)
+    fishnet_map5_2 = fishnetmap(vega_5, res)
+
+    baseline_png5 = png_path + "fishnet_map_nyc_5.png"
+    save_png(baseline5, baseline_png5)
+    save_png(fishnet_map5_1, png_path + "test_fishnet_map_nyc_5-1.png")
+    save_png(fishnet_map5_2, png_path + "test_fishnet_map_nyc_5-2.png")
+
+    spark.catalog.dropGlobalTempView("nyc_taxi")
+
+    assert run_diff_png(baseline_png1, png_path + "test_fishnet_map_nyc_1-1.png", 0.1)
+    assert run_diff_png(baseline_png1, png_path + "test_fishnet_map_nyc_1-2.png", 0.1)
+    assert run_diff_png(baseline_png2, png_path + "test_fishnet_map_nyc_2-1.png", 0.1)
+    assert run_diff_png(baseline_png2, png_path + "test_fishnet_map_nyc_2-2.png", 0.1)
+    assert run_diff_png(baseline_png3, png_path + "test_fishnet_map_nyc_3-1.png", 0.15)
+    assert run_diff_png(baseline_png3, png_path + "test_fishnet_map_nyc_3-2.png", 0.15)
+    assert run_diff_png(baseline_png4, png_path + "test_fishnet_map_nyc_4-1.png", 0.1)
+    assert run_diff_png(baseline_png4, png_path + "test_fishnet_map_nyc_4-2.png", 0.1)
+    assert run_diff_png(baseline_png5, png_path + "test_fishnet_map_nyc_5-1.png", 0.2)
+    assert run_diff_png(baseline_png5, png_path + "test_fishnet_map_nyc_5-2.png", 0.2)
 
 if __name__ == "__main__":
     spark_session = SparkSession \
@@ -900,5 +983,6 @@ if __name__ == "__main__":
     run_test_heat_map(spark_session)
     run_test_choropleth_map(spark_session)
     run_test_icon_viz(spark_session)
+    run_test_fishnet_map(spark_session)
 
     spark_session.stop()

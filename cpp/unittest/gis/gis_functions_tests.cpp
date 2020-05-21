@@ -18,6 +18,7 @@
 #include <arrow/array.h>
 #include <gtest/gtest.h>
 #include <ogr_geometry.h>
+
 #include <ctime>
 #include <iostream>
 
@@ -262,9 +263,12 @@ TEST(geometry_test, test_ST_Point) {
     std::cout << "array len = " << len << std::endl;
     total_len += len;
   }
+
+  // if in debug mode
   if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
     ASSERT_GT(result.size(), 1);
   }
+
   ASSERT_EQ(total_len, 100 * 10000);
 
   total_len = 0;
@@ -273,9 +277,7 @@ TEST(geometry_test, test_ST_Point) {
     std::cout << "json result len = " << array->length() << std::endl;
     total_len += array->length();
   }
-  if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
-    ASSERT_GT(json_result.size(), 1);
-  }
+
   ASSERT_EQ(total_len, result[0]->length());
 }
 
@@ -3589,8 +3591,7 @@ TEST(geometry_test, test_ST_AsGeoJSON) {
   auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input)[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0),
-            R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
+  ASSERT_EQ(res_str->GetString(0), R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
   ASSERT_EQ(
       res_str->GetString(1),
       R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");
@@ -3802,4 +3803,9 @@ TEST(geometry_test, test_ST_Envelope_Aggr) {
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
   ASSERT_EQ(res_str->GetString(0), "POLYGON ((-2 -3,-2 4,3 4,3 -3,-2 -3))");
+}
+
+TEST(geometry_test, test_GIS_Version) {
+  auto ver = arctern::gis::GIS_Version();
+  std::cout << ver << std::endl;
 }

@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "arrow/render_api.h"
+
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -26,8 +29,6 @@
 #include "render/render_builder.h"
 #include "render/utils/agg/agg_handler.h"
 #include "render/utils/render_utils.h"
-
-#include "arrow/render_api.h"
 
 namespace arctern {
 namespace render {
@@ -450,6 +451,106 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
   return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
 }
 
+template <typename T>
+std::pair<uint8_t*, int64_t> render_fishnetmap(const std::vector<std::string>& points,
+                                               const std::vector<T>& arr_c,
+                                               const std::string& conf) {
+  rapidjson::Document document;
+  document.Parse(conf.c_str());
+  rapidjson::Value mark_enter;
+  mark_enter = document["marks"][0]["encode"]["enter"];
+  auto agg = mark_enter["aggregation_type"]["value"].GetString();
+  int cell_size = mark_enter["cell_size"]["value"].GetDouble();
+  int cell_spacing = mark_enter["cell_spacing"]["value"].GetDouble();
+  auto region_size = cell_size + cell_spacing;
+  AggHandler::AggType type_agg = AggHandler::agg_type(agg);
+
+  auto data = AggHandler::region_agg<T>(points, arr_c, region_size);
+  auto num_point = data.size();
+
+  std::vector<uint32_t> input_x(num_point);
+  std::vector<uint32_t> input_y(num_point);
+  std::vector<T> input_c(num_point);
+  int i = 0;
+
+  switch (type_agg) {
+    case AggHandler::AggType::MAX: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = *max_element(result_weight.begin(), result_weight.end());
+        i++;
+      }
+      break;
+    }
+    case AggHandler::AggType::MIN: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = *min_element(result_weight.begin(), result_weight.end());
+        i++;
+      }
+      break;
+    }
+    case AggHandler::AggType::COUNT: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = result_weight.size();
+        i++;
+      }
+      break;
+    }
+    case AggHandler::AggType::SUM: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        input_c[i] = accumulate(result_weight.begin(), result_weight.end(), 0);
+        i++;
+      }
+      break;
+    }
+    case AggHandler::AggType::STDDEV: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        T sum = accumulate(result_weight.begin(), result_weight.end(), 0);
+        T mean = sum / result_weight.size();
+        T accum = 0;
+        std::for_each(std::begin(result_weight), std::end(result_weight),
+                      [&](const T d) { accum += (d - mean) * (d - mean); });
+        input_c[i] = sqrt(accum / result_weight.size());
+        i++;
+      }
+      break;
+    }
+    case AggHandler::AggType::AVG: {
+      for (auto iter = data.begin(); iter != data.end(); iter++) {
+        auto result_point = iter->first;
+        auto result_weight = iter->second;
+        input_x[i] = result_point.first;
+        input_y[i] = result_point.second;
+        T sum_data = accumulate(result_weight.begin(), result_weight.end(), 0);
+        input_c[i] = sum_data / result_weight.size();
+        i++;
+      }
+      break;
+    }
+  }
+
+  return fishnetmap<T>(&input_x[0], &input_y[0], &input_c[0], num_point, conf);
+}
+
 const std::vector<std::shared_ptr<arrow::Array>> projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos,
     const std::string& bottom_right, const std::string& top_left, const int& height,
@@ -771,6 +872,62 @@ std::shared_ptr<arrow::Array> icon_viz(
   auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
 
   return out_pic(result);
+}
+
+std::shared_ptr<arrow::Array> fishnet_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
+    const std::string& conf) {
+  const auto& wkb_vec = WkbExtraction(points_vector);
+
+  auto weight_data_type = weights_vector[0]->type_id();
+
+  switch (weight_data_type) {
+    case arrow::Type::INT8: {
+      const auto& arr_c = WeightExtraction<int8_t>(weights_vector);
+      return out_pic(render_fishnetmap<int8_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::INT16: {
+      const auto& arr_c = WeightExtraction<int16_t>(weights_vector);
+      return out_pic(render_fishnetmap<int16_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::INT32: {
+      const auto& arr_c = WeightExtraction<int32_t>(weights_vector);
+      return out_pic(render_fishnetmap<int32_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::INT64: {
+      const auto& arr_c = WeightExtraction<int64_t>(weights_vector);
+      return out_pic(render_fishnetmap<int64_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::UINT8: {
+      const auto& arr_c = WeightExtraction<uint8_t>(weights_vector);
+      return out_pic(render_fishnetmap<uint8_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::UINT16: {
+      const auto& arr_c = WeightExtraction<uint16_t>(weights_vector);
+      return out_pic(render_fishnetmap<uint16_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::UINT32: {
+      const auto& arr_c = WeightExtraction<uint32_t>(weights_vector);
+      return out_pic(render_fishnetmap<uint32_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::UINT64: {
+      const auto& arr_c = WeightExtraction<uint64_t>(weights_vector);
+      return out_pic(render_fishnetmap<uint64_t>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::FLOAT: {
+      const auto& arr_c = WeightExtraction<float>(weights_vector);
+      return out_pic(render_fishnetmap<float>(wkb_vec, arr_c, conf));
+    }
+    case arrow::Type::DOUBLE: {
+      const auto& arr_c = WeightExtraction<double>(weights_vector);
+      return out_pic(render_fishnetmap<double>(wkb_vec, arr_c, conf));
+    }
+    default:
+      std::string err_msg = "type error of count while running square_map, type = " +
+                            std::to_string(weight_data_type);
+      throw std::runtime_error(err_msg);
+  }
 }
 
 }  // namespace render

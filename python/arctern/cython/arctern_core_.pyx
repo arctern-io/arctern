@@ -128,7 +128,16 @@ def icon_viz(vega, points_list):
 
     return pyarrow_wrap_array(arctern_core_pxd.icon_viz(points_vector, vega))
 
-
+def fishnet_map(vega, points_list, weights_list):
+    cdef vector[shared_ptr[CArray]] points_vector
+    cdef vector[shared_ptr[CArray]] weights_vector
+    for points in points_list:
+        arr = pyarrow_unwrap_array(points)
+        points_vector.push_back(arr)
+    for weights in weights_list:
+        arr = pyarrow_unwrap_array(weights)
+        weights_vector.push_back(arr)
+    return pyarrow_wrap_array(arctern_core_pxd.fishnet_map(points_vector, weights_vector, vega))
 
 # gis api:
 def ST_Point(object arr_x,object arr_y):
@@ -342,3 +351,6 @@ def ST_Union_Aggr(object geo_arr):
 
 def ST_Envelope_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Envelope_Aggr(pyarrow_unwrap_array(geo_arr)))
+
+def GIS_Version():
+    return arctern_core_pxd.GIS_Version()

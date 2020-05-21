@@ -39,7 +39,7 @@ def create_scope():
     else:
         scope = request.json.get("scope")
         if scope in _SCOPE:
-            return jsonify(status="error", code=-1, message="sorry, scope_id exists!")
+            return jsonify(status="error", code=-1, message="sorry, scope {} already exists!".format(scope))
     if scope is None:
         scope = str(uuid.uuid1()).replace("-", "")
     _SCOPE[scope] = dict()
@@ -97,9 +97,9 @@ def load_file():
         exec(load_code, _SCOPE[scope])
     return jsonify(status='success', code=200, message='load table successfully!')
 
-@API.route('/savetable', methods=['POST'])
+@API.route('/savefile', methods=['POST'])
 def save_table():
-    log.INSTANCE.info("POST /savetable: {}".format(request.json))
+    log.INSTANCE.info("POST /savefile: {}".format(request.json))
 
     scope = request.json.get('scope')
     log.INSTANCE.info("scope: {}".format(scope))
@@ -197,6 +197,7 @@ def render(payload, render_type):
         "choroplethmap": codegen.generate_choropleth_map_code,
         "weighted_pointmap": codegen.generate_weighted_map_code,
         "icon_viz": codegen.generate_icon_viz_code,
+        "fishnetmap": codegen.generate_fishnetmap_code,
     }
 
     log.INSTANCE.info("POST /{}: {}".format(render_type, payload))
@@ -266,6 +267,15 @@ def weighted_pointmap():
 @API.route('/icon_viz', methods=['POST'])
 def icon_viz():
     status, code, result = render(request.json, 'icon_viz')
+    return jsonify(
+        status=status,
+        code=code,
+        result=result,
+    )
+
+@API.route('/fishnetmap', methods=['POST'])
+def fishnetmap():
+    status, code, result = render(request.json, 'fishnetmap')
     return jsonify(
         status=status,
         code=code,

@@ -79,12 +79,12 @@ def WkbToWkt(wkbs):
     return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PointFromText(geos):
+def ST_PointFromText(text):
     """
     Transform the representation of point from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Point in WKT form.
+    :type text: WKT
+    :param text: Point in WKT form.
 
     :rtype: WKB
     :return: Point in WKB form.
@@ -106,15 +106,15 @@ def ST_PointFromText(geos):
       |POINT (30 10)                    |
       +---------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_PolygonFromText(geos):
+def ST_PolygonFromText(text):
     """
     Transform the representation of polygon from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Polygon in WKT form.
+    :type text: WKT
+    :param text: Polygon in WKT form.
 
     :rtype: WKB
     :return: Polygon in WKB form.
@@ -136,15 +136,15 @@ def ST_PolygonFromText(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))    |
       +-----------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_LineStringFromText(geos):
+def ST_LineStringFromText(text):
     """
     Transform the representation of linestring from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Linestring in WKT form.
+    :type text: WKT
+    :param text: Linestring in WKT form.
 
     :rtype: WKB
     :return: Linestring in WKB form.
@@ -166,15 +166,15 @@ def ST_LineStringFromText(geos):
       |LINESTRING (0 0, 0 1, 1 1, 1 0)       |
       +--------------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromWKT(geos):
+def ST_GeomFromWKT(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type geos: WKT
-    :param geos: Geometry in WKT form.
+    :type text: WKT
+    :param text: Geometry in WKT form.
 
     :rtype: WKB
     :return: Geometry in WKB form.
@@ -196,15 +196,15 @@ def ST_GeomFromWKT(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0))|
       +-------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
-def ST_GeomFromText(geos):
+def ST_GeomFromText(text):
     """
     Transform the representation of geometry from WKT to WKB.
 
-    :type geo: WKT
-    :param geo: Geometry in WKT form.
+    :type text: WKT
+    :param text: Geometry in WKT form.
 
     :rtype: WKB
     :return: Geometry in WKB form.
@@ -226,15 +226,15 @@ def ST_GeomFromText(geos):
       |POLYGON ((0 0,0 1,1 1,1 0,0 0)) |
       +--------------------------------+
     """
-    return arctern.ST_GeomFromText(geos)
+    return arctern.ST_GeomFromText(text)
 
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_AsText(geos):
     """
     Transform the representation of geometry from WKB to WKT.
 
-    :type geo: WKB
-    :param geo: Geometry in WKB form.
+    :type geos: WKB
+    :param geos: Geometry in WKB form.
 
     :rtype: WKT
     :return: Geometry in WKT form.
@@ -263,8 +263,8 @@ def ST_AsGeoJSON(geos):
     """
     Return the GeoJSON representation of the geometry.
 
-    :type geo: WKB
-    :param geo: Geometry in WKB form.
+    :type geos: WKB
+    :param geos: Geometry in WKB form.
 
     :rtype: string
     :return: Geometry organized as GeoJSON format.
@@ -622,7 +622,7 @@ def ST_IsSimple(geos):
       >>> test_data = []
       >>> test_data.extend([('POLYGON((1 2, 3 4, 5 6, 1 2))',)])
       >>> test_data.extend([('LINESTRING(1 1,2 2,2 3.5,1 3,1 2,2 1)',)])
-      >>> test_data.extend([('POINT (1 1)')])
+      >>> test_data.extend([('POINT (1 1)',)])
       >>> simple_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> simple_df.createOrReplaceTempView("simple")
       >>> spark_session.sql("select ST_IsSimple(ST_GeomFromText(geos)) from simple").show(100,0)
@@ -639,7 +639,7 @@ def ST_IsSimple(geos):
 @pandas_udf("string", PandasUDFType.SCALAR)
 def ST_GeometryType(geos):
     """
-    For each geometry in geometries, return a string that indicates is type.
+    For each geometry in geometries, return a string that indicates it's type.
 
     :type geos: WKB
     :param geos: Geometry
@@ -1247,7 +1247,7 @@ def ST_Union_Aggr(geos):
       +-----------------------------------------------+
       |ST_AsText(ST_Union_Aggr(ST_GeomFromText(geos)))|
       +-----------------------------------------------+
-      |POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))|
+      |POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))        |
       +-----------------------------------------------+
     """
     rst = arctern.ST_Union_Aggr(geos)
@@ -1306,7 +1306,7 @@ def ST_Transform(geos, from_srid, to_srid):
       >>> from arctern_pyspark import register_funcs
       >>> spark_session = SparkSession.builder.appName("Python Arrow-in-Spark example").getOrCreate()
       >>> register_funcs(spark_session)
-      >>>  test_data = []
+      >>> test_data = []
       >>> test_data.extend([('POINT (10 10)',)])
       >>> buffer_df = spark_session.createDataFrame(data=test_data, schema=['geos']).cache()
       >>> buffer_df.createOrReplaceTempView("buffer")

@@ -13,16 +13,27 @@
 # limitations under the License.
 
 
+import configparser
 from setuptools import find_packages, setup
+
+conf = configparser.ConfigParser()
+conf.read("arctern_server/config.ini")
+conf.set("spark", "master-addr", "local[*]")
+with open("arctern_server/config.ini", "w") as f:
+    conf.write(f)
+
+with open("arctern_server/requirements.txt", "r") as f:
+    dependencies = f.read().splitlines()
 
 setup(
     name="arctern_server",
-    version="0.0.3",
+    version="0.0.4",
     author="Zilliz",
     author_email="support@zilliz.com",
     description="arctern demo server",
     packages=find_packages(),
     scripts=['arctern_server/arctern-server'],
     python_requires='>=3.6',
-    include_package_data=True
+    include_package_data=True,
+    install_requires=dependencies,
 )
