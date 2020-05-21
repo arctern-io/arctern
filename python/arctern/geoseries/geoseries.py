@@ -17,7 +17,7 @@
 from warnings import warn
 from pandas import Series
 import arctern
-from .geoarray import GeoArray, is_geometry_arry
+from .geoarray import GeoArray, is_geometry_array
 
 
 def _property_op(op, this):
@@ -120,7 +120,7 @@ class GeoSeries(Series):
             n = len(index) if index is not None else 1
             data = [data] * n
 
-        if not is_geometry_arry(data):
+        if not is_geometry_array(data):
             s = Series(data, index=index, name=name, **kwargs)
             if s.empty:
                 s = s.astype(bytes)

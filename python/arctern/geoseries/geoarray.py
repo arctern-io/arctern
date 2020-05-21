@@ -88,7 +88,7 @@ def from_wkb(data):
     return GeoArray(array)
 
 
-def is_geometry_arry(data):
+def is_geometry_array(data):
     """
     Check if the data is array like, and dtype is `GeoDtype`.
     """
