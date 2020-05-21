@@ -61,11 +61,12 @@ def usage():
 def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, LOG_FILE="/tmp/arctern_server_log.txt", LOG_LEVEL=logging.INFO):
     log.set_file(LOG_FILE, LOG_LEVEL)
 
+    # create default parameter
     default.create_default_interpreter()
     default.create_default_notebook()
     default.create_default_paragraph()
 
-    if not IS_DEBUG:
+    if not IS_DEBUG: # release mode
         from waitress import serve
         serve(APP, host=IP, port=PORT)
     else:

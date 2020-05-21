@@ -13,10 +13,9 @@ limitations under the License.
 
 # pylint: disable=logging-format-interpolation
 
-import requests
-
 from arctern_server.app.common import log
 from arctern_server.app.common import config as app_config
+from arctern_server.app import httpretry
 
 def forward_to_zeppelin(request):
     url_path = request.path
@@ -26,5 +25,5 @@ def forward_to_zeppelin(request):
     log.INSTANCE.info("{} {}, body: {}, args: {}".format(method, url_path, request.json, request.args))
     log.INSTANCE.info("forward to: {}".format(zeppelin_url))
 
-    r = requests.request(method, zeppelin_url, data=request.data, headers=request.headers)
+    r = httpretry.safe_requests(method, zeppelin_url, data=request.data, headers=request.headers)
     return r.json()

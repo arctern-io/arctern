@@ -16,8 +16,6 @@ limitations under the License.
 import ast
 import json
 
-import requests
-
 from flask import Blueprint, jsonify, request
 
 from arctern_server.app.common import log
@@ -25,6 +23,7 @@ from arctern_server.app.common import config as app_config
 from arctern_server.app import pysparkbackend
 from arctern_server.app import pythonbackend
 from arctern_server.app import default
+from arctern_server.app import httpretry
 
 API = Blueprint("function_api", __name__)
 
@@ -36,7 +35,7 @@ def _function_forward(code, notebook_id, paragraph_id):
             "text": code,
         }   # TODO: more details
         log.INSTANCE.info("forward to: post {}\nbody: {}\n".format(url, payload))
-        r = requests.post(url=url, json=payload)
+        r = httpretry.safe_requests("POST", url, json=payload)
         paragraph_id = r.json()["body"]
     else:
         url = app_config.ZEPPELEN_PREFIX + "/api/notebook/" + notebook_id + "/paragraph/" + paragraph_id
@@ -44,12 +43,12 @@ def _function_forward(code, notebook_id, paragraph_id):
             "text": code,
         }   # TODO: more details
         log.INSTANCE.info("forward to: put {}".format(url))
-        requests.put(url=url, json=payload)
+        httpretry.safe_requests("PUT", url, json=payload)
 
     # step 2: run paragraph
     url = app_config.ZEPPELEN_PREFIX + "/api/notebook/run/" + notebook_id + "/" + paragraph_id
     log.INSTANCE.info("forward to: post {}".format(url))
-    response = requests.post(url=url)
+    response = httpretry.safe_requests("POST", url)
     return response.json()
 
 @API.route('/loadfile', methods=['POST'])
