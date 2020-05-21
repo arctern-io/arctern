@@ -230,3 +230,20 @@ TEST(Relation, LineStringRelateToLineString) {
     }
   }
 }
+
+TEST(Relation, HostAll) {
+  vector<vector<string>> dataset = {
+      {"left", "right", "mat"},
+      {"Point(0 0)", "Point(0 0)", "0FFFFFFF*"},
+      {"Point(0 0)", "Point(0 1)", "FF0FFF0F*"},
+      {"Point(0 0)", "LineString(0 -1, 0 1)", "0FFFFF10*"},
+      {"Point(0 0)", "LineString(0 0, 0 1)", "F0FFFF10*"},
+      {"Point(0 0)", "LineString(0 1, 3 0)", "FF0FFF10*"},
+      {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", "F0FFFFFF*"},
+      {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", "0FFFFFFF*"},
+      {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", "FF0FFFFF*"},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", "FFF0FFFF*"},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", "0FFFFFFF*"},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", "FFFFFF0F*"},
+  };
+}

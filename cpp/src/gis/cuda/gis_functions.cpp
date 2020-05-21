@@ -34,6 +34,7 @@
 #include "gis/cuda/functor/st_length.h"
 #include "gis/cuda/functor/st_point.h"
 #include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_equals.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
 
@@ -109,20 +110,27 @@ DoubleArrayPtr ST_Distance(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_ge
   return distance;
 }
 
-BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+using RelateFunc = void (*)(const GeometryVector&, const GeometryVector&, bool*);
+static BooleanArrayPtr RelateTemplate(RelateFunc func, const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   auto len = lhs_geo->length();
   auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_geo);
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_geo);
-
   auto raw_within = std::make_unique<bool[]>(len);
-  ST_Within(lhs_geo_vec, rhs_geo_vec, raw_within.get());
-
+  func(lhs_geo_vec, rhs_geo_vec, raw_within.get());
   arrow::BooleanBuilder builder;
   CHECK_ARROW(builder.AppendValues((uint8_t*)raw_within.get(), len));
   BooleanArrayPtr within;
   CHECK_ARROW(builder.Finish(&within));
-
   return within;
+    
+}
+
+BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Within, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Equals, lhs_geo, rhs_geo);
 }
 
 }  // namespace cuda
