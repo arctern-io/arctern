@@ -311,7 +311,7 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(
         return Matrix("FF0FFF1F*");
       }
     }
-  } while (0);
+  } while (false);
 
   assert(right_size >= 2);
   Matrix mat;
@@ -387,6 +387,7 @@ DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
 
     auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
     auto is_at_edge = PointOnLineString(point, vertex_size, values) != 0;
+
     final_is_at_edge = final_is_at_edge || is_at_edge;
 
     if (shape_index == 0) {

@@ -66,11 +66,15 @@ TEST(FunctorRelate, naive) {
   vector<std::tuple<string, string, Matrix, bool>> raw_data = {
       {"Point(1 1)", "LineString(1 1, 1 1)         ", mat{"0FFFFFFF*"}, true},
       {"Point(0 1)", "LineString(1 1, 1 1)         ", mat{"FF0FFF1F*"}, true},
-      {"Point(1 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"F0FFFFFF*"}, true},
+      // standard answer from PostGis is F0FFFFFF*, but we use below for consistency
+      {"Point(1 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"F0FFFF21*"}, true},
+      // Below is standard answer from PostGis
+      {"Point(1 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"F0FFFF21*"}, true},
       {"Point(0 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"FF0FFF21*"}, true},
+
       {"LineString(1 1, 1 1)         ", "Point(1 1)", mat{"0FFFFFFF*"}, true},
       {"LineString(1 1, 1 1)         ", "Point(0 1)", mat{"FF1FFF0F*"}, true},
-      {"Polygon((1 1, 1 1, 1 1, 1 1))", "Point(1 1)", mat{"FFF0FFFF*"}, true},
+      {"Polygon((1 1, 1 1, 1 1, 1 1))", "Point(1 1)", mat{"FF20F1FF*"}, true},
       {"Polygon((1 1, 1 1, 1 1, 1 1))", "Point(0 1)", mat{"FF2FF10F*"}, true},
 
       {"Point(0 1)", "LINESTRING (0 0, 0 1, 1 2)", mat("0FFFFF10*"), true},
@@ -91,13 +95,13 @@ TEST(FunctorRelate, naive) {
       {"Point(0 0)", "LineString(0 0, 0 1)", mat("F0FFFF10*"), true},
 
       {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
-      {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", mat{"F0FFFFFF*"}, true},
-      {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", mat{"0FFFFFFF*"}, true},
-      {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", mat{"FF0FFFFF*"}, true},
-      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", mat{"FFF0FFFF*"}, true},
+      {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", mat{"F0FFFF21*"}, true},
+      {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", mat{"0FFFFF21*"}, true},
+      {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", mat{"FF0FFF21*"}, true},
 
-      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", mat{"0FFFFFFF*"}, true},
-      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", mat{"FFFFFF0F*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", mat{"FF20F1FF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", mat{"0F2FF1FF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", mat{"FF2FF10F*"}, true},
   };
   vector<string> left_vec;
   vector<string> right_vec;
