@@ -81,6 +81,68 @@ void MaskResult::AppendFilter(const std::shared_ptr<arrow::BinaryArray>& geometr
   this->AppendFilter(scanner, supported_types);
 }
 
+using string_view = decltype(WkbArrayPtr()->GetView(0));
+
+static inline WkbTypes GetType(string_view view) {
+  WkbTypes type;
+  assert(view.size() >= sizeof(WkbByteOrder) + sizeof(WkbTypes));
+  memcpy(&type, view.data() + sizeof(WkbByteOrder), sizeof(WkbTypes));
+  return type;
+}
+
+static constexpr uint64_t bundle(WkbTypes left, WkbTypes right) {
+  return ((uint64_t)left << 32) | ((uint64_t)right);
+}
+
+// select GPU-enabled
+MaskResult RelateSelector(const WkbArrayPtr& left_geo, const WkbArrayPtr& right_geo) {
+  assert(left_geo->length() == right_geo->length());
+  auto length = left_geo->length();
+  if (length == 0) {
+    return MaskResult(MaskResult::Status::kOnlyFalse);
+  }
+  std::vector<bool> mask(length);
+  int64_t count = 0;
+
+  for (int64_t index = 0; index < length; ++index) {
+    bool flag = false;
+    if (left_geo->IsNull(index) || right_geo->IsNull(index)) {
+      flag = false;
+    } else {
+      auto left_type = GetType(left_geo->GetView(index));
+      auto right_type = GetType(right_geo->GetView(index));
+      constexpr auto kPoint = WkbTypes::kPoint;
+      constexpr auto kLineString = WkbTypes::kLineString;
+      constexpr auto kPolygon = WkbTypes::kPolygon;
+      switch (bundle(left_type, right_type)) {
+        case bundle(kPoint, kPoint):
+        case bundle(kPoint, kLineString):
+        case bundle(kLineString, kPoint):
+        case bundle(kLineString, kLineString):
+        case bundle(kPoint, kPolygon):
+        case bundle(kPolygon, kPoint): {
+          flag = true;
+          break;
+        }
+        default: {
+          flag = false;
+          break;
+        }
+      }
+    }
+    mask[index] = flag;
+    count += flag ? 1 : 0;
+  }
+
+  if (count == length) {
+    return MaskResult(MaskResult::Status::kOnlyTrue);
+  } else if (count == 0) {
+    return MaskResult(MaskResult::Status::kOnlyFalse);
+  } else {
+    return MaskResult(std::move(mask));
+  }
+}
+
 }  // namespace dispatch
 }  // namespace gis
 }  // namespace arctern
