@@ -122,6 +122,14 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   // project left line to 0->1
   auto lv0 = to_complex(line_endpoints[0]);
   auto lv1 = to_complex(line_endpoints[0 + 1]) - lv0;
+  if (lv1 == 0) {
+    auto res = PointOnLineString(line_endpoints[0], right_size, right_points);
+    if (res) {
+      return LineRelationResult{1, true, 0};
+    } else {
+      return LineRelationResult{-1, false, 0};
+    }
+  }
   LineRelationResult result{-1, false, 0};
   for (int right_index = 0; right_index < right_size - 1; ++right_index) {
     // do similiar projection
@@ -134,12 +142,14 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
       auto r1 = rv1.real();
       if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
         // outside, just check endpoints
-        if (r0 == 0 || r0 == 1) {
-          ++result.cross_count;
-          result.CC = thrust::max(result.CC, 0);
-        } else if (r1 == 0 || r1 == 1) {
-          ++result.cross_count;
-          result.CC = thrust::max(result.CC, 0);
+        if (r0 == 0 || r0 == 1 || r1 == 0 || r1 == 1) {
+          if(r0 == r1) {
+            // degenerated to point
+            result.CC = 1;
+          } else {
+            ++result.cross_count;
+            result.CC = thrust::max(result.CC, 0);
+          }
         }
       } else {
         // at least intersect
@@ -305,7 +315,7 @@ DEVICE_RUNNABLE inline Matrix PointRelateToLineString(
       }
     }
     if (is_degenerated) {
-      if(IsEqual(first_point, left_point)) {
+      if (IsEqual(first_point, left_point)) {
         return Matrix("0FFFFFFF*");
       } else {
         return Matrix("FF0FFF1F*");

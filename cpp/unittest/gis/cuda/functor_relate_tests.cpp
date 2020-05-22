@@ -64,6 +64,7 @@ TEST(FunctorRelate, naive) {
   // simple unittest, the complex one is put into host_within_tests.cpp
   using mat = Matrix;
   vector<std::tuple<string, string, Matrix, bool>> raw_data = {
+      {"LineString(0 0, 1 0, 1 1)", "LineString(0 0, 1 0, 1 1)", mat{"1FFF0FFF*"}, true},
       {"Point(1 1)", "LineString(1 1, 1 1)         ", mat{"0FFFFFFF*"}, true},
       {"Point(0 1)", "LineString(1 1, 1 1)         ", mat{"FF0FFF1F*"}, true},
       // standard answer from PostGis is F0FFFFFF*, but we use below for consistency

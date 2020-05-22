@@ -106,24 +106,24 @@ DoubleArrayPtr ST_Length(const WkbArrayPtr& input_geo);
 BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo);
 
 // std::shared_ptr<arrow::Array> ST_Touches(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
+//     const std::shared_ptr<arrow::Array>& geometries_1,
+//     const std::shared_ptr<arrow::Array>& geometries_2);
 //
 // std::shared_ptr<arrow::Array> ST_Overlaps(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
+//     const std::shared_ptr<arrow::Array>& geometries_1,
+//     const std::shared_ptr<arrow::Array>& geometries_2);
 //
 // std::shared_ptr<arrow::Array> ST_Crosses(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
+//     const std::shared_ptr<arrow::Array>& geometries_1,
+//     const std::shared_ptr<arrow::Array>& geometries_2);
 //
 // std::shared_ptr<arrow::Array> ST_Contains(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
+//     const std::shared_ptr<arrow::Array>& geometries_1,
+//     const std::shared_ptr<arrow::Array>& geometries_2);
 //
 // std::shared_ptr<arrow::Array> ST_Intersects(
-//    const std::shared_ptr<arrow::Array>& geometries_1,
-//    const std::shared_ptr<arrow::Array>& geometries_2);
+//     const std::shared_ptr<arrow::Array>& geometries_1,
+//     const std::shared_ptr<arrow::Array>& geometries_2);
 
 BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo);
 
