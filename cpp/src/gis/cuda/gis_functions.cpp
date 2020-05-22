@@ -143,9 +143,11 @@ BooleanArrayPtr ST_Overlaps(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_g
 BooleanArrayPtr ST_Crosses(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Crosses, lhs_geo, rhs_geo);
 }
-//BooleanArrayPtr ST_Contains(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
-//  return RelateTemplate(ST_Contains, lhs_geo, rhs_geo);
-//}
+BooleanArrayPtr ST_Contains(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  // equivalent to ST_Within
+  return RelateTemplate(ST_Within, rhs_geo, lhs_geo);
+}
+
 //BooleanArrayPtr ST_Intersects(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
 //  return RelateTemplate(ST_Intersects, lhs_geo, rhs_geo);
 //}

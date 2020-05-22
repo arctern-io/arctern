@@ -299,7 +299,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
 std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
-#if defined(USE_GPU) && 0
+#if defined(USE_GPU)
   return RelateWrapper(gdal::ST_Contains, cuda::ST_Contains, geometries_1, geometries_2);
 #else
   return gdal::ST_Contains(geometries_1, geometries_2);
