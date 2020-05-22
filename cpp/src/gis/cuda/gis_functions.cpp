@@ -37,8 +37,7 @@
 #include "gis/cuda/functor/st_touches.h"
 #include "gis/cuda/functor/st_overlaps.h"
 #include "gis/cuda/functor/st_crosses.h"
-//#include "gis/cuda/functor/st_contains.h"
-//#include "gis/cuda/functor/st_intersects.h"
+#include "gis/cuda/functor/st_intersects.h"
 #include "gis/cuda/functor/st_equals.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
@@ -137,20 +136,23 @@ BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo
 BooleanArrayPtr ST_Touches(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Touches, lhs_geo, rhs_geo);
 }
+
 BooleanArrayPtr ST_Overlaps(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Overlaps, lhs_geo, rhs_geo);
 }
+
 BooleanArrayPtr ST_Crosses(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Crosses, lhs_geo, rhs_geo);
 }
+
 BooleanArrayPtr ST_Contains(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   // equivalent to ST_Within
   return RelateTemplate(ST_Within, rhs_geo, lhs_geo);
 }
 
-//BooleanArrayPtr ST_Intersects(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
-//  return RelateTemplate(ST_Intersects, lhs_geo, rhs_geo);
-//}
+BooleanArrayPtr ST_Intersects(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Intersects, lhs_geo, rhs_geo);
+}
 
 BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Within, lhs_geo, rhs_geo);
