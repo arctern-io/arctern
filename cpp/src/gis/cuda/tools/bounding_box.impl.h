@@ -20,7 +20,7 @@
 namespace arctern {
 namespace gis {
 namespace cuda {
-namespace {
+namespace internal {
 
 DEVICE_RUNNABLE inline int CalcSimplePointCountImpl(WkbTag tag,
                                                     const uint32_t*& meta_iter) {
@@ -48,7 +48,6 @@ DEVICE_RUNNABLE inline int CalcSimplePointCountImpl(WkbTag tag,
     }
   }
 }
-}  // namespace
 
 DEVICE_RUNNABLE inline int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
@@ -77,11 +76,12 @@ DEVICE_RUNNABLE inline int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter
     }
   }
 }
+}  // namespace internal
 
 DEVICE_RUNNABLE inline BoundingBox CalcBoundingBox(WkbTag tag,
                                                    ConstGpuContext::ConstIter& iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
-  auto point_count = CalcPointCount(tag, iter.metas);
+  auto point_count = internal::CalcPointCount(tag, iter.metas);
   auto value2 = iter.read_value_ptr<double2>(point_count);
 
   BoundingBox bbox;
