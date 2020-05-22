@@ -50,16 +50,52 @@ void RelationFinalize(Func func, const de9im::Matrix* dev_matrices, int64_t size
 }
 
 template <typename Func>
-void ST_RelateFunctorSimple(Func func, const GeometryVector& left_vec, const GeometryVector& right_vec,
-                       bool* host_results){
+void ST_RelateFunctor(Func func, const GeometryVector& left_vec,
+                      const GeometryVector& right_vec, bool* host_results) {
   auto size = left_vec.size();
   auto left_ctx_holder = left_vec.CreateReadGpuContext();
   auto right_ctx_holder = right_vec.CreateReadGpuContext();
   auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
   auto results = GpuMakeUniqueArray<bool>(size);
 
-
   RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
+  GpuMemcpy(host_results, results.get(), size);
+};
+
+namespace internal {
+template <typename Func>
+__global__ void RelationFinalizeWithDimImpl(Func func, ConstGpuContext left,
+                                            ConstGpuContext right,
+                                            const de9im::Matrix* dev_matrices,
+                                            int64_t size, bool* dev_results) {
+  auto index = threadIdx.x + blockIdx.x * blockDim.x;
+  if (index < size) {
+    auto left_dim = left.get_tag(index).get_dimension();
+    auto right_dim = right.get_tag(index).get_dimension();
+    dev_results[index] = func(dev_matrices[index], left_dim, right_dim);
+  }
+}
+}  // namespace internal
+
+template <typename Func>
+void RelationFinalizeWithDim(Func func, ConstGpuContext left, ConstGpuContext right,
+                             const de9im::Matrix* dev_matrices, int64_t size,
+                             bool* dev_results) {
+  auto config = GetKernelExecConfig(size);
+  internal::RelationFinalizeWithDimImpl<<<config.grid_dim, config.block_dim>>>(
+      func, left, right, dev_matrices, size, dev_results);
+}
+
+template <typename Func>
+void ST_RelateFunctorWithDim(Func func, const GeometryVector& left_vec,
+                             const GeometryVector& right_vec, bool* host_results) {
+  auto size = left_vec.size();
+  auto left_ctx_holder = left_vec.CreateReadGpuContext();
+  auto right_ctx_holder = right_vec.CreateReadGpuContext();
+  auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
+  auto results = GpuMakeUniqueArray<bool>(size);
+  RelationFinalizeWithDim(func, *left_ctx_holder, *right_ctx_holder, matrices.get(),
+                          left_vec.size(), results.get());
   GpuMemcpy(host_results, results.get(), size);
 };
 

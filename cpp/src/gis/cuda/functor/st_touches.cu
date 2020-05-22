@@ -32,7 +32,7 @@ void ST_Touches(const GeometryVector& left_vec, const GeometryVector& right_vec,
     auto BB = de9im::Matrix::IsTrue(mat->BB);
     return !II && (IB || BI || BB);
   };  // NOLINT
-  ST_RelateFunctorSimple(func, left_vec, right_vec, host_results);
+  ST_RelateFunctor(func, left_vec, right_vec, host_results);
 }
 
 }  // namespace cuda
