@@ -32,10 +32,7 @@ def _property_geo(op, this):
 
 def _unary_geo(op, this, *args, **kwargs):
     # type: (function, GeoSeries, args, kwargs) -> GeoSeries
-    if 'crs' in kwargs.keys():
-        crs = kwargs.pop('crs')
-    else:
-        crs = this.crs
+    crs = kwargs.pop("crs", this.crs)
     return GeoSeries(op(this.values, *args, **kwargs), index=this.index, name=this.name, crs=crs)
 
 
@@ -250,9 +247,6 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
-
-    def unique(self):
-        return super().unique()
 
     # -------------------------------------------------------------------------
     # Geometry related property
