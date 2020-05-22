@@ -24,7 +24,7 @@ namespace gis {
 namespace cuda {
 
 void ST_Touches(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               bool* host_results);
+                bool* host_results);
 
 }  // namespace cuda
 }  // namespace gis

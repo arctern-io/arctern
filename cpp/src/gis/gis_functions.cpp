@@ -310,7 +310,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
 #if defined(USE_GPU)
-  return RelateWrapper(gdal::ST_Intersects, cuda::ST_Intersects, geometries_1, geometries_2);
+  return RelateWrapper(gdal::ST_Intersects, cuda::ST_Intersects, geometries_1,
+                       geometries_2);
 #else
   return gdal::ST_Intersects(geometries_1, geometries_2);
 #endif

@@ -143,7 +143,7 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
       if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
         // outside, just check endpoints
         if (r0 == 0 || r0 == 1 || r1 == 0 || r1 == 1) {
-          if(r0 == r1) {
+          if (r0 == r1) {
             // degenerated to point
             result.CC = 1;
           } else {

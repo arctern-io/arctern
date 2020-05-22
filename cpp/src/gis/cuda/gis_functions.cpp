@@ -29,16 +29,16 @@
 #include "common/version.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/st_area.h"
+#include "gis/cuda/functor/st_crosses.h"
 #include "gis/cuda/functor/st_distance.h"
 #include "gis/cuda/functor/st_envelope.h"
-#include "gis/cuda/functor/st_length.h"
-#include "gis/cuda/functor/st_point.h"
-#include "gis/cuda/functor/st_within.h"
-#include "gis/cuda/functor/st_touches.h"
-#include "gis/cuda/functor/st_overlaps.h"
-#include "gis/cuda/functor/st_crosses.h"
-#include "gis/cuda/functor/st_intersects.h"
 #include "gis/cuda/functor/st_equals.h"
+#include "gis/cuda/functor/st_intersects.h"
+#include "gis/cuda/functor/st_length.h"
+#include "gis/cuda/functor/st_overlaps.h"
+#include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/functor/st_touches.h"
+#include "gis/cuda/functor/st_within.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
 
@@ -115,7 +115,8 @@ DoubleArrayPtr ST_Distance(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_ge
 }
 
 using RelateFunc = void (*)(const GeometryVector&, const GeometryVector&, bool*);
-static BooleanArrayPtr RelateTemplate(RelateFunc func, const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+static BooleanArrayPtr RelateTemplate(RelateFunc func, const WkbArrayPtr& lhs_geo,
+                                      const WkbArrayPtr& rhs_geo) {
   auto len = lhs_geo->length();
   auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_geo);
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_geo);
@@ -126,7 +127,6 @@ static BooleanArrayPtr RelateTemplate(RelateFunc func, const WkbArrayPtr& lhs_ge
   BooleanArrayPtr within;
   CHECK_ARROW(builder.Finish(&within));
   return within;
-    
 }
 
 BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
@@ -157,7 +157,6 @@ BooleanArrayPtr ST_Intersects(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs
 BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
   return RelateTemplate(ST_Within, lhs_geo, rhs_geo);
 }
-
 
 }  // namespace cuda
 }  // namespace gis

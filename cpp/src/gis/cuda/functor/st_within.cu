@@ -25,7 +25,6 @@ namespace cuda {
 
 void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results) {
-
   auto func = [] __device__(de9im::Matrix mat) {
     return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
   };  // NOLINT

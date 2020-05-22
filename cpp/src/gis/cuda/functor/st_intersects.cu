@@ -24,7 +24,7 @@ namespace gis {
 namespace cuda {
 
 void ST_Intersects(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               bool* host_results) {
+                   bool* host_results) {
   auto func = [] __device__(de9im::Matrix mat) {
     auto disjoint = mat.IsMatchTo(de9im::Matrix("FF*FF****"));
     return !disjoint;
