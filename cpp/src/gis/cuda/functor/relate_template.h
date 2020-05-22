@@ -60,7 +60,7 @@ void ST_RelateFunctor(Func func, const GeometryVector& left_vec,
 
   RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
   GpuMemcpy(host_results, results.get(), size);
-};
+}
 
 namespace internal {
 template <typename Func>
@@ -97,7 +97,7 @@ void ST_RelateFunctorWithDim(Func func, const GeometryVector& left_vec,
   RelationFinalizeWithDim(func, *left_ctx_holder, *right_ctx_holder, matrices.get(),
                           left_vec.size(), results.get());
   GpuMemcpy(host_results, results.get(), size);
-};
+}
 
 }  // namespace cuda
 }  // namespace gis
