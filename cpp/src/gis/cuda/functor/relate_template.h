@@ -49,6 +49,20 @@ void RelationFinalize(Func func, const de9im::Matrix* dev_matrices, int64_t size
       func, dev_matrices, size, dev_results);
 }
 
+template <typename Func>
+void ST_RelateFunctorSimple(Func func, const GeometryVector& left_vec, const GeometryVector& right_vec,
+                       bool* host_results){
+  auto size = left_vec.size();
+  auto left_ctx_holder = left_vec.CreateReadGpuContext();
+  auto right_ctx_holder = right_vec.CreateReadGpuContext();
+  auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
+  auto results = GpuMakeUniqueArray<bool>(size);
+
+
+  RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
+  GpuMemcpy(host_results, results.get(), size);
+};
+
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern

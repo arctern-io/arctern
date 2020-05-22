@@ -25,17 +25,10 @@ namespace cuda {
 
 void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results) {
-  auto size = left_vec.size();
-  auto left_ctx_holder = left_vec.CreateReadGpuContext();
-  auto right_ctx_holder = right_vec.CreateReadGpuContext();
-  auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
-  auto results = GpuMakeUniqueArray<bool>(size);
   auto func = [] __device__(de9im::Matrix mat) {
     return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
   };  // NOLINT
-
-  RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
-  GpuMemcpy(host_results, results.get(), size);
+  ST_RelateFunctorSimple(func, left_vec, right_vec, host_results);
 }
 
 }  // namespace cuda

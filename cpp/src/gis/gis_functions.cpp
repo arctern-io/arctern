@@ -279,7 +279,11 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
 std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU) && 0
+  return RelateWrapper(gdal::ST_Overlaps, cuda::ST_Overlaps, geometries_1, geometries_2);
+#else
   return gdal::ST_Overlaps(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
