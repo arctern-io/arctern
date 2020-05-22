@@ -242,7 +242,7 @@ def plot_fishnetmap(ax, points, weights, bounding_box,
                     color_gradient=["#0000FF", "#FF0000"],
                     cell_size=4, cell_spacing=1, opacity=1.0,
                     coordinate_system='epsg:3857',
-                    aggregation_type='sum', 
+                    aggregation_type='sum',
                     **extra_contextily_params):
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -258,4 +258,3 @@ def plot_fishnetmap(ax, points, weights, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
-
