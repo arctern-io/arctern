@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
+
 from collections.abc import Iterable
 from distutils.version import LooseVersion
 import numbers
@@ -28,6 +32,9 @@ class GeoDtype(ExtensionDtype):
     name = "GeoDtype"
     na_value = np.nan
     kind = 'O'
+
+    def __repr__(self):
+        return "GeoDtype"
 
     @classmethod
     def construct_from_string(cls, string):

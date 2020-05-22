@@ -13,6 +13,9 @@
 # limitations under the License.
 
 # pylint: disable=useless-super-delegation
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods
+# pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
 from pandas import Series

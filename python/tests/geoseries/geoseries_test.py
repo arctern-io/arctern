@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=attribute-defined-outside-init
-# pylint: disable=redefined-outer-name
+# pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
 import pytest
 from pandas.testing import assert_series_equal
