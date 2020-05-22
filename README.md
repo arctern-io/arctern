@@ -119,3 +119,4 @@ support@zilliz.com
 ##### ZILLIZ Wechat
 
 <img src="./doc/img/v0.1.0_intro/zilliz.png" width = "200" align=left>
+
