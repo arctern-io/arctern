@@ -238,6 +238,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
 }
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
+#ifdef USE_GPU
 template <typename FuncGdal, typename FuncCuda>
 static auto RelateWrapper(
     FuncGdal func_gdal, FuncCuda func_cuda,
@@ -255,6 +256,7 @@ static auto RelateWrapper(
   };
   return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 }
+#endif
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
