@@ -17,7 +17,7 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/relate_template.h"
-#include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_intersects.h"
 
 namespace arctern {
 namespace gis {
