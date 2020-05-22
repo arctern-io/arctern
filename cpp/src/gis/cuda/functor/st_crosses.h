@@ -23,7 +23,7 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
+void ST_Crosses(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results);
 
 }  // namespace cuda

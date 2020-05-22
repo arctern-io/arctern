@@ -15,16 +15,29 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#pragma once
-#include "gis/cuda/common/gis_definitions.h"
-#include "gis/cuda/tools/de9im_matrix.h"
+#include "gis/cuda/common/gpu_memory.h"
+#include "gis/cuda/functor/relate_template.h"
+#include "gis/cuda/functor/st_within.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               bool* host_results);
+void ST_Crosses(const GeometryVector& left_vec, const GeometryVector& right_vec,
+                bool* host_results) {
+  auto func = [] __device__(de9im::Matrix mat, int left_dim, int right_dim) {
+    if (left_dim == 1 || right_dim == 1) {
+      return mat->II == de9im::Matrix::State::kDim0;
+    } else if (left_dim < right_dim) {
+      return mat.IsMatchTo(de9im::Matrix("T*T******"));
+    } else if (left_dim > right_dim) {
+      return mat.IsMatchTo(de9im::Matrix("T*****T**"));
+    } else {
+      return false;
+    }
+  };  // NOLINT
+  ST_RelateFunctorWithDim(func, left_vec, right_vec, host_results);
+}
 
 }  // namespace cuda
 }  // namespace gis

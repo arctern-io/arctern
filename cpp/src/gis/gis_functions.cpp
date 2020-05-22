@@ -289,7 +289,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
 std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
-#if defined(USE_GPU) && 0
+#if defined(USE_GPU)
   return RelateWrapper(gdal::ST_Crosses, cuda::ST_Crosses, geometries_1, geometries_2);
 #else
   return gdal::ST_Crosses(geometries_1, geometries_2);
