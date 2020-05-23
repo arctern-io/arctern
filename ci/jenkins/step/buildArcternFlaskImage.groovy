@@ -5,7 +5,7 @@ def imageName = "${FLASK_IMAGE_REPOSITORY}:${ARCTERN_FLASK_TAG}"
 
 try {
     deleteImages("${imageName}", true)
-    def customImage = docker.build("${imageName}", "--build-arg IMAGE_NAME=${ARCTERN_FLASK_REPO} --file docker/flask/runtime/Dockerfile .")
+    def customImage = docker.build("${imageName}", "--file docker/flask/runtime/Dockerfile .")
     deleteImages("${params.DOKCER_REGISTRY_URL}/${imageName}", true)
     docker.withRegistry("https://${params.DOKCER_REGISTRY_URL}", "${params.DOCKER_CREDENTIALS_ID}") {
         customImage.push()
