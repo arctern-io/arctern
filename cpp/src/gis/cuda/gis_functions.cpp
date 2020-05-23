@@ -29,10 +29,15 @@
 #include "common/version.h"
 #include "gis/cuda/conversion/conversions.h"
 #include "gis/cuda/functor/st_area.h"
+#include "gis/cuda/functor/st_crosses.h"
 #include "gis/cuda/functor/st_distance.h"
 #include "gis/cuda/functor/st_envelope.h"
+#include "gis/cuda/functor/st_equals.h"
+#include "gis/cuda/functor/st_intersects.h"
 #include "gis/cuda/functor/st_length.h"
+#include "gis/cuda/functor/st_overlaps.h"
 #include "gis/cuda/functor/st_point.h"
+#include "gis/cuda/functor/st_touches.h"
 #include "gis/cuda/functor/st_within.h"
 #include "gis/gdal/format_conversion.h"
 #include "utils/check_status.h"
@@ -109,20 +114,48 @@ DoubleArrayPtr ST_Distance(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_ge
   return distance;
 }
 
-BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+using RelateFunc = void (*)(const GeometryVector&, const GeometryVector&, bool*);
+static BooleanArrayPtr RelateTemplate(RelateFunc func, const WkbArrayPtr& lhs_geo,
+                                      const WkbArrayPtr& rhs_geo) {
   auto len = lhs_geo->length();
   auto lhs_geo_vec = ArrowWkbToGeometryVector(lhs_geo);
   auto rhs_geo_vec = ArrowWkbToGeometryVector(rhs_geo);
-
-  auto raw_within = std::make_unique<bool[]>(len);
-  ST_Within(lhs_geo_vec, rhs_geo_vec, raw_within.get());
-
+  auto raw_info = std::make_unique<bool[]>(len);
+  func(lhs_geo_vec, rhs_geo_vec, raw_info.get());
   arrow::BooleanBuilder builder;
-  CHECK_ARROW(builder.AppendValues((uint8_t*)raw_within.get(), len));
+  CHECK_ARROW(builder.AppendValues((uint8_t*)raw_info.get(), len));
   BooleanArrayPtr within;
   CHECK_ARROW(builder.Finish(&within));
-
   return within;
+}
+
+BooleanArrayPtr ST_Equals(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Equals, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Touches(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Touches, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Overlaps(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Overlaps, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Crosses(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Crosses, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Contains(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  // equivalent to ST_Within
+  return RelateTemplate(ST_Within, rhs_geo, lhs_geo);
+}
+
+BooleanArrayPtr ST_Intersects(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Intersects, lhs_geo, rhs_geo);
+}
+
+BooleanArrayPtr ST_Within(const WkbArrayPtr& lhs_geo, const WkbArrayPtr& rhs_geo) {
+  return RelateTemplate(ST_Within, lhs_geo, rhs_geo);
 }
 
 }  // namespace cuda

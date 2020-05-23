@@ -17,18 +17,25 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/relate_template.h"
-#include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_equals.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
+void ST_Equals(const GeometryVector& left_vec, const GeometryVector& right_vec,
                bool* host_results) {
+  auto size = left_vec.size();
+  auto left_ctx_holder = left_vec.CreateReadGpuContext();
+  auto right_ctx_holder = right_vec.CreateReadGpuContext();
+  auto matrices = GenRelateMatrix(*left_ctx_holder, *right_ctx_holder);
+  auto results = GpuMakeUniqueArray<bool>(size);
   auto func = [] __device__(de9im::Matrix mat) {
-    return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
+    return mat.IsMatchTo(de9im::Matrix("T*F**FFF*"));
   };  // NOLINT
-  ST_RelateFunctor(func, left_vec, right_vec, host_results);
+
+  RelationFinalize(func, matrices.get(), left_vec.size(), results.get());
+  GpuMemcpy(host_results, results.get(), size);
 }
 
 }  // namespace cuda

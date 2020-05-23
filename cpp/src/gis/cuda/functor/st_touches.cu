@@ -17,16 +17,20 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/relate_template.h"
-#include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_touches.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               bool* host_results) {
+void ST_Touches(const GeometryVector& left_vec, const GeometryVector& right_vec,
+                bool* host_results) {
   auto func = [] __device__(de9im::Matrix mat) {
-    return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
+    auto II = de9im::Matrix::IsTrue(mat->II);
+    auto IB = de9im::Matrix::IsTrue(mat->IB);
+    auto BI = de9im::Matrix::IsTrue(mat->BI);
+    auto BB = de9im::Matrix::IsTrue(mat->BB);
+    return !II && (IB || BI || BB);
   };  // NOLINT
   ST_RelateFunctor(func, left_vec, right_vec, host_results);
 }

@@ -17,16 +17,17 @@
 
 #include "gis/cuda/common/gpu_memory.h"
 #include "gis/cuda/functor/relate_template.h"
-#include "gis/cuda/functor/st_within.h"
+#include "gis/cuda/functor/st_intersects.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Within(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               bool* host_results) {
+void ST_Intersects(const GeometryVector& left_vec, const GeometryVector& right_vec,
+                   bool* host_results) {
   auto func = [] __device__(de9im::Matrix mat) {
-    return mat.IsMatchTo(de9im::Matrix("T*F**F***"));
+    auto disjoint = mat.IsMatchTo(de9im::Matrix("FF*FF****"));
+    return !disjoint;
   };  // NOLINT
   ST_RelateFunctor(func, left_vec, right_vec, host_results);
 }

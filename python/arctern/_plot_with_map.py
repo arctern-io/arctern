@@ -13,7 +13,7 @@
 # limitations under the License.
 import io
 import base64
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
 import arctern
 
 
@@ -78,6 +78,8 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
 
 # pylint: disable=too-many-arguments
 # pylint: disable=dangerous-default-value
+
+
 def plot_weighted_pointmap(ax, points, color_weights=None,
                            size_weights=None,
                            bounding_box=None,
@@ -225,6 +227,31 @@ def plot_iconviz(ax, points, icon_path, bounding_box,
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path,
                      coordinate_system=coordinate_system)
     hexstr = arctern.icon_viz_layer(vega, points)
+    f = io.BytesIO(base64.b64decode(hexstr))
+
+    img = plt.imread(f)
+    ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+    cx.add_basemap(ax, **extra_contextily_params)
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+
+# pylint: disable=too-many-arguments
+# pylint: disable=dangerous-default-value
+
+
+def plot_fishnetmap(ax, points, weights, bounding_box,
+                    color_gradient=["#0000FF", "#FF0000"],
+                    cell_size=4, cell_spacing=1, opacity=1.0,
+                    coordinate_system='epsg:3857',
+                    aggregation_type='sum',
+                    **extra_contextily_params):
+    from matplotlib import pyplot as plt
+    import contextily as cx
+    bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
+    w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
+    vega = vega_fishnetmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
+                           cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
+                           coordinate_system=coordinate_system, aggregation_type=aggregation_type)
+    hexstr = arctern.fishnet_map_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)

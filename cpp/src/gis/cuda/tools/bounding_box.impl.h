@@ -14,15 +14,16 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+#pragma once
 #include "gis/cuda/tools/bounding_box.h"
 
 namespace arctern {
 namespace gis {
 namespace cuda {
-namespace {
+namespace internal {
 
-DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_iter) {
+DEVICE_RUNNABLE inline int CalcSimplePointCountImpl(WkbTag tag,
+                                                    const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   switch (tag.get_category()) {
     case WkbCategory::kPoint: {
@@ -39,7 +40,7 @@ DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_i
         auto count = *meta_iter++;
         total_count += count;
       }
-      return polygons;
+      return total_count;
     }
     default: {
       assert(false);
@@ -47,9 +48,8 @@ DEVICE_RUNNABLE int CalcSimplePointCountImpl(WkbTag tag, const uint32_t*& meta_i
     }
   }
 }
-}  // namespace
 
-DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
+DEVICE_RUNNABLE inline int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
   switch (tag.get_category()) {
     case WkbCategory::kPoint:
@@ -65,6 +65,7 @@ DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
       for (int i = 0; i < size; ++i) {
         auto fetched_tag = (WkbTag)*meta_iter++;
         auto sub_tag = RemoveMulti(tag);
+        (void)fetched_tag;  // used in assert, maybe unused
         assert(sub_tag.data == fetched_tag.data);
         total_count += CalcSimplePointCountImpl(sub_tag, meta_iter);
       }
@@ -76,18 +77,18 @@ DEVICE_RUNNABLE int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter) {
     }
   }
 }
+}  // namespace internal
 
-DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag,
-                                            ConstGpuContext::ConstIter& iter) {
+DEVICE_RUNNABLE inline BoundingBox CalcBoundingBox(WkbTag tag,
+                                                   ConstGpuContext::ConstIter& iter) {
   assert(tag.get_space_type() == WkbSpaceType::XY);
-  auto point_count = CalcPointCount(tag, iter.metas);
-  auto value2 = reinterpret_cast<const double2*>(iter.values);
+  auto point_count = internal::CalcPointCount(tag, iter.metas);
+  auto value2 = iter.read_value_ptr<double2>(point_count);
+
   BoundingBox bbox;
   for (auto i = 0; i < point_count; ++i) {
     bbox.Update(value2[i]);
   }
-  constexpr int dimensions = 2;
-  iter.values += dimensions * point_count;
   assert(value2 + point_count == (const double2*)iter.values);
   return bbox;
 }
