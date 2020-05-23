@@ -67,3 +67,5 @@ DEVICE_RUNNABLE BoundingBox CalcBoundingBox(WkbTag tag, ConstGpuContext::ConstIt
 }  // namespace cuda
 }  // namespace gis
 }  // namespace arctern
+
+#include "gis/cuda/tools/bounding_box.impl.h"

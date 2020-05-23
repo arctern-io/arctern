@@ -105,6 +105,7 @@ TEST(Relation, LineRelateToLineString) {
   // TODO(dog): use CSV format
   vector<Data> datas{
       {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
+      {vd{0, 0, 0, 3}, vd{0, 0, 0, 1, 1, 1, 0, 2, 0, 3}, lrr{1, false, -100}},
       {vd{0, 0, 0, 1}, vd{0, 1, 0, 2}, lrr{0, false, 1}},
       {vd{0, 0, 0, 1}, vd{0, 0, 2, 1, -2, 0}, lrr{0, false, 2}},
       {vd{0, 0, 0, 1}, vd{0, 0, 2, 3}, lrr{0, false, 1}},
