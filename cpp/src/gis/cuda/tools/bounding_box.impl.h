@@ -65,6 +65,7 @@ DEVICE_RUNNABLE inline int CalcPointCount(WkbTag tag, const uint32_t*& meta_iter
       for (int i = 0; i < size; ++i) {
         auto fetched_tag = (WkbTag)*meta_iter++;
         auto sub_tag = RemoveMulti(tag);
+        (void)fetched_tag;  // used in assert, maybe unused
         assert(sub_tag.data == fetched_tag.data);
         total_count += CalcSimplePointCountImpl(sub_tag, meta_iter);
       }
