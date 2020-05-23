@@ -64,6 +64,7 @@ __all__ = [
 import base64
 from . import arctern_core_
 
+
 def arctern_udf(*arg_types):
     def decorate(func):
         from functools import wraps
@@ -71,10 +72,9 @@ def arctern_udf(*arg_types):
         @wraps(func)
         def wrapper(*warpper_args):
             import pandas as pd
-            pd_series_type = type(pd.Series([None]))
             array_len = 1
             for arg in warpper_args:
-                if isinstance(arg, pd_series_type):
+                if pd.api.types.is_list_like(arg):
                     array_len = len(arg)
                     break
             func_args = []
@@ -86,7 +86,7 @@ def arctern_udf(*arg_types):
                     assert isinstance(arg_type, str)
                     if len(arg_type) == 0:
                         func_args.append(warpper_args[func_arg_idx])
-                    elif isinstance(warpper_args[func_arg_idx], pd_series_type):
+                    elif pd.api.types.is_list_like(warpper_args[func_arg_idx]):
                         assert len(warpper_args[func_arg_idx]) == array_len
                         func_args.append(warpper_args[func_arg_idx])
                     else:
@@ -99,8 +99,11 @@ def arctern_udf(*arg_types):
                 func_args.append(warpper_args[func_arg_idx])
                 func_arg_idx = func_arg_idx + 1
             return func(*func_args)
+
         return wrapper
+
     return decorate
+
 
 def arctern_caller(func, *func_args):
     import pyarrow
@@ -131,10 +134,12 @@ def arctern_caller(func, *func_args):
             result_total = result_total.append(result.to_pandas(), ignore_index=True)
     return result_total
 
+
 def _to_arrow_array_list(arrow_array):
     if hasattr(arrow_array, 'chunks'):
         return list(arrow_array.chunks)
     return [arrow_array]
+
 
 def _to_pandas_series(array_list):
     result = None
@@ -152,6 +157,7 @@ def _to_pandas_series(array_list):
             else:
                 result = result.append(array.to_pandas(), ignore_index=True)
     return result
+
 
 @arctern_udf('double', 'double')
 def ST_Point(x, y):
@@ -186,6 +192,7 @@ def ST_Point(x, y):
     result = arctern_core_.ST_Point(arr_x, arr_y)
     return _to_pandas_series(result)
 
+
 @arctern_udf('string')
 def ST_GeomFromGeoJSON(json):
     """
@@ -211,6 +218,7 @@ def ST_GeomFromGeoJSON(json):
     geo = _to_arrow_array_list(geo)
     result = [arctern_core_.ST_GeomFromGeoJSON(g) for g in geo]
     return _to_pandas_series(result)
+
 
 @arctern_udf('string')
 def ST_GeomFromText(text):
@@ -238,6 +246,7 @@ def ST_GeomFromText(text):
     result = [arctern_core_.ST_GeomFromText(g) for g in geo]
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_AsText(geos):
     """
@@ -264,6 +273,7 @@ def ST_AsText(geos):
     result = [arctern_core_.ST_AsText(g) for g in geo]
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_AsGeoJSON(geos):
     """
@@ -289,6 +299,7 @@ def ST_AsGeoJSON(geos):
     geo = _to_arrow_array_list(geo)
     result = [arctern_core_.ST_AsGeoJSON(g) for g in geo]
     return _to_pandas_series(result)
+
 
 @arctern_udf('binary', 'binary')
 def ST_Intersection(geo1, geo2):
@@ -322,6 +333,7 @@ def ST_Intersection(geo1, geo2):
     result = arctern_core_.ST_Intersection(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_IsValid(geos):
     """
@@ -346,6 +358,7 @@ def ST_IsValid(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_IsValid, arr_geos)
+
 
 @arctern_udf('binary', '')
 def ST_PrecisionReduce(geos, precision):
@@ -375,6 +388,7 @@ def ST_PrecisionReduce(geos, precision):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_PrecisionReduce, arr_geos, precision)
+
 
 @arctern_udf('binary', 'binary')
 def ST_Equals(geo1, geo2):
@@ -410,6 +424,7 @@ def ST_Equals(geo1, geo2):
     result = arctern_core_.ST_Equals(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary', 'binary')
 def ST_Touches(geo1, geo2):
     """
@@ -444,6 +459,7 @@ def ST_Touches(geo1, geo2):
     result = arctern_core_.ST_Touches(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary', 'binary')
 def ST_Overlaps(geo1, geo2):
     """
@@ -477,6 +493,7 @@ def ST_Overlaps(geo1, geo2):
     arr_geo2 = _to_arrow_array_list(arr_geo2)
     result = arctern_core_.ST_Overlaps(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
+
 
 @arctern_udf('binary', 'binary')
 def ST_Crosses(geo1, geo2):
@@ -514,6 +531,7 @@ def ST_Crosses(geo1, geo2):
     result = arctern_core_.ST_Crosses(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_IsSimple(geos):
     """
@@ -540,6 +558,7 @@ def ST_IsSimple(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_IsSimple, arr_geos)
 
+
 @arctern_udf('binary')
 def ST_GeometryType(geos):
     """
@@ -565,6 +584,7 @@ def ST_GeometryType(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_GeometryType, arr_geos)
 
+
 @arctern_udf('binary')
 def ST_MakeValid(geos):
     """
@@ -589,6 +609,7 @@ def ST_MakeValid(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_MakeValid, arr_geos)
+
 
 @arctern_udf('binary')
 def ST_SimplifyPreserveTopology(geos, distance_tolerance):
@@ -617,6 +638,7 @@ def ST_SimplifyPreserveTopology(geos, distance_tolerance):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_SimplifyPreserveTopology, arr_geos, distance_tolerance)
+
 
 @arctern_udf('double', 'double', 'double', 'double')
 def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
@@ -663,6 +685,7 @@ def ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y):
     result = arctern_core_.ST_PolygonFromEnvelope(arr_min_x, arr_min_y, arr_max_x, arr_max_y)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary', 'binary')
 def ST_Contains(geo1, geo2):
     """
@@ -698,6 +721,7 @@ def ST_Contains(geo1, geo2):
     result = arctern_core_.ST_Contains(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary', 'binary')
 def ST_Intersects(geo1, geo2):
     """
@@ -730,6 +754,7 @@ def ST_Intersects(geo1, geo2):
     arr_geo2 = _to_arrow_array_list(arr_geo2)
     result = arctern_core_.ST_Intersects(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
+
 
 @arctern_udf('binary', 'binary')
 def ST_Within(geo1, geo2):
@@ -764,6 +789,7 @@ def ST_Within(geo1, geo2):
     arr_geo2 = _to_arrow_array_list(arr_geo2)
     result = arctern_core_.ST_Within(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
+
 
 @arctern_udf('binary', 'binary')
 def ST_Distance(geo1, geo2):
@@ -801,6 +827,7 @@ def ST_Distance(geo1, geo2):
     arr_geo2 = _to_arrow_array_list(arr_geo2)
     result = arctern_core_.ST_Distance(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
+
 
 @arctern_udf('binary', 'binary')
 def ST_DistanceSphere(geo1, geo2):
@@ -840,6 +867,7 @@ def ST_DistanceSphere(geo1, geo2):
     result = arctern_core_.ST_DistanceSphere(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_Area(geos):
     """
@@ -865,6 +893,7 @@ def ST_Area(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Area, arr_geos)
+
 
 @arctern_udf('binary')
 def ST_Centroid(geos):
@@ -892,6 +921,7 @@ def ST_Centroid(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Centroid, arr_geos)
 
+
 @arctern_udf('binary')
 def ST_Length(geos):
     """
@@ -917,6 +947,7 @@ def ST_Length(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Length, arr_geos)
+
 
 @arctern_udf('binary', 'binary')
 def ST_HausdorffDistance(geo1, geo2):
@@ -954,6 +985,7 @@ def ST_HausdorffDistance(geo1, geo2):
     result = arctern_core_.ST_HausdorffDistance(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_ConvexHull(geos):
     """
@@ -979,6 +1011,7 @@ def ST_ConvexHull(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_ConvexHull, arr_geos)
 
+
 @arctern_udf('binary')
 def ST_NPoints(geos):
     """
@@ -1003,6 +1036,7 @@ def ST_NPoints(geos):
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_NPoints, arr_geos)
+
 
 @arctern_udf('binary')
 def ST_Envelope(geos):
@@ -1044,6 +1078,7 @@ def ST_Envelope(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Envelope, arr_geos)
 
+
 @arctern_udf('binary')
 def ST_Buffer(geos, distance):
     """
@@ -1075,6 +1110,7 @@ def ST_Buffer(geos, distance):
     result = [arctern_core_.ST_Buffer(g, distance) for g in arr_geos]
     return _to_pandas_series(result)
 
+
 @arctern_udf('binary')
 def ST_Union_Aggr(geos):
     """
@@ -1104,6 +1140,7 @@ def ST_Union_Aggr(geos):
         result = arctern_caller(arctern_core_.ST_Union_Aggr, result)
     return result
 
+
 @arctern_udf('binary')
 def ST_Envelope_Aggr(geos):
     """
@@ -1132,6 +1169,7 @@ def ST_Envelope_Aggr(geos):
     while len(result) > 1:
         result = arctern_caller(arctern_core_.ST_Envelope_Aggr, result)
     return result
+
 
 @arctern_udf('binary')
 def ST_Transform(geos, from_srid, to_srid):
@@ -1168,6 +1206,7 @@ def ST_Transform(geos, from_srid, to_srid):
     dst = bytes(to_srid, encoding="utf8")
 
     return arctern_caller(arctern_core_.ST_Transform, arr_geos, src, dst)
+
 
 @arctern_udf('binary')
 def ST_CurveToLine(geos):
@@ -1263,7 +1302,8 @@ def point_map_layer(vega, points, transform=True):
 
         # transform and projection
         if coor != 'EPSG:3857':
-            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
         else:
             geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
@@ -1301,7 +1341,8 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
 
         # transform and projection
         if coor != 'EPSG:3857':
-            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
         else:
             geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
@@ -1360,7 +1401,8 @@ def heat_map_layer(vega, points, weights, transform=True):
 
         # transform and projection
         if coor != 'EPSG:3857':
-            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
         else:
             geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
@@ -1400,7 +1442,8 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
 
         # transform and projection
         if coor != 'EPSG:3857':
-            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
         else:
             geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
@@ -1441,7 +1484,8 @@ def icon_viz_layer(vega, points, transform=True):
 
         # transform and projection
         if coor != 'EPSG:3857':
-            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
         else:
             geos_rs = arctern_core_.projection(geos_rs, bounding_box_max, bounding_box_min, height, width)
 
