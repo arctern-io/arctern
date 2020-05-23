@@ -7,7 +7,7 @@
 {% set git_commit_id=environ.get('GIT_COMMIT_ID', '') %}
 
 package:
-  name: libarctern
+  name: arctern
   version: {{ version }}
 
 source:
