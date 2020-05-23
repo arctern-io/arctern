@@ -10,7 +10,7 @@ git clean -xdf
 
 # Build pyarctern
 ./ci/scripts/python_build.sh clean
-./ci/scripts/python_build.sh
+./ci/scripts/python_build.sh --library_dirs=$PREFIX/lib
 
 # Build arctern_pyspark
 ./ci/scripts/pyspark_build.sh clean
