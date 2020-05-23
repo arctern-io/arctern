@@ -31,6 +31,7 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
   override def eval(input: InternalRow): Any = {}
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+
     val wktExpr = inputExpr.head
     val wktGen = inputExpr.head.genCode(ctx)
 
