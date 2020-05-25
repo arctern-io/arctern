@@ -38,7 +38,7 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     return bounding_box
 
 
-def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
+def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:3857',
                   point_size=3, point_color='#0000FF', opacity=1.0,
                   **extra_contextily_params):
     """
@@ -83,7 +83,7 @@ def plot_pointmap(ax, points, bounding_box, coordinate_system='EPSG:4326',
 def plot_weighted_pointmap(ax, points, color_weights=None,
                            size_weights=None,
                            bounding_box=None,
-                           coordinate_system='EPSG:4326',
+                           coordinate_system='EPSG:3857',
                            color_gradient=["#115f9a", "#d0f400"],
                            color_bound=[0, 0],
                            size_bound=[3],
@@ -134,7 +134,7 @@ def _calc_zoom(bbox, coordinate_system):
 
 
 def plot_heatmap(ax, points, weights, bounding_box,
-                 coordinate_system='EPSG:4326',
+                 coordinate_system='EPSG:3857',
                  aggregation_type='max',
                  **extra_contextily_params):
     """
@@ -170,7 +170,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
 
 def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
                        color_gradient, color_bound=None, opacity=1.0,
-                       coordinate_system='EPSG:4326',
+                       coordinate_system='EPSG:3857',
                        aggregation_type='max',
                        **extra_contextily_params):
     """
@@ -204,7 +204,7 @@ def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
 
 
 def plot_iconviz(ax, points, icon_path, bounding_box,
-                 coordinate_system='EPSG:4326',
+                 coordinate_system='EPSG:3857',
                  **extra_contextily_params):
     """
     :type ax: AxesSubplot
