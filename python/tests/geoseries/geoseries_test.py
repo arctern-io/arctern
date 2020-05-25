@@ -178,6 +178,10 @@ class TestPandasMethod:
         s[0] = np.nan
         assert s[0] is None
 
+        import pandas as pd
+        s[0] = pd.NA
+        assert s[0] is None
+
     def test_equals(self):
         s1 = GeoSeries([make_point(1, 1), None])
         s2 = GeoSeries([make_point(1, 1), None])
