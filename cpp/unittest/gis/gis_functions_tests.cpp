@@ -2333,8 +2333,9 @@ TEST(geometry_test, test_ST_Within3) {
   status = builder1.Append(std::string(l8));
   status = builder1.Finish(&input1);
 
-  OGRGeometry *polygon;
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))", nullptr, &polygon));
+  OGRGeometry* polygon;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))",
+                                               nullptr, &polygon));
   auto sz = polygon->WkbSize();
   std::vector<char> wkb(sz);
   polygon->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data());

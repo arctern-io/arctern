@@ -783,18 +783,18 @@ def ST_Within(geo1, geo2):
     """
     import pyarrow as pa
     import pandas as pd
-    if type(geo2) == pd.Series and geo2.size == 1:
+    if isinstance(geo2, pd.Series) and geo2.size == 1:
         arr_geo1 = pa.array(geo1, type='binary')
         arr_geo1 = _to_arrow_array_list(arr_geo1)
         result = arctern_core_.ST_Within2(arr_geo1, geo2[0])
         return _to_pandas_series(result)
-    else:
-        arr_geo1 = pa.array(geo1, type='binary')
-        arr_geo2 = pa.array(geo2, type='binary')
-        arr_geo1 = _to_arrow_array_list(arr_geo1)
-        arr_geo2 = _to_arrow_array_list(arr_geo2)
-        result = arctern_core_.ST_Within(arr_geo1, arr_geo2)
-        return _to_pandas_series(result)
+
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    result = arctern_core_.ST_Within(arr_geo1, arr_geo2)
+    return _to_pandas_series(result)
 
 
 @arctern_udf('binary', 'binary')
