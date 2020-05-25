@@ -4,5 +4,5 @@ set -e
 
 if [ "$BUILD_ARCTERN" == '1' ]; then
   echo "Building arctern..."
-  conda build conda/recipes/arctern -c defaults -c conda-forge
+  conda build conda/recipes/arctern/cpu -c defaults -c conda-forge
 fi

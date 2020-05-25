@@ -344,7 +344,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::string GIS_Version() {
-  const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
+  const std::string info = "version : " + std::string(LIB_VERSION) + "\n" +
 #ifdef USE_GPU
                            "build type : " + CMAKE_BUILD_TYPE + "/GPU \n" +
 #else

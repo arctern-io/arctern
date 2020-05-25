@@ -17,9 +17,15 @@ from .render_func import *
 from .gis_func import *
 from .plot import plot
 
-def version():
+def version(verbose=False):
     """
-    :return: version of arctern_pyspark
+    Return the information of arctern_pyspark version.
+
+    :type verbose: bool
+    :param verbose: whether to get other information besides version
+
+    :rtype: str
+    :return: Information of arctern_pyspark version.
     """
     import arctern
-    return arctern.version()
+    return arctern.version(verbose)
