@@ -151,7 +151,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
-    const std::string& geo_right_raw);
+    const std::string& geometries_2);
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
