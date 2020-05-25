@@ -1535,7 +1535,13 @@ def fishnet_map_layer(vega, points, weights, transform=True):
 
 def version(verbose=False):
     """
-    :return: version of arctern
+    Return the information of arctern version.
+
+    :type verbose: bool
+    :param verbose: whether to get other information besides version
+
+    :rtype: bool
+    :return: Information of arctern version.
     """
     full_version_info = arctern_core_.GIS_Version().decode("utf-8")
     if verbose:
