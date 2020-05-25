@@ -1540,7 +1540,7 @@ def version(verbose=False):
     :type verbose: bool
     :param verbose: whether to get other information besides version
 
-    :rtype: bool
+    :rtype: str
     :return: Information of arctern version.
     """
     full_version_info = arctern_core_.GIS_Version().decode("utf-8")
