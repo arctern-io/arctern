@@ -21,6 +21,7 @@ requirements:
   build:
     - python ===3.7.6
     - setuptools
+    - pandas ===1.0.3
     - flask ===1.1.1
     - waitress ===1.4.3
     - flask-httpauth ===3.3.0
@@ -30,6 +31,7 @@ requirements:
 
   run:
     - python ===3.7.6
+    - pandas ===1.0.3
     - flask ===1.1.1
     - waitress ===1.4.3
     - flask-httpauth ===3.3.0
