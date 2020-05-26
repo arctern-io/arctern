@@ -30,7 +30,7 @@ import arctern
 class GeoDtype(ExtensionDtype):
     type = object
     name = "GeoDtype"
-    na_value = np.nan
+    na_value = pd.NA
     kind = 'O'
 
     def __repr__(self):
@@ -92,6 +92,8 @@ def from_wkb(data):
     else:
         array = data
 
+    mask = pd.isna(array)
+    array[mask] = None
     return GeoArray(array)
 
 
@@ -264,10 +266,12 @@ class GeoArray(ExtensionArray):
         if isinstance(value, GeoArray):
             self.data[key] = value.data
 
-        elif isinstance(value, bytes) or value is None or value is np.nan:
+        elif isinstance(value, bytes):
             self.data[key] = value
+        elif pd.isna(value):
+            self.data[key] = None
         else:
-            raise TypeError("Value should be array-like or scalar value, got %s" % str(value))
+            raise TypeError("Value must be bytes value, got %s" % str(value))
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):

@@ -735,9 +735,7 @@ class GeoSeries(Series):
             other = self.__class__([other] * len(self))
         result = _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
         other_na = other.isna()
-        for i, value in self.isna().items():
-            if value and other_na[i]:
-                result[i] = True
+        result[other_na & self.isna()] = True
         return result
 
     def touches(self, other):

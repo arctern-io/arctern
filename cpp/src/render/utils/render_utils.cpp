@@ -77,13 +77,15 @@ std::vector<std::string> WkbExtraction(
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
     const std::vector<OGRGeometry*>& geos, int arrays_size) {
-  std::vector<std::shared_ptr<arrow::Array>> arrays(arrays_size);
   int size_per_array = geos.size() / arrays_size;
+  arrays_size = geos.size() % arrays_size == 0 ? arrays_size : arrays_size + 1;
+  std::vector<std::shared_ptr<arrow::Array>> arrays(arrays_size);
 
   for (int i = 0; i < arrays_size; i++) {
     arrow::BinaryBuilder builder;
 
-    for (int j = i * size_per_array; j < (i + 1) * size_per_array; j++) {
+    for (int j = i * size_per_array; j < geos.size() && j < (i + 1) * size_per_array;
+         j++) {
       auto sz = geos[j]->WkbSize();
       std::vector<char> str(sz);
       auto err_code = geos[j]->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
@@ -95,7 +97,6 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
       CHECK_ARROW(builder.Append(str.data(), str.size()));
       OGRGeometryFactory::destroyGeometry(geos[j]);
     }
-
     std::shared_ptr<arrow::Array> array;
     CHECK_ARROW(builder.Finish(&array));
     arrays[i] = array;
