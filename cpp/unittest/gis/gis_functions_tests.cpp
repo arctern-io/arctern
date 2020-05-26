@@ -2323,14 +2323,15 @@ TEST(geometry_test, test_ST_Within4) {
   str_builder.Finish(&pointer_array);
 
   OGRGeometry* circle;
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt("curvepolygon(circularstring(-1 -1, 1 1, -1 -1))",
-                                               nullptr, &circle));
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt(
+      "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))", nullptr, &circle));
   auto sz = circle->WkbSize();
   std::vector<char> wkb(sz);
   circle->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data());
   std::string circle_wkb(wkb.begin(), wkb.end());
 
-  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array), circle_wkb)[0];
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
+                                     circle_wkb)[0];
   auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
 
   ASSERT_EQ(res_bool->Value(0), true);
