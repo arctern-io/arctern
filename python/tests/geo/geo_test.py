@@ -335,7 +335,6 @@ def test_ST_Within():
     p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
     p13 = "LINESTRING(2 2,3 2)"
     p14 = "POINT(10 2)"
-
     data1 = pandas.Series([p11, p12, p13, p14])
 
     p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
