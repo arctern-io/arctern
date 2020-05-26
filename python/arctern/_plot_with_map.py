@@ -38,7 +38,7 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     return bounding_box
 
 
-def plot_pointmap(ax, points, bounding_box, 
+def plot_pointmap(ax, points, bounding_box,
                   point_size=3, point_color='#115f9a', opacity=1.0,
                   coordinate_system='EPSG:3857',
                   **extra_contextily_params):
