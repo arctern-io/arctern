@@ -1109,7 +1109,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
-std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+std::vector<std::shared_ptr<arrow::Array>> ST_WithinOpt(
     const std::vector<std::shared_ptr<arrow::Array>>& geo1, const std::string& geo2) {
   auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
                OGRGeometry* ogr2) {

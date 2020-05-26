@@ -332,7 +332,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
 std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
     const std::string& geo_right_raw) {
-  return gdal::ST_Within(geo_left_raws, geo_right_raw);
+  return gdal::ST_WithinOpt(geo_left_raws, geo_right_raw);
 }
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
