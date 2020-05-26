@@ -1533,8 +1533,18 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
-def version():
+def version(verbose=False):
     """
-    :return: version of arctern
+    Return the information of arctern version.
+
+    :type verbose: bool
+    :param verbose: whether to get other information besides version
+
+    :rtype: str
+    :return: Information of arctern version.
     """
-    return arctern_core_.GIS_Version().decode("utf-8")
+    full_version_info = arctern_core_.GIS_Version().decode("utf-8")
+    if verbose:
+        return full_version_info
+    only_versin_info = full_version_info.split("\n")[0]
+    return only_versin_info
