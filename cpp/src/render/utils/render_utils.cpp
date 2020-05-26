@@ -84,7 +84,8 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
   for (int i = 0; i < arrays_size; i++) {
     arrow::BinaryBuilder builder;
 
-    for (int j = i * size_per_array; j < geos.size() && j < (i + 1) * size_per_array; j++) {
+    for (int j = i * size_per_array; j < geos.size() && j < (i + 1) * size_per_array;
+         j++) {
       auto sz = geos[j]->WkbSize();
       std::vector<char> str(sz);
       auto err_code = geos[j]->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
