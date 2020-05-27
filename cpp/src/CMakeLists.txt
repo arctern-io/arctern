@@ -58,7 +58,7 @@ set(gis_src
         gis/dispatch/wkb_type_scanner.cpp
         gis/dispatch/type_scanner.cpp
         gis/gdal/format_conversion.cpp
-        gis/spatial_join/st_indexed_within_naive.cpp
+        gis/spatial_join/st_indexed_within.cpp
         )
 
 set(cuda_gis_src
@@ -87,9 +87,13 @@ set(arrow_src
         arrow/render_api.cpp
         )
 
+set(index_src
+        index/index_builder.cpp
+        )
+
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
-    set(LIBRARY_TYPE STATIC)
+    set(LIBRARY_TYPE STATIC gis/spatial_join/st_indexed_within.cpp index/index.h index/index_builder.cpp ../unittest/gis/spatial_join/indexed_with_test.cpp)
 endif (STATIC_LIB_SWITCH)
 
 if (BUILD_WITH_GPU)
@@ -100,6 +104,7 @@ if (BUILD_WITH_GPU)
             ${render_src}
             ${gpu_render_src}
             ${arrow_src}
+            ${index_src}
     )
 else ()
     add_library(
@@ -108,6 +113,7 @@ else ()
             ${render_src}
             ${cpu_render_src}
             ${arrow_src}
+            ${index_src}
     )
 endif ()
 

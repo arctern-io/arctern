@@ -346,9 +346,10 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 /****************************** JOIN FUNCTIONS *****************************/
 std::vector<ArrayPtr> ST_IndexedWithin(const std::vector<ArrayPtr>& points_raw,
                                        const std::vector<ArrayPtr>& polygons_raw) {
-  auto points = VectorTypeCast<arrow::BinaryArray>(points_raw);
-  auto polygons = VectorTypeCast<arrow::BinaryArray>(polygons_raw);
-  auto res = spatial_join::ST_IndexedWithin(points, polygons);
+//  auto points = VectorTypeCast<arrow::BinaryArray>(points_raw);
+//  auto polygons = VectorTypeCast<arrow::BinaryArray>(polygons_raw);
+//  auto res = spatial_join::ST_IndexedWithin(points, polygons, "RTREE");
+    auto res = spatial_join::ST_IndexedWithin(points_raw, polygons_raw, "RTREE");
   return VectorTypeCast<arrow::Array>(res);
 }
 
