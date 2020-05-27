@@ -23,6 +23,8 @@
 #include <vector>
 #include <memory>
 
+#include "render/utils/render_utils.h"
+
 namespace arctern {
 namespace snap {
 

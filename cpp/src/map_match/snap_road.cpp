@@ -15,6 +15,7 @@
  */
 
 #include <string>
+#include <iostream>
 
 #include "map_match/snap_road.h"
 
@@ -27,34 +28,23 @@ struct Projection {
     double distance;
 };
 
-Projection projection_to_edge(const std::string &road_str,
-        const std::string &gps_point_str) {
+Projection projection_to_edge(const OGRGeometry *road,
+                              const OGRGeometry *gps_point) {
     double min_distance = 1000000;
     auto nearest_point = std::make_shared<OGRPoint>();
 
-    OGRGeometry *road = nullptr;
-    auto err_code = OGRGeometryFactory::createFromWkb(road_str.c_str(),
-                                               nullptr,
-                                               &road);
-    if (err_code != OGRERR_NONE) throw nullptr;
-    auto road1 = dynamic_cast<OGRLineString *>(road);
+    const OGRPoint *gps_point_geo = dynamic_cast<const OGRPoint *>(gps_point);
+    const OGRLineString *road_geo = dynamic_cast<const OGRLineString *>(road);
 
-    OGRGeometry *gps_point = nullptr;
+    double x = gps_point_geo->getX();
+    double y = gps_point_geo->getY();
+    int32_t num_points = road_geo->getNumPoints();
 
-    err_code = OGRGeometryFactory::createFromWkb(gps_point_str.c_str(),
-                                                 nullptr,
-                                                 &gps_point);
-
-    if (err_code != OGRERR_NONE) throw nullptr;
-    auto gps_point1 = dynamic_cast<OGRPoint *>(gps_point);
-    double x = gps_point1->getX();
-    double y = gps_point1->getY();
-
-    for (int32_t i = 0; i < (road1->getNumPoints() - 1); i++) {
-        double x1 = road1->getX(i);
-        double y1 = road1->getY(i);
-        double x2 = road1->getX(i + 1);
-        double y2 = road1->getY(i + 1);
+    for (int32_t i = 0; i < (num_points - 1); i++) {
+        double x1 = road_geo->getX(i);
+        double y1 = road_geo->getY(i);
+        double x2 = road_geo->getX(i + 1);
+        double y2 = road_geo->getY(i + 1);
         double L2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
         if (L2 == 0.0) {
             throw nullptr;
@@ -86,25 +76,18 @@ Projection projection_to_edge(const std::string &road_str,
     projection.distance = min_distance;
     projection.size = wkb_size;
 
-    OGRGeometryFactory::destroyGeometry(road1);
-    OGRGeometryFactory::destroyGeometry(gps_point1);
-
     return projection;
 }
 
-Projection nearest_projection(const std::vector<std::shared_ptr<arrow::Array>> &roads,
-        const std::string &gps_point_str) {
+Projection nearest_projection(const std::vector<OGRGeometry *> &roads,
+            const OGRGeometry *gps_point) {
     double min_distance = 10000000;
-    Projection result;
+    Projection result, projection_point;
     for (int32_t i = 0; i < roads.size(); i++) {
-        auto roads_str = std::static_pointer_cast<arrow::BinaryArray>(roads[i]);
-        for (int32_t j = 0; j < roads[i]->length(); j++) {
-            auto projection_point = projection_to_edge(roads_str->GetString(j),
-                                                       gps_point_str);
-            if (min_distance >= projection_point.distance) {
-                min_distance = projection_point.distance;
-                result = projection_point;
-            }
+        projection_point = projection_to_edge(roads[i], gps_point);
+        if (min_distance >= projection_point.distance) {
+            min_distance = projection_point.distance;
+            result = projection_point;
         }
     }
 
@@ -115,33 +98,38 @@ Projection nearest_projection(const std::vector<std::shared_ptr<arrow::Array>> &
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
         const std::vector<std::shared_ptr<arrow::Array>> &roads,
         const std::vector<std::shared_ptr<arrow::Array>> &gps_points,
-        int32_t num_thread
-        ) {
-    std::vector<std::vector<Projection>> projections_str;
+        int32_t num_thread) {
     std::vector<std::shared_ptr<arrow::Array>> result;
 
-    for (int32_t i = 0; i < gps_points.size(); i++) {
-        std::vector<Projection> gps_projection_str(gps_points[i]->length());
-        projections_str.push_back(gps_projection_str);
-    }
-    
-    for (int32_t i = 0; i < gps_points.size(); i++) {
-        auto gps_points_str = std::static_pointer_cast<arrow::BinaryArray>(gps_points[i]);
-        #pragma omp parallel for num_threads(num_thread)
-        for (int32_t j = 0; j < gps_points[i]->length(); j++) {
-            projections_str[i][j] = nearest_projection(roads,
-                                                       gps_points_str->GetString(j));
-        }
+    auto roads_geo = arctern::render::GeometryExtraction(roads);
+    auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
+    auto num_gps_points = gps_points_geo.size();
+    std::vector<Projection> projections_str(num_gps_points);
+
+#pragma omp parallel for num_threads(num_thread)
+    for (int32_t i = 0; i < num_gps_points; i++) {
+        projections_str[i] = nearest_projection(roads_geo, gps_points_geo[i]);
     }
 
     arrow::BinaryBuilder builder;
+    int32_t offset = 0;
     for (int32_t i = 0; i < gps_points.size(); i++) {
         std::shared_ptr<arrow::BinaryArray> projection_str;
         for (int32_t j = 0; j < gps_points[i]->length(); j++) {
-            builder.Append(projections_str[i][j].point_str, projections_str[i][j].size);
+            builder.Append(projections_str[j + offset].point_str,
+                           projections_str[j + offset].size);
         }
         builder.Finish(&projection_str);
         result.emplace_back(projection_str);
+        offset += gps_points[i]->length();
+    }
+
+    for (int32_t i = 0; i < gps_points_geo.size(); i++) {
+        OGRGeometryFactory::destroyGeometry(gps_points_geo[i]);
+    }
+
+    for (int32_t i = 0; i < roads_geo.size(); i++) {
+        OGRGeometryFactory::destroyGeometry(roads_geo[i]);
     }
 
     return result;
