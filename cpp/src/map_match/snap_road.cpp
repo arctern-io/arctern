@@ -101,25 +101,39 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
   auto roads_geo = arctern::render::GeometryExtraction(roads);
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
-  std::vector<Projection> projections_str(num_gps_points);
-
-#pragma omp parallel for num_threads(num_thread)
-  for (int32_t i = 0; i < num_gps_points; i++) {
-    projections_str[i] = nearest_projection(roads_geo, gps_points_geo[i]);
-  }
+  Projection projection_point;
 
   arrow::BinaryBuilder builder;
-  int32_t offset = 0;
-  for (int32_t i = 0; i < gps_points.size(); i++) {
-    std::shared_ptr<arrow::BinaryArray> projection_str;
-    for (int32_t j = 0; j < gps_points[i]->length(); j++) {
-      builder.Append(projections_str[j + offset].point_str,
-                     projections_str[j + offset].size);
+  int32_t index = 0;
+  int32_t offset = gps_points[index]->length();
+  
+  for (int32_t i = 0; i < num_gps_points; i++) {
+    if (i < offset) {
+      projection_point = nearest_projection(roads_geo, gps_points_geo[i]);
+      builder.Append(projection_point.point_str,projection_point.size);
+    } 
+    else {
+      if (gps_points.size() > (index + 1)){
+        index++;
+        offset += gps_points[index]->length();
+      }
+      std::shared_ptr<arrow::BinaryArray> projection_points;
+      builder.Finish(&projection_points);
+      result.emplace_back(projection_points);
     }
-    builder.Finish(&projection_str);
-    result.emplace_back(projection_str);
-    offset += gps_points[i]->length();
   }
+
+  
+  // for (int32_t i = 0; i < gps_points.size(); i++) {
+  //   std::shared_ptr<arrow::BinaryArray> projection_str;
+  //   for (int32_t j = 0; j < gps_points[i]->length(); j++) {
+  //     builder.Append(projections_str[j + offset].point_str,
+  //                    projections_str[j + offset].size);
+  //   }
+  //   builder.Finish(&projection_str);
+  //   result.emplace_back(projection_str);
+  //   offset += gps_points[i]->length();
+  // }
 
   for (int32_t i = 0; i < gps_points_geo.size(); i++) {
     OGRGeometryFactory::destroyGeometry(gps_points_geo[i]);
