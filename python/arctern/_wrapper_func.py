@@ -48,7 +48,7 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "sjoin"
+    "sjoin",
     "point_map_layer",
     "weighted_point_map_layer",
     "heat_map_layer",
@@ -1235,7 +1235,7 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
-def sjoin(left: GeoSeries, right: GeoSeries, join_type: str):
+def sjoin(left, right, join_type: str):
     """
     Calculate spatial join of two GeoSeries 
 
@@ -1249,7 +1249,7 @@ def sjoin(left: GeoSeries, right: GeoSeries, join_type: str):
       >>> from arctern import *
       >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
       >>> data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
-      >>> res = sjoin(data1, data2))
+      >>> res = sjoin(data1, data2)
       >>> print(res)
           0    1
           1    -1
