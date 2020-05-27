@@ -8,7 +8,7 @@
 {% set cuda_version='.'.join(environ.get('CUDA_VERSION', '10.0').split('.')[:2]) %}
 
 package:
-  name: libarctern
+  name: arctern
   version: {{ version }}
 
 source:
@@ -29,11 +29,15 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.16.0
     - rapidjson ==1.1.0
+    - python ===3.7.6
+    - Cython ==0.29.15
+    - setuptools
 
   host:
     - cudatoolkit {{ cuda_version }}.*
 
   run:
+    - python ===3.7.6
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.16.0
@@ -52,6 +56,10 @@ test:
     - test ! -f $PREFIX/lib/libminiz.a           # [unix]
     - test ! -f $PREFIX/lib/libarctern.a        # [unix]
 
+    # python
+    - python -c "import arctern"
+    - python -c "import arctern_pyspark"
+
     # conda tools
 
 about:
@@ -59,4 +67,4 @@ about:
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
-  summary:  C++ library for Arctern
+  summary: library for Arctern

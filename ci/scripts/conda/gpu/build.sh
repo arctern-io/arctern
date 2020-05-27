@@ -64,17 +64,14 @@ conda list
 conda config --set ssl_verify False
 
 ################################################################################
-# BUILD - Conda package builds (conda deps: libarctern <- arctern <- arctern-spark)
+# BUILD - Conda package builds
 ################################################################################
-
-logger "Build conda pkg for libarctern..."
-source ci/scripts/conda/gpu/libarctern/build_libarctern.sh
 
 logger "Build conda pkg for arctern..."
 source ci/scripts/conda/gpu/arctern/build_arctern.sh
 
-logger "Build conda pkg for arctern-spark..."
-source ci/scripts/conda/gpu/arctern-spark/build_arctern-spark.sh
+logger "Build conda pkg for arctern-webserver..."
+source ci/scripts/conda/gpu/arctern-webserver/build_arctern_webserver.sh
 
 ################################################################################
 # UPLOAD - Conda packages

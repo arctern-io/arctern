@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "common/version.h"
+#include "dispatch/aligned_execute.h"
 #include "gis/api.h"
 #include "gis/gdal/gis_functions.h"
 #include "utils/check_status.h"
@@ -31,15 +32,19 @@
 namespace arctern {
 namespace gis {
 
+using dispatch::UnwarpBinary;
 /**************************** GEOMETRY CONSTRUCTOR ***************************/
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Point(
     const std::vector<std::shared_ptr<arrow::Array>>& x_values_raw,
     const std::vector<std::shared_ptr<arrow::Array>>& y_values_raw) {
-#if defined(USE_GPU) && 0
-  auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_values_raw);
-  auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_values_raw);
-  return cuda::ST_Point(x_values, y_values);
+#if defined(USE_GPU)
+  auto functor = [](const ArrayPtr x_raw, const ArrayPtr y_raw) {
+    auto x_values = std::static_pointer_cast<arrow::DoubleArray>(x_raw);
+    auto y_values = std::static_pointer_cast<arrow::DoubleArray>(y_raw);
+    return cuda::ST_Point(x_values, y_values);
+  };
+  return dispatch::AlignedExecuteBinary(functor, x_values_raw, y_values_raw);
 #else
   return gdal::ST_Point(x_values_raw, y_values_raw);
 #endif
@@ -171,20 +176,25 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
-#if defined(USE_GPU) && 0
-  auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
-  auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
-  auto gpu_supported_type = {WkbTypes::kPoint};
-  dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(geo_left, gpu_supported_type);
-  mask_result.AppendFilter(geo_right, gpu_supported_type);
-  auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
-      mask_result, gdal::ST_Distance, cuda::ST_Distance, geo_left, geo_right);
-  return result;
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
+#if defined(USE_GPU)
+  // won't work because gdal api break change
+  auto functor = [](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
+    auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+    auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
+    auto gpu_supported_type = {WkbTypes::kPoint};
+    dispatch::MaskResult mask_result;
+    mask_result.AppendFilter(geo_left, gpu_supported_type);
+    mask_result.AppendFilter(geo_right, gpu_supported_type);
+    auto result = dispatch::BinaryExecute<arrow::DoubleArray>(
+        mask_result, UnwarpBinary(gdal::ST_Distance), cuda::ST_Distance, geo_left,
+        geo_right);
+    return result;
+  };
+  return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
 #else
-  return gdal::ST_Distance(geo_left_raw, geo_right_raw);
+  return gdal::ST_Distance(geo_left_raws, geo_right_raws);
 #endif
 }
 
@@ -228,62 +238,94 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
 }
 
 /**************************** SPATIAL RELATIONSHIP ***************************/
+#ifdef USE_GPU
+template <typename FuncGdal, typename FuncCuda>
+static auto RelateWrapper(
+    FuncGdal func_gdal, FuncCuda func_cuda,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
+  auto functor = [&](const ArrayPtr& geo_left_raw, const ArrayPtr& geo_right_raw) {
+    auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
+    auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
+
+    auto mask_result = dispatch::RelateSelector(geo_left, geo_right);
+
+    auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
+        mask_result, UnwarpBinary(func_gdal), func_cuda, geo_left, geo_right);
+    return result;
+  };
+  return dispatch::AlignedExecuteBinary(functor, geo_left_raws, geo_right_raws);
+}
+#endif
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Equals, cuda::ST_Equals, geometries_1, geometries_2);
+#else
   return gdal::ST_Equals(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Touches, cuda::ST_Touches, geometries_1, geometries_2);
+#else
   return gdal::ST_Touches(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Overlaps(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Overlaps, cuda::ST_Overlaps, geometries_1, geometries_2);
+#else
   return gdal::ST_Overlaps(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Crosses(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Crosses, cuda::ST_Crosses, geometries_1, geometries_2);
+#else
   return gdal::ST_Crosses(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Contains(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Contains, cuda::ST_Contains, geometries_1, geometries_2);
+#else
   return gdal::ST_Contains(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Intersects, cuda::ST_Intersects, geometries_1,
+                       geometries_2);
+#else
   return gdal::ST_Intersects(geometries_1, geometries_2);
+#endif
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Within(
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raw,
-    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raw) {
-#if defined(USE_GPU) && 0
-  auto geo_left = std::static_pointer_cast<arrow::BinaryArray>(geo_left_raw);
-  auto geo_right = std::static_pointer_cast<arrow::BinaryArray>(geo_right_raw);
-
-  auto gpu_type_left = dispatch::GroupedWkbTypes{WkbTypes::kPoint};
-  auto gpu_type_right = dispatch::GroupedWkbTypes{WkbTypes::kPolygon};
-
-  dispatch::MaskResult mask_result;
-  mask_result.AppendFilter(geo_left, gpu_type_left);
-  mask_result.AppendFilter(geo_right, gpu_type_right);
-
-  auto result = dispatch::BinaryExecute<arrow::BooleanArray>(
-      mask_result, gdal::ST_Within, cuda::ST_Within, geo_left, geo_right);
-  return result;
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_right_raws) {
+#if defined(USE_GPU)
+  return RelateWrapper(gdal::ST_Within, cuda::ST_Within, geo_left_raws, geo_right_raws);
 #else
-  return gdal::ST_Within(geo_left_raw, geo_right_raw);
+  return gdal::ST_Within(geo_left_raws, geo_right_raws);
 #endif
 }
 
@@ -302,7 +344,7 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::string GIS_Version() {
-  const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
+  const std::string info = "version : " + std::string(LIB_VERSION) + "\n" +
 #ifdef USE_GPU
                            "build type : " + CMAKE_BUILD_TYPE + "/GPU \n" +
 #else

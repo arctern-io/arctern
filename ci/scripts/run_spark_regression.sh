@@ -54,4 +54,5 @@ pushd ${TESTS_DIR}
 python collect_results.py
 python compare.py
 python test_vectory_impl.py 
+
 popd

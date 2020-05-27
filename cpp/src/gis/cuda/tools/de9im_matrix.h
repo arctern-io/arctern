@@ -43,6 +43,10 @@ class Matrix {
     kDim2 = '2',
   };
 
+  static DEVICE_RUNNABLE bool IsTrue(State state) {
+    return state != State::kInvalid && state != State::kFalse;
+  }
+
   struct NamedStates {
     State II;
     State IB;
