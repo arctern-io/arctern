@@ -2311,35 +2311,6 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
-TEST(geometry_test, test_ST_Within4) {
-  arrow::StringBuilder str_builder;
-  str_builder.Append("point(1.414 0)");
-  str_builder.Append("point(1.5 0)");
-  str_builder.Append("point(0.5 0)");
-  str_builder.Append("point(2 3)");
-  str_builder.Append("point(0 0)");
-
-  std::shared_ptr<arrow::Array> pointer_array;
-  str_builder.Finish(&pointer_array);
-
-  OGRGeometry* circle;
-  CHECK_GDAL(OGRGeometryFactory::createFromWkt(
-      "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))", nullptr, &circle));
-  auto sz = circle->WkbSize();
-  std::vector<char> wkb(sz);
-  circle->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data());
-  std::string circle_wkb(wkb.begin(), wkb.end());
-
-  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(pointer_array),
-                                     circle_wkb)[0];
-  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
-
-  ASSERT_EQ(res_bool->Value(0), true);
-  ASSERT_EQ(res_bool->Value(1), false);
-  ASSERT_EQ(res_bool->Value(2), true);
-  ASSERT_EQ(res_bool->Value(3), false);
-}
-
 TEST(geometry_test, test_ST_Within3) {
   auto l1 = "POINT (1 0)";
   auto l2 = "POINT (1 3)";
