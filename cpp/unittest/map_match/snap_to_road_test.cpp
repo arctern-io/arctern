@@ -112,7 +112,7 @@ TEST(MAP_MATCH_TEST, SNAP_TO_ROAD) {
     roads_binary_vec.push_back(roads_binary);
     roads_binary_vec.push_back(roads_binary);
 
-    auto result = arctern::snap::snap_to_road(roads_binary_vec,gps_points_binary_vec);
+    auto result = arctern::snap::snap_to_road(roads_binary_vec, gps_points_binary_vec);
     auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
 
     for (int32_t i = 0; i < compare_result.size(); i++) {
