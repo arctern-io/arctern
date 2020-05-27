@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "map_match/snap_road.h"
 
@@ -23,17 +23,17 @@ namespace arctern {
 namespace snap {
 
 struct Projection {
-  unsigned char *point_str;
+  unsigned char* point_str;
   int32_t size;
   double distance;
 };
 
-Projection projection_to_edge(const OGRGeometry *road, const OGRGeometry *gps_point) {
+Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_point) {
   double min_distance = 1000000;
   auto nearest_point = std::make_shared<OGRPoint>();
 
-  const OGRPoint *gps_point_geo = dynamic_cast<const OGRPoint *>(gps_point);
-  const OGRLineString *road_geo = dynamic_cast<const OGRLineString *>(road);
+  const OGRPoint* gps_point_geo = dynamic_cast<const OGRPoint*>(gps_point);
+  const OGRLineString* road_geo = dynamic_cast<const OGRLineString*>(road);
 
   double x = gps_point_geo->getX();
   double y = gps_point_geo->getY();
@@ -69,7 +69,7 @@ Projection projection_to_edge(const OGRGeometry *road, const OGRGeometry *gps_po
 
   Projection projection;
   auto wkb_size = nearest_point->WkbSize();
-  auto wkb = static_cast<unsigned char *>(CPLMalloc(wkb_size));
+  auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
   OGR_G_ExportToWkb(nearest_point.get(), OGRwkbByteOrder::wkbNDR, wkb);
   projection.point_str = wkb;
   projection.distance = min_distance;
@@ -78,8 +78,8 @@ Projection projection_to_edge(const OGRGeometry *road, const OGRGeometry *gps_po
   return projection;
 }
 
-Projection nearest_projection(const std::vector<OGRGeometry *> &roads,
-                              const OGRGeometry *gps_point) {
+Projection nearest_projection(const std::vector<OGRGeometry*>& roads,
+                              const OGRGeometry* gps_point) {
   double min_distance = 10000000;
   Projection result, projection_point;
   for (int32_t i = 0; i < roads.size(); i++) {
@@ -93,11 +93,9 @@ Projection nearest_projection(const std::vector<OGRGeometry *> &roads,
   return result;
 }
 
-
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
-    const std::vector<std::shared_ptr<arrow::Array>> &roads,
-    const std::vector<std::shared_ptr<arrow::Array>> &gps_points,
-    int32_t num_thread) {
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t num_thread) {
   std::vector<std::shared_ptr<arrow::Array>> result;
 
   auto roads_geo = arctern::render::GeometryExtraction(roads);
@@ -116,7 +114,7 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     std::shared_ptr<arrow::BinaryArray> projection_str;
     for (int32_t j = 0; j < gps_points[i]->length(); j++) {
       builder.Append(projections_str[j + offset].point_str,
-		     projections_str[j + offset].size);
+		             projections_str[j + offset].size);
     }
     builder.Finish(&projection_str);
     result.emplace_back(projection_str);
@@ -133,7 +131,6 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
 
   return result;
 }
-
 
 }  // namespace snap
 }  // namespace arctern
