@@ -31,7 +31,9 @@ std::vector<double> min_distacne(std::vector<std::string> roads,
         double distance = 1000000000;
         for (int32_t j = 0; j < roads.size(); j++) {
             OGRGeometry *road = nullptr;
-            err_code = OGRGeometryFactory::createFromWkt(roads[j].c_str(), nullptr, &road);
+            err_code = OGRGeometryFactory::createFromWkt(roads[j].c_str(),
+                                                         nullptr,
+                                                         &road);
             if (err_code != OGRERR_NONE) throw nullptr;
             auto road1 = dynamic_cast<OGRLineString *>(road);
 
