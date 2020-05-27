@@ -135,7 +135,7 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     std::shared_ptr<arrow::BinaryArray> projection_str;
     for (int32_t j = 0; j < gps_points[i]->length(); j++) {
       builder.Append(projections_str[j + offset].point_str,
-		             projections_str[j + offset].size);
+                     projections_str[j + offset].size);
     }
     builder.Finish(&projection_str);
     result.emplace_back(projection_str);
