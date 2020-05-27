@@ -24,6 +24,7 @@
 
 #include "arrow/gis_api.h"
 #include "gis/test_common/transforms.h"
+#include <chrono>
 
 using std::string;
 using std::vector;
@@ -122,7 +123,7 @@ TEST(IndexedWithin, Sheet) {
   vector<string> points_raw;
   vector<string> polygons_raw;
   using std::to_string;
-  int S = 100;
+  int S = 1000;
   auto proj_str = [](double row, double col) {
     auto nr = row * 3 + col * 2;
     auto nc = row * 2 + col * -2;
@@ -161,13 +162,17 @@ TEST(IndexedWithin, Sheet) {
     left.push_back(polygons_raw[index]);
     std_res.push_back(poly_shuf[index]);
   }
-
   auto lg = arctern::gis::StrsToWkb(left);
   auto rg = arctern::gis::StrsToWkb(right);
+
+  auto beg_time = std::chrono::high_resolution_clock::now();
   auto res_vec = arctern::gis::ST_IndexedWithin({lg}, {rg});
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time = end_time - beg_time;
   assert(res_vec.size() == 1);
   auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
-  assert(res->length() == N);
+  std::cout << time.count() << std::endl;
+  ASSERT_EQ(res->length(), N);
   for (int i = 0; i < res->length(); ++i) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
   }
