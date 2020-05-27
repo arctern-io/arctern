@@ -35,5 +35,5 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     int32_t num_thread = 8);
 
 
-} // namespace snap
-} // namespace arctern
+}  // namespace snap
+}  // namespace arctern

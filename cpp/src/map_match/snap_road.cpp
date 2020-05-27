@@ -136,5 +136,5 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
 }
 
 
-} // namespace snap
-} // namespace arctern
+}  // namespace snap
+}  // namespace arctern
