@@ -106,11 +106,11 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
   arrow::BinaryBuilder builder;
   int32_t index = 0;
   int32_t offset = gps_points[index]->length();
-  
+
   for (int32_t i = 0; i < num_gps_points; i++) {
     projection_point = nearest_projection(roads_geo, gps_points_geo[i]);
-    builder.Append(projection_point.point_str,projection_point.size);
-    if (i == (offset - 1)){
+    builder.Append(projection_point.point_str, projection_point.size);
+    if (i == (offset - 1)) {
       if (gps_points.size() > (index + 1)) {
         index++;
         offset += gps_points[index]->length();
