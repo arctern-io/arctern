@@ -35,4 +35,14 @@ template <typename ArrowArrayType>
 using GetArrowBuilderType =
     typename arrow::TypeTraits<typename ArrowArrayType::TypeClass>::BuilderType;
 
+template<typename ArrowTo, typename ArrowFrom>
+inline std::vector<std::shared_ptr<ArrowTo>> VectorTypeCast(const std::vector<ArrowFrom>& ptrs) {
+  std::vector<std::shared_ptr<ArrowTo>> res;
+  res.reserve(ptrs.size());
+  for(const auto& ptr: ptrs) {
+    res.emplace_back(std::static_pointer_cast<ArrowTo>(res));
+  }
+  return res;
+}
+
 }  // namespace arctern
