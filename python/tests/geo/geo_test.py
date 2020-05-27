@@ -341,7 +341,6 @@ def test_ST_Within():
     p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
     p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
     p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-
     data2 = pandas.Series([p21, p22, p23, p24])
 
     rst = arctern.ST_Within(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
