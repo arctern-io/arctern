@@ -1257,11 +1257,11 @@ def sjoin(left, right, join_type: str):
           dtype: int
     """
     import pyarrow as pa
-    pa_left = pa.array(geo1, type='binary')
-    pa_right = pa.array(geo2, type='binary')
+    pa_left = pa.array(left, type='binary')
+    pa_right = pa.array(right, type='binary')
     vec_arr_left = _to_arrow_array_list(pa_left)
     vec_arr_right = _to_arrow_array_list(pa_right)
-    assert str == 'withnin'
+    assert join_type == 'within'
     result = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
     return _to_pandas_series(result) 
 

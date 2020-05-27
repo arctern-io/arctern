@@ -346,6 +346,16 @@ def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
         result = arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist)
         return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_IndexedWithin(object left_geometries,object right_geometries):
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_IndexedWithin(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
+
 def ST_Union_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Union_Aggr(pyarrow_unwrap_array(geo_arr)))
 
