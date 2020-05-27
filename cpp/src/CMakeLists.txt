@@ -91,6 +91,9 @@ set(index_src
         index/index_builder.cpp
         )
 
+set(snap_road
+        map_match/snap_road.cpp)
+
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC gis/spatial_join/st_indexed_within.cpp index/index.h index/index_builder.cpp ../unittest/gis/spatial_join/indexed_with_test.cpp)
@@ -114,6 +117,7 @@ else ()
             ${cpu_render_src}
             ${arrow_src}
             ${index_src}
+            ${snap_road}
     )
 endif ()
 

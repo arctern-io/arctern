@@ -11,8 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ._wrapper_func import *
-from ._plot import *
-from ._plot_with_map import *
-from .geoseries import *
-from ._map_match_func import *
+
+set(snap_tests_src
+        ${unittest_srcs}
+        snap_to_road_test.cpp
+        )
+
+add_executable(snap_tests ${snap_tests_src})
+
+#add_dependencies(snap_tests googletest_ep)
+
+target_link_libraries(snap_tests
+        arctern
+        arrow
+        gtest
+        pthread
+        gdal
+        )
+
+install(TARGETS snap_tests DESTINATION unittest)

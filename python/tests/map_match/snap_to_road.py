@@ -11,8 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ._wrapper_func import *
-from ._plot import *
-from ._plot_with_map import *
-from .geoseries import *
-from ._map_match_func import *
+
+import pandas
+import arctern
+
+def test_snap_to_road():
+    roads = pandas.Series("LINESTRING (0 0,2 0)")
+    gps_points = pandas.Series("POINT (1 1)")
+    rst = arctern.ST_AsText(arctern.snap_to_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
+    assert len(rst) == 1
+    assert rst[0] == "POINT (1 0)"

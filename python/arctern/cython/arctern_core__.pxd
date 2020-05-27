@@ -108,3 +108,8 @@ cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]] &points_raw, const vector[shared_ptr[CArray]] &polygons_raw) except +
 
     string GIS_Version() except +
+
+cdef extern from "map_match.h" namespace "arctern::snap":
+    vector[shared_ptr[CArray]] snap_to_road(const vector[shared_ptr[CArray]] &roads, \
+                                         const vector[shared_ptr[CArray]] &gps_points,
+                                         int32_t num_thread) except +
