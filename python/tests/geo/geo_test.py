@@ -16,6 +16,19 @@ import pandas
 from osgeo import ogr
 import arctern
 
+from arctern import GeoSeries
+
+def test_sjoin():
+    # assert False
+    from arctern import GeoSeries, sjoin
+    data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
+    data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
+    res = sjoin(data1, data2, 'within')
+    print(res)
+    assert len(res) == 3
+    assert res[0] == 1
+    assert res[1] == -1
+    assert res[2] == 0
 
 def test_ST_IsValid():
     data = pandas.Series(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
@@ -600,7 +613,6 @@ def test_ST_Envelope_Aggr():
     data = pandas.Series([p1, p2])
     rst = arctern.ST_AsText(arctern.ST_Envelope_Aggr(arctern.ST_GeomFromText(data)))
     assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"
-
 
 # Test whether arctern _wrapper_func can process list-like data,
 # include `list`, `set`, `numpy.ndarray`, `pandas.Series`

@@ -58,6 +58,7 @@ set(gis_src
         gis/dispatch/wkb_type_scanner.cpp
         gis/dispatch/type_scanner.cpp
         gis/gdal/format_conversion.cpp
+        gis/spatial_join/st_indexed_within_naive.cpp
         )
 
 set(cuda_gis_src
