@@ -48,6 +48,7 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
+    "sjoin"
     "point_map_layer",
     "weighted_point_map_layer",
     "heat_map_layer",
