@@ -25,15 +25,11 @@
 namespace arctern{
 namespace snap{
 
-
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points,
-    int32_t num_thread
-    );
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
 
-
-} // namespace snap
-} // namespace arctern
+}  // namespace snap
+}  // namespace arctern
 
 #endif

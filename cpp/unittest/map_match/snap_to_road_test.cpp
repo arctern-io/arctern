@@ -91,6 +91,7 @@ TEST(MAP_MATCH_TEST, SNAP_TO_ROAD) {
     builder.Finish(&gps_points_binary);
     std::vector<std::shared_ptr<arrow::Array>> gps_points_binary_vec;
     gps_points_binary_vec.push_back(gps_points_binary);
+    gps_points_binary_vec.push_back(gps_points_binary);
 
     for (int32_t i = 0; i < roads.size(); i++) {
         OGRGeometry *road = nullptr;
@@ -109,10 +110,9 @@ TEST(MAP_MATCH_TEST, SNAP_TO_ROAD) {
     builder.Finish(&roads_binary);
     std::vector<std::shared_ptr<arrow::Array>> roads_binary_vec;
     roads_binary_vec.push_back(roads_binary);
+    roads_binary_vec.push_back(roads_binary);
 
-    auto result = arctern::snap::snap_to_road(roads_binary_vec,
-                                              gps_points_binary_vec,
-                                              1);
+    auto result = arctern::snap::snap_to_road(roads_binary_vec,gps_points_binary_vec);
     auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
 
     for (int32_t i = 0; i < compare_result.size(); i++) {

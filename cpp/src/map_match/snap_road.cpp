@@ -95,7 +95,7 @@ Projection nearest_projection(const std::vector<OGRGeometry*>& roads,
 
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t num_thread) {
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
   std::vector<std::shared_ptr<arrow::Array>> result;
 
   auto roads_geo = arctern::render::GeometryExtraction(roads);
@@ -108,12 +108,10 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
   int32_t offset = gps_points[index]->length();
   
   for (int32_t i = 0; i < num_gps_points; i++) {
-    if (i < offset) {
-      projection_point = nearest_projection(roads_geo, gps_points_geo[i]);
-      builder.Append(projection_point.point_str,projection_point.size);
-    } 
-    else {
-      if (gps_points.size() > (index + 1)){
+    projection_point = nearest_projection(roads_geo, gps_points_geo[i]);
+    builder.Append(projection_point.point_str,projection_point.size);
+    if (i == (offset - 1)){
+      if (gps_points.size() > (index + 1)) {
         index++;
         offset += gps_points[index]->length();
       }
@@ -122,18 +120,6 @@ std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
       result.emplace_back(projection_points);
     }
   }
-
-  
-  // for (int32_t i = 0; i < gps_points.size(); i++) {
-  //   std::shared_ptr<arrow::BinaryArray> projection_str;
-  //   for (int32_t j = 0; j < gps_points[i]->length(); j++) {
-  //     builder.Append(projections_str[j + offset].point_str,
-  //                    projections_str[j + offset].size);
-  //   }
-  //   builder.Finish(&projection_str);
-  //   result.emplace_back(projection_str);
-  //   offset += gps_points[i]->length();
-  // }
 
   for (int32_t i = 0; i < gps_points_geo.size(); i++) {
     OGRGeometryFactory::destroyGeometry(gps_points_geo[i]);

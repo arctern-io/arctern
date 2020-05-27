@@ -108,5 +108,4 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
 cdef extern from "map_match.h" namespace "arctern::snap":
     vector[shared_ptr[CArray]] snap_to_road(const vector[shared_ptr[CArray]] &roads, \
-                                         const vector[shared_ptr[CArray]] &gps_points,
-                                         int32_t num_thread) except +
+                                         const vector[shared_ptr[CArray]] &gps_points) except +
