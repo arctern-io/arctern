@@ -15,3 +15,4 @@ from ._wrapper_func import *
 from ._plot import *
 from ._plot_with_map import *
 from .geoseries import *
+from ._map_match_func import *

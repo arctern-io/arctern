@@ -86,6 +86,9 @@ set(arrow_src
         arrow/render_api.cpp
         )
 
+set(snap_road
+        map_match/snap_road.cpp)
+
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
     set(LIBRARY_TYPE STATIC)
@@ -107,6 +110,7 @@ else ()
             ${render_src}
             ${cpu_render_src}
             ${arrow_src}
+            ${snap_road}
     )
 endif ()
 
