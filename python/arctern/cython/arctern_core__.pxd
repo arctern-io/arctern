@@ -105,6 +105,6 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr) except +
 
-    vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]] &points, const vector[shared_ptr[CArray]] &polygons) except +
+    vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]] &points_raw, const vector[shared_ptr[CArray]] &polygons_raw) except +
 
     string GIS_Version() except +
