@@ -15,12 +15,12 @@
  */
 #pragma once
 
+#include <arrow/type_traits.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 #include <memory>
 #include <string>
 #include <vector>
-#include <arrow/type_traits.h>
 
 #include "arrow/render_api.h"
 #include "utils/check_status.h"
