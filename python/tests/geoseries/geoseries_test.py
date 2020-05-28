@@ -67,7 +67,7 @@ class TestConstructor:
         assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_empty(self):
-        s = GeoSeries([])
+        s = GeoSeries([], dtype="GeoDtype")
         assert_is_geoseries(s)
         assert len(s) == 0
 
@@ -209,3 +209,13 @@ def test_geo_method_with_missing_value():
 
     assert s1.geom_equals(s3).all()
     assert not s1.geom_equals(s2).any()
+
+def test_geoseries_type_by_df_box_col_values():
+    from pandas import DataFrame, Series
+    series = GeoSeries(["POINT (0 0)", None, "POINT (0 1)", "POINT (2 0)"])
+    df = DataFrame({'s':series})
+    assert isinstance(df['s'], type(series))
+
+    series = Series([1, None, 2, 3])
+    df = DataFrame({'s':series})
+    assert isinstance(df['s'], type(series))

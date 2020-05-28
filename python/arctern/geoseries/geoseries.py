@@ -18,10 +18,23 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series
+from pandas import Series, DataFrame
 import arctern
-from .geoarray import GeoArray, is_geometry_array
+from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
+def fix_dataframe_box_col_volues():
+
+    def _box_col_values(self, values, items):
+        klass = self._constructor_sliced
+
+        if isinstance(values.dtype, GeoDtype):
+            klass = GeoSeries
+
+        return klass(values, index=self.index, name=items, fastpath=True)
+
+    DataFrame._box_col_values = _box_col_values
+
+fix_dataframe_box_col_volues()
 
 def _property_op(op, this):
     # type: (function, GeoSeries) -> Series[bool/float/object]
