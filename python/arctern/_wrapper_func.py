@@ -756,7 +756,6 @@ def ST_Intersects(geo1, geo2):
     return _to_pandas_series(result)
 
 
-@arctern_udf('binary', 'binary')
 def ST_Within(geo1, geo2):
     """
     Check whether geometry "geo1" is within geometry "geo2". "geo1 within geo2" means no points of "geo1" lie in the
@@ -783,6 +782,34 @@ def ST_Within(geo1, geo2):
           dtype: bool
     """
     import pyarrow as pa
+    import pandas as pd
+    if isinstance(geo1, bytes) and isinstance(geo2, bytes):
+        arr_geo1 = pa.array(pd.Series([geo1]), type='binary')
+        arr_geo1 = _to_arrow_array_list(arr_geo1)
+        result = arctern_core_.ST_Within2(arr_geo1, geo2)
+        return _to_pandas_series(result)
+
+    if isinstance(geo1, bytes) and isinstance(geo2, pd.Series):
+        series_geo1 = pd.Series([geo1 for _ in range(geo2.size)])
+        arr_geo1 = pa.array(series_geo1, type='binary')
+        arr_geo2 = pa.array(geo2, type='binary')
+        arr_geo1 = _to_arrow_array_list(arr_geo1)
+        arr_geo2 = _to_arrow_array_list(arr_geo2)
+        result = arctern_core_.ST_Within(arr_geo1, arr_geo2)
+        return _to_pandas_series(result)
+
+    if isinstance(geo2, pd.Series) and geo2.size == 1:
+        arr_geo1 = pa.array(geo1, type='binary')
+        arr_geo1 = _to_arrow_array_list(arr_geo1)
+        result = arctern_core_.ST_Within2(arr_geo1, geo2[0])
+        return _to_pandas_series(result)
+
+    if isinstance(geo2, bytes):
+        arr_geo1 = pa.array(geo1, type='binary')
+        arr_geo1 = _to_arrow_array_list(arr_geo1)
+        result = arctern_core_.ST_Within2(arr_geo1, geo2)
+        return _to_pandas_series(result)
+
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
     arr_geo1 = _to_arrow_array_list(arr_geo1)
