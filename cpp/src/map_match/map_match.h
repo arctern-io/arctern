@@ -25,11 +25,15 @@
 #include "render/utils/render_utils.h"
 
 namespace arctern {
-namespace snap {
+namespace map_match {
 
-std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
+std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
 
-}  // namespace snap
+std::vector<std::shared_ptr<arrow::Array>> nearest_road(
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
+
+}  // namespace map_match
 }  // namespace arctern
