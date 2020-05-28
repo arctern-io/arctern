@@ -34,7 +34,7 @@ std::vector<std::string> WkbExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    const std::vector<OGRGeometry*>& geos, int arrays_size);
+    std::vector<OGRGeometry*>&& geos, int arrays_size);
 
 template <typename T>
 std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {

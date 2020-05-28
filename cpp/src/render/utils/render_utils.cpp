@@ -76,7 +76,7 @@ std::vector<std::string> WkbExtraction(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    const std::vector<OGRGeometry*>& geos, int arrays_size) {
+    std::vector<OGRGeometry*>&& geos, int arrays_size) {
   int size_per_array = geos.size() / arrays_size;
   arrays_size = geos.size() % arrays_size == 0 ? arrays_size : arrays_size + 1;
   std::vector<std::shared_ptr<arrow::Array>> arrays(arrays_size);
@@ -101,7 +101,7 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
     CHECK_ARROW(builder.Finish(&array));
     arrays[i] = array;
   }
-
+  geos.clear();
   return arrays;
 }
 

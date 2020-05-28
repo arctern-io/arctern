@@ -31,22 +31,28 @@ namespace spatial_join {
 template <typename T>
 const std::vector<std::shared_ptr<arrow::Array>> join(
     const std::vector<std::shared_ptr<arrow::Array>>& geos, std::shared_ptr<T> index) {
+
   const auto& wkb_vec = render::GeometryExtraction(geos);
   auto num_of_point = wkb_vec.size();
   auto array_size = geos.size();
   auto tree = index.get();
 
   std::vector<std::shared_ptr<arrow::Array>> arrays(array_size);
+
   int size_per_array = num_of_point / array_size;
   array_size = num_of_point % array_size == 0 ? array_size : array_size + 1;
+
   for (int i = 0; i < array_size; i++) {
     arrow::Int32Builder builder;
     for (int j = i * size_per_array; j < (i + 1) * size_per_array && j < num_of_point;
          j++) {
       auto geo = reinterpret_cast<OGRPoint*>(wkb_vec[j]);
       std::vector<void*> matches;
+
       OGREnvelope* envelope = new OGREnvelope();
+
       geo->getEnvelope(envelope);
+
       const geos::geom::Envelope* env = new geos::geom::Envelope(
           envelope->MinX, envelope->MaxX, envelope->MinY, envelope->MaxY);
       tree->query(env, matches);

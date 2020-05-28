@@ -38,14 +38,14 @@ using SpatialIndex = GEOS_DLL::geos::index::SpatialIndex;
 namespace arctern {
 namespace index {
 
-enum IndexType {
+enum class IndexType {
     rTree = 0,
     qTree,
 };
 
 class IndexNode {
 public:
-    IndexNode():geometry_(nullptr), index_(-1) {};
+    IndexNode(): geometry_(nullptr), index_(-1) {};
 
     IndexNode(OGRGeometry* geo, int32_t index);
 
@@ -60,9 +60,6 @@ private:
     int32_t index_;
 };
 
-std::shared_ptr<SpatialIndex> index_builder(
-        const std::vector<std::shared_ptr<arrow::Array>>& geo,
-        IndexType index_type);
 
 
 }  // namespace index
