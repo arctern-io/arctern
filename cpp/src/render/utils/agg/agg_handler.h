@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <arrow/type_traits.h>
 
 #include "arrow/array.h"
 #include "utils/check_status.h"
@@ -117,7 +118,9 @@ class AggHandler {
       const std::shared_ptr<arrow::Array>& geos,
       const std::shared_ptr<arrow::Array>& arr_c) {
     auto geo_arr = std::static_pointer_cast<arrow::BinaryArray>(geos);
-    auto c_arr = (T*)arr_c->data()->GetValues<T>(1);
+    using ArrayType = typename arrow::CTypeTraits<T>::ArrayType;
+    auto numeric_arr = std::static_pointer_cast<ArrayType>(arr_c);
+    auto c_arr = numeric_arr->raw_values();
     auto geos_size = geos->length();
     auto geo_type = geos->type_id();
     auto c_size = arr_c->length();
