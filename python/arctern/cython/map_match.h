@@ -23,7 +23,7 @@
 #include "arrow/api.h"
 
 namespace arctern{
-namespace snap{
+namespace map_match{
 
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,

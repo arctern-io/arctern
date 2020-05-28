@@ -50,28 +50,30 @@ std::vector<double> min_distacne(std::vector<std::string> roads,
 
 //TEST(MAP_MATCH_TEST, SNAP_TO_ROAD) {
 //    std::vector<std::string> roads;
-//    roads.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
-//    roads.push_back("LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)");
-//    roads.push_back("LINESTRING (-73.9975554 40.7141073,-73.9975944 40.7140611)");
-//    roads.push_back("LINESTRING (-73.9978864 40.714317,-73.997674 40.7140968)");
-//    roads.push_back("LINESTRING (-73.997981 40.7136728,-73.9980743 40.7137811)");
-//    roads.push_back("LINESTRING (-73.9980743 40.7137811,-73.9984728 40.7136003)");
-//    roads.push_back("LINESTRING (-73.9611014 40.7608112,-73.9610636 40.7608639)");
-//    roads.push_back("LINESTRING (-73.9594166 40.7593773,-73.9593736 40.7593593)");
-//    roads.push_back("LINESTRING (-73.961609 40.7602969,-73.9615014 40.7602517)");
-//    roads.push_back("LINESTRING (-73.9615569 40.7601753,-73.9615014 40.7602517)");
+////    roads.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
+////    roads.push_back("LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)");
+////    roads.push_back("LINESTRING (-73.9975554 40.7141073,-73.9975944 40.7140611)");
+////    roads.push_back("LINESTRING (-73.9978864 40.714317,-73.997674 40.7140968)");
+////    roads.push_back("LINESTRING (-73.997981 40.7136728,-73.9980743 40.7137811)");
+////    roads.push_back("LINESTRING (-73.9980743 40.7137811,-73.9984728 40.7136003)");
+////    roads.push_back("LINESTRING (-73.9611014 40.7608112,-73.9610636 40.7608639)");
+////    roads.push_back("LINESTRING (-73.9594166 40.7593773,-73.9593736 40.7593593)");
+////    roads.push_back("LINESTRING (-73.961609 40.7602969,-73.9615014 40.7602517)");
+////    roads.push_back("LINESTRING (-73.9615569 40.7601753,-73.9615014 40.7602517)");
+//    roads.push_back("LINESTRING (0 0,2 0)");
 //
 //    std::vector<std::string> gps_points;
-//    gps_points.push_back("POINT (-73.993003 40.747594)");
-//    gps_points.push_back("POINT (-73.959908 40.776353)");
-//    gps_points.push_back("POINT (-73.955183 40.773459)");
-//    gps_points.push_back("POINT (-73.985233 40.744682)");
-//    gps_points.push_back("POINT (-73.997969 40.682816)");
-//    gps_points.push_back("POINT (-73.996458 40.758197)");
-//    gps_points.push_back("POINT (-73.98824 40.74896)");
-//    gps_points.push_back("POINT (-73.985185 40.735828)");
-//    gps_points.push_back("POINT (-73.989726 40.767795)");
-//    gps_points.push_back("POINT (-73.992669 40.768327)");
+////    gps_points.push_back("POINT (-73.993003 40.747594)");
+////    gps_points.push_back("POINT (-73.959908 40.776353)");
+////    gps_points.push_back("POINT (-73.955183 40.773459)");
+////    gps_points.push_back("POINT (-73.985233 40.744682)");
+////    gps_points.push_back("POINT (-73.997969 40.682816)");
+////    gps_points.push_back("POINT (-73.996458 40.758197)");
+////    gps_points.push_back("POINT (-73.98824 40.74896)");
+////    gps_points.push_back("POINT (-73.985185 40.735828)");
+////    gps_points.push_back("POINT (-73.989726 40.767795)");
+////    gps_points.push_back("POINT (-73.992669 40.768327)");
+//    gps_points.push_back("POINT (1.0001 0)");
 //
 //    auto compare_result = min_distacne(roads, gps_points);
 //
@@ -121,6 +123,8 @@ std::vector<double> min_distacne(std::vector<std::string> roads,
 //                                                          &gps_point);
 //        if (err_code != OGRERR_NONE) throw nullptr;
 //        auto gps_point1 = dynamic_cast<OGRPoint *>(gps_point);
+//        auto point1_x = gps_point1->getX();
+//        auto point1_y = gps_point1->getY();
 //
 //        OGRGeometry *projection_point = nullptr;
 //        err_code = OGRGeometryFactory::createFromWkb(result_1->GetString(i).c_str(),
@@ -128,6 +132,8 @@ std::vector<double> min_distacne(std::vector<std::string> roads,
 //                                                     &projection_point);
 //        if (err_code != OGRERR_NONE) throw nullptr;
 //        auto projection_point1 = dynamic_cast<OGRPoint *>(projection_point);
+//        auto projection_point1_x = projection_point1->getX();
+//        auto projection_point1_y = projection_point1->getY();
 //        assert(projection_point1->Distance(gps_point1) == compare_result[i]);
 //    }
 //}
@@ -198,4 +204,18 @@ TEST(MAP_MATCH_TEST, SNAP_TO_ROAD2){
     std::cout << getTime() << std::endl;
     auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(a[0]);
     std::cout << result_1->length() << std::endl;
+
+    for (int32_t i = 0; i < result_1->length(); i++) {
+        std::string geo = result_1->GetString(i);
+        OGRGeometry *gps_point = nullptr;
+        auto err_code = OGRGeometryFactory::createFromWkb(geo.c_str(),
+                                                          nullptr,
+                                                          &gps_point);
+        if (err_code != OGRERR_NONE) throw nullptr;
+        auto gps_point1 = dynamic_cast<OGRPoint *>(gps_point);
+        auto point1_x = gps_point1->getX();
+        auto point1_y = gps_point1->getY();
+        OGRGeometryFactory::destroyGeometry(gps_point);
+    }
+
 }
