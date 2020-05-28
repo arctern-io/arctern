@@ -110,7 +110,7 @@ Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
         }
       }
     } else {
-        free(projection_point.geo_str);
+      free(projection_point.geo_str);
     }
   }
 
