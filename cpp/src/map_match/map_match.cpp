@@ -29,9 +29,9 @@ struct Projection {
 };
 
 void destroy_geometry(std::vector<OGRGeometry*>& geos) {
-    for (int32_t i = 0; i < geos.size(); i++) {
-        OGRGeometryFactory::destroyGeometry(geos[i]);
-    }
+  for (int32_t i = 0; i < geos.size(); i++) {
+    OGRGeometryFactory::destroyGeometry(geos[i]);
+  }
 }
 
 Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_point) {
@@ -85,30 +85,30 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
 }
 
 Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
-                              const OGRGeometry* gps_point, int32_t flag) {
+                        const OGRGeometry* gps_point, int32_t flag) {
   double min_distance = 10000000;
   Projection result, projection_point;
   for (int32_t i = 0; i < roads.size(); i++) {
     projection_point = projection_to_edge(roads[i], gps_point);
     if (min_distance >= projection_point.distance) {
-        if (min_distance >= projection_point.distance) {
-            min_distance = projection_point.distance;
+      if (min_distance >= projection_point.distance) {
+        min_distance = projection_point.distance;
 
-            if (result.geo_str != nullptr) {
-                free(result.geo_str);
-            }
-
-            if (flag == 0) {
-                result = projection_point;
-            } else {
-                free(projection_point.geo_str);
-                auto wkb_size = roads[i]->WkbSize();
-                auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-                OGR_G_ExportToWkb(roads[i], OGRwkbByteOrder::wkbNDR, wkb);
-                result.geo_str = wkb;
-                result.size = wkb_size;
-            }
+        if (result.geo_str != nullptr) {
+            free(result.geo_str);
         }
+
+        if (flag == 0) {
+            result = projection_point;
+        } else {
+            free(projection_point.geo_str);
+            auto wkb_size = roads[i]->WkbSize();
+            auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+            OGR_G_ExportToWkb(roads[i], OGRwkbByteOrder::wkbNDR, wkb);
+            result.geo_str = wkb;
+            result.size = wkb_size;
+        }
+      }
     } else {
         free(projection_point.geo_str);
     }
@@ -118,8 +118,8 @@ Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
 }
 
 std::vector<std::shared_ptr<arrow::Array>> compute(
-        const std::vector<std::shared_ptr<arrow::Array>>& roads,
-        const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
   std::vector<std::shared_ptr<arrow::Array>> result;
 
   auto roads_geo = arctern::render::GeometryExtraction(roads);
@@ -132,17 +132,17 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
   int32_t offset = gps_points[index]->length();
 
   for (int32_t i = 0; i < num_gps_points; i++) {
-      projection_point = nearest_edge(roads_geo, gps_points_geo[i], flag);
-      builder.Append(projection_point.geo_str, projection_point.size);
-      if (i == (offset - 1)) {
-          if (gps_points.size() > (index + 1)) {
-              index++;
-              offset += gps_points[index]->length();
-          }
-          std::shared_ptr<arrow::BinaryArray> projection_points;
-          builder.Finish(&projection_points);
-          result.emplace_back(projection_points);
-      }
+    projection_point = nearest_edge(roads_geo, gps_points_geo[i], flag);
+    builder.Append(projection_point.geo_str, projection_point.size);
+    if (i == (offset - 1)) {
+        if (gps_points.size() > (index + 1)) {
+            index++;
+            offset += gps_points[index]->length();
+        }
+        std::shared_ptr<arrow::BinaryArray> projection_points;
+        builder.Finish(&projection_points);
+        result.emplace_back(projection_points);
+    }
   }
 
   destroy_geometry(gps_points_geo);
