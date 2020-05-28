@@ -136,11 +136,6 @@ if ("${MAKE}" STREQUAL "")
     endif ()
 endif ()
 
-if (BUILD_WITH_OPENMP)
-        message("build with openmp.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-endif()
-
 set(ARCTERN_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 set(ARCTERN_ENGINE_SRC ${PROJECT_SOURCE_DIR}/src)
 set(ARCTERN_THIRDPARTY_SRC ${PROJECT_SOURCE_DIR}/thirdparty)

@@ -108,6 +108,7 @@ if (BUILD_WITH_GPU)
             ${gpu_render_src}
             ${arrow_src}
             ${index_src}
+            ${snap_road}
     )
 else ()
     add_library(

@@ -100,8 +100,20 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* &gps_point,
     std::vector<void *> matches;
     OGREnvelope *envelope = new OGREnvelope();
     geo->getEnvelope(envelope);
-    const geos::geom::Envelope *env = new geos::geom::Envelope(envelope->MinX - 0.01, envelope->MaxX+0.01, envelope->MinY-0.01,
-                                                               envelope->MaxY+0.01);
+    const geos::geom::Envelope *env = new geos::geom::Envelope(envelope->MinX - 0.001, envelope->MaxX+0.001, envelope->MinY-0.001,
+                                                               envelope->MaxY+0.001);
+//#define PI       3.14159
+//#define DEG2RAD(x) ((x)*PI/180.)  //角度转弧度
+//    double lon1=10.001;
+//    double lat1=10;
+//    double lon2=10;
+//    double lat2=10;
+//    auto lon_dist=DEG2RAD(lon1-lon2);
+//    auto lat_dist=DEG2RAD(lat1-lat2);
+//    auto dist_sq=lon_dist * lon_dist+lat_dist*lat_dist;
+//    auto distance=sqrt(dist_sq)*6371251.46;
+//    std::cout << distance << std::endl;
+
     tree->query(env, matches);
     std::vector<OGRGeometry*> results;
     for (auto match: matches) {
@@ -111,35 +123,47 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* &gps_point,
     return results;
 }
 
+std::string getTime() {
+    time_t timep;
+    time(&timep);
+    char tmp[64];
+    strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&timep));
+    return tmp;
+}
+
 std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t num_thread) {
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
   std::vector<std::shared_ptr<arrow::Array>> result;
 
   auto roads_geo = arctern::render::GeometryExtraction(roads);
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
-  std::vector<Projection> projections_str(num_gps_points);
 
-    auto index = std::static_pointer_cast<RTree>(index_builder(roads, IndexType::rTree));
-//#pragma omp parallel for num_threads(num_thread)
-  for (int32_t i = 0; i < num_gps_points; i++) {
-//    auto vector_road = get_road(gps_points_geo[i], index);
-    projections_str[i] = nearest_projection(roads_geo, gps_points_geo[i]);
-//    projections_str[i] = nearest_projection(vector_road, gps_points_geo[i]);
-  }
+  std::cout << "build index start = " << getTime() << std::endl;
+  auto index_tree = std::static_pointer_cast<RTree>(index_builder(roads, IndexType::rTree));
+  std::cout << "build index end = " <<  getTime() << std::endl;
+  Projection projection_point;
 
   arrow::BinaryBuilder builder;
-  int32_t offset = 0;
-  for (int32_t i = 0; i < gps_points.size(); i++) {
-    std::shared_ptr<arrow::BinaryArray> projection_str;
-    for (int32_t j = 0; j < gps_points[i]->length(); j++) {
-      builder.Append(projections_str[j + offset].point_str,
-                     projections_str[j + offset].size);
+  int32_t index = 0;
+  int32_t offset = gps_points[index]->length();
+
+  for (int32_t i = 0; i < num_gps_points; i++) {
+    auto vector_road = get_road(gps_points_geo[i], index_tree);
+    if (vector_road.empty()) continue;
+    projection_point = nearest_projection(vector_road, gps_points_geo[i]);
+//    projection_point = nearest_projection(roads_geo, gps_points_geo[i]);
+    builder.Append(projection_point.point_str, projection_point.size);
+    if (i == (offset - 1)) {
+      if (gps_points.size() > (index + 1)) {
+        index++;
+        offset += gps_points[index]->length();
+      }
+      std::shared_ptr<arrow::BinaryArray> projection_points;
+      builder.Finish(&projection_points);
+      result.emplace_back(projection_points);
     }
-    builder.Finish(&projection_str);
-    result.emplace_back(projection_str);
-    offset += gps_points[i]->length();
   }
 
   for (int32_t i = 0; i < gps_points_geo.size(); i++) {
