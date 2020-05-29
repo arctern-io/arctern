@@ -18,6 +18,7 @@
 #include <arrow/type_traits.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,6 +31,8 @@ namespace render {
 
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
+
+OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb);
 
 std::vector<std::string> WkbExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);

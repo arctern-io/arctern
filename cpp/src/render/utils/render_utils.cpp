@@ -22,9 +22,16 @@
 #include "arrow/render_api.h"
 #include "render/utils/render_utils.h"
 #include "utils/check_status.h"
+#include <arrow/util/string_view.h>
 
 namespace arctern {
 namespace render {
+
+OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb) {
+  OGRGeometry* geo = nullptr;
+  OGRGeometryFactory::createFromWkb(wkb.to_string().c_str(), nullptr, &geo);
+  return OGRGeometryUniquePtr(geo);
+}
 
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs) {

@@ -35,7 +35,7 @@ using IndexNode = arctern::index::IndexNode;
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
     const std::vector<std::shared_ptr<arrow::Array>>& polygons,
-    const std::string index_type);
+    std::string index_type);
 
 }  // namespace spatial_join
 }  // namespace gis

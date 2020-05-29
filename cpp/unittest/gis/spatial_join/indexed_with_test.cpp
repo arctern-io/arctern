@@ -123,7 +123,7 @@ TEST(IndexedWithin, Sheet) {
   vector<string> points_raw;
   vector<string> polygons_raw;
   using std::to_string;
-  int S = 1000;
+  int S = 100;
   auto proj_str = [](double row, double col) {
     auto nr = row * 3 + col * 2;
     auto nc = row * 2 + col * -2;
@@ -154,7 +154,7 @@ TEST(IndexedWithin, Sheet) {
     right[ans] = polygons_raw[i];
   }
 
-  int N = 100000;
+  int N = 10000;
   vector<int> std_res;
   vector<string> left;
   for (int i = 0; i < N; ++i) {

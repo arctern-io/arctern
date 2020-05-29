@@ -27,15 +27,13 @@
 namespace arctern {
 namespace gis {
 namespace spatial_join {
+using index::IndexTree;
 
-template <typename T>
 const std::vector<std::shared_ptr<arrow::Array>> join(
-    const std::vector<std::shared_ptr<arrow::Array>>& geos, std::shared_ptr<T> index) {
-
+    const std::vector<std::shared_ptr<arrow::Array>>& geos, const IndexTree& tree) {
   const auto& wkb_vec = render::GeometryExtraction(geos);
   auto num_of_point = wkb_vec.size();
   auto array_size = geos.size();
-  auto tree = index.get();
 
   std::vector<std::shared_ptr<arrow::Array>> arrays(array_size);
 
@@ -49,20 +47,21 @@ const std::vector<std::shared_ptr<arrow::Array>> join(
       auto geo = reinterpret_cast<OGRPoint*>(wkb_vec[j]);
       std::vector<void*> matches;
 
-      OGREnvelope* envelope = new OGREnvelope();
+      auto envelope = std::make_unique<OGREnvelope>();
+      geo->getEnvelope(envelope.get());
 
-      geo->getEnvelope(envelope);
-
-      const geos::geom::Envelope* env = new geos::geom::Envelope(
+      geos::geom::Envelope env(
           envelope->MinX, envelope->MaxX, envelope->MinY, envelope->MaxY);
-      tree->query(env, matches);
+
+      tree.get_tree()->query(&env, matches);
+
       IndexNode* res = nullptr;
 
       int32_t geo_index = -1;
       for (auto match : matches) {
         res = (IndexNode*)match;
         auto indexed_geo = res->geometry();
-        if (geo->Within(indexed_geo.get())) {
+        if (geo->Within(indexed_geo)) {
           geo_index = res->index();
           break;
         }
@@ -81,18 +80,30 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
     const std::vector<std::shared_ptr<arrow::Array>>& polygons,
     const std::string index_type) {
-  if (!index_type.compare("RTREE")) {
-    auto index =
-        std::static_pointer_cast<RTree>(index_builder(polygons, IndexType::rTree));
-    return join<RTree>(points, index);
-  } else if (!index_type.compare("QuadTREE")) {
-    auto index =
-        std::static_pointer_cast<QuadTree>(index_builder(polygons, IndexType::qTree));
-    return join<QuadTree>(points, index);
+  IndexType type;
+  if (index_type == "RTREE") {
+    type = IndexType::kRTree;
+  } else if (index_type == "QuadTree") {
+    type = IndexType::kQTree;
   } else {
-    std::string err_msg = "unknow index type";
-    throw std::runtime_error(err_msg);
+    type = IndexType::kInvalid;
   }
+
+  auto index = index::IndexTree::Create(type);
+  index.append(polygons);
+  return join(points, index);
+  //  if (!index_type.compare("RTREE")) {
+  //    auto index =
+  //        std::static_pointer_cast<RTree>(index_builder(polygons, IndexType::rTree));
+  //    return join<RTree>(points, index);
+  //  } else if (!index_type.compare("QuadTREE")) {
+  //    auto index =
+  //        std::static_pointer_cast<QuadTree>(index_builder(polygons, IndexType::qTree));
+  //    return join<QuadTree>(points, index);
+  //  } else {
+  //    std::string err_msg = "unknow index type";
+  //    throw std::runtime_error(err_msg);
+  //  }
 }
 
 }  // namespace spatial_join

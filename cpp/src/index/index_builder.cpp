@@ -21,30 +21,5 @@
 namespace arctern {
 namespace index {
 
-IndexNode::IndexNode(OGRGeometry* geo, int32_t index) {
-  geometry_ = std::shared_ptr<OGRGeometry>(geo, [](OGRGeometry*) {});
-  index_ = index;
-}
-
-template <typename TreeType>
-std::shared_ptr<TreeType> CreateIndexTree(
-    const std::vector<std::shared_ptr<arrow::Array>>& geos) {
-
-  static_assert(std::is_base_of<SpatialIndex, TreeType>::value(), "mismatch");
-  auto geo_vec = render::GeometryExtraction(geos);
-  auto tree = std::make_shared<TreeType>();
-  int32_t offset = 0;
-
-  for (auto& geo: geo_vec) {
-    auto rs_pointer = static_cast<const OGRPolygon*>(geo);
-    auto envelope = std::make_unique<OGREnvelope>();
-    rs_pointer->getEnvelope(envelope.get());
-    const geos::geom::Envelope* env = new geos::geom::Envelope(
-        envelope->MinX, envelope->MaxX, envelope->MinY, envelope->MaxY);
-    IndexNode* node = new IndexNode(geo, offset++);
-    tree->insert(env, node);
-  }
-}
-
 }  // namespace index
 }  // namespace arctern
