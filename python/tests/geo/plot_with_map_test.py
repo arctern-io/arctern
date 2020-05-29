@@ -157,7 +157,7 @@ def test_heatmap():
     points = arctern.ST_Point(arr_x, arr_y)
 
     ax = _get_matplot()
-    ap.plot_heatmap(ax, points, arr_c, bounding_box=bounding_box, coordinate_system='EPSG:4326')
+    ap.plot_heatmap(ax, points, arr_c, bounding_box=bounding_box, map_zoom_level=13, coordinate_system='EPSG:4326')
     _finalize(ax, "test_heat_map1")
 
 
