@@ -83,7 +83,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
   }
 
   auto index = index::IndexTree::Create(type);
-  index.append(polygons);
+  index.Append(polygons);
   return left_join(points, index);
 }
 
