@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 #include <gtest/gtest.h>
-#include <time.h>
-#include <fstream>
 #include <iostream>
-#include <thread>
 
 #include "map_match/map_match.h"
 

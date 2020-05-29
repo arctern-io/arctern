@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -35,7 +36,7 @@ void destroy_geometry(std::vector<OGRGeometry*>& geos) {
 }
 
 Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_point) {
-  double min_distance = 1000000;
+  double min_distance = 100000000;
   auto nearest_point = std::make_shared<OGRPoint>();
 
   const OGRPoint* gps_point_geo = dynamic_cast<const OGRPoint*>(gps_point);
@@ -64,7 +65,7 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
     double prj_x = x1 + ratio * (x1_x2);
     double prj_y = y1 + ratio * (y1_y2);
 
-    double distance = (x - prj_x) * (x - prj_x) + (y - prj_y) * (y - prj_y);
+    double distance = sqrt((x - prj_x) * (x - prj_x) + (y - prj_y) * (y - prj_y));
 
     if (min_distance >= distance) {
       min_distance = distance;
@@ -86,22 +87,23 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
 
 Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
                         const OGRGeometry* gps_point, int32_t flag) {
-  double min_distance = 10000000;
-  Projection result, projection_point;
+  double min_distance = 100000000;
+  Projection result, projection;
+
   for (int32_t i = 0; i < roads.size(); i++) {
-    projection_point = projection_to_edge(roads[i], gps_point);
-    if (min_distance >= projection_point.distance) {
-      if (min_distance >= projection_point.distance) {
-        min_distance = projection_point.distance;
+    projection = projection_to_edge(roads[i], gps_point);
+    if (min_distance >= projection.distance) {
+      if (min_distance >= projection.distance) {
+        min_distance = projection.distance;
 
         if (result.geo_str != nullptr) {
           free(result.geo_str);
         }
 
         if (flag == 0) {
-          result = projection_point;
+          result = projection;
         } else {
-          free(projection_point.geo_str);
+          free(projection.geo_str);
           auto wkb_size = roads[i]->WkbSize();
           auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
           OGR_G_ExportToWkb(roads[i], OGRwkbByteOrder::wkbNDR, wkb);
@@ -110,7 +112,7 @@ Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
         }
       }
     } else {
-      free(projection_point.geo_str);
+      free(projection.geo_str);
     }
   }
 
