@@ -19,10 +19,10 @@
 #include <ogr_geometry.h>
 #include <utils/check_status.h>
 
+#include <chrono>
 #include <fstream>
 #include <random>
 
-#include <chrono>
 #include "arrow/gis_api.h"
 #include "gis/test_common/transforms.h"
 
@@ -180,7 +180,8 @@ TEST(IndexedWithin, Sheet) {
 
 TEST(IndexedWithin, PyTest) {
   vector<string> left = {"Point(0 0)", "Point(1000 1000)", "Point(10 10)"};
-  vector<string> right = {"Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"};
+  vector<string> right = {"Polygon((9 10, 11 12, 11 8, 9 10))",
+                          "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"};
   vector<int> std_res = {1, -1, 0};
   auto N = left.size();
 
@@ -199,4 +200,3 @@ TEST(IndexedWithin, PyTest) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
   }
 }
-
