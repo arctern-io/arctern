@@ -15,9 +15,6 @@
  */
 #include <gtest/gtest.h>
 #include <iostream>
-#include <time.h>
-#include <fstream>
-#include <thread>
 
 #include "map_match/map_match.h"
 
