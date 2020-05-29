@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
-#include <algorithm>
 
 #include "map_match/map_match.h"
 
