@@ -114,3 +114,5 @@ cdef extern from "map_match.h" namespace "arctern::map_match":
                                                         const vector[shared_ptr[CArray]] &gps_points) except +
     vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]] &roads, \
                                             const vector[shared_ptr[CArray]] &gps_points) except +
+    vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]] &roads, \
+                                            const vector[shared_ptr[CArray]] &gps_points) except +

@@ -139,14 +139,6 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry*& gps_point,
   return results;
 }
 
-std::string getTime() {
-  time_t timep;
-  time(&timep);
-  char tmp[64];
-  strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S", localtime(&timep));
-  return tmp;
-}
-
 std::vector<std::shared_ptr<arrow::Array>> compute(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
@@ -197,6 +189,42 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
   return result;
 }
 
+std::vector<std::shared_ptr<arrow::Array>> is_near_road(
+        const std::vector<std::shared_ptr<arrow::Array>>& roads,
+        const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
+    std::vector<std::shared_ptr<arrow::Array>> results;
+
+    auto roads_geo = arctern::render::GeometryExtraction(roads);
+    auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
+    auto num_gps_points = gps_points_geo.size();
+    auto index_tree =
+            std::static_pointer_cast<RTree>(index_builder(roads, IndexType::rTree));
+
+    arrow::BooleanBuilder builder;
+    int32_t offset = 0;
+    for (int i = 0; i < gps_points.size(); ++i) {
+        int size = gps_points[i]->length();
+        for (int j = 0; j < size; ++j) {
+            auto index = offset + j;
+            auto vector_road = get_road(gps_points_geo[index], index_tree);
+            if (vector_road.empty()) {
+                builder.Append(false);
+            } else {
+                builder.Append(true);
+            }
+        }
+        std::shared_ptr<arrow::BooleanArray> result;
+        builder.Finish(&result);
+        results.emplace_back(result);
+        offset += size;
+    }
+
+    destroy_geometry(gps_points_geo);
+    destroy_geometry(roads_geo);
+
+    return results;
+}
+
 std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
@@ -207,6 +235,12 @@ std::vector<std::shared_ptr<arrow::Array>> nearest_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
   return compute(roads, gps_points, 1);
+}
+
+std::vector<std::shared_ptr<arrow::Array>> near_road(
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
+  return is_near_road(roads, gps_points);
 }
 
 }  // namespace map_match
