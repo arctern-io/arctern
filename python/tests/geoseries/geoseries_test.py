@@ -22,7 +22,7 @@ from arctern._wrapper_func import ST_GeomFromText
 
 
 def make_point(x, y):
-    return "Point (%s %s)" % (x, y)
+    return "POINT (%s %s)" % (x, y)
 
 
 @pytest.fixture(params=['wkt', 'wkb'])
@@ -200,6 +200,12 @@ class TestPandasMethod:
         # __ne__
         r = s != s[0]
         assert r.tolist() == [False, True, True]
+
+    def test_astype(self):
+        s = GeoSeries([make_point(1, 1), make_point(1, 2)])
+        assert s.astype(str).tolist() == [make_point(1, 1), make_point(1, 2)]
+        assert s.astype('string').tolist() == [make_point(1, 1), make_point(1, 2)]
+
 
 
 def test_geo_method_with_missing_value():
