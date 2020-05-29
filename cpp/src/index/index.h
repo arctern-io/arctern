@@ -23,6 +23,7 @@
 #include <geos/indexSweepline.h>
 #include <geos/spatialIndex.h>
 #include <ogr_geometry.h>
+#include <utils/arrow_alias.h>
 
 #include <functional>
 #include <iomanip>
@@ -34,7 +35,6 @@
 #include "arrow/array.h"
 #include "index/index.h"
 #include "render/utils/render_utils.h"
-#include <utils/arrow_alias.h>
 
 using RTree = GEOS_DLL::geos::index::strtree::STRtree;
 using QuadTree = GEOS_DLL::geos::index::quadtree::Quadtree;
@@ -88,17 +88,17 @@ class IndexTree {
     for (int i = 0; i < right->length(); ++i) {
       auto view = right->GetView(i);
       auto append_index = right_cache_.size();
-      auto polygon = render::GeometryExtraction(view);
-      OGREnvelope envelope;
-      polygon->getEnvelope(&envelope);
-
-      geos::geom::Envelope geos_env(envelope.MinX, envelope.MaxX, envelope.MinY,
-                                    envelope.MaxY);
-
+      right_cache_.emplace_back(render::GeometryExtraction(view));
+      auto& polygon = right_cache_.back();
+      {
+        OGREnvelope envelope;
+        polygon->getEnvelope(&envelope);
+        envelopes_.emplace_back(envelope.MinX, envelope.MaxX, envelope.MinY,
+                                envelope.MaxY);
+      }
+      auto& envelope = envelopes_.back();
       IndexNode* node = new IndexNode(polygon.get(), append_index);
-
-      right_cache_.emplace_back(std::move(polygon));
-      tree_->insert(&geos_env, node);
+      tree_->insert(&envelope, node);
     }
   }
 
@@ -114,7 +114,9 @@ class IndexTree {
   IndexTree() = default;
 
  private:
-  std::vector<OGRGeometryUniquePtr> right_cache_;
+  // use deque instead of vector for validation of references
+  std::deque<geos::geom::Envelope> envelopes_;
+  std::deque<OGRGeometryUniquePtr> right_cache_;
   std::unique_ptr<SpatialIndex> tree_;
 };
 
