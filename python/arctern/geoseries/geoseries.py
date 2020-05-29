@@ -135,6 +135,8 @@ class GeoSeries(Series):
 
         if not is_geometry_array(data):
             s = Series(data, index=index, name=name, **kwargs)
+            index = s.index
+            name = s.name
             if s.empty:
                 s = s.astype(bytes)
             else:
