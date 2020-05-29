@@ -73,21 +73,13 @@ def to_wkt(data):
     return np.asarray(arctern.ST_AsText(data), dtype=str)
 
 
-def from_wkb(data):
+def from_wkb_or_wkt(data):
     """
     Convert a list or array of wkb objects to a GeoArray.
     :param data: array-like
             list or array of wkb objects
     :return: GeoArray
     """
-    # pandas.infer_type can't infer custom ExtensionDtype
-    if not isinstance(getattr(data, "dtype", None), GeoDtype) and len(data) != 0:
-        from pandas.api.types import infer_dtype
-        inferred = infer_dtype(data, skipna=True)
-        if inferred in ("bytes", "empty"):
-            pass
-        else:
-            raise ValueError("'data' must be bytes type array or list.")
     if not isinstance(data, np.ndarray):
         array = np.empty(len(data), dtype=object)
         array[:] = data
@@ -96,6 +88,16 @@ def from_wkb(data):
 
     mask = pd.isna(array)
     array[mask] = None
+
+    if not isinstance(getattr(array, "dtype", None), GeoDtype) and len(array) != 0:
+        from pandas.api.types import infer_dtype
+        inferred = infer_dtype(array, skipna=True)
+        if inferred in ("bytes", "empty"):
+            pass
+        elif inferred == "string":
+            array = arctern.ST_GeomFromText(array).values
+        else:
+            raise TypeError("'data' must be bytes type array or list.")
     return GeoArray(array)
 
 
@@ -117,7 +119,9 @@ class GeoArray(ExtensionArray):
     _dtype = GeoDtype()
 
     def __init__(self, data):
-        if not isinstance(data, (np.ndarray, GeoArray)):
+        if isinstance(data, GeoArray):
+            data = data.data
+        if not isinstance(data, np.ndarray):
             raise TypeError(
                 "'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
         if not data.ndim == 1:
@@ -264,7 +268,7 @@ class GeoArray(ExtensionArray):
         if isinstance(value, pd.Series):
             value = value.values
         if isinstance(value, (list, np.ndarray)):
-            value = from_wkb(value)
+            value = from_wkb_or_wkt(value)
         if isinstance(value, GeoArray):
             self.data[key] = value.data
 
@@ -277,7 +281,7 @@ class GeoArray(ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-        return from_wkb(scalars)
+        return from_wkb_or_wkt(scalars)
 
     def _values_for_factorize(self):
         # we store geometry as bytes internally, just return it.

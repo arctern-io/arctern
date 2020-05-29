@@ -136,21 +136,10 @@ class GeoSeries(Series):
             data = [data] * n
 
         if not is_geometry_array(data):
-            s = Series(data, index=index, name=name, **kwargs)
+            kwargs.pop('dtype', None)
+            s = Series(data, index=index, name=name, dtype=GeoDtype.name, **kwargs)
             index = s.index
             name = s.name
-            if s.empty:
-                s = s.astype(object)
-            # make sure missing value is None
-            s[s.isna()] = None
-            from pandas.api.types import infer_dtype
-            inferred = infer_dtype(s, skipna=True)
-            if inferred in ("bytes", "empty"):
-                pass
-            elif inferred == "string":
-                s = arctern.ST_GeomFromText(s)
-            else:
-                raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values)
 
         super().__init__(data, index=index, name=name, **kwargs)
