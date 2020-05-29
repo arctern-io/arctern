@@ -177,3 +177,26 @@ TEST(IndexedWithin, Sheet) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
   }
 }
+
+TEST(IndexedWithin, PyTest) {
+  vector<string> left = {"Point(0 0)", "Point(1000 1000)", "Point(10 10)"};
+  vector<string> right = {"Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"};
+  vector<int> std_res = {1, -1, 0};
+  auto N = left.size();
+
+  auto lg = arctern::gis::StrsToWkb(left);
+  auto rg = arctern::gis::StrsToWkb(right);
+
+  auto beg_time = std::chrono::high_resolution_clock::now();
+  auto res_vec = arctern::gis::ST_IndexedWithin({lg}, {rg});
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time = end_time - beg_time;
+  assert(res_vec.size() == 1);
+  auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
+  std::cout << time.count() << std::endl;
+  ASSERT_EQ(res->length(), N);
+  for (int i = 0; i < res->length(); ++i) {
+    ASSERT_EQ(res->GetView(i), std_res[i]);
+  }
+}
+
