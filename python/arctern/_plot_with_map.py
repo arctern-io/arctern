@@ -135,6 +135,7 @@ def _calc_zoom(bbox, coordinate_system):
 
 
 def plot_heatmap(ax, points, weights, bounding_box,
+                 map_zoom_level=None,
                  coordinate_system='EPSG:3857',
                  aggregation_type='max',
                  **extra_contextily_params):
@@ -157,7 +158,8 @@ def plot_heatmap(ax, points, weights, bounding_box,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
+    if map_zoom_level is None:
+        map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level,
                         aggregation_type=aggregation_type, coordinate_system=coordinate_system)
     hexstr = arctern.heat_map_layer(vega, points, weights)
