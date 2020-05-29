@@ -370,7 +370,7 @@ def ST_PrecisionReduce(geos, precision):
     :param geos: Geometries in WKB form.
 
     :type precision: int
-    :param precision: The number to of ignificant digits.
+    :param precision: The number of significant digits.
 
     :rtype: Series(dtype: object)
     :return: Geometry with reduced precision.
@@ -882,7 +882,7 @@ def ST_DistanceSphere(geo1, geo2):
       >>> data2 = pandas.Series([p21, p22])
       >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
-          0         1.0
+          0         0.0
           1    111226.3
           dtype: float64
     """
