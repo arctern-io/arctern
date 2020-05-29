@@ -127,9 +127,7 @@ inline NumberState ParserNumber(NumberState pre_state, const char c) {
         return NumberState::Error;
       }
     }
-    default: {
-      return NumberState::Error;
-    }
+    default: { return NumberState::Error; }
   }
   return NumberState::Error;
 }
@@ -211,9 +209,7 @@ bool NextToken(const char* src, TokenInfo* token) {
           return true;
         }
       }
-      default: {
-        return true;
-      }
+      default: { return true; }
     }
     src++;
   }
@@ -254,9 +250,7 @@ bool IsValidWkt(const char* src) {
             ++bracket_nest;
             break;
           }
-          default: {
-            return false;
-          }
+          default: { return false; }
         }
         break;
       }
@@ -273,9 +267,7 @@ bool IsValidWkt(const char* src) {
           case TokenType::WktKey: {
             break;
           }
-          default: {
-            return false;
-          }
+          default: { return false; }
         }
         break;
       }
@@ -296,9 +288,7 @@ bool IsValidWkt(const char* src) {
             num_cnt = 0;
             break;
           }
-          default: {
-            return false;
-          }
+          default: { return false; }
         }
         break;
       }
@@ -322,9 +312,7 @@ bool IsValidWkt(const char* src) {
             if (num_cnt != 0) return false;
             break;
           }
-          default: {
-            return false;
-          }
+          default: { return false; }
         }
         break;
       }
@@ -339,18 +327,14 @@ bool IsValidWkt(const char* src) {
             if (bracket_nest < 0) return false;
             break;
           }
-          default: {
-            return false;
-          }
+          default: { return false; }
         }
         break;
       }
       case TokenType::Empty: {
         return false;
       }
-      default: {
-        return false;
-      }
+      default: { return false; }
     }
     pre_type = token.type;
     src = token.start + token.len;
