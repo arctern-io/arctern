@@ -25,9 +25,11 @@
 #include <ogr_geometry.h>
 #include <utils/arrow_alias.h>
 
+#include <deque>
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 

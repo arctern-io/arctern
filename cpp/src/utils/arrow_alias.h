@@ -22,6 +22,7 @@
 #include <arrow/api.h>
 #endif
 #include <memory>
+#include <vector>
 namespace arctern {
 
 using ArrayPtr = std::shared_ptr<arrow::Array>;
