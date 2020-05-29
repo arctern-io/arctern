@@ -21,47 +21,45 @@
 namespace arctern {
 namespace index {
 
-IndexNode::IndexNode(OGRGeometry *geo, int32_t index) {
-    geometry_ = std::shared_ptr<OGRGeometry>(geo, [](OGRGeometry *) {});
-    index_ = index;
+IndexNode::IndexNode(OGRGeometry* geo, int32_t index) {
+  geometry_ = std::shared_ptr<OGRGeometry>(geo, [](OGRGeometry*) {});
+  index_ = index;
 }
 
 template <typename T>
 void gen_index(std::shared_ptr<T>& tree,
                const std::vector<std::shared_ptr<arrow::Array>>& geos) {
-    const auto& geo_vec = render::GeometryExtraction(geos);
+  const auto& geo_vec = render::GeometryExtraction(geos);
 
-    int32_t offset = 0;
-    for (auto geo: geo_vec) {
-        auto rs_pointer = reinterpret_cast<OGRPolygon *>(geo);
-        OGREnvelope *envelope = new OGREnvelope();
-        rs_pointer->getEnvelope(envelope);
-        const geos::geom::Envelope *env = new geos::geom::Envelope(envelope->MinX, envelope->MaxX, envelope->MinY,
-                                                                   envelope->MaxY);
-        IndexNode* node = new IndexNode(geo, offset++);
-        tree->insert(env, node);
-        free((void *) envelope);
-    }
+  int32_t offset = 0;
+  for (auto geo : geo_vec) {
+    auto rs_pointer = reinterpret_cast<OGRPolygon*>(geo);
+    OGREnvelope* envelope = new OGREnvelope();
+    rs_pointer->getEnvelope(envelope);
+    const geos::geom::Envelope* env = new geos::geom::Envelope(
+        envelope->MinX, envelope->MaxX, envelope->MinY, envelope->MaxY);
+    IndexNode* node = new IndexNode(geo, offset++);
+    tree->insert(env, node);
+    free((void*)envelope);
+  }
 }
 
 std::shared_ptr<SpatialIndex> index_builder(
-        const std::vector<std::shared_ptr<arrow::Array>>& geo,
-        IndexType index_type) {
-
-    switch (index_type) {
-        case IndexType::rTree: {
-            auto tree = std::make_shared<RTree>();
-            gen_index<RTree>(tree, geo);
-            return tree;
-        }
-        case IndexType::qTree: {
-            auto tree = std::make_shared<QuadTree>();
-            gen_index<QuadTree>(tree, geo);
-            return tree;
-        }
+    const std::vector<std::shared_ptr<arrow::Array>>& geo, IndexType index_type) {
+  switch (index_type) {
+    case IndexType::rTree: {
+      auto tree = std::make_shared<RTree>();
+      gen_index<RTree>(tree, geo);
+      return tree;
     }
-    return nullptr;
+    case IndexType::qTree: {
+      auto tree = std::make_shared<QuadTree>();
+      gen_index<QuadTree>(tree, geo);
+      return tree;
+    }
+  }
+  return nullptr;
 }
 
-}
-}
+}  // namespace index
+}  // namespace arctern

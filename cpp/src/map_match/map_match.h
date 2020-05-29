@@ -22,8 +22,8 @@
 #include <memory>
 #include <vector>
 
-#include "render/utils/render_utils.h"
 #include "index/index.h"
+#include "render/utils/render_utils.h"
 
 namespace arctern {
 namespace map_match {

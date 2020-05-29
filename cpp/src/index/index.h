@@ -16,18 +16,19 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <functional>
 #include <iomanip>
+#include <iostream>
+#include <vector>
+#include <memory>
 
 #include "arrow/api.h"
 #include "arrow/array.h"
 
-#include <geos/indexStrtree.h>
-#include <geos/indexQuadtree.h>
 #include <geos/indexBintree.h>
 #include <geos/indexChain.h>
+#include <geos/indexQuadtree.h>
+#include <geos/indexStrtree.h>
 #include <geos/indexSweepline.h>
 #include <geos/spatialIndex.h>
 #include <ogr_geometry.h>
@@ -39,31 +40,27 @@ namespace arctern {
 namespace index {
 
 enum IndexType {
-    rTree = 0,
-    qTree,
+  rTree = 0,
+  qTree,
 };
 
 class IndexNode {
-public:
-    IndexNode():geometry_(nullptr), index_(-1) {};
+ public:
+  IndexNode() : geometry_(nullptr), index_(-1) {}
 
-    IndexNode(OGRGeometry* geo, int32_t index);
+  IndexNode(OGRGeometry* geo, int32_t index);
 
-    const std::shared_ptr<OGRGeometry>
-    geometry() const { return geometry_; }
+  const std::shared_ptr<OGRGeometry> geometry() const { return geometry_; }
 
-    const int32_t
-    index() const { return index_; }
+  const int32_t index() const { return index_; }
 
-private:
-    std::shared_ptr<OGRGeometry> geometry_;
-    int32_t index_;
+ private:
+  std::shared_ptr<OGRGeometry> geometry_;
+  int32_t index_;
 };
 
 std::shared_ptr<SpatialIndex> index_builder(
-        const std::vector<std::shared_ptr<arrow::Array>>& geo,
-        IndexType index_type);
-
+    const std::vector<std::shared_ptr<arrow::Array>>& geo, IndexType index_type);
 
 }  // namespace index
 }  // namespace arctern
