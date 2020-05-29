@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <arrow/type_traits.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 #include <memory>
@@ -47,11 +48,10 @@ std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>
   std::vector<T> res(total_size);
 
   int offset = 0;
+  using ArrayType = typename arrow::CTypeTraits<T>::ArrayType;
   for (const auto& arr : arrs) {
-    // TODO: if to use numeric array
-    //    auto numeric_arr = std::static_pointer_cast<arrow::NumericArray<T>>(arr);
-    //    (T*)numeric_arr->data()->GetValues(1);
-    auto ptr = (T*)arr->data()->GetValues<T>(1);
+    auto numeric_arr = std::static_pointer_cast<ArrayType>(arr);
+    auto ptr = numeric_arr->raw_values();
     std::memcpy(res.data() + offset, ptr, arr->length() * sizeof(T));
     offset += arr->length();
   }
