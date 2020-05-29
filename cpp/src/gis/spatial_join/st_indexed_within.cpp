@@ -44,6 +44,7 @@ Int32ArrayPtr left_join(const WkbArrayPtr& lefts, const IndexTree& index_tree) {
 
     int32_t final_index = -1;
     for (auto match : matches) {
+      // match(void*) contains index as binary representation.
       auto index = reinterpret_cast<size_t>(match);
       auto right_geo = index_tree.get_geometry(index);
       if (left_geo->Within(right_geo)) {

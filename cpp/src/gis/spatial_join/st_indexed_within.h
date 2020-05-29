@@ -16,6 +16,8 @@
 // under the License.
 
 #pragma once
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "index/index.h"
