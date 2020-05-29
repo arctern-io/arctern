@@ -29,51 +29,43 @@ namespace gis {
 namespace spatial_join {
 using index::IndexTree;
 
-const std::vector<std::shared_ptr<arrow::Array>> join(
-    const std::vector<std::shared_ptr<arrow::Array>>& geos, const IndexTree& tree) {
-  const auto& wkb_vec = render::GeometryExtraction(geos);
-  auto num_of_point = wkb_vec.size();
-  auto array_size = geos.size();
-
-  std::vector<std::shared_ptr<arrow::Array>> arrays(array_size);
-
-  int size_per_array = num_of_point / array_size;
-  array_size = num_of_point % array_size == 0 ? array_size : array_size + 1;
-
-  for (int i = 0; i < array_size; i++) {
-    arrow::Int32Builder builder;
-    for (int j = i * size_per_array; j < (i + 1) * size_per_array && j < num_of_point;
-         j++) {
-      auto geo = reinterpret_cast<OGRPoint*>(wkb_vec[j]);
-      std::vector<void*> matches;
-
-      auto envelope = std::make_unique<OGREnvelope>();
-      geo->getEnvelope(envelope.get());
-
-      geos::geom::Envelope env(
-          envelope->MinX, envelope->MaxX, envelope->MinY, envelope->MaxY);
-
-      tree.get_tree()->query(&env, matches);
-
-      IndexNode* res = nullptr;
-
-      int32_t geo_index = -1;
-      for (auto match : matches) {
-        res = (IndexNode*)match;
-        auto indexed_geo = res->geometry();
-        if (geo->Within(indexed_geo)) {
-          geo_index = res->index();
-          break;
-        }
-      }
-      CHECK_ARROW(builder.Append(geo_index));
-      OGRGeometryFactory::destroyGeometry(wkb_vec[j]);
+Int32ArrayPtr left_join(const WkbArrayPtr& lefts, const IndexTree& index_tree) {
+  arrow::Int32Builder builder;
+  for (int s = 0; s < lefts->length(); ++s) {
+    auto left_view = lefts->GetView(s);
+    auto left_geo = render::GeometryExtraction(left_view);
+    std::vector<void*> matches;
+    {
+      OGREnvelope ogr_env;
+      left_geo->getEnvelope(&ogr_env);
+      geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX, ogr_env.MinY, ogr_env.MaxY);
+      index_tree.get_tree()->query(&env, matches);
     }
-    std::shared_ptr<arrow::Array> array;
-    CHECK_ARROW(builder.Finish(&array));
-    arrays[i] = array;
+
+    int32_t final_index = -1;
+    for (auto match : matches) {
+      auto index = reinterpret_cast<size_t>(match);
+      auto right_geo = index_tree.get_geometry(index);
+      if (left_geo->Within(right_geo)) {
+        final_index = static_cast<int>(index);
+        break;
+      }
+    }
+    CHECK_ARROW(builder.Append(final_index));
   }
-  return arrays;
+  Int32ArrayPtr arr;
+  CHECK_ARROW(builder.Finish(&arr));
+  return arr;
+}
+
+std::vector<ArrayPtr> left_join(const std::vector<ArrayPtr>& left_vec,
+                                const IndexTree& index_tree) {
+  std::vector<ArrayPtr> results;
+  for (const auto& arr_raw : left_vec) {
+    auto arr = std::static_pointer_cast<arrow::BinaryArray>(arr_raw);
+    results.emplace_back(left_join(arr, index_tree));
+  }
+  return results;
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
@@ -84,26 +76,14 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
   if (index_type == "RTREE") {
     type = IndexType::kRTree;
   } else if (index_type == "QuadTree") {
-    type = IndexType::kQTree;
+    type = IndexType::kQuadTree;
   } else {
-    type = IndexType::kInvalid;
+    throw std::invalid_argument("wrong index_type: " + index_type);
   }
 
   auto index = index::IndexTree::Create(type);
   index.append(polygons);
-  return join(points, index);
-  //  if (!index_type.compare("RTREE")) {
-  //    auto index =
-  //        std::static_pointer_cast<RTree>(index_builder(polygons, IndexType::rTree));
-  //    return join<RTree>(points, index);
-  //  } else if (!index_type.compare("QuadTREE")) {
-  //    auto index =
-  //        std::static_pointer_cast<QuadTree>(index_builder(polygons, IndexType::qTree));
-  //    return join<QuadTree>(points, index);
-  //  } else {
-  //    std::string err_msg = "unknow index type";
-  //    throw std::runtime_error(err_msg);
-  //  }
+  return left_join(points, index);
 }
 
 }  // namespace spatial_join

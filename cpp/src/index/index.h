@@ -45,7 +45,7 @@ namespace index {
 enum class IndexType {
   kInvalid,
   kRTree,
-  kQTree,
+  kQuadTree,
 };
 
 class IndexNode {
@@ -68,7 +68,7 @@ class IndexTree {
   static IndexTree Create(IndexType type) {
     IndexTree tree;
     switch (type) {
-      case IndexType::kQTree: {
+      case IndexType::kQuadTree: {
         tree.tree_ = std::make_unique<QuadTree>();
         break;
       }
@@ -87,9 +87,9 @@ class IndexTree {
   void append(const WkbArrayPtr& right) {
     for (int i = 0; i < right->length(); ++i) {
       auto view = right->GetView(i);
-      auto append_index = right_cache_.size();
-      right_cache_.emplace_back(render::GeometryExtraction(view));
-      auto& polygon = right_cache_.back();
+      auto append_index = geometries_.size();
+      geometries_.emplace_back(render::GeometryExtraction(view));
+      auto& polygon = geometries_.back();
       {
         OGREnvelope envelope;
         polygon->getEnvelope(&envelope);
@@ -97,7 +97,7 @@ class IndexTree {
                                 envelope.MaxY);
       }
       auto& envelope = envelopes_.back();
-      IndexNode* node = new IndexNode(polygon.get(), append_index);
+      void* node = reinterpret_cast<void*>(append_index);
       tree_->insert(&envelope, node);
     }
   }
@@ -108,6 +108,13 @@ class IndexTree {
       this->append(ptr);
     }
   }
+
+  const geos::geom::Envelope& get_envelop(size_t index) const {
+    return envelopes_[index];
+  }
+
+  OGRGeometry* get_geometry(size_t index) const { return geometries_[index].get(); }
+
   SpatialIndex* get_tree() const { return tree_.get(); }
 
  private:
@@ -116,7 +123,7 @@ class IndexTree {
  private:
   // use deque instead of vector for validation of references
   std::deque<geos::geom::Envelope> envelopes_;
-  std::deque<OGRGeometryUniquePtr> right_cache_;
+  std::deque<OGRGeometryUniquePtr> geometries_;
   std::unique_ptr<SpatialIndex> tree_;
 };
 
