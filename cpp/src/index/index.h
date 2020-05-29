@@ -48,21 +48,6 @@ enum class IndexType {
   kQuadTree,
 };
 
-class IndexNode {
- public:
-  IndexNode() : geometry_(nullptr), index_(-1){};
-
-  IndexNode(OGRGeometry* geo, int32_t index) : geometry_(geo), index_(index) {}
-
-  OGRGeometry* geometry() const { return geometry_; }
-
-  int32_t index() const { return index_; }
-
- private:
-  OGRGeometry* geometry_;
-  int32_t index_;
-};
-
 class IndexTree {
  public:
   static IndexTree Create(IndexType type) {
@@ -109,9 +94,9 @@ class IndexTree {
     }
   }
 
-  const geos::geom::Envelope& get_envelop(size_t index) const {
-    return envelopes_[index];
-  }
+  //  const geos::geom::Envelope& get_envelop(size_t index) const {
+  //    return envelopes_[index];
+  //  }
 
   OGRGeometry* get_geometry(size_t index) const { return geometries_[index].get(); }
 
