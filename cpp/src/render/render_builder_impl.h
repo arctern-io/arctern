@@ -31,7 +31,7 @@
 namespace arctern {
 namespace render {
 
-void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom_right,
+void Projection(const std::vector<OGRGeometryUniquePtr>& geos, const std::string& bottom_right,
                 const std::string& top_left, const int& height, const int& width) {
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
   pointXY_from_wkt(top_left, top_left_x, top_left_y);
@@ -41,7 +41,7 @@ void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom
   auto coordinate_height = top_left_y - bottom_right_y;
 
   uint32_t output_x, output_y;
-  for (auto geo : geos) {
+  for (auto& geo : geos) {
     if (geo == nullptr) {
       continue;
     } else {
@@ -72,7 +72,7 @@ void Projection(const std::vector<OGRGeometry*>& geos, const std::string& bottom
   }
 }
 
-void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
+void TransformAndProjection(const std::vector<OGRGeometryUniquePtr>& geos,
                             const std::string& src_rs, const std::string& dst_rs,
                             const std::string& bottom_right, const std::string& top_left,
                             const int& height, const int& width) {
@@ -100,12 +100,12 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
   auto coor_height = max_y - min_y;
 
   int32_t output_x, output_y;
-  for (auto geo : geos) {
+  for (const auto& geo : geos) {
     if (geo == nullptr) {
       continue;
     } else {
       // 1. transform
-      CHECK_GDAL(OGR_G_Transform(geo, (OGRCoordinateTransformation*)poCT));
+      CHECK_GDAL(geo->transform((OGRCoordinateTransformation*)poCT));
       // 2. projection
       auto type = wkbFlatten(geo->getGeometryType());
       if (type == wkbPoint) {
