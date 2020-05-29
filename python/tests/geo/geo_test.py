@@ -16,8 +16,6 @@ import pandas
 from osgeo import ogr
 import arctern
 
-from arctern import GeoSeries
-
 def test_sjoin():
     # assert False
     from arctern import GeoSeries, sjoin
