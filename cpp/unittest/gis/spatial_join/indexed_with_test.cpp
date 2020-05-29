@@ -22,9 +22,9 @@
 #include <fstream>
 #include <random>
 
+#include <chrono>
 #include "arrow/gis_api.h"
 #include "gis/test_common/transforms.h"
-#include <chrono>
 
 using std::string;
 using std::vector;

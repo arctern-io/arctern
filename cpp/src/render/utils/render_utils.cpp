@@ -19,10 +19,10 @@
 #include <string>
 #include <vector>
 
+#include <arrow/util/string_view.h>
 #include "arrow/render_api.h"
 #include "render/utils/render_utils.h"
 #include "utils/check_status.h"
-#include <arrow/util/string_view.h>
 
 namespace arctern {
 namespace render {
