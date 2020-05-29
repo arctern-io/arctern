@@ -186,7 +186,6 @@ class TestPandasMethod:
         assert s1[0] == s1[1]
 
         # set item with na value
-        import numpy as np
         s[0] = np.nan
         assert s[0] is None
 
