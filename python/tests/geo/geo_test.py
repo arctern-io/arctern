@@ -358,6 +358,14 @@ def test_ST_Within():
     assert rst[2] == 1
     assert rst[3] == 0
 
+    rst = arctern.ST_Within(arctern.ST_GeomFromText(data1),
+                            arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"))
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 0
+    assert rst[2] == 1
+    assert rst[3] == 0
+
     rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0],
                             arctern.ST_GeomFromText(data1))
     assert len(rst) == 4
@@ -365,6 +373,11 @@ def test_ST_Within():
     assert rst[1] == 0
     assert rst[2] == 0
     assert rst[3] == 0
+
+    rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"),
+                            arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"))
+    assert len(rst) == 1
+    assert rst[0] == 1
 
     rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0],
                             arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])

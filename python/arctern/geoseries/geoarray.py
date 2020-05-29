@@ -66,11 +66,11 @@ def from_wkt(data):
 
 def to_wkt(data):
     """
-    Convert GeoArray or np.ndarray or list to a numpy object array of wkt formed string.
+    Convert GeoArray or np.ndarray or list to a numpy string array of wkt formed string.
     """
     if not isinstance(data, (GeoArray, np.ndarray, list)):
         raise ValueError("'data' must be a GeoArray or np.ndarray or list.")
-    return arctern.ST_AsText(data).values
+    return np.asarray(arctern.ST_AsText(data), dtype=str)
 
 
 def from_wkb(data):
@@ -337,9 +337,10 @@ class GeoArray(ExtensionArray):
             if copy:
                 return self.copy()
             return self
-        if pd.api.types.is_string_dtype(dtype) and not pd.api.types.is_object_dtype(dtype):
-            # as string type means to wkt formed string
+        # as str or string type means to wkt formed string
+        if pd.api.types.is_dtype_equal(dtype, str) or pd.api.types.is_dtype_equal(dtype, 'string'):
             return to_wkt(self)
+        # TODO(shengjh): Currently we can not handle dtype which is not numpy.dtype, if get here
         return np.array(self, dtype=dtype, copy=copy)
 
     def _formatter(self, boxed=False):

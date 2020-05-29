@@ -112,6 +112,9 @@ def ST_Intersects(object geo_arr1,object geo_arr2):
 def ST_Within(object geo_arr1,object geo_arr2):
     pass
 
+def ST_Within2(object geo_arr1, object geo2):
+    pass
+
 def ST_Distance(object geo_arr1,object geo_arr2):
     pass
 
