@@ -16,15 +16,14 @@ import pandas
 import arctern
 
 def test_nearest_location_on_road():
-    roads = pandas.Series("LINESTRING (10 2.0,10 3.0)")
-    gps_points = pandas.Series("POINT (0.0 0.0)")
+    roads = pandas.Series("LINESTRING (1 2,1 3)")
+    gps_points = pandas.Series("POINT (1.0001 2.5)")
     rst = arctern.ST_AsText(arctern.nearest_location_on_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
     assert len(rst) == 1
-    assert rst[0] == "POINT (0.0 0.0002)"
+    assert rst[0] == "POINT (1.0 2.5)"
 
-#def test_nearest_road():
-#    roads = pandas.Series(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
-#    gps_points = pandas.Series("POINT (1.0001 1)")
-#    rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
-#    assert len(rst) == 1
-#    assert rst[0] == "LINESTRING (0 0,2 0)"
+def test_nearest_road():
+    roads = pandas.Series(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
+    gps_points = pandas.Series("POINT (1.0001 1)")
+    rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
+    assert len(rst) == 0 
