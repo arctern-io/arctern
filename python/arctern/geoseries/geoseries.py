@@ -18,10 +18,23 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series
+from pandas import Series, DataFrame
 import arctern
-from .geoarray import GeoArray, is_geometry_array
+from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
+def fix_dataframe_box_col_volues():
+
+    def _box_col_values(self, values, items):
+        klass = self._constructor_sliced
+
+        if isinstance(values.dtype, GeoDtype):
+            klass = GeoSeries
+
+        return klass(values, index=self.index, name=items, fastpath=True)
+
+    DataFrame._box_col_values = _box_col_values
+
+fix_dataframe_box_col_volues()
 
 def _property_op(op, this):
     # type: (function, GeoSeries) -> Series[bool/float/object]
@@ -160,6 +173,13 @@ class GeoSeries(Series):
         # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
+                from pandas.core.internals import SingleBlockManager
+                # astype will dispatch to here,Only if `dtype` is `GeoDtype`
+                # will return GeoSeries
+                if isinstance(data, SingleBlockManager):
+                    dtype = getattr(data, 'dtype')
+                    if not isinstance(dtype, GeoDtype):
+                        raise TypeError
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
                 return Series(data, index=index, **kwargs)
@@ -473,7 +493,7 @@ class GeoSeries(Series):
             return self
         return _unary_geo(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
-    def simplify_preserve_to_pology(self, distance_tolerance):
+    def simplify_preserve_topology(self, distance_tolerance):
         """
         Returns a "simplified" version for each geometry using the Douglas-Peucker algorithm.
 

@@ -122,7 +122,7 @@ def test_ST_MakeValid():
 
 def test_ST_SimplifyPreserveTopology():
     data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    rst = data.simplify_preserve_to_pology(10000).to_wkt()
+    rst = data.simplify_preserve_topology(10000).to_wkt()
     assert rst[0] == "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
 
 
