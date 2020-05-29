@@ -159,7 +159,7 @@ TEST(IndexedWithin, Sheet) {
   vector<string> left;
   for (int i = 0; i < N; ++i) {
     auto index = eng() % vol;
-    left.push_back(polygons_raw[index]);
+    left.push_back(points_raw[index]);
     std_res.push_back(poly_shuf[index]);
   }
   auto lg = arctern::gis::StrsToWkb(left);
