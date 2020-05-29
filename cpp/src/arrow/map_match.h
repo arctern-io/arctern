@@ -13,27 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #pragma once
-#include <arrow/api.h>
-#include <arrow/array.h>
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
-#include <memory>
-#include <vector>
 
-#include "render/utils/render_utils.h"
-#include "index/index.h"
-
-namespace arctern {
-namespace map_match {
-
-using IndexNode = arctern::index::IndexNode;
-using IndexType = arctern::index::IndexType;
-
-std::vector<std::shared_ptr<arrow::Array>> snap_to_road(
-    const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
-
-}  // namespace map_match
-}  // namespace arctern
+#include "map_match/map_match.h"

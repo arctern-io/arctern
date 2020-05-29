@@ -91,8 +91,8 @@ set(index_src
         index/index_builder.cpp
         )
 
-set(snap_road
-        map_match/snap_road.cpp)
+set(map_match_src
+        map_match/map_match.cpp)
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
@@ -108,7 +108,7 @@ if (BUILD_WITH_GPU)
             ${gpu_render_src}
             ${arrow_src}
             ${index_src}
-            ${snap_road}
+            ${map_match_src}
     )
 else ()
     add_library(
@@ -118,7 +118,7 @@ else ()
             ${cpu_render_src}
             ${arrow_src}
             ${index_src}
-            ${snap_road}
+            ${map_match_src}
     )
 endif ()
 

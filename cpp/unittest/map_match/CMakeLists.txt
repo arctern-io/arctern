@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(snap_tests_src
+set(map_match_tests_src
         ${unittest_srcs}
-        snap_to_road_test.cpp
+        map_match_test.cpp
         )
 
-add_executable(snap_tests ${snap_tests_src})
+add_executable(map_match_tests ${map_match_tests_src})
 
-#add_dependencies(snap_tests googletest_ep)
+#add_dependencies(map_match_tests googletest_ep)
 
-target_link_libraries(snap_tests
+target_link_libraries(map_match_tests
         arctern
         arrow
         gtest
@@ -29,4 +29,4 @@ target_link_libraries(snap_tests
         gdal
         )
 
-install(TARGETS snap_tests DESTINATION unittest)
+install(TARGETS map_match_tests DESTINATION unittest)

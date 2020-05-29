@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-#ifndef MAP_MATCH_H
-#define MAP_MATCH_H
-
+#pragma once
+#include <arrow/api.h>
+#include <arrow/array.h>
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <memory>
-#include <string>
+#include <vector>
 
-#include "arrow/api.h"
+#include "render/utils/render_utils.h"
+#include "index/index.h"
 
-namespace arctern{
-namespace map_match{
+namespace arctern {
+namespace map_match {
+
+using IndexNode = arctern::index::IndexNode;
+using IndexType = arctern::index::IndexType;
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
 
 }  // namespace map_match
 }  // namespace arctern
-
-#endif

@@ -14,7 +14,8 @@
 # pylint: disable=too-many-lines
 
 __all__ = [
-    "snap_to_road"
+    "nearest_location_on_road",
+    "nearest_road"
 ]
 
 from . import arctern_core_
@@ -41,11 +42,20 @@ def _to_pandas_series(array_list):
                 result = result.append(array.to_pandas(), ignore_index=True)
     return result
 
-def snap_to_road(roads, gps_points):
+def nearest_location_on_road(roads, gps_points):
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
     arr_gps_points = pa.array(gps_points, type='binary')
     arr_roads = _to_arrow_array_list(arr_roads)
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    result = arctern_core_.snap_to_road(arr_roads, arr_gps_points)
+    result = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
+    return _to_pandas_series(result)
+
+def nearest_road(roads, gps_points):
+    import pyarrow as pa
+    arr_roads = pa.array(roads, type='binary')
+    arr_gps_points = pa.array(gps_points, type='binary')
+    arr_roads = _to_arrow_array_list(arr_roads)
+    arr_gps_points = _to_arrow_array_list(arr_gps_points)
+    result = arctern_core_.nearest_road(arr_roads, arr_gps_points)
     return _to_pandas_series(result)
