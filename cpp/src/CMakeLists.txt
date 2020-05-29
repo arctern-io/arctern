@@ -93,7 +93,7 @@ set(index_src
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
-    set(LIBRARY_TYPE STATIC gis/spatial_join/st_indexed_within.cpp index/index.h index/index_builder.cpp ../unittest/gis/spatial_join/indexed_with_test.cpp)
+    set(LIBRARY_TYPE STATIC)
 endif (STATIC_LIB_SWITCH)
 
 if (BUILD_WITH_GPU)
