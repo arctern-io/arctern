@@ -188,7 +188,6 @@ class TestPandasMethod:
         s[0] = np.nan
         assert s[0] is None
 
-        import pandas as pd
         s[0] = pd.NA
         assert s[0] is None
 
