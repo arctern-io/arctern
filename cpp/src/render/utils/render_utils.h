@@ -15,8 +15,10 @@
  */
 #pragma once
 
+#include <arrow/type_traits.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,11 +32,13 @@ namespace render {
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
+OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb);
+
 std::vector<std::string> WkbExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    const std::vector<OGRGeometry*>& geos, int arrays_size);
+    std::vector<OGRGeometry*>&& geos, int arrays_size);
 
 template <typename T>
 std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
@@ -47,11 +51,10 @@ std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>
   std::vector<T> res(total_size);
 
   int offset = 0;
+  using ArrayType = typename arrow::CTypeTraits<T>::ArrayType;
   for (const auto& arr : arrs) {
-    // TODO: if to use numeric array
-    //    auto numeric_arr = std::static_pointer_cast<arrow::NumericArray<T>>(arr);
-    //    (T*)numeric_arr->data()->GetValues(1);
-    auto ptr = (T*)arr->data()->GetValues<T>(1);
+    auto numeric_arr = std::static_pointer_cast<ArrayType>(arr);
+    auto ptr = numeric_arr->raw_values();
     std::memcpy(res.data() + offset, ptr, arr->length() * sizeof(T));
     offset += arr->length();
   }

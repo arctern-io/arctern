@@ -16,13 +16,11 @@ import pandas
 from osgeo import ogr
 import arctern
 
-from arctern import GeoSeries
-
 def test_sjoin():
     # assert False
     from arctern import GeoSeries, sjoin
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-    data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
+    data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
     res = sjoin(data1, data2, 'within')
     print(res)
     assert len(res) == 3
@@ -371,6 +369,14 @@ def test_ST_Within():
     assert rst[2] == 1
     assert rst[3] == 0
 
+    rst = arctern.ST_Within(arctern.ST_GeomFromText(data1),
+                            arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"))
+    assert len(rst) == 4
+    assert rst[0] == 1
+    assert rst[1] == 0
+    assert rst[2] == 1
+    assert rst[3] == 0
+
     rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0],
                             arctern.ST_GeomFromText(data1))
     assert len(rst) == 4
@@ -378,6 +384,11 @@ def test_ST_Within():
     assert rst[1] == 0
     assert rst[2] == 0
     assert rst[3] == 0
+
+    rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"),
+                            arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))"))
+    assert len(rst) == 1
+    assert rst[0] == 1
 
     rst = arctern.ST_Within(arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0],
                             arctern.ST_GeomFromText("POLYGON((0 0,0 8,8 8,8 0,0 0))")[0])

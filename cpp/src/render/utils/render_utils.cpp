@@ -19,12 +19,19 @@
 #include <string>
 #include <vector>
 
+#include <arrow/util/string_view.h>
 #include "arrow/render_api.h"
 #include "render/utils/render_utils.h"
 #include "utils/check_status.h"
 
 namespace arctern {
 namespace render {
+
+OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb) {
+  OGRGeometry* geo = nullptr;
+  OGRGeometryFactory::createFromWkb(wkb.to_string().c_str(), nullptr, &geo);
+  return OGRGeometryUniquePtr(geo);
+}
 
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
@@ -76,7 +83,7 @@ std::vector<std::string> WkbExtraction(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    const std::vector<OGRGeometry*>& geos, int arrays_size) {
+    std::vector<OGRGeometry*>&& geos, int arrays_size) {
   int size_per_array = geos.size() / arrays_size;
   arrays_size = geos.size() % arrays_size == 0 ? arrays_size : arrays_size + 1;
   std::vector<std::shared_ptr<arrow::Array>> arrays(arrays_size);
@@ -101,7 +108,7 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
     CHECK_ARROW(builder.Finish(&array));
     arrays[i] = array;
   }
-
+  geos.clear();
   return arrays;
 }
 

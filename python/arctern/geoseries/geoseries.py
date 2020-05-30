@@ -18,9 +18,24 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series
+from pandas import Series, DataFrame
 import arctern
-from .geoarray import GeoArray, is_geometry_array
+from .geoarray import GeoArray, is_geometry_array, GeoDtype
+
+
+def fix_dataframe_box_col_volues():
+    def _box_col_values(self, values, items):
+        klass = self._constructor_sliced
+
+        if isinstance(values.dtype, GeoDtype):
+            klass = GeoSeries
+
+        return klass(values, index=self.index, name=items, fastpath=True)
+
+    DataFrame._box_col_values = _box_col_values
+
+
+fix_dataframe_box_col_volues()
 
 
 def _property_op(op, this):
@@ -122,6 +137,8 @@ class GeoSeries(Series):
 
         if not is_geometry_array(data):
             s = Series(data, index=index, name=name, **kwargs)
+            index = s.index
+            name = s.name
             if s.empty:
                 s = s.astype(bytes)
             else:
@@ -160,6 +177,13 @@ class GeoSeries(Series):
         # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
+                from pandas.core.internals import SingleBlockManager
+                # astype will dispatch to here,Only if `dtype` is `GeoDtype`
+                # will return GeoSeries
+                if isinstance(data, SingleBlockManager):
+                    dtype = getattr(data, 'dtype')
+                    if not isinstance(dtype, GeoDtype):
+                        raise TypeError
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
                 return Series(data, index=index, **kwargs)
@@ -473,7 +497,7 @@ class GeoSeries(Series):
             return self
         return _unary_geo(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
-    def simplify_preserve_to_pology(self, distance_tolerance):
+    def simplify_preserve_topology(self, distance_tolerance):
         """
         Returns a "simplified" version for each geometry using the Douglas-Peucker algorithm.
 
@@ -732,10 +756,14 @@ class GeoSeries(Series):
         """
         from pandas.api.types import is_scalar
         if is_scalar(other):
-            other = self.__class__([other] * len(self))
-        result = _binary_op(arctern.ST_Equals, self, other).astype(bool, copy=False)
+            other = self.__class__([other] * len(self), index=self.index)
+        this = self
+        if not this.index.equals(other.index):
+            warn("The indices of the two GeoSeries are different.")
+            this, other = this.align(other)
+        result = _binary_op(arctern.ST_Equals, this, other).astype(bool, copy=False)
         other_na = other.isna()
-        result[other_na & self.isna()] = True
+        result[other_na & this.isna()] = True
         return result
 
     def touches(self, other):

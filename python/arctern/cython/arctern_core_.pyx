@@ -17,6 +17,7 @@
 
 from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
 
 
@@ -281,6 +282,14 @@ def ST_Within(object left_geometries,object right_geometries):
     for geo in right_geometries:
         right.push_back(pyarrow_unwrap_array(geo))
     result = arctern_core_pxd.ST_Within(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def ST_Within2(left_geometries, right_geometry):
+    cdef string s = right_geometry
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_Within(left, s)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
 def ST_Distance(object geo_arr1,object geo_arr2):

@@ -16,15 +16,6 @@
 
 #pragma once
 
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <vector>
-#include <memory>
-
-#include "arrow/api.h"
-#include "arrow/array.h"
-
 #include <geos/indexBintree.h>
 #include <geos/indexChain.h>
 #include <geos/indexQuadtree.h>
@@ -33,34 +24,55 @@
 #include <geos/spatialIndex.h>
 #include <ogr_geometry.h>
 
-using RTree = GEOS_DLL::geos::index::strtree::STRtree;
-using QuadTree = GEOS_DLL::geos::index::quadtree::Quadtree;
-using SpatialIndex = GEOS_DLL::geos::index::SpatialIndex;
+#include <deque>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <vector>
+
+#include "arrow/api.h"
+#include "arrow/array.h"
+#include "index/index.h"
+#include "render/utils/render_utils.h"
+#include "utils/arrow_alias.h"
+
 namespace arctern {
 namespace index {
 
-enum IndexType {
-  rTree = 0,
-  qTree,
+enum class IndexType {
+  kInvalid,
+  kRTree,
+  kQuadTree,
 };
 
-class IndexNode {
+class IndexTree {
  public:
-  IndexNode() : geometry_(nullptr), index_(-1) {}
+  using SpatialIndex = GEOS_DLL::geos::index::SpatialIndex;
+  static IndexTree Create(IndexType type);
 
-  IndexNode(OGRGeometry* geo, int32_t index);
+  void Append(const WkbArrayPtr& right);
 
-  const std::shared_ptr<OGRGeometry> geometry() const { return geometry_; }
+  void Append(const std::vector<ArrayPtr>& right);
 
-  const int32_t index() const { return index_; }
+  //  const geos::geom::Envelope& get_envelop(size_t index) const {
+  //    return envelopes_[index];
+  //  }
+
+  OGRGeometry* get_geometry(size_t index) const { return geometries_[index].get(); }
+
+  SpatialIndex* get_tree() const { return tree_.get(); }
 
  private:
-  std::shared_ptr<OGRGeometry> geometry_;
-  int32_t index_;
-};
+  IndexTree() = default;
 
-std::shared_ptr<SpatialIndex> index_builder(
-    const std::vector<std::shared_ptr<arrow::Array>>& geo, IndexType index_type);
+ private:
+  // use deque instead of vector for validation of references
+  std::deque<geos::geom::Envelope> envelopes_;
+  std::deque<OGRGeometryUniquePtr> geometries_;
+  std::unique_ptr<SpatialIndex> tree_;
+};
 
 }  // namespace index
 }  // namespace arctern

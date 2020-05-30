@@ -18,11 +18,18 @@
 #include <ogr_api.h>
 #include <ogr_geometry.h>
 #include <utils/check_status.h>
+
+#include <chrono>
 #include <fstream>
+#include <random>
 
 #include "arrow/gis_api.h"
+#include "gis/test_common/transforms.h"
 
-TEST(INDEXED_WITHIN_TEST, WKB_TEST) {
+using std::string;
+using std::vector;
+
+TEST(IndexedWithin, Naive) {
   // param1: wkt string
   std::string wkt11 = "POINT (10 10)";
   std::string wkt12 = "POINT (30 10)";
@@ -109,5 +116,87 @@ TEST(INDEXED_WITHIN_TEST, WKB_TEST) {
     for (int i = 0; i < size; i++) {
       ASSERT_EQ(values->Value(i), out_std[offset++]);
     }
+  }
+}
+
+TEST(IndexedWithin, Sheet) {
+  vector<string> points_raw;
+  vector<string> polygons_raw;
+  using std::to_string;
+  int S = 100;
+  auto proj_str = [](double row, double col) {
+    auto nr = row * 3 + col * 2;
+    auto nc = row * 2 + col * -2;
+    return to_string(nr) + " " + to_string(nc);
+  };
+  for (int row = 0; row < S; ++row) {
+    for (int col = 0; col < S; ++col) {
+      auto polygon_str = "Polygon((" + proj_str(row, col) + ", " +
+                         proj_str(row + 1, col) + ", " + proj_str(row + 1, col + 1) +
+                         ", " + proj_str(row, col + 1) + ", " + proj_str(row, col) + "))";
+
+      polygons_raw.push_back(polygon_str);
+      auto point_raw = "Point(" + proj_str(row + 0.5, col + 0.5) + ")";
+      points_raw.push_back(point_raw);
+    }
+  }
+  auto vol = S * S;
+  vector<int> poly_shuf(vol);
+  for (int i = 0; i < vol; ++i) {
+    poly_shuf[i] = i;
+  }
+  std::default_random_engine eng(42);
+  std::shuffle(poly_shuf.begin(), poly_shuf.end(), eng);
+  vector<string> right(vol);
+
+  for (int i = 0; i < vol; ++i) {
+    auto ans = poly_shuf[i];
+    right[ans] = polygons_raw[i];
+  }
+
+  int N = 10000;
+  vector<int> std_res;
+  vector<string> left;
+  for (int i = 0; i < N; ++i) {
+    auto index = eng() % vol;
+    left.push_back(points_raw[index]);
+    std_res.push_back(poly_shuf[index]);
+  }
+  auto lg = arctern::gis::StrsToWkb(left);
+  auto rg = arctern::gis::StrsToWkb(right);
+
+  auto beg_time = std::chrono::high_resolution_clock::now();
+  auto res_vec = arctern::gis::ST_IndexedWithin({lg}, {rg});
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time = end_time - beg_time;
+  assert(res_vec.size() == 1);
+  auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
+  std::cout << time.count() << std::endl;
+  ASSERT_EQ(res->length(), N);
+  for (int i = 0; i < res->length(); ++i) {
+    ASSERT_EQ(res->GetView(i), std_res[i]);
+  }
+}
+
+TEST(IndexedWithin, PyTest) {
+  vector<string> left = {"Point(0 0)", "Point(1000 1000)", "Point(10 10)"};
+  vector<string> right = {"Polygon((9 10, 11 12, 11 8, 9 10))",
+                          "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"};
+  vector<int> std_res = {1, -1, 0};
+  auto N = left.size();
+
+  auto lg = arctern::gis::StrsToWkb(left);
+  auto rg = arctern::gis::StrsToWkb(right);
+
+  auto beg_time = std::chrono::high_resolution_clock::now();
+  auto res_vec = arctern::gis::ST_IndexedWithin({lg}, {rg});
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time = end_time - beg_time;
+  assert(res_vec.size() == 1);
+  auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
+  std::cout << time.count() << std::endl;
+  ASSERT_EQ(res->length(), N);
+  for (int i = 0; i < res->length(); ++i) {
+    ASSERT_EQ(res->GetView(i), std_res[i]);
   }
 }

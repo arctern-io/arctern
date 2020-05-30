@@ -15,6 +15,7 @@
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
 import pytest
+import pandas as pd
 from pandas.testing import assert_series_equal
 from arctern.geoseries import GeoSeries
 from arctern.geoseries.geoarray import GeoDtype
@@ -22,7 +23,7 @@ from arctern._wrapper_func import ST_GeomFromText
 
 
 def make_point(x, y):
-    return "Point (%s %s)" % (x, y)
+    return "POINT (%s %s)" % (x, y)
 
 
 @pytest.fixture(params=['wkt', 'wkb'])
@@ -67,7 +68,7 @@ class TestConstructor:
         assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_empty(self):
-        s = GeoSeries([])
+        s = GeoSeries([], dtype="GeoDtype")
         assert_is_geoseries(s)
         assert len(s) == 0
 
@@ -104,6 +105,15 @@ class TestConstructor:
         assert len(s) == 5
         for i in index:
             assert s[i] == s[index[0]]
+
+    def test_form_series_with_index(self):
+        index = [1, 2, 3, 4, 5]
+        s = pd.Series(make_point(1, 1), index=index)
+        geo_s = GeoSeries(s)
+        assert_is_geoseries(geo_s)
+        assert len(geo_s) == 5
+        for i in index:
+            assert geo_s[i] == geo_s[index[0]]
 
 
 class TestType:
@@ -178,7 +188,6 @@ class TestPandasMethod:
         s[0] = np.nan
         assert s[0] is None
 
-        import pandas as pd
         s[0] = pd.NA
         assert s[0] is None
 
@@ -201,11 +210,48 @@ class TestPandasMethod:
         r = s != s[0]
         assert r.tolist() == [False, True, True]
 
+    def test_astype(self):
+        s = GeoSeries([make_point(1, 1), make_point(1, 2)])
+        assert s.astype(str).tolist() == [make_point(1, 1), make_point(1, 2)]
+        assert s.astype('string').tolist() == [make_point(1, 1), make_point(1, 2)]
 
-def test_geo_method_with_missing_value():
-    s1 = GeoSeries([make_point(1, 1), None])
-    s2 = GeoSeries([None, make_point(1, 1)])
-    s3 = GeoSeries([make_point(1, 1), None])
 
-    assert s1.geom_equals(s3).all()
-    assert not s1.geom_equals(s2).any()
+class TestGeoMethods:
+    def test_geom_equals_with_missing_value(self):
+        s1 = GeoSeries([make_point(1, 1), None])
+        s2 = GeoSeries([None, make_point(1, 1)])
+        s3 = GeoSeries([make_point(1, 1), None])
+        assert s1.geom_equals(s3).all()
+        assert not s1.geom_equals(s2).any()
+
+    def test_geom_with_index(self):
+        index = ['a', 'b']
+
+        # unary
+        s = GeoSeries([make_point(1, 1), None], index=index)
+        s1 = s.length
+        assert s1.index.to_list() == index
+
+        # binary with same index
+        left = GeoSeries([make_point(1, 1), None], index=index)
+        right = GeoSeries([make_point(1, 1), None], index=index)
+        s1 = left.geom_equals(right)
+        assert s1.index.to_list() == index
+
+        # binary with different index will align index
+        left = GeoSeries([make_point(1, 1), None], index=[1, 2])
+        right = GeoSeries([make_point(1, 1), None], index=[3, 4])
+        s1 = left.geom_equals(right)
+        assert s1.index.to_list() == [1, 2, 3, 4]
+        assert s1.to_list() == [False, True, False, True]
+
+
+def test_geoseries_type_by_df_box_col_values():
+    from pandas import DataFrame, Series
+    series = GeoSeries(["POINT (0 0)", None, "POINT (0 1)", "POINT (2 0)"])
+    df = DataFrame({'s': series})
+    assert isinstance(df['s'], type(series))
+
+    series = Series([1, None, 2, 3])
+    df = DataFrame({'s': series})
+    assert isinstance(df['s'], type(series))

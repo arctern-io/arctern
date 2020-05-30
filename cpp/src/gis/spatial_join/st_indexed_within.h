@@ -15,9 +15,9 @@
  */
 
 #pragma once
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "index/index.h"
 #include "utils/arrow_alias.h"
@@ -27,16 +27,10 @@ namespace gis {
 namespace spatial_join {
 
 using IndexType = arctern::index::IndexType;
-using IndexNode = arctern::index::IndexNode;
-
-// std::vector<Int32ArrayPtr> ST_IndexedWithin(const std::vector<WkbArrayPtr>& points,
-//                                            const std::vector<WkbArrayPtr>& polygons,
-//                                            const std::string index_type = "RTREE");
 
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
-    const std::vector<std::shared_ptr<arrow::Array>>& polygons,
-    const std::string index_type);
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons, std::string index_type);
 
 }  // namespace spatial_join
 }  // namespace gis

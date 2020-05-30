@@ -28,7 +28,6 @@
 namespace arctern {
 namespace map_match {
 
-using IndexNode = arctern::index::IndexNode;
 using IndexType = arctern::index::IndexType;
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
