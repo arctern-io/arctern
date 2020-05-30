@@ -12,27 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(gis_tests_src
+set(index_tests_src
         ${unittest_srcs}
-        gis_functions_tests.cpp
-        parser_tests.cpp)
+        indexed_with_test.cpp
+        )
 
-add_executable(gis_tests ${gis_tests_src})
+add_executable(index_tests ${index_tests_src})
 
-#add_dependencies(gis_tests googletest_ep)
-
-target_link_libraries(gis_tests
+target_link_libraries(index_tests
         arctern
         arrow
         gtest
         pthread
-        gdal
         )
 
-install(TARGETS gis_tests DESTINATION unittest)
-
-add_subdirectory(gdal)
-add_subdirectory(spatial_join)
-if(BUILD_WITH_GPU)
-    add_subdirectory(cuda)
-endif()
+install(TARGETS index_tests DESTINATION unittest)
