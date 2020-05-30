@@ -44,6 +44,12 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
+
+    CONDA_ENV_PYTHON_FILE="${SCRIPTS_DIR}/../yaml/conda_env_python.yml"
+    if [[ -f "${CONDA_ENV_PYTHON_FILE} ]]; then
+        conda install  -c conda-forge -q --file -y "${CONDA_ENV_PYTHON_FILE}"
+    fi
+
 fi
 
 pushd "${PYTHON_SRC_DIR}"
