@@ -23,7 +23,6 @@
 #include <geos/indexSweepline.h>
 #include <geos/spatialIndex.h>
 #include <ogr_geometry.h>
-#include <utils/arrow_alias.h>
 
 #include <deque>
 #include <functional>
@@ -37,10 +36,8 @@
 #include "arrow/array.h"
 #include "index/index.h"
 #include "render/utils/render_utils.h"
-
-namespace arctern {
+#include "utils/arrow_alias.h"
 namespace index {
-
 enum class IndexType {
   kInvalid,
   kRTree,

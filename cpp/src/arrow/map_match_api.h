@@ -13,25 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #pragma once
-#include <memory>
-#include <string>
-#include <vector>
 
-#include "index/index.h"
-#include "utils/arrow_alias.h"
-
-namespace arctern {
-namespace gis {
-namespace spatial_join {
-
-using IndexType = arctern::index::IndexType;
-
-std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
-    const std::vector<std::shared_ptr<arrow::Array>>& points,
-    const std::vector<std::shared_ptr<arrow::Array>>& polygons, std::string index_type);
-
-}  // namespace spatial_join
-}  // namespace gis
-}  // namespace arctern
+#include "map_match/map_match.h"

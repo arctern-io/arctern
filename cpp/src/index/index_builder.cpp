@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <geos/indexBintree.h>
 #include <geos/indexChain.h>
 #include <geos/indexQuadtree.h>

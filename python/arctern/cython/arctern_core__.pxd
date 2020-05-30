@@ -111,3 +111,11 @@ cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]] &points_raw, const vector[shared_ptr[CArray]] &polygons_raw) except +
 
     string GIS_Version() except +
+
+cdef extern from "map_match.h" namespace "arctern::map_match":
+    vector[shared_ptr[CArray]] nearest_location_on_road(const vector[shared_ptr[CArray]] &roads, \
+                                                        const vector[shared_ptr[CArray]] &gps_points) except +
+    vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]] &roads, \
+                                            const vector[shared_ptr[CArray]] &gps_points) except +
+    vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]] &roads, \
+                                            const vector[shared_ptr[CArray]] &gps_points) except +
