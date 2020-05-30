@@ -15,23 +15,32 @@
  */
 
 #pragma once
+#include <arrow/api.h>
+#include <arrow/array.h>
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "index/index.h"
-#include "utils/arrow_alias.h"
+#include "render/utils/render_utils.h"
 
 namespace arctern {
-namespace gis {
-namespace spatial_join {
+namespace map_match {
 
 using IndexType = arctern::index::IndexType;
 
-std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
-    const std::vector<std::shared_ptr<arrow::Array>>& points,
-    const std::vector<std::shared_ptr<arrow::Array>>& polygons, std::string index_type);
+std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
 
-}  // namespace spatial_join
-}  // namespace gis
+std::vector<std::shared_ptr<arrow::Array>> nearest_road(
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
+
+std::vector<std::shared_ptr<arrow::Array>> near_road(
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
+
+}  // namespace map_match
 }  // namespace arctern
