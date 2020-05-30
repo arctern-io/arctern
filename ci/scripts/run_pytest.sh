@@ -47,7 +47,7 @@ if [[ -n ${CONDA_ENV} ]]; then
 
     CONDA_ENV_PYTHON_FILE="${SCRIPTS_DIR}/../yaml/conda_env_python.yml"
     if [[ -f "${CONDA_ENV_PYTHON_FILE} ]]; then
-        conda install  -c conda-forge -q --file -y "${CONDA_ENV_PYTHON_FILE}"
+        conda install  -c conda-forge -q -y --file "${CONDA_ENV_PYTHON_FILE}"
     fi
 
 fi
