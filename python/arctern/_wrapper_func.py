@@ -65,7 +65,6 @@ __all__ = [
 import base64
 from . import arctern_core_
 
-
 def arctern_udf(*arg_types):
     def decorate(func):
         from functools import wraps
@@ -1263,7 +1262,6 @@ def ST_CurveToLine(geos):
     arr_geos = _to_arrow_array_list(arr_geos)
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
-
 
 def sjoin(left, right, join_type: str):
     """
