@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include <gtest/gtest.h>
-#include <fstream>
 #include <iostream>
 
 #include "map_match/map_match.h"

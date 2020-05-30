@@ -1265,36 +1265,6 @@ def ST_CurveToLine(geos):
 
 def sjoin(left, right, join_type: str):
     """
-    Calculate spatial join of two GeoSeries 
-
-    :type left: GeoSeries
-
-    :type right: GeoSeries
-
-    :rtype: Series(dtype: int)
-
-    :example:
-      >>> from arctern import *
-      >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-      >>> data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
-      >>> res = sjoin(data1, data2)
-      >>> print(res)
-          0    1
-          1    -1
-          2    0
-          dtype: int
-    """
-    import pyarrow as pa
-    pa_left = pa.array(left, type='binary')
-    pa_right = pa.array(right, type='binary')
-    vec_arr_left = _to_arrow_array_list(pa_left)
-    vec_arr_right = _to_arrow_array_list(pa_right)
-    assert join_type == 'within'
-    result = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
-    return _to_pandas_series(result) 
-
-def sjoin(left, right, join_type: str):
-    """
     Calculate spatial join of two GeoSeries
     :type left: GeoSeries
     :type right: GeoSeries
