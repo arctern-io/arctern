@@ -355,6 +355,16 @@ def ST_Buffer(object geo_arr,double dfDist, n_quadrant_segments = None):
         result = arctern_core_pxd.ST_Buffer(pyarrow_unwrap_array(geo_arr),dfDist)
         return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_IndexedWithin(object left_geometries,object right_geometries):
+    cdef vector[shared_ptr[CArray]] left
+    for geo in left_geometries:
+        left.push_back(pyarrow_unwrap_array(geo))
+    cdef vector[shared_ptr[CArray]] right
+    for geo in right_geometries:
+        right.push_back(pyarrow_unwrap_array(geo))
+    result = arctern_core_pxd.ST_IndexedWithin(left, right)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
+
 def ST_Union_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Union_Aggr(pyarrow_unwrap_array(geo_arr)))
 
@@ -363,3 +373,34 @@ def ST_Envelope_Aggr(object geo_arr):
 
 def GIS_Version():
     return arctern_core_pxd.GIS_Version()
+
+# map match func api:
+def nearest_location_on_road(object roads,object gps_points):
+    cdef vector[shared_ptr[CArray]] network
+    for road in roads:
+        network.push_back(pyarrow_unwrap_array(road))
+    cdef vector[shared_ptr[CArray]] gps_points_to_match
+    for gps_point in gps_points:
+        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+    result = arctern_core_pxd.nearest_location_on_road(network, gps_points_to_match)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def nearest_road(object roads,object gps_points):
+    cdef vector[shared_ptr[CArray]] network
+    for road in roads:
+        network.push_back(pyarrow_unwrap_array(road))
+    cdef vector[shared_ptr[CArray]] gps_points_to_match
+    for gps_point in gps_points:
+        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+    result = arctern_core_pxd.nearest_road(network, gps_points_to_match)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def near_road(object roads,object gps_points):
+    cdef vector[shared_ptr[CArray]] network
+    for road in roads:
+        network.push_back(pyarrow_unwrap_array(road))
+    cdef vector[shared_ptr[CArray]] gps_points_to_match
+    for gps_point in gps_points:
+        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+    result = arctern_core_pxd.near_road(network, gps_points_to_match)
+    return [pyarrow_wrap_array(ptr) for ptr in result]
