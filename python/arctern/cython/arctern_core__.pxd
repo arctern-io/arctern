@@ -20,8 +20,8 @@ cdef extern from "render.h" namespace "arctern::render":
     # func api:
     const vector[shared_ptr[CArray]] projection(const vector[shared_ptr[CArray]] &geos,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
     const vector[shared_ptr[CArray]] transform_and_projection(const vector[shared_ptr[CArray]] &geos,const string &src_rs,const string &dst_rs,const string &bottom_right,const string &top_left,const int &height,const int &width) except +
-    shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] && arr_wkt) except +
-    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] && arr_wkb) except +
+    shared_ptr[CArray] WktToWkb(const shared_ptr[CArray] &arr_wkt) except +
+    shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] &arr_wkb) except +
 
     # drawing api:
     shared_ptr[CArray] point_map(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
@@ -107,4 +107,15 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     shared_ptr[CArray] ST_Union_Aggr(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope_Aggr(const shared_ptr[CArray] &geo_arr) except +
+
+    vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]] &points_raw, const vector[shared_ptr[CArray]] &polygons_raw) except +
+
     string GIS_Version() except +
+
+cdef extern from "map_match.h" namespace "arctern::map_match":
+    vector[shared_ptr[CArray]] nearest_location_on_road(const vector[shared_ptr[CArray]] &roads, \
+                                                        const vector[shared_ptr[CArray]] &gps_points) except +
+    vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]] &roads, \
+                                            const vector[shared_ptr[CArray]] &gps_points) except +
+    vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]] &roads, \
+                                            const vector[shared_ptr[CArray]] &gps_points) except +

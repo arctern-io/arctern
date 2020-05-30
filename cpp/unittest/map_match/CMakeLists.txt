@@ -11,8 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ._wrapper_func import *
-from ._plot import *
-from ._plot_with_map import *
-from .geoseries import *
-from ._map_match_func import *
+
+set(map_match_tests_src
+        ${unittest_srcs}
+        map_match_test.cpp
+        )
+
+add_executable(map_match_tests ${map_match_tests_src})
+
+#add_dependencies(map_match_tests googletest_ep)
+
+target_link_libraries(map_match_tests
+        arctern
+        arrow
+        gtest
+        pthread
+        gdal
+        )
+
+install(TARGETS map_match_tests DESTINATION unittest)

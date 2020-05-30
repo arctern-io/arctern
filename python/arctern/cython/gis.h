@@ -136,6 +136,10 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geo_arr);
 
+std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
+    const std::vector<std::shared_ptr<arrow::Array>>& points,
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons);
+
 std::string GIS_Version();
 
 }  // namespace gis

@@ -27,6 +27,8 @@
 #include "dispatch/aligned_execute.h"
 #include "gis/api.h"
 #include "gis/gdal/gis_functions.h"
+#include "gis/spatial_join/st_indexed_within.h"
+#include "utils/arrow_alias.h"
 #include "utils/check_status.h"
 
 namespace arctern {
@@ -345,6 +347,13 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries) {
   return gdal::ST_Envelope_Aggr(geometries);
+}
+
+/****************************** JOIN FUNCTIONS *****************************/
+std::vector<ArrayPtr> ST_IndexedWithin(const std::vector<ArrayPtr>& points_raw,
+                                       const std::vector<ArrayPtr>& polygons_raw) {
+  auto res = spatial_join::ST_IndexedWithin(points_raw, polygons_raw, "RTREE");
+  return VectorTypeCast<arrow::Array>(res);
 }
 
 /*************************** AGGREGATE FUNCTIONS ***************************/

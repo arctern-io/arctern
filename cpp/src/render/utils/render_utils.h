@@ -18,6 +18,7 @@
 #include <arrow/type_traits.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -31,11 +32,13 @@ namespace render {
 std::vector<OGRGeometry*> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
+OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb);
+
 std::vector<std::string> WkbExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    const std::vector<OGRGeometry*>& geos, int arrays_size);
+    std::vector<OGRGeometry*>&& geos, int arrays_size);
 
 template <typename T>
 std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
