@@ -29,7 +29,7 @@ namespace render {
 
 OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb) {
   OGRGeometry* geo = nullptr;
-  OGRGeometryFactory::createFromWkb(wkb.to_string().c_str(), nullptr, &geo);
+  OGRGeometryFactory::createFromWkb(wkb.data(), nullptr, &geo);
   return OGRGeometryUniquePtr(geo);
 }
 
