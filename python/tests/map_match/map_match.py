@@ -26,4 +26,4 @@ def test_nearest_road():
     roads = pandas.Series(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
     gps_points = pandas.Series("POINT (1.0001 1)")
     rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
-    assert len(rst) == 0 
+    assert len(rst) == 0
