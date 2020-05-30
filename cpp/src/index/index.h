@@ -37,6 +37,7 @@
 #include "index/index.h"
 #include "render/utils/render_utils.h"
 #include "utils/arrow_alias.h"
+namespace arctern {
 namespace index {
 enum class IndexType {
   kInvalid,

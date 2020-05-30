@@ -120,7 +120,7 @@ Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
   return result;
 }
 
-const std::vector<OGRGeometry*> get_road(OGRGeometry*& gps_point,
+const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
                                          const IndexTree& index_tree) {
   std::vector<void*> matches;
   {
@@ -159,7 +159,7 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
   int32_t offset = gps_points[index]->length();
 
   for (int32_t i = 0; i < num_gps_points; i++) {
-    auto vector_road = get_road(gps_points_geo[i], index_tree);
+    auto vector_road = get_road(gps_points_geo[i].get(), index_tree);
     if (vector_road.empty()) {
       if (i == (offset - 1)) {
         if (gps_points.size() > (index + 1)) {
@@ -172,7 +172,7 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
       }
       continue;
     }
-    projection_point = nearest_edge(vector_road, gps_points_geo[i], flag);
+    projection_point = nearest_edge(vector_road, gps_points_geo[i].get(), flag);
     builder.Append(projection_point.geo_str, projection_point.size);
 
     if (i == (offset - 1)) {
@@ -185,9 +185,6 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
       result.emplace_back(projection_points);
     }
   }
-
-  destroy_geometry(gps_points_geo);
-  destroy_geometry(roads_geo);
 
   return result;
 }
@@ -209,7 +206,7 @@ std::vector<std::shared_ptr<arrow::Array>> is_near_road(
     int size = gps_points[i]->length();
     for (int j = 0; j < size; ++j) {
       auto index = offset + j;
-      auto vector_road = get_road(gps_points_geo[index], index_tree);
+      auto vector_road = get_road(gps_points_geo[index].get(), index_tree);
       if (vector_road.empty()) {
         builder.Append(false);
       } else {
@@ -221,9 +218,6 @@ std::vector<std::shared_ptr<arrow::Array>> is_near_road(
     results.emplace_back(result);
     offset += size;
   }
-
-  destroy_geometry(gps_points_geo);
-  destroy_geometry(roads_geo);
 
   return results;
 }
