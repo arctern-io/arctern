@@ -2215,18 +2215,18 @@ def test_to_string():
     assert geo_res1 == pd_res1
 
 
-def test_style():
-    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.style.html
-    geo_s = GeoSeries(geo_dropoff.to_list())
-    pd_s = pd.Series(geo_dropoff.to_list())
-    pd_s_wkb = trans2wkb4series(pd_s)
-    pd.testing.assert_series_equal(geo_s.astype(object), pd_s_wkb.astype(object), check_dtype=False)  # (as expected)
+#def test_style():
+#    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.style.html
+#    geo_s = GeoSeries(geo_dropoff.to_list())
+#    pd_s = pd.Series(geo_dropoff.to_list())
+#    pd_s_wkb = trans2wkb4series(pd_s)
+#    pd.testing.assert_series_equal(geo_s.astype(object), pd_s_wkb.astype(object), check_dtype=False)  # (as expected)
 
-    geo_df = pd.DataFrame({'val': geo_s})
-    pd_df = pd.DataFrame({'val': pd_s})
-    pd_df_wkb = pd.DataFrame({'val': pd_s_wkb})
-    pd.testing.assert_frame_equal(geo_df, pd_df_wkb, check_dtype=False)
+#    geo_df = pd.DataFrame({'val': geo_s})
+#    pd_df = pd.DataFrame({'val': pd_s})
+#    pd_df_wkb = pd.DataFrame({'val': pd_s_wkb})
+#    pd.testing.assert_frame_equal(geo_df, pd_df_wkb, check_dtype=False)
 
-    geo_res1 = geo_df.style
-    pd_res1 = pd_df.style
-    assert geo_res1.data.to_string() == pd_res1.data.to_string()
+#    geo_res1 = geo_df.style
+#    pd_res1 = pd_df.style
+#    assert geo_res1.data.to_string() == pd_res1.data.to_string()
