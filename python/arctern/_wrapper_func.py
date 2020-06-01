@@ -65,6 +65,7 @@ __all__ = [
 import base64
 from . import arctern_core_
 
+
 def arctern_udf(*arg_types):
     def decorate(func):
         from functools import wraps
@@ -1263,6 +1264,7 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
+
 def within_which(left, right):
     """
     Calculate spatial join of two GeoSeries
@@ -1291,7 +1293,7 @@ def within_which(left, right):
     res = res.apply(lambda x: right.index[x] if x >= 0 else pandas.NA)
     res = res.set_axis(left.index)
     return res
-    
+
 
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
