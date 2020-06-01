@@ -16,6 +16,7 @@ import pandas
 from osgeo import ogr
 import arctern
 
+
 def test_within_which():
     # assert False
     from arctern import GeoSeries, within_which
@@ -29,14 +30,14 @@ def test_within_which():
     assert res[2] == 0
 
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"], index=['A', 'B', 'C'])
-    data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"], index=['x', 'y'] )
+    data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))",
+                       "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"], index=['x', 'y'])
     res = within_which(data1, data2)
     print(res)
     assert len(res) == 3
     assert res['A'] == 'y'
-    assert res['B'] is  pandas.NA
+    assert res['B'] is pandas.NA
     assert res['C'] == 'x'
-
 
 
 def test_ST_IsValid():
@@ -56,7 +57,8 @@ def test_ST_PrecisionReduce():
 def test_ST_Intersection():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POINT (0 1)"])
     data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))", "POINT (0 1)"])
-    rst = arctern.ST_AsText(arctern.ST_Intersection(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
+    rst = arctern.ST_AsText(arctern.ST_Intersection(
+        arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
     assert len(rst) == 2
     assert rst[0] == "LINESTRING (2 2,2 1)"
     assert rst[1] == "POINT (0 1)"
@@ -205,7 +207,8 @@ def test_ST_MakeValid():
 
 def test_ST_SimplifyPreserveTopology():
     data = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(arctern.ST_GeomFromText(data), 10000))
+    rst = arctern.ST_AsText(arctern.ST_SimplifyPreserveTopology(
+        arctern.ST_GeomFromText(data), 10000))
     assert rst[0] == "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
 
 
@@ -252,7 +255,7 @@ def test_ST_AsGeoJSON():
     assert str_ptr[0] == '{ "type": "Point", "coordinates": [ 1.0, 2.0 ] }'
     assert str_ptr[1] == '{ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] }'
     assert str_ptr[
-               2] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
+        2] == '{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }'
 
 
 def test_ST_GeomFromText():
@@ -455,17 +458,20 @@ def test_ST_DistanceSphere():
     assert math.isnan(rst[1])
 
     data = pandas.Series(["POINT(0 0)"])
-    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data), arctern.ST_GeomFromText("POINT(0 0)")[0])
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(
+        data), arctern.ST_GeomFromText("POINT(0 0)")[0])
     assert len(rst) == 1
     assert math.isclose(rst[0], 0.0, rel_tol=1e-5)
 
     data = pandas.Series(["POINT(0 0)"])
-    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText(data))
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(
+        "POINT(0 0)")[0], arctern.ST_GeomFromText(data))
     assert len(rst) == 1
     assert math.isclose(rst[0], 0.0, rel_tol=1e-5)
 
     data = pandas.Series(["POINT(0 0)"])
-    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText("POINT(0 0)")[0])
+    rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(
+        "POINT(0 0)")[0], arctern.ST_GeomFromText("POINT(0 0)")[0])
     assert len(rst) == 1
     assert math.isclose(rst[0], 0.0, rel_tol=1e-5)
 
@@ -503,17 +509,20 @@ def test_ST_HausdorffDistance():
     data2 = ["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"]
     data1 = pandas.Series(data1)
     data2 = pandas.Series(data2)
-    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
+    rst = arctern.ST_HausdorffDistance(
+        arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2))
     assert len(rst) == 2
     assert rst[0] == 1
     assert rst[1] == 1
 
-    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText("POINT(0 0)")[0])
+    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText(
+        data1), arctern.ST_GeomFromText("POINT(0 0)")[0])
     assert len(rst) == 2
     assert math.isclose(rst[0], math.sqrt(2), rel_tol=1e-5)
     assert rst[1] == 0
 
-    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText("POINT(0 0)")[0], arctern.ST_GeomFromText(data2))
+    rst = arctern.ST_HausdorffDistance(arctern.ST_GeomFromText("POINT(0 0)")[
+                                       0], arctern.ST_GeomFromText(data2))
     assert len(rst) == 2
     assert math.isclose(rst[0], 2, rel_tol=1e-5)
     assert rst[1] == 1.0
@@ -535,7 +544,8 @@ def test_ST_ConvexHull():
 def test_ST_Transform():
     data = ["POINT (10 10)"]
     data = pandas.Series(data)
-    rst = arctern.ST_AsText(arctern.ST_Transform(arctern.ST_GeomFromText(data), "EPSG:4326", "EPSG:3857"))
+    rst = arctern.ST_AsText(arctern.ST_Transform(
+        arctern.ST_GeomFromText(data), "EPSG:4326", "EPSG:3857"))
 
     wkt = rst[0]
     rst_point = ogr.CreateGeometryFromWkt(str(wkt))
@@ -638,6 +648,8 @@ def test_ST_Envelope_Aggr():
 
 # Test whether arctern _wrapper_func can process list-like data,
 # include `list`, `set`, `numpy.ndarray`, `pandas.Series`
+
+
 class TestListLikeParam:
     def test_list(self):
         p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
