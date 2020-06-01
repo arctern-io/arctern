@@ -1289,6 +1289,7 @@ def within_which(left, right):
     res = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
     res = _to_pandas_series(res)
     res = res.apply(lambda x: right.index[x] if x >= 0 else pandas.NA)
+    res = res.set_axis(left.index)
     return res
     
 

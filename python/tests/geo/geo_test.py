@@ -25,7 +25,7 @@ def test_within_which():
     print(res)
     assert len(res) == 3
     assert res[0] == 1
-    assert res[1] == pandas.NA
+    assert res[1] is pandas.NA
     assert res[2] == 0
 
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"], index=['A', 'B', 'C'])
@@ -34,7 +34,7 @@ def test_within_which():
     print(res)
     assert len(res) == 3
     assert res['A'] == 'y'
-    assert res['B'] == pandas.NA
+    assert res['B'] is  pandas.NA
     assert res['C'] == 'x'
 
 
