@@ -263,3 +263,15 @@ def test_geoseries_type_by_df_box_col_values():
     series = Series([1, None, 2, 3])
     df = DataFrame({'s': series})
     assert isinstance(df['s'], type(series))
+
+
+def test_to_geopandas():
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = None
+    data = GeoSeries([p1, p2], crs="EPSG:4326")
+    rst = data.to_geopandas()
+
+    import shapely
+    assert rst[0] == shapely.geometry.Polygon(((0, 0), (4, 0), (4, 4), (0, 4), (0, 0)))
+    assert rst[1] is None
+    assert rst.crs.to_string() == "EPSG:4326"
