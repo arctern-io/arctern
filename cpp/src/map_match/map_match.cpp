@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <locale>
+#include <limits>
 #include <algorithm>
 #include <iostream>
 #include <string>
