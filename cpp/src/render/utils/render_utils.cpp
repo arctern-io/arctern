@@ -46,6 +46,10 @@ std::vector<OGRGeometryUniquePtr> GeometryExtraction(
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        geos_res[index++] = nullptr;
+        continue;
+      }
       OGRGeometry* geo = nullptr;
       auto err_code = OGRGeometryFactory::createFromWkb(
           wkb_geometries->GetString(i).c_str(), nullptr, &geo);
@@ -74,6 +78,10 @@ std::vector<std::string> WkbExtraction(
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        wkb_res[index++] = "";
+        continue;
+      }
       wkb_res[index] = wkb_geometries->GetString(i);
       index++;
     }
@@ -93,6 +101,10 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
 
     for (int j = i * size_per_array; j < geos.size() && j < (i + 1) * size_per_array;
          j++) {
+      if (geos[j] == nullptr) {
+        CHECK_ARROW(builder.AppendNull());
+        continue;
+      }
       auto sz = geos[j]->WkbSize();
       std::vector<char> str(sz);
       auto err_code = geos[j]->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());

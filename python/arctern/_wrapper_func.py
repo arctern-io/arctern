@@ -48,7 +48,7 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "sjoin",
+    "within_which",
     "point_map_layer",
     "weighted_point_map_layer",
     "heat_map_layer",
@@ -64,6 +64,7 @@ __all__ = [
 
 import base64
 from . import arctern_core_
+
 
 def arctern_udf(*arg_types):
     def decorate(func):
@@ -371,7 +372,7 @@ def ST_PrecisionReduce(geos, precision):
     :param geos: Geometries in WKB form.
 
     :type precision: int
-    :param precision: The number to of ignificant digits.
+    :param precision: The number of significant digits.
 
     :rtype: Series(dtype: object)
     :return: Geometry with reduced precision.
@@ -883,7 +884,7 @@ def ST_DistanceSphere(geo1, geo2):
       >>> data2 = pandas.Series([p21, p22])
       >>> rst = arctern.ST_DistanceSphere(arctern.ST_GeomFromText(data2), arctern.ST_GeomFromText(data1))
       >>> print(rst)
-          0         1.0
+          0         0.0
           1    111226.3
           dtype: float64
     """
@@ -1263,31 +1264,35 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
-def sjoin(left, right, join_type: str):
+
+def within_which(left, right):
     """
     Calculate spatial join of two GeoSeries
     :type left: GeoSeries
     :type right: GeoSeries
-    :rtype: Series(dtype: int)
+    :rtype: Series(dtype: object)
     :example:
       >>> from arctern import *
       >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
       >>> data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
-      >>> res = sjoin(data1, data2)
+      >>> res = within_which(data1, data2)
       >>> print(res)
           0    1
-          1    -1
+          1    <NA>
           2    0
-          dtype: int
+          dtype: object
     """
     import pyarrow as pa
+    import pandas
     pa_left = pa.array(left, type='binary')
     pa_right = pa.array(right, type='binary')
     vec_arr_left = _to_arrow_array_list(pa_left)
     vec_arr_right = _to_arrow_array_list(pa_right)
-    assert join_type == 'within'
-    result = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
-    return _to_pandas_series(result)
+    res = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
+    res = _to_pandas_series(res)
+    res = res.apply(lambda x: right.index[x] if x >= 0 else pandas.NA)
+    res = res.set_axis(left.index)
+    return res
 
 
 def sjoin(left, right, join_type: str):

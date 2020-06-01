@@ -16,6 +16,7 @@
 
 import pytest
 import pandas as pd
+import numpy as np
 from pandas.testing import assert_series_equal
 from arctern.geoseries import GeoSeries
 from arctern.geoseries.geoarray import GeoDtype
@@ -86,12 +87,13 @@ class TestConstructor:
         with pytest.raises(TypeError):
             GeoSeries(wrong_type_data)
 
-    # only support None as na value
     def test_from_with_na_data(self):
-        s = GeoSeries(['Point (1 2)', None])
+        s = GeoSeries(['Point (1 2)', None, np.nan])
         assert_is_geoseries(s)
-        assert len(s) == 2
+        assert len(s) == 3
         assert s.hasnans
+        assert s[1] is None
+        assert s[2] is None
 
     def test_from_mismatch_crs(self):
         data = GeoSeries('Point (1 2)', crs='epsg:7777')
@@ -184,7 +186,6 @@ class TestPandasMethod:
         assert s1[0] == s1[1]
 
         # set item with na value
-        import numpy as np
         s[0] = np.nan
         assert s[0] is None
 
@@ -227,10 +228,17 @@ class TestGeoMethods:
     def test_geom_with_index(self):
         index = ['a', 'b']
 
-        # unary
+        # property
         s = GeoSeries([make_point(1, 1), None], index=index)
         s1 = s.length
         assert s1.index.to_list() == index
+        assert s1[index[0]] == 0
+        assert pd.isna(s1[index[1]])
+
+        # unary
+        s1 = s.precision_reduce(3)
+        assert not pd.isna(s1[index[0]])
+        assert pd.isna(s1[index[1]])
 
         # binary with same index
         left = GeoSeries([make_point(1, 1), None], index=index)
