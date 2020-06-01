@@ -180,8 +180,7 @@ class GeoSeries(Series):
         :type crs: str, optional
         :param crs: SRID(spatial reference identifier) form.
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.set_crs(crs)
 
     @property
     def _constructor(self):
