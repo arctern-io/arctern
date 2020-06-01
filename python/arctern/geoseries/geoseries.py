@@ -40,18 +40,18 @@ fix_dataframe_box_col_volues()
 
 def _property_op(op, this):
     # type: (function, GeoSeries) -> Series[bool/float/object]
-    return Series(op(this.values), index=this.index)
+    return Series(op(this).values, index=this.index)
 
 
 def _property_geo(op, this):
     # type: (function, GeoSeries) -> GeoSeries
-    return GeoSeries(op(this.values), index=this.index, crs=this.crs)
+    return GeoSeries(op(this).values, index=this.index, crs=this.crs)
 
 
 def _unary_geo(op, this, *args, **kwargs):
     # type: (function, GeoSeries, args, kwargs) -> GeoSeries
     crs = kwargs.pop("crs", this.crs)
-    return GeoSeries(op(this.values, *args, **kwargs), index=this.index, name=this.name, crs=crs)
+    return GeoSeries(op(this, *args, **kwargs).values, index=this.index, name=this.name, crs=crs)
 
 
 def _delegate_binary_op(op, this, other):
@@ -64,7 +64,7 @@ def _delegate_binary_op(op, this, other):
         pass
     else:
         raise TypeError(type(this), type(other))
-    data = op(this.values, other)
+    data = op(this, other).values
     return data, this.index
 
 
@@ -126,7 +126,7 @@ class GeoSeries(Series):
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
-            else:
+            elif not data.crs == crs:
                 raise ValueError(
                     "csr of the passed geometry data is different from crs."
                 )
@@ -140,16 +140,17 @@ class GeoSeries(Series):
             index = s.index
             name = s.name
             if s.empty:
-                s = s.astype(bytes)
+                s = s.astype(object)
+            # make sure missing value is None
+            s[s.isna()] = None
+            from pandas.api.types import infer_dtype
+            inferred = infer_dtype(s, skipna=True)
+            if inferred in ("bytes", "empty"):
+                pass
+            elif inferred == "string":
+                s = arctern.ST_GeomFromText(s)
             else:
-                from pandas.api.types import infer_dtype
-                inferred = infer_dtype(s, skipna=True)
-                if inferred in ("bytes", "empty"):
-                    pass
-                elif inferred == "string":
-                    s = arctern.ST_GeomFromText(s)
-                else:
-                    raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
+                raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values)
 
         super().__init__(data, index=index, name=name, **kwargs)

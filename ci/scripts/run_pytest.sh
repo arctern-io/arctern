@@ -44,6 +44,8 @@ done
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"
     conda activate ${CONDA_ENV}
+    conda install -c conda-forge -q -y geopandas=0.7.0
+    conda install -c conda-forge -q -y pygeos=0.7.1
 fi
 
 pushd "${PYTHON_SRC_DIR}"
