@@ -1263,12 +1263,12 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
-def sjoin(left, right, join_type: str):
+def within_which(left, right):
     """
     Calculate spatial join of two GeoSeries
     :type left: GeoSeries
     :type right: GeoSeries
-    :rtype: Series(dtype: int)
+    :rtype: Series(dtype: object)
     :example:
       >>> from arctern import *
       >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
@@ -1276,19 +1276,20 @@ def sjoin(left, right, join_type: str):
       >>> res = sjoin(data1, data2)
       >>> print(res)
           0    1
-          1    -1
+          1    <NA>
           2    0
-          dtype: int
+          dtype: object
     """
     import pyarrow as pa
     pa_left = pa.array(left, type='binary')
     pa_right = pa.array(right, type='binary')
     vec_arr_left = _to_arrow_array_list(pa_left)
     vec_arr_right = _to_arrow_array_list(pa_right)
-    assert join_type == 'within'
     result = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
-    return _to_pandas_series(result)
-
+    result.apply(lambda x: right.index[x] if x >= 0 else pd.NA)
+    result.set_axis(left.index)
+    return result
+    
 
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
