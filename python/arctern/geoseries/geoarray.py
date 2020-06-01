@@ -256,6 +256,10 @@ class GeoArray(ExtensionArray):
             # keys to numpy array, pass-through non-array-like indexers
             key = pd.api.indexers.check_array_indexer(self, key)
 
+        if isinstance(key, np.ndarray) and key.dtype == bool:
+            if not key.any():
+                return
+
         scalar_key = pd.api.types.is_scalar(key)
         scalar_value = pd.api.types.is_scalar(value)
         if scalar_key and not scalar_value:
