@@ -65,6 +65,10 @@ std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_
 
   arrow::BinaryBuilder builder;
   for (int i = 0; i < wkt_size; i++) {
+    if (wkts->IsNull(i)) {
+      auto error = builder.AppendNull();
+      continue;
+    }
     auto wkt = wkts->GetString(i);
     OGRGeometry* geo = nullptr;
     CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &geo));

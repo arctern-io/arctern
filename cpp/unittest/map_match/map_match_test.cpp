@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "map_match/map_match.h"
+
 #include <gtest/gtest.h>
 #include <iostream>
 #include <locale>
-
-#include "map_match/map_match.h"
+#include <iostream>
 
 std::vector<OGRGeometry*> construct_geometry(const std::vector<std::string>& wkt) {
   std::vector<OGRGeometry*> result;
