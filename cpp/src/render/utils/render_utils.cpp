@@ -46,6 +46,10 @@ std::vector<OGRGeometry*> GeometryExtraction(
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        geos_res[index++] = nullptr;
+        continue;
+      }
       OGRGeometry* geo = nullptr;
       auto err_code = OGRGeometryFactory::createFromWkb(
           wkb_geometries->GetString(i).c_str(), nullptr, &geo);
