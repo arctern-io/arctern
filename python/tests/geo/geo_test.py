@@ -16,12 +16,12 @@ import pandas
 from osgeo import ogr
 import arctern
 
-def test_sjoin():
+def test_within_which():
     # assert False
     from arctern import GeoSeries, within_which
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
     data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
-    res = within_which(data1, data2, 'within')
+    res = within_which(data1, data2)
     print(res)
     assert len(res) == 3
     assert res[0] == 1
@@ -30,7 +30,7 @@ def test_sjoin():
 
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"], index=['A', 'B', 'C'])
     data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"], index=['x', 'y'] )
-    res = within_which(data1, data2, 'within')
+    res = within_which(data1, data2)
     print(res)
     assert len(res) == 3
     assert res['A'] == 'y'
