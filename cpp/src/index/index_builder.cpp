@@ -34,7 +34,7 @@
 #include "render/utils/render_utils.h"
 
 namespace arctern {
-namespace index {
+namespace geo_indexing {
 
 IndexTree IndexTree::Create(IndexType type) {
   using RTree = GEOS_DLL::geos::index::strtree::STRtree;

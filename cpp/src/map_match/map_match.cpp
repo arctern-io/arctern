@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+#include "map_match/map_match.h"
+
 #include <algorithm>
 #include <iostream>
 #include <string>
 
-#include "map_match/map_match.h"
-
 namespace arctern {
 namespace map_match {
-using index::IndexTree;
+using geo_indexing::IndexTree;
 
 struct Projection {
   unsigned char* geo_str = nullptr;
@@ -145,11 +145,11 @@ std::vector<std::shared_ptr<arrow::Array>> compute(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
   std::vector<std::shared_ptr<arrow::Array>> result;
-
+  using geo_indexing::IndexTree;
   auto roads_geo = arctern::render::GeometryExtraction(roads);
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
-  auto index_tree = index::IndexTree::Create(IndexType::kRTree);
+  auto index_tree = IndexTree::Create(IndexType::kRTree);
   index_tree.Append(roads);
 
   Projection projection_point;
@@ -197,7 +197,7 @@ std::vector<std::shared_ptr<arrow::Array>> is_near_road(
   auto roads_geo = arctern::render::GeometryExtraction(roads);
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
-  auto index_tree = index::IndexTree::Create(IndexType::kRTree);
+  auto index_tree = geo_indexing::IndexTree::Create(IndexType::kRTree);
   index_tree.Append(roads);
 
   arrow::BooleanBuilder builder;

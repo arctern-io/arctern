@@ -38,7 +38,7 @@
 #include "render/utils/render_utils.h"
 #include "utils/arrow_alias.h"
 namespace arctern {
-namespace index {
+namespace geo_indexing {
 enum class IndexType {
   kInvalid,
   kRTree,
