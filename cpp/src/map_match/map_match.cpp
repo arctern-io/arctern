@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+#include "map_match/map_match.h"
+
 #include <algorithm>
 #include <iostream>
 #include <string>
-
-#include "map_match/map_match.h"
 
 namespace arctern {
 namespace map_match {
