@@ -78,6 +78,10 @@ std::vector<std::string> WkbExtraction(
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        wkb_res[index++] = "";
+        continue;
+      }
       wkb_res[index] = wkb_geometries->GetString(i);
       index++;
     }
