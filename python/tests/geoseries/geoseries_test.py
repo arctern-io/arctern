@@ -117,6 +117,16 @@ class TestConstructor:
         for i in index:
             assert geo_s[i] == geo_s[index[0]]
 
+    def test_from_geopandas(self):
+        import geopandas as gpd
+        from shapely.geometry import Point
+        gpd_s = gpd.GeoSeries([Point(1, 1), Point(1, 2), None], index=[1, 2, 3], crs='EPSG:4326')
+        s = GeoSeries.from_geopandas(gpd_s)
+        assert_is_geoseries(s)
+        assert s.crs == "EPSG:4326"
+        assert s.to_wkt().to_list() == [make_point(1, 1), make_point(1, 2), None]
+        assert s.index.to_list() == [1, 2, 3]
+
 
 class TestType:
     def setup_method(self):
