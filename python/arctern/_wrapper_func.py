@@ -1281,13 +1281,15 @@ def within_which(left, right):
           dtype: object
     """
     import pyarrow as pa
+    import pandas
     pa_left = pa.array(left, type='binary')
     pa_right = pa.array(right, type='binary')
     vec_arr_left = _to_arrow_array_list(pa_left)
     vec_arr_right = _to_arrow_array_list(pa_right)
-    result = pandas.Series(arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right), index=left.index)
-    result.apply(lambda x: right.index[x] if x >= 0 else pd.NA)
-    return result
+    res = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
+    res = _to_pandas_series(res)
+    res = res.apply(lambda x: right.index[x] if x >= 0 else pandas.NA)
+    return res
     
 
 def projection(geos, bottom_right, top_left, height, width):
