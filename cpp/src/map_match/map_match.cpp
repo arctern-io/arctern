@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 #include <algorithm>
 #include <iostream>
 #include <limits>
@@ -50,7 +51,7 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
   int32_t num_points = road_geo->getNumPoints();
 
   if (road_geo == nullptr || gps_point_geo == nullptr) {
-    projection.distance = 100000000;
+    projection.distance = min_distance;
   }
 
   for (int32_t i = 0; i < (num_points - 1); i++) {
