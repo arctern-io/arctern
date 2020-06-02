@@ -965,6 +965,27 @@ class GeoSeries(Series):
         """
         return _property_op(arctern.ST_AsGeoJSON, self)
 
+    def to_geopandas(self):
+        """
+        Transform each arctern GeoSeries to GeoPandas GeoSeries.
+
+        :rtype: GeoPandas GeoSeries(dtype: geometry)
+        :return: A GeoPandas GeoSeries.
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s
+        0    POINT (1 1)
+        dtype: GeoDtype
+        >>> s.to_geopandas()
+        0    POINT (1.00000 1.00000)
+        dtype: geometry
+        """
+        import geopandas
+        import shapely
+
+        return geopandas.GeoSeries(self.apply(lambda x: shapely.wkb.loads(x) if x is not None else None), crs=self.crs)
+
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         """
