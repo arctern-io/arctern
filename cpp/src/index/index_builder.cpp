@@ -81,5 +81,5 @@ void IndexTree::Append(const std::vector<ArrayPtr>& right) {
   }
 }
 
-}  // namespace index
+}  // namespace geo_indexing
 }  // namespace arctern

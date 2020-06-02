@@ -72,5 +72,5 @@ class IndexTree {
   std::unique_ptr<SpatialIndex> tree_;
 };
 
-}  // namespace index
+}  // namespace geo_indexing
 }  // namespace arctern
