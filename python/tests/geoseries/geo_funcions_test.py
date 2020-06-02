@@ -109,7 +109,7 @@ def test_ST_IsSimple():
 
 def test_ST_GeometryType():
     data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    rst = data.geometry_type
+    rst = data.geom_type
     assert rst[0] == "ST_POLYGON"
     assert rst[1] == "ST_POLYGON"
 
@@ -122,7 +122,7 @@ def test_ST_MakeValid():
 
 def test_ST_SimplifyPreserveTopology():
     data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    rst = data.simplify_preserve_topology(10000).to_wkt()
+    rst = data.simplify(10000).to_wkt()
     assert rst[0] == "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
 
 
@@ -424,26 +424,26 @@ def test_ST_Union_Aggr():
     p1 = "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
     p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))"
     data = GeoSeries([p1, p2])
-    rst = data.union_aggr().to_wkt()
+    rst = data.unary_union().to_wkt()
     assert rst[0] == "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))"
 
     p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
     p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))"
     data = GeoSeries([p1, p2])
-    rst = data.union_aggr().to_wkt()
+    rst = data.unary_union().to_wkt()
     assert rst[0] == "POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))"
 
     p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = GeoSeries([p1, p2])
-    rst = data.union_aggr().to_wkt()
+    rst = data.unary_union().to_wkt()
     assert rst[0] == "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))"
 
     p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
     p2 = "POINT (2 3)"
 
     data = GeoSeries([p1, p2])
-    rst = data.union_aggr().to_wkt()
+    rst = data.unary_union().to_wkt()
     assert rst[0] == p1
 
 

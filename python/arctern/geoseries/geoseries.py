@@ -172,6 +172,16 @@ class GeoSeries(Series):
     def crs(self):
         return self._crs
 
+    @crs.setter
+    def crs(self, crs):
+        """
+        Set the coordinate system for the GeoSeries.
+
+        :type crs: str, optional
+        :param crs: SRID(spatial reference identifier) form.
+        """
+        self.set_crs(crs)
+
     @property
     def _constructor(self):
         # Some operations result is not geometry type, we should return Series as constructor
@@ -356,7 +366,7 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_Area, self)
 
     @property
-    def geometry_type(self):
+    def geom_type(self):
         """
         For each geometry in geometries, return a string that indicates is type.
 
@@ -498,12 +508,12 @@ class GeoSeries(Series):
             return self
         return _unary_geo(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
-    def simplify_preserve_topology(self, distance_tolerance):
+    def simplify(self, tolerance):
         """
         Returns a "simplified" version for each geometry using the Douglas-Peucker algorithm.
 
-        :type: distance_tolerance: float
-        :param distance_tolerance: The maximum distance between a point on a linestring and a curve.
+        :type: tolerance: float
+        :param tolerance: The maximum distance between a point on a linestring and a curve.
 
         :rtype: GeoSeries
         :return: Simplified geometries.
@@ -511,27 +521,12 @@ class GeoSeries(Series):
         :example:
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "CIRCULARSTRING (0 0,1 1,2 0)"])
-        >>> s.simplify_preserve_to_pology(1)
+        >>> s.simplify(1)
         0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
         1               LINESTRING (0 0,2 0)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_SimplifyPreserveTopology, self, distance_tolerance)
-
-    def projection(self, bottom_right, top_left, height, width):
-        """
-        TODO(shengjh): fill here
-
-        :param bottom_right:
-        :param top_left:
-        :param height:
-        :param width:
-        :return:
-        """
-        return _unary_geo(arctern.projection, self, bottom_right, top_left, height, width)
-
-    def transform_and_projection(self, src_rs, dst_rs, bottom_right, top_left, height, width):
-        return _unary_geo(arctern.transform_and_projection, self, src_rs, dst_rs, bottom_right, top_left, height, width)
+        return _unary_geo(arctern.ST_SimplifyPreserveTopology, self, tolerance)
 
     def buffer(self, distance):
         """
@@ -593,7 +588,7 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_MakeValid, self)
 
-    def union_aggr(self):
+    def unary_union(self):
         """
         Return a geometry that represents the union of all geometries in the GeoSeries.
 
@@ -1063,3 +1058,33 @@ class GeoSeries(Series):
         """
         crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
+
+    @classmethod
+    def from_geopandas(cls, data):
+        """
+        Construct geometries from geopandas GeoSeries.
+
+        :rtype data: geopandas.GeoSeries
+        :param data: Source geometries data.
+
+        :rtype: arctern.GeoSeries
+        :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
+        """
+
+        import geopandas as gpd
+        import shapely.wkb
+        if not isinstance(data, gpd.GeoSeries):
+            raise TypeError(f"data must be {gpd.GeoSeries}, got {type(data)}")
+
+        if data.crs is not None:
+            crs = data.crs.to_authority() or data.crs.source_crs.to_authority()
+            crs = crs[0] + ':' + crs[1]
+        else:
+            crs = None
+
+        def f(x):
+            if x is None:
+                return x
+            return shapely.wkb.dumps(x)
+
+        return cls(data.apply(f), crs=crs)
