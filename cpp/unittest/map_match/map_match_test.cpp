@@ -106,6 +106,7 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
       auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
       OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, wkb);
       builder.Append(wkb, wkb_size);
+      free(wkb);
     }
   }
   std::shared_ptr<arrow::Array> wkb_array;
