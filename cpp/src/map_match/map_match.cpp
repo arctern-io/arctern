@@ -46,13 +46,13 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
   const OGRPoint* gps_point_geo = dynamic_cast<const OGRPoint*>(gps_point);
   const OGRLineString* road_geo = dynamic_cast<const OGRLineString*>(road);
 
-  double x = gps_point_geo->getX();
-  double y = gps_point_geo->getY();
-  int32_t num_points = road_geo->getNumPoints();
-
   if (road_geo == nullptr || gps_point_geo == nullptr) {
     projection.distance = min_distance;
   }
+
+  double x = gps_point_geo->getX();
+  double y = gps_point_geo->getY();
+  int32_t num_points = road_geo->getNumPoints();
 
   for (int32_t i = 0; i < (num_points - 1); i++) {
     double x1 = road_geo->getX(i);
