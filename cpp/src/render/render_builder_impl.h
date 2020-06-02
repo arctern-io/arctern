@@ -17,6 +17,7 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <numeric>
 #include <string>
@@ -31,8 +32,9 @@
 namespace arctern {
 namespace render {
 
-void Projection(const std::vector<OGRGeometryUniquePtr>& geos, const std::string& bottom_right,
-                const std::string& top_left, const int& height, const int& width) {
+void Projection(const std::vector<OGRGeometryUniquePtr>& geos,
+                const std::string& bottom_right, const std::string& top_left,
+                const int& height, const int& width) {
   double top_left_x, top_left_y, bottom_right_x, bottom_right_y;
   pointXY_from_wkt(top_left, top_left_x, top_left_y);
   pointXY_from_wkt(bottom_right, bottom_right_x, bottom_right_y);
