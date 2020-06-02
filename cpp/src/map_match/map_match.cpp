@@ -37,12 +37,6 @@ struct Projection {
   double distance;
 };
 
-// void destroy_geometry(std::vector<OGRGeometry*>& geos) {
-//  for (int32_t i = 0; i < geos.size(); i++) {
-//    OGRGeometryFactory::destroyGeometry(geos[i]);
-//  }
-//}
-
 Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_point) {
   Projection projection;
   double min_distance = std::numeric_limits<double>::max();
