@@ -144,7 +144,6 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD1) {
   auto result = arctern::map_match::nearest_location_on_road(roads_binary_vec,
                                                              gps_points_binary_vec);
   auto compare_result = min_distacne(roads, gps_points);
-
   auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
 
   for (int32_t i = 0; i < result_1->length(); i++) {
