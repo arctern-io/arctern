@@ -582,14 +582,16 @@ std::shared_ptr<arrow::Array> point_map(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = rs_pointer->getX();
     input_y[i] = rs_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
+
   auto result = pointmap(&input_x[0], &input_y[0], num_of_point, conf);
 
   return out_pic(result);
@@ -604,16 +606,18 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = (uint32_t)rst_pointer->getX();
     input_y[i] = (uint32_t)rst_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
   auto result = weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf);
+
   return out_pic(result);
 }
 
@@ -862,13 +866,15 @@ std::shared_ptr<arrow::Array> icon_viz(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
+
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = rs_pointer->getX();
     input_y[i] = rs_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
   auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);

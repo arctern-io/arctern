@@ -48,10 +48,7 @@ void WindowCPU2D::Init() {
   }
 }
 
-void WindowCPU2D::Terminate() {
-  free(buffer_);
-  OSMesaDestroyContext(context_);
-}
+void WindowCPU2D::Terminate() { OSMesaDestroyContext(context_); }
 
 }  // namespace render
 }  // namespace arctern

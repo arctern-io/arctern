@@ -58,6 +58,7 @@ void IconViz::Draw() {
   }
 
   glFinish();
+  free(image_buffer.buffer);
 }
 
     std::vector<uint8_t> IconViz::Render() {
