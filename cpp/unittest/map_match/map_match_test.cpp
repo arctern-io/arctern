@@ -175,11 +175,11 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD2) {
   std::vector<std::string> gps_points;
   gps_points.push_back("POINT (-73.993003 40.747594)");
   gps_points.push_back("POINT (-73.959908 40.776353)");
-  gps_points.push_back("POIN (-73.955183 40.773459)");
+  gps_points.push_back("POINT (-73.955183 40.773459)");
   gps_points.push_back("POINT (-73.985233 40.744682)");
   gps_points.push_back("POINT (-73.997969 40.682816)");
   gps_points.push_back("POINT (-73.996458 40.758197)");
-  gps_points.push_back("PONT (-73.98824 40.74896)");
+  gps_points.push_back("POINT (-73.98824 40.74896)");
   gps_points.push_back("POINT (-73.985185 40.735828)");
   gps_points.push_back("POINT (-73.989726 40.767795)");
   gps_points.push_back("POINT (-73.992669 40.768327)");

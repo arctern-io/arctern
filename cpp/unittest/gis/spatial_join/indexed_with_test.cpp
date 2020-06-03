@@ -171,7 +171,6 @@ TEST(IndexedWithin, Sheet) {
   std::chrono::duration<double> time = end_time - beg_time;
   assert(res_vec.size() == 1);
   auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
-  std::cout << time.count() << std::endl;
   ASSERT_EQ(res->length(), N);
   for (int i = 0; i < res->length(); ++i) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
@@ -194,7 +193,6 @@ TEST(IndexedWithin, PyTest) {
   std::chrono::duration<double> time = end_time - beg_time;
   assert(res_vec.size() == 1);
   auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
-  std::cout << time.count() << std::endl;
   ASSERT_EQ(res->length(), N);
   for (int i = 0; i < res->length(); ++i) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
