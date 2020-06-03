@@ -106,6 +106,7 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
       auto wkb_size = geo->WkbSize();
       auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
       OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, wkb);
+      OGRGeometryFactory::destroyGeometry(geo);
       builder.Append(wkb, wkb_size);
       free(wkb);
     }
@@ -159,6 +160,8 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD1) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(gps_point);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -205,6 +208,8 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD2) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(gps_point);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -249,52 +254,56 @@ TEST(MAP_MATCH_TEST, NEAREST_ROAD) {
                                       &nearest_road);
     char* str;
     OGR_G_ExportToWkt(nearest_road, &str);
+    OGRGeometryFactory::destroyGeometry(nearest_road);
     assert(std::string(str) == compare_result[i]);
+    CPLFree(str);
   }
 }
 
-//TEST(MAP_MATCH_TEST, NEAR_ROAD) {
-//  std::vector<std::string> roads;
-//  roads.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
-//  roads.push_back("LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)");
-//  roads.push_back("LINESTRING (-73.9975554 40.7141073,-73.9975944 40.7140611)");
-//  roads.push_back("LINESTRING (-73.9978864 40.714317,-73.997674 40.7140968)");
-//  roads.push_back("LINESTRING (-73.997981 40.7136728,-73.9980743 40.7137811)");
-//  roads.push_back("LINESTRING (-73.9980743 40.7137811,-73.9984728 40.7136003)");
-//  roads.push_back("LINESTRING (-73.9611014 40.7608112,-73.9610636 40.7608639)");
-//  roads.push_back("LINESTRING (-73.9594166 40.7593773,-73.9593736 40.7593593)");
-//  roads.push_back("LINESTRING (-73.961609 40.7602969,-73.9615014 40.7602517)");
-//  roads.push_back("LINESTRING (-73.9615569 40.7601753,-73.9615014 40.7602517)");
-//
-//  std::vector<std::string> gps_points;
-//  gps_points.push_back("POINT (-73.961003 40.760594)");
-//  gps_points.push_back("POINT (-73.959908 40.776353)");
-//  gps_points.push_back("POINT (-73.955183 40.773459)");
-//  gps_points.push_back("POINT (-73.985233 40.744682)");
-//  gps_points.push_back("POINT (-73.997969 40.682816)");
-//  gps_points.push_back("POINT (-73.996458 40.758197)");
-//  gps_points.push_back("POINT (-73.98824 40.74896)");
-//  gps_points.push_back("POINT (-73.985185 40.735828)");
-//  gps_points.push_back("POINT (-73.989726 40.767795)");
-//  gps_points.push_back("POINT (-73.992669 40.768327)");
-//
-//  auto gps_points_binary_vec = wkb(gps_points);
-//
-//  auto roads_binary_vec = wkb(roads);
-//  auto result = arctern::map_match::near_road(roads_binary_vec, gps_points_binary_vec, 1000);
-//  auto compare_result = nearest(roads, gps_points);
-//
-//  auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
-//  assert(result_1->length() == gps_points_binary_vec[0]->length());
-//  std::vector<bool> out_std = {true, false, false, false, false, false, false, false, false, false};
-//  int offset = 0;
-//  for (int j = 0; j < result.size(); j++) {
-//    auto values = std::static_pointer_cast<arrow::BooleanArray>(result[j]);
-//    auto size = result[j]->length();
-//    auto type = result[j]->type_id();
-//    assert(type == arrow::Type::BOOL);
-//    for (int i = 0; i < size; i++) {
-//      ASSERT_EQ(values->Value(i), out_std[offset++]);
-//    }
-//  }
-//}
+TEST(MAP_MATCH_TEST, NEAR_ROAD) {
+  std::vector<std::string> roads;
+  roads.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
+  roads.push_back("LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)");
+  roads.push_back("LINESTRING (-73.9975554 40.7141073,-73.9975944 40.7140611)");
+  roads.push_back("LINESTRING (-73.9978864 40.714317,-73.997674 40.7140968)");
+  roads.push_back("LINESTRING (-73.997981 40.7136728,-73.9980743 40.7137811)");
+  roads.push_back("LINESTRING (-73.9980743 40.7137811,-73.9984728 40.7136003)");
+  roads.push_back("LINESTRING (-73.9611014 40.7608112,-73.9610636 40.7608639)");
+  roads.push_back("LINESTRING (-73.9594166 40.7593773,-73.9593736 40.7593593)");
+  roads.push_back("LINESTRING (-73.961609 40.7602969,-73.9615014 40.7602517)");
+  roads.push_back("LINESTRING (-73.9615569 40.7601753,-73.9615014 40.7602517)");
+
+  std::vector<std::string> gps_points;
+  gps_points.push_back("POINT (-73.961003 40.760594)");
+  gps_points.push_back("POINT (-73.959908 40.776353)");
+  gps_points.push_back("POINT (-73.955183 40.773459)");
+  gps_points.push_back("POINT (-73.985233 40.744682)");
+  gps_points.push_back("POINT (-73.997969 40.682816)");
+  gps_points.push_back("POINT (-73.996458 40.758197)");
+  gps_points.push_back("POINT (-73.98824 40.74896)");
+  gps_points.push_back("POINT (-73.985185 40.735828)");
+  gps_points.push_back("POINT (-73.989726 40.767795)");
+  gps_points.push_back("POINT (-73.992669 40.768327)");
+
+  auto gps_points_binary_vec = wkb(gps_points);
+
+  auto roads_binary_vec = wkb(roads);
+  auto result =
+      arctern::map_match::near_road(roads_binary_vec, gps_points_binary_vec, 1000);
+  auto compare_result = nearest(roads, gps_points);
+
+  auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
+  assert(result_1->length() == gps_points_binary_vec[0]->length());
+  std::vector<bool> out_std = {true,  false, false, false, false,
+                               false, false, false, false, false};
+  int offset = 0;
+  for (int j = 0; j < result.size(); j++) {
+    auto values = std::static_pointer_cast<arrow::BooleanArray>(result[j]);
+    auto size = result[j]->length();
+    auto type = result[j]->type_id();
+    assert(type == arrow::Type::BOOL);
+    for (int i = 0; i < size; i++) {
+      ASSERT_EQ(values->Value(i), out_std[offset++]);
+    }
+  }
+}

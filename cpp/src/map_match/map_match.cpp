@@ -23,7 +23,7 @@
 #include <string>
 
 #define PI 3.14159
-#define RAD2DEG(x) ((x)*180.0/PI)
+#define RAD2DEG(x) ((x)*180.0 / PI)
 
 namespace arctern {
 namespace map_match {
@@ -133,7 +133,9 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
         results.emplace_back(geo);
       }
       deg_distance *= 2;
-      if (!results.empty() || deg_distance > ogr_env.MinX + 90.0 || deg_distance > 90.0 - ogr_env.MinX) break;
+      if (!results.empty() || deg_distance > ogr_env.MinX + 90.0 ||
+          deg_distance > 90.0 - ogr_env.MinX)
+        break;
     } while (greedy_search);
   }
 
@@ -199,9 +201,8 @@ std::vector<std::shared_ptr<arrow::Array>> nearest_road(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> near_road(
-        const std::vector<std::shared_ptr<arrow::Array>>& roads,
-        const std::vector<std::shared_ptr<arrow::Array>>& gps_points,
-        const double distance) {
+    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, const double distance) {
   std::vector<std::shared_ptr<arrow::Array>> results;
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
 
@@ -215,7 +216,8 @@ std::vector<std::shared_ptr<arrow::Array>> near_road(
     int size = gps_points[i]->length();
     for (int j = 0; j < size; ++j) {
       auto index = offset + j;
-      auto vector_road = get_road(gps_points_geo[index].get(), index_tree, false, distance);
+      auto vector_road =
+          get_road(gps_points_geo[index].get(), index_tree, false, distance);
       if (vector_road.empty()) {
         builder.Append(false);
       } else {

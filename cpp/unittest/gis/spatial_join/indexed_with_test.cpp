@@ -208,19 +208,19 @@ TEST(IndexedWithin, NullTest) {
   auto wkb_point11 = arctern::render::WktToWkb(string_array11);
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb_point11};
   std::string polygon1 =
-          "POLYGON (("
-          "0 0, "
-          "10 0, "
-          "20 20, "
-          "0 20, "
-          "0 0))";
+      "POLYGON (("
+      "0 0, "
+      "10 0, "
+      "20 20, "
+      "0 20, "
+      "0 0))";
   std::string polygon2 =
-          "POLYGON (("
-          "20 0, "
-          "40 0, "
-          "40 20, "
-          "20 20, "
-          "20 0))";
+      "POLYGON (("
+      "20 0, "
+      "40 0, "
+      "40 20, "
+      "20 20, "
+      "20 0))";
   arrow::StringBuilder string_builder2;
   status = string_builder2.AppendNull();
   status = string_builder2.Append(polygon1);

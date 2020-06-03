@@ -1608,12 +1608,16 @@ def fishnet_map_layer(vega, points, weights, transform=True):
 def nearest_location_on_road(roads, points):
     """
     Compute the location on roads closest to each point in points, The points passed do not need to be part of a continuous path.
+
     :type roads: Series(dtype: object)
     :param roads: LineStrings in WKB form.
+
     :type points: Series(dtype: object)
     :param points: Points in WKB form.
+
     :rtype: Series(dtype: object)
     :return: Points in WKB form.
+
     :example:
       >>> from arctern import *
       >>> import pandas
@@ -1637,12 +1641,16 @@ def nearest_location_on_road(roads, points):
 def nearest_road(roads, points,):
     """
     Compute the closest road for each point in points, The points passed do not need to be part of a continuous path.
+
     :type roads: Series(dtype: object)
     :param roads: LineStrings in WKB form.
+
     :type points: Series(dtype: object)
     :param points: Points in WKB form.
+
     :rtype: Series(dtype: object)
     :return: Points in WKB form.
+
     :example:
       >>> from arctern import *
       >>> import pandas
@@ -1666,12 +1674,19 @@ def nearest_road(roads, points,):
 def near_road(roads, points, distance=100):
     """
     Check if there is a road within distance meters of each point. The points passed do not need to be part of a continuous path.
+
     :type roads: Series(dtype: object)
     :param roads: LineStrings in WKB form.
+
     :type points: Series(dtype: object)
     :param points: Points in WKB form.
+
+    :type distance: double
+    :param distance: distance meters around the point in points
+
     :rtype: Series(dtype: bool)
     :return: True if there is a road within 100 meters of the point.
+
     :example:
       >>> from arctern import *
       >>> import pandas
