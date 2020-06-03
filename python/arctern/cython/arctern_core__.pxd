@@ -24,14 +24,14 @@ cdef extern from "render.h" namespace "arctern::render":
     shared_ptr[CArray] WkbToWkt(const shared_ptr[CArray] &arr_wkb) except +
 
     # drawing api:
-    shared_ptr[CArray] point_map(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
-    shared_ptr[CArray] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
-    shared_ptr[CArray] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
-    shared_ptr[CArray] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &color_weights_vector, const vector[shared_ptr[CArray]] &size_weights_vector, const string &vega) except +
-    shared_ptr[CArray] heat_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
-    shared_ptr[CArray] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
-    shared_ptr[CArray] icon_viz(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
-    shared_ptr[CArray] fishnet_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    vector[unsigned char] point_map(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
+    vector[unsigned char] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
+    vector[unsigned char] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    vector[unsigned char] weighted_point_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &color_weights_vector, const vector[shared_ptr[CArray]] &size_weights_vector, const string &vega) except +
+    vector[unsigned char] heat_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    vector[unsigned char] choropleth_map(const vector[shared_ptr[CArray]] &region_boundaries_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
+    vector[unsigned char] icon_viz(const vector[shared_ptr[CArray]] &points_vector, const string &vega) except +
+    vector[unsigned char] fishnet_map(const vector[shared_ptr[CArray]] &points_vector, const vector[shared_ptr[CArray]] &weights_vector, const string &vega) except +
 
 cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Point(const vector[shared_ptr[CArray]] &ptr_x, \
