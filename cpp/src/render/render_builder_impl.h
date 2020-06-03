@@ -137,134 +137,125 @@ void TransformAndProjection(const std::vector<OGRGeometryUniquePtr>& geos,
   OCTDestroyCoordinateTransformation(poCT);
 }
 
-std::pair<std::vector<uint8_t>, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
+    std::vector<uint8_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
   VegaPointmap vega_pointmap(conf);
   if (!vega_pointmap.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   PointMap point_map(arr_x, arr_y, num);
   point_map.mutable_point_vega() = vega_pointmap;
 
   const auto& render = point_map.Render();
-  const auto& ret_size = point_map.output_image_size();
-  return std::make_pair(render, ret_size);
+      return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, num_vertices);
   weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
 
   const auto& render = weighted_pointmap.Render();
-  const auto& ret_size = weighted_pointmap.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                                int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr, num_vertices);
   weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
 
   const auto& render = weighted_pointmap.Render();
-  const auto& ret_size = weighted_pointmap.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                                T* arr_s, int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, arr_s, num_vertices);
   weighted_pointmap.mutable_weighted_point_vega() = vega_weighted_pointmap;
 
   const auto& render = weighted_pointmap.Render();
-  const auto& ret_size = weighted_pointmap.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+std::vector<uint8_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                      int64_t num_vertices, const std::string& conf) {
   VegaHeatMap vega_heat_map(conf);
   if (!vega_heat_map.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   HeatMap<T> heat_map(arr_x, arr_y, arr_c, num_vertices);
   heat_map.mutable_heatmap_vega() = vega_heat_map;
 
   const auto& render = heat_map.Render();
-  const auto& ret_size = heat_map.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
+std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   ChoroplethMap<T> choropleth_map(arr_wkt, arr_c, num_buildings);
   choropleth_map.mutable_choroplethmap_vega() = vega_choropleth_map;
 
   const auto& render = choropleth_map.Render();
-  const auto& ret_size = choropleth_map.output_image_size();
-
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
-std::pair<std::vector<uint8_t>, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
+    std::vector<uint8_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                      const std::string& conf) {
   VegaIcon vega_icon(conf);
   if (!vega_icon.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   IconViz icon_viz(arr_x, arr_y, num);
   icon_viz.mutable_icon_vega() = vega_icon;
 
   const auto& render = icon_viz.Render();
-  const auto& ret_size = icon_viz.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+std::vector<uint8_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                         int64_t num_vertices, const std::string& conf) {
   VegaFishNetMap vega_fishnet_map(conf);
   if (!vega_fishnet_map.is_valid()) {
-    return std::make_pair(std::vector<uint8_t>(), -1);
+    return std::vector<uint8_t>();
   }
 
   FishNetMap<T> fishnet_map(arr_x, arr_y, arr, num_vertices);
   fishnet_map.mutable_fishnet_vega() = vega_fishnet_map;
   const auto& render = fishnet_map.Render();
-  const auto& ret_size = fishnet_map.output_image_size();
-  return std::make_pair(render, ret_size);
+  return render;
 }
 
 }  // namespace render

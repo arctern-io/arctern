@@ -33,20 +33,18 @@
 namespace arctern {
 namespace render {
 
-std::shared_ptr<arrow::Array> out_pic(std::pair<std::vector<uint8_t>, int64_t> output) {
-  if (output.first.size() == 0 || output.second < 0) {
+std::shared_ptr<arrow::Array> out_pic(std::vector<uint8_t> output) {
+  if (output.empty()) {
     std::string err_msg =
         "Null image buffer, in most cases, it was caused by incorrect vega json";
     throw std::runtime_error(err_msg);
   }
 
-  auto output_length = output.second;
-  auto output_data = output.first;
-  auto bit_map = (uint8_t*)malloc(output_length);
-  memset(bit_map, 0xff, output_length);
+  auto output_length = output.size();
+  auto bit_map = std::vector<uint8_t>(output_length, 1);
 
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_length);
-  auto buffer1 = std::make_shared<arrow::Buffer>(output_data.data(), output_length);
+  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map.data(), output_length);
+  auto buffer1 = std::make_shared<arrow::Buffer>(output.data(), output_length);
   auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
   buffers.emplace_back(buffer0);
   buffers.emplace_back(buffer1);
@@ -110,7 +108,7 @@ std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> render_weighted_pointmap(
+std::vector<uint8_t> render_weighted_pointmap(
     const std::vector<std::string>& points, const std::vector<T>& weights,
     const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, weights);
@@ -197,7 +195,7 @@ std::pair<std::vector<uint8_t>, int64_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> render_weighted_pointmap(
+std::vector<uint8_t> render_weighted_pointmap(
     const std::vector<std::string>& points, const std::vector<T>& arr_c,
     const std::vector<T>& arr_s, const std::string& conf) {
   auto agg_res = AggHandler::weight_agg_multiple_column<T>(points, arr_c, arr_s);
@@ -302,7 +300,7 @@ std::pair<std::vector<uint8_t>, int64_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> render_heatmap(const std::vector<std::string>& points,
+std::vector<uint8_t> render_heatmap(const std::vector<std::string>& points,
                                             const std::vector<T>& arr_c,
                                             const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, arr_c);
@@ -389,7 +387,7 @@ std::pair<std::vector<uint8_t>, int64_t> render_heatmap(const std::vector<std::s
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
+std::vector<uint8_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
                                                   const std::vector<T>& arr_c,
                                                   const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(arr_wkb, arr_c);
@@ -456,7 +454,7 @@ std::pair<std::vector<uint8_t>, int64_t> render_choroplethmap(const std::vector<
 }
 
 template <typename T>
-std::pair<std::vector<uint8_t>, int64_t> render_fishnetmap(const std::vector<std::string>& points,
+std::vector<uint8_t> render_fishnetmap(const std::vector<std::string>& points,
                                                const std::vector<T>& arr_c,
                                                const std::string& conf) {
   rapidjson::Document document;

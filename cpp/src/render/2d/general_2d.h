@@ -49,8 +49,6 @@ class General2D {
  public:
   unsigned char* mutable_buffer() { return buffer_; }
 
-  int output_image_size() { return output_image_size_; }
-
  protected:
   arrow::ArrayVector array_vector_;
   unsigned char* buffer_;
