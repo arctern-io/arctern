@@ -110,6 +110,7 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
       builder.Append(wkb, wkb_size);
       free(wkb);
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
   std::shared_ptr<arrow::Array> wkb_array;
   builder.Finish(&wkb_array);
