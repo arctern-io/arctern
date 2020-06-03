@@ -106,7 +106,6 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
       auto wkb_size = geo->WkbSize();
       auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
       OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, wkb);
-      OGRGeometryFactory::destroyGeometry(geo);
       builder.Append(wkb, wkb_size);
       free(wkb);
     }
