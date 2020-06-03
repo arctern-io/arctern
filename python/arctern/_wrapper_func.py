@@ -59,6 +59,9 @@ __all__ = [
     "transform_and_projection",
     "wkt2wkb",
     "wkb2wkt",
+    "nearest_location_on_road",
+    "nearest_road",
+    "near_road",
     "version"
 ]
 
@@ -1602,6 +1605,38 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.buffers()[1].to_pybytes())
 
+def nearest_location_on_road(roads, points):
+    import pyarrow as pa
+    arr_roads = pa.array(roads, type='binary')
+    arr_gps_points = pa.array(points, type='binary')
+    arr_roads = _to_arrow_array_list(arr_roads)
+    arr_gps_points = _to_arrow_array_list(arr_gps_points)
+    location_rst = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
+    res = _to_pandas_series(location_rst)
+    res = res.set_axis(points.index)
+    return res
+
+def nearest_road(roads, points):
+    import pyarrow as pa
+    arr_roads = pa.array(roads, type='binary')
+    arr_gps_points = pa.array(points, type='binary')
+    arr_roads = _to_arrow_array_list(arr_roads)
+    arr_gps_points = _to_arrow_array_list(arr_gps_points)
+    road_rst = arctern_core_.nearest_road(arr_roads, arr_gps_points)
+    res = _to_pandas_series(road_rst)
+    res = res.set_axis(points.index)
+    return res
+
+def near_road(roads, points):
+    import pyarrow as pa
+    arr_roads = pa.array(roads, type='binary')
+    arr_gps_points = pa.array(points, type='binary')
+    arr_roads = _to_arrow_array_list(arr_roads)
+    arr_gps_points = _to_arrow_array_list(arr_gps_points)
+    bool_rst = arctern_core_.near_road(arr_roads, arr_gps_points)
+    res = _to_pandas_series(bool_rst)
+    res = res.set_axis(points.index)
+    return res
 
 def version(verbose=False):
     """
