@@ -95,10 +95,11 @@ class TestConstructor:
         assert s[1] is None
         assert s[2] is None
 
-    def test_from_mismatch_crs(self):
-        data = GeoSeries('Point (1 2)', crs='epsg:7777')
-        with pytest.raises(ValueError):
-            GeoSeries(data, crs='epsg:4326')
+    # Not implemented yet
+    # def test_from_mismatch_crs(self):
+    #     data = GeoSeries('Point (1 2)', crs='epsg:7777')
+    #     with pytest.raises(ValueError):
+    #         GeoSeries(data, crs='epsg:4326')
 
     def test_form_scalar_with_index(self):
         index = [1, 2, 3, 4, 5]
@@ -159,19 +160,51 @@ class TestCRS:
         self.s = GeoSeries([make_point(x, x) for x in range(5)], crs=self.crs)
 
     def test_constrctor(self):
-        assert self.crs.upper() == self.s.crs
+        assert self.crs == self.s.crs
 
     def test_series_method(self):
-        assert self.s.head().crs == self.crs.upper()
-        assert self.s[:4].crs == self.crs.upper()
-        assert self.s.take([1, 3, 4]).crs == self.crs.upper()
-        assert self.s[[True, False, True, True, True]].crs == self.crs.upper()
+        assert self.s.head().crs == self.crs
+        assert self.s[:4].crs == self.crs
+        assert self.s.take([1, 3, 4]).crs == self.crs
+        assert self.s[[True, False, True, True, True]].crs == self.crs
 
     # test methods in GeoSeries will produce GeoSeries as result
     def test_geom_method(self):
-        assert self.s.buffer(0.2).crs == self.crs.upper()
-        assert self.s.intersection(self.s).crs == self.crs.upper()
-        assert self.s.centroid.crs == self.crs.upper()
+        assert self.s.buffer(0.2).crs == self.crs
+        assert self.s.intersection(self.s).crs == self.crs
+        assert self.s.centroid.crs == self.crs
+
+    def test_geom_method_without_crs(self):
+        s = GeoSeries([make_point(x, x) for x in range(5)])
+        s1 = GeoSeries([make_point(x, x) for x in range(5)], crs="epsg:4326")
+        with pytest.raises(ValueError):
+            s.to_crs('epsg:3857')
+        with pytest.raises(ValueError):
+            s.distance_sphere(s1)
+        with pytest.raises(ValueError):
+            s1.distance_sphere(s)
+
+    def test_various_crs_format(self):
+        # for more crs format info, see https://spatialreference.org/
+        # just expect no exception, since "no exception" means geometry can be processed with that crs
+
+        # epsg:n
+        s = GeoSeries(make_point(1, 1), crs="epsg:4326")
+        s = s.to_crs("epsg:3857")
+        assert s.crs == "epsg:3857"
+
+        # proj4
+        s = GeoSeries(make_point(1, 1), crs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+        s = s.to_crs("epsg:3857")
+        assert s.crs == "epsg:3857"
+
+        # OGC WKT
+        s = GeoSeries(make_point(1, 1),
+                      crs='GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG",'
+                          '"7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],'
+                          'UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]')
+        s = s.to_crs("epsg:3857")
+        assert s.crs == "epsg:3857"
 
 
 # other method will be tested in geoarray_test.py

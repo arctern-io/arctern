@@ -82,8 +82,7 @@ def _binary_geo(op, this, other):
 
 def _validate_crs(crs):
     if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
+        raise TypeError(f"`crs` should be string type, got {type(crs)}")
     return crs
 
 
@@ -106,7 +105,9 @@ class GeoSeries(Series):
     :param name: The name to give to the Series.
 
     :type crs: str, optional
-    :param crs: The coordinate system for the GeoSeries, now only support SRID form.
+    :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                e.g. "EPSG:n", Well Known Text definition. The full list can find at
+                https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
 
     :param kwargs: Additional arguments passed to the GeoSeries constructor, e.g. ``copy``
 
@@ -126,10 +127,11 @@ class GeoSeries(Series):
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+            # TODO(shengjh): Need a way to check crs, since same crs can has different representations
+            # elif not data.crs == crs:
+            #     raise ValueError(
+            #         "csr of the passed geometry data is different from crs."
+            #     )
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
@@ -163,7 +165,9 @@ class GeoSeries(Series):
         Set the coordinate system for the GeoSeries.
 
         :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                    e.g. "EPSG:n", Well Known Text definition. The full list can find at
+                    https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
         """
         crs = _validate_crs(crs)
         self._crs = crs
@@ -175,10 +179,7 @@ class GeoSeries(Series):
     @crs.setter
     def crs(self, crs):
         """
-        Set the coordinate system for the GeoSeries.
-
-        :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        Same to `set_crs`.
         """
         self.set_crs(crs)
 
@@ -371,7 +372,7 @@ class GeoSeries(Series):
         For each geometry in geometries, return a string that indicates is type.
 
         :rtype: Series(dtype: object)
-        :return: The type of geometry, e.g. "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT"
+        :return: The type of geometry, e.g. "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT".
 
         :examples:
         >>> from arctern import GeoSeries
@@ -484,8 +485,9 @@ class GeoSeries(Series):
         The ``crs`` attribute on the current GeoSeries must be set.
 
         :type crs: string
-        :param crs: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. "EPSG:4326"
+        :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                    e.g. "EPSG:n", PROJ.4 definitions and Well Known Text definition. The full list can find at
+                    https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
 
         :rtype: GeoSeries
         :return: Geometries with transformed coordinate reference system.
@@ -843,7 +845,7 @@ class GeoSeries(Series):
         Return minimum distance in meters between two lon/lat points.
 
         Uses a spherical earth and radius derived from the spheroid defined by the SRID.
-        Only 'EPSG:4326' can calculate spherical distance.
+        Can only calculate spherical distance when currently crs is geographic coordinate systems.
 
         :type other: scalar bytes object geometry or GeoSeries
         :param other: The geometries to calculate the spherical distance to each geometry.
@@ -861,8 +863,12 @@ class GeoSeries(Series):
         0    111226.3
         dtype: float64
         """
-        if not self.crs == getattr(other, "crs", "EPSG:4326") == "EPSG:4326":
-            raise ValueError("Only can calculate spherical distance with 'EPSG:4326' crs.")
+        if self.crs is None:
+            raise ValueError("Only can calculate spherical distance with geographic coordinate systems."
+                             " But this GeoSeries crs is None, set crs for it first")
+        if isinstance(other, GeoSeries) and other.crs is None:
+            raise ValueError("Only can calculate spherical distance with geographic coordinate systems."
+                             " But other's crs is None, set crs for it first")
         return _binary_op(arctern.ST_DistanceSphere, self, other)
 
     def hausdorff_distance(self, other):
@@ -1005,7 +1011,9 @@ class GeoSeries(Series):
         :param max_y: The maximum value of y coordinate of the rectangles.
 
         :type crs: string, optional
-        :param crs: Must be SRID format string.
+        :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                    e.g. "EPSG:n", PROJ.4 definitions and Well Known Text definition. The full list can find at
+                    https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
 
         :rtype: GeoSeries
         :return: A GeoSeries contains geometries.
@@ -1022,7 +1030,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1037,7 +1044,9 @@ class GeoSeries(Series):
         :param y: Ordinate of the point.
 
         :type crs: string, optional
-        :param crs: Must be SRID format string.
+        :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                    e.g. "EPSG:n", PROJ.4 definitions and Well Known Text definition. The full list can find at
+                    https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
 
         :rtype: GeoSeries
         :return: A GeoSeries contains point geometries.
@@ -1052,7 +1061,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1064,7 +1072,9 @@ class GeoSeries(Series):
         :param json: Geometries in json format.
 
         :type crs: string, optional
-        :param crs: Must be SRID format string.
+        :param crs: The coordinate system for the GeoSeries, can be various text formats.
+                e.g. "EPSG:n", PROJ.4 definitions and Well Known Text definition. The full list can find at
+                https://gdal.org/api/ogrspatialref.html#classOGRSpatialReference_1aec3c6a49533fe457ddc763d699ff8796
 
         :rtype: GeoSeries
         :return: A GeoSeries contains geometries.
@@ -1077,7 +1087,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod
