@@ -41,7 +41,7 @@ std::shared_ptr<arrow::Array> out_pic(std::vector<uint8_t> output) {
   }
 
   auto output_length = output.size();
-  auto bit_map = std::vector<uint8_t>(output_length, 1);
+  auto bit_map = std::vector<uint8_t>(output_length, 0xff);
 
   auto buffer0 = std::make_shared<arrow::Buffer>(bit_map.data(), output_length);
   auto buffer1 = std::make_shared<arrow::Buffer>(output.data(), output_length);

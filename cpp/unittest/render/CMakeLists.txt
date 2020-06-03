@@ -15,13 +15,13 @@
 set(render_tests_src
         ${unittest_srcs}
 		pointmap_test.cpp
-	    heatmap_test.cpp
-		choropleth_map_test.cpp
-		coordinate_projection_test.cpp
-		weighted_pointmap_test.cpp
-		iconviz_test.cpp
-		render_builder_api_test.cpp
-		fishnetmap_test.cpp
+#	    heatmap_test.cpp
+#		choropleth_map_test.cpp
+#		coordinate_projection_test.cpp
+#		weighted_pointmap_test.cpp
+#		iconviz_test.cpp
+#		render_builder_api_test.cpp
+#		fishnetmap_test.cpp
 		)
 
 add_executable(render_tests ${render_tests_src})
