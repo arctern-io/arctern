@@ -70,7 +70,7 @@ def test_plot2():
 
     fig, ax = plt.subplots()
     arctern.plot.plot_geometry(ax, arr_wkb, color=['red', 'blue', 'black'], marker='^', markersize=100)
-    ax.grid() 
+    ax.grid()
     fig.savefig(file_name)
     file_size = os.path.getsize(file_name)
     file_size = file_size / 1024
