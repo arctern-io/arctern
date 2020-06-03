@@ -28,7 +28,7 @@ class PointMap : public General2D {
 
   PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
 
-  uint8_t* Render() final;
+    std::vector<uint8_t> Render() final;
 
   void Shader();
 

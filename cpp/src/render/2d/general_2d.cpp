@@ -63,7 +63,7 @@ void General2D::Finalize() {
 #endif
 }
 
-uint8_t* General2D::Output() {
+std::vector<uint8_t> General2D::Output() {
   // export image to memory
   ExportImage();
 
@@ -79,7 +79,9 @@ uint8_t* General2D::Output() {
   }
 #endif
 
-  return output_image_;
+  std::vector<uint8_t> output_image(output_image_, output_image_ + output_image_size_);
+  STBIW_FREE(output_image_);
+  return output_image;
 }
 
 #ifdef USE_GPU

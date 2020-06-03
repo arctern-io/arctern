@@ -137,11 +137,11 @@ void TransformAndProjection(const std::vector<OGRGeometryUniquePtr>& geos,
   OCTDestroyCoordinateTransformation(poCT);
 }
 
-std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
+std::pair<std::vector<uint8_t>, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                       const std::string& conf) {
   VegaPointmap vega_pointmap(conf);
   if (!vega_pointmap.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   PointMap point_map(arr_x, arr_y, num);
@@ -153,12 +153,12 @@ std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t 
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
+std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
                                                int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, num_vertices);
@@ -170,12 +170,12 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                                int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr, num_vertices);
@@ -187,12 +187,12 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+std::pair<std::vector<uint8_t>, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                                T* arr_s, int64_t num_vertices,
                                                const std::string& conf) {
   VegaWeightedPointmap vega_weighted_pointmap(conf);
   if (!vega_weighted_pointmap.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   WeightedPointMap<T> weighted_pointmap(arr_x, arr_y, arr_c, arr_s, num_vertices);
@@ -204,11 +204,11 @@ std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+std::pair<std::vector<uint8_t>, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
                                      int64_t num_vertices, const std::string& conf) {
   VegaHeatMap vega_heat_map(conf);
   if (!vega_heat_map.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   HeatMap<T> heat_map(arr_x, arr_y, arr_c, num_vertices);
@@ -220,12 +220,12 @@ std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
+std::pair<std::vector<uint8_t>, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
                                            T* arr_c, int64_t num_buildings,
                                            const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   ChoroplethMap<T> choropleth_map(arr_wkt, arr_c, num_buildings);
@@ -237,11 +237,11 @@ std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_
   return std::make_pair(render, ret_size);
 }
 
-std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
+std::pair<std::vector<uint8_t>, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num,
                                      const std::string& conf) {
   VegaIcon vega_icon(conf);
   if (!vega_icon.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   IconViz icon_viz(arr_x, arr_y, num);
@@ -253,11 +253,11 @@ std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t n
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+std::pair<std::vector<uint8_t>, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                         int64_t num_vertices, const std::string& conf) {
   VegaFishNetMap vega_fishnet_map(conf);
   if (!vega_fishnet_map.is_valid()) {
-    return std::make_pair(nullptr, -1);
+    return std::make_pair(std::vector<uint8_t>(), -1);
   }
 
   FishNetMap<T> fishnet_map(arr_x, arr_y, arr, num_vertices);

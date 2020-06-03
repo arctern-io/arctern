@@ -31,7 +31,7 @@ class General2D {
  public:
   ~General2D();
 
-  virtual uint8_t* Render() = 0;
+  virtual std::vector<uint8_t> Render() = 0;
 
   virtual void Draw() = 0;
 
@@ -40,7 +40,7 @@ class General2D {
 
   void Finalize();
 
-  uint8_t* Output();
+  std::vector<uint8_t> Output();
 
   void InitBuffer(WindowParams& window_params);
 
