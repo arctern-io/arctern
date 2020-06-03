@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+#include "map_match/map_match.h"
+
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <limits>
-
-#include "map_match/map_match.h"
 
 std::vector<OGRGeometry*> construct_geometry(const std::vector<std::string>& wkt) {
   std::vector<OGRGeometry*> result;
@@ -99,13 +100,15 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
     auto error = OGRGeometryFactory::createFromWkt(wkt[i].c_str(), nullptr, &geo);
 
     if (error) {
-        builder.AppendNull();
+      builder.AppendNull();
     } else {
       auto wkb_size = geo->WkbSize();
-      auto wkb = static_cast<unsigned char *>(CPLMalloc(wkb_size));
+      auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
       OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, wkb);
       builder.Append(wkb, wkb_size);
+      free(wkb);
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
   std::shared_ptr<arrow::Array> wkb_array;
   builder.Finish(&wkb_array);

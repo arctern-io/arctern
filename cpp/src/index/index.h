@@ -37,10 +37,8 @@
 #include "index/index.h"
 #include "render/utils/render_utils.h"
 #include "utils/arrow_alias.h"
-
 namespace arctern {
-namespace index {
-
+namespace geo_indexing {
 enum class IndexType {
   kInvalid,
   kRTree,
@@ -74,5 +72,5 @@ class IndexTree {
   std::unique_ptr<SpatialIndex> tree_;
 };
 
-}  // namespace index
+}  // namespace geo_indexing
 }  // namespace arctern
