@@ -198,3 +198,49 @@ TEST(IndexedWithin, PyTest) {
     ASSERT_EQ(res->GetView(i), std_res[i]);
   }
 }
+
+TEST(IndexedWithin, NullTest) {
+  std::string wkt11 = "POINT (10 10)";
+  arrow::StringBuilder string_builder11;
+  auto status = string_builder11.Append(wkt11);
+  std::shared_ptr<arrow::StringArray> string_array11;
+  status = string_builder11.Finish(&string_array11);
+  auto wkb_point11 = arctern::render::WktToWkb(string_array11);
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb_point11};
+  std::string polygon1 =
+          "POLYGON (("
+          "0 0, "
+          "10 0, "
+          "20 20, "
+          "0 20, "
+          "0 0))";
+  std::string polygon2 =
+          "POLYGON (("
+          "20 0, "
+          "40 0, "
+          "40 20, "
+          "20 20, "
+          "20 0))";
+  arrow::StringBuilder string_builder2;
+  status = string_builder2.AppendNull();
+  status = string_builder2.Append(polygon1);
+  status = string_builder2.Append(polygon2);
+  std::shared_ptr<arrow::StringArray> string_array2;
+  status = string_builder2.Finish(&string_array2);
+  auto wkb_polygon = arctern::render::WktToWkb(string_array2);
+  std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb_polygon};
+  std::string index_type = "RTREE";
+  auto out = arctern::gis::ST_IndexedWithin(point_vec, polygon_vec);
+  arrow::Int32Builder builder;
+  std::vector<int> out_std = {1};
+  int offset = 0;
+  for (int j = 0; j < out.size(); j++) {
+    auto values = std::static_pointer_cast<arrow::Int32Array>(out[j]);
+    auto size = out[j]->length();
+    auto type = out[j]->type_id();
+    assert(type == arrow::Type::INT32);
+    for (int i = 0; i < size; i++) {
+      ASSERT_EQ(values->Value(i), out_std[offset++]);
+    }
+  }
+}

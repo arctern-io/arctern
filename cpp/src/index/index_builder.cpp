@@ -60,6 +60,11 @@ IndexTree IndexTree::Create(IndexType type) {
 void IndexTree::Append(const WkbArrayPtr& right) {
   for (int i = 0; i < right->length(); ++i) {
     auto view = right->GetView(i);
+    if (view.size() == 0) {
+      envelopes_.emplace_back(0, 0, 0, 0);
+      geometries_.emplace_back(nullptr);
+      continue;
+    }
     auto append_index = geometries_.size();
     geometries_.emplace_back(render::GeometryExtraction(view));
     auto& polygon = geometries_.back();

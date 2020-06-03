@@ -115,7 +115,6 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
                                          const bool greedy_search = false,
                                          const double distance = 100.0) {
   auto deg_distance = RAD2DEG(distance / 6371251.46);
-  std::cout << deg_distance << std::endl;
   std::vector<void*> matches;
   std::vector<OGRGeometry*> results;
   {
@@ -144,59 +143,47 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
 std::vector<std::shared_ptr<arrow::Array>> compute(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
-  std::vector<std::shared_ptr<arrow::Array>> result;
+  std::vector<std::shared_ptr<arrow::Array>> results;
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
   auto index_tree = IndexTree::Create(IndexType::kRTree);
   index_tree.Append(roads);
 
-  arrow::BinaryBuilder builder;
-  int32_t index = 0;
-  int32_t offset = gps_points[index]->length();
-
-  for (int32_t i = 0; i < num_gps_points; i++) {
-    std::vector<OGRGeometry*> vector_road;
-    if (gps_points_geo[i] != nullptr) {
-      vector_road = get_road(gps_points_geo[i].get(), index_tree, true);
-    }
-    if (vector_road.empty() || gps_points_geo[i] == nullptr) {
-      if (i == (offset - 1)) {
-        if (gps_points.size() > (index + 1)) {
-          index++;
-          offset += gps_points[index]->length();
+  int32_t offset = 0;
+  for (int32_t i = 0; i < gps_points.size(); i++) {
+    arrow::BinaryBuilder builder;
+    auto len = gps_points[i]->length();
+    for (int32_t j = 0; j < len; j++) {
+      std::vector<OGRGeometry*> vector_road;
+      if (gps_points_geo[offset] == nullptr) {
+        offset++;
+        builder.AppendNull();
+      } else {
+        auto geo_point = gps_points_geo[offset++].get();
+        vector_road = get_road(geo_point, index_tree, true);
+        if (vector_road.empty()) {
+          builder.AppendNull();
+        } else {
+          Projection projection = nearest_edge(vector_road, geo_point);
+          if (flag == 0) {
+            OGRPoint point(projection.point.x, projection.point.y);
+            std::vector<unsigned char> str(point.WkbSize());
+            OGR_G_ExportToWkb(&point, OGRwkbByteOrder::wkbNDR, str.data());
+            builder.Append(str.data(), str.size());
+          } else {
+            auto geo = vector_road[projection.road_id];
+            std::vector<unsigned char> str(geo->WkbSize());
+            OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, str.data());
+            builder.Append(str.data(), str.size());
+          }
         }
-        std::shared_ptr<arrow::BinaryArray> projection_points;
-        builder.Finish(&projection_points);
-        result.emplace_back(projection_points);
       }
-      builder.AppendNull();
-      continue;
     }
-    Projection projection = nearest_edge(vector_road, gps_points_geo[i].get());
-    if (flag == 0) {
-      OGRPoint point(projection.point.x, projection.point.y);
-      std::vector<unsigned char> str(point.WkbSize());
-      OGR_G_ExportToWkb(&point, OGRwkbByteOrder::wkbNDR, str.data());
-      builder.Append(str.data(), str.size());
-    } else {
-      auto geo = vector_road[projection.road_id];
-      std::vector<unsigned char> str(geo->WkbSize());
-      OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, str.data());
-      builder.Append(str.data(), str.size());
-    }
-
-    if (i == (offset - 1)) {
-      if (gps_points.size() > (index + 1)) {
-        index++;
-        offset += gps_points[index]->length();
-      }
-      std::shared_ptr<arrow::BinaryArray> projection_points;
-      builder.Finish(&projection_points);
-      result.emplace_back(projection_points);
-    }
+    std::shared_ptr<arrow::BinaryArray> result;
+    builder.Finish(&result);
+    results.emplace_back(result);
   }
-
-  return result;
+  return results;
 }
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
