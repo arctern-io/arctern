@@ -154,6 +154,7 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD1) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -199,6 +200,7 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD2) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -243,5 +245,6 @@ TEST(MAP_MATCH_TEST, NEAREST_ROAD) {
     char* str;
     OGR_G_ExportToWkt(nearest_road, &str);
     assert(std::string(str) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(nearest_road);
   }
 }
