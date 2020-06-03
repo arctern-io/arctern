@@ -574,7 +574,7 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
   return res;
 }
 
-std::shared_ptr<arrow::Array> point_map(
+std::vector<uint8_t> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -593,12 +593,10 @@ std::shared_ptr<arrow::Array> point_map(
     OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
-  auto result = pointmap(&input_x[0], &input_y[0], num_of_point, conf);
-
-  return out_pic(result);
+  return pointmap(&input_x[0], &input_y[0], num_of_point, conf);
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::vector<uint8_t> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -617,12 +615,10 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
-  auto result = weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf);
-
-  return out_pic(result);
+  return weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf);
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::vector<uint8_t> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -633,43 +629,43 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   switch (weight_data_type) {
     case arrow::Type::INT8: {
       const auto& arr_c = WeightExtraction<int8_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<int8_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<int8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT16: {
       const auto& arr_c = WeightExtraction<int16_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<int16_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<int16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT32: {
       const auto& arr_c = WeightExtraction<int32_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<int32_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<int32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT64: {
       const auto& arr_c = WeightExtraction<int64_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<int64_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<int64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT8: {
       const auto& arr_c = WeightExtraction<uint8_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<uint8_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<uint8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT16: {
       const auto& arr_c = WeightExtraction<uint16_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<uint16_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<uint16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT32: {
       const auto& arr_c = WeightExtraction<uint32_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<uint32_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<uint32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT64: {
       const auto& arr_c = WeightExtraction<uint64_t>(weights_vector);
-      return out_pic(render_weighted_pointmap<uint64_t>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<uint64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::FLOAT: {
       const auto& arr_c = WeightExtraction<float>(weights_vector);
-      return out_pic(render_weighted_pointmap<float>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<float>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::DOUBLE: {
       const auto& arr_c = WeightExtraction<double>(weights_vector);
-      return out_pic(render_weighted_pointmap<double>(wkb_vec, arr_c, conf));
+      return render_weighted_pointmap<double>(wkb_vec, arr_c, conf);
     }
     default:
       std::string err_msg =
@@ -679,7 +675,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::vector<uint8_t> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
@@ -692,52 +688,52 @@ std::shared_ptr<arrow::Array> weighted_point_map(
     case arrow::Type::INT8: {
       const auto& arr_c = WeightExtraction<int8_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<int8_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<int8_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<int8_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::INT16: {
       const auto& arr_c = WeightExtraction<int16_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<int16_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<int16_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<int16_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::INT32: {
       const auto& arr_c = WeightExtraction<int32_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<int32_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<int32_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<int32_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::INT64: {
       const auto& arr_c = WeightExtraction<int64_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<int64_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<int64_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<int64_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::UINT8: {
       const auto& arr_c = WeightExtraction<uint8_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<uint8_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<uint8_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<uint8_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::UINT16: {
       const auto& arr_c = WeightExtraction<uint16_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<uint16_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<uint16_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<uint16_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::UINT32: {
       const auto& arr_c = WeightExtraction<uint32_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<uint32_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<uint32_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<uint32_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::UINT64: {
       const auto& arr_c = WeightExtraction<uint64_t>(color_weights_vector);
       const auto& arr_s = WeightExtraction<uint64_t>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<uint64_t>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<uint64_t>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::FLOAT: {
       const auto& arr_c = WeightExtraction<float>(color_weights_vector);
       const auto& arr_s = WeightExtraction<float>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<float>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<float>(wkb_vec, arr_c, arr_s, conf);
     }
     case arrow::Type::DOUBLE: {
       const auto& arr_c = WeightExtraction<double>(color_weights_vector);
       const auto& arr_s = WeightExtraction<double>(size_weights_vector);
-      return out_pic(render_weighted_pointmap<double>(wkb_vec, arr_c, arr_s, conf));
+      return render_weighted_pointmap<double>(wkb_vec, arr_c, arr_s, conf);
     }
     default:
       std::string err_msg =
@@ -747,7 +743,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> heat_map(
+std::vector<uint8_t> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -758,43 +754,43 @@ std::shared_ptr<arrow::Array> heat_map(
   switch (weight_data_type) {
     case arrow::Type::INT8: {
       const auto& arr_c = WeightExtraction<int8_t>(weights_vector);
-      return out_pic(render_heatmap<int8_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<int8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT16: {
       const auto& arr_c = WeightExtraction<int16_t>(weights_vector);
-      return out_pic(render_heatmap<int16_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<int16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT32: {
       const auto& arr_c = WeightExtraction<int32_t>(weights_vector);
-      return out_pic(render_heatmap<int32_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<int32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT64: {
       const auto& arr_c = WeightExtraction<int64_t>(weights_vector);
-      return out_pic(render_heatmap<int64_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<int64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT8: {
       const auto& arr_c = WeightExtraction<uint8_t>(weights_vector);
-      return out_pic(render_heatmap<uint8_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<uint8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT16: {
       const auto& arr_c = WeightExtraction<uint16_t>(weights_vector);
-      return out_pic(render_heatmap<uint16_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<uint16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT32: {
       const auto& arr_c = WeightExtraction<uint32_t>(weights_vector);
-      return out_pic(render_heatmap<uint32_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<uint32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT64: {
       const auto& arr_c = WeightExtraction<uint64_t>(weights_vector);
-      return out_pic(render_heatmap<uint64_t>(wkb_vec, arr_c, conf));
+      return render_heatmap<uint64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::FLOAT: {
       const auto& arr_c = WeightExtraction<float>(weights_vector);
-      return out_pic(render_heatmap<float>(wkb_vec, arr_c, conf));
+      return render_heatmap<float>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::DOUBLE: {
       const auto& arr_c = WeightExtraction<double>(weights_vector);
-      return out_pic(render_heatmap<double>(wkb_vec, arr_c, conf));
+      return render_heatmap<double>(wkb_vec, arr_c, conf);
     }
     default:
       std::string err_msg = "type error of count while running heatmap, type = " +
@@ -803,7 +799,7 @@ std::shared_ptr<arrow::Array> heat_map(
   }
 }
 
-std::shared_ptr<arrow::Array> choropleth_map(
+std::vector<uint8_t> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -813,43 +809,43 @@ std::shared_ptr<arrow::Array> choropleth_map(
   switch (weight_data_type) {
     case arrow::Type::INT8: {
       const auto& arr_c = WeightExtraction<int8_t>(weights_vector);
-      return out_pic(render_choroplethmap<int8_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<int8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT16: {
       const auto& arr_c = WeightExtraction<int16_t>(weights_vector);
-      return out_pic(render_choroplethmap<int16_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<int16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT32: {
       const auto& arr_c = WeightExtraction<int32_t>(weights_vector);
-      return out_pic(render_choroplethmap<int32_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<int32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT64: {
       const auto& arr_c = WeightExtraction<int64_t>(weights_vector);
-      return out_pic(render_choroplethmap<int64_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<int64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT8: {
       const auto& arr_c = WeightExtraction<uint8_t>(weights_vector);
-      return out_pic(render_choroplethmap<uint8_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<uint8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT16: {
       const auto& arr_c = WeightExtraction<uint16_t>(weights_vector);
-      return out_pic(render_choroplethmap<uint16_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<uint16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT32: {
       const auto& arr_c = WeightExtraction<uint32_t>(weights_vector);
-      return out_pic(render_choroplethmap<uint32_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<uint32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT64: {
       const auto& arr_c = WeightExtraction<uint64_t>(weights_vector);
-      return out_pic(render_choroplethmap<uint64_t>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<uint64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::FLOAT: {
       const auto& arr_c = WeightExtraction<float>(weights_vector);
-      return out_pic(render_choroplethmap<float>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<float>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::DOUBLE: {
       const auto& arr_c = WeightExtraction<double>(weights_vector);
-      return out_pic(render_choroplethmap<double>(wkb_vec, arr_c, conf));
+      return render_choroplethmap<double>(wkb_vec, arr_c, conf);
     }
     default:
       std::string err_msg = "type error of count while running choroplethmap, type = " +
@@ -858,7 +854,7 @@ std::shared_ptr<arrow::Array> choropleth_map(
   }
 }
 
-std::shared_ptr<arrow::Array> icon_viz(
+std::vector<uint8_t> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -877,12 +873,10 @@ std::shared_ptr<arrow::Array> icon_viz(
     OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
-  auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
-
-  return out_pic(result);
+  return iconviz(&input_x[0], &input_y[0], num_of_point, conf);
 }
 
-std::shared_ptr<arrow::Array> fishnet_map(
+std::vector<uint8_t> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -893,43 +887,43 @@ std::shared_ptr<arrow::Array> fishnet_map(
   switch (weight_data_type) {
     case arrow::Type::INT8: {
       const auto& arr_c = WeightExtraction<int8_t>(weights_vector);
-      return out_pic(render_fishnetmap<int8_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<int8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT16: {
       const auto& arr_c = WeightExtraction<int16_t>(weights_vector);
-      return out_pic(render_fishnetmap<int16_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<int16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT32: {
       const auto& arr_c = WeightExtraction<int32_t>(weights_vector);
-      return out_pic(render_fishnetmap<int32_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<int32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::INT64: {
       const auto& arr_c = WeightExtraction<int64_t>(weights_vector);
-      return out_pic(render_fishnetmap<int64_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<int64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT8: {
       const auto& arr_c = WeightExtraction<uint8_t>(weights_vector);
-      return out_pic(render_fishnetmap<uint8_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<uint8_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT16: {
       const auto& arr_c = WeightExtraction<uint16_t>(weights_vector);
-      return out_pic(render_fishnetmap<uint16_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<uint16_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT32: {
       const auto& arr_c = WeightExtraction<uint32_t>(weights_vector);
-      return out_pic(render_fishnetmap<uint32_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<uint32_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::UINT64: {
       const auto& arr_c = WeightExtraction<uint64_t>(weights_vector);
-      return out_pic(render_fishnetmap<uint64_t>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<uint64_t>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::FLOAT: {
       const auto& arr_c = WeightExtraction<float>(weights_vector);
-      return out_pic(render_fishnetmap<float>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<float>(wkb_vec, arr_c, conf);
     }
     case arrow::Type::DOUBLE: {
       const auto& arr_c = WeightExtraction<double>(weights_vector);
-      return out_pic(render_fishnetmap<double>(wkb_vec, arr_c, conf));
+      return render_fishnetmap<double>(wkb_vec, arr_c, conf);
     }
     default:
       std::string err_msg = "type error of count while running square_map, type = " +
