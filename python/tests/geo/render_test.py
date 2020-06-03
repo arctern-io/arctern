@@ -58,9 +58,6 @@ def test_point_map():
 
     vega = vega_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
     curve_z1 = arctern.point_map_layer(vega, points)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print(curve_z1)
-    print(type(curve_z1))
     save_png(curve_z1, "/tmp/test_curve_z1.png")
 
 
