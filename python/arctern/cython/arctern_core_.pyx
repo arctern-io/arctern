@@ -395,12 +395,12 @@ def nearest_road(object roads,object gps_points):
     result = arctern_core_pxd.nearest_road(network, gps_points_to_match)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def near_road(object roads,object gps_points):
+def near_road(object roads,object gps_points, distance):
     cdef vector[shared_ptr[CArray]] network
     for road in roads:
         network.push_back(pyarrow_unwrap_array(road))
     cdef vector[shared_ptr[CArray]] gps_points_to_match
     for gps_point in gps_points:
         gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.near_road(network, gps_points_to_match)
+    result = arctern_core_pxd.near_road(network, gps_points_to_match, distance)
     return [pyarrow_wrap_array(ptr) for ptr in result]
