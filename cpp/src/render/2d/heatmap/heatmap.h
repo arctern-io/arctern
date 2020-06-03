@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "render/2d/general_2d.h"
 #include "render/2d/heatmap/set_color.h"
 

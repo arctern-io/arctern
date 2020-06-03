@@ -158,7 +158,7 @@ void PointMap::Shader() {
 }
 #endif
 
-        std::vector<uint8_t> PointMap::Render() {
+std::vector<uint8_t> PointMap::Render() {
   WindowsInit(point_vega_.window_params());
 #ifdef USE_GPU
   Shader();

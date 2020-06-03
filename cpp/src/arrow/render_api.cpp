@@ -108,9 +108,9 @@ std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_
 }
 
 template <typename T>
-std::vector<uint8_t> render_weighted_pointmap(
-    const std::vector<std::string>& points, const std::vector<T>& weights,
-    const std::string& conf) {
+std::vector<uint8_t> render_weighted_pointmap(const std::vector<std::string>& points,
+                                              const std::vector<T>& weights,
+                                              const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, weights);
   auto num_point = data.first.size();
 
@@ -195,9 +195,10 @@ std::vector<uint8_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::vector<uint8_t> render_weighted_pointmap(
-    const std::vector<std::string>& points, const std::vector<T>& arr_c,
-    const std::vector<T>& arr_s, const std::string& conf) {
+std::vector<uint8_t> render_weighted_pointmap(const std::vector<std::string>& points,
+                                              const std::vector<T>& arr_c,
+                                              const std::vector<T>& arr_s,
+                                              const std::string& conf) {
   auto agg_res = AggHandler::weight_agg_multiple_column<T>(points, arr_c, arr_s);
   auto num_point = std::get<0>(agg_res).size();
 
@@ -301,8 +302,8 @@ std::vector<uint8_t> render_weighted_pointmap(
 
 template <typename T>
 std::vector<uint8_t> render_heatmap(const std::vector<std::string>& points,
-                                            const std::vector<T>& arr_c,
-                                            const std::string& conf) {
+                                    const std::vector<T>& arr_c,
+                                    const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
 
@@ -388,8 +389,8 @@ std::vector<uint8_t> render_heatmap(const std::vector<std::string>& points,
 
 template <typename T>
 std::vector<uint8_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
-                                                  const std::vector<T>& arr_c,
-                                                  const std::string& conf) {
+                                          const std::vector<T>& arr_c,
+                                          const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.second.size();
 
@@ -455,8 +456,8 @@ std::vector<uint8_t> render_choroplethmap(const std::vector<std::string>& arr_wk
 
 template <typename T>
 std::vector<uint8_t> render_fishnetmap(const std::vector<std::string>& points,
-                                               const std::vector<T>& arr_c,
-                                               const std::string& conf) {
+                                       const std::vector<T>& arr_c,
+                                       const std::string& conf) {
   rapidjson::Document document;
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
@@ -865,7 +866,6 @@ std::shared_ptr<arrow::Array> icon_viz(
 
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
-
 
   for (size_t i = 0; i < num_of_point; i++) {
     OGRGeometry* res_geo = nullptr;

@@ -16,6 +16,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "render/2d/input.h"
 #ifdef USE_GPU

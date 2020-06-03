@@ -15,6 +15,7 @@
  */
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include "render/2d/general_2d.h"
 

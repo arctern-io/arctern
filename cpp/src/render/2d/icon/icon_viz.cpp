@@ -61,7 +61,7 @@ void IconViz::Draw() {
   free(image_buffer.buffer);
 }
 
-    std::vector<uint8_t> IconViz::Render() {
+std::vector<uint8_t> IconViz::Render() {
   WindowsInit(icon_vega_.window_params());
   Draw();
   Finalize();
