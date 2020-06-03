@@ -108,6 +108,7 @@ std::vector<std::shared_ptr<arrow::Array>> wkb(const std::vector<std::string>& w
       builder.Append(wkb, wkb_size);
       free(wkb);
     }
+    OGRGeometryFactory::destroyGeometry(geo);
   }
   std::shared_ptr<arrow::Array> wkb_array;
   builder.Finish(&wkb_array);
@@ -156,6 +157,8 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD1) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(gps_point);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -201,6 +204,8 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD2) {
                                       &projection_point);
     auto projection_point1 = dynamic_cast<OGRPoint*>(projection_point);
     assert(projection_point1->Distance(gps_point) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(gps_point);
+    OGRGeometryFactory::destroyGeometry(projection_point);
   }
 }
 
@@ -245,5 +250,6 @@ TEST(MAP_MATCH_TEST, NEAREST_ROAD) {
     char* str;
     OGR_G_ExportToWkt(nearest_road, &str);
     assert(std::string(str) == compare_result[i]);
+    OGRGeometryFactory::destroyGeometry(nearest_road);
   }
 }
