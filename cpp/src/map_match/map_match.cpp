@@ -132,8 +132,8 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
         auto geo = index_tree.get_geometry(index);
         results.emplace_back(geo);
       }
-        deg_distance *= 2;
-        if (deg_distance > 0.1 || !results.empty()) break;
+      deg_distance *= 2;
+      if (!results.empty() || deg_distance > ogr_env.MinX + 90.0 || deg_distance > 90.0 - ogr_env.MinX) break;
     } while (greedy_search);
   }
 

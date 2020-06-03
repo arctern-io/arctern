@@ -1631,9 +1631,10 @@ def nearest_location_on_road(roads, points):
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
     location_rst = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
     res = _to_pandas_series(location_rst)
+    res = res.set_axis(points.index)
     return res
 
-def nearest_road(roads, points):
+def nearest_road(roads, points,):
     """
     Compute the closest road for each point in points, The points passed do not need to be part of a continuous path.
     :type roads: Series(dtype: object)
@@ -1659,6 +1660,7 @@ def nearest_road(roads, points):
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
     road_rst = arctern_core_.nearest_road(arr_roads, arr_gps_points)
     res = _to_pandas_series(road_rst)
+    res = res.set_axis(points.index)
     return res
 
 def near_road(roads, points, distance=100):
