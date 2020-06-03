@@ -14,4 +14,3 @@
 from ._wrapper_func import *
 from .geoseries import *
 from . import plot
-from ._map_match_func import *
