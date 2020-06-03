@@ -26,7 +26,7 @@ namespace arctern {
 namespace gis {
 namespace spatial_join {
 
-using IndexType = arctern::index::IndexType;
+using IndexType = arctern::geo_indexing::IndexType;
 
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,

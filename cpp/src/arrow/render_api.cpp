@@ -561,7 +561,7 @@ const std::vector<std::shared_ptr<arrow::Array>> projection(
     const int& width) {
   auto geo_vec = GeometryExtraction(geos);
   Projection(geo_vec, bottom_right, top_left, height, width);
-  const auto& res = GeometryExport(std::move(geo_vec), geos.size());
+  const auto& res = GeometryExport(geo_vec, geos.size());
   return res;
 }
 
@@ -571,7 +571,7 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::string& top_left, const int& height, const int& width) {
   auto geo_vec = GeometryExtraction(geos);
   TransformAndProjection(geo_vec, src_rs, dst_rs, bottom_right, top_left, height, width);
-  const auto& res = GeometryExport(std::move(geo_vec), geos.size());
+  const auto& res = GeometryExport(geo_vec, geos.size());
   return res;
 }
 
