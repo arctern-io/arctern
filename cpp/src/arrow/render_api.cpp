@@ -33,28 +33,6 @@
 namespace arctern {
 namespace render {
 
-std::shared_ptr<arrow::Array> out_pic(std::vector<uint8_t> output) {
-  if (output.empty()) {
-    std::string err_msg =
-        "Null image buffer, in most cases, it was caused by incorrect vega json";
-    throw std::runtime_error(err_msg);
-  }
-
-  auto output_length = output.size();
-  auto bit_map = std::vector<uint8_t>(output_length, 0xff);
-
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map.data(), output_length);
-  auto buffer1 = std::make_shared<arrow::Buffer>(output.data(), output_length);
-  auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
-  buffers.emplace_back(buffer0);
-  buffers.emplace_back(buffer1);
-
-  auto data_type = arrow::uint8();
-  auto array_data = arrow::ArrayData::Make(data_type, output_length, buffers);
-  auto array = arrow::MakeArray(array_data);
-  return array;
-}
-
 std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_wkt) {
   auto wkts = std::static_pointer_cast<arrow::StringArray>(arr_wkt);
   auto wkt_size = arr_wkt->length();
