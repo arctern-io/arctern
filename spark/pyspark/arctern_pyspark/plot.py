@@ -85,4 +85,4 @@ def plot(ax, geoms, **style_kwds):
     import arctern
     if isinstance(geoms, pyspark.sql.dataframe.DataFrame):
         pandas_df = geoms.toPandas()
-        arctern.plot(ax, pandas_df, **style_kwds)
+        arctern.plot.plot_geometry(ax, pandas_df, **style_kwds)
