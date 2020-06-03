@@ -34,4 +34,4 @@ def test_near_road():
     gps_points = pandas.Series("POINT (1.0001 0.0001)")
     rst = arctern.near_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points), 100)
     assert len(rst) == 1
-    assert rst[0] == True
+    assert rst[0]
