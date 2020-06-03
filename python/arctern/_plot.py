@@ -235,7 +235,7 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
     _plot_collection(ax, geoms, **style_kwds)
     return None
 
-def plot(ax, geoms, **style_kwds):
+def plot_geometry(ax, geoms, **style_kwds):
     """
     Plot a collection of geometries to `ax`. Parameters 'linewidth', 'linestyle', 'edgecolor',
     'facecolor', 'color', 'marker', 'markersize' are used to describe the style of plotted figure.
@@ -290,14 +290,14 @@ def plot(ax, geoms, **style_kwds):
        >>> arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
        >>> df = pandas.DataFrame({'wkb':arr_wkb})
        >>> fig, ax = plt.subplots()
-       >>> arctern.plot(ax, df,
-                        color=['orange', 'green', 'blue', 'red'],
-                        marker='^',
-                        markersize=100,
-                        linewidth=[None, 7, 8, 5],
-                        linestyle=[None, 'dashed', 'dashdot', None],
-                        edgecolor=[None, None, 'red', None],
-                        facecolor=[None, None, 'black', None])
+       >>> arctern.plot_geometry(ax, df,
+                                 color=['orange', 'green', 'blue', 'red'],
+                                 marker='^',
+                                 markersize=100,
+                                 linewidth=[None, 7, 8, 5],
+                                 linestyle=[None, 'dashed', 'dashdot', None],
+                                 edgecolor=[None, None, 'red', None],
+                                 facecolor=[None, None, 'black', None])
        >>> ax.grid()
        >>> fig.savefig('/tmp/plot_test.png')
     """
