@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 TEST(POINTMAP_WKT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
   // param1: wkt string
@@ -78,7 +79,7 @@ TEST(POINTMAP_WKT_TEST, SINGLE_COLOR_SINGLE_POINTSIZE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
 
@@ -155,7 +156,7 @@ TEST(POINTMAP_WKT_TEST, MULTIPLE_COLOR_SINGLE_POINTSIZE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -233,7 +234,7 @@ TEST(POINTMAP_WKT_TEST, SINGLE_COLOR_MULTIPLE_POINTSIZE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> size_vec{s_array};
@@ -322,7 +323,7 @@ TEST(POINTMAP_WKT_TEST, MULTIPLE_COLOR_MULTIPLE_POINTSIZE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -412,7 +413,7 @@ TEST(POINTMAP_WKT_TEST, INT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -502,7 +503,7 @@ TEST(POINTMAP_WKT_TEST, INT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -592,7 +593,7 @@ TEST(POINTMAP_WKT_TEST, INT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -682,7 +683,7 @@ TEST(POINTMAP_WKT_TEST, INT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -772,7 +773,7 @@ TEST(POINTMAP_WKT_TEST, UINT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -862,7 +863,7 @@ TEST(POINTMAP_WKT_TEST, UINT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -952,7 +953,7 @@ TEST(POINTMAP_WKT_TEST, UINT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1042,7 +1043,7 @@ TEST(POINTMAP_WKT_TEST, UINT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1132,7 +1133,7 @@ TEST(POINTMAP_WKT_TEST, FLOAT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1222,7 +1223,7 @@ TEST(POINTMAP_WKT_TEST, DOUBLE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1312,7 +1313,7 @@ TEST(POINTMAP_WKT_TEST, MEAN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1402,7 +1403,7 @@ TEST(POINTMAP_WKT_TEST, SUM) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1492,7 +1493,7 @@ TEST(POINTMAP_WKT_TEST, MAX) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1582,7 +1583,7 @@ TEST(POINTMAP_WKT_TEST, MIN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1672,7 +1673,7 @@ TEST(POINTMAP_WKT_TEST, COUNT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1762,7 +1763,7 @@ TEST(POINTMAP_WKT_TEST, STD) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1841,7 +1842,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1919,7 +1920,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -1997,7 +1998,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2075,7 +2076,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, INT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2153,7 +2154,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2231,7 +2232,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2309,7 +2310,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2387,7 +2388,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, UINT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2465,7 +2466,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, FLOAT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2543,7 +2544,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, DOUBLE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2621,7 +2622,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MEAN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2699,7 +2700,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, SUM) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2777,7 +2778,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MAX) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2855,7 +2856,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, MIN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -2933,7 +2934,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, COUNT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3011,7 +3012,7 @@ TEST(POINTMAP_WKT_TEST_MULTIPLE_COLOR, STD) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3100,7 +3101,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_TO_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3190,7 +3191,7 @@ TEST(POINTMAP_WKT_TEST, SKYBLUE_TO_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3280,7 +3281,7 @@ TEST(POINTMAP_WKT_TEST, PURPLE_TO_YELLOW) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3370,7 +3371,7 @@ TEST(POINTMAP_WKT_TEST, RED_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3460,7 +3461,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3550,7 +3551,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_GREEN_YELLOW) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3640,7 +3641,7 @@ TEST(POINTMAP_WKT_TEST, WHITE_BLUE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3730,7 +3731,7 @@ TEST(POINTMAP_WKT_TEST, BLUE_WHITE_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -3820,7 +3821,7 @@ TEST(POINTMAP_WKT_TEST, GREEN_YELLOW_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};

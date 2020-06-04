@@ -57,8 +57,6 @@ __all__ = [
     "fishnet_map_layer",
     "projection",
     "transform_and_projection",
-    "wkt2wkb",
-    "wkb2wkt",
     "nearest_location_on_road",
     "nearest_road",
     "near_road",
@@ -1326,21 +1324,6 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
     geos = arctern_core_.transform_and_projection(
         geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
     return _to_pandas_series(geos)
-
-
-def wkt2wkb(arr_wkt):
-    import pyarrow as pa
-    wkts = pa.array(arr_wkt, type='string')
-    rs = arctern_core_.wkt2wkb(wkts)
-    return rs.to_pandas()
-
-
-def wkb2wkt(arr_wkb):
-    import pyarrow as pa
-    wkbs = pa.array(arr_wkb, type='binary')
-    rs = arctern_core_.wkb2wkt(wkbs)
-    return rs.to_pandas()
-
 
 def point_map_layer(vega, points, transform=True):
     import pyarrow as pa
