@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef RENDER_H
-#define RENDER_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -78,5 +77,3 @@ std::shared_ptr<arrow::StringArray> fishnet_map(
 
 }  // namespace render
 }  // namespace arctern
-
-#endif

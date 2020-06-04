@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef MAP_MATCH_H
-#define MAP_MATCH_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -40,5 +39,3 @@ std::vector<std::shared_ptr<arrow::Array>> near_road(
 
 }  // namespace map_match
 }  // namespace arctern
-
-#endif
