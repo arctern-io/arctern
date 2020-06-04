@@ -1606,6 +1606,28 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 def nearest_location_on_road(roads, points):
+    """
+    Compute the location on roads closest to each point in points, The points passed do not need to be part of a continuous path.
+
+    :type roads: Series(dtype: object)
+    :param roads: LineStrings in WKB form.
+
+    :type points: Series(dtype: object)
+    :param points: Points in WKB form.
+
+    :rtype: Series(dtype: object)
+    :return: Points in WKB form.
+
+    :example:
+      >>> from arctern import *
+      >>> import pandas
+      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
+      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
+      >>> rst = arctern.ST_AsText(arctern.nearest_location_on_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
+      >>> print(rst)
+          0    POINT (1.0 2.5)
+          dtype: object
+    """
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
     arr_gps_points = pa.array(points, type='binary')
@@ -1613,9 +1635,32 @@ def nearest_location_on_road(roads, points):
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
     location_rst = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
     res = _to_pandas_series(location_rst)
+    res = res.set_axis(points.index)
     return res
 
-def nearest_road(roads, points):
+def nearest_road(roads, points,):
+    """
+    Compute the closest road for each point in points, The points passed do not need to be part of a continuous path.
+
+    :type roads: Series(dtype: object)
+    :param roads: LineStrings in WKB form.
+
+    :type points: Series(dtype: object)
+    :param points: Points in WKB form.
+
+    :rtype: Series(dtype: object)
+    :return: Points in WKB form.
+
+    :example:
+      >>> from arctern import *
+      >>> import pandas
+      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
+      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
+      >>> rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
+      >>> print(rst)
+          0    LINESTRING (1 2,1 3)
+          dtype: object
+    """
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
     arr_gps_points = pa.array(points, type='binary')
@@ -1623,15 +1668,41 @@ def nearest_road(roads, points):
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
     road_rst = arctern_core_.nearest_road(arr_roads, arr_gps_points)
     res = _to_pandas_series(road_rst)
+    res = res.set_axis(points.index)
     return res
 
-def near_road(roads, points):
+def near_road(roads, points, distance=100):
+    """
+    Check if there is a road within distance meters of each point. The points passed do not need to be part of a continuous path.
+
+    :type roads: Series(dtype: object)
+    :param roads: LineStrings in WKB form.
+
+    :type points: Series(dtype: object)
+    :param points: Points in WKB form.
+
+    :type distance: double
+    :param distance: distance meters around the point in points
+
+    :rtype: Series(dtype: bool)
+    :return: True if there is a road within 100 meters of the point.
+
+    :example:
+      >>> from arctern import *
+      >>> import pandas
+      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
+      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
+      >>> rst = arctern.near_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2), 100)
+      >>> print(rst)
+          0    True
+          dtype: object
+    """
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
     arr_gps_points = pa.array(points, type='binary')
     arr_roads = _to_arrow_array_list(arr_roads)
     arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    bool_rst = arctern_core_.near_road(arr_roads, arr_gps_points)
+    bool_rst = arctern_core_.near_road(arr_roads, arr_gps_points, float(distance))
     res = _to_pandas_series(bool_rst)
     res = res.set_axis(points.index)
     return res
