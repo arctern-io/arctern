@@ -29,30 +29,34 @@ namespace render {
 
 OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb) {
   OGRGeometry* geo = nullptr;
-  OGRGeometryFactory::createFromWkb(wkb.to_string().c_str(), nullptr, &geo);
+  OGRGeometryFactory::createFromWkb(wkb.data(), nullptr, &geo);
   return OGRGeometryUniquePtr(geo);
 }
 
-std::vector<OGRGeometry*> GeometryExtraction(
+std::vector<OGRGeometryUniquePtr> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
   int total_size = 0;
   for (const auto& arr : arrs) {
     total_size += arr->length();
   }
-  std::vector<OGRGeometry*> geos_res(total_size);
+  std::vector<OGRGeometryUniquePtr> geos_res(total_size);
 
   int index = 0;
   for (const auto& arr : arrs) {
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        geos_res[index++] = nullptr;
+        continue;
+      }
       OGRGeometry* geo = nullptr;
       auto err_code = OGRGeometryFactory::createFromWkb(
           wkb_geometries->GetString(i).c_str(), nullptr, &geo);
       if (err_code || geo == nullptr) {
         geos_res[index] = nullptr;
       } else {
-        geos_res[index] = geo;
+        geos_res[index] = OGRGeometryUniquePtr(geo);
       }
       index++;
     }
@@ -74,6 +78,10 @@ std::vector<std::string> WkbExtraction(
     assert(arr->type_id() == arrow::Type::BINARY);
     auto wkb_geometries = std::static_pointer_cast<arrow::BinaryArray>(arr);
     for (int i = 0; i < wkb_geometries->length(); i++) {
+      if (arr->IsNull(i)) {
+        wkb_res[index++] = "";
+        continue;
+      }
       wkb_res[index] = wkb_geometries->GetString(i);
       index++;
     }
@@ -83,7 +91,7 @@ std::vector<std::string> WkbExtraction(
 }
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    std::vector<OGRGeometry*>&& geos, int arrays_size) {
+    const std::vector<OGRGeometryUniquePtr>& geos, int arrays_size) {
   int size_per_array = geos.size() / arrays_size;
   arrays_size = geos.size() % arrays_size == 0 ? arrays_size : arrays_size + 1;
   std::vector<std::shared_ptr<arrow::Array>> arrays(arrays_size);
@@ -93,6 +101,10 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
 
     for (int j = i * size_per_array; j < geos.size() && j < (i + 1) * size_per_array;
          j++) {
+      if (geos[j] == nullptr) {
+        CHECK_ARROW(builder.AppendNull());
+        continue;
+      }
       auto sz = geos[j]->WkbSize();
       std::vector<char> str(sz);
       auto err_code = geos[j]->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
@@ -102,13 +114,11 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
         throw std::runtime_error(err_msg);
       }
       CHECK_ARROW(builder.Append(str.data(), str.size()));
-      OGRGeometryFactory::destroyGeometry(geos[j]);
     }
     std::shared_ptr<arrow::Array> array;
     CHECK_ARROW(builder.Finish(&array));
     arrays[i] = array;
   }
-  geos.clear();
   return arrays;
 }
 

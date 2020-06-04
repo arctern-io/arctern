@@ -38,7 +38,7 @@ def _transform_bbox(bounding_box, src_coord_sys, dst_coord_sys):
     return bounding_box
 
 
-def plot_pointmap(ax, points, bounding_box,
+def pointmap(ax, points, bounding_box,
                   point_size=3, point_color='#115f9a', opacity=1.0,
                   coordinate_system='EPSG:3857',
                   **extra_contextily_params):
@@ -81,7 +81,7 @@ def plot_pointmap(ax, points, bounding_box,
 # pylint: disable=dangerous-default-value
 
 
-def plot_weighted_pointmap(ax, points, color_weights=None,
+def weighted_pointmap(ax, points, color_weights=None,
                            size_weights=None,
                            bounding_box=None,
                            color_gradient=["#115f9a", "#d0f400"],
@@ -134,7 +134,7 @@ def _calc_zoom(bbox, coordinate_system):
     return cx.tile._calculate_zoom(*bbox)
 
 
-def plot_heatmap(ax, points, weights, bounding_box,
+def heatmap(ax, points, weights, bounding_box,
                  map_zoom_level=None,
                  coordinate_system='EPSG:3857',
                  aggregation_type='max',
@@ -171,7 +171,7 @@ def plot_heatmap(ax, points, weights, bounding_box,
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 
-def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
+def choroplethmap(ax, region_boundaries, weights, bounding_box,
                        color_gradient, color_bound=None, opacity=1.0,
                        coordinate_system='EPSG:3857',
                        aggregation_type='max',
@@ -206,7 +206,7 @@ def plot_choroplethmap(ax, region_boundaries, weights, bounding_box,
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
 
 
-def plot_iconviz(ax, points, bounding_box, icon_path,
+def iconviz(ax, points, bounding_box, icon_path,
                  coordinate_system='EPSG:3857',
                  **extra_contextily_params):
     """
@@ -241,7 +241,7 @@ def plot_iconviz(ax, points, bounding_box, icon_path,
 # pylint: disable=dangerous-default-value
 
 
-def plot_fishnetmap(ax, points, weights, bounding_box,
+def fishnetmap(ax, points, weights, bounding_box,
                     color_gradient=["#0000FF", "#FF0000"],
                     cell_size=4, cell_spacing=1, opacity=1.0,
                     coordinate_system='epsg:3857',

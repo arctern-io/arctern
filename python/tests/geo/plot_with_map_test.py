@@ -73,7 +73,7 @@ def test_pointmap():
     arr_y = pandas.Series(y_data)
     points = arctern.ST_Point(arr_x, arr_y)
     ax = _get_matplot()
-    ap.plot_pointmap(ax, points, bounding_box=bounding_box, point_size=10,
+    ap.plot.pointmap(ax, points, bounding_box=bounding_box, point_size=10,
                      point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_point_map")
 
@@ -111,22 +111,22 @@ def test_weighted_pointmap():
     arr_s = pandas.Series(s_data)
 
     ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, bounding_box=bounding_box, color_gradient=[
+    ap.plot.weighted_pointmap(ax, points, bounding_box=bounding_box, color_gradient=[
                               "#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_0_0")
 
     ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, bounding_box=bounding_box, color_gradient=[
+    ap.plot.weighted_pointmap(ax, points, color_weights=arr_c, bounding_box=bounding_box, color_gradient=[
                               "#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_1_0")
 
     ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
+    ap.plot.weighted_pointmap(ax, points, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
                               "#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_0_1")
 
     ax = _get_matplot()
-    ap.plot_weighted_pointmap(ax, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
+    ap.plot.weighted_pointmap(ax, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
                               "#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
     _finalize(ax, "test_weighted_1_1")
 
@@ -157,7 +157,7 @@ def test_heatmap():
     points = arctern.ST_Point(arr_x, arr_y)
 
     ax = _get_matplot()
-    ap.plot_heatmap(ax, points, arr_c, bounding_box=bounding_box, map_zoom_level=13, coordinate_system='EPSG:4326')
+    ap.plot.heatmap(ax, points, arr_c, bounding_box=bounding_box, map_zoom_level=13, coordinate_system='EPSG:4326')
     _finalize(ax, "test_heat_map1")
 
 
@@ -174,11 +174,11 @@ def test_choroplethmap():
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
-    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
     arr_count = pandas.Series(count_data)
 
     ax = _get_matplot()
-    ap.plot_choroplethmap(ax, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=[
+    ap.plot.choroplethmap(ax, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=[
                           "#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
     _finalize(ax, "test_choropleth_map1")
 
@@ -206,7 +206,7 @@ def test_iconviz():
     png_path = dir_path + "/../images/taxi.png"
 
     ax = _get_matplot()
-    ap.plot_iconviz(ax, points, bounding_box=bounding_box,
+    ap.plot.iconviz(ax, points, bounding_box=bounding_box,
                     icon_path=png_path, coordinate_system="EPSG:4326")
     _finalize(ax, "test_icon_viz")
 
@@ -236,5 +236,5 @@ def test_fishnet_map():
     points = arctern.ST_Point(arr_x, arr_y)
 
     ax = _get_matplot()
-    ap.plot_fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+    ap.plot.fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
     _finalize(ax, "test_fishnetmap")

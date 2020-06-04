@@ -138,7 +138,7 @@ void ChoroplethMap<T>::SetColor() {
 }
 
 template <typename T>
-uint8_t* ChoroplethMap<T>::Render() {
+std::vector<uint8_t> ChoroplethMap<T>::Render() {
   WindowsInit(choropleth_vega_.window_params());
   SetColor();
   Transform();

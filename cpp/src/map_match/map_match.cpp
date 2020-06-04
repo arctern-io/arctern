@@ -14,34 +14,44 @@
  * limitations under the License.
  */
 
+#include "map_match/map_match.h"
+
 #include <algorithm>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 #include <string>
 
-#include "map_match/map_match.h"
+#define PI 3.14159
+#define RAD2DEG(x) ((x)*180.0 / PI)
 
 namespace arctern {
 namespace map_match {
-using index::IndexTree;
+using geo_indexing::IndexTree;
+
+struct Point {
+  double x;
+  double y;
+};
 
 struct Projection {
-  unsigned char* geo_str = nullptr;
-  int32_t size;
+  Point point;
+  int32_t road_id;
   double distance;
 };
 
-void destroy_geometry(std::vector<OGRGeometry*>& geos) {
-  for (int32_t i = 0; i < geos.size(); i++) {
-    OGRGeometryFactory::destroyGeometry(geos[i]);
-  }
-}
-
 Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_point) {
-  double min_distance = 100000000;
-  auto nearest_point = std::make_shared<OGRPoint>();
+  Projection projection;
+  double min_distance = std::numeric_limits<double>::max();
+  //  auto nearest_point = std::make_shared<OGRPoint>();
+  Point nearest_point;
 
   const OGRPoint* gps_point_geo = dynamic_cast<const OGRPoint*>(gps_point);
   const OGRLineString* road_geo = dynamic_cast<const OGRLineString*>(road);
+
+  if (road_geo == nullptr || gps_point_geo == nullptr) {
+    projection.distance = min_distance;
+  }
 
   double x = gps_point_geo->getX();
   double y = gps_point_geo->getY();
@@ -54,7 +64,7 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
     double y2 = road_geo->getY(i + 1);
     double L2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
     if (L2 == 0.0) {
-      throw nullptr;
+      continue;
     }
     double x1_x = x - x1;
     double y1_y = y - y1;
@@ -70,72 +80,63 @@ Projection projection_to_edge(const OGRGeometry* road, const OGRGeometry* gps_po
 
     if (min_distance >= distance) {
       min_distance = distance;
-      nearest_point->setX(prj_x);
-      nearest_point->setY(prj_y);
+      nearest_point.x = prj_x;
+      nearest_point.y = prj_y;
     }
   }
 
-  Projection projection;
-  auto wkb_size = nearest_point->WkbSize();
-  auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-  OGR_G_ExportToWkb(nearest_point.get(), OGRwkbByteOrder::wkbNDR, wkb);
-  projection.geo_str = wkb;
   projection.distance = min_distance;
-  projection.size = wkb_size;
+  projection.point = nearest_point;
 
   return projection;
 }
 
 Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
-                        const OGRGeometry* gps_point, int32_t flag) {
-  double min_distance = 100000000;
-  Projection result, projection;
+                        const OGRGeometry* gps_point) {
+  double min_distance = std::numeric_limits<double>::max();
+  Projection result;
 
   for (int32_t i = 0; i < roads.size(); i++) {
-    projection = projection_to_edge(roads[i], gps_point);
+    Projection projection = projection_to_edge(roads[i], gps_point);
     if (min_distance >= projection.distance) {
       if (min_distance >= projection.distance) {
         min_distance = projection.distance;
-
-        if (result.geo_str != nullptr) {
-          free(result.geo_str);
-        }
-
-        if (flag == 0) {
-          result = projection;
-        } else {
-          free(projection.geo_str);
-          auto wkb_size = roads[i]->WkbSize();
-          auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-          OGR_G_ExportToWkb(roads[i], OGRwkbByteOrder::wkbNDR, wkb);
-          result.geo_str = wkb;
-          result.size = wkb_size;
-        }
+        result = projection;
+        result.road_id = i;
       }
-    } else {
-      free(projection.geo_str);
     }
   }
 
   return result;
 }
 
-const std::vector<OGRGeometry*> get_road(OGRGeometry*& gps_point,
-                                         const IndexTree& index_tree) {
+const std::vector<OGRGeometry*> get_road(OGRGeometry* gps_point,
+                                         const IndexTree& index_tree,
+                                         const bool greedy_search = false,
+                                         const double distance = 100.0) {
+  auto deg_distance = RAD2DEG(distance / 6371251.46);
   std::vector<void*> matches;
+  std::vector<OGRGeometry*> results;
   {
     OGREnvelope ogr_env;
     gps_point->getEnvelope(&ogr_env);
-    geos::geom::Envelope env(ogr_env.MinX - 0.001, ogr_env.MaxX + 0.001,
-                             ogr_env.MinY - 0.001, ogr_env.MaxY + 0.001);
-    index_tree.get_tree()->query(&env, matches);
-  }
-  std::vector<OGRGeometry*> results;
-  for (auto match : matches) {
-    // match(void*) contains index as binary representation.
-    auto index = reinterpret_cast<size_t>(match);
-    auto geo = index_tree.get_geometry(index);
-    results.emplace_back(geo);
+    do {
+      results.clear();
+      matches.clear();
+      geos::geom::Envelope env(ogr_env.MinX - deg_distance, ogr_env.MaxX + deg_distance,
+                               ogr_env.MinY - deg_distance, ogr_env.MaxY + deg_distance);
+      index_tree.get_tree()->query(&env, matches);
+      for (auto match : matches) {
+        // match(void*) contains index as binary representation.
+        auto index = reinterpret_cast<size_t>(match);
+        auto geo = index_tree.get_geometry(index);
+        results.emplace_back(geo);
+      }
+      deg_distance *= 2;
+      if (!results.empty() || deg_distance > ogr_env.MinX + 90.0 ||
+          deg_distance > 90.0 - ogr_env.MinX)
+        break;
+    } while (greedy_search);
   }
 
   return results;
@@ -144,87 +145,46 @@ const std::vector<OGRGeometry*> get_road(OGRGeometry*& gps_point,
 std::vector<std::shared_ptr<arrow::Array>> compute(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points, int32_t flag) {
-  std::vector<std::shared_ptr<arrow::Array>> result;
-
-  auto roads_geo = arctern::render::GeometryExtraction(roads);
-  auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
-  auto num_gps_points = gps_points_geo.size();
-  auto index_tree = index::IndexTree::Create(IndexType::kRTree);
-  index_tree.Append(roads);
-
-  Projection projection_point;
-
-  arrow::BinaryBuilder builder;
-  int32_t index = 0;
-  int32_t offset = gps_points[index]->length();
-
-  for (int32_t i = 0; i < num_gps_points; i++) {
-    auto vector_road = get_road(gps_points_geo[i], index_tree);
-    if (vector_road.empty()) {
-      if (i == (offset - 1)) {
-        if (gps_points.size() > (index + 1)) {
-          index++;
-          offset += gps_points[index]->length();
-        }
-        std::shared_ptr<arrow::BinaryArray> projection_points;
-        builder.Finish(&projection_points);
-        result.emplace_back(projection_points);
-      }
-      continue;
-    }
-    projection_point = nearest_edge(vector_road, gps_points_geo[i], flag);
-    builder.Append(projection_point.geo_str, projection_point.size);
-
-    if (i == (offset - 1)) {
-      if (gps_points.size() > (index + 1)) {
-        index++;
-        offset += gps_points[index]->length();
-      }
-      std::shared_ptr<arrow::BinaryArray> projection_points;
-      builder.Finish(&projection_points);
-      result.emplace_back(projection_points);
-    }
-  }
-
-  destroy_geometry(gps_points_geo);
-  destroy_geometry(roads_geo);
-
-  return result;
-}
-
-std::vector<std::shared_ptr<arrow::Array>> is_near_road(
-    const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
   std::vector<std::shared_ptr<arrow::Array>> results;
-
-  auto roads_geo = arctern::render::GeometryExtraction(roads);
   auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
   auto num_gps_points = gps_points_geo.size();
-  auto index_tree = index::IndexTree::Create(IndexType::kRTree);
+  auto index_tree = IndexTree::Create(IndexType::kRTree);
   index_tree.Append(roads);
 
-  arrow::BooleanBuilder builder;
   int32_t offset = 0;
-  for (int i = 0; i < gps_points.size(); ++i) {
-    int size = gps_points[i]->length();
-    for (int j = 0; j < size; ++j) {
-      auto index = offset + j;
-      auto vector_road = get_road(gps_points_geo[index], index_tree);
-      if (vector_road.empty()) {
-        builder.Append(false);
+  for (int32_t i = 0; i < gps_points.size(); i++) {
+    arrow::BinaryBuilder builder;
+    auto len = gps_points[i]->length();
+    for (int32_t j = 0; j < len; j++) {
+      std::vector<OGRGeometry*> vector_road;
+      if (gps_points_geo[offset] == nullptr) {
+        offset++;
+        builder.AppendNull();
       } else {
-        builder.Append(true);
+        auto geo_point = gps_points_geo[offset++].get();
+        vector_road = get_road(geo_point, index_tree, true);
+        if (vector_road.empty()) {
+          builder.AppendNull();
+        } else {
+          Projection projection = nearest_edge(vector_road, geo_point);
+          if (flag == 0) {
+            OGRPoint point(projection.point.x, projection.point.y);
+            std::vector<unsigned char> str(point.WkbSize());
+            OGR_G_ExportToWkb(&point, OGRwkbByteOrder::wkbNDR, str.data());
+            builder.Append(str.data(), str.size());
+          } else {
+            auto geo = vector_road[projection.road_id];
+            std::vector<unsigned char> str(geo->WkbSize());
+            OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, str.data());
+            builder.Append(str.data(), str.size());
+          }
+        }
       }
     }
-    std::shared_ptr<arrow::BooleanArray> result;
+    std::shared_ptr<arrow::BinaryArray> result;
     builder.Finish(&result);
     results.emplace_back(result);
-    offset += size;
   }
-
-  destroy_geometry(gps_points_geo);
-  destroy_geometry(roads_geo);
-
   return results;
 }
 
@@ -242,8 +202,35 @@ std::vector<std::shared_ptr<arrow::Array>> nearest_road(
 
 std::vector<std::shared_ptr<arrow::Array>> near_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points) {
-  return is_near_road(roads, gps_points);
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, const double distance) {
+  std::vector<std::shared_ptr<arrow::Array>> results;
+  auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
+
+  auto num_gps_points = gps_points_geo.size();
+  auto index_tree = geo_indexing::IndexTree::Create(IndexType::kRTree);
+  index_tree.Append(roads);
+
+  arrow::BooleanBuilder builder;
+  int32_t offset = 0;
+  for (int i = 0; i < gps_points.size(); ++i) {
+    int size = gps_points[i]->length();
+    for (int j = 0; j < size; ++j) {
+      auto index = offset + j;
+      auto vector_road =
+          get_road(gps_points_geo[index].get(), index_tree, false, distance);
+      if (vector_road.empty()) {
+        builder.Append(false);
+      } else {
+        builder.Append(true);
+      }
+    }
+    std::shared_ptr<arrow::BooleanArray> result;
+    builder.Finish(&result);
+    results.emplace_back(result);
+    offset += size;
+  }
+
+  return results;
 }
 
 }  // namespace map_match

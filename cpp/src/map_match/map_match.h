@@ -19,6 +19,7 @@
 #include <arrow/array.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <memory>
 #include <vector>
 
@@ -28,7 +29,7 @@
 namespace arctern {
 namespace map_match {
 
-using IndexType = arctern::index::IndexType;
+using IndexType = arctern::geo_indexing::IndexType;
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
@@ -40,7 +41,7 @@ std::vector<std::shared_ptr<arrow::Array>> nearest_road(
 
 std::vector<std::shared_ptr<arrow::Array>> near_road(
     const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& gps_points);
+    const std::vector<std::shared_ptr<arrow::Array>>& gps_points, const double distance);
 
 }  // namespace map_match
 }  // namespace arctern

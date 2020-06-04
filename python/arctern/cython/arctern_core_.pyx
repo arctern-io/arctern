@@ -40,13 +40,6 @@ def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, 
     result = arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def wkt2wkb(arr_wkt):
-    return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
-
-def wkb2wkt(arr_wkb):
-    return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
-
-
 # render drawing api:
 def point_map(vega, points_list):
     cdef vector[shared_ptr[CArray]] points_vector
@@ -395,12 +388,12 @@ def nearest_road(object roads,object gps_points):
     result = arctern_core_pxd.nearest_road(network, gps_points_to_match)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def near_road(object roads,object gps_points):
+def near_road(object roads,object gps_points, distance):
     cdef vector[shared_ptr[CArray]] network
     for road in roads:
         network.push_back(pyarrow_unwrap_array(road))
     cdef vector[shared_ptr[CArray]] gps_points_to_match
     for gps_point in gps_points:
         gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.near_road(network, gps_points_to_match)
+    result = arctern_core_pxd.near_road(network, gps_points_to_match, distance)
     return [pyarrow_wrap_array(ptr) for ptr in result]
