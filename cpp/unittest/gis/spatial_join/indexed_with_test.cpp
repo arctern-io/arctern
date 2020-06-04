@@ -25,6 +25,7 @@
 
 #include "arrow/gis_api.h"
 #include "gis/test_common/transforms.h"
+#include "gis/gdal/format_conversion.h"
 
 using std::string;
 using std::vector;
@@ -44,7 +45,7 @@ TEST(IndexedWithin, Naive) {
   status = string_builder11.Append(wkt15);
   std::shared_ptr<arrow::StringArray> string_array11;
   status = string_builder11.Finish(&string_array11);
-  auto wkb_point11 = arctern::render::WktToWkb(string_array11);
+  auto wkb_point11 = arctern::gis::gdal::WktToWkb(string_array11);
 
   std::string wkt21 = "POINT (60 60)";
   std::string wkt22 = "POINT (40 40)";
@@ -59,7 +60,7 @@ TEST(IndexedWithin, Naive) {
   status = string_builder12.Append(wkt25);
   std::shared_ptr<arrow::StringArray> string_array12;
   status = string_builder12.Finish(&string_array12);
-  auto wkb_point12 = arctern::render::WktToWkb(string_array12);
+  auto wkb_point12 = arctern::gis::gdal::WktToWkb(string_array12);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb_point11, wkb_point12};
 
@@ -98,7 +99,7 @@ TEST(IndexedWithin, Naive) {
   status = string_builder2.Append(polygon4);
   std::shared_ptr<arrow::StringArray> string_array2;
   status = string_builder2.Finish(&string_array2);
-  auto wkb_polygon = arctern::render::WktToWkb(string_array2);
+  auto wkb_polygon = arctern::gis::gdal::WktToWkb(string_array2);
 
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb_polygon};
 
@@ -205,7 +206,7 @@ TEST(IndexedWithin, NullTest) {
   auto status = string_builder11.Append(wkt11);
   std::shared_ptr<arrow::StringArray> string_array11;
   status = string_builder11.Finish(&string_array11);
-  auto wkb_point11 = arctern::render::WktToWkb(string_array11);
+  auto wkb_point11 = arctern::gis::gdal::WktToWkb(string_array11);
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb_point11};
   std::string polygon1 =
       "POLYGON (("
@@ -227,7 +228,7 @@ TEST(IndexedWithin, NullTest) {
   status = string_builder2.Append(polygon2);
   std::shared_ptr<arrow::StringArray> string_array2;
   status = string_builder2.Finish(&string_array2);
-  auto wkb_polygon = arctern::render::WktToWkb(string_array2);
+  auto wkb_polygon = arctern::gis::gdal::WktToWkb(string_array2);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb_polygon};
   std::string index_type = "RTREE";
   auto out = arctern::gis::ST_IndexedWithin(point_vec, polygon_vec);

@@ -40,13 +40,6 @@ def transform_and_projection(geos_list, src_rs, dst_rs, bottom_right, top_left, 
     result = arctern_core_pxd.transform_and_projection(geos_vector, src_rs, dst_rs, bottom_right, top_left, height, width)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
-def wkt2wkb(arr_wkt):
-    return pyarrow_wrap_array(arctern_core_pxd.WktToWkb(pyarrow_unwrap_array(arr_wkt)))
-
-def wkb2wkt(arr_wkb):
-    return pyarrow_wrap_array(arctern_core_pxd.WkbToWkt(pyarrow_unwrap_array(arr_wkb)))
-
-
 # render drawing api:
 def point_map(vega, points_list):
     cdef vector[shared_ptr[CArray]] points_vector

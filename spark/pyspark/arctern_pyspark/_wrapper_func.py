@@ -55,8 +55,6 @@ __all__ = [
     "ST_AsGeoJSON",
     "Projection",
     "TransformAndProjection",
-    "WktToWkb",
-    "WkbToWkt",
 ]
 
 from pyspark.sql.functions import pandas_udf, PandasUDFType
@@ -69,14 +67,6 @@ def Projection(geos, bottom_geo2, top_geo1, height, width):
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def TransformAndProjection(geos, src_rs, dst_rs, bottom_geo2, top_geo1, height, width):
     return arctern.transform_and_projection(geos, src_rs[0], dst_rs[0], bottom_geo2[0], top_geo1[0], height[0], width[0])
-
-@pandas_udf("binary", PandasUDFType.SCALAR)
-def WktToWkb(wkts):
-    return arctern.wkt2wkb(wkts)
-
-@pandas_udf("string", PandasUDFType.SCALAR)
-def WkbToWkt(wkbs):
-    return arctern.wkb2wkt(wkbs)
 
 @pandas_udf("binary", PandasUDFType.SCALAR)
 def ST_PointFromText(text):
