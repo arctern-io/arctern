@@ -1,30 +1,47 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# pylint: disable=too-many-lines,redefined-outer-name
+
+import pytest
 import pandas as pd
 from arctern import GeoSeries
 import arctern
-import pytest
 
-nyc_schema={
-    "VendorID":"string",
-    "tpep_pickup_datetime":"string",
-    "tpep_dropoff_datetime":"string",
-    "passenger_count":"int64",
-    "trip_distance":"double",
-    "pickup_longitude":"double",
-    "pickup_latitude":"double",
-    "dropoff_longitude":"double",
-    "dropoff_latitude":"double",
-    "fare_amount":"double",
-    "tip_amount":"double",
-    "total_amount":"double",
-    "buildingid_pickup":"int64",
-    "buildingid_dropoff":"int64",
-    "buildingtext_pickup":"string",
-    "buildingtext_dropoff":"string",
+nyc_schema = {
+    "VendorID": "string",
+    "tpep_pickup_datetime": "string",
+    "tpep_dropoff_datetime": "string",
+    "passenger_count": "int64",
+    "trip_distance": "double",
+    "pickup_longitude": "double",
+    "pickup_latitude": "double",
+    "dropoff_longitude": "double",
+    "dropoff_latitude": "double",
+    "fare_amount": "double",
+    "tip_amount": "double",
+    "total_amount": "double",
+    "buildingid_pickup": "int64",
+    "buildingid_dropoff": "int64",
+    "buildingtext_pickup": "string",
+    "buildingtext_dropoff": "string",
 }
 
-def trans2wkb4series(s,index=range(0,0)):
-    if isinstance(index,range):
-        index = range(0,s.size)
+
+def trans2wkb4series(s, index=range(0, 0)):
+    if isinstance(index, range):
+        index = range(0, s.size)
     import pygeos
     s_arr = []
     if not isinstance(s, pd.Series):
@@ -36,23 +53,25 @@ def trans2wkb4series(s,index=range(0,0)):
                 s_arr.append(None)
             else:
                 s_arr.append(pygeos.to_wkb(pygeos.Geometry(s[i])))
-        s = pd.Series(s_arr,index=index)
+        s = pd.Series(s_arr, index=index)
     except:
         return None
     return s
 
 
 nyc_df = pd.read_csv("/home/czs/nyc_taxi.csv",
-                 dtype=nyc_schema,
-                 date_parser=pd.to_datetime,
-                 parse_dates=["tpep_pickup_datetime","tpep_dropoff_datetime"])
+                     dtype=nyc_schema,
+                     date_parser=pd.to_datetime,
+                     parse_dates=["tpep_pickup_datetime", "tpep_dropoff_datetime"])
 
 geo_dropoff = nyc_df['buildingtext_dropoff'].dropna().head(10)
 geo_pickup = nyc_df['buildingtext_pickup'].dropna().head(10)
 
+
 @pytest.fixture()
 def geo_s():
     return GeoSeries(geo_dropoff.to_list())
+
 
 @pytest.fixture()
 def pd_s():
@@ -63,49 +82,32 @@ def pd_s():
 def test_equals(geo_s, pd_s):
     assert not geo_s.equals(pd_s)
 
-def test_first(geo_s, pd_s):
-    pass
-    # geo_s.first(0)
-    """
-    :param geo_s:
-    :param pd_s:         if not isinstance(self.index, DatetimeIndex):
->           raise TypeError("'first' only supports a DatetimeIndex index")
-E           TypeError: 'first' only supports a DatetimeIndex index
-    :return:
-    """
 
-def test_last(geo_s, pd_s):
+@pytest.mark.skip("not support first")
+def test_first():
     pass
-    # geo_s.last(1)
-    """
-    >           raise TypeError("'last' only supports a DatetimeIndex index")
-    E           TypeError: 'last' only supports a DatetimeIndex index
-    """
+
+@pytest.mark.skip("not support last")
+def test_last():
+    pass
 
 def test_head(geo_s, pd_s):
     target = GeoSeries([])
     # ret = geo_s.head(0)
     # x = (ret == target)
-
     target = pd.Series([])
     # ret = pd_s.head(0)
     # y = ret == target
 
-def test_idmax():
-    indexs = ['A', 'B', 'C', 'D', 'E', 'F', "G", "H", "I"]
-    geo_s = GeoSeries(geo_dropoff.to_list(), index = indexs)
-    try:
-        r = geo_s.idxmax()
-    except:
-        error_msg = "E           TypeError: reduction operation 'argmax' not allowed for this dtype"
 
+@pytest.mark.skip("not support idmax")
+def test_idmax():
+    pass
+
+
+@pytest.mark.skip("not support idmin")
 def test_idmin():
-    indexs = ['A', 'B', 'C', 'D', 'E', 'F', "G", "H", "I"]
-    geo_s = GeoSeries(geo_dropoff.to_list(), index = indexs)
-    try:
-        r = geo_s.idxmin()
-    except:
-        error_msg = "E           TypeError: reduction operation 'argmin' not allowed for this dtype"
+    pass
 
 
 def test_isin(geo_s, pd_s):
@@ -114,11 +116,13 @@ def test_isin(geo_s, pd_s):
     assert ret[1]
     assert not ret[2]
 
+
 def test_reindex(geo_s, pd_s):
     new_index = [1, 2, 'a', "b", "c", "d", "h", "i", "k"]
     ret1 = geo_s.reindex(new_index)
     ret1.dropna()
     assert any(ret1)
+
 
 def test_reindex_like(geo_s, pd_s):
     index_ = ['Coca Cola', 'Sprite', 'Coke', 'Fanta', 'Dew', 'ThumbsUp', "i", "j", "k"]
@@ -131,6 +135,7 @@ def test_reindex_like(geo_s, pd_s):
     sr2.index = index_
     result1 = geo_s.reindex_like(sr2)
     result2 = sr2.reindex_like(geo_s)
+
 
 def test_rename(geo_s):
     geo_s.rename("test_1", inplace=True)
@@ -148,19 +153,23 @@ def test_reset_index(geo_s):
     ret = old_index == geo_s.index
     assert all(ret)
 
+
 def test_sample(geo_s):
     ret = geo_s.sample(frac=0.5, replace=True, random_state=1)
     assert ret.count() == 4
 
+
 def test_set_axis(geo_s):
     indexs = pd.Index(['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c'], dtype='object')
-    geo_s = geo_s.set_axis(['a', 'b', 'c']*3, axis='index')
+    geo_s = geo_s.set_axis(['a', 'b', 'c'] * 3, axis='index')
     assert all(geo_s.index == indexs)
+
 
 def test_take(geo_s):
     geo_s = geo_s.take([0, 3, 4])
     indexs = pd.Index([0, 3, 4], dtype='object')
     assert all(geo_s.index == indexs)
+
 
 def test_tail(geo_s):
     part1 = geo_s.head(3)
@@ -168,8 +177,9 @@ def test_tail(geo_s):
     part3 = part1.append(part2)
     pd.testing.assert_series_equal(part3, geo_s, check_dtype=False)
 
+
 def test_truncate(geo_s):
-    part1 = geo_s.truncate(before = 2, after = 9)
+    part1 = geo_s.truncate(before=2, after=9)
     part2 = geo_s.tail(7)
     pd.testing.assert_series_equal(part1, part2, check_dtype=False)
 
@@ -180,24 +190,28 @@ def test_where(geo_s, pd_s):
     ret3 = ret1.append(ret2)
     assert ret3.count() == geo_s.count()
 
+
 def test_mask(geo_s):
     ret1 = geo_s.mask(geo_s.npoints < 10)
     ret2 = geo_s.mask(geo_s.npoints >= 10)
     assert (geo_s.count() == (ret1.count() + ret2.count()))
 
+
 def test_add_prefix(geo_s):
-    target = pd.Index([ "prefix_%d"%i for i in range(geo_s.count())], dtype='object')
+    target = pd.Index(["prefix_%d" % i for i in range(geo_s.count())], dtype='object')
     geo_s = geo_s.add_prefix("prefix_")
     assert all(geo_s.index == target)
 
+
 def test_add_prefix(geo_s):
-    target = pd.Index([ "%d_suffix"%i for i in range(geo_s.count())], dtype='object')
+    target = pd.Index(["%d_suffix" % i for i in range(geo_s.count())], dtype='object')
     geo_s = geo_s.add_suffix("_suffix")
     assert all(geo_s.index == target)
 
+
 def test_filter(geo_s, pd_s):
     total = geo_s.count()
-    index = pd.Index([ "%d_suffix"%i if i % 2 else i for i in range(total)], dtype='object')
+    index = pd.Index(["%d_suffix" % i if i % 2 else i for i in range(total)], dtype='object')
 
     geo_s.index = index
     pd_s.index = index
@@ -206,15 +220,18 @@ def test_filter(geo_s, pd_s):
     ret2 = pd_s.filter(regex='_suffix$', axis=0)
     pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
+
 def test_isna(geo_s, pd_s):
     ret1 = geo_s.isna()
     ret2 = pd_s.isna()
     pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
+
 def test_notna(geo_s, pd_s):
     ret1 = geo_s.notna()
     ret2 = pd_s.notna()
     pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
+
 
 def test_dropna(geo_s, pd_s):
     ret1 = geo_s.dropna()
@@ -232,6 +249,7 @@ def test_fillna(geo_s, pd_s):
     ret2 = pd_s.fillna(ele2)
     pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
+
 def test_interpolate(geo_s, pd_s):
     geo_s[1] = pd.NA
     geo_s[2] = pd.NA
@@ -245,30 +263,34 @@ def test_interpolate(geo_s, pd_s):
 
 
 @pytest.mark.skip("not support skew")
-def test_skew(geo_s):
+def test_skew():
     pass
 
+
 @pytest.mark.skip("not support std")
-def test_std(geo_s):
+def test_std():
     pass
 
 
 @pytest.mark.skip("not support var")
-def test_var(geo_s):
+def test_var():
     pass
 
+
 @pytest.mark.skip("not support sum")
-def test_sum(geo_s):
+def test_sum():
     pass
 
 
 @pytest.mark.skip("not support kurtosis")
-def test_kurtosis(geo_s):
+def test_kurtosis():
     pass
+
 
 def test_unique(geo_s, pd_s):
     ret1 = geo_s.unique()
     ret2 = pd_s.unique()
+
     assert all(ret1 == ret2)
 
 def test_nunique(geo_s, pd_s):
@@ -281,27 +303,32 @@ def test_isunique(geo_s, pd_s):
     ret2 = pd_s.is_unique
     assert ret1 == ret2
 
+
 def test_is_monotonic(geo_s, pd_s):
     ret1 = geo_s.is_monotonic
     ret2 = pd_s.is_monotonic
     assert ret1 == ret2
+
 
 def test_is_monotonic_increasing(geo_s, pd_s):
     ret1 = geo_s.is_monotonic_increasing
     ret2 = pd_s.is_monotonic_increasing
     assert ret1 == ret2
 
+
 def test_is_monotonic_decreasing(geo_s, pd_s):
     ret1 = geo_s.is_monotonic_decreasing
     ret2 = pd_s.is_monotonic_decreasing
     assert ret1 == ret2
 
+
 @pytest.mark.skip("to do")
-def test_value_counts(geo_s, pd_s):
+def test_value_counts():
     pass
 
+
 def test_align(geo_s, pd_s):
-    other = pd.Series([ 1, 2, 3, 4])
+    other = pd.Series([1, 2, 3, 4])
     ops = ["left", "right", "outer"]
     for op in ops:
         g_1, new_right_1 = geo_s.align(other, join=op)
@@ -316,6 +343,7 @@ def test_drop(geo_s, pd_s):
     ret1 = geo_s.drop(labels=["A", "B"])
     ret2 = pd_s.drop(labels=["A", "B"])
     pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
+
 
 def test_drop_level(geo_s, pd_s):
     indexs = pd.MultiIndex.from_product([['one', 'two', 'three'], ['a', 'b', 'c']])
@@ -338,6 +366,7 @@ def test_append(geo_s, pd_s):
     pd_wkb_s2 = trans2wkb4series(pd.Series(geo_pickup.to_list()))
     pd_append_wkb_s = pd_s.append(pd_wkb_s2)
     pd.testing.assert_series_equal(geo_append_s, pd_append_wkb_s, check_dtype=False)
+
 
 # pd.set_option("max_colwidth", 1000)
 
@@ -459,11 +488,9 @@ def test_between_time(geo_s, pd_s):
     pd.testing.assert_series_equal(geo_between_time_s, pd_betweem_time_s, check_dtype=False)
 
 
-
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.tshift.html
 def test_tshift():
     pass
-
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.slice_shift.html
@@ -482,7 +509,7 @@ def test_argsort(geo_s, pd_s):
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.argmin.html
 @pytest.mark.skip("not support argmin")
-def test_argmin(geo_s, pd_s):
+def test_argmin():
     pass
     """
     TypeError: putmask() argument 1 must be numpy.ndarray, not GeoArray
@@ -588,7 +615,7 @@ def test_eq(geo_s, pd_s):
 
 
 @pytest.mark.skip("not support product")
-def test_product(geo_s, pd_s):
+def test_product():
     pass
     """
     with pytest.raises(TypeError):
@@ -774,6 +801,7 @@ def test_cumsum():
 def test_diff():
     pass
 
+
 def test_factorize(geo_s, pd_s):
     geo_codes, geo_uniques = pd.factorize(geo_s)
     pd_codes, pd_uniques = pd.factorize(pd_s)
@@ -813,7 +841,7 @@ def test_min():
 
 
 @pytest.mark.skip("not support mode")
-def test_mode(geo_s, pd_s):
+def test_mode():
     pass
 
 
@@ -853,6 +881,7 @@ def test_rank():
 def test_sem():
     pass
 
+
 def test_drop_duplicates(geo_s, pd_s):
     geo_s[geo_s.count()] = geo_s[0]
     pd_s[pd_s.count()] = pd_s[0]
@@ -883,7 +912,8 @@ def test_duplicated(geo_s, pd_s):
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html
 def test_Series(geo_s, pd_s):
-    pd.testing.assert_series_equal(geo_s,pd_s,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)  # (as expected)
+
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.index.html
 def test_index(geo_s, pd_s):
@@ -897,6 +927,7 @@ def test_array(geo_s, pd_s):
     geo_res = geo_s.array
     pd_res = pd_s.array
     assert (geo_res == pd_res).all()
+
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.values.html
 def test_values(geo_s, pd_s):
@@ -942,8 +973,7 @@ def test_size(geo_s, pd_s):
 def test_T(geo_s, pd_s):
     geo_res = geo_s.T
     pd_res = pd_s.T
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
-
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.memory_usage.html
 # def test_memory_usage(geo_s, pd_s):
@@ -971,6 +1001,7 @@ def test_dtypes(geo_s):
     # geo_s = GeoSeries(geo_dropoff.to_list())
     assert geo_s.dtypes == 'GeoDtype'
 
+
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.name.html
 def test_name(geo_s, pd_s):
     geo_res = geo_s.name
@@ -982,28 +1013,28 @@ def test_name(geo_s, pd_s):
 def test_astype(geo_s, pd_s):
     geo_res = geo_s.astype('object')
     pd_res = pd_s.astype('object')
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.convert_dtypes.html
 def test_convert_dtypes(geo_s, pd_s):
     geo_res = geo_s.convert_dtypes()
     pd_res = pd_s.convert_dtypes()
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.infer_objects.html
 def test_infer_objects(geo_s, pd_s):
     geo_res = geo_s.infer_objects()
     pd_res = pd_s.infer_objects()
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.copy.html
 def test_copy(geo_s, pd_s):
     geo_res = geo_s.copy()
     pd_res = pd_s.copy()
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.bool.html
@@ -1031,9 +1062,9 @@ def test_to_period(geo_s, pd_s):
     geo_s.index = index
     pd_s.index = index
 
-    geo_res = geo_s.to_period(copy=False,freq='30T')
-    pd_res = pd_s.to_period(copy=False,freq='30T')
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False)
+    geo_res = geo_s.to_period(copy=False, freq='30T')
+    pd_res = pd_s.to_period(copy=False, freq='30T')
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.to_timestamp.html
@@ -1044,7 +1075,7 @@ def test_to_timestamp(geo_s, pd_s):
 
     geo_res = geo_s.to_timestamp()
     pd_res = pd_s.to_timestamp()
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.to_list.html
@@ -1053,8 +1084,9 @@ def test_to_list(geo_s, pd_s):
     pd_res = pd_s.to_list()
     assert geo_res == pd_res
 
+
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.__array__.html
-def test_array(geo_s, pd_s):
+def test___array__(geo_s, pd_s):
     geo_res = geo_s.__array__()
     pd_res = pd_s.__array__()
     assert (geo_res == pd_res).all()
@@ -1080,18 +1112,19 @@ def test_iat(geo_s, pd_s):
     pd_res = pd_s.iat[2]
     assert geo_res == pd_res
 
+
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.iloc.html
 def test_iloc(geo_s, pd_s):
     geo_res = geo_s.iloc[:2]
     pd_res = pd_s.iloc[:2]
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.loc.html
 def test_loc(geo_s, pd_s):
     geo_res = geo_s.loc[:2]
     pd_res = pd_s.loc[:2]
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.__iter__.html
@@ -1144,6 +1177,7 @@ def test_pop(geo_s, pd_s):
     pd_res = pd_s.pop(1)
     assert geo_res == pd_res
 
+
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.item.html
 def test_item(geo_s, pd_s):
     geo_res = geo_s.head(1).item()
@@ -1190,13 +1224,13 @@ def test_combine(geo_s, pd_s):
     geo_s_combine = GeoSeries(geo_pickup.to_list())
     pd_s_combine = pd.Series(geo_pickup.to_list())
     pd_s_combine_wkb = trans2wkb4series(pd_s_combine)
-    pd.testing.assert_series_equal(geo_s,pd_s,check_dtype=False) # (as expected)
-    pd.testing.assert_series_equal(geo_s_combine,pd_s_combine_wkb,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)  # (as expected)
+    pd.testing.assert_series_equal(geo_s_combine, pd_s_combine_wkb, check_dtype=False)  # (as expected)
 
     take_any = lambda p1, p2: p2 if (p1 != p2) else p1
-    geo_res = geo_s.combine(geo_s_combine,take_any)
-    pd_res = pd_s.combine(pd_s_combine_wkb,take_any)
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    geo_res = geo_s.combine(geo_s_combine, take_any)
+    pd_res = pd_s.combine(pd_s_combine_wkb, take_any)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.combine_first.html
@@ -1204,12 +1238,12 @@ def test_combine_first(geo_s, pd_s):
     geo_s_combine = GeoSeries(geo_pickup.to_list())
     pd_s_combine = pd.Series(geo_pickup.to_list())
     pd_s_combine_wkb = trans2wkb4series(pd_s_combine)
-    pd.testing.assert_series_equal(geo_s,pd_s,check_dtype=False) # (as expected)
-    pd.testing.assert_series_equal(geo_s_combine,pd_s_combine_wkb,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)  # (as expected)
+    pd.testing.assert_series_equal(geo_s_combine, pd_s_combine_wkb, check_dtype=False)  # (as expected)
 
     geo_res = geo_s.combine_first(geo_s_combine)
     pd_res = pd_s.combine_first(pd_s_combine_wkb)
-    pd.testing.assert_series_equal(geo_res,pd_res,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_res, pd_res, check_dtype=False)  # (as expected)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.round.html
@@ -1228,24 +1262,11 @@ def test_ne(geo_s, pd_s):
     geo_s_compare = GeoSeries(geo_pickup.to_list())
     pd_s_compare = pd.Series(geo_pickup.to_list())
     pd_s_compare_wkb = trans2wkb4series(pd_s_compare)
-    pd.testing.assert_series_equal(geo_s,pd_s,check_dtype=False) # (as expected)
-    pd.testing.assert_series_equal(geo_s_compare,pd_s_compare_wkb,check_dtype=False) # (as expected)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)  # (as expected)
+    pd.testing.assert_series_equal(geo_s_compare, pd_s_compare_wkb, check_dtype=False)  # (as expected)
 
     geo_res = geo_s.ne(geo_s_compare)
     pd_res = pd_s.ne(pd_s_compare_wkb)
-    assert (geo_res == pd_res).all()
-
-
-# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.eq.html
-def test_eq(geo_s, pd_s):
-    geo_s_compare = GeoSeries(geo_pickup.to_list())
-    pd_s_compare = pd.Series(geo_pickup.to_list())
-    pd_s_compare_wkb = trans2wkb4series(pd_s_compare)
-    pd.testing.assert_series_equal(geo_s,pd_s,check_dtype=False) # (as expected)
-    pd.testing.assert_series_equal(geo_s_compare,pd_s_compare_wkb,check_dtype=False) # (as expected)
-
-    geo_res = geo_s.eq(geo_s_compare)
-    pd_res = pd_s.eq(pd_s_compare_wkb)
     assert (geo_res == pd_res).all()
 
 def test_to_string(geo_s):
