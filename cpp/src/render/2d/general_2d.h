@@ -16,6 +16,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "render/2d/input.h"
 #ifdef USE_GPU
@@ -31,7 +32,7 @@ class General2D {
  public:
   ~General2D();
 
-  virtual uint8_t* Render() = 0;
+  virtual std::vector<uint8_t> Render() = 0;
 
   virtual void Draw() = 0;
 
@@ -40,7 +41,7 @@ class General2D {
 
   void Finalize();
 
-  uint8_t* Output();
+  std::vector<uint8_t> Output();
 
   void InitBuffer(WindowParams& window_params);
 
@@ -48,8 +49,6 @@ class General2D {
 
  public:
   unsigned char* mutable_buffer() { return buffer_; }
-
-  int output_image_size() { return output_image_size_; }
 
  protected:
   arrow::ArrayVector array_vector_;

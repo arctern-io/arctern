@@ -27,7 +27,7 @@
 namespace arctern {
 namespace gis {
 namespace spatial_join {
-using index::IndexTree;
+using geo_indexing::IndexTree;
 
 Int32ArrayPtr left_join(const WkbArrayPtr& lefts, const IndexTree& index_tree) {
   arrow::Int32Builder builder;
@@ -82,7 +82,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     throw std::invalid_argument("wrong index_type: " + index_type);
   }
 
-  auto index = index::IndexTree::Create(type);
+  auto index = geo_indexing::IndexTree::Create(type);
   index.Append(polygons);
   return left_join(points, index);
 }

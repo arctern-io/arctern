@@ -33,7 +33,7 @@ class ChoroplethMap : public General2D {
 
   ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, T* count, int64_t num_vertices);
 
-  uint8_t* Render() final;
+  std::vector<uint8_t> Render() final;
 
   void Draw() final;
 

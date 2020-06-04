@@ -29,7 +29,7 @@
 namespace arctern {
 namespace render {
 
-std::vector<OGRGeometry*> GeometryExtraction(
+std::vector<OGRGeometryUniquePtr> GeometryExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
 OGRGeometryUniquePtr GeometryExtraction(nonstd::string_view wkb);
@@ -38,7 +38,7 @@ std::vector<std::string> WkbExtraction(
     const std::vector<std::shared_ptr<arrow::Array>>& arrs);
 
 std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
-    std::vector<OGRGeometry*>&& geos, int arrays_size);
+    const std::vector<OGRGeometryUniquePtr>& geos, int arrays_size);
 
 template <typename T>
 std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {

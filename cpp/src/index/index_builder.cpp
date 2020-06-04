@@ -34,7 +34,7 @@
 #include "render/utils/render_utils.h"
 
 namespace arctern {
-namespace index {
+namespace geo_indexing {
 
 IndexTree IndexTree::Create(IndexType type) {
   using RTree = GEOS_DLL::geos::index::strtree::STRtree;
@@ -59,6 +59,11 @@ IndexTree IndexTree::Create(IndexType type) {
 
 void IndexTree::Append(const WkbArrayPtr& right) {
   for (int i = 0; i < right->length(); ++i) {
+    if (right->IsNull(i)) {
+      envelopes_.emplace_back(0, 0, 0, 0);
+      geometries_.emplace_back(nullptr);
+      continue;
+    }
     auto view = right->GetView(i);
     auto append_index = geometries_.size();
     geometries_.emplace_back(render::GeometryExtraction(view));
@@ -81,5 +86,5 @@ void IndexTree::Append(const std::vector<ArrayPtr>& right) {
   }
 }
 
-}  // namespace index
+}  // namespace geo_indexing
 }  // namespace arctern

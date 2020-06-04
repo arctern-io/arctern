@@ -715,7 +715,7 @@ void WeightedPointMap<T>::SetPointSize(T* ptr) {
 }
 
 template <typename T>
-uint8_t* WeightedPointMap<T>::Render() {
+std::vector<uint8_t> WeightedPointMap<T>::Render() {
   WindowsInit(weighted_point_vega_.window_params());
 #ifdef USE_GPU
   Shader();

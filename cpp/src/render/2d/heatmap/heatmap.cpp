@@ -219,7 +219,7 @@ void HeatMap<T>::Shader() {
 #endif
 
 template <typename T>
-uint8_t* HeatMap<T>::Render() {
+std::vector<uint8_t> HeatMap<T>::Render() {
   WindowsInit(heatmap_vega_.window_params());
   DataInit();
 #ifdef USE_GPU

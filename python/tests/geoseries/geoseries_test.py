@@ -117,6 +117,16 @@ class TestConstructor:
         for i in index:
             assert geo_s[i] == geo_s[index[0]]
 
+    def test_from_geopandas(self):
+        import geopandas as gpd
+        from shapely.geometry import Point
+        gpd_s = gpd.GeoSeries([Point(1, 1), Point(1, 2), None], index=[1, 2, 3], crs='EPSG:4326')
+        s = GeoSeries.from_geopandas(gpd_s)
+        assert_is_geoseries(s)
+        assert s.crs == "EPSG:4326"
+        assert s.to_wkt().to_list() == [make_point(1, 1), make_point(1, 2), None]
+        assert s.index.to_list() == [1, 2, 3]
+
 
 class TestType:
     def setup_method(self):
@@ -263,3 +273,15 @@ def test_geoseries_type_by_df_box_col_values():
     series = Series([1, None, 2, 3])
     df = DataFrame({'s': series})
     assert isinstance(df['s'], type(series))
+
+
+def test_to_geopandas():
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = None
+    data = GeoSeries([p1, p2], crs="EPSG:4326")
+    rst = data.to_geopandas()
+
+    import shapely
+    assert rst[0] == shapely.geometry.Polygon(((0, 0), (4, 0), (4, 4), (0, 4), (0, 0)))
+    assert rst[1] is None
+    assert rst.crs.to_string() == "EPSG:4326"

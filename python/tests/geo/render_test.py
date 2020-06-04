@@ -152,7 +152,7 @@ def test_choropleth_map():
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
-    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
     arr_count = pandas.Series(count_data)
 
     vega = vega_choroplethmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
