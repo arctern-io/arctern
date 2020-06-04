@@ -33,18 +33,18 @@
 namespace arctern {
 namespace render {
 
-std::shared_ptr<arrow::StringArray> out_pic(std::vector<uint8_t> output_image) {
+std::shared_ptr<arrow::BinaryArray> out_pic(std::vector<uint8_t> output_image) {
   if (output_image.empty()) {
     std::string err_msg =
         "Null image buffer, in most cases, it was caused by incorrect vega json";
     throw std::runtime_error(err_msg);
   }
 
-  arrow::StringBuilder string_builder;
+  arrow::BinaryBuilder string_builder;
   std::string image_buffer(output_image.begin(), output_image.end());
-  auto status = string_builder.Append(image_buffer);
+  auto status = string_builder.Append(image_buffer.data(), image_buffer.size());
 
-  std::shared_ptr<arrow::StringArray> string_array;
+  std::shared_ptr<arrow::BinaryArray> string_array;
   status = string_builder.Finish(&string_array);
 
   return string_array;
@@ -569,7 +569,7 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
   return res;
 }
 
-std::shared_ptr<arrow::StringArray> point_map(
+std::shared_ptr<arrow::BinaryArray> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -591,7 +591,7 @@ std::shared_ptr<arrow::StringArray> point_map(
   return out_pic(pointmap(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::StringArray> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -613,7 +613,7 @@ std::shared_ptr<arrow::StringArray> weighted_point_map(
   return out_pic(weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::StringArray> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -670,7 +670,7 @@ std::shared_ptr<arrow::StringArray> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::StringArray> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
@@ -738,7 +738,7 @@ std::shared_ptr<arrow::StringArray> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::StringArray> heat_map(
+std::shared_ptr<arrow::BinaryArray> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -794,7 +794,7 @@ std::shared_ptr<arrow::StringArray> heat_map(
   }
 }
 
-std::shared_ptr<arrow::StringArray> choropleth_map(
+std::shared_ptr<arrow::BinaryArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -849,7 +849,7 @@ std::shared_ptr<arrow::StringArray> choropleth_map(
   }
 }
 
-std::shared_ptr<arrow::StringArray> icon_viz(
+std::shared_ptr<arrow::BinaryArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -871,7 +871,7 @@ std::shared_ptr<arrow::StringArray> icon_viz(
   return out_pic(iconviz(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::StringArray> fishnet_map(
+std::shared_ptr<arrow::BinaryArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {

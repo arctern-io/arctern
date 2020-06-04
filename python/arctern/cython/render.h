@@ -38,43 +38,43 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width);
 
-std::vector<uint8_t> point_map(
+std::shared_ptr<arrow::StringArray> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
 // two args api: point_map(wkt, conf)
-std::vector<uint8_t> weighted_point_map(
+std::shared_ptr<arrow::StringArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
 // three args api: point_map(wkt, c, conf), point_map(wkt, s, conf)
-std::vector<uint8_t> weighted_point_map(
+std::shared_ptr<arrow::StringArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
 // four args api: point_map(wkt, c, s, conf)
-std::vector<uint8_t> weighted_point_map(
+std::shared_ptr<arrow::StringArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
     const std::string& conf);
 
-std::vector<uint8_t> heat_map(
+std::shared_ptr<arrow::StringArray> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::vector<uint8_t> choropleth_map(
+std::shared_ptr<arrow::StringArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::vector<uint8_t> icon_viz(
+std::shared_ptr<arrow::StringArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
-std::vector<uint8_t> fishnet_map(
+std::shared_ptr<arrow::StringArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);

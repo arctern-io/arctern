@@ -1373,7 +1373,12 @@ def point_map_layer(vega, points, transform=True):
 
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.point_map(vega_string, geos_rs)
-    return base64.b64encode(bytes(rs))
+    rs = rs.to_pandas()
+    print("get here^&&&&&&&&&&&&&&&&&&&&")
+    print(type(rs))
+    print(type(rs[0]))
+    print(rs[0])
+    return base64.b64encode(rs[0])
 
 
 # pylint: disable=too-many-branches
