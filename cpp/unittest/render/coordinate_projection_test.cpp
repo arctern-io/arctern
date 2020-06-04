@@ -19,6 +19,7 @@
 #include <ogr_geometry.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   // param1: wkt string
@@ -31,7 +32,7 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   // param2: src_rs
   std::string src_ts = "EPSG:4326";
@@ -90,7 +91,7 @@ TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   // param2: src_rs
   std::string src_ts = "EPSG:4326";
@@ -130,7 +131,7 @@ TEST(PROJECTION_TEST, POINT_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
   auto arr = arctern::render::projection(vec, bottom_right, top_left, 200, 300);
@@ -174,7 +175,7 @@ TEST(PROJECTION_TEST, POLYGON_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> vec{wkb};
   auto arr = arctern::render::projection(vec, bottom_right, top_left, 200, 300);
@@ -217,7 +218,7 @@ TEST(TRANSFORM_PROJECTION_TEST, NULL_TEST) {
   std::shared_ptr<arrow::StringArray> string_array;
   status = string_builder.Finish(&string_array);
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   // param2: src_rs
   std::string src_ts = "EPSG:4326";

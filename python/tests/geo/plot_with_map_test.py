@@ -174,7 +174,7 @@ def test_choroplethmap():
     count_data.append(5.0)
 
     arr_wkt = pandas.Series(wkt_data)
-    arr_wkb = arctern.wkt2wkb(arr_wkt)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
     arr_count = pandas.Series(count_data)
 
     ax = _get_matplot()
