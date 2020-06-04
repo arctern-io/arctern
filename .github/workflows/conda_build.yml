@@ -23,6 +23,9 @@ on:
       - '.github/workflows/conda_build.yml'
       - '!**.md'
       - '!ci/jenkins/**'
+  release:
+    # Only use the types keyword to narrow down the activity types that will trigger your workflow.
+    types: [prereleased, released]
 
 jobs:
   centos:
@@ -96,3 +99,61 @@ jobs:
           docker login -u ${{ secrets.DOCKERHUB_USER }} \
                        -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker-compose push conda-cudagl-build
+
+  centos-release:
+    name: AMD64 CentOS ${{ matrix.centos }} Release
+    if: github.event_name == 'release' && github.repository == 'zilliztech/arctern'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        centos: [7]
+    env:
+      CENTOS: ${{ matrix.centos }}
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Checkout Arctern
+        uses: actions/checkout@v1
+      - name: Docker Pull
+        shell: bash
+        run: |
+          docker-compose pull --ignore-pull-failures conda-build
+      - name: Docker Build
+        shell: bash
+        run: |
+          docker-compose build conda-build
+      - name: Docker Run
+        run: |
+          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
+                             -e CONDA_USERNAME=arctern \
+                             -e MY_UPLOAD_KEY=${{ secrets.RELEASE_ANACONDA_TOKEN }} \
+                             conda-build
+
+  centos-cuda-release:
+    name: AMD64 CentOS ${{ matrix.centos }} CUDA Release
+    if: github.event_name == 'release' && github.repository == 'zilliztech/arctern'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        centos: [7]
+    env:
+      CENTOS: ${{ matrix.centos }}
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Checkout Arctern
+        uses: actions/checkout@v1
+      - name: Docker Pull
+        shell: bash
+        run: |
+          docker-compose pull --ignore-pull-failures conda-cudagl-build
+      - name: Docker Build
+        shell: bash
+        run: |
+          docker-compose build conda-cudagl-build
+      - name: Docker Run
+        run: |
+          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
+                             -e CONDA_USERNAME=arctern \
+                             -e MY_UPLOAD_KEY=${{ secrets.RELEASE_ANACONDA_TOKEN }} \
+                             conda-cudagl-build
