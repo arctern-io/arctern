@@ -33,34 +33,27 @@
 namespace arctern {
 namespace render {
 
-std::shared_ptr<arrow::Array> out_pic(std::pair<uint8_t*, int64_t> output) {
-  if (output.first == nullptr || output.second < 0) {
+std::shared_ptr<arrow::BinaryArray> out_pic(std::vector<uint8_t> output_image) {
+  if (output_image.empty()) {
     std::string err_msg =
         "Null image buffer, in most cases, it was caused by incorrect vega json";
     throw std::runtime_error(err_msg);
   }
 
-  auto output_length = output.second;
-  auto output_data = output.first;
-  auto bit_map = (uint8_t*)malloc(output_length);
-  memset(bit_map, 0xff, output_length);
+  arrow::BinaryBuilder string_builder;
+  std::string image_buffer(output_image.begin(), output_image.end());
+  auto status = string_builder.Append(image_buffer.data(), image_buffer.size());
 
-  auto buffer0 = std::make_shared<arrow::Buffer>(bit_map, output_length);
-  auto buffer1 = std::make_shared<arrow::Buffer>(output_data, output_length);
-  auto buffers = std::vector<std::shared_ptr<arrow::Buffer>>();
-  buffers.emplace_back(buffer0);
-  buffers.emplace_back(buffer1);
+  std::shared_ptr<arrow::BinaryArray> string_array;
+  status = string_builder.Finish(&string_array);
 
-  auto data_type = arrow::uint8();
-  auto array_data = arrow::ArrayData::Make(data_type, output_length, buffers);
-  auto array = arrow::MakeArray(array_data);
-  return array;
+  return string_array;
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_weighted_pointmap(
-    const std::vector<std::string>& points, const std::vector<T>& weights,
-    const std::string& conf) {
+std::vector<uint8_t> render_weighted_pointmap(const std::vector<std::string>& points,
+                                              const std::vector<T>& weights,
+                                              const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, weights);
   auto num_point = data.first.size();
 
@@ -145,9 +138,10 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_weighted_pointmap(
-    const std::vector<std::string>& points, const std::vector<T>& arr_c,
-    const std::vector<T>& arr_s, const std::string& conf) {
+std::vector<uint8_t> render_weighted_pointmap(const std::vector<std::string>& points,
+                                              const std::vector<T>& arr_c,
+                                              const std::vector<T>& arr_s,
+                                              const std::string& conf) {
   auto agg_res = AggHandler::weight_agg_multiple_column<T>(points, arr_c, arr_s);
   auto num_point = std::get<0>(agg_res).size();
 
@@ -250,9 +244,9 @@ std::pair<uint8_t*, int64_t> render_weighted_pointmap(
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& points,
-                                            const std::vector<T>& arr_c,
-                                            const std::string& conf) {
+std::vector<uint8_t> render_heatmap(const std::vector<std::string>& points,
+                                    const std::vector<T>& arr_c,
+                                    const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(points, arr_c);
   auto num_point = data.first.size();
 
@@ -337,9 +331,9 @@ std::pair<uint8_t*, int64_t> render_heatmap(const std::vector<std::string>& poin
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
-                                                  const std::vector<T>& arr_c,
-                                                  const std::string& conf) {
+std::vector<uint8_t> render_choroplethmap(const std::vector<std::string>& arr_wkb,
+                                          const std::vector<T>& arr_c,
+                                          const std::string& conf) {
   auto data = AggHandler::weight_agg<T>(arr_wkb, arr_c);
   auto num_geo = data.second.size();
 
@@ -404,9 +398,9 @@ std::pair<uint8_t*, int64_t> render_choroplethmap(const std::vector<std::string>
 }
 
 template <typename T>
-std::pair<uint8_t*, int64_t> render_fishnetmap(const std::vector<std::string>& points,
-                                               const std::vector<T>& arr_c,
-                                               const std::string& conf) {
+std::vector<uint8_t> render_fishnetmap(const std::vector<std::string>& points,
+                                       const std::vector<T>& arr_c,
+                                       const std::string& conf) {
   rapidjson::Document document;
   document.Parse(conf.c_str());
   rapidjson::Value mark_enter;
@@ -523,7 +517,7 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
   return res;
 }
 
-std::shared_ptr<arrow::Array> point_map(
+std::shared_ptr<arrow::BinaryArray> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -532,20 +526,20 @@ std::shared_ptr<arrow::Array> point_map(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = rs_pointer->getX();
     input_y[i] = rs_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
-  auto result = pointmap(&input_x[0], &input_y[0], num_of_point, conf);
 
-  return out_pic(result);
+  return out_pic(pointmap(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -554,20 +548,20 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rst_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = (uint32_t)rst_pointer->getX();
     input_y[i] = (uint32_t)rst_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
-  auto result = weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf);
-  return out_pic(result);
+  return out_pic(weighted_pointmap<int8_t>(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -624,7 +618,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
@@ -692,7 +686,7 @@ std::shared_ptr<arrow::Array> weighted_point_map(
   }
 }
 
-std::shared_ptr<arrow::Array> heat_map(
+std::shared_ptr<arrow::BinaryArray> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -748,7 +742,7 @@ std::shared_ptr<arrow::Array> heat_map(
   }
 }
 
-std::shared_ptr<arrow::Array> choropleth_map(
+std::shared_ptr<arrow::BinaryArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {
@@ -803,7 +797,7 @@ std::shared_ptr<arrow::Array> choropleth_map(
   }
 }
 
-std::shared_ptr<arrow::Array> icon_viz(
+std::shared_ptr<arrow::BinaryArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf) {
   const auto& wkb_vec = WkbExtraction(points_vector);
@@ -812,21 +806,20 @@ std::shared_ptr<arrow::Array> icon_viz(
   std::vector<uint32_t> input_x(num_of_point);
   std::vector<uint32_t> input_y(num_of_point);
 
-  OGRGeometry* res_geo = nullptr;
   for (size_t i = 0; i < num_of_point; i++) {
+    OGRGeometry* res_geo = nullptr;
     std::string geo_wkb = wkb_vec[i];
     CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo_wkb.c_str(), nullptr, &res_geo));
     auto rs_pointer = reinterpret_cast<OGRPoint*>(res_geo);
     input_x[i] = rs_pointer->getX();
     input_y[i] = rs_pointer->getY();
+    OGRGeometryFactory::destroyGeometry(res_geo);
   }
 
-  auto result = iconviz(&input_x[0], &input_y[0], num_of_point, conf);
-
-  return out_pic(result);
+  return out_pic(iconviz(&input_x[0], &input_y[0], num_of_point, conf));
 }
 
-std::shared_ptr<arrow::Array> fishnet_map(
+std::shared_ptr<arrow::BinaryArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf) {

@@ -64,6 +64,9 @@ TEST(TRANSFORM_PROJECTION_TEST, POINT_TEST) {
   assert(res_geo1->toPoint()->getY() == 57);
   assert(res_geo2->toPoint()->getX() == 272);
   assert(res_geo2->toPoint()->getY() == 138);
+
+  OGRGeometryFactory::destroyGeometry(res_geo1);
+  OGRGeometryFactory::destroyGeometry(res_geo2);
 }
 
 TEST(TRANSFORM_PROJECTION_TEST, POLYGON_TEST) {
@@ -151,6 +154,9 @@ TEST(PROJECTION_TEST, POINT_TEST) {
   assert(res_geo1->toPoint()->getY() == 57);
   assert(res_geo2->toPoint()->getX() == 272);
   assert(res_geo2->toPoint()->getY() == 138);
+
+  OGRGeometryFactory::destroyGeometry(res_geo1);
+  OGRGeometryFactory::destroyGeometry(res_geo2);
 }
 
 TEST(PROJECTION_TEST, POLYGON_TEST) {
@@ -198,6 +204,8 @@ TEST(PROJECTION_TEST, POLYGON_TEST) {
   assert(res_geo->toPolygon()->getExteriorRing()->getY(3) == 138);
   assert(res_geo->toPolygon()->getExteriorRing()->getX(4) == 280);
   assert(res_geo->toPolygon()->getExteriorRing()->getY(4) == 57);
+
+  OGRGeometryFactory::destroyGeometry(res_geo);
 }
 
 TEST(TRANSFORM_PROJECTION_TEST, NULL_TEST) {

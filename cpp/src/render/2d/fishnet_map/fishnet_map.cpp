@@ -139,7 +139,7 @@ void FishNetMap<T>::Draw() {
 }
 
 template <typename T>
-uint8_t* FishNetMap<T>::Render() {
+std::vector<uint8_t> FishNetMap<T>::Render() {
   WindowsInit(fishnet_vega_.window_params());
   DataInit();
   Draw();

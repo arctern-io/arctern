@@ -1356,7 +1356,7 @@ def point_map_layer(vega, points, transform=True):
 
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.point_map(vega_string, geos_rs)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 
 # pylint: disable=too-many-branches
@@ -1424,7 +1424,7 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
         color_weights_rs = _to_arrow_array_list(arr_c)
         rs = arctern_core_.weighted_color_point_map(vega_string, geos_rs, color_weights_rs)
 
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 
 def heat_map_layer(vega, points, weights, transform=True):
@@ -1466,7 +1466,7 @@ def heat_map_layer(vega, points, weights, transform=True):
 
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.heat_map(vega_string, geos_rs, weights_rs)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 
 def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
@@ -1509,7 +1509,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     weights_rs = _to_arrow_array_list(arr)
 
     rs = arctern_core_.choropleth_map(vega_string, geos_rs, weights_rs)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 
 def icon_viz_layer(vega, points, transform=True):
@@ -1544,7 +1544,7 @@ def icon_viz_layer(vega, points, transform=True):
     vega_string = vega.build().encode('utf-8')
 
     rs = arctern_core_.icon_viz(vega_string, geos_rs)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 
 def fishnet_map_layer(vega, points, weights, transform=True):
@@ -1586,7 +1586,7 @@ def fishnet_map_layer(vega, points, weights, transform=True):
 
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
-    return base64.b64encode(rs.buffers()[1].to_pybytes())
+    return base64.b64encode(rs.to_pandas()[0])
 
 def nearest_location_on_road(roads, points):
     """
