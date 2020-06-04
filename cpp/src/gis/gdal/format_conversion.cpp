@@ -43,7 +43,7 @@ std::shared_ptr<arrow::StringArray> WkbToWkt(const std::shared_ptr<arrow::Array>
     } else {
       auto str = wkb_array->GetString(i);
       CHECK_GDAL(OGRGeometryFactory::createFromWkb(str.c_str(), nullptr, &geo));
-      CHECK_GDAL(OGR_G_ExportToWkt((void *) geo, &wkt));
+      CHECK_GDAL(OGR_G_ExportToWkt((void*)geo, &wkt));
       builder.Append(wkt);
       OGRGeometryFactory::destroyGeometry(geo);
       CPLFree(wkt);
@@ -66,11 +66,11 @@ std::shared_ptr<arrow::BinaryArray> WktToWkb(const std::shared_ptr<arrow::Array>
       builder.AppendNull();
       continue;
     } else {
-      CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_array->GetString(i).c_str(), nullptr,
-                                                   &geo));
+      CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_array->GetString(i).c_str(),
+                                                   nullptr, &geo));
       auto wkb_size = OGR_G_WkbSize(geo);
-      GByte *wkb = new GByte[wkb_size];
-      CHECK_GDAL(OGR_G_ExportToWkb((void *) geo, wkbNDR, wkb));
+      GByte* wkb = new GByte[wkb_size];
+      CHECK_GDAL(OGR_G_ExportToWkb((void*)geo, wkbNDR, wkb));
       builder.Append(wkb, wkb_size);
       delete[] wkb;
       OGRGeometryFactory::destroyGeometry(geo);
