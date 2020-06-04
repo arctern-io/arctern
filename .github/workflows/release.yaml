@@ -1,0 +1,64 @@
+name: Release Build
+
+# This workflow is triggered on pushes or pull request to the repository.
+on:
+  release:
+    # Only use the types keyword to narrow down the activity types that will trigger your workflow.
+    types: [prereleased, released]
+
+jobs:
+  centos-release:
+    name: AMD64 CentOS ${{ matrix.centos }} Conda Release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        centos: [7]
+    env:
+      CENTOS: ${{ matrix.centos }}
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Checkout Arctern
+        uses: actions/checkout@v1
+      - name: Docker Pull
+        shell: bash
+        run: |
+          docker-compose pull --ignore-pull-failures conda-build
+      - name: Docker Build
+        shell: bash
+        run: |
+          docker-compose build conda-build
+      - name: Docker Run
+        run: |
+          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
+                             -e CONDA_USERNAME=arctern \
+                             -e MY_UPLOAD_KEY=${{ secrets.RELEASE_ANACONDA_TOKEN }} \
+                             conda-build
+
+  centos-cuda-release:
+    name: AMD64 CentOS ${{ matrix.centos }} CUDA Conda Release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        centos: [7]
+    env:
+      CENTOS: ${{ matrix.centos }}
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Checkout Arctern
+        uses: actions/checkout@v1
+      - name: Docker Pull
+        shell: bash
+        run: |
+          docker-compose pull --ignore-pull-failures conda-cudagl-build
+      - name: Docker Build
+        shell: bash
+        run: |
+          docker-compose build conda-cudagl-build
+      - name: Docker Run
+        run: |
+          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
+                             -e CONDA_USERNAME=arctern \
+                             -e MY_UPLOAD_KEY=${{ secrets.RELEASE_ANACONDA_TOKEN }} \
+                             conda-cudagl-build
