@@ -1072,7 +1072,7 @@ class GeoSeries(Series):
         :example:
         >>> from pandas import Series
         >>> from arctern import GeoSeries
-        >>> json = Series(["{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"])
+        >>> json = Series(['{"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]}'])
         >>> GeoSeries.geom_from_geojson(json)
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
