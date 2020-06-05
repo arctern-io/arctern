@@ -227,6 +227,20 @@ class GeoSeries(Series):
         >>> s2 = GeoSeries(["POINT(1 1)", None])
         >>> s2.equals(s1)
         True
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s3 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1))"])
+        >>> s4 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1))"])
+        >>> s4.equals(s3)
+        True
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s5 = GeoSeries(["POLYGON ((0 0,2 0,2 2,0 2,0 0))"])
+        >>> s6 = GeoSeries(["POLYGON ((0 0,0 2,2 2,2 0,0 0))"])
+        >>> s6.equals(s5)
+        False
         """
         if not isinstance(other, GeoSeries):
             return False
@@ -243,6 +257,21 @@ class GeoSeries(Series):
     ):
         """
         Fill NA values with a geometry, which can be WKT or WKB formed.
+
+        example:
+        >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
+        >>> s
+        0                        POINT (1 1)
+        1    POLYGON ((1 1,2 1,2 2,1 2,1 1))
+        2                               None
+        3                               None
+        dtype: GeoDtype
+        >>> s.fillna("POINT (1 2)")
+        0                        POINT (1 1)
+        1    POLYGON ((1 1,2 1,2 2,1 2,1 1))
+        2                        POINT (1 2)
+        3                        POINT (1 2)
+        dtype: GeoDtype
         """
         return super().fillna(value, method, axis, inplace, limit, downcast)
 
@@ -258,10 +287,12 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["Point (1 1)", None])
+        >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s.isna()
         0    False
-        1     True
+        1    False
+        2     True
+        3     True
         dtype: bool
         """
         return super().isna()
@@ -278,10 +309,12 @@ class GeoSeries(Series):
 
         :example:
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POINT (1 1)", None])
-        >>> s.isna()
-        0    False
+        >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
+        >>> s.notna()
+        0     True
         1     True
+        2    False
+        3    False
         dtype: bool
         """
         return super().notna()
