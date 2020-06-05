@@ -83,11 +83,6 @@ nyc_df = pd.read_csv(TESTDATA,
                  parse_dates=["tpep_pickup_datetime", "tpep_dropoff_datetime"])
 
 
-#nyc_df = pd.read_csv("/home/czs/nyc_taxi.csv",
-#                     dtype=nyc_schema,
-#                     date_parser=pd.to_datetime,
-#                     parse_dates=["tpep_pickup_datetime", "tpep_dropoff_datetime"])
-
 geo_dropoff = nyc_df['buildingtext_dropoff'].dropna().head(10)
 geo_pickup = nyc_df['buildingtext_pickup'].dropna().head(10)
 
