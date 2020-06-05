@@ -261,6 +261,42 @@ class GeoSeries(Series):
         """
         Fill NA values with a geometry, which can be WKT or WKB formed.
 
+        :type value: scalar, dict, Series, or DataFrame
+        :param value: Value to use to fill holes (e.g. "POINT (1 1)"), alternately a
+                      dict/Series/DataFrame of values specifying which value to use for
+                      each index (for a Series) or column (for a DataFrame).  Values not
+                      in the dict/Series/DataFrame will not be filled. This value cannot
+                      be a list.
+
+        :type method: {'backfill', 'bfill', 'pad', 'ffill', None}, default None
+        :param method: Method to use for filling holes in reindexed Series
+                       pad / ffill: propagate last valid observation forward to next valid
+                       backfill / bfill: use next valid observation to fill gap.
+
+        :type axis: {0 or ‘index’}
+        :param axis: Axis along which to fill missing values.
+
+        :type inplace: bool, default False
+        :param inplace: If True, fill in-place. Note: this will modify any
+                        other views on this object (e.g., a no-copy slice for a column
+                        in a DataFrame).
+
+        :type limit:  int, default None
+        :param limit: If method is specified, this is the maximum number of consecutive
+                      NaN values to forward/backward fill. In other words, if there is
+                      a gap with more than this number of consecutive NaNs, it will only
+                      be partially filled. If method is not specified, this is the
+                      maximum number of entries along the entire axis where NaNs will be
+                      filled. Must be greater than 0 if not None.
+
+        :type downcast: dict, default is None
+        :param downcast: A dict of item->dtype of what to downcast if possible,
+                         or the string 'infer' which will try to downcast to an appropriate
+                         equal type (e.g. float64 to int64 if possible).
+
+        :rtype: GeoSeries or None
+        :return: Object with missing values filled or None if ``inplace=True``.
+
         :example:
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s
