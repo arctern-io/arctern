@@ -123,7 +123,7 @@ class GeoArray(ExtensionArray):
         if not data.ndim == 1:
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
-        self.data = data
+        self.data = np.asarray(data)
 
     @property
     def dtype(self):

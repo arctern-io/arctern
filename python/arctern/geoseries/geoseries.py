@@ -19,6 +19,7 @@
 
 from warnings import warn
 from pandas import Series, DataFrame
+import numpy as np
 import arctern
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
@@ -40,7 +41,7 @@ fix_dataframe_box_col_volues()
 
 def _property_op(op, this):
     # type: (function, GeoSeries) -> Series[bool/float/object]
-    return Series(op(this).values, index=this.index)
+    return Series(np.asarray(op(this)), index=this.index)
 
 
 def _property_geo(op, this):
@@ -64,7 +65,7 @@ def _delegate_binary_op(op, this, other):
         pass
     else:
         raise TypeError(type(this), type(other))
-    data = op(this, other).values
+    data = np.asarray(op(this, other))
     return data, this.index
 
 
@@ -139,18 +140,22 @@ class GeoSeries(Series):
             s = Series(data, index=index, name=name, **kwargs)
             index = s.index
             name = s.name
-            if s.empty:
-                s = s.astype(object)
-            # make sure missing value is None
-            s[s.isna()] = None
-            from pandas.api.types import infer_dtype
-            inferred = infer_dtype(s, skipna=True)
-            if inferred in ("bytes", "empty"):
-                pass
-            elif inferred == "string":
-                s = arctern.ST_GeomFromText(s)
-            else:
-                raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
+
+            from pandas.api.types import is_object_dtype, is_float_dtype
+            # The default dtype for empty Series is 'float64' in pandas
+            if not is_geometry_array(s):
+                if is_float_dtype(s.dtype) and s.empty:
+                    s = s.astype(object)
+                # make sure missing value is None
+                s[s.isna()] = None
+                from pandas.api.types import infer_dtype
+                inferred = infer_dtype(s, skipna=True)
+                if inferred in ("bytes", "empty"):
+                    pass
+                elif inferred == "string":
+                    s = arctern.ST_GeomFromText(s)
+                else:
+                    raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values)
 
         super().__init__(data, index=index, name=name, **kwargs)

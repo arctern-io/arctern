@@ -73,6 +73,10 @@ class TestConstructor:
         assert_is_geoseries(s)
         assert len(s) == 0
 
+        s = GeoSeries()
+        assert_is_geoseries(s)
+        assert len(s) == 0
+
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
         assert_is_geoseries(s)
@@ -262,6 +266,11 @@ class TestGeoMethods:
         s1 = left.geom_equals(right)
         assert s1.index.to_list() == [1, 2, 3, 4]
         assert s1.to_list() == [False, True, False, True]
+
+    def test_to_wkb(self):
+        s = GeoSeries(make_point(1, 1))
+        s1 = s.to_wkb()
+        assert type(s1) is pd.Series
 
 
 def test_geoseries_type_by_df_box_col_values():
