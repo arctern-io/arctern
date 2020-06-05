@@ -294,6 +294,7 @@ class GeoSeries(Series):
         2     True
         3     True
         dtype: bool
+        
         """
         return super().isna()
 
