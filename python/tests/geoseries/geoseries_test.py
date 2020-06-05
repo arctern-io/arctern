@@ -279,7 +279,7 @@ class TestGeoMethods:
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
         s1 = s.to_wkb()
-        assert type(s1) is pd.Series
+        assert isinstance(s1, pd.Series)
 
 
 def test_geoseries_type_by_df_box_col_values():
