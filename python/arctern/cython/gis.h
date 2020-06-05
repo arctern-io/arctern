@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef GIS_H
-#define GIS_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -144,5 +143,3 @@ std::string GIS_Version();
 
 }  // namespace gis
 }  // namespace arctern
-
-#endif
