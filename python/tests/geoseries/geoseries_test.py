@@ -77,6 +77,11 @@ class TestConstructor:
         assert_is_geoseries(s)
         assert len(s) == 0
 
+    def test_explicate_dtype(self, sequence, expected_series):
+        s = GeoSeries(sequence, dtype="GeoDtype")
+        assert_is_geoseries(s)
+        assert_series_equal(s, expected_series, check_dtype=False)
+
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
         assert_is_geoseries(s)
