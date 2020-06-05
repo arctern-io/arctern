@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=too-many-lines,redefined-outer-name
+# pylint: disable=too-many-lines,redefined-outer-name,bare-except
 
 import pytest
 import pandas as pd
@@ -47,8 +47,7 @@ def trans2wkb4series(s, index=range(0, 0)):
     if not isinstance(s, pd.Series):
         return None
     try:
-        len = s.size
-        for i in range(0, len):
+        for i in range(0, s.size):
             if not s[i]:
                 s_arr.append(None)
             else:
@@ -72,16 +71,13 @@ geo_pickup = nyc_df['buildingtext_pickup'].dropna().head(10)
 def geo_s():
     return GeoSeries(geo_dropoff.to_list())
 
-
 @pytest.fixture()
 def pd_s():
     x = pd.Series(geo_dropoff.to_list())
     return trans2wkb4series(x, x.index)
 
-
 def test_equals(geo_s, pd_s):
     assert not geo_s.equals(pd_s)
-
 
 @pytest.mark.skip("not support first")
 def test_first():
@@ -92,13 +88,10 @@ def test_last():
     pass
 
 def test_head(geo_s, pd_s):
-    target = GeoSeries([])
-    # ret = geo_s.head(0)
-    # x = (ret == target)
-    target = pd.Series([])
-    # ret = pd_s.head(0)
-    # y = ret == target
-
+    half = geo_s.count() // 2
+    ret1 = geo_s.head(half)
+    ret2 = pd_s.head(half)
+    pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
 @pytest.mark.skip("not support idmax")
 def test_idmax():
@@ -111,47 +104,52 @@ def test_idmin():
 
 
 def test_isin(geo_s, pd_s):
-    ret = geo_s.isin(list(pd_s[0:2]))
-    assert ret[0]
-    assert ret[1]
-    assert not ret[2]
-
+    ret = geo_s.isin(list(pd_s[::]))
+    assert all(ret)
 
 def test_reindex(geo_s, pd_s):
-    new_index = [1, 2, 'a', "b", "c", "d", "h", "i", "k"]
+    count = geo_s.count()
+    new_index = ['index_%d'%i for i in range(count)]
     ret1 = geo_s.reindex(new_index)
-    ret1.dropna()
-    assert any(ret1)
+    ret2 = pd_s.reindex(new_index)
+    pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
 
 def test_reindex_like(geo_s, pd_s):
-    index_ = ['Coca Cola', 'Sprite', 'Coke', 'Fanta', 'Dew', 'ThumbsUp', "i", "j", "k"]
+    count = geo_s.count()
+    index_ = ["index_%d"%i for i in range(count)]
     geo_s.index = index_
+    pd_s.index = index_
 
-    sr2 = pd.Series([11, 25, 8, 11, 24, 6, 25, 45])
-    index_ = ['Coca Cola', 'Sprite', 'Coke', 'Fanta',
-              'Dew', 'ThumbsUp', 'Mirinda', 'Appy']
+    sr2 = pd.Series(range(count-1))
+    index2_ = ["index_%d"%i for i in range(count-1)]
+    sr2.index = index2_
 
-    sr2.index = index_
-    result1 = geo_s.reindex_like(sr2)
-    result2 = sr2.reindex_like(geo_s)
+    ret1 = geo_s.reindex_like(sr2)
+    ret2 = pd_s.reindex_like(sr2)
+
+    pd.testing.assert_series_equal(ret1, ret2, check_dtype=False)
 
 
-def test_rename(geo_s):
+def test_rename(geo_s, pd_s):
     geo_s.rename("test_1", inplace=True)
+    pd_s.rename("test_1", inplace=True)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
-
-def test_rename_axis(geo_s):
+def test_rename_axis(geo_s, pd_s):
     geo_s.rename_axis("test_1", inplace=True)
+    pd_s.rename_axis("test_1", inplace=True)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
 
-def test_reset_index(geo_s):
-    index_ = ['Coca Cola', 'Sprite', 'Coke', 'Fanta', 'Dew', 'ThumbsUp', "i", "j", "k"]
-    old_index = geo_s.index
-    geo_s.index = index_
+def test_reset_index(geo_s, pd_s):
+    count = geo_s.count()
+    new_index = ["index_%d"%i for i in range(count)]
+    geo_s.index = new_index
+    pd_s.index = new_index
     geo_s = geo_s.reset_index()
-    ret = old_index == geo_s.index
-    assert all(ret)
+    pd_s = pd_s.reset_index()
+    pd.testing.assert_frame_equal(geo_s, pd_s, check_dtype=False)
 
 
 def test_sample(geo_s):
@@ -159,54 +157,55 @@ def test_sample(geo_s):
     assert ret.count() == 4
 
 
-def test_set_axis(geo_s):
-    indexs = pd.Index(['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c'], dtype='object')
-    geo_s = geo_s.set_axis(['a', 'b', 'c'] * 3, axis='index')
-    assert all(geo_s.index == indexs)
+def test_set_axis(geo_s, pd_s):
+    count = geo_s.count()
+    new_indexs = ['a'] * count
+    geo_s.set_axis(new_indexs)
+    pd_s.set_axis(new_indexs)
+    ret1 = geo_s.index
+    ret2 = pd_s.index
+    pd.testing.assert_index_equal(ret1, ret2)
 
+def test_take(geo_s, pd_s):
+    geo_s = geo_s.take([0, -1])
+    pd_s = geo_s.take([0, -1])
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
-def test_take(geo_s):
-    geo_s = geo_s.take([0, 3, 4])
-    indexs = pd.Index([0, 3, 4], dtype='object')
-    assert all(geo_s.index == indexs)
+def test_tail(geo_s, pd_s):
+    geo_s = geo_s.tail(-1)
+    pd_s = pd_s.tail(-1)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
-
-def test_tail(geo_s):
-    part1 = geo_s.head(3)
-    part2 = geo_s.tail(-3)
-    part3 = part1.append(part2)
-    pd.testing.assert_series_equal(part3, geo_s, check_dtype=False)
-
-
-def test_truncate(geo_s):
-    part1 = geo_s.truncate(before=2, after=9)
-    part2 = geo_s.tail(7)
-    pd.testing.assert_series_equal(part1, part2, check_dtype=False)
+def test_truncate(geo_s, pd_s):
+    before = 2
+    after = geo_s.count()
+    geo_s = geo_s.truncate(before=before, after=after)
+    pd_s = pd_s.truncate(before=before, after=after)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
 
 def test_where(geo_s, pd_s):
-    ret1 = geo_s.where(geo_s.npoints <= 10)
-    ret2 = geo_s.where(geo_s.npoints > 10)
-    ret3 = ret1.append(ret2)
-    assert ret3.count() == geo_s.count()
+    geo_s = geo_s.where(geo_s.npoints <= 10)
+    pd_s = pd_s.where(geo_s.npoints <= 10)
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
 
 def test_mask(geo_s):
     ret1 = geo_s.mask(geo_s.npoints < 10)
     ret2 = geo_s.mask(geo_s.npoints >= 10)
-    assert (geo_s.count() == (ret1.count() + ret2.count()))
+    assert geo_s.count() == (ret1.count() + ret2.count())
 
 
-def test_add_prefix(geo_s):
-    target = pd.Index(["prefix_%d" % i for i in range(geo_s.count())], dtype='object')
+def test_add_prefix(geo_s, pd_s):
     geo_s = geo_s.add_prefix("prefix_")
-    assert all(geo_s.index == target)
+    pd_s = pd_s.add_prefix("prefix_")
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
 
-def test_add_prefix(geo_s):
-    target = pd.Index(["%d_suffix" % i for i in range(geo_s.count())], dtype='object')
+def test_add_suffix(geo_s, pd_s):
     geo_s = geo_s.add_suffix("_suffix")
-    assert all(geo_s.index == target)
+    pd_s = pd_s.add_suffix("_suffix")
+    pd.testing.assert_series_equal(geo_s, pd_s, check_dtype=False)
 
 
 def test_filter(geo_s, pd_s):
@@ -331,8 +330,8 @@ def test_align(geo_s, pd_s):
     other = pd.Series([1, 2, 3, 4])
     ops = ["left", "right", "outer"]
     for op in ops:
-        g_1, new_right_1 = geo_s.align(other, join=op)
-        p_1, p_new_right_1 = pd_s.align(other, join=op)
+        g_1, _ = geo_s.align(other, join=op)
+        p_1, _ = pd_s.align(other, join=op)
         pd.testing.assert_series_equal(g_1, p_1, check_dtype=False)
 
 
@@ -511,25 +510,16 @@ def test_argsort(geo_s, pd_s):
 @pytest.mark.skip("not support argmin")
 def test_argmin():
     pass
-    """
-    TypeError: putmask() argument 1 must be numpy.ndarray, not GeoArray
-    """
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.argmax.html
 @pytest.mark.skip("not support argmax")
 def test_argmax():
     pass
-    """
-    TypeError: putmask() argument 1 must be numpy.ndarray, not GeoArray
-    """
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.reorder_levels.html
 def test_reorder_levels():
-    """
-    Exception: Can only reorder levels on a hierarchical axis.
-    """
     pass
 
 
@@ -617,12 +607,6 @@ def test_eq(geo_s, pd_s):
 @pytest.mark.skip("not support product")
 def test_product():
     pass
-    """
-    with pytest.raises(TypeError):
-        geo_s.product()
-    with pytest.raises(TypeError):
-        pd_s.product()
-    """
 
 
 # def test_apply(geo_s, pd_s):
@@ -807,7 +791,7 @@ def test_factorize(geo_s, pd_s):
     pd_codes, pd_uniques = pd.factorize(pd_s)
 
     assert (geo_codes == pd_codes).all()
-    assert (geo_uniques == geo_uniques).all()
+    assert (geo_uniques == pd_uniques).all()
 
 
 @pytest.mark.skip("not support kurt")
