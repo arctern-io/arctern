@@ -48,38 +48,35 @@ void TransformAndProjection(const std::vector<OGRGeometry*>& geos,
                             const std::string& bottom_right, const std::string& top_left,
                             const int& height, const int& width);
 
-std::pair<uint8_t*, int64_t> pointmap(uint32_t* arr_x, uint32_t* arr_y,
-                                      int64_t num_vertices, const std::string& conf);
+std::vector<uint8_t> pointmap(uint32_t* arr_x, uint32_t* arr_y, int64_t num_vertices,
+                              const std::string& conf);
 
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
-                                               int64_t num_vertices,
-                                               const std::string& conf);
-
-template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
-                                               int64_t num_vertices,
-                                               const std::string& conf);
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y,
+                                       int64_t num_vertices, const std::string& conf);
 
 template <typename T>
-std::pair<uint8_t*, int64_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
-                                               T* arr_s, int64_t num_vertices,
-                                               const std::string& conf);
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                       int64_t num_vertices, const std::string& conf);
 
 template <typename T>
-std::pair<uint8_t*, int64_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
-                                     int64_t num_vertices, const std::string& conf);
+std::vector<uint8_t> weighted_pointmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+                                       T* arr_s, int64_t num_vertices,
+                                       const std::string& conf);
 
 template <typename T>
-std::pair<uint8_t*, int64_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
-                                           T* arr_c, int64_t num_buildings,
-                                           const std::string& conf);
-
-std::pair<uint8_t*, int64_t> iconviz(uint32_t* arr_x, uint32_t* arr_y,
-                                     int64_t num_vertices, const std::string& conf);
+std::vector<uint8_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
+                             int64_t num_vertices, const std::string& conf);
 
 template <typename T>
-std::pair<uint8_t*, int64_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
-                                        int64_t num_vertices, const std::string& conf);
+std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt, T* arr_c,
+                                   int64_t num_buildings, const std::string& conf);
+
+std::vector<uint8_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num_vertices,
+                             const std::string& conf);
+
+template <typename T>
+std::vector<uint8_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
+                                int64_t num_vertices, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern

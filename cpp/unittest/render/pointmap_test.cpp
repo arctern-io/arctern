@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 // TEST(POINTMAP_TEST, RAW_POINT_TEST) {
 //  // param1: x, y
@@ -237,7 +238,7 @@ TEST(POINTMAP_TEST, WKT_POINT_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
 
@@ -299,6 +300,6 @@ TEST(POINTMAP_TEST, WKT_POINT_TEST) {
 //      "  ]\n"
 //      "}";
 //
-//  auto wkb = arctern::render::WktToWkb(string_array);
+//  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 //  arctern::render::point_map(wkb, vega);
 //}

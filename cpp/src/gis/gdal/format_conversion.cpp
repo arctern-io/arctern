@@ -37,12 +37,17 @@ std::shared_ptr<arrow::StringArray> WkbToWkt(const std::shared_ptr<arrow::Array>
   char* wkt = nullptr;
 
   for (int i = 0; i < len; ++i) {
-    auto str = wkb_array->GetString(i);
-    CHECK_GDAL(OGRGeometryFactory::createFromWkb(str.c_str(), nullptr, &geo));
-    CHECK_GDAL(OGR_G_ExportToWkt((void*)geo, &wkt));
-    builder.Append(wkt);
-    OGRGeometryFactory::destroyGeometry(geo);
-    CPLFree(wkt);
+    if (wkb_array->IsNull(i)) {
+      builder.AppendNull();
+      continue;
+    } else {
+      auto str = wkb_array->GetString(i);
+      CHECK_GDAL(OGRGeometryFactory::createFromWkb(str.c_str(), nullptr, &geo));
+      CHECK_GDAL(OGR_G_ExportToWkt((void*)geo, &wkt));
+      builder.Append(wkt);
+      OGRGeometryFactory::destroyGeometry(geo);
+      CPLFree(wkt);
+    }
   }
 
   std::shared_ptr<arrow::StringArray> results;
@@ -57,18 +62,19 @@ std::shared_ptr<arrow::BinaryArray> WktToWkb(const std::shared_ptr<arrow::Array>
   OGRGeometry* geo = nullptr;
 
   for (int i = 0; i < len; ++i) {
-    CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_array->GetString(i).c_str(), nullptr,
-                                                 &geo));
-    auto wkb_size = OGR_G_WkbSize(geo);
-    if (wkb_size) {
+    if (wkt_array->IsNull(i)) {
+      builder.AppendNull();
+      continue;
+    } else {
+      CHECK_GDAL(OGRGeometryFactory::createFromWkt(wkt_array->GetString(i).c_str(),
+                                                   nullptr, &geo));
+      auto wkb_size = OGR_G_WkbSize(geo);
       GByte* wkb = new GByte[wkb_size];
       CHECK_GDAL(OGR_G_ExportToWkb((void*)geo, wkbNDR, wkb));
       builder.Append(wkb, wkb_size);
       delete[] wkb;
-    } else {
-      builder.AppendNull();
+      OGRGeometryFactory::destroyGeometry(geo);
     }
-    OGRGeometryFactory::destroyGeometry(geo);
   }
 
   std::shared_ptr<arrow::BinaryArray> results;

@@ -32,7 +32,7 @@ class IconViz : public General2D {
 
   IconViz(uint32_t* input_x, uint32_t* input_y, int64_t num_icons);
 
-  uint8_t* Render() final;
+  std::vector<uint8_t> Render() final;
 
   void Draw() final;
 
