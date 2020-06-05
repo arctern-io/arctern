@@ -224,18 +224,16 @@ class GeoSeries(Series):
         :example:
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POINT(1 1)", None])
-        >>> s2 = GeoSeries(["POINT(1 1)", None])
+        >>> s2 = GeoSeries(["Point(1 1)", None])
         >>> s2.equals(s1)
         True
 
-        :example:
         >>> from arctern import GeoSeries
         >>> s3 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1))"])
         >>> s4 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1))"])
         >>> s4.equals(s3)
         True
 
-        :example:
         >>> from arctern import GeoSeries
         >>> s5 = GeoSeries(["POLYGON ((0 0,2 0,2 2,0 2,0 0))"])
         >>> s6 = GeoSeries(["POLYGON ((0 0,0 2,2 2,2 0,0 0))"])
@@ -258,7 +256,7 @@ class GeoSeries(Series):
         """
         Fill NA values with a geometry, which can be WKT or WKB formed.
 
-        example:
+        :example:
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s
         0                        POINT (1 1)
@@ -266,11 +264,23 @@ class GeoSeries(Series):
         2                               None
         3                               None
         dtype: GeoDtype
+
+        Replace all NaN elements with WKT formed str.
+
         >>> s.fillna("POINT (1 2)")
         0                        POINT (1 1)
         1    POLYGON ((1 1,2 1,2 2,1 2,1 1))
         2                        POINT (1 2)
         3                        POINT (1 2)
+        dtype: GeoDtype
+
+        We can also replace all NaN elements with WKB formed bytes.
+
+        >>> s.fillna(s[1])
+        0                        POINT (1 1)
+        1    POLYGON ((1 1,2 1,2 2,1 2,1 1))
+        2    POLYGON ((1 1,2 1,2 2,1 2,1 1))
+        3    POLYGON ((1 1,2 1,2 2,1 2,1 1))
         dtype: GeoDtype
         """
         return super().fillna(value, method, axis, inplace, limit, downcast)
@@ -294,7 +304,7 @@ class GeoSeries(Series):
         2     True
         3     True
         dtype: bool
-        
+
         """
         return super().isna()
 
