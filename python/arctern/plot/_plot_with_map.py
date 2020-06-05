@@ -46,22 +46,28 @@ def pointmap(ax, points, bounding_box,
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form
-    :type bounding_box: (float, float, float, float)
-    :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                        value should be of :coordinate_system:
-    :type point_szie: int
-    :param point_size: size of point
+    :type points: GeoSeries
+    :param points: Sequence of Points
+
+    :type bounding_box: list(float)
+    :param bounding_box: The bounding rectangle, in form of [west, south, east, north].
+
+    :type point_size: int
+    :param point_size: Diameter of point, default as 3 
+
     :type point_color: str
-    :param point_color: specify color in hex form
+    :param point_color: Specify point color in Hex Color Code, default as "#115f9a"
+
     :type opacity: float
-    :param opacity: opacity of point
+    :param opacity: Opacity of point, ranged from 0.0 to 1.0, default as 1.0
+
     :type coordinate_system: str
-    :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
     :type extra_contextily_params: dict
-    :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                                                    See https://contextily.readthedocs.io/en/latest/reference.html
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -95,20 +101,44 @@ def weighted_pointmap(ax, points, color_weights=None,
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form
-    :type bounding_box: (float, float, float, float)
-    :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                         value should be of :coordinate_system:
-    :type point_szie: int
-    :param point_size: size of point
+    :type points: GeoSeries
+    :param points: Sequence of Points
+
+    :type color_weights: Series(dtype: float|int64)
+    :param color_weights: Weights for point color
+
+    :type size_weights: Series(dtype: float|int64)
+    :param size_weights: Weights for point size, deciding diameter of point (after bounded by size_bound)
+
+    :type bounding_box: list
+    :param bounding_box: The bounding rectangle, in form of [west, south, east, north].
+
+    :type color_gradient: list
+    :param color_gradient: Specify range of color gradient. 
+                           Either use ["hex_color"] to specify a same color for all points, 
+                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
+    
+    :type color_bound: list
+    :param color_bound: Specify weight range [w1, w2] binding to color_gradient. 
+                        Needed only when color_gradient has two value ["color1", "color2"], 
+                        and bind w1 to "color1", and w2 to "color2".
+                        When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+
+    :type size_bound: list
+    :param size_bound: Specify range [w1, w2] of size_weights. 
+                       When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+
     :type opacity: float
-    :param opacity: opacity of point
+    :param opacity: Opacity of point, ranged from 0.0 to 1.0, default as 1.0
+
     :type coordinate_system: str
-    :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
     :type extra_contextily_params: dict
-    :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
+ 
     """
     from matplotlib import pyplot as plt
     import contextily as cx
