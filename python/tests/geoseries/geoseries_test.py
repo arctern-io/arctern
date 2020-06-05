@@ -183,7 +183,7 @@ class TestCRS:
         assert self.s.centroid.crs == self.crs.upper()
 
 
-# other method will be tested in geoarray_test.py
+# other method will be tested in geoarray_test.py and series_method_test.py
 class TestPandasMethod:
     def test_missing_values(self):
         s = GeoSeries([make_point(1, 2), None])
@@ -214,6 +214,10 @@ class TestPandasMethod:
     def test_equals(self):
         s1 = GeoSeries([make_point(1, 1), None])
         s2 = GeoSeries([make_point(1, 1), None])
+        assert s1.equals(s2)
+
+        s1 = GeoSeries()
+        s2 = GeoSeries()
         assert s1.equals(s2)
 
     def test_unique(self):
