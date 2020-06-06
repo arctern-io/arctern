@@ -296,7 +296,7 @@ def plot_geometry(ax, geoms, **style_kwds):
                            "linestring(0 1, 5 6, 10 11),"
                            "POINT(4 7))")
        >>> arr_wkt = pandas.Series(raw_data)
-       >>> arr_wkb = arctern.ST_CurveToLine(arctern.ST_GeomFromText(arr_wkt))
+       >>> arr_wkb = (arctern.GeoSeries(arr_wkt)).curve_to_line()
        >>> df = pandas.DataFrame({'wkb':arr_wkb})
        >>> fig, ax = plt.subplots()
        >>> arctern.plot.plot_geometry(ax, df,
