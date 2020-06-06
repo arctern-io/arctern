@@ -1268,7 +1268,7 @@ def ST_CurveToLine(geos):
 
 def within_which(left, right):
     """
-    For each geometry in left, search geometries that satisfy "within" relationship in right  
+    For each geometry in left, search geometries that satisfy "within" relationship in right
 
     :type left: GeoSeries
     :param left: Sequence of Geometries
@@ -1616,7 +1616,7 @@ def nearest_location_on_road(roads, points):
       >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
       >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
       >>> rst
-          0    POINT (1.0 2.5) 
+          0    POINT (1.0 2.5)
           dtype: object
     """
     import pyarrow as pa
