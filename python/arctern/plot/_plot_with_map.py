@@ -124,28 +124,33 @@ def weighted_pointmap(ax, points, color_weights=None,
     :param points: Sequence of Points
 
     :type color_weights: Series(dtype: float|int64)
-    :param color_weights: Weights for point color
+    :param color_weights: Weights for point color, default as None 
 
     :type size_weights: Series(dtype: float|int64)
     :param size_weights: Weights for point size, deciding diameter of point (after bounded by size_bound)
+                         Default as None
 
     :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
+    :param bounding_box: Specify the bounding rectangle [west, south, east, north],
+                         Default as None
 
     :type color_gradient: list
     :param color_gradient: Specify range of color gradient. 
                            Either use ["hex_color"] to specify a same color for all points, 
                            or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
+                           Default as ["#115f9a", "#d0f400"]
     
     :type color_bound: list
     :param color_bound: Specify weight range [w1, w2] binding to color_gradient. 
                         Needed only when color_gradient has two value ["color1", "color2"]. 
                         Bind w1 to "color1", and w2 to "color2".
                         When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+                        Default as [0, 0]
 
     :type size_bound: list
     :param size_bound: Specify range [w1, w2] of size_weights. 
                        When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+                       Default as [3]
 
     :type opacity: float
     :param opacity: Opacity of point, ranged from 0.0 to 1.0, default as 1.0
@@ -230,6 +235,9 @@ def heatmap(ax, points, weights, bounding_box,
     :type bounding_box: list
     :param bounding_box: Specify the bounding rectangle [west, south, east, north].
 
+    :type map_zoom_level: float
+    :param map_zoom_level: Zoom level of heatmap. Default as auto. 
+
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
                               Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
@@ -304,6 +312,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
                         Needed only when color_gradient has two value ["color1", "color2"]. 
                         Bind w1 to "color1", and w2 to "color2".
                         When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+                        Default as None
 
     :type opacity: float
     :param opacity: Opacity of polygons, ranged from 0.0 to 1.0, default as 1.0
@@ -319,6 +328,21 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
                                     See https://contextily.readthedocs.io/en/latest/reference.html for details
+
+    :example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> import arctern
+    >>> import matplotlib.pyplot as plt
+    >>> # read from test_data.csv
+    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+    >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
+    >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+    >>> # plot choroplethmap
+    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+    >>> arctern.plot.choroplethmap(ax, polygon, input['color_weights'], bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean")
+    >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -352,7 +376,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     :param bounding_box: Specify the bounding rectangle [west, south, east, north].
 
     :type icon_path: str
-    :param icon_path: absolute path to icon file
+    :param icon_path: Absolute path to icon file
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
@@ -424,10 +448,10 @@ def fishnetmap(ax, points, weights, bounding_box,
                            Current only default value ["#0000FF", "#FF0000"] is supported
 
     :type cell_size: int
-    :param cell_size: Side length of fishnet cells.
+    :param cell_size: Side length of fishnet cells, default as 4
 
     :type cell_spacing: int
-    :param cell_spacing: Margin between adjacent fishnet cells.
+    :param cell_spacing: Margin between adjacent fishnet cells, default as 1
 
     :type opacity: float
     :param opacity: Opacity of fishnet, ranged from 0.0 to 1.0, default as 1.0
