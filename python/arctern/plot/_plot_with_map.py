@@ -76,6 +76,7 @@ def pointmap(ax, points, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
 
 # pylint: disable=too-many-arguments
 # pylint: disable=dangerous-default-value
@@ -124,6 +125,7 @@ def weighted_pointmap(ax, points, color_weights=None,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
 
 # pylint: disable=protected-access
 
@@ -169,6 +171,7 @@ def heatmap(ax, points, weights, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
 
 
 def choroplethmap(ax, region_boundaries, weights, bounding_box,
@@ -204,6 +207,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
 
 
 def iconviz(ax, points, bounding_box, icon_path,
@@ -236,6 +240,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
 
 # pylint: disable=too-many-arguments
 # pylint: disable=dangerous-default-value
@@ -261,3 +266,4 @@ def fishnetmap(ax, points, weights, bounding_box,
     ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
     cx.add_basemap(ax, **extra_contextily_params)
     ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
