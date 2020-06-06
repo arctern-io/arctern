@@ -1602,12 +1602,11 @@ def nearest_location_on_road(roads, points):
     :return: Points in WKB form.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.ST_AsText(arctern.nearest_location_on_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+      >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
+      >>> rst
           0    POINT (1.0 2.5)
           dtype: object
     """
@@ -1635,12 +1634,11 @@ def nearest_road(roads, points,):
     :return: Points in WKB form.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+      >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
+      >>> rst
           0    LINESTRING (1 2,1 3)
           dtype: object
     """
@@ -1671,12 +1669,11 @@ def near_road(roads, points, distance=100):
     :return: True if there is a road within 100 meters of the point.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.near_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2), 100)
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+      >>> rst = arctern.near_road(data1, data2)
+      >>> rst
           0    True
           dtype: object
     """
