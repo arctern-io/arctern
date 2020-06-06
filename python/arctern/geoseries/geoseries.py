@@ -169,12 +169,25 @@ class GeoSeries(Series):
 
         :type crs: str, optional
         :param crs: SRID(spatial reference identifier) form.
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+        >>> s.set_crs("EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
         """
         crs = _validate_crs(crs)
         self._crs = crs
 
     @property
     def crs(self):
+        """
+        Return the coordinate system of the GeoSeries.
+
+        :rtype: str
+        :return: the coordinate system of the GeoSeries.
+        """
         return self._crs
 
     @crs.setter
@@ -1028,6 +1041,13 @@ class GeoSeries(Series):
 
         :rtype: Series(dtype: object)
         :return: A Series contains geometries as WKB formed bytes object.
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s.to_wkb()
+        0    b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?'
+        dtype: object
         """
         return _property_op(lambda x: x, self)
 
