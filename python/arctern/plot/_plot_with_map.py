@@ -64,7 +64,8 @@ def pointmap(ax, points, bounding_box,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
@@ -149,7 +150,8 @@ def weighted_pointmap(ax, points, color_weights=None,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
@@ -226,7 +228,8 @@ def heatmap(ax, points, weights, bounding_box,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type aggregation_type: str
     :param aggregation_type: Aggregation type of data processing. Default as 'max'
@@ -301,7 +304,8 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type aggregation_type: str
     :param aggregation_type: Aggregation type of data processing. Default as 'max'
@@ -345,7 +349,8 @@ def iconviz(ax, points, bounding_box, icon_path,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
@@ -421,7 +426,8 @@ def fishnetmap(ax, points, weights, bounding_box,
 
     :type coordinate_system: str
     :param coordinate_system: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+                              Default as 'EPSG:3857'
 
     :type aggregation_type: str
     :param aggregation_type: Aggregation type of data processing. Default as 'sum'
