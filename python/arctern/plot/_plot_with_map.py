@@ -235,7 +235,7 @@ def heatmap(ax, points, weights, bounding_box,
     :type bounding_box: list
     :param bounding_box: Specify the bounding rectangle [west, south, east, north].
 
-    :type map_zoom_level: float
+    :type map_zoom_level: int
     :param map_zoom_level: Zoom level of heatmap. Default as auto. 
 
     :type coordinate_system: str
