@@ -136,7 +136,7 @@ def weighted_pointmap(ax, points, color_weights=None,
     
     :type color_bound: list
     :param color_bound: Specify weight range [w1, w2] binding to color_gradient. 
-                        Needed only when color_gradient has two value ["color1", "color2"], 
+                        Needed only when color_gradient has two value ["color1", "color2"]. 
                         Bind w1 to "color1", and w2 to "color2".
                         When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
 
