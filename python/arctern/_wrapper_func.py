@@ -1268,10 +1268,19 @@ def ST_CurveToLine(geos):
 
 def within_which(left, right):
     """
-    Calculate spatial join of two GeoSeries
+    For each geometry in left, search geometries that satisfy "within" relationship in right  
+
     :type left: GeoSeries
+    :param left: Sequence of Geometries
+
     :type right: GeoSeries
+    :param right: Sequence of Geometries
+
     :rtype: Series(dtype: object)
+    :return: For each `left[i]`, find `j` satisfying that `left[i]` is within `right[j]`.
+             When there are multiple candidates, return one of them.
+             When not exists, return `pandas.NA`
+
     :example:
       >>> from arctern import *
       >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])

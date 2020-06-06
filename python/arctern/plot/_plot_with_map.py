@@ -44,6 +44,7 @@ def pointmap(ax, points, bounding_box,
                   **extra_contextily_params):
     """
     Plot pointmap in Matplotlib
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -115,6 +116,7 @@ def weighted_pointmap(ax, points, color_weights=None,
                            **extra_contextily_params):
     """
     Plot weighted pointmap in Matplotlib
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -215,6 +217,7 @@ def heatmap(ax, points, weights, bounding_box,
                  **extra_contextily_params):
     """
     Plot heatmap in matplotlibs
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -278,6 +281,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
                        **extra_contextily_params):
     """
     Render region boundaries in matplotlib
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -337,6 +341,7 @@ def iconviz(ax, points, bounding_box, icon_path,
                  **extra_contextily_params):
     """
     Plot points as icons on map in Matplotlib
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -399,6 +404,7 @@ def fishnetmap(ax, points, weights, bounding_box,
                     **extra_contextily_params):
     """
     Plot fishnetmap in Matplotlib
+
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
