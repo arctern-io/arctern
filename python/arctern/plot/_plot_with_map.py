@@ -50,7 +50,7 @@ def pointmap(ax, points, bounding_box,
     :type points: GeoSeries
     :param points: Sequence of Points
 
-    :type bounding_box: list(float)
+    :type bounding_box: list
     :param bounding_box: Specify the bounding rectangle [west, south, east, north].
 
     :type point_size: int
@@ -318,19 +318,41 @@ def iconviz(ax, points, bounding_box, icon_path,
                  coordinate_system='EPSG:3857',
                  **extra_contextily_params):
     """
+    Plot points as icons on map in Matplotlib
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form
-    :type bounding_box: (float, float, float, float)
-    :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                                             value should be of :coordinate_system:
+
+    :type points: GeoSeries
+    :param points: Sequence of Points
+
+    :type bounding_box: list
+    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
+
+    :type icon_path: str
+    :param icon_path: absolute path to icon file
+
     :type coordinate_system: str
-    :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
     :type extra_contextily_params: dict
-    :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                                                    See https://contextily.readthedocs.io/en/latest/reference.html
-    """
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
+    :example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> import arctern
+    >>> import matplotlib.pyplot as plt
+    >>> # read from test_data.csv
+    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}, nrows=10)
+    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+    >>> # plot icon visualization
+    >>> # Download icon-viz.png :  https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png
+    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+    >>> arctern.plot.iconviz(ax, points, bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], icon_path='/path/to/icon-viz.png', coordinate_system='EPSG:4326')
+    >>> plt.show()
+   """
     from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
@@ -356,6 +378,58 @@ def fishnetmap(ax, points, weights, bounding_box,
                     coordinate_system='epsg:3857',
                     aggregation_type='sum',
                     **extra_contextily_params):
+    """
+    Plot weighted pointmap in Matplotlib
+    :type ax: AxesSubplot
+    :param ax: Matplotlib axes object on which to add the basemap.
+
+    :type points: GeoSeries
+    :param points: Sequence of Points
+
+    :type weights: Series(dtype: float|int64)
+    :param weights: Color weight of points
+
+    :type bounding_box: list
+    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
+
+    :type color_gradient: list
+    :param color_gradient: Specify range of color gradient. 
+                           Either use ["hex_color"] to specify a same color for all points, 
+                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
+                           Current only default value ["#0000FF", "#FF0000"] is supported
+
+    :type cell_size: int
+    :param cell_size: Side length of fishnet cells.
+
+    :type cell_spacing: int
+    :param cell_spacing: Margin between adjacent fishnet cells.
+
+    :type opacity: float
+    :param opacity: Opacity of fishnet, ranged from 0.0 to 1.0, default as 1.0
+
+    :type coordinate_system: str
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
+    :type aggregation_type: str
+    :param aggregation_type: Aggregation type of data processing. Default as 'sum'
+
+    :type extra_contextily_params: dict
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> import arctern
+    >>> import matplotlib.pyplot as plt
+    >>> # read from test_data.csv
+    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+    >>> # render fishnet
+    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+    >>> arctern.plot.fishnetmap(ax, points=points, weights=df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], cell_size=8, cell_spacing=2, opacity=1.0, coordinate_system="EPSG:4326")
+    >>> plt.show()
+    """
     from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
