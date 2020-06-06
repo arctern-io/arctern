@@ -249,6 +249,7 @@ def heatmap(ax, points, weights, bounding_box,
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
                                     See https://contextily.readthedocs.io/en/latest/reference.html for details
+
     :example:
     >>> import pandas as pd
     >>> import numpy as np
@@ -386,6 +387,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
                                     See https://contextily.readthedocs.io/en/latest/reference.html for details
+
     :example:
     >>> import pandas as pd
     >>> import numpy as np
@@ -467,6 +469,8 @@ def fishnetmap(ax, points, weights, bounding_box,
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap
                                     See https://contextily.readthedocs.io/en/latest/reference.html for details
+
+    :example:
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
