@@ -193,13 +193,15 @@ class GeoSeries(Series):
         # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
-                from pandas.core.internals import SingleBlockManager
+                if not isinstance(getattr(data, "dtype", None), GeoDtype):
+                    raise TypeError
+                # from pandas.core.internals import SingleBlockManager
                 # astype will dispatch to here,Only if `dtype` is `GeoDtype`
                 # will return GeoSeries
-                if isinstance(data, SingleBlockManager):
-                    dtype = getattr(data, 'dtype')
-                    if not isinstance(dtype, GeoDtype):
-                        raise TypeError
+                # if isinstance(data, SingleBlockManager):
+                #     dtype = getattr(data, 'dtype')
+                #     if not isinstance(dtype, GeoDtype):
+                #         raise TypeError
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
                 return Series(data, index=index, **kwargs)
