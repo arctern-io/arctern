@@ -300,13 +300,13 @@ def plot_geometry(ax, geoms, **style_kwds):
        >>> df = pandas.DataFrame({'wkb':arr_wkb})
        >>> fig, ax = plt.subplots()
        >>> arctern.plot.plot_geometry(ax, df,
-       ...                       color=['orange', 'green', 'blue', 'red'],
-       ...                       marker='^',
-       ...                       markersize=100,
-       ...                       linewidth=[None, 7, 8, 5],
-       ...                       linestyle=[None, 'dashed', 'dashdot', None],
-       ...                       edgecolor=[None, None, 'red', None],
-       ...                       facecolor=[None, None, 'black', None])
+       ...                            color=['orange', 'green', 'blue', 'red'],
+       ...                            marker='^',
+       ...                            markersize=100,
+       ...                            linewidth=[None, 7, 8, 5],
+       ...                            linestyle=[None, 'dashed', 'dashdot', None],
+       ...                            edgecolor=[None, None, 'red', None],
+       ...                            facecolor=[None, None, 'black', None])
        >>> ax.grid()
        >>> fig.savefig('/tmp/plot_test.png')
     """
