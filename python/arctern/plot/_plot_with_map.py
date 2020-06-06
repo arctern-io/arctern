@@ -234,8 +234,20 @@ def heatmap(ax, points, weights, bounding_box,
     :type extra_contextily_params: dict
     :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
                                     See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-
+    :example:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> import arctern
+    >>> import matplotlib.pyplot as plt
+    >>> # read from test_data.csv
+    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+    >>> 
+    >>> # plot heatmap
+    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+    >>> arctern.plot.heatmap(ax, points, df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], coordinate_system='EPSG:4326')
+    >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
