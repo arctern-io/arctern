@@ -214,6 +214,7 @@ def heatmap(ax, points, weights, bounding_box,
                  aggregation_type='max',
                  **extra_contextily_params):
     """
+    Plot heatmap in matplotlibs
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -276,6 +277,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
                        aggregation_type='max',
                        **extra_contextily_params):
     """
+    Render region boundaries in matplotlib
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
@@ -396,7 +398,7 @@ def fishnetmap(ax, points, weights, bounding_box,
                     aggregation_type='sum',
                     **extra_contextily_params):
     """
-    Plot weighted pointmap in Matplotlib
+    Plot fishnetmap in Matplotlib
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
