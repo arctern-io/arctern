@@ -215,16 +215,27 @@ def heatmap(ax, points, weights, bounding_box,
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form
-    :type bounding_box: (float, float, float, float)
-    :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                                             value should be of :coordinate_system:
+    :type points: GeoSeries
+    :param points: Sequence of Points
+
+    :type weights: Series(dtype: float|int64)
+    :param weights: Weights of point intensity
+
+    :type bounding_box: list
+    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
+
     :type coordinate_system: str
-    :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
+    :type aggregation_type: str
+    :param aggregation_type: Aggregation type of data processing. Default as 'max'
+
     :type extra_contextily_params: dict
-    :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                                                    See https://contextily.readthedocs.io/en/latest/reference.html
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
+
+
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -253,16 +264,39 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     :type ax: AxesSubplot
     :param ax: Matplotlib axes object on which to add the basemap.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form
-    :type bounding_box: (float, float, float, float)
-    :param bounding_box: The bounding rectangle, as a [left, upper, right, lower]-tuple.
-                        value should be of :coordinate_system:
+    :type region_boundaries: GeoSeries
+    :param region_boundaries: Sequence of polygons, as region boundaries to plot.
+
+    :type weights: Series(dtype: float|int64)
+    :param weights: Color weights for polygons
+
+    :type bounding_box: list
+    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
+
+    :type color_gradient: list
+    :param color_gradient: Specify range of color gradient. 
+                           Either use ["hex_color"] to specify a same color for all polygons, 
+                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
+    
+    :type color_bound: list
+    :param color_bound: Specify weight range [w1, w2] binding to color_gradient. 
+                        Needed only when color_gradient has two value ["color1", "color2"]. 
+                        Bind w1 to "color1", and w2 to "color2".
+                        When weight < w1 or weight > w2, truncate to w1/w2 accordingly. 
+
+    :type opacity: float
+    :param opacity: Opacity of polygons, ranged from 0.0 to 1.0, default as 1.0
+
     :type coordinate_system: str
-    :param coordinate_system: either 'EPSG:4326' or 'EPSG:3857'
+    :param coordinate_system: Coordinate Reference System of the geometry objects.
+                    Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
+
+    :type aggregation_type: str
+    :param aggregation_type: Aggregation type of data processing. Default as 'max'
+
     :type extra_contextily_params: dict
-    :param extra_contextily_params: extra parameters for contextily.add_basemap.
-                                                                    See https://contextily.readthedocs.io/en/latest/reference.html
+    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
+                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
     """
     from matplotlib import pyplot as plt
     import contextily as cx
