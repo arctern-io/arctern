@@ -31,7 +31,7 @@ def test_within_which():
 
     data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"], index=['A', 'B', 'C'])
     data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))",
-                       "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"], index=['x', 'y'])
+                       "Polygon((-1 0, 1 2, 1 -2, -1 0))"], index=['x', 'y'])
     res = within_which(data1, data2)
     print(res)
     assert len(res) == 3
