@@ -1,121 +1,30 @@
 <img src="./doc/img/icon/arctern-color.png" width = "200">
 
-[中文README](./README_CN.md)
+[Arctern Docs](https://arctern.io/docs/versions/v0.2.x/development-doc-en/html/index.html)
 
-> Notice: Arctern is still in development and the 0.1.0 version is expected to be released in April 2020.
+[Arctern 中文文档](https://arctern.io/docs/versions/v0.2.x/development-doc-cn/html/index.html)
 
 ## Overview
 
-Arctern is a geospatial analytics engine for massive-scale data. Compared with other geospatial analytics tools, Arctern aims at providing the following advantages:
+Arctern is a fast scalable spatial-temporal analytics framework. 
 
-1. Provides domain-specific APIs to improve the development efficiency of upper-level applications.
-2. Provides extensible, low-cost distributed solutions.
-3. Provides GPU acceleration for geospatial analytics algorithms.
-4. Support hybrid analysis with GIS, SQL, and ML functionalities.
+Scalability is key to building productive data science pipelines. To address the scalability challenge, we launched Arctern, an open source spatial-temporal analytic framework for boosting end-to-end data science performance. Arctern aims to improve scalability from two aspects: 
 
-## Architecture
+* Unified data analytic and processing interface across different platforms, from laptops to clusters and cloud.
+* Rich and consistent algorithms and models, including trajectory processing, spatial clustering and regression, etc., across different data science pipeline stages.
 
-The following figure shows the architecture of Arctern 0.1.0.  
+## Arctern's approach and current progress
 
-<img src="./doc/img/v0.1.0_intro/arctern_arch_v0.1.0.png" width = "700">
+We adopt GeoPandas‘s interface and plan to build the GeoDataFrame/GeoSeries that scale both up and out. On top of GeoDataFrame/GeoSeries, we will develop a consistent spatial-temporal algorithm set across execution environments.
 
-Arctern includes two components: GIS and Visualization. Arctern 0.1.0 supports most frequently used 35 GIS APIs in the OGC standard, including construction, access, correlation analysis, measurement for geometric objects. The visualization component is responsible for rendering geometry objects. It provides standard Vega rendering APIs. Different from traditional web rendering, Arctern uses server-side rendering and can render choropleths, heatmaps, and scatter plots for massive-scale data.  With a set of unified APIs, Arctern provides both CPU and GPU based implementations for geospatial data analytics and visualization.
+We have now developed an efficient multi-thread GeoSeries implementation, and the distributed version is in progress. In the latest version 0.2.0, Arctern achieves 24x speed up against GeoPandas. Even under single-thread execution, Arctern outperforms GeoPandas 7x on average. The detailed evaluation results are illustrated in the figure below.
 
-For data format, Arctern supports standard numeric types, WKB formats, and files with JSON, CSV, and parquet format. Arctern organizes data in the memory in a column-based manner according to the Arrow standard. In this way, Arctern supports zero-copy data exchange with external systems.
+<img src="./doc/img/v0.2.0_intro/performance_geopandas_vs_arctern.png" width = "700">
 
-Arctern includes three types of column-based interface: C++ API, Python API, and Spark API. The C++ APIs pass arguments in Arrow format, Python and Spark APIs pass arguments in dataframe format. Because Spark will start to support GPU resource management since the 3.0 version, the Spark interface of Arctern only supports Spark 3.0.
+We are also conducting experimental GPU acceleration for spatial-temporal data analysis and rendering. By now Arctern provides six GPU-accelerated rendering methods and eight spatial-relation operations, which outperform their CPU-based counterparts with up to 36x speed up.
 
-## Code example 
+In the next few releases, our team will focus on:
 
-```python
-# Invoke Arctern API in PySpark
+- Developing a distributed version of GeoSeries. Our first distributed implementation of GeoDataFrame/GeoSeries will be based on Spark. It is developed in sync with Spark 3.0 since its preview release. Spark's supports on GPU scheduling and column-based processing is highly in line with our idea of high-performance spatial-temporal data processing. Besides, the introduced Koalas interface offers a promising option for implementing consistent GeoDataFrame/GeoSeries interfaces on Spark.
+- Enriching our spatial-temporal algorithm sets. We will concentrate on KNN search and trajectory analysis in the project's early stages.
 
-from pyspark.sql import SparkSession
-from arctern_pyspark import register_funcs, heatmap
-from arctern.util import save_png
-from arctern.util.vega import vega_heatmap 
-
-if __name__== "__main__":
-    spark = SparkSession \
-            .builder \
-            .appName("Arctern-PySpark example") \
-            .getOrCreate()
-
-    spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-    register_funcs(spark)
-
-    df = spark.read.format("csv") \
-         .option("header", True) \ 
-         .option("delimiter", ",") \
-         .schema("passenger_count long,  pickup_longitude double, pickup_latitude double") \
-         .load("file:///tmp/0_5M_nyc_taxi_and_building.csv") \
-         .cache()
-    df.createOrReplaceTempView("nyc_taxi")
-        
-    res = spark.sql(
-        "select ST_Point(pickup_longitude, pickup_latitude) as point, passenger_count as w \
-        from nyc_taxi \
-        where ST_Within(ST_Point(pickup_longitude, pickup_latitude), 'POLYGON ((-73.998427 40.730309, \
-                                                                                -73.954348 40.730309, \
-                                                                                -73.954348 40.780816, \
-                                                                                -73.998427 40.780816, \
-                                                                                -73.998427 40.730309))')")
-
-    vega = vega_heatmap(1024, 896, 10.0, [-73.998427, 40.730309, -73.954348, 40.780816], 'EPSG:4326')
-    res = heatmap(res, vega)
-    save_png(res, '/tmp/heatmap.png')
-
-    spark.catalog.dropTempView("nyc_taxi")
-
-    spark.stop()
-```
-
-## Visualization
-
-Arctern will be open sourced along with Sulidae, which is a front-end visualization system developed by ZILLIZ and provides hybrid visualization solutions with both web frontend and server-side rendering. Sulidae combines the speed and flexibility of web frontend rendering and massive-scale data rendering capability of the backend.
-
-Arctern 0.1.0 is compatible with Sulidae. The following figures show the visualization effects of a headmap and a choropleth with 10 million data.
-
-<img src="./doc/img/v0.1.0_intro/heat_map.png" width = "700">
-
-<img src="./doc/img/v0.1.0_intro/contour_map.png" width = "700">
-
-## Arctern roadmap
-
-### v0.1.0
-
-1. Support most frequently used 35 GIS APIs in the OGC standard.
-2. Support rendering choropleths, heatmaps, and scatter plots for massive-scale datasets.
-3. Provide C++, Python, and Spark APIs that comply with Arrow standard.
-4. Arctern engine with CPU based implementation.
-5. Arctern engine with GPU based implementation.
-6. Compatibility with Sulidae.
-7. Documentation for installation, deployment, and API reference.
-
-### v0.2.0
-
-1. Domain-specific API for trace analysis and geospatial data analysis.
-2. Geospatial indexes for domain-specific API.
-3. Performance optimization in Spark 3.0.
-4. Support more GIS APIs.
-5. Continuously improve system stability.
-
-### In progress:
-
-#### Completed by 2020.03.10
-
-1. Support most frequently used 35 GIS APIs in the OGC standard.
-2. Support rendering horopleths, heatmaps, and scatter plots for massive-scale datasets.
-3. Support C++, Python, and Spark APIs that comply with Arrow standard.
-4. Arctern engine with CPU support.
-5. Arctern engine with GPU support.
-
-### Contact us
-
-#### Email
-
-support@zilliz.com
-
-##### ZILLIZ Wechat
-
-<img src="./doc/img/v0.1.0_intro/zilliz.png" width = "200" align=left>

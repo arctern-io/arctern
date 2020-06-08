@@ -169,12 +169,31 @@ class GeoSeries(Series):
 
         :type crs: str, optional
         :param crs: SRID(spatial reference identifier) form.
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+        >>> s.set_crs("EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
         """
         crs = _validate_crs(crs)
         self._crs = crs
 
     @property
     def crs(self):
+        """
+        Return the coordinate system of the GeoSeries.
+
+        :rtype: str
+        :return: the coordinate system of the GeoSeries.
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"], crs="EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
+        """
         return self._crs
 
     @crs.setter
@@ -463,7 +482,7 @@ class GeoSeries(Series):
         :examples:
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-        >>> s.geometry_type
+        >>> s.geom_type
         0      ST_POINT
         1    ST_POLYGON
         dtype: object
@@ -687,7 +706,7 @@ class GeoSeries(Series):
         >>> p1 = "POINT(1 2)"
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
-        >>> s.union_aggr()
+        >>> s.unary_union()
         0    MULTIPOINT (1 2,1 1)
         dtype: GeoDtype
         """
@@ -1030,6 +1049,13 @@ class GeoSeries(Series):
 
         :rtype: Series(dtype: object)
         :return: A Series contains geometries as WKB formed bytes object.
+
+        :example:
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s.to_wkb()
+        0    b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?'
+        dtype: object
         """
         return _property_op(lambda x: x, self)
 
@@ -1178,7 +1204,6 @@ class GeoSeries(Series):
         :rtype: arctern.GeoSeries
         :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
         """
-
         import geopandas as gpd
         import shapely.wkb
         if not isinstance(data, gpd.GeoSeries):
