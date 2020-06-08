@@ -377,3 +377,33 @@ class GeoArray(ExtensionArray):
         if boxed:
             return lambda x: to_wkt([x])[0]
         return repr
+
+    def value_counts(self, normalize=False, sort=True, ascending=False, bins=None, dropna=True):
+        """
+        Return a Series containing counts of each GeoArray.
+
+        Every category will have an entry, even those with a count of 0.
+
+        Parameters
+        ----------
+        dropna : bool, default True
+            Don't include counts of NaN.
+
+        Returns
+        -------
+        counts : Series
+
+        See Also
+        --------
+        Series.value_counts
+        """
+
+        from pandas.core.algorithms import value_counts
+        if dropna:
+            values = self[~self.isna()].data
+        else:
+            values = self.data
+
+        result = value_counts(values, sort=False, dropna=dropna)
+
+        return pd.Series(result.values, name=result.name)
