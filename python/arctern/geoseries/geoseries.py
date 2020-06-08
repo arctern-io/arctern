@@ -480,7 +480,7 @@ class GeoSeries(Series):
         :examples:
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-        >>> s.geometry_type
+        >>> s.geom_type
         0      ST_POINT
         1    ST_POLYGON
         dtype: object
@@ -704,7 +704,7 @@ class GeoSeries(Series):
         >>> p1 = "POINT(1 2)"
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
-        >>> s.union_aggr()
+        >>> s.unary_union()
         0    MULTIPOINT (1 2,1 1)
         dtype: GeoDtype
         """
@@ -1042,7 +1042,7 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_AsText, self)
 
     def to_wkb(self):
-        """
+        r"""
         Transform each geometry to WKB formed bytes object.
 
         :rtype: Series(dtype: object)
@@ -1201,8 +1201,18 @@ class GeoSeries(Series):
 
         :rtype: arctern.GeoSeries
         :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
-        """
 
+        :example:
+        >>> import geopandas as gpd
+        >>> from shapely.geometry import Point, Polygon
+        >>> from arctern import GeoSeries
+        >>> gpd_s = gpd.GeoSeries([Point(1,1), Polygon(((1,1), (1,2), (2,3), (1,1)))])
+        >>> arctern_s = GeoSeries.from_geopandas(gpd_s)
+        >>> arctern_s
+        0                    POINT (1 1)
+        1    POLYGON ((1 1,1 2,2 3,1 1))
+        dtype: GeoDtype
+        """
         import geopandas as gpd
         import shapely.wkb
         if not isinstance(data, gpd.GeoSeries):
