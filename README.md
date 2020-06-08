@@ -25,12 +25,3 @@ In the next few releases, our team will focus on:
 - Developing a distributed version of GeoSeries. Our first distributed implementation of GeoDataFrame/GeoSeries will be based on Spark. It is developed in sync with Spark 3.0 since its preview release. Spark's supports on GPU scheduling and column-based processing is highly in line with our idea of high-performance spatial-temporal data processing. Besides, the introduced Koalas interface offers a promising option for implementing consistent GeoDataFrame/GeoSeries interfaces on Spark.
 - Enriching our spatial-temporal algorithm sets. We will concentrate on KNN search and trajectory analysis in the project's early stages.
 
-### Contact us
-
-#### Email
-
-support@zilliz.com
-
-##### ZILLIZ Wechat
-
-<img src="./doc/img/v0.1.0_intro/zilliz.png" width = "200" align=left>
