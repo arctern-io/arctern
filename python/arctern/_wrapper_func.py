@@ -1268,14 +1268,23 @@ def ST_CurveToLine(geos):
 
 def within_which(left, right):
     """
-    Calculate spatial join of two GeoSeries
+    For each geometry in left, search geometries that satisfy "within" relationship in right
+
     :type left: GeoSeries
+    :param left: Sequence of Geometries
+
     :type right: GeoSeries
+    :param right: Sequence of Geometries
+
     :rtype: Series(dtype: object)
+    :return: For each `left[i]`, find `j` satisfying that `left[i]` is within `right[j]`.
+             When there are multiple candidates, return one of them.
+             When not exists, return `pandas.NA`
+
     :example:
       >>> from arctern import *
       >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-      >>> data2 = GeoSeries(["Polygon(9 10, 11 12, 11 8, 9 10)", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
+      >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
       >>> res = within_which(data1, data2)
       >>> print(res)
           0    1
@@ -1602,12 +1611,11 @@ def nearest_location_on_road(roads, points):
     :return: Points in WKB form.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.ST_AsText(arctern.nearest_location_on_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+      >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
+      >>> rst
           0    POINT (1.0 2.5)
           dtype: object
     """
@@ -1635,12 +1643,11 @@ def nearest_road(roads, points,):
     :return: Points in WKB form.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)))
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+      >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
+      >>> rst
           0    LINESTRING (1 2,1 3)
           dtype: object
     """
@@ -1671,12 +1678,11 @@ def near_road(roads, points, distance=100):
     :return: True if there is a road within 100 meters of the point.
 
     :example:
-      >>> from arctern import *
-      >>> import pandas
-      >>> data1=pandas.Series(["LINESTRING (1 2,1 3)"])
-      >>> data2=pandas.Series(["POINT (1.001 2.5)"])
-      >>> rst = arctern.near_road(arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2), 100)
-      >>> print(rst)
+      >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+      >>> rst = arctern.near_road(data1, data2)
+      >>> rst
           0    True
           dtype: object
     """
