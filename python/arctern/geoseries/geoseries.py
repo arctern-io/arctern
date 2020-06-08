@@ -1042,7 +1042,7 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_AsText, self)
 
     def to_wkb(self):
-        """
+        r"""
         Transform each geometry to WKB formed bytes object.
 
         :rtype: Series(dtype: object)
