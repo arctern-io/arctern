@@ -1,8 +1,5 @@
 <img src="./doc/img/icon/arctern-color.png" width = "200">
 
-[中文README](./README_CN.md)
-
-> Notice: The 0.2.0 version is expected to be released in June 2020.
 
 ## Overview
 
