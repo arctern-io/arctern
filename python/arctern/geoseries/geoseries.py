@@ -1202,7 +1202,6 @@ class GeoSeries(Series):
         :rtype: arctern.GeoSeries
         :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
         """
-
         import geopandas as gpd
         import shapely.wkb
         if not isinstance(data, gpd.GeoSeries):
