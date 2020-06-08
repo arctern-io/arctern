@@ -378,11 +378,9 @@ class GeoArray(ExtensionArray):
             return lambda x: to_wkt([x])[0]
         return repr
 
-    def value_counts(self, normalize=False, sort=True, ascending=False, bins=None, dropna=True):
+    def value_counts(self, dropna=True):
         """
         Return a Series containing counts of each GeoArray.
-
-        Every category will have an entry, even those with a count of 0.
 
         Parameters
         ----------
@@ -391,11 +389,7 @@ class GeoArray(ExtensionArray):
 
         Returns
         -------
-        counts : Series
-
-        See Also
-        --------
-        Series.value_counts
+        counts : Pandas Series
         """
 
         from pandas.core.algorithms import value_counts
@@ -406,4 +400,4 @@ class GeoArray(ExtensionArray):
 
         result = value_counts(values, sort=False, dropna=dropna)
 
-        return pd.Series(result.values, name=result.name)
+        return pd.Series(result.values, index=result.index, name=result.name)

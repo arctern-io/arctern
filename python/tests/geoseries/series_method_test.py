@@ -341,9 +341,10 @@ def test_is_monotonic_decreasing(geo_s, pd_s):
     assert ret1 == ret2
 
 
-@pytest.mark.skip("to do")
-def test_value_counts():
-    pass
+def test_value_counts(geo_s, pd_s):
+    ret1 = geo_s.value_counts(normalize=True)
+    ret2 = pd_s.value_counts(normalize=True)
+    pd.testing.assert_series_equal(ret1, ret2)
 
 
 def test_align(geo_s, pd_s):
