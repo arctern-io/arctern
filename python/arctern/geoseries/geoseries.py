@@ -1201,6 +1201,17 @@ class GeoSeries(Series):
 
         :rtype: arctern.GeoSeries
         :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
+
+        :example:
+        >>> import geopandas as gpd
+        >>> from shapely.geometry import Point, Polygon
+        >>> from arctern import GeoSeries
+        >>> gpd_s = gpd.GeoSeries([Point(1,1), Polygon(((1,1), (1,2), (2,3), (1,1)))])
+        >>> arctern_s = GeoSeries.from_geopandas(gpd_s)
+        >>> arctern_s
+        0                    POINT (1 1)
+        1    POLYGON ((1 1,1 2,2 3,1 1))
+        dtype: GeoDtype
         """
         import geopandas as gpd
         import shapely.wkb
