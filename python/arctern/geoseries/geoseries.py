@@ -480,7 +480,7 @@ class GeoSeries(Series):
         :examples:
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-        >>> s.geometry_type
+        >>> s.geom_type
         0      ST_POINT
         1    ST_POLYGON
         dtype: object
@@ -704,7 +704,7 @@ class GeoSeries(Series):
         >>> p1 = "POINT(1 2)"
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
-        >>> s.union_aggr()
+        >>> s.unary_union()
         0    MULTIPOINT (1 2,1 1)
         dtype: GeoDtype
         """
