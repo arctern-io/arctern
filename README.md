@@ -1,7 +1,8 @@
 <img src="./doc/img/icon/arctern-color.png" width = "200">
 
 [Arctern Docs](https://arctern.io/docs/versions/v0.2.x/development-doc-en/html/index.html)
-[Arctern CN_Docs](https://arctern.io/docs/versions/v0.2.x/development-doc-cn/html/index.html)
+
+[Arctern 中文文档](https://arctern.io/docs/versions/v0.2.x/development-doc-cn/html/index.html)
 
 ## Overview
 
