@@ -73,6 +73,15 @@ class TestConstructor:
         assert_is_geoseries(s)
         assert len(s) == 0
 
+        s = GeoSeries()
+        assert_is_geoseries(s)
+        assert len(s) == 0
+
+    def test_explicate_dtype(self, sequence, expected_series):
+        s = GeoSeries(sequence, dtype="GeoDtype")
+        assert_is_geoseries(s)
+        assert_series_equal(s, expected_series, check_dtype=False)
+
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
         assert_is_geoseries(s)
@@ -174,7 +183,7 @@ class TestCRS:
         assert self.s.centroid.crs == self.crs.upper()
 
 
-# other method will be tested in geoarray_test.py
+# other method will be tested in geoarray_test.py and series_method_test.py
 class TestPandasMethod:
     def test_missing_values(self):
         s = GeoSeries([make_point(1, 2), None])
@@ -205,6 +214,10 @@ class TestPandasMethod:
     def test_equals(self):
         s1 = GeoSeries([make_point(1, 1), None])
         s2 = GeoSeries([make_point(1, 1), None])
+        assert s1.equals(s2)
+
+        s1 = GeoSeries()
+        s2 = GeoSeries()
         assert s1.equals(s2)
 
     def test_unique(self):
@@ -262,6 +275,11 @@ class TestGeoMethods:
         s1 = left.geom_equals(right)
         assert s1.index.to_list() == [1, 2, 3, 4]
         assert s1.to_list() == [False, True, False, True]
+
+    def test_to_wkb(self):
+        s = GeoSeries(make_point(1, 1))
+        s1 = s.to_wkb()
+        assert isinstance(s1, pd.Series)
 
 
 def test_geoseries_type_by_df_box_col_values():
