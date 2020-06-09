@@ -445,7 +445,8 @@ class GeoSeries(Series):
         * POINT / MULTIPOINT / POLYGON / MULTIPOLYGON / CURVEPOLYGON / MULTICURVE: 0
         * LINESTRING: Length of a single straight line.
         * MULTILINESTRING: Sum of length of multiple straight lines.
-        * CIRCULARSTRING: Length of a single curve line.
+        * CIRCULARSTRING: Length of a single curvilinear line.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of length of all geometries in the collection.
 
         Returns
         -------
@@ -491,6 +492,15 @@ class GeoSeries(Series):
     def area(self):
         """
         Calculates the 2D Cartesian (planar) area of each geometry in the GeoSeries.
+
+        The ways to calculate the area of geometries are as follows:
+
+        * POINT / MULTIPOINT / LINESTRING / MULTILINESTRING / CIRCULARSTRING: 0
+        * POLYGON: Area of a single polygon.
+        * MULTIPOLYGON: Sum of area of multiple polygons.
+        * CURVEPOLYGON: Area of a single curvilinear polygon.
+        * MULTICURVE: Sum of area of multiple curvilinear polygons.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of area of all geometries in the collection.
 
         Returns
         -------
