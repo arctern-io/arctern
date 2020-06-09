@@ -99,11 +99,9 @@ Projection nearest_edge(const std::vector<OGRGeometry*>& roads,
   for (int32_t i = 0; i < roads.size(); i++) {
     Projection projection = projection_to_edge(roads[i], gps_point);
     if (min_distance >= projection.distance) {
-      if (min_distance >= projection.distance) {
         min_distance = projection.distance;
         result = projection;
         result.road_id = i;
-      }
     }
   }
 
