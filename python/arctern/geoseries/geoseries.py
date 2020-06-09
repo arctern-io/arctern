@@ -120,7 +120,7 @@ class GeoSeries(Series):
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
-        
+
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
