@@ -90,28 +90,25 @@ def _validate_crs(crs):
 
 class GeoSeries(Series):
     """
-    A Series to store geometry data which is WKB formed bytes object.
+    One-dimensional Series to store an array of geometry objects.
 
-    :type data: array-like, Iterable, dict, or scalar value(str or bytes)
-    :param data: Geometries to store, which can be WKB formed bytes or WKT formed string.
+    Parameters
+    ----------
+    data : array-like, Iterable, dict, or scalar value(str or bytes)
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT (Well-Known Text) <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+    index : array-like or Index (1d)
+        Same to the index of pandas.Series.
+        Values must be hashable and have the same length as data. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
+    name : str, optional
+        The name to give to the GeoSeries.
+    crs : str, optional
+        The coordinate reference system (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a representation of CRS definition by now.
+    **kwargs :
+        Options to pass to the GeoSeries constructor, e.g. ``copy``.
 
-    :type index: array-like or Index (1d)
-    :param index: Same to Pandas Series.
-        Values must be hashable and have the same length as `data`.
-        Non-unique index values are allowed. Will default to
-        RangeIndex (0, 1, 2, ..., n) if not provided. If both a dict and index
-        sequence are used, the index will override the keys found in the
-        dict.
-
-    :type name: str, optional
-    :param name: The name to give to the Series.
-
-    :type crs: str, optional
-    :param crs: The coordinate system for the GeoSeries, now only support SRID form.
-
-    :param kwargs: Additional arguments passed to the GeoSeries constructor, e.g. ``copy``
-
-    :example:
+    Examples
+    -------
     >>> from arctern import GeoSeries
     >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
     >>> s
@@ -123,7 +120,7 @@ class GeoSeries(Series):
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
-
+        
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
