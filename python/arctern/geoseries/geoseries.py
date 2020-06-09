@@ -90,28 +90,25 @@ def _validate_crs(crs):
 
 class GeoSeries(Series):
     """
-    A Series to store geometry data which is WKB formed bytes object.
+    One-dimensional Series to store an array of geometry objects.
 
-    :type data: array-like, Iterable, dict, or scalar value(str or bytes)
-    :param data: Geometries to store, which can be WKB formed bytes or WKT formed string.
+    Parameters
+    ----------
+    data : array-like, Iterable, dict, or scalar value(str or bytes)
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT (Well-Known Text) <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+    index : array-like or Index (1d)
+        Same to the index of pandas.Series.
+        Values must be hashable and have the same length as data. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
+    name : str, optional
+        The name to give to the GeoSeries.
+    crs : str, optional
+        The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a WKT representation of CRS by now, e.g. ``"EPSG:4326"``.
+    **kwargs :
+        Options to pass to the GeoSeries constructor, e.g. ``copy``.
 
-    :type index: array-like or Index (1d)
-    :param index: Same to Pandas Series.
-        Values must be hashable and have the same length as `data`.
-        Non-unique index values are allowed. Will default to
-        RangeIndex (0, 1, 2, ..., n) if not provided. If both a dict and index
-        sequence are used, the index will override the keys found in the
-        dict.
-
-    :type name: str, optional
-    :param name: The name to give to the Series.
-
-    :type crs: str, optional
-    :param crs: The coordinate system for the GeoSeries, now only support SRID form.
-
-    :param kwargs: Additional arguments passed to the GeoSeries constructor, e.g. ``copy``
-
-    :example:
+    Examples
+    -------
     >>> from arctern import GeoSeries
     >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
     >>> s
@@ -165,12 +162,20 @@ class GeoSeries(Series):
 
     def set_crs(self, crs):
         """
-        Set the coordinate system for the GeoSeries.
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
 
-        :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        Parameters
+        ----------
+        crs : str
+            A WKT representation of CRS.
+            It is a string made up of an authority code and a SRID (Spatial Reference Identifier), e.g. ``"EPSG:4326"``.
 
-        :example:
+        See Also
+        -------
+        Arctern supports common CRS listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
         >>> s.set_crs("EPSG:4326")
