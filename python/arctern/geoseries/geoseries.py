@@ -102,8 +102,8 @@ class GeoSeries(Series):
     name : str, optional
         The name to give to the GeoSeries.
     crs : str, optional
-        The coordinate reference system (CRS) set to all geometries in GeoSeries.
-        Only supports SRID as a representation of CRS definition by now.
+        The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a WKT representation of CRS by now, e.g. ``"EPSG:4326"``.
     **kwargs :
         Options to pass to the GeoSeries constructor, e.g. ``copy``.
 
@@ -162,12 +162,20 @@ class GeoSeries(Series):
 
     def set_crs(self, crs):
         """
-        Set the coordinate system for the GeoSeries.
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
 
-        :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        Parameters
+        ----------
+        crs : str
+            A WKT representation of CRS.
+            It is a string made up of an authority code and a SRID (Spatial Reference Identifier), e.g. ``"EPSG:4326"``.
 
-        :example:
+        See Also
+        -------
+        Arctern supports common CRS listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
         >>> s.set_crs("EPSG:4326")
