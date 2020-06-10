@@ -766,12 +766,16 @@ class GeoSeries(Series):
 
         Examples
         -------
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "CIRCULARSTRING (0 0,1 1,2 0)"])
-        >>> s.simplify(1)
-        0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
-        1               LINESTRING (0 0,2 0)
-        dtype: GeoDtype
+        >>> from arctern.plot import plot_geometry
+        >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
+        >>> g0 = g0.curve_to_line()
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> ax.grid()
+        >>> plot_geometry(ax,g0,facecolor="red",alpha=0.2)
+        >>> plot_geometry(ax,g0.simplify(1),facecolor="green",alpha=0.2)
         """
         return _unary_geo(arctern.ST_SimplifyPreserveTopology, self, tolerance)
 
@@ -787,11 +791,17 @@ class GeoSeries(Series):
         :return: Geometries.
 
         :example:
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POINT (0 1)"])
-        >>> s.buffer(0)
-        0    POLYGON EMPTY
-        dtype: GeoDtype
+        >>> from arctern.plot import plot_geometry
+        >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
+        >>> g0 = g0.curve_to_line()
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> ax.grid()
+        >>> plot_geometry(ax,g0,facecolor=["red"],alpha=0.2)
+        >>> plot_geometry(ax,g0.buffer(-2),facecolor=["green"],alpha=0.2)
+        >>> plot_geometry(ax,g0.buffer(2),facecolor=["blue"],alpha=0.2)
         """
         return _unary_geo(arctern.ST_Buffer, self, distance)
 
