@@ -1230,3 +1230,63 @@ class GeoSeries(Series):
             return shapely.wkb.dumps(x)
 
         return cls(data.apply(f), crs=crs)
+
+    @classmethod
+    def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
+        """
+        Read a file to GeoSeries.
+
+        Supported file format is listed in
+        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type bbox: a (minx, miny, maxx, maxy) tuple
+        :param bbox: Filter for geometries which spatial intersects with by the provided bounding box.
+
+        :type mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
+        :param mask: Filter for geometries which spatial intersects with by the provided geometry.
+
+        :param item: int or slice
+        :param item: Load special items by skipping over items or stopping at a specific item.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`
+
+        :rtype: GeoSeries
+        :return: A GeoSeries read from file.
+        """
+        import fiona
+        import json
+        with fiona.Env():
+            with fiona.open(fp, "r", **kwargs) as features:
+                # TODO: use crs.to_string() when arctern.GeoSeries support proj.4 string
+                crs = features.crs_wkt
+
+                if mask is not None:
+                    if isinstance(mask, (str, bytes)):
+                        mask = GeoSeries(mask)
+                    if not isinstance(mask, GeoSeries):
+                        raise TypeError(f"unsupported mask type {type(mask)}")
+                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                if isinstance(item, (int, type(None))):
+                    item = (item,)
+                elif isinstance(item, slice):
+                    item = (item.start, item.stop, item.step)
+                else:
+                    raise TypeError(f"unsupported item type {type(item)}")
+                features = features.filter(*item, bbox=bbox, mask=mask)
+
+                geoms = []
+                for feature in features:
+                    geometry = feature["geometry"]
+                    geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
+                geoms = arctern.ST_GeomFromGeoJSON(geoms).values
+
+                return cls(geoms, crs=crs, name="geometry")
+
+    def to_file(self, fp, driver="ESRI Shapefile", **kwargs):
+        import fiona
+        with fiona.Env():
+            with fiona.open(fp, "w", driver, crs=self.crs, **kwargs) as sink:
+                sink.writerecords()
