@@ -860,7 +860,7 @@ class GeoSeries(Series):
 
     def unary_union(self):
         """
-        Returns a geometry that represents the union of all geometries in the GeoSeries.
+        Calculates a geometry that represents the union of all geometries in the GeoSeries.
 
         Returns
         -------
@@ -1131,14 +1131,14 @@ class GeoSeries(Series):
         For each geometry in the GeoSeries and the corresponding geometry given in ``other``, calculates the minimum 2D Cartesian (planar) distance between them.
 
         other : geometry or GeoSeries
-            The geometry or GeoSeries to calculate whether the distance between it and the geometries in the first GeoSeries.
+            The geometry or GeoSeries to calculate the distance between it and the geometries in the first GeoSeries.
             * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function calculates the distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         Series
-            A Series contains the distances between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            A Series that contains the distances between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         -------
@@ -1165,14 +1165,14 @@ class GeoSeries(Series):
         Parameters
         ----------
         other : geometry or GeoSeries
-            The geometry or GeoSeries to calculate whether the spherical distance between it and the geometries in the first GeoSeries.
+            The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
             * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
             * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         Series
-            A Series contains the spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            A Series that contains the spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Notes
         -------
@@ -1193,18 +1193,24 @@ class GeoSeries(Series):
 
     def hausdorff_distance(self, other):
         """
-        Returns the Hausdorff distance between each geometry and other.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the Hausdorff distance between them.
 
-        This is a measure of how similar or dissimilar 2 geometries are.
+        Hausdorff distance is a measure of how similar two geometries are.
 
-        :type other: scalar bytes object geometry or GeoSeries
-                     Can be scalar WKB formed bytes object, or a GeoSeries.
-        :param other: The geometries to calculate the hausdorff distance to each geometry.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the Hausdorff distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the Hausdorff distance between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the Hausdorff distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return : A Series contains the hausdorff distance between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series that contains the Hausdorff distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
         >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
@@ -1221,16 +1227,22 @@ class GeoSeries(Series):
 
     def intersection(self, other):
         """
-        Calculate the point set intersection between each geometry and other.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the intersection of them.
 
-        :type other: scalar bytes object geometry or GeoSeries.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
-        :param other: The geometries to calculate the intersection point set between each geometry.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the intersection of it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the intersection of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the intersection of each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains only one geometry, which is the intersection of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
         >>> s2 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
