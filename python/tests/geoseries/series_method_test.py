@@ -1279,3 +1279,9 @@ def test_to_string(geo_s):
     geo_s_string = geo_s.to_string()
     pd_s_string = pd_s.to_string()
     assert geo_s_string == pd_s_string
+
+def test_to_json(geo_s):
+    gpd_s = geo_s.to_geopandas()
+    geo_res = geo_s.to_json()
+    gpd_res = gpd_s.to_json()
+    assert geo_res == gpd_res
