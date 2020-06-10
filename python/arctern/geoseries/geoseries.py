@@ -164,13 +164,15 @@ class GeoSeries(Series):
         """
         Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
 
-        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
-
         Parameters
         ----------
         crs : str
             A string representation of CRS.
             The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+
+        Notes
+        -------
+        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
 
         Examples
         -------
@@ -544,7 +546,7 @@ class GeoSeries(Series):
     @property
     def centroid(self):
         """
-        Calculates the centroid of each geometry in the GeoSeries.
+        Returns the centroid of each geometry in the GeoSeries.
 
         Returns
         -------
@@ -565,7 +567,11 @@ class GeoSeries(Series):
     @property
     def convex_hull(self):
         """
-        For each geometry in the GeoSeries, calculates the smallest convex geometry that encloses it.
+        For each geometry in the GeoSeries, returns the smallest convex geometry that encloses it.
+
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
 
         * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
         * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
@@ -611,10 +617,14 @@ class GeoSeries(Series):
 
         ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
 
+        The GeoSeries ``s1`` below contains a point, a line, and a convex polygon.
+
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
         >>> s = GeoSeries(["POINT(2 0.5)", "LINESTRING(0 0,3 0.5)",  "POLYGON ((1 1,3 1,3 3,1 3, 1 1))"])
         >>> plot_geometry(ax,s)
+
+        The returned geometries from ``convex_hull`` looks exactly the same as the original.
 
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
@@ -630,7 +640,7 @@ class GeoSeries(Series):
     @property
     def npoints(self):
         """
-        Calculates the number of points for each geometry in the GeoSeries.
+        Returns the number of points for each geometry in the GeoSeries.
 
         Returns
         -------
@@ -651,7 +661,7 @@ class GeoSeries(Series):
     @property
     def envelope(self):
         """
-        Calculates the minimum bounding box for each geometry in the GeoSeries.
+        Returns the minimum bounding box for each geometry in the GeoSeries.
 
         The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
 
@@ -677,7 +687,7 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Convert curves in each geometry to approximate linear representation.
+        Converts curves in each geometry to approximate linear representation.
 
         For example,
 
@@ -703,17 +713,25 @@ class GeoSeries(Series):
 
     def to_crs(self, crs):
         """
-        Transform each geometry to a different coordinate reference system.
-        The ``crs`` attribute on the current GeoSeries must be set.
+        Transforms the Coordinate Reference System (CRS) of the GeoSeries to `crs`.
 
-        :type crs: string
-        :param crs: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. "EPSG:4326"
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: Geometries with transformed coordinate reference system.
+        Returns
+        -------
+        GeoSeries
+            GeoSeries with transformed CRS.
 
-        :example:
+        Notes
+        -------
+        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
         >>> s
@@ -734,15 +752,20 @@ class GeoSeries(Series):
 
     def simplify(self, tolerance):
         """
-        Returns a "simplified" version for each geometry using the Douglas-Peucker algorithm.
+        Returns a simplified version for each geometry in the GeoSeries using the Douglas-Peucker algorithm.
 
-        :type: tolerance: float
-        :param tolerance: The maximum distance between a point on a linestring and a curve.
+        Parameters
+        ----------
+        tolerance : float
+            The maximum distance between a point on a linestring and a curve.
 
-        :rtype: GeoSeries
-        :return: Simplified geometries.
+        Returns
+        -------
+        GeoSeries
+            Simplified geometries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "CIRCULARSTRING (0 0,1 1,2 0)"])
         >>> s.simplify(1)
