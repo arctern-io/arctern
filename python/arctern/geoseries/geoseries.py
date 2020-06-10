@@ -865,7 +865,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains only one geometry, which is the union of all geometries in the given GeoSeries.
+            A GeoSeries that contains only one geometry, which is the union of all geometries in the first GeoSeries.
 
         Examples
         -------
@@ -907,16 +907,22 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
     def intersects(self, other):
         """
-        Check whether each geometry intersects other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they intersect each other.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if is intersected.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it is intersected with the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype : Series(dtype: bool)
-        :return: A Series with value True if intersected.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -925,7 +931,7 @@ class GeoSeries(Series):
         1    True
         dtype: bool
 
-        Alternatively other can be ca scalar bytes object.
+        Alternatively, ``other`` can be a geometry in WKB format.
 
         >>> s2.intersects(s1[0])
         0    True
@@ -936,17 +942,22 @@ class GeoSeries(Series):
 
     def within(self, other):
         """
-        Check whether each geometry is within other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry is within the other.
 
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether the geometries in the first GeoSeries is within it.
+            * If ``other`` is a geometry, this function tests the "within" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "within" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is within.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it is within the geometries in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry is within other.
-
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -959,16 +970,22 @@ class GeoSeries(Series):
 
     def contains(self, other):
         """
-        Check whether each geometry contains other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry contains the other.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is contained.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether the geometries in the first GeoSeries contains it.
+            * If ``other`` is a geometry, this function tests the "contain" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "contain" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry contains other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it contains the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -981,21 +998,24 @@ class GeoSeries(Series):
 
     def crosses(self, other):
         """
-        Check whether each geometry and other(elementwise) "spatially cross".
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry spatially crosses the other.
 
-        "Spatially cross" here means two geometries have
-        some, but not all interior points in common. The intersection of the
-        interiors of the geometries must not be the empty set and must have
-        a dimensionality less than the maximum dimension of the two input geometries.
+        "Spatially cross" means two geometries have some, but not all interior points in common. The intersection of the interiors of the geometries must not be the empty set and must have a dimensionality less than the maximum dimension of the two input geometries.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if cross.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it crosses the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "cross" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "cross" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry crosses other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it crosses the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -1008,18 +1028,24 @@ class GeoSeries(Series):
 
     def geom_equals(self, other):
         """
-        Check whether each geometry is "spatially equal" to other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry equals the other.
 
-        "Spatially equal" means two geometries represent the same geometry structure.
+        "Equal" means two geometries represent the same geometry structure.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is equals.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it equals the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the equivalence relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the equivalence relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry is spatially equals to other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it equals the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -1042,19 +1068,24 @@ class GeoSeries(Series):
 
     def touches(self, other):
         """
-        Check whether each geometry "touches" other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry touches the other.
 
-        "Touch" means two geometries have common points, and the
-        common points locate only on their boundaries.
+        "Touch" means two geometries have common points, and the common points locate only on their boundaries.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is touched.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it touches the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "touch" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "touch" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry touches other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it touches the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -1067,19 +1098,24 @@ class GeoSeries(Series):
 
     def overlaps(self, other):
         """
-        Check whether each geometry "spatially overlaps" other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry "spatially overlaps" the other.
 
-        "Spatially overlap" here means two geometries intersect
-        but one does not completely contain another.
+        "Spatially overlap" here means two geometries intersect but one does not completely contain another.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry overlaps.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it overlaps the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "overlap" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "overlap" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry overlaps other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it overlaps the geometries in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -1092,16 +1128,20 @@ class GeoSeries(Series):
 
     def distance(self, other):
         """
-        Calculates the minimum 2D Cartesian (planar) distance between each geometry and other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, calculates the minimum 2D Cartesian (planar) distance between them.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to calculate the distance to each geometry.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate whether the distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return: A Series contains the distances between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series contains the distances between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p11 = "LINESTRING(9 0,9 2)"
         >>> p12 = "POINT(10 2)"
