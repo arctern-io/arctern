@@ -314,7 +314,7 @@ class GeoSeries(Series):
         inplace : bool, by default False
 
             * *True:* Fills NA values in-place.
-                **Note:** this will modify any other views on this object.
+                **Note:** This will modify any other views on this object.
             * *False:* Create a new GeoSeries object, and then fill NA values in it.
 
         limit : int, by default None
@@ -752,12 +752,12 @@ class GeoSeries(Series):
 
     def simplify(self, tolerance):
         """
-        Returns a simplified version for each geometry in the GeoSeries using the Douglas-Peucker algorithm.
+        Returns a simplified version for each geometry in the GeoSeries using the `Douglas-Peucker algorithm <https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm>`_.
 
         Parameters
         ----------
         tolerance : float
-            The maximum distance between a point on a linestring and a curve.
+            Distance tolerance.
 
         Returns
         -------
@@ -777,16 +777,23 @@ class GeoSeries(Series):
 
     def buffer(self, distance):
         """
-        For each geometry, returns a geometry that represents all points
-        whose distance from this geos is less than or equal to "distance".
+        For each geometry, returns a new geometry at a distance of ``distance`` from it.
 
-        :type distance: float
-        :param distance: he maximum distance of the returned geometry from each geometry.
+        * If ``distance`` &ge; 0, the new geometry is a scaled-up version outside the original goemetry.
+        * If ``distance`` &le; 0, the new geometry is a scaled-down version inside the original goemetry.
 
-        :rtype: GeoSeries
-        :return: Geometries.
+        Parameters
+        ----------
+        distance : float
+            The maximum distance between the returned geometry and the original.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            GeoSeries that contains the new geometries at a distance of ``distance`` from the original.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT (0 1)"])
         >>> s.buffer(0)
@@ -797,16 +804,20 @@ class GeoSeries(Series):
 
     def precision_reduce(self, precision):
         """
-        For the coordinates of each geometry, reduce the number of significant digits
-        to the given number. The last decimal place will be rounded.
+        For the coordinates of each geometry in the GeoSeries, reduces the number of significant digits to the given number. The digit in the last decimal place will be rounded.
 
-        :type precision: int
-        :param precision: The number of significant digits.
+        Parameters
+        ----------
+        precision : int
+            Number of significant digits.
 
-        :rtype: GeoSeries
-        :return: Geometries with reduced precision.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that stores geometries with reduced precision.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
         >>> s.precision_reduce(3)
@@ -818,15 +829,17 @@ class GeoSeries(Series):
 
     def make_valid(self):
         """
-        Create a valid representation of each geometry without losing any of the input vertices.
+        Creates a valid representation of each geometry in the GeoSeries without losing any of the input vertices.
 
-        If the geometry is already-valid, then nothing will be done. If the geometry can't be
-        made to valid, it will be set to None value.
+        If the geometry is already-valid, then nothing will be done. If the geometry can't be made to valid, it will be set to None.
 
-        :rtype: GeoSeries
-        :return: Geometries that are made to valid.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with valid geometries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
         >>> s.make_valid()
@@ -837,12 +850,15 @@ class GeoSeries(Series):
 
     def unary_union(self):
         """
-        Return a geometry that represents the union of all geometries in the GeoSeries.
+        Returns a geometry that represents the union of all geometries in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains only one geometry.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains only one geometry, which is the union of all geometries in the given GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p1 = "POINT(1 2)"
         >>> p2 = "POINT(1 1)"
@@ -855,12 +871,17 @@ class GeoSeries(Series):
 
     def envelope_aggr(self):
         """
-        Compute the double-precision minimum bounding box geometry for the union of all geometries.
+        Returns the minimum bounding box for the union of all geometries in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains only one geometry.
+        The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Minimum bounding box for the union of all geometries in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
         >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
