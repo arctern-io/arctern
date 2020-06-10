@@ -310,9 +310,11 @@ class GeoSeries(Series):
         axis : {0 or 'index'}
             Axis along which to fill missing values.
         inplace : bool, by default False
+
             * *True:* Fills NA values in-place.
                 **Note:** this will modify any other views on this object.
             * *False:* Create a new GeoSeries object, and then fill NA values in it.
+
         limit : int, by default None
             * If ``method`` is specified, this is the maximum number of consecutive
             NA values to forward/backward fill. In other words, if there is
@@ -328,7 +330,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries or None
-            * None if ``inplace=False``
+            * None if ``inplace=False``.
             * Object with missing values filled if ``inplace=True``.
 
         Examples
@@ -367,7 +369,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
             * True: An element is a NA value, such as None.
             * False: An element is a non-missing value.
@@ -391,7 +393,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
             * True: An element is a non-missing value.
             * False: An element is a NA value, such as None.
@@ -420,7 +422,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             * *True:* All geometries are valid.
             * *False:* At least one geometry is invalid.
 
@@ -445,11 +447,12 @@ class GeoSeries(Series):
         * POINT / MULTIPOINT / POLYGON / MULTIPOLYGON / CURVEPOLYGON / MULTICURVE: 0
         * LINESTRING: Length of a single straight line.
         * MULTILINESTRING: Sum of length of multiple straight lines.
-        * CIRCULARSTRING: Length of a single curve line.
+        * CIRCULARSTRING: Length of a single curvilinear line.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of length of all geometries in the collection.
 
         Returns
         -------
-        Series(dtype: float64)
+        Series
             Length of each geometry in the GeoSeries.
 
         Examples
@@ -472,7 +475,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             * *True:* All geometries are simple.
             * *False:* At least one geometry is not simple.
 
@@ -492,9 +495,18 @@ class GeoSeries(Series):
         """
         Calculates the 2D Cartesian (planar) area of each geometry in the GeoSeries.
 
+        The ways to calculate the area of geometries are as follows:
+
+        * POINT / MULTIPOINT / LINESTRING / MULTILINESTRING / CIRCULARSTRING: 0
+        * POLYGON: Area of a single polygon.
+        * MULTIPOLYGON: Sum of area of multiple polygons.
+        * CURVEPOLYGON: Area of a single curvilinear polygon.
+        * MULTICURVE: Sum of area of multiple curvilinear polygons.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of area of all geometries in the collection.
+
         Returns
         -------
-        Series(dtype: float64)
+        Series
             2D Cartesian (planar) area of each geometry in the GeoSeries.
 
         Examples
@@ -511,11 +523,11 @@ class GeoSeries(Series):
     @property
     def geom_type(self):
         """
-        Returns a series of string that indicates the type of each geometry in the GeoSeries.
+        Returns the type of each geometry in the GeoSeries.
 
         Returns
         -------
-        Series(dtype: object)
+        Series
             The string representations of geometry types. For example, "ST_LINESTRING", "ST_POLYGON", "ST_POINT", and "ST_MULTIPOINT".
 
         Examples
@@ -532,12 +544,15 @@ class GeoSeries(Series):
     @property
     def centroid(self):
         """
-        Compute the centroid of each geometry.
+        Calculates the centroid of each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: The centroid of geometries.
+        Returns
+        -------
+        GeoSeries
+            The centroid of each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.centroid
@@ -550,13 +565,15 @@ class GeoSeries(Series):
     @property
     def convex_hull(self):
         """
-        For each geometry, compute the smallest convex geometry
-        that encloses all geometries in it.
+        For each geometry in the GeoSeries, calculates the smallest convex geometry that encloses it.
 
-        :rtype: GeoSeries
-        :return: Convex Geometries.
+        Returns
+        -------
+        GeoSeries
+            Convex Geometry of each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.convex_hull
