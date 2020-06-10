@@ -523,7 +523,7 @@ class GeoSeries(Series):
     @property
     def geom_type(self):
         """
-        Returns a series of string that indicates the type of each geometry in the GeoSeries.
+        Returns the type of each geometry in the GeoSeries.
 
         Returns
         -------
@@ -544,7 +544,7 @@ class GeoSeries(Series):
     @property
     def centroid(self):
         """
-        Compute the centroid of each geometry in the GeoSeries.
+        Calculates the centroid of each geometry in the GeoSeries.
 
         Returns
         -------
