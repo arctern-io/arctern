@@ -570,7 +570,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            Convex Geometries.
+            Convex Geometry of each geometry in the GeoSeries.
 
         Examples
         -------
