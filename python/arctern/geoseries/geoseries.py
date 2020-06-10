@@ -98,7 +98,7 @@ class GeoSeries(Series):
         Contains geometric data stored in GeoSeries. The geometric data can be in `WKT (Well-Known Text) <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
     index : array-like or Index (1d)
         Same to the index of pandas.Series.
-        Values must be hashable and have the same length as data. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
+        Values must be hashable and have the same length as ``data``. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
     name : str, optional
         The name to give to the GeoSeries.
     crs : str, optional
@@ -567,6 +567,10 @@ class GeoSeries(Series):
         """
         For each geometry in the GeoSeries, calculates the smallest convex geometry that encloses it.
 
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
+
         Returns
         -------
         GeoSeries
@@ -574,21 +578,30 @@ class GeoSeries(Series):
 
         Examples
         -------
-        >>> import matplotlib.pyplot as plt
+        For geometry collections, such as MULTIPOLYGON, MULTISURFACE, and GEOMETRYCOLLECTION, ``convex_hull`` ignores point and line elements and creates the smallest convex geometry that encloses all polygon elements.
+
+        First, create a MULTIPOLYGON object that contains a concave polygon and a rectangle.
+
         >>> from arctern import GeoSeries
         >>> from arctern.plot import plot_geometry
         >>> fig, ax = plt.subplots()
-        >>> g0 = GeoSeries(["MultiPolygon(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
+        >>> g0 = GeoSeries(["MULTIPOLYGON(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
         >>> plot_geometry(ax,g0)
+
+        Then, use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the MULTIPOLYGON object.
 
         >>> g1 = g0.convex_hull
         >>> fig, ax = plt.subplots()
         >>> plot_geometry(ax,g1)
 
+        Let's see how ``convex_hull`` deals with a GEOMETRYCOLLECTION that contains a semicircle and a rectangle.
+
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
         >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
         >>> plot_geometry(ax,g4.curve_to_line())
+
+        Use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the GEOMETRYCOLLECTION object. Since semicircle and rectangle are convex, the returned convex geometry is just a combination of the two gemetries and looks the same as the original.
 
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
@@ -596,25 +609,29 @@ class GeoSeries(Series):
         >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
         CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
 
+        ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
+
         >>> s = GeoSeries(["POINT(1 1)", "LINESTRING(0 0, 1 1)",  "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.convex_hull
         0                        POINT (1 1)
         1               LINESTRING (0 0,1 1)
         2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
-
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
     @property
     def npoints(self):
         """
-        Calculates the points number for each geometry.
+        Calculates the number of points for each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: int)
-        :return: The number of points for each geometry.
+        Returns
+        -------
+        Series
+            Number of points for each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.npoints
@@ -627,12 +644,17 @@ class GeoSeries(Series):
     @property
     def envelope(self):
         """
-        Compute the double-precision minimum bounding box geometry for each geometry.
+        Calculates the minimum bounding box for each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: bounding box geometries
+        The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Minimum bounding box for each geometry in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.envelope
@@ -648,15 +670,23 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Convert curves in each geometry to approximate linear representation,
-        e.g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON,
-        and MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices
-        that can't support CIRCULARSTRING geometry types.
+        Convert curves in each geometry to approximate linear representation.
 
-        :rtype: GeoSeries
-        :return: Converted geometries
+        For example,
 
-        :example:
+        * CIRCULAR STRING to LINESTRING,
+        * CURVEPOLYGON to POLYGON,
+        * MULTISURFACE to MULTIPOLYGON.
+        
+        It is useful for outputting to devices that can't support CIRCULARSTRING geometry types.
+
+        Returns
+        -------
+        GeoSeries
+            Converted linear geometries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"])
         >>> rst = s.curve_to_line().to_wkt()
