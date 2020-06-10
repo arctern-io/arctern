@@ -633,12 +633,17 @@ class GeoSeries(Series):
     @property
     def envelope(self):
         """
-        Compute the double-precision minimum bounding box geometry for each geometry.
+        Calculates the minimum bounding box for each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: bounding box geometries
+        The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Minimum bounding box for each geometry in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.envelope
