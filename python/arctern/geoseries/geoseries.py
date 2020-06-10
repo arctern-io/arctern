@@ -163,6 +163,8 @@ class GeoSeries(Series):
         self._crs = None
         self.set_crs(crs)
 
+
+
     def set_crs(self, crs):
         """
         Set the coordinate system for the GeoSeries.
@@ -212,13 +214,15 @@ class GeoSeries(Series):
         # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
-                from pandas.core.internals import SingleBlockManager
+                if not isinstance(getattr(data, "dtype", None), GeoDtype):
+                    raise TypeError
+                # from pandas.core.internals import SingleBlockManager
                 # astype will dispatch to here,Only if `dtype` is `GeoDtype`
                 # will return GeoSeries
-                if isinstance(data, SingleBlockManager):
-                    dtype = getattr(data, 'dtype')
-                    if not isinstance(dtype, GeoDtype):
-                        raise TypeError
+                # if isinstance(data, SingleBlockManager):
+                #     dtype = getattr(data, 'dtype')
+                #     if not isinstance(dtype, GeoDtype):
+                #         raise TypeError
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
                 return Series(data, index=index, **kwargs)
@@ -1196,7 +1200,7 @@ class GeoSeries(Series):
         """
         Construct geometries from geopandas GeoSeries.
 
-        :rtype data: geopandas.GeoSeries
+        :type data: geopandas.GeoSeries
         :param data: Source geometries data.
 
         :rtype: arctern.GeoSeries
@@ -1230,6 +1234,96 @@ class GeoSeries(Series):
             return shapely.wkb.dumps(x)
 
         return cls(data.apply(f), crs=crs)
+
+    def bbox(self, geom_wkb):
+        """
+        Calculate bound box of one geometry formed WKB.
+
+        :type geom_wkb: WKB of geometry
+        :param geom_wkb: one of Arctern.GeoSeries.
+
+        :rtype: list
+        :return: A list of geometry's bound box.
+        """
+        from osgeo import ogr
+        geom = ogr.CreateGeometryFromWkb(geom_wkb)
+        env = geom.GetEnvelope()
+        return [env[0], env[2], env[1], env[3]]
+
+    def bbox_of_series(self):
+        """
+        Calculate bound box of Arctern.GeoSeries.
+
+        :rtype: list
+        :return: A list of Arctern.GeoSeries's bound box.
+        """
+        from osgeo import ogr
+        geom_collection = ogr.Geometry(ogr.wkbGeometryCollection)
+        for geom_wkb in self:
+            geom = ogr.CreateGeometryFromWkb(geom_wkb)
+            geom_collection.AddGeometry(geom)
+        env = geom_collection.GetEnvelope()
+        return [env[0], env[2], env[1], env[3]]
+
+    def iterfeatures(self, na="null", show_bbox=False):
+        """
+        Returns an iterator that yields feature dictionaries that comply with
+        Arctern.GeoSeries.
+
+        :type na: str
+        :param na: {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame
+            * null: ouput the missing entries as JSON null
+            * drop: remove the property from the feature. This applies to
+                    each feature individually so that features may have
+                    different properties
+            * keep: output the missing entries as NaN
+
+        :type show_bbox: bool
+        :param show_bbox: include bbox (bounds box) in the geojson. default False
+        """
+
+        if na not in ["null", "drop", "keep"]:
+            raise ValueError("Unknown na method {0}".format(na))
+
+        ids = np.array(self.index, copy=False)
+
+        for fid, geom in zip(ids, self):
+            feature = {
+                "id": str(fid),
+                "type": "Feature",
+                "properties": {},
+                "geometry": eval(arctern.GeoSeries(geom).as_geojson()[0]) if geom else None,
+            }
+            if show_bbox:
+                feature["bbox"] = self.bbox(geom) if geom else None
+            yield feature
+
+    def _to_geo(self, **kwargs):
+        """
+        Returns a python feature collection representation of the Arctern.GeoSeries.
+        """
+        geo = {
+            "type": "FeatureCollection",
+            "features": list(self.iterfeatures(**kwargs)),
+        }
+
+        if kwargs.get("show_bbox", False):
+            geo["bbox"] = self.bbox_of_series()
+
+        return geo
+
+    def to_json(self, show_bbox=True, **kwargs):
+        """
+        Returns a GeoJSON string representation of the GeoSeries.
+
+        :type show_bbox: bool
+        :param show_bbox: include bbox (bounds box) in the geojson. default False
+
+        :param kwargs: that will be passed to json.dumps().
+        """
+        import json
+        return json.dumps(self._to_geo(na="null", show_bbox=show_bbox), **kwargs)
 
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
