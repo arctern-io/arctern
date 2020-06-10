@@ -22,7 +22,7 @@
 
 #include <memory>
 
-TEST(ArrowUtils, naive) {
+TEST(ArrowUtils, ChunkedArray) {
   //
   using arctern::ArrayPtr;
   using arctern::ChunkedArrayPtr;

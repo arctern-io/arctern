@@ -125,6 +125,7 @@ else ()
             ${arrow_src}
             ${index_src}
             ${map_match_src}
+            ${utils_src}
     )
 endif ()
 
