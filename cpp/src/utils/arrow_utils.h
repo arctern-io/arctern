@@ -25,7 +25,8 @@
 
 namespace arctern {
 // by default, the chunk size is up to 128MB
-std::vector<ChunkedArrayPtr>
-AlignChunkedArray(std::vector<ChunkedArrayPtr>& chunked_array, size_t chunk_size_limit = 128 * 1024 * 1024);
+std::vector<ChunkedArrayPtr> AlignChunkedArray(
+    const std::vector<ChunkedArrayPtr>& chunked_array,
+    size_t chunk_size_limit = 128 * 1024 * 1024);
 
 }  // namespace arctern
