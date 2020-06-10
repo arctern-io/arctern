@@ -1158,20 +1158,28 @@ class GeoSeries(Series):
 
     def distance_sphere(self, other):
         """
-        Return minimum distance in meters between two lon/lat points.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the minimum spherical distance between them.
 
-        Uses a spherical earth and radius derived from the spheroid defined by the SRID.
-        Only 'EPSG:4326' can calculate spherical distance.
+        This function uses a spherical earth and radius derived from the spheroid defined by the SRID.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to calculate the spherical distance to each geometry.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
-                      If other is scalar bytes object, we will assume other's crs is 'EPSG:4326'.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate whether the spherical distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
+            * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return: A Series contains the spherical distance between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series contains the spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Notes
+        -------
+        Only the longitude and latitude coordinate reference system ("EPSG:4326") can be used to calculate spherical distance.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POINT(10 2)"], crs="EPSG:4326")
         >>> s2 = GeoSeries(["POINT(10 3)"], crs="EPSG:4326")
