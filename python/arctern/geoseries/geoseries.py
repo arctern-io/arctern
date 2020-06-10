@@ -544,12 +544,15 @@ class GeoSeries(Series):
     @property
     def centroid(self):
         """
-        Compute the centroid of each geometry.
+        Compute the centroid of each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: The centroid of geometries.
+        Returns
+        -------
+        GeoSeries
+            The centroid of each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.centroid
