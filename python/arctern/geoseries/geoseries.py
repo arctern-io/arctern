@@ -672,11 +672,11 @@ class GeoSeries(Series):
         """
         Convert curves in each geometry to approximate linear representation.
 
-        For example, 
-        
-        * CIRCULAR STRING to LINESTRING, 
+        For example,
+
+        * CIRCULAR STRING to LINESTRING,
         * CURVEPOLYGON to POLYGON,
-        * MULTISURFACE to MULTIPOLYGON. 
+        * MULTISURFACE to MULTIPOLYGON.
         
         It is useful for outputting to devices that can't support CIRCULARSTRING geometry types.
 
