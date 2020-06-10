@@ -31,6 +31,7 @@ using WkbArrayPtr = std::shared_ptr<arrow::BinaryArray>;
 using DoubleArrayPtr = std::shared_ptr<arrow::DoubleArray>;
 using Int32ArrayPtr = std::shared_ptr<arrow::Int32Array>;
 using BooleanArrayPtr = std::shared_ptr<arrow::BooleanArray>;
+using ChunkedArrayPtr = std::shared_ptr<arrow::ChunkedArray>;
 
 template <typename ArrowArrayType>
 using GetArrowBuilderType =
