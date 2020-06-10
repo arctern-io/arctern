@@ -579,11 +579,33 @@ class GeoSeries(Series):
         Examples
         -------
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> from arctern.plot import plot_geometry
+        >>> fig, ax = plt.subplots()
+        >>> g0 = GeoSeries(["MultiPolygon(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
+        >>> plot_geometry(ax,g0)
+
+        >>> g1 = g0.convex_hull
+        >>> fig, ax = plt.subplots()
+        >>> plot_geometry(ax,g1)
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
+        >>> plot_geometry(ax,g4.curve_to_line())
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> print(g4.convex_hull.to_wkt()[0])
+        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
+        CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
+
+        >>> s = GeoSeries(["POINT(1 1)", "LINESTRING(0 0, 1 1)",  "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.convex_hull
         0                        POINT (1 1)
-        1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
+        1               LINESTRING (0 0,1 1)
+        2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
+
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
