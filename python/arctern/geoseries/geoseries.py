@@ -670,15 +670,23 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Convert curves in each geometry to approximate linear representation,
-        e.g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON,
-        and MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices
-        that can't support CIRCULARSTRING geometry types.
+        Convert curves in each geometry to approximate linear representation.
 
-        :rtype: GeoSeries
-        :return: Converted geometries
+        For example, 
+        
+        * CIRCULAR STRING to LINESTRING, 
+        * CURVEPOLYGON to POLYGON,
+        * MULTISURFACE to MULTIPOLYGON. 
+        
+        It is useful for outputting to devices that can't support CIRCULARSTRING geometry types.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Converted linear geometries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"])
         >>> rst = s.curve_to_line().to_wkt()
