@@ -573,6 +573,10 @@ class GeoSeries(Series):
         * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
         * For a point or line, the returned geometry is the same as the original.
 
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
+
         Returns
         -------
         GeoSeries
@@ -613,10 +617,21 @@ class GeoSeries(Series):
 
         ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
 
-        >>> s = GeoSeries(["POINT(1 1)", "LINESTRING(0 0, 1 1)",  "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-        >>> s.convex_hull
-        0                        POINT (1 1)
-        1               LINESTRING (0 0,1 1)
+        The GeoSeries ``s1`` below contains a point, a line, and a convex polygon.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> s = GeoSeries(["POINT(2 0.5)", "LINESTRING(0 0,3 0.5)",  "POLYGON ((1 1,3 1,3 3,1 3, 1 1))"])
+        >>> plot_geometry(ax,s)
+
+        The returned geometries from ``convex_hull`` looks exactly the same as the original.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> print(s.convex_hull)
+        >>> plot_geometry(ax,s.convex_hull)
+        0                    POINT (2.0 0.5)
+        1           LINESTRING (0 0,3.0 0.5)
         2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
         """
