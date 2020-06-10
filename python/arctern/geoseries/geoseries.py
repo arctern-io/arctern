@@ -567,6 +567,10 @@ class GeoSeries(Series):
         """
         For each geometry in the GeoSeries, calculates the smallest convex geometry that encloses it.
 
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
+
         Returns
         -------
         GeoSeries
@@ -586,12 +590,15 @@ class GeoSeries(Series):
     @property
     def npoints(self):
         """
-        Calculates the points number for each geometry.
+        Calculates the number of points for each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: int)
-        :return: The number of points for each geometry.
+        Returns
+        -------
+        Series
+            Number of points for each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.npoints
