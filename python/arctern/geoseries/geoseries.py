@@ -677,7 +677,7 @@ class GeoSeries(Series):
         * CIRCULAR STRING to LINESTRING,
         * CURVEPOLYGON to POLYGON,
         * MULTISURFACE to MULTIPOLYGON.
-        
+
         It is useful for outputting to devices that can't support CIRCULARSTRING geometry types.
 
         Returns
