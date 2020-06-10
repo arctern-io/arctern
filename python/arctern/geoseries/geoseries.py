@@ -310,9 +310,11 @@ class GeoSeries(Series):
         axis : {0 or 'index'}
             Axis along which to fill missing values.
         inplace : bool, by default False
+
             * *True:* Fills NA values in-place.
                 **Note:** this will modify any other views on this object.
             * *False:* Create a new GeoSeries object, and then fill NA values in it.
+
         limit : int, by default None
             * If ``method`` is specified, this is the maximum number of consecutive
             NA values to forward/backward fill. In other words, if there is
@@ -328,7 +330,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries or None
-            * None if ``inplace=False``
+            * None if ``inplace=False``.
             * Object with missing values filled if ``inplace=True``.
 
         Examples
@@ -367,7 +369,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
             * True: An element is a NA value, such as None.
             * False: An element is a non-missing value.
@@ -391,7 +393,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
             * True: An element is a non-missing value.
             * False: An element is a NA value, such as None.
@@ -420,7 +422,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             * *True:* All geometries are valid.
             * *False:* At least one geometry is invalid.
 
@@ -450,7 +452,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: float64)
+        Series
             Length of each geometry in the GeoSeries.
 
         Examples
@@ -473,7 +475,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: bool)
+        Series
             * *True:* All geometries are simple.
             * *False:* At least one geometry is not simple.
 
@@ -504,7 +506,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: float64)
+        Series
             2D Cartesian (planar) area of each geometry in the GeoSeries.
 
         Examples
@@ -525,7 +527,7 @@ class GeoSeries(Series):
 
         Returns
         -------
-        Series(dtype: object)
+        Series
             The string representations of geometry types. For example, "ST_LINESTRING", "ST_POLYGON", "ST_POINT", and "ST_MULTIPOINT".
 
         Examples
