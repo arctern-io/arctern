@@ -163,8 +163,6 @@ class GeoSeries(Series):
         self._crs = None
         self.set_crs(crs)
 
-
-
     def set_crs(self, crs):
         """
         Set the coordinate system for the GeoSeries.
@@ -1328,7 +1326,7 @@ class GeoSeries(Series):
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
         """
-        Read a file to GeoSeries.
+        Read a file or OGR dataset to GeoSeries.
 
         Supported file format is listed in
         https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
@@ -1345,7 +1343,9 @@ class GeoSeries(Series):
         :param item: int or slice
         :param item: Load special items by skipping over items or stopping at a specific item.
 
-        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
 
         :rtype: GeoSeries
         :return: A GeoSeries read from file.
@@ -1379,8 +1379,46 @@ class GeoSeries(Series):
 
                 return cls(geoms, crs=crs, name="geometry")
 
-    def to_file(self, fp, driver="ESRI Shapefile", **kwargs):
+    def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
+        """
+        Store GeoSeries to a file or OGR dataset.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type mode: str, default "w"
+        :param mode: 'a' to append, or 'w' to write. Not all driver support
+                      append, see "Supported driver list" below for more info.
+
+        :type driver: str, default "ESRI Shapefile"
+        :param driver: The OGR format driver. It's  represents a
+                       translator for a specific format. Supported driver is listed in
+                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
+                       write data to multi-layer dataset.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+        """
+        geo_type_map = dict([
+            ("ST_POINT", "Point"),
+            ("ST_LINESTRING", "LineString"),
+            ("ST_POLYGON", "Polygon"),
+            ("ST_MULTIPOINT", "MultiPoint"),
+            ("ST_MULTILINESTRING", "MultiLineString"),
+            ("ST_MULTIPOLYGON", "MultiPolygon"),
+            ("ST_GEOMETRYCOLLECTION", "GeometryCollection")
+        ])
+
+        geo_types = self.geom_type.map(geo_type_map)
+        if len(geo_types) == 0:
+            geo_types = "Unknown"
+        else:
+            geo_types = set(geo_types.unique())
+        schema = {"properties": {}, "geometry": geo_types}
+        # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
+        crs = self.crs
         import fiona
         with fiona.Env():
-            with fiona.open(fp, "w", driver, crs=self.crs, **kwargs) as sink:
-                sink.writerecords()
+            with fiona.open(fp, mode, driver, crs=crs, schema=schema, **kwargs) as sink:
+                sink.writerecords(self.iterfeatures())
