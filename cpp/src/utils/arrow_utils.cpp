@@ -8,7 +8,6 @@ class ChunkedArrayAligner {
  public:
   ChunkedArrayAligner(size_t max_rows_limit) : max_rows_limit_(max_rows_limit) {}
 
- private:
   void Register(const ChunkedArrayPtr& chunked_array) {
     size_t sum = 0;
     ArrayPtr ptr;
@@ -64,7 +63,20 @@ class ChunkedArrayAligner {
 };
 }  // namespace
 
-
-
-
+// by default, the chunk size is up to 128MB
+std::vector<ChunkedArrayPtr> AlignChunkedArray(
+    const std::vector<ChunkedArrayPtr>& chunked_arrays,
+    size_t max_rows_limit = 128 * 1024 * 1024) {
+  //
+  ChunkedArrayAligner aligner(max_rows_limit);
+  for(auto& chunked_array: chunked_arrays) {
+    aligner.Register(chunked_array);
+  }
+  aligner.Align();
+  std::vector<ChunkedArrayPtr> results;
+  for(auto& chunked_array: chunked_arrays) {
+    results.emplace_back(aligner.Slice(chunked_array));
+  }
+  return results;
+}
 }  // namespace arctern
