@@ -98,7 +98,7 @@ class GeoSeries(Series):
         Contains geometric data stored in GeoSeries. The geometric data can be in `WKT (Well-Known Text) <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
     index : array-like or Index (1d)
         Same to the index of pandas.Series.
-        Values must be hashable and have the same length as data. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
+        Values must be hashable and have the same length as ``data``. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
     name : str, optional
         The name to give to the GeoSeries.
     crs : str, optional
@@ -578,20 +578,30 @@ class GeoSeries(Series):
 
         Examples
         -------
+        For geometry collections, such as MULTIPOLYGON, MULTISURFACE, and GEOMETRYCOLLECTION, ``convex_hull`` ignores point and line elements and creates the smallest convex geometry that encloses all polygon elements.
+
+        First, create a MULTIPOLYGON object that contains a concave polygon and a rectangle.
+
         >>> from arctern import GeoSeries
         >>> from arctern.plot import plot_geometry
         >>> fig, ax = plt.subplots()
-        >>> g0 = GeoSeries(["MultiPolygon(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
+        >>> g0 = GeoSeries(["MULTIPOLYGON(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
         >>> plot_geometry(ax,g0)
+
+        Then, use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the MULTIPOLYGON object.
 
         >>> g1 = g0.convex_hull
         >>> fig, ax = plt.subplots()
         >>> plot_geometry(ax,g1)
 
+        Let's see how ``convex_hull`` deals with a GEOMETRYCOLLECTION that contains a semicircle and a rectangle.
+
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
         >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
         >>> plot_geometry(ax,g4.curve_to_line())
+
+        Use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the GEOMETRYCOLLECTION object. Since semicircle and rectangle are convex, the returned convex geometry is just a combination of the two gemetries and looks the same as the original.
 
         >>> fig, ax = plt.subplots()
         >>> ax.axis('equal')
@@ -599,13 +609,14 @@ class GeoSeries(Series):
         >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
         CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
 
+        ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
+
         >>> s = GeoSeries(["POINT(1 1)", "LINESTRING(0 0, 1 1)",  "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.convex_hull
         0                        POINT (1 1)
         1               LINESTRING (0 0,1 1)
         2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
-
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
