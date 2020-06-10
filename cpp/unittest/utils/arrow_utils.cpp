@@ -53,23 +53,21 @@ TEST(ArrowUtils, naive) {
     ASSERT_TRUE(is_equal);
     ASSERT_EQ(ptr->num_chunks(), expected_size.size());
     for (int i = 0; i < expected_size.size(); ++i) {
-      ASSERT_EQ(ptr->chunk(i), expected_size[i]);
+      ASSERT_EQ(ptr->chunk(i)->length(), expected_size[i]);
     }
   };
-
-
-  auto rechunked = arctern::AlignChunkedArray({a, b}, 10);
-  ASSERT_EQ(rechunked.size(), 2);
-  std::vector<int> expected_size{2, 1, 2, 3, 1};
-  verify(rechunked[0], a, expected_size);
-  verify(rechunked[1], a, expected_size);
-
-  rechunked = arctern::AlignChunkedArray({a, b}, 2);
-  ASSERT_EQ(rechunked.size(), 2);
-  std::vector<int> expected_size{2, 1, 2, 2, 1, 1};
-  verify(rechunked[0], a, expected_size);
-  verify(rechunked[1], a, expected_size);
+  {
+    auto rechunked = arctern::AlignChunkedArray({a, b}, 10);
+    ASSERT_EQ(rechunked.size(), 2);
+    std::vector<int> expected_size{2, 1, 2, 3, 1};
+    verify(rechunked[0], a, expected_size);
+    verify(rechunked[1], b, expected_size);
+  }
+  {
+    auto rechunked = arctern::AlignChunkedArray({a, b}, 2);
+    ASSERT_EQ(rechunked.size(), 2);
+    std::vector<int> expected_size{2, 1, 2, 2, 1, 1};
+    verify(rechunked[0], a, expected_size);
+    verify(rechunked[1], b, expected_size);
+  }
 }
-
-
-

@@ -66,7 +66,7 @@ class ChunkedArrayAligner {
 // by default, the chunk size is up to 128MB
 std::vector<ChunkedArrayPtr> AlignChunkedArray(
     const std::vector<ChunkedArrayPtr>& chunked_arrays,
-    size_t max_rows_limit = 128 * 1024 * 1024) {
+    size_t max_rows_limit) {
   //
   ChunkedArrayAligner aligner(max_rows_limit);
   for(auto& chunked_array: chunked_arrays) {
