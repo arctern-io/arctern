@@ -565,13 +565,15 @@ class GeoSeries(Series):
     @property
     def convex_hull(self):
         """
-        For each geometry, compute the smallest convex geometry
-        that encloses all geometries in it.
+        For each geometry in the GeoSeries, calculates the smallest convex geometry that encloses it.
 
-        :rtype: GeoSeries
-        :return: Convex Geometries.
+        Returns
+        -------
+        GeoSeries
+            Convex Geometries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.convex_hull
