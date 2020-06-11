@@ -30,7 +30,3 @@ target_link_libraries(utils_tests
         )
 
 install(TARGETS utils_tests DESTINATION unittest)
-
-if(BUILD_WITH_GPU)
-    add_subdirectory(cuda)
-endif()
