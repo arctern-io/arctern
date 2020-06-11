@@ -373,8 +373,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
-            * True: An element is a NA value, such as None.
-            * False: An element is a non-missing value.
+            * *True*: An element is a NA value, such as None.
+            * *False*: An element is a non-missing value.
 
         Examples
         -------
@@ -397,8 +397,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
-            * True: An element is a non-missing value.
-            * False: An element is a NA value, such as None.
+            * *True*: An element is a non-missing value.
+            * *False*: An element is a NA value, such as None.
 
         Examples
         -------
@@ -920,6 +920,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+            * *True*: The two geometries intersect each other.
+            * *False*: The two geometries do not intersect each other.
 
         Examples
         -------
@@ -955,6 +957,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it is within the geometries in ``other``.
+            * *True*: The first geometry is within the other.
+            * *False*: The first geometry is not within the other.
 
         Examples
         -------
@@ -983,6 +987,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it contains the geometries in ``other``.
+            * *True*: The first geometry contains the other.
+            * *False*: The first geometry does not contain the other.
 
         Examples
         -------
@@ -1013,6 +1019,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it crosses the geometries in ``other``.
+            * *True*: The first geometry crosses the other.
+            * *False*: The first geometry does not cross the other.
 
         Examples
         -------
@@ -1043,6 +1051,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it equals the geometries in ``other``.
+            * *True*: The first geometry equals the other.
+            * *False*: The first geometry does not equal the other.
 
         Examples
         -------
@@ -1083,6 +1093,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it touches the geometries in ``other``.
+            * *True*: The first geometry touches the other.
+            * *False*: The first geometry does not touch the other.
 
         Examples
         -------
@@ -1113,6 +1125,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it overlaps the geometries in ``other``.
+            * *True*: The first geometry overlaps the other.
+            * *False*: The first geometry does not overlap the other.
 
         Examples
         -------
@@ -1130,6 +1144,8 @@ class GeoSeries(Series):
         """
         For each geometry in the GeoSeries and the corresponding geometry given in ``other``, calculates the minimum 2D Cartesian (planar) distance between them.
 
+        Parameters
+        ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the distance between it and the geometries in the first GeoSeries.
             * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
