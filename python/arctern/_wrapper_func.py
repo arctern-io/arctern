@@ -1266,7 +1266,7 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
-def ST_SymDifference(geo1,geo2):
+def ST_SymDifference(geo1, geo2):
     import pyarrow as pa
     arr_geo1 = pa.array(geo1, type='binary')
     arr_geo2 = pa.array(geo2, type='binary')
