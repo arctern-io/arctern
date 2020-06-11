@@ -32,6 +32,16 @@ using arrow::Int32Type;
 using std::vector;
 
 TEST(ChunkedArray, Naive) {
+  auto verify = [](ChunkedArrayPtr ptr, ChunkedArrayPtr raw,
+                   const vector<int>& expected_size) {
+    auto is_equal = ptr->Equals(raw);
+    ASSERT_TRUE(is_equal);
+    ASSERT_EQ(ptr->num_chunks(), expected_size.size());
+    for (int i = 0; i < expected_size.size(); ++i) {
+      ASSERT_EQ(ptr->chunk(i)->length(), expected_size[i]);
+    }
+  };
+
   std::shared_ptr<Array> expected;
   std::shared_ptr<Array> a1, a2, a3, b1, b2, b3, b4;
   ArrayFromVector<Int16Type, int16_t>({1, 2, 3}, &a1);
@@ -46,15 +56,13 @@ TEST(ChunkedArray, Naive) {
   auto a = std::make_shared<ChunkedArray>(vector<ArrayPtr>{a1, a2, a3});
   auto b = std::make_shared<ChunkedArray>(vector<ArrayPtr>{b1, b2, b3, b4});
 
-  auto verify = [](ChunkedArrayPtr ptr, ChunkedArrayPtr raw,
-                   const vector<int>& expected_size) {
-    auto is_equal = ptr->Equals(raw);
-    ASSERT_TRUE(is_equal);
-    ASSERT_EQ(ptr->num_chunks(), expected_size.size());
-    for (int i = 0; i < expected_size.size(); ++i) {
-      ASSERT_EQ(ptr->chunk(i)->length(), expected_size[i]);
-    }
-  };
+  vector<vector<int16_t>> a_data{{1, 2, 3}, {4, 5}, {6, 7, 8, 9}};
+  ChunkedArrayPtr ra;
+  arrow::ChunkedArrayFromVector<arrow::Int16Type>(a_data, &ra);
+
+
+
+  verify(ra, a, {3, 2, 4});
 
   {
     auto rechunked = arctern::AlignChunkedArray({a, b}, 10);
