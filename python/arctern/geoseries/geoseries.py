@@ -95,10 +95,10 @@ class GeoSeries(Series):
     Parameters
     ----------
     data : array-like, Iterable, dict, or scalar value(str or bytes)
-        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT (Well-Known Text) <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
     index : array-like or Index (1d)
-        Same to the index of pandas.Series.
-        Values must be hashable and have the same length as ``data``. Non-unique index values are allowed. Will default to RangeIndex (0, 1, 2, …, n) if not provided. If both a dict and index sequence are used, the index will override the keys found in the dict.
+        Same to the index of pandas.Series, by default ``RangeIndex (0, 1, 2, …, n)``.
+        Index values must be hashable and have the same length as ``data``. Non-unique index values are allowed. If both a dict and index sequence are used, the index will override the keys found in the dict.
     name : str, optional
         The name to give to the GeoSeries.
     crs : str, optional
@@ -663,7 +663,7 @@ class GeoSeries(Series):
         """
         Returns the minimum bounding box for each geometry in the GeoSeries.
 
-        The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
+        The bounding box is a rectangular geometry object, and its edges are parallel to the axes.
 
         Returns
         -------
@@ -783,8 +783,8 @@ class GeoSeries(Series):
         """
         For each geometry, returns a new geometry at a distance of ``distance`` from it.
 
-        * If ``distance`` &ge; 0, the new geometry is a scaled-up version outside the original goemetry.
-        * If ``distance`` &le; 0, the new geometry is a scaled-down version inside the original goemetry.
+        * If ``distance`` &ge; 0, the new geometry is a scaled-up version outside the original geometry.
+        * If ``distance`` &le; 0, the new geometry is a scaled-down version inside the original geo metry.
 
         Parameters
         ----------
@@ -1258,12 +1258,15 @@ class GeoSeries(Series):
 
     def to_wkt(self):
         """
-        Transform each geometry to WKT formed string.
+        Transforms all geometries in the GeoSeries to `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as WKT formed string.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in WKT format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1276,13 +1279,16 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_AsText, self)
 
     def to_wkb(self):
-        r"""
-        Transform each geometry to WKB formed bytes object.
+        """
+        Transforms all geometries in the GeoSeries to `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as WKB formed bytes object.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in WKB format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s.to_wkb()
@@ -1293,12 +1299,15 @@ class GeoSeries(Series):
 
     def as_geojson(self):
         """
-        Transform each to GeoJSON format string.
+        Transforms all geometries in the GeoSeries to GeoJSON strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as GeoJSON formed string.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in GeoJSON format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1312,11 +1321,15 @@ class GeoSeries(Series):
 
     def to_geopandas(self):
         """
-        Transform each arctern GeoSeries to GeoPandas GeoSeries.
+        Transforms an arctern.GeoSeries object to a geopandas.GeoSeries object.
 
-        :rtype: GeoPandas GeoSeries(dtype: geometry)
-        :return: A GeoPandas GeoSeries.
-        :example:
+        Returns
+        -------
+        geopandas.GeoSeries
+            A geopandas.GeoSeries object.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1334,33 +1347,38 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         """
-        Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
-        arr_max_y and special coordinate system. The edges of polygon are parallel to coordinate axis.
+        Constructs rectangular POLYGON objects within the given spatial range. The edges of the rectangles are parallel to the coordinate axises.
 
-        :type min_x: Series(dtype: float64)
-        :param min_x: The minimum value of x coordinate of the rectangles.
+        ``min_x``, ``min_y``, ``max_x``, and ``max_y`` are Series so that polygons can be created in batch. The number of values in the four Series should be the same.
 
-        :type min_y: Series(dtype: float64)
-        :param min_y: The minimum value of y coordinate of the rectangles.
+        Suppose that the demension of ``min_x`` is *N*, the returned GeoSeries of this function should contains *N* rectangles. The shape and position of the *i*th rectangle is defined by its bottom left vertex *(min_x, min_y)* and top right vertex *(max_x, max_y)*.
 
-        :type max_x: Series(dtype: float64)
-        :param max_x: The maximum value of x coordinate of the rectangles.
+        Parameters
+        ----------
+        min_x : Series
+            The minimum x coordinates of the rectangles.
+        min_y : Series
+            The minimum y coordinates of the rectangles.
+        max_x : Series
+            The maximum x coordinates of the rectangles.
+        max_y : Series
+            The maximum y coordinates of the rectangles.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :type max_y: Series(dtype: float64)
-        :param max_y: The maximum value of y coordinate of the rectangles.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains rectangular POLYGON objects within the given spatial range.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
-
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
-
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> min_x = Series([0.0, 1.0])
         >>> max_x = Series([2.0, 1.5])
-        >>> min_y = Series([0.0, 1.0])
+        >>> min_y = Series([0.0, 1.0])  
         >>> max_y = Series([1.0, 1.5])
         >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
         0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
@@ -1373,21 +1391,29 @@ class GeoSeries(Series):
     @classmethod
     def point(cls, x, y, crs=None):
         """
-        Construct Point geometries according to the coordinates.
+        Constructs POINT objects based on the given coordinates.
 
-        :type x: Series(dtype: float64)
-        :param x: Abscissa of the point.
+        ``x``and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
 
-        :type y: Series(dtype: float64)
-        :param y: Ordinate of the point.
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y)*.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
+        Parameters
+        ----------
+        x : Series
+            X coordinates of points.
+        y : Series
+            Y coordinates of points.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains point geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains POINT objects.
 
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> x = Series([1.3, 2.5])
@@ -1403,18 +1429,25 @@ class GeoSeries(Series):
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
         """
-        Construct geometry from the GeoJSON representation string.
+        Constructs geometries from GeoJSON strings.
 
-        :type json: Series(dtype: object)
-        :param json: Geometries in json format.
+        ``json`` is Series so that geometries can be created in batch.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
+        Parameters
+        ----------
+        json : Series
+            String representations of geometries in JSON format.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries.
 
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> json = Series(['{"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]}'])
@@ -1428,15 +1461,20 @@ class GeoSeries(Series):
     @classmethod
     def from_geopandas(cls, data):
         """
-        Construct geometries from geopandas GeoSeries.
+        Constructs an arctern.GeoSeries object from a geopandas.GeoSeries object.
 
-        :rtype data: geopandas.GeoSeries
-        :param data: Source geometries data.
+        Parameters
+        ----------
+        data : geopandas.GeoSeries
+            A geopandas.GeoSeries object.
 
-        :rtype: arctern.GeoSeries
-        :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
+        Returns
+        -------
+        arctern.GeoSeries
+            An arctern.GeoSeries object.
 
-        :example:
+        Examples
+        -------
         >>> import geopandas as gpd
         >>> from shapely.geometry import Point, Polygon
         >>> from arctern import GeoSeries
