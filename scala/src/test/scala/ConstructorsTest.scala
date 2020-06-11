@@ -157,4 +157,45 @@ class ConstructorsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_GeomFromGeoJSON-Null") {
+
+    val data = Seq(
+      Row("""{ "type": "Point", "coordinates": [ 1.0, 2.0 ] }"""),
+      Row(null),
+      Row("""{ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] }"""),
+      Row(null),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("json", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_GeomFromGeoJSON")
+    val rst = spark.sql("select ST_GeomFromGeoJSON(json) from table_ST_GeomFromGeoJSON")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(1).isNullAt(0))
+    assert(rst.collect()(3).isNullAt(0))
+
+    rst.show(false)
+  }
+
+  test("ST_GeomFromGeoJSON") {
+    val data = Seq(
+      Row("""{ "type": "Point", "coordinates": [ 1.0, 2.0 ] }"""),
+      Row("""{ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] }"""),
+      Row("""{ "type": "Polygon", "coordinates": [ [ [ 0.0, 0.0 ], [ 0.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ], [ 0.0, 0.0 ] ] ] }"""),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("json", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_GeomFromGeoJSON")
+    val rst = spark.sql("select ST_GeomFromGeoJSON(json) from table_ST_GeomFromGeoJSON")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
 }

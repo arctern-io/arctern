@@ -8,6 +8,7 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Point", ST_Point)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PolygonFromEnvelope", ST_PolygonFromEnvelope)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromGeoJSON", ST_GeomFromGeoJSON)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Centroid", ST_Centroid)
   }

@@ -155,3 +155,39 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
 
   override def children: Seq[Expression] = inputExpr
 }
+
+case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
+
+  assert(inputExpr.length == 1)
+  assert(inputExpr.head.dataType match { case _: StringType => true })
+
+  override def nullable: Boolean = true
+
+  override def eval(input: InternalRow): Any = {}
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+
+    val jsonExpr = inputExpr.head
+    val jsonGen = inputExpr.head.genCode(ctx)
+
+    val nullSafeEval =
+      jsonGen.code + ctx.nullSafeExec(jsonExpr.nullable, jsonGen.isNull) {
+        s"""
+           |${ev.value}_geo = new org.wololo.jts2geojson.GeoJSONReader().read(${jsonGen.value}.toString());
+           |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+       """.stripMargin
+      }
+    ev.copy(code =
+      code"""
+          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+          boolean ${ev.isNull} = (${ev.value}_geo == null);
+            """)
+
+  }
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def children: Seq[Expression] = inputExpr
+}
