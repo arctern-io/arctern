@@ -1601,23 +1601,27 @@ def nearest_location_on_road(roads, points):
     """
     Compute the location on roads closest to each point in points, The points passed do not need to be part of a continuous path.
 
-    :type roads: Series(dtype: object)
-    :param roads: LineStrings in WKB form.
+    Parameters
+    ----------
+    roads : Series
+        LineStrings in WKB form.
+    points : Series
+        Points in WKB form.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form.
+    Returns
+    -------
+    Series
+        Points in WKB form.
 
-    :rtype: Series(dtype: object)
-    :return: Points in WKB form.
-
-    :example:
-      >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-      >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
-      >>> rst
-          0    POINT (1.0 2.5)
-          dtype: object
+    Examples
+    -------
+    >>> import arctern
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+    >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
+    >>> rst
+        0    POINT (1.0 2.5)
+        dtype: object
     """
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
