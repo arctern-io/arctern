@@ -80,7 +80,7 @@ class ChunkedArrayAligner {
 };
 }  // namespace
 
-// by default, the chunk size is up to 128MB
+// by default, the max_rows_limit is up to 8 million
 std::vector<ChunkedArrayPtr> AlignChunkedArray(
     const std::vector<ChunkedArrayPtr>& chunked_arrays, size_t max_rows_limit) {
   //

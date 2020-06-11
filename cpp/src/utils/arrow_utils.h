@@ -24,9 +24,9 @@
 #include "utils/arrow_alias.h"
 
 namespace arctern {
-// by default, the chunk size is up to 128MB
+// by default, the max_rows_limit is up to 8 millions
 std::vector<ChunkedArrayPtr> AlignChunkedArray(
     const std::vector<ChunkedArrayPtr>& chunked_arrays,
-    size_t chunk_size_limit = 1024 * 1024);
+    size_t max_rows_limit = 8 * 1024 * 1024);
 
 }  // namespace arctern
