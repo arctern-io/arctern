@@ -32,6 +32,7 @@
 #include "gis/gdal/geometry_visitor.h"
 #include "gis/parser.h"
 #include "utils/check_status.h"
+#include "utils/arrow_utils.h"
 
 namespace arctern {
 namespace gis {
@@ -835,6 +836,66 @@ std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
     return array_ptr;
   };
   return UnaryOp<arrow::BinaryBuilder>(geometries, op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2){
+  arrow::ArrayVector result_array_vector;
+  arrow::ChunkedArrayVector chunked_arrays;
+  chunked_arrays.push_back(geo1);
+  chunked_arrays.push_back(geo2);
+  auto max_size_of_chunk = 0;
+  OGRGeometryCollection empty;
+
+  for (int32_t i = 0; i < chunked_arrays.size(); i++) {
+    for (int32_t j = 0; j < chunked_arrays[i]->num_chunks(); j++) {
+      if (max_size_of_chunk <= chunked_arrays[i]->chunk(j)->length()) {
+        max_size_of_chunk = chunked_arrays[i]->chunk(j)->length();
+      }
+    }
+  }
+
+  auto align_goes = arctern::AlignChunkedArray(chunked_arrays,max_size_of_chunk);
+  arrow::BinaryBuilder builder;
+
+  for (int32_t i = 0; i < align_goes[0]->num_chunks(); i++) {
+    auto binary_geo1_chunk = std::static_pointer_cast<arrow::BinaryArray>(align_goes[0]->chunk(i));
+    auto binary_geo2_chunk = std::static_pointer_cast<arrow::BinaryArray>(align_goes[1]->chunk(i));
+    for (int32_t j = 0; j < binary_geo1_chunk->length(); j++) {
+      arrow::BinaryArray::offset_type wkb_size;
+      WkbItem left;
+      left.data_ptr = binary_geo1_chunk->GetValue(j, &wkb_size);
+      left.wkb_size = wkb_size;
+      auto left_geo = left.ToGeometry();
+      WkbItem right;
+      right.data_ptr = binary_geo2_chunk->GetValue(j, &wkb_size);
+      right.wkb_size = wkb_size;
+      auto right_geo = right.ToGeometry();
+      if (right_geo == nullptr && left_geo == nullptr){
+        builder.AppendNull();
+      } else {
+        auto rst = right_geo->SymDifference(left_geo);
+        auto rst_wkb_size =rst->WkbSize();
+        auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+        auto err_code = rst->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
+        if (err_code != OGRERR_NONE) {
+          builder.AppendNull();
+        } else {
+          builder.Append(wkb,wkb_size);
+        }
+        CPLFree(wkb);
+        OGRGeometryFactory::destroyGeometry(rst);
+      }
+      OGRGeometryFactory::destroyGeometry(left_geo);
+      OGRGeometryFactory::destroyGeometry(right_geo);
+    }
+    std::shared_ptr<arrow::Array> binary_array;
+    builder.Finish(&binary_array);
+    result_array_vector.push_back(binary_array);
+  }
+
+  return std::make_shared<arrow::ChunkedArray>(result_array_vector);
 }
 
 /************************ MEASUREMENT FUNCTIONS ************************/

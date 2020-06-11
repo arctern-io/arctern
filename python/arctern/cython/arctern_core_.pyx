@@ -15,7 +15,7 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, pyarrow_wrap_array, pyarrow_unwrap_array, pyarrow_wrap_chunked_array, pyarrow_unwrap_chunked_array)
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
@@ -333,6 +333,10 @@ def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
 def ST_CurveToLine(object geo_arr):
     result = arctern_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr))
     return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def ST_SymDifference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_SymDifference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
 
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))

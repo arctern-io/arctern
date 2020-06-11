@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, int32_t)
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
@@ -96,6 +96,9 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs) except +
 
     vector[shared_ptr[CArray]] ST_CurveToLine(const shared_ptr[CArray] &geo_arr) except +
+    
+    shared_ptr[CChunkedArray] ST_SymDifference(const shared_ptr[CChunkedArray] &geo1, \
+                                               const shared_ptr[CChunkedArray] &geo2) except +
 
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr) except +

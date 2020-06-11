@@ -122,6 +122,10 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(const std::shared_ptr<arrow::Array>& geos);
 
+std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
 std::shared_ptr<arrow::Array> ST_NPoints(const std::shared_ptr<arrow::Array>& geo_arr);
 
 std::shared_ptr<arrow::Array> ST_Envelope(const std::shared_ptr<arrow::Array>& geo_arr);
