@@ -23,7 +23,7 @@ namespace {
 
 class ChunkedArrayAligner {
  public:
-  ChunkedArrayAligner(size_t max_rows_limit) : max_rows_limit_(max_rows_limit) {}
+  explicit ChunkedArrayAligner(size_t max_rows_limit) : max_rows_limit_(max_rows_limit) {}
 
   void Register(const ChunkedArrayPtr& chunked_array) {
     size_t sum = 0;
