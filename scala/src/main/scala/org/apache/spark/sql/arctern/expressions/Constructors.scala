@@ -18,13 +18,14 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{ArrayType, ByteType, DataType}
+import org.apache.spark.sql.types.{ArrayType, ByteType, DataType, NumericType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 1)
+  assert(inputExpr.head.dataType match { case _ : StringType => true})
 
   override def nullable: Boolean = true
 
@@ -50,6 +51,47 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
           boolean ${ev.isNull} = (${ev.value}_geo == null);
             """)
 
+  }
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def children: Seq[Expression] = inputExpr
+}
+
+case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
+
+  assert(inputExpr.length == 2)
+  assert(inputExpr.head.dataType match { case _ : NumericType => true})
+  assert(inputExpr(1).dataType match { case _ : NumericType => true})
+
+  override def nullable: Boolean = true
+
+  override def eval(input: InternalRow): Any = {}
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+
+    val xExpr = inputExpr.head
+    val yExpr = inputExpr(1)
+    val xGen = inputExpr.head.genCode(ctx)
+    val yGen = inputExpr(1).genCode(ctx)
+
+    val nullSafeEval =
+      xGen.code + ctx.nullSafeExec(xExpr.nullable || yExpr.nullable, xGen.isNull) {
+        yGen.code + ctx.nullSafeExec(yExpr.nullable, yGen.isNull) {
+          s"""
+             |${ev.value}_point = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
+             |if (${ev.value}_point != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_point")}
+          """.stripMargin
+        }
+      }
+
+    ev.copy(code =
+      code"""
+          org.locationtech.jts.geom.Point ${ev.value}_point = null;
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+          boolean ${ev.isNull} = (${ev.value}_point == null);
+          """)
   }
 
   override def dataType: DataType = new GeometryUDT

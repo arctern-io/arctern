@@ -16,10 +16,9 @@
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.arctern.expressions.ST_GeomFromText
 
 class ConstructorsTest extends AdapterTest {
-  test("ST_GeomFromText With Null") {
+  test("ST_GeomFromText-Null") {
 
     val data = Seq(
       Row(1, "POINT (10 20)"),
@@ -65,4 +64,49 @@ class ConstructorsTest extends AdapterTest {
     rst.show(false)
   }
 
+  test("ST_Point-Null") {
+
+    val data = Seq(
+      Row(1.0, 1.1),
+      Row(2.1, 2.0),
+      Row(3.3, 3.0),
+      Row(null, 4.4),
+      Row(5.5, 5.5),
+      Row(6.6, null),
+      Row(null, null)
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("x", DoubleType, nullable = true), StructField("y", DoubleType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_Point")
+    val rst = spark.sql("select ST_Point(x, y) from table_ST_Point")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(3).isNullAt(0))
+    assert(rst.collect()(5).isNullAt(0))
+    assert(rst.collect()(6).isNullAt(0))
+
+    rst.show(false)
+  }
+
+  test("ST_Point") {
+    val data = Seq(
+      Row(1.1, 1.1),
+      Row(2.1, 2.0),
+      Row(3.0, 3.1),
+      Row(4.0, 4.0),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("x", DoubleType, nullable = true), StructField("y", DoubleType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_Point")
+    val rst = spark.sql("select ST_Point(x, y) from table_ST_Point")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
 }
