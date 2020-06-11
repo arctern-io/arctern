@@ -24,8 +24,8 @@
 #include <random>
 
 #include "arrow/gis_api.h"
-#include "gis/test_common/transforms.h"
 #include "gis/gdal/format_conversion.h"
+#include "gis/test_common/transforms.h"
 
 using std::string;
 using std::vector;
