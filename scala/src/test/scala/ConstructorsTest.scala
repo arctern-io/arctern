@@ -15,7 +15,9 @@
  */
 
 import org.apache.spark.sql.Row
+import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.types._
+import org.locationtech.jts.io.WKTReader
 
 class ConstructorsTest extends AdapterTest {
   test("ST_GeomFromText-Null") {
@@ -218,7 +220,7 @@ class ConstructorsTest extends AdapterTest {
     rst.show(false)
   }
 
-  test("ST_AsText") {
+  test("ST_AsText-FromArcternExpr") {
     val data = Seq(
       Row("POINT (10 20)"),
       Row("LINESTRING (0 0, 10 10, 20 20)"),
@@ -234,6 +236,29 @@ class ConstructorsTest extends AdapterTest {
     val rst = spark.sql("select ST_AsText(ST_GeomFromText(wkt)) from table_ST_AsText")
 
     //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_AsText-FromNormalExpr") {
+    val data = Seq(
+      Row(new WKTReader().read("POINT (10 20)")),
+      Row(new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
+      Row(new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
+      Row(new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(null)
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsText")
+    val rst = spark.sql("select ST_AsText(geo) from table_ST_AsText")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(5).isNullAt(0))
 
     rst.show(false)
   }
@@ -261,7 +286,7 @@ class ConstructorsTest extends AdapterTest {
     rst.show(false)
   }
 
-  test("ST_AsGeoJSON") {
+  test("ST_AsGeoJSON-FromArcternExpr") {
     val data = Seq(
       Row("POINT (10 20)"),
       Row("LINESTRING (0 0, 10 10, 20 20)"),
@@ -277,6 +302,29 @@ class ConstructorsTest extends AdapterTest {
     val rst = spark.sql("select ST_AsGeoJSON(ST_GeomFromText(wkt)) from table_ST_AsGeoJSON")
 
     //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_AsGeoJSON-FromNormalExpr") {
+    val data = Seq(
+      Row(new WKTReader().read("POINT (10 20)")),
+      Row(new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
+      Row(new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
+      Row(new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(null)
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsGeoJSON")
+    val rst = spark.sql("select ST_AsGeoJSON(geo) from table_ST_AsGeoJSON")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(5).isNullAt(0))
 
     rst.show(false)
   }

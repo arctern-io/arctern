@@ -122,6 +122,10 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
     val maxXGen = inputExpr(2).genCode(ctx)
     val maxYGen = inputExpr(3).genCode(ctx)
 
+    def coordinateCode(x: ExprCode, y: ExprCode) = {
+      s"new org.locationtech.jts.geom.Coordinate(${x.value}, ${y.value});"
+    }
+
     val nullSafeEval =
       minXGen.code + ctx.nullSafeExec(minXExpr.nullable, minXGen.isNull) {
         minYGen.code + ctx.nullSafeExec(minYExpr.nullable, minYGen.isNull) {
@@ -129,10 +133,10 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
             maxYGen.code + ctx.nullSafeExec(maxYExpr.nullable, maxYGen.isNull) {
               s"""
                  |org.locationtech.jts.geom.Coordinate[] coordinates = new org.locationtech.jts.geom.Coordinate[5];
-                 |coordinates[0] = new org.locationtech.jts.geom.Coordinate(${minXGen.value}, ${minYGen.value});
-                 |coordinates[1] = new org.locationtech.jts.geom.Coordinate(${minXGen.value}, ${maxYGen.value});
-                 |coordinates[2] = new org.locationtech.jts.geom.Coordinate(${maxXGen.value}, ${maxYGen.value});
-                 |coordinates[3] = new org.locationtech.jts.geom.Coordinate(${maxXGen.value}, ${minYGen.value});
+                 |coordinates[0] = ${coordinateCode(minXGen, minYGen)}
+                 |coordinates[1] = ${coordinateCode(minXGen, maxYGen)}
+                 |coordinates[2] = ${coordinateCode(maxXGen, maxYGen)}
+                 |coordinates[3] = ${coordinateCode(maxXGen, minYGen)}
                  |coordinates[4] = coordinates[0];
                  |${ev.value}_polygon = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
                  |if (${ev.value}_polygon != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_polygon")}
@@ -205,18 +209,31 @@ case class ST_AsText(inputExpr: Seq[Expression]) extends ArcternExpr {
     val geoExpr = inputExpr.head
     val geoGen = inputExpr.head.genCode(ctx)
 
+    assert(CodeGenUtil.isGeometryExpr(geoExpr))
+
+    var exprGeo :String = ""
+    var exprGeoDeclare :String = ""
+    var exprGeoCode :String = ""
+
+    if(CodeGenUtil.isArcternExpr(geoExpr)){
+      val (geo, declare, code)  = CodeGenUtil.geometryFromArcternExpr(geoGen.code.toString())
+      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
+    } else {
+      val (geo, declare, code)  = CodeGenUtil.geometryFromNormalExpr(geoGen)
+      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
+    }
+
     val nullSafeEval =
-      geoGen.code + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
+      exprGeoCode + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
         s"""
-           |${ev.value}_geo = ${CodeGenUtil.deserializeGeometryCode(s"${geoGen.value}")}
-           |${ev.value}_wkt = ${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt(${ev.value}_geo);
+           |${ev.value}_wkt = ${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt(${exprGeo});
            |if (${ev.value}_wkt != null) ${ev.value} = org.apache.spark.unsafe.types.UTF8String.fromString(${ev.value}_wkt);
        """.stripMargin
       }
 
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          $exprGeoDeclare
           String ${ev.value}_wkt = null;
           ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
@@ -243,18 +260,31 @@ case class ST_AsGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
     val geoExpr = inputExpr.head
     val geoGen = inputExpr.head.genCode(ctx)
 
+    assert(CodeGenUtil.isGeometryExpr(geoExpr))
+
+    var exprGeo :String = ""
+    var exprGeoDeclare :String = ""
+    var exprGeoCode :String = ""
+
+    if(CodeGenUtil.isArcternExpr(geoExpr)){
+      val (geo, declare, code)  = CodeGenUtil.geometryFromArcternExpr(geoGen.code.toString())
+      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
+    } else {
+      val (geo, declare, code)  = CodeGenUtil.geometryFromNormalExpr(geoGen)
+      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
+    }
+
     val nullSafeEval =
-      geoGen.code + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
+      exprGeoCode + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
         s"""
-           |${ev.value}_geo = ${CodeGenUtil.deserializeGeometryCode(s"${geoGen.value}")}
-           |${ev.value}_json = new org.wololo.jts2geojson.GeoJSONWriter().write(${ev.value}_geo).toString();
+           |${ev.value}_json = new org.wololo.jts2geojson.GeoJSONWriter().write(${exprGeo}).toString();
            |if (${ev.value}_json != null) ${ev.value} = org.apache.spark.unsafe.types.UTF8String.fromString(${ev.value}_json);
        """.stripMargin
       }
 
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          $exprGeoDeclare
           String ${ev.value}_json = null;
           ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval

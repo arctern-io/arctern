@@ -36,6 +36,7 @@ object GeometryUDT {
   def GeomDeserialize(datum: Any): Geometry = {
     datum match {
       case values: ArrayData => FromWkb(values.toByteArray())
+      case null => null
     }
   }
 
