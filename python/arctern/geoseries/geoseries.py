@@ -1354,8 +1354,10 @@ class GeoSeries(Series):
         import json
         with fiona.Env():
             with fiona.open(fp, "r", **kwargs) as features:
-                # TODO: use crs.to_string() when arctern.GeoSeries support proj.4 string
-                crs = features.crs_wkt
+                if features.crs is not None:
+                    crs = features.crs.get("init", None)
+                else:
+                    crs = features.crs_wkt
 
                 if mask is not None:
                     if isinstance(mask, (str, bytes)):
@@ -1414,7 +1416,7 @@ class GeoSeries(Series):
         if len(geo_types) == 0:
             geo_types = "Unknown"
         else:
-            geo_types = set(geo_types.unique())
+            geo_types = set(geo_types.dropna().unique())
         schema = {"properties": {}, "geometry": geo_types}
         # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
         crs = self.crs
