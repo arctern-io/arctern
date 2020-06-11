@@ -109,4 +109,52 @@ class ConstructorsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_PolygonFromEnvelope-Null") {
+
+    val data = Seq(
+      Row(1.0, 1.0, 2.0, 2.0),
+      Row(null, 1.0, 2.0, 2.0),
+      Row(1.0, null, 2.0, 2.0),
+      Row(1.0, 1.0, null, 2.0),
+      Row(1.0, 1.0, 2.0, null),
+      Row(null, null, 2.0, 2.0),
+      Row(null, null, null, null),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("xMin", DoubleType, nullable = true), StructField("yMin", DoubleType, nullable = true), StructField("xMax", DoubleType, nullable = true), StructField("yMax", DoubleType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_PolygonFromEnvelope")
+    val rst = spark.sql("select ST_PolygonFromEnvelope(xMin, yMin, xMax, yMax) from table_ST_PolygonFromEnvelope")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(1).isNullAt(0))
+    assert(rst.collect()(2).isNullAt(0))
+    assert(rst.collect()(3).isNullAt(0))
+    assert(rst.collect()(4).isNullAt(0))
+    assert(rst.collect()(5).isNullAt(0))
+    assert(rst.collect()(6).isNullAt(0))
+
+    rst.show(false)
+  }
+
+  test("ST_PolygonFromEnvelope") {
+    val data = Seq(
+      Row(1.0, 1.0, 2.0, 2.0),
+      Row(10.1, 10.1, 20.2, 20.2),
+      Row(-1.0, -1.0, 2.0, 2.0),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("xMin", DoubleType, nullable = true), StructField("yMin", DoubleType, nullable = true), StructField("xMax", DoubleType, nullable = true), StructField("yMax", DoubleType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_PolygonFromEnvelope")
+    val rst = spark.sql("select ST_PolygonFromEnvelope(xMin, yMin, xMax, yMax) from table_ST_PolygonFromEnvelope")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
 }

@@ -25,7 +25,7 @@ import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 1)
-  assert(inputExpr.head.dataType match { case _ : StringType => true})
+  assert(inputExpr.head.dataType match { case _: StringType => true })
 
   override def nullable: Boolean = true
 
@@ -61,8 +61,8 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 2)
-  assert(inputExpr.head.dataType match { case _ : NumericType => true})
-  assert(inputExpr(1).dataType match { case _ : NumericType => true})
+  assert(inputExpr.head.dataType match { case _: NumericType => true })
+  assert(inputExpr(1).dataType match { case _: NumericType => true })
 
   override def nullable: Boolean = true
 
@@ -76,7 +76,7 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
     val yGen = inputExpr(1).genCode(ctx)
 
     val nullSafeEval =
-      xGen.code + ctx.nullSafeExec(xExpr.nullable || yExpr.nullable, xGen.isNull) {
+      xGen.code + ctx.nullSafeExec(xExpr.nullable, xGen.isNull) {
         yGen.code + ctx.nullSafeExec(yExpr.nullable, yGen.isNull) {
           s"""
              |${ev.value}_point = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
@@ -91,6 +91,63 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
           boolean ${ev.isNull} = (${ev.value}_point == null);
+          """)
+  }
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def children: Seq[Expression] = inputExpr
+}
+
+case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExpr {
+
+  assert(inputExpr.length == 4)
+  assert(inputExpr.head.dataType match { case _: NumericType => true })
+  assert(inputExpr(1).dataType match { case _: NumericType => true })
+  assert(inputExpr(2).dataType match { case _: NumericType => true })
+  assert(inputExpr(3).dataType match { case _: NumericType => true })
+
+  override def nullable: Boolean = true
+
+  override def eval(input: InternalRow): Any = {}
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+
+    val minXExpr = inputExpr.head
+    val minYExpr = inputExpr(1)
+    val maxXExpr = inputExpr(2)
+    val maxYExpr = inputExpr(3)
+    val minXGen = inputExpr.head.genCode(ctx)
+    val minYGen = inputExpr(1).genCode(ctx)
+    val maxXGen = inputExpr(2).genCode(ctx)
+    val maxYGen = inputExpr(3).genCode(ctx)
+
+    val nullSafeEval =
+      minXGen.code + ctx.nullSafeExec(minXExpr.nullable, minXGen.isNull) {
+        minYGen.code + ctx.nullSafeExec(minYExpr.nullable, minYGen.isNull) {
+          maxXGen.code + ctx.nullSafeExec(maxXExpr.nullable, maxXGen.isNull) {
+            maxYGen.code + ctx.nullSafeExec(maxYExpr.nullable, maxYGen.isNull) {
+              s"""
+                 |org.locationtech.jts.geom.Coordinate[] coordinates = new org.locationtech.jts.geom.Coordinate[5];
+                 |coordinates[0] = new org.locationtech.jts.geom.Coordinate(${minXGen.value}, ${minYGen.value});
+                 |coordinates[1] = new org.locationtech.jts.geom.Coordinate(${minXGen.value}, ${maxYGen.value});
+                 |coordinates[2] = new org.locationtech.jts.geom.Coordinate(${maxXGen.value}, ${maxYGen.value});
+                 |coordinates[3] = new org.locationtech.jts.geom.Coordinate(${maxXGen.value}, ${minYGen.value});
+                 |coordinates[4] = coordinates[0];
+                 |${ev.value}_polygon = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
+                 |if (${ev.value}_polygon != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_polygon")}
+              """.stripMargin
+            }
+          }
+        }
+      }
+
+    ev.copy(code =
+      code"""
+          org.locationtech.jts.geom.Polygon ${ev.value}_polygon = null;
+          ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+          boolean ${ev.isNull} = (${ev.value}_polygon == null);
           """)
   }
 
