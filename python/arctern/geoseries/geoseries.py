@@ -781,7 +781,7 @@ class GeoSeries(Series):
 
     def buffer(self, distance):
         """
-        For each geometry, moves all of its points away from its centroid to construct a new geometry. The distance of movement is specified by ``distance``.
+        For each geometry, moves all of its points away from its centroid to construct a new geometry. The distance of movement is specified as ``distance``.
 
         * If ``distance`` > 0, the new geometry is a scaled-up version outside the original geometry.
         * If ``distance`` < 0, the new geometry is a scaled-down version inside the original geometry.
@@ -789,7 +789,7 @@ class GeoSeries(Series):
         Parameters
         ----------
         distance : float
-            The maximum distance between the returned geometry and the original.
+            Distance of movement.
 
         Returns
         -------
