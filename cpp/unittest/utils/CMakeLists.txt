@@ -14,8 +14,8 @@
 
 set(utils_tests_src
         ${unittest_srcs}
-        arrow_alias.cpp
-        arrow_utils.cpp
+        arrow_alias_tests.cpp
+        chunked_array_tests.cpp
         )
 
 add_executable(utils_tests ${utils_tests_src})

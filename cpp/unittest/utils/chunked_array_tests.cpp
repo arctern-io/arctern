@@ -15,24 +15,23 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "utils/arrow_utils.h"
-
 #include <arrow/testing/gtest_util.h>
 #include <gtest/gtest.h>
 
 #include <memory>
 
-TEST(ArrowUtils, ChunkedArray) {
-  //
-  using arctern::ArrayPtr;
-  using arctern::ChunkedArrayPtr;
-  using arrow::Array;
-  using arrow::ArrayFromVector;
-  using arrow::ChunkedArray;
-  using arrow::Int16Type;
-  using arrow::Int32Type;
-  using std::vector;
+#include "utils/arrow_utils.h"
+using arctern::ArrayPtr;
+using arctern::ChunkedArrayPtr;
+using arrow::Array;
+using arrow::ArrayFromVector;
+using arrow::ChunkedArray;
+using arrow::ChunkedArrayFromJSON;
+using arrow::Int16Type;
+using arrow::Int32Type;
+using std::vector;
 
+TEST(ChunkedArray, Naive) {
   std::shared_ptr<Array> expected;
   std::shared_ptr<Array> a1, a2, a3, b1, b2, b3, b4;
   ArrayFromVector<Int16Type, int16_t>({1, 2, 3}, &a1);
@@ -56,6 +55,7 @@ TEST(ArrowUtils, ChunkedArray) {
       ASSERT_EQ(ptr->chunk(i)->length(), expected_size[i]);
     }
   };
+
   {
     auto rechunked = arctern::AlignChunkedArray({a, b}, 10);
     ASSERT_EQ(rechunked.size(), 2);

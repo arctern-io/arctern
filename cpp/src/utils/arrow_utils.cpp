@@ -70,7 +70,7 @@ class ChunkedArrayAligner {
       last_arr_offset += slice_length;
       result.push_back(std::move(slice));
     }
-    return std::make_shared<arrow::ChunkedArray>(result);
+    return std::make_shared<arrow::ChunkedArray>(result, chunked_array->type());
   }
   int size() { return arr_indexes_.size(); }
 
