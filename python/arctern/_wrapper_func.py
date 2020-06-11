@@ -1273,7 +1273,7 @@ def ST_SymDifference(geo1,geo2):
     arr_geo1 = pa.ChunkedArray(arr_geo1)
     arr_geo2 = pa.ChunkedArray(arr_geo2)
     result = arctern_core_.ST_Equals1(arr_geo1, arr_geo2)
-    return _chunked_array_to_pandas_series(result)
+    return result.to_pandas()
 
 
 def within_which(left, right):
