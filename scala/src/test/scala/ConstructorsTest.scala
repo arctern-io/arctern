@@ -198,4 +198,48 @@ class ConstructorsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_AsText-Null") {
+
+    val data = Seq(
+      Row("POINT (10 20)"),
+      Row(null),
+      Row("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
+      Row(null),
+      Row("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsText")
+    val rst = spark.sql("select ST_AsText(ST_GeomFromText(wkt)) from table_ST_AsText")
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(rst.collect()(1).isNullAt(0))
+    assert(rst.collect()(3).isNullAt(0))
+
+    rst.show(false)
+  }
+
+  test("ST_AsText") {
+    val data = Seq(
+      Row("POINT (10 20)"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
+      Row("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))"),
+      Row("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsText")
+    val rst = spark.sql("select ST_AsText(ST_GeomFromText(wkt)) from table_ST_AsText")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
 }

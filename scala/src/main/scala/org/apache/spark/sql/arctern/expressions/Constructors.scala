@@ -21,6 +21,7 @@ import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{ArrayType, ByteType, DataType, NumericType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.apache.spark.unsafe.types.UTF8String
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
@@ -188,6 +189,44 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
   }
 
   override def dataType: DataType = new GeometryUDT
+
+  override def children: Seq[Expression] = inputExpr
+}
+
+case class ST_AsText(inputExpr: Seq[Expression]) extends ArcternExpr {
+
+  assert(inputExpr.length == 1)
+  assert(inputExpr.head.dataType match { case _: GeometryUDT => true })
+
+  override def nullable: Boolean = true
+
+  override def eval(input: InternalRow): Any = {}
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    val geoExpr = inputExpr.head
+    val geoGen = inputExpr.head.genCode(ctx)
+
+    val nullSafeEval =
+      geoGen.code + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
+        s"""
+           |${ev.value}_geo = ${CodeGenUtil.deserializeGeometryCode(s"${geoGen.value}")}
+           |${ev.value}_wkt = ${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt(${ev.value}_geo);
+           |if (${ev.value}_wkt != null) ${ev.value} = org.apache.spark.unsafe.types.UTF8String.fromString(${ev.value}_wkt);
+       """.stripMargin
+      }
+
+    ev.copy(code =
+      code"""
+          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          String ${ev.value}_wkt = null;
+          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+          boolean ${ev.isNull} = (${ev.value} == null);
+            """)
+
+  }
+
+  override def dataType: DataType = StringType
 
   override def children: Seq[Expression] = inputExpr
 }
