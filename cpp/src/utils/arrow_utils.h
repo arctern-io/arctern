@@ -30,4 +30,3 @@ std::vector<ChunkedArrayPtr> AlignChunkedArray(
     size_t chunk_size_limit = 1024 * 1024);
 
 }  // namespace arctern
-
