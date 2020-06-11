@@ -371,7 +371,7 @@ class TestFile:
         assert_series_equal(dest, source)
 
     def test_from_esri_zip(self):
-        file_name = "zip://" + os.path.join(str(os.getcwd()), "datasets/taxi_zones.zip")
+        file_name = "zip://" + os.path.join("datasets/taxi_zones.zip")
         print(file_name)
         dest = GeoSeries.from_file(file_name)
         assert len(dest) == 9
