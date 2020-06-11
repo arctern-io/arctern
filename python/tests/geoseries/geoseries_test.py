@@ -371,7 +371,8 @@ class TestFile:
         assert_series_equal(dest, source)
 
     def test_from_esri_zip(self):
-        file_name = os.path.join("zip://", "dataset/taxi_zones.zip")
+        data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "dataset"))
+        file_name = "zip://" + os.path.join(data_dir, "taxi_zones.zip")
         dest = GeoSeries.from_file(file_name)
         assert len(dest) == 9
         assert dest.crs == "EPSG:2263"
