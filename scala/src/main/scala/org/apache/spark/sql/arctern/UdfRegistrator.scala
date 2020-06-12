@@ -16,5 +16,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Centroid", ST_Centroid)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_IsValid", ST_IsValid)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_IsSimple", ST_IsSimple)
   }
 }

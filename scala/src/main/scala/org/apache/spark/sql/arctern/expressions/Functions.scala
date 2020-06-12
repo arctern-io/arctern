@@ -196,3 +196,14 @@ case class ST_IsValid(inputsExpr: Seq[Expression])extends ST_UnaryOp {
   override def dataType: DataType = BooleanType
 
 }
+
+case class ST_IsSimple(inputsExpr: Seq[Expression])extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.isSimple()")
+
+  override def dataType: DataType = BooleanType
+
+}
