@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "utils/arrow_alias.h"
-
 #include <gtest/gtest.h>
+
+#include "utils/arrow_alias.h"
 TEST(ArrowAlias, naive) { SUCCEED(); }
