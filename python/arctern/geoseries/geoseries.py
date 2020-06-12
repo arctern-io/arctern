@@ -870,7 +870,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains only one geometry, which is the union of all geometries in the first GeoSeries.
+            A GeoSeries that contains only one geometry, which is the union of all geometries in the GeoSeries.
 
         Examples
         -------
@@ -893,7 +893,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains only one geometry, which is the minimum bounding box for the union of all geometries in the first GeoSeries.
+            A GeoSeries that contains only one geometry, which is the minimum bounding box for the union of all geometries in the GeoSeries.
 
         Examples
         -------
