@@ -234,7 +234,7 @@ inline void AppendWkb(
     if (err_code != OGRERR_NONE) {
       CHECK_ARROW(builder.AppendNull());
     } else {
-      CHECK_ARROW(builder.Append(wkb));
+      CHECK_ARROW(builder.Append(wkb,wkb_size));
     }
     CPLFree(wkb);
   }
@@ -1075,6 +1075,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
+// only for test
 std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2) {
