@@ -90,28 +90,25 @@ def _validate_crs(crs):
 
 class GeoSeries(Series):
     """
-    A Series to store geometry data which is WKB formed bytes object.
+    One-dimensional Series to store an array of geometry objects.
 
-    :type data: array-like, Iterable, dict, or scalar value(str or bytes)
-    :param data: Geometries to store, which can be WKB formed bytes or WKT formed string.
+    Parameters
+    ----------
+    data : array-like, Iterable, dict, or scalar value(str or bytes)
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+    index : array-like or Index (1d)
+        Same to the index of pandas.Series, by default ``RangeIndex (0, 1, 2, …, n)``.
+        Index values must be hashable and have the same length as ``data``. Non-unique index values are allowed. If both a dict and index sequence are used, the index will override the keys found in the dict.
+    name : str, optional
+        The name to give to the GeoSeries.
+    crs : str, optional
+        The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a WKT representation of CRS by now, for example, ``"EPSG:4326"``.
+    **kwargs :
+        Options to pass to the GeoSeries constructor, for example, ``copy``.
 
-    :type index: array-like or Index (1d)
-    :param index: Same to Pandas Series.
-        Values must be hashable and have the same length as `data`.
-        Non-unique index values are allowed. Will default to
-        RangeIndex (0, 1, 2, ..., n) if not provided. If both a dict and index
-        sequence are used, the index will override the keys found in the
-        dict.
-
-    :type name: str, optional
-    :param name: The name to give to the Series.
-
-    :type crs: str, optional
-    :param crs: The coordinate system for the GeoSeries, now only support SRID form.
-
-    :param kwargs: Additional arguments passed to the GeoSeries constructor, e.g. ``copy``
-
-    :example:
+    Examples
+    -------
     >>> from arctern import GeoSeries
     >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
     >>> s
@@ -165,12 +162,20 @@ class GeoSeries(Series):
 
     def set_crs(self, crs):
         """
-        Set the coordinate system for the GeoSeries.
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
 
-        :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :example:
+        Notes
+        -------
+        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
         >>> s.set_crs("EPSG:4326")
@@ -183,12 +188,15 @@ class GeoSeries(Series):
     @property
     def crs(self):
         """
-        Return the coordinate system of the GeoSeries.
+        Returns the Coordinate Reference System (CRS) of the GeoSeries.
 
-        :rtype: str
-        :return: the coordinate system of the GeoSeries.
+        Returns
+        -------
+        str
+            CRS of the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"], crs="EPSG:4326")
         >>> s.crs
@@ -199,10 +207,21 @@ class GeoSeries(Series):
     @crs.setter
     def crs(self, crs):
         """
-        Set the coordinate system for the GeoSeries.
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
 
-        :type crs: str, optional
-        :param crs: SRID(spatial reference identifier) form.
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+        >>> s.set_crs("EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
         """
         self.set_crs(crs)
 
@@ -231,21 +250,23 @@ class GeoSeries(Series):
 
     def equals(self, other):
         """
-        Test whether two objects contain the same elements.
+        Tests whether two objects contain the same elements.
 
-        This function allows two GeoSeries to be compared against each other to
-        see if they have the same shape and geometries (same wkb bytes).
-        NaNs in the same location are considered equal. The column headers do not
-        need to have the same type, but the elements within the columns must
-        be the same dtype.
+        This function allows two GeoSeries to be compared against each other to see if they have the same shape and elements. NaNs in the same location are considered equal. The column headers do not need to have the same type, but the elements within the columns must be the same dtype.
 
-        :type other: GeoSeries
-        :param other: The other GeoSeries to be compared with the first
+        Parameters
+        ----------
+        other : GeoSeries
+            The other GeoSeries to be compared with the first GeoSeries.
 
-        :rtype: bool
-        :return: True if all geometries are the same in both objects, False otherwise.
+        Returns
+        -------
+        bool
+            * *True:* All geometries are the same in both objects.
+            * *False:* The two objects are different in shape or elements.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POINT(1 1)", None])
         >>> s2 = GeoSeries(["Point(1 1)", None])
@@ -278,45 +299,44 @@ class GeoSeries(Series):
             downcast=None,
     ):
         """
-        Fill NA values with a geometry, which can be WKT or WKB formed.
+        Fills NA values with a geometry in WKT or WKB format.
 
-        :type value: scalar, dict, Series, or DataFrame
-        :param value: Value to use to fill holes (e.g. "POINT (1 1)"), alternately a
-                      dict/Series/DataFrame of values specifying which value to use for
-                      each index (for a Series) or column (for a DataFrame).  Values not
-                      in the dict/Series/DataFrame will not be filled. This value cannot
-                      be a list.
+        Parameters
+        ----------
+        value :
+            Value to use to fill holes. This value should be the representation of a geometry in WKT or WKB format. For exmaple, "POINT (1 1)".
+        method : {'backfill', 'bfill', 'pad', 'ffill', None}, by default None
+            Method to use for filling holes in reindexed Series.
+            * *pad/ffill:* Propagates the last valid observation forward to fill gap.
+            * *backfill/bfill:* Propagates the next valid observation backward to fill gap.
+        axis : {0 or 'index'}
+            Axis along which to fill missing values.
+        inplace : bool, by default False
 
-        :type method: {'backfill', 'bfill', 'pad', 'ffill', None}, default None
-        :param method: Method to use for filling holes in reindexed Series
-                       pad / ffill: propagate last valid observation forward to next valid
-                       backfill / bfill: use next valid observation to fill gap.
+            * *True:* Fills NA values in-place.
+                **Note:** This will modify any other views on this object.
+            * *False:* Create a new GeoSeries object, and then fill NA values in it.
 
-        :type axis: {0 or ‘index’}
-        :param axis: Axis along which to fill missing values.
+        limit : int, by default None
+            * If ``method`` is specified, this is the maximum number of consecutive
+            NA values to forward/backward fill. In other words, if there is
+            a gap with more than this number of consecutive NAs, it will only
+            be partially filled.
+            * If ``method`` is not specified, this is the maximum number of entries along the entire axis where NaNs will be filled.
+            **Note:** It must be greater than 0 if not None.
+        downcast : dict, by default None
+            A dict of item->dtype of what to downcast if possible,
+            or the string 'infer' which will try to downcast to an appropriate
+            equal type (for example, float64 to int64 if possible).
 
-        :type inplace: bool, default False
-        :param inplace: If True, fill in-place. Note: this will modify any
-                        other views on this object (e.g., a no-copy slice for a column
-                        in a DataFrame).
+        Returns
+        -------
+        GeoSeries or None
+            * None if ``inplace=False``.
+            * Object with missing values filled if ``inplace=True``.
 
-        :type limit:  int, default None
-        :param limit: If method is specified, this is the maximum number of consecutive
-                      NaN values to forward/backward fill. In other words, if there is
-                      a gap with more than this number of consecutive NaNs, it will only
-                      be partially filled. If method is not specified, this is the
-                      maximum number of entries along the entire axis where NaNs will be
-                      filled. Must be greater than 0 if not None.
-
-        :type downcast: dict, default is None
-        :param downcast: A dict of item->dtype of what to downcast if possible,
-                         or the string 'infer' which will try to downcast to an appropriate
-                         equal type (e.g. float64 to int64 if possible).
-
-        :rtype: GeoSeries or None
-        :return: Object with missing values filled or None if ``inplace=True``.
-
-        :example:
+        Examples
+        -------
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s
         0                        POINT (1 1)
@@ -325,7 +345,7 @@ class GeoSeries(Series):
         3                               None
         dtype: GeoDtype
 
-        Replace all NaN elements with WKT formed str.
+        Replace all NA elements with a string in WKT format.
 
         >>> s.fillna("POINT (1 2)")
         0                        POINT (1 1)
@@ -334,7 +354,7 @@ class GeoSeries(Series):
         3                        POINT (1 2)
         dtype: GeoDtype
 
-        We can also replace all NaN elements with WKB formed bytes.
+        We can also replace all NA elements with an object in WKB format. Here we use ``s[1]`` as an example of WKB objects because ``s`` is a GeoSeries and all elements stored in GeoSeries are transformed to WKB format.
 
         >>> s.fillna(s[1])
         0                        POINT (1 1)
@@ -347,15 +367,17 @@ class GeoSeries(Series):
 
     def isna(self):
         """
-        Detect missing values.
+        Detects missing values.
 
-        NA value in GeoSeries is represented as None.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
+            * *True*: An element is a NA value, such as None.
+            * *False*: An element is a non-missing value.
 
-        :rtype: Series(dtype: bool)
-        :return: Mask of bool values for each element in GeoSeries
-                that indicates whether an element is not an NA value.
-
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s.isna()
@@ -364,21 +386,22 @@ class GeoSeries(Series):
         2     True
         3     True
         dtype: bool
-
         """
         return super().isna()
 
     def notna(self):
         """
-        Detect non-missing values.
+        Detects existing (non-missing) values.
 
-        Inverse of isna.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
+            * *True*: An element is a non-missing value.
+            * *False*: An element is a NA value, such as None.
 
-        :rtype: Series(dtype: bool)
-        :return: Mask of bool values for each element in GeoSeries
-                that indicates whether an element is not an NA value.
-
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s.notna()
@@ -397,12 +420,16 @@ class GeoSeries(Series):
     @property
     def is_valid(self):
         """
-        Check if each geometry is of valid geometry format.
+        Tests whether each geometry in the GeoSeries is in valid format, such as WKT and WKB formats.
 
-        :rtype: Series(dtype: bool)
-        :return: True value for geometries that are valid, False otherwise.
+        Returns
+        -------
+        Series
+            * *True:* All geometries are valid.
+            * *False:* At least one geometry is invalid.
 
-        :examples:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT(1)"])
         >>> s.is_valid
@@ -415,12 +442,23 @@ class GeoSeries(Series):
     @property
     def length(self):
         """
-        Calculate the length of each geometry.
+        Calculates the length of each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: float64)
-        :return: The length of each geometry in the GeoSeries.
+        The ways to calculate the length of geometries are as follows:
 
-        :examples:
+        * POINT / MULTIPOINT / POLYGON / MULTIPOLYGON / CURVEPOLYGON / MULTICURVE: 0
+        * LINESTRING: Length of a single straight line.
+        * MULTILINESTRING: Sum of length of multiple straight lines.
+        * CIRCULARSTRING: Length of a single curvilinear line.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of length of all geometries in the collection.
+
+        Returns
+        -------
+        Series
+            Length of each geometry in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "LINESTRING (0 0, 0 2)"])
         >>> s.length
@@ -433,15 +471,18 @@ class GeoSeries(Series):
     @property
     def is_simple(self):
         """
-        Check whether each geometry is "simple".
+        Tests whether each geometry in the GeoSeries is simple.
 
-        "Simple" here means that a geometry has no anomalous geometric points,
-        such as self intersection or self tangency.
+        Here "simple" means that a geometry has no anomalous point, such as a self-intersection or a self-tangency.
 
-        :rtype: Series(dtype: bool)
-        :return: True for geometries that are simple, False otherwise.
+        Returns
+        -------
+        Series
+            * *True:* All geometries are simple.
+            * *False:* At least one geometry is not simple.
 
-        :examples:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POINT EMPTY"])
         >>> s.is_simple
@@ -454,12 +495,24 @@ class GeoSeries(Series):
     @property
     def area(self):
         """
-        Calculate the 2D Cartesian (planar) area of each geometry.
+        Calculates the 2D Cartesian (planar) area of each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: float64)
-        :return: The area of each geometry.
+        The ways to calculate the area of geometries are as follows:
 
-        :examples:
+        * POINT / MULTIPOINT / LINESTRING / MULTILINESTRING / CIRCULARSTRING: 0
+        * POLYGON: Area of a single polygon.
+        * MULTIPOLYGON: Sum of area of multiple polygons.
+        * CURVEPOLYGON: Area of a single curvilinear polygon.
+        * MULTICURVE: Sum of area of multiple curvilinear polygons.
+        * MULTISURFACE / COMPOUNDCURVE / GEOMETRYCOLLECTION: For a geometry collection among the 3 types, calculates the sum of area of all geometries in the collection.
+
+        Returns
+        -------
+        Series
+            2D Cartesian (planar) area of each geometry in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.area
@@ -472,12 +525,15 @@ class GeoSeries(Series):
     @property
     def geom_type(self):
         """
-        For each geometry in geometries, return a string that indicates is type.
+        Returns the type of each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: object)
-        :return: The type of geometry, e.g. "ST_LINESTRING", "ST_POLYGON", "ST_POINT", "ST_MULTIPOINT"
+        Returns
+        -------
+        Series
+            The string representations of geometry types. For example, "ST_LINESTRING", "ST_POLYGON", "ST_POINT", and "ST_MULTIPOINT".
 
-        :examples:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.geom_type
@@ -490,12 +546,15 @@ class GeoSeries(Series):
     @property
     def centroid(self):
         """
-        Compute the centroid of each geometry.
+        Returns the centroid of each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: The centroid of geometries.
+        Returns
+        -------
+        GeoSeries
+            The centroid of each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.centroid
@@ -508,18 +567,72 @@ class GeoSeries(Series):
     @property
     def convex_hull(self):
         """
-        For each geometry, compute the smallest convex geometry
-        that encloses all geometries in it.
+        For each geometry in the GeoSeries, returns the smallest convex geometry that encloses it.
 
-        :rtype: GeoSeries
-        :return: Convex Geometries.
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
 
-        :example:
+        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
+        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
+        * For a point or line, the returned geometry is the same as the original.
+
+        Returns
+        -------
+        GeoSeries
+            Convex Geometry of each geometry in the GeoSeries.
+
+        Examples
+        -------
+        For geometry collections, such as MULTIPOLYGON, MULTISURFACE, and GEOMETRYCOLLECTION, ``convex_hull`` ignores point and line elements and creates the smallest convex geometry that encloses all polygon elements.
+
+        First, create a MULTIPOLYGON object that contains a concave polygon and a rectangle.
+
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
-        >>> s.convex_hull
-        0                        POINT (1 1)
-        1    POLYGON ((1 1,1 3,3 3,3 1,1 1))
+        >>> from arctern.plot import plot_geometry
+        >>> fig, ax = plt.subplots()
+        >>> g0 = GeoSeries(["MULTIPOLYGON(((0 0,0 2,1 1,2 2,2 0,0 0)),((2 0,2 2,3 2,3 0,2 0)))"])
+        >>> plot_geometry(ax,g0)
+
+        Then, use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the MULTIPOLYGON object.
+
+        >>> g1 = g0.convex_hull
+        >>> fig, ax = plt.subplots()
+        >>> plot_geometry(ax,g1)
+
+        Let's see how ``convex_hull`` deals with a GEOMETRYCOLLECTION that contains a semicircle and a rectangle.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
+        >>> plot_geometry(ax,g4.curve_to_line())
+
+        Use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the GEOMETRYCOLLECTION object. Since semicircle and rectangle are convex, the returned convex geometry is just a combination of the two gemetries and looks the same as the original.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> print(g4.convex_hull.to_wkt()[0])
+        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
+        CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
+
+        ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
+
+        The GeoSeries ``s1`` below contains a point, a line, and a convex polygon.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> s = GeoSeries(["POINT(2 0.5)", "LINESTRING(0 0,3 0.5)",  "POLYGON ((1 1,3 1,3 3,1 3, 1 1))"])
+        >>> plot_geometry(ax,s)
+
+        The returned geometries from ``convex_hull`` looks exactly the same as the original.
+
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> print(s.convex_hull)
+        >>> plot_geometry(ax,s.convex_hull)
+        0                    POINT (2.0 0.5)
+        1           LINESTRING (0 0,3.0 0.5)
+        2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
         """
         return _property_geo(arctern.ST_ConvexHull, self)
@@ -527,12 +640,15 @@ class GeoSeries(Series):
     @property
     def npoints(self):
         """
-        Calculates the points number for each geometry.
+        Returns the number of points for each geometry in the GeoSeries.
 
-        :rtype: Series(dtype: int)
-        :return: The number of points for each geometry.
+        Returns
+        -------
+        Series
+            Number of points for each geometry in the GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.npoints
@@ -545,12 +661,17 @@ class GeoSeries(Series):
     @property
     def envelope(self):
         """
-        Compute the double-precision minimum bounding box geometry for each geometry.
+        Returns the minimum bounding box for each geometry in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: bounding box geometries
+        The bounding box is a rectangular geometry object, and its edges are parallel to the axes.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Minimum bounding box for each geometry in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
         >>> s.envelope
@@ -566,15 +687,23 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Convert curves in each geometry to approximate linear representation,
-        e.g., CIRCULAR STRING to regular LINESTRING, CURVEPOLYGON to POLYGON,
-        and MULTISURFACE to MULTIPOLYGON. Useful for outputting to devices
-        that can't support CIRCULARSTRING geometry types.
+        Converts curves in each geometry to approximate linear representation.
 
-        :rtype: GeoSeries
-        :return: Converted geometries
+        For example,
 
-        :example:
+        * CIRCULAR STRING to LINESTRING,
+        * CURVEPOLYGON to POLYGON,
+        * MULTISURFACE to MULTIPOLYGON.
+
+        It is useful for outputting to devices that can't support CIRCULARSTRING geometry types.
+
+        Returns
+        -------
+        GeoSeries
+            Converted linear geometries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"])
         >>> rst = s.curve_to_line().to_wkt()
@@ -584,17 +713,25 @@ class GeoSeries(Series):
 
     def to_crs(self, crs):
         """
-        Transform each geometry to a different coordinate reference system.
-        The ``crs`` attribute on the current GeoSeries must be set.
+        Transforms the Coordinate Reference System (CRS) of the GeoSeries to `crs`.
 
-        :type crs: string
-        :param crs: Coordinate Reference System of the geometry objects.
-                    Must be SRID formed, e.g. "EPSG:4326"
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: Geometries with transformed coordinate reference system.
+        Returns
+        -------
+        GeoSeries
+            GeoSeries with transformed CRS.
 
-        :example:
+        Notes
+        -------
+        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
         >>> s
@@ -607,63 +744,90 @@ class GeoSeries(Series):
         if crs is None:
             raise ValueError("Can not transform with invalid crs")
         if self.crs is None:
-            raise ValueError("Can not transform geometries without crs. Set crs for this GeoSeries first.")
+            raise ValueError(
+                "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
         return _unary_geo(arctern.ST_Transform, self, self.crs, crs, crs=crs)
 
     def simplify(self, tolerance):
         """
-        Returns a "simplified" version for each geometry using the Douglas-Peucker algorithm.
+        Returns a simplified version for each geometry in the GeoSeries using the `Douglas-Peucker algorithm <https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm>`_.
 
-        :type: tolerance: float
-        :param tolerance: The maximum distance between a point on a linestring and a curve.
+        Parameters
+        ----------
+        tolerance : float
+            Distance tolerance.
 
-        :rtype: GeoSeries
-        :return: Simplified geometries.
+        Returns
+        -------
+        GeoSeries
+            Simplified geometries.
 
-        :example:
+        Examples
+        -------
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "CIRCULARSTRING (0 0,1 1,2 0)"])
-        >>> s.simplify(1)
-        0    POLYGON ((1 1,1 2,2 2,2 1,1 1))
-        1               LINESTRING (0 0,2 0)
-        dtype: GeoDtype
+        >>> from arctern.plot import plot_geometry
+        >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
+        >>> g0 = g0.curve_to_line()
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> ax.grid()
+        >>> plot_geometry(ax,g0,facecolor="red",alpha=0.2)
+        >>> plot_geometry(ax,g0.simplify(1),facecolor="green",alpha=0.2)
         """
         return _unary_geo(arctern.ST_SimplifyPreserveTopology, self, tolerance)
 
     def buffer(self, distance):
         """
-        For each geometry, returns a geometry that represents all points
-        whose distance from this geos is less than or equal to "distance".
+        For each geometry, moves all of its points away from its centroid to construct a new geometry. The distance of movement is specified as ``distance``.
 
-        :type distance: float
-        :param distance: he maximum distance of the returned geometry from each geometry.
+        * If ``distance`` > 0, the new geometry is a scaled-up version outside the original geometry.
+        * If ``distance`` < 0, the new geometry is a scaled-down version inside the original geometry.
 
-        :rtype: GeoSeries
-        :return: Geometries.
+        Parameters
+        ----------
+        distance : float
+            Distance of movement.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            GeoSeries that contains the new geometries at a distance of ``distance`` from the original.
+
+        Examples
+        -------
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
-        >>> s = GeoSeries(["POINT (0 1)"])
-        >>> s.buffer(0)
-        0    POLYGON EMPTY
-        dtype: GeoDtype
+        >>> from arctern.plot import plot_geometry
+        >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
+        >>> g0 = g0.curve_to_line()
+        >>> fig, ax = plt.subplots()
+        >>> ax.axis('equal')
+        >>> ax.grid()
+        >>> plot_geometry(ax,g0,facecolor=["red"],alpha=0.2)
+        >>> plot_geometry(ax,g0.buffer(-2),facecolor=["green"],alpha=0.2)
+        >>> plot_geometry(ax,g0.buffer(2),facecolor=["blue"],alpha=0.2)
         """
         return _unary_geo(arctern.ST_Buffer, self, distance)
 
     def precision_reduce(self, precision):
         """
-        For the coordinates of each geometry, reduce the number of significant digits
-        to the given number. The last decimal place will be rounded.
+        For the coordinates of each geometry in the GeoSeries, reduces the number of significant digits to the given number. The digit in the last decimal place will be rounded.
 
-        :type precision: int
-        :param precision: The number of significant digits.
+        Parameters
+        ----------
+        precision : int
+            Number of significant digits.
 
-        :rtype: GeoSeries
-        :return: Geometries with reduced precision.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that stores geometries with reduced precision.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
         >>> s.precision_reduce(3)
@@ -675,15 +839,17 @@ class GeoSeries(Series):
 
     def make_valid(self):
         """
-        Create a valid representation of each geometry without losing any of the input vertices.
+        Creates a valid representation of each geometry in the GeoSeries without losing any of the input vertices.
 
-        If the geometry is already-valid, then nothing will be done. If the geometry can't be
-        made to valid, it will be set to None value.
+        If the geometry is already-valid, then nothing will be done. If the geometry can't be made to valid, it will be set to None.
 
-        :rtype: GeoSeries
-        :return: Geometries that are made to valid.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with valid geometries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
         >>> s.make_valid()
@@ -694,12 +860,15 @@ class GeoSeries(Series):
 
     def unary_union(self):
         """
-        Return a geometry that represents the union of all geometries in the GeoSeries.
+        Calculates a geometry that represents the union of all geometries in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains only one geometry.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains only one geometry, which is the union of all geometries in the first GeoSeries.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p1 = "POINT(1 2)"
         >>> p2 = "POINT(1 1)"
@@ -712,12 +881,17 @@ class GeoSeries(Series):
 
     def envelope_aggr(self):
         """
-        Compute the double-precision minimum bounding box geometry for the union of all geometries.
+        Returns the minimum bounding box for the union of all geometries in the GeoSeries.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains only one geometry.
+        The bounding box is a rectangular geometry object, and its sides are parallel to the axes.
 
-        :example:
+        Returns
+        -------
+        GeoSeries
+            Minimum bounding box for the union of all geometries in the GeoSeries.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
         >>> p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
@@ -733,16 +907,24 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
     def intersects(self, other):
         """
-        Check whether each geometry intersects other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they intersect each other.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if is intersected.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it is intersected with the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype : Series(dtype: bool)
-        :return: A Series with value True if intersected.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+            * *True*: The two geometries intersect each other.
+            * *False*: The two geometries do not intersect each other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -751,7 +933,7 @@ class GeoSeries(Series):
         1    True
         dtype: bool
 
-        Alternatively other can be ca scalar bytes object.
+        Alternatively, ``other`` can be a geometry in WKB format.
 
         >>> s2.intersects(s1[0])
         0    True
@@ -762,17 +944,24 @@ class GeoSeries(Series):
 
     def within(self, other):
         """
-        Check whether each geometry is within other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry is within the other.
 
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether the geometries in the first GeoSeries is within it.
+            * If ``other`` is a geometry, this function tests the "within" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "within" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is within.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it is within the geometries in ``other``.
+            * *True*: The first geometry is within the other.
+            * *False*: The first geometry is not within the other.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry is within other.
-
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -785,16 +974,24 @@ class GeoSeries(Series):
 
     def contains(self, other):
         """
-        Check whether each geometry contains other (elementwise).
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry contains the other.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is contained.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether the geometries in the first GeoSeries contains it.
+            * If ``other`` is a geometry, this function tests the "contain" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "contain" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry contains other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it contains the geometries in ``other``.
+            * *True*: The first geometry contains the other.
+            * *False*: The first geometry does not contain the other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -807,21 +1004,26 @@ class GeoSeries(Series):
 
     def crosses(self, other):
         """
-        Check whether each geometry and other(elementwise) "spatially cross".
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry spatially crosses the other.
 
-        "Spatially cross" here means two geometries have
-        some, but not all interior points in common. The intersection of the
-        interiors of the geometries must not be the empty set and must have
-        a dimensionality less than the maximum dimension of the two input geometries.
+        "Spatially cross" means two geometries have some, but not all interior points in common. The intersection of the interiors of the geometries must not be the empty set and must have a dimensionality less than the maximum dimension of the two input geometries.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if cross.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it crosses the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "cross" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "cross" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry crosses other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it crosses the geometries in ``other``.
+            * *True*: The first geometry crosses the other.
+            * *False*: The first geometry does not cross the other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -834,18 +1036,26 @@ class GeoSeries(Series):
 
     def geom_equals(self, other):
         """
-        Check whether each geometry is "spatially equal" to other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry equals the other.
 
-        "Spatially equal" means two geometries represent the same geometry structure.
+        "Equal" means two geometries represent the same geometry structure.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is equals.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it equals the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the equivalence relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the equivalence relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry is spatially equals to other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it equals the geometries in ``other``.
+            * *True*: The first geometry equals the other.
+            * *False*: The first geometry does not equal the other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -868,19 +1078,26 @@ class GeoSeries(Series):
 
     def touches(self, other):
         """
-        Check whether each geometry "touches" other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry touches the other.
 
-        "Touch" means two geometries have common points, and the
-        common points locate only on their boundaries.
+        "Touch" means two geometries have common points, and the common points locate only on their boundaries.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry is touched.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it touches the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "touch" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "touch" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry touches other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it touches the geometries in ``other``.
+            * *True*: The first geometry touches the other.
+            * *False*: The first geometry does not touch the other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -893,19 +1110,26 @@ class GeoSeries(Series):
 
     def overlaps(self, other):
         """
-        Check whether each geometry "spatially overlaps" other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry "spatially overlaps" the other.
 
-        "Spatially overlap" here means two geometries intersect
-        but one does not completely contain another.
+        "Spatially overlap" here means two geometries intersect but one does not completely contain another.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to test if each geometry overlaps.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it overlaps the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the "overlap" relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the "overlap" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: bool)
-        :return: A Series with value True if each geometry overlaps other.
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it overlaps the geometries in ``other``.
+            * *True*: The first geometry overlaps the other.
+            * *False*: The first geometry does not overlap the other.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
         >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
@@ -918,16 +1142,22 @@ class GeoSeries(Series):
 
     def distance(self, other):
         """
-        Calculates the minimum 2D Cartesian (planar) distance between each geometry and other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, calculates the minimum 2D Cartesian (planar) distance between them.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to calculate the distance to each geometry.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return: A Series contains the distances between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series that contains the distances between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> p11 = "LINESTRING(9 0,9 2)"
         >>> p12 = "POINT(10 2)"
@@ -944,20 +1174,28 @@ class GeoSeries(Series):
 
     def distance_sphere(self, other):
         """
-        Return minimum distance in meters between two lon/lat points.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the minimum spherical distance between them.
 
-        Uses a spherical earth and radius derived from the spheroid defined by the SRID.
-        Only 'EPSG:4326' can calculate spherical distance.
+        This function uses a spherical earth and radius derived from the spheroid defined by the SRID.
 
-        :type other: scalar bytes object geometry or GeoSeries
-        :param other: The geometries to calculate the spherical distance to each geometry.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
-                      If other is scalar bytes object, we will assume other's crs is 'EPSG:4326'.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
+            * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return: A Series contains the spherical distance between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series that contains the spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Notes
+        -------
+        Only the longitude and latitude coordinate reference system ("EPSG:4326") can be used to calculate spherical distance.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POINT(10 2)"], crs="EPSG:4326")
         >>> s2 = GeoSeries(["POINT(10 3)"], crs="EPSG:4326")
@@ -971,18 +1209,24 @@ class GeoSeries(Series):
 
     def hausdorff_distance(self, other):
         """
-        Returns the Hausdorff distance between each geometry and other.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the Hausdorff distance between them.
 
-        This is a measure of how similar or dissimilar 2 geometries are.
+        Hausdorff distance is a measure of how similar two geometries are.
 
-        :type other: scalar bytes object geometry or GeoSeries
-                     Can be scalar WKB formed bytes object, or a GeoSeries.
-        :param other: The geometries to calculate the hausdorff distance to each geometry.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the Hausdorff distance between it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the Hausdorff distance between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the Hausdorff distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: Series(dtype: float64)
-        :return : A Series contains the hausdorff distance between each geometry and other.
+        Returns
+        -------
+        Series
+            A Series that contains the Hausdorff distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
         >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
@@ -999,16 +1243,22 @@ class GeoSeries(Series):
 
     def intersection(self, other):
         """
-        Calculate the point set intersection between each geometry and other.
+        For each point in the GeoSeries and the corresponding point given in ``other``, calculates the intersection of them.
 
-        :type other: scalar bytes object geometry or GeoSeries.
-                      Can be scalar WKB formed bytes object, or a GeoSeries.
-        :param other: The geometries to calculate the intersection point set between each geometry.
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the intersection of it and the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the intersection of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the intersection of each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains only one geometry, which is the intersection of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
         >>> s2 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
@@ -1024,12 +1274,15 @@ class GeoSeries(Series):
 
     def to_wkt(self):
         """
-        Transform each geometry to WKT formed string.
+        Transforms all geometries in the GeoSeries to `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as WKT formed string.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in WKT format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1042,13 +1295,16 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_AsText, self)
 
     def to_wkb(self):
-        r"""
-        Transform each geometry to WKB formed bytes object.
+        """
+        Transforms all geometries in the GeoSeries to `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as WKB formed bytes object.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in WKB format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s.to_wkb()
@@ -1059,12 +1315,15 @@ class GeoSeries(Series):
 
     def as_geojson(self):
         """
-        Transform each to GeoJSON format string.
+        Transforms all geometries in the GeoSeries to GeoJSON strings.
 
-        :rtype: Series(dtype: object)
-        :return: A Series contains geometries as GeoJSON formed string.
+        Returns
+        -------
+        Series
+            A Series that contains geometries in GeoJSON format.
 
-        :example:
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1078,11 +1337,15 @@ class GeoSeries(Series):
 
     def to_geopandas(self):
         """
-        Transform each arctern GeoSeries to GeoPandas GeoSeries.
+        Transforms an arctern.GeoSeries object to a geopandas.GeoSeries object.
 
-        :rtype: GeoPandas GeoSeries(dtype: geometry)
-        :return: A GeoPandas GeoSeries.
-        :example:
+        Returns
+        -------
+        geopandas.GeoSeries
+            A geopandas.GeoSeries object.
+
+        Examples
+        -------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s
@@ -1100,33 +1363,38 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         """
-        Construct polygon(rectangle) geometries from arr_min_x, arr_min_y, arr_max_x,
-        arr_max_y and special coordinate system. The edges of polygon are parallel to coordinate axis.
+        Constructs rectangular POLYGON objects within the given spatial range. The edges of the rectangles are parallel to the coordinate axises.
 
-        :type min_x: Series(dtype: float64)
-        :param min_x: The minimum value of x coordinate of the rectangles.
+        ``min_x``, ``min_y``, ``max_x``, and ``max_y`` are Series so that polygons can be created in batch. The number of values in the four Series should be the same.
 
-        :type min_y: Series(dtype: float64)
-        :param min_y: The minimum value of y coordinate of the rectangles.
+        Suppose that the demension of ``min_x`` is *N*, the returned GeoSeries of this function should contains *N* rectangles. The shape and position of the *i*th rectangle is defined by its bottom left vertex *(min_x, min_y)* and top right vertex *(max_x, max_y)*.
 
-        :type max_x: Series(dtype: float64)
-        :param max_x: The maximum value of x coordinate of the rectangles.
+        Parameters
+        ----------
+        min_x : Series
+            The minimum x coordinates of the rectangles.
+        min_y : Series
+            The minimum y coordinates of the rectangles.
+        max_x : Series
+            The maximum x coordinates of the rectangles.
+        max_y : Series
+            The maximum y coordinates of the rectangles.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :type max_y: Series(dtype: float64)
-        :param max_y: The maximum value of y coordinate of the rectangles.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains rectangular POLYGON objects within the given spatial range.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
-
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
-
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> min_x = Series([0.0, 1.0])
         >>> max_x = Series([2.0, 1.5])
-        >>> min_y = Series([0.0, 1.0])
+        >>> min_y = Series([0.0, 1.0])  
         >>> max_y = Series([1.0, 1.5])
         >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
         0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
@@ -1139,21 +1407,29 @@ class GeoSeries(Series):
     @classmethod
     def point(cls, x, y, crs=None):
         """
-        Construct Point geometries according to the coordinates.
+        Constructs POINT objects based on the given coordinates.
 
-        :type x: Series(dtype: float64)
-        :param x: Abscissa of the point.
+        ``x``and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
 
-        :type y: Series(dtype: float64)
-        :param y: Ordinate of the point.
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y)*.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
+        Parameters
+        ----------
+        x : Series
+            X coordinates of points.
+        y : Series
+            Y coordinates of points.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains point geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains POINT objects.
 
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> x = Series([1.3, 2.5])
@@ -1169,18 +1445,25 @@ class GeoSeries(Series):
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
         """
-        Construct geometry from the GeoJSON representation string.
+        Constructs geometries from GeoJSON strings.
 
-        :type json: Series(dtype: object)
-        :param json: Geometries in json format.
+        ``json`` is Series so that geometries can be created in batch.
 
-        :type crs: string, optional
-        :param crs: Must be SRID format string.
+        Parameters
+        ----------
+        json : Series
+            String representations of geometries in JSON format.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries contains geometries.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries.
 
-        :example:
+        Examples
+        -------
         >>> from pandas import Series
         >>> from arctern import GeoSeries
         >>> json = Series(['{"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]}'])
@@ -1194,15 +1477,20 @@ class GeoSeries(Series):
     @classmethod
     def from_geopandas(cls, data):
         """
-        Construct geometries from geopandas GeoSeries.
+        Constructs an arctern.GeoSeries object from a geopandas.GeoSeries object.
 
-        :rtype data: geopandas.GeoSeries
-        :param data: Source geometries data.
+        Parameters
+        ----------
+        data : geopandas.GeoSeries
+            A geopandas.GeoSeries object.
 
-        :rtype: arctern.GeoSeries
-        :return: A arctern.GeoSeries constructed from geopandas.GeoSeries.
+        Returns
+        -------
+        arctern.GeoSeries
+            An arctern.GeoSeries object.
 
-        :example:
+        Examples
+        -------
         >>> import geopandas as gpd
         >>> from shapely.geometry import Point, Polygon
         >>> from arctern import GeoSeries
