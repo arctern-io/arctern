@@ -44,6 +44,7 @@ __all__ = [
     "ST_Envelope_Aggr",
     "ST_Transform",
     "ST_CurveToLine",
+    "ST_SymDifference",
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "ST_AsText",
@@ -1264,6 +1265,17 @@ def ST_CurveToLine(geos):
     arr_geos = _to_arrow_array_list(arr_geos)
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
+
+def ST_SymDifference(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_SymDifference(chunked_array_geo1, chunked_array_geo2)
+    return result.to_pandas()
 
 
 def within_which(left, right):

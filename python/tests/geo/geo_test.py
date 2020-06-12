@@ -560,6 +560,18 @@ def test_ST_CurveToLine():
 
     assert str(rst[0]).startswith("POLYGON")
 
+def test_ST_SymDifference():
+    geo1 = "LINESTRING (0 0,5 0)"
+    geo2 = "LINESTRING (4 0,6 0)"
+    geo_wkb1 = arctern.ST_GeomFromText(geo1)[0]
+    geo_wkb2 = arctern.ST_GeomFromText(geo2)[0]
+    arr1 = [geo_wkb1 for x in range(1, 400001)]
+    arr2 = [geo_wkb2 for x in range(1, 400001)]
+    data1 = pandas.Series(arr1)
+    data2 = pandas.Series(arr2)
+    rst = arctern.ST_AsText(arctern.ST_SymDifference(data1, data2))
+    for i in rst:
+        assert(i == "MULTILINESTRING ((5 0,6 0),(0 0,4 0))")
 
 def test_ST_NPoints():
     data = ["LINESTRING(1 1,1 4)"]
