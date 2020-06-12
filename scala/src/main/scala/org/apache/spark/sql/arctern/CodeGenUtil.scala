@@ -103,4 +103,6 @@ object CodeGenUtil {
     case _ : ArcternExpr => true
     case _ => false
   }
+
+  def utf8StringFromStringCode(string_name: String) = s"org.apache.spark.unsafe.types.UTF8String.fromString($string_name);"
 }

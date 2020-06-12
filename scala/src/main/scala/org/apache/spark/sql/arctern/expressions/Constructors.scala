@@ -177,7 +177,7 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
     val nullSafeEval =
       jsonGen.code + ctx.nullSafeExec(jsonExpr.nullable, jsonGen.isNull) {
         s"""
-           |${ev.value}_geo = new org.wololo.jts2geojson.GeoJSONReader().read(${jsonGen.value}.toString());
+           |${ev.value}_geo = ${GeometryUDT.getClass.getName.dropRight(1)}.FromGeoJSON(${jsonGen.value}.toString());
            |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
        """.stripMargin
       }
@@ -196,104 +196,24 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
   override def children: Seq[Expression] = inputExpr
 }
 
-case class ST_AsText(inputExpr: Seq[Expression]) extends ArcternExpr {
+case class ST_AsText(inputsExpr: Seq[Expression])extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
 
-  assert(inputExpr.length == 1)
-  assert(inputExpr.head.dataType match { case _: GeometryUDT => true })
+  override def expr: Expression = inputsExpr.head
 
-  override def nullable: Boolean = true
-
-  override def eval(input: InternalRow): Any = {}
-
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val geoExpr = inputExpr.head
-    val geoGen = inputExpr.head.genCode(ctx)
-
-    assert(CodeGenUtil.isGeometryExpr(geoExpr))
-
-    var exprGeo :String = ""
-    var exprGeoDeclare :String = ""
-    var exprGeoCode :String = ""
-
-    if(CodeGenUtil.isArcternExpr(geoExpr)){
-      val (geo, declare, code)  = CodeGenUtil.geometryFromArcternExpr(geoGen.code.toString())
-      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
-    } else {
-      val (geo, declare, code)  = CodeGenUtil.geometryFromNormalExpr(geoGen)
-      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
-    }
-
-    val nullSafeEval =
-      exprGeoCode + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
-        s"""
-           |${ev.value}_wkt = ${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt(${exprGeo});
-           |if (${ev.value}_wkt != null) ${ev.value} = org.apache.spark.unsafe.types.UTF8String.fromString(${ev.value}_wkt);
-       """.stripMargin
-      }
-
-    ev.copy(code =
-      code"""
-          $exprGeoDeclare
-          String ${ev.value}_wkt = null;
-          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-          $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value} == null);
-            """)
-
-  }
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt($geo)"))
 
   override def dataType: DataType = StringType
 
-  override def children: Seq[Expression] = inputExpr
 }
 
-case class ST_AsGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
+case class ST_AsGeoJSON(inputsExpr: Seq[Expression])extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
 
-  assert(inputExpr.length == 1)
-  assert(inputExpr.head.dataType match { case _: GeometryUDT => true })
+  override def expr: Expression = inputsExpr.head
 
-  override def nullable: Boolean = true
-
-  override def eval(input: InternalRow): Any = {}
-
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val geoExpr = inputExpr.head
-    val geoGen = inputExpr.head.genCode(ctx)
-
-    assert(CodeGenUtil.isGeometryExpr(geoExpr))
-
-    var exprGeo :String = ""
-    var exprGeoDeclare :String = ""
-    var exprGeoCode :String = ""
-
-    if(CodeGenUtil.isArcternExpr(geoExpr)){
-      val (geo, declare, code)  = CodeGenUtil.geometryFromArcternExpr(geoGen.code.toString())
-      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
-    } else {
-      val (geo, declare, code)  = CodeGenUtil.geometryFromNormalExpr(geoGen)
-      exprGeo = geo; exprGeoDeclare = declare; exprGeoCode = code
-    }
-
-    val nullSafeEval =
-      exprGeoCode + ctx.nullSafeExec(geoExpr.nullable, geoGen.isNull) {
-        s"""
-           |${ev.value}_json = new org.wololo.jts2geojson.GeoJSONWriter().write(${exprGeo}).toString();
-           |if (${ev.value}_json != null) ${ev.value} = org.apache.spark.unsafe.types.UTF8String.fromString(${ev.value}_json);
-       """.stripMargin
-      }
-
-    ev.copy(code =
-      code"""
-          $exprGeoDeclare
-          String ${ev.value}_json = null;
-          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-          $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value} == null);
-            """)
-
-  }
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"${GeometryUDT.getClass.getName.dropRight(1)}.ToGeoJSON($geo)"))
 
   override def dataType: DataType = StringType
 
-  override def children: Seq[Expression] = inputExpr
 }
