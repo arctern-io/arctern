@@ -338,55 +338,6 @@ UnaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& array,
 
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
-                        std::shared_ptr<typename arrow::ChunkedArray>>::type
-BinaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
-          const std::shared_ptr<typename arrow::ChunkedArray>& geo2,
-          std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
-          std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
-  T builder;
-  std::vector<std::shared_ptr<arrow::ChunkedArray>> chunked_arrays;
-  chunked_arrays.push_back(geo1);
-  chunked_arrays.push_back(geo2);
-
-  auto align_geos = arctern::AlignChunkedArray(chunked_arrays);
-
-  for (int32_t i = 0; i < align_geos[0]->num_chunks(); ++i) {
-    auto binary_geo1_chunk =
-        std::static_pointer_cast<arrow::BinaryArray>(align_geos[0]->chunk(i));
-    auto binary_geo2_chunk =
-        std::static_pointer_cast<arrow::BinaryArray>(align_geos[1]->chunk(i));
-    auto len1 = binary_geo1_chunk->length();
-    auto len2 = binary_geo2_chunk->length();
-    assert(len1 == len2);
-    for (int32_t j = 0; j < len1; ++j) {
-      auto ogr1 = Wrapper_createFromWkb(binary_geo1_chunk, j);
-      auto ogr2 = Wrapper_createFromWkb(binary_geo2_chunk, j);
-
-      if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
-        builder.AppendNull();
-      } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
-        if (null_op == nullptr) {
-          builder.AppendNull();
-        } else {
-          null_op(builder, ogr1, ogr2);
-        }
-      } else {
-        op(builder, ogr1, ogr2);
-      }
-
-      OGRGeometryFactory::destroyGeometry(ogr1);
-      OGRGeometryFactory::destroyGeometry(ogr2);
-    }
-  }
-
-  std::shared_ptr<arrow::Array> result_array;
-  CHECK_ARROW(builder.Finish(&result_array));
-  auto results = std::make_shared<arrow::ChunkedArray>(std::move(result_array));
-  return results;
-}
-
-template <typename T>
-typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::shared_ptr<typename arrow::Array>>::type
 UnaryOp(const std::shared_ptr<arrow::Array>& array,
         std::function<void(T&, OGRGeometry*)> op) {
@@ -475,8 +426,7 @@ BinaryOp1(
     const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
     const std::shared_ptr<typename arrow::ChunkedArray>& geo2,
     std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
-    std::function<std::shared_ptr<typename arrow::Array>(T&, OGRGeometry*, OGRGeometry*)>
-        null_op = nullptr) {
+    std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
 
   auto total_lines = geo1->length();
   int parallelism = total_lines >= parallel_threshold ? get_parallelism(): 1;
