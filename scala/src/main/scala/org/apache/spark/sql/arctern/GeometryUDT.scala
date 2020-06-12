@@ -73,4 +73,6 @@ object GeometryUDT {
       case _: UnsupportedOperationException => null
     }
   }
+
+  def GetGeoType(obj: Geometry): String = obj.getGeometryType
 }

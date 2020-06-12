@@ -202,7 +202,7 @@ case class ST_GeometryType(inputsExpr: Seq[Expression])extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getGeometryType()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"${GeometryUDT.getClass.getName.dropRight(1)}.GetGeoType($geo)"))
 
   override def dataType: DataType = StringType
 
