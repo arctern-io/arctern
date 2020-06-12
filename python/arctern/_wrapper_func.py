@@ -1273,9 +1273,9 @@ def within_which(left, right):
     Parameters
     ----------
     left : GeoSeries
-        A GeoSeries that contains some geometries.
+        Sequence of geometries.
     right : GeoSeries
-        A GeoSeries that contains some geometries.
+        Sequence of geometries.
 
     Returns
     -------
