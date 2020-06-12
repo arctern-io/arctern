@@ -907,46 +907,6 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
   };
 
   return BinaryOp1<arrow::BinaryBuilder>(geo1, geo2, op);
-  //  arrow::BinaryBuilder builder;
-  //
-  //  for (int32_t i = 0; i < align_goes[0]->num_chunks(); i++) {
-  //    auto binary_geo1_chunk =
-  //    std::static_pointer_cast<arrow::BinaryArray>(align_goes[0]->chunk(i)); auto
-  //    binary_geo2_chunk =
-  //    std::static_pointer_cast<arrow::BinaryArray>(align_goes[1]->chunk(i)); for
-  //    (int32_t j = 0; j < binary_geo1_chunk->length(); j++) {
-  //      arrow::BinaryArray::offset_type wkb_size;
-  //      WkbItem left;
-  //      left.data_ptr = binary_geo1_chunk->GetValue(j, &wkb_size);
-  //      left.wkb_size = wkb_size;
-  //      auto left_geo = left.ToGeometry();
-  //      WkbItem right;
-  //      right.data_ptr = binary_geo2_chunk->GetValue(j, &wkb_size);
-  //      right.wkb_size = wkb_size;
-  //      auto right_geo = right.ToGeometry();
-  //      if (right_geo == nullptr && left_geo == nullptr){
-  //        builder.AppendNull();
-  //      } else {
-  //        auto rst = right_geo->SymDifference(left_geo);
-  //        auto rst_wkb_size =rst->WkbSize();
-  //        auto wkb = static_cast<unsigned char*>(CPLMalloc(rst_wkb_size));
-  //        auto err_code = rst->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
-  //        if (err_code != OGRERR_NONE) {
-  //          builder.AppendNull();
-  //        } else {
-  //          builder.Append(wkb,rst_wkb_size);
-  //        }
-  //        OGRGeometryFactory::destroyGeometry(rst);
-  //      }
-  //      OGRGeometryFactory::destroyGeometry(left_geo);
-  //      OGRGeometryFactory::destroyGeometry(right_geo);
-  //    }
-  //    std::shared_ptr<arrow::Array> binary_array;
-  //    builder.Finish(&binary_array);
-  //    result_array_vector.push_back(binary_array);
-  //  }
-
-  //  return std::make_shared<arrow::ChunkedArray>(result_array_vector);
 }
 
 /************************ MEASUREMENT FUNCTIONS ************************/

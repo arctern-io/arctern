@@ -171,8 +171,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
 
 std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
-    const std::shared_ptr<arrow::ChunkedArray>& geo2){
-  return gdal::ST_SymDifference(geo1,geo2);
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  return gdal::ST_SymDifference(geo1, geo2);
 }
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
