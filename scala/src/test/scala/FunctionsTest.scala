@@ -124,4 +124,43 @@ class FunctionsTest extends AdapterTest {
     // rst.show()
   }
 
+  test("ST_IsValid") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("error geo"))
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_IsValid(geo) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show()
+  }
+
+  test("ST_IsValid-Null") {
+    val data = Seq(
+      Row("Polygon(0 0, 0 1, 1 1, 1 0, 0 0)"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row(null)
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_IsValid(ST_GeomFromText(geo)) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show()
+  }
 }
