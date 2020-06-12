@@ -185,6 +185,14 @@ def ST_Equals(object left_geometries,object right_geometries):
     result = arctern_core_pxd.ST_Equals(left, right)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_Disjoint(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Disjoint(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Boundary(object geometries ):
+    result = arctern_core_pxd.ST_Boundary(pyarrow_unwrap_chunked_array(geometries))
+    return pyarrow_wrap_chunked_array(result)
+
 def ST_Touches(object left_geometries,object right_geometries):
     cdef vector[shared_ptr[CArray]] left
     for geo in left_geometries:

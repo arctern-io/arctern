@@ -229,6 +229,24 @@ inline std::shared_ptr<arrow::Array> AppendWkb(
   return array_ptr;
 }
 
+inline void AppendWkb(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
+  if (geo == nullptr) {
+    CHECK_ARROW(builder.AppendNull());
+  } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
+    CHECK_ARROW(builder.AppendNull());
+  } else {
+    auto wkb_size = geo->WkbSize();
+    auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
+    if (err_code != OGRERR_NONE) {
+      CHECK_ARROW(builder.AppendNull());
+    } else {
+      CHECK_ARROW(builder.Append(wkb, wkb_size));
+    }
+    CPLFree(wkb);
+  }
+}
+
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
                   ChunkArrayIdx<WkbItem>& idx) {
   if (idx.chunk_idx >= (int)chunk_array.size()) return false;
@@ -292,6 +310,79 @@ bool GetNextValue(std::vector<std::vector<std::shared_ptr<arrow::Array>>>& array
     is_null |= idx_list[i].is_null;
   }
   return ret_val;
+}
+
+template <typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
+                        std::shared_ptr<typename arrow::ChunkedArray>>::type
+UnaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& array,
+         std::function<void(T&, OGRGeometry*)> op) {
+  T builder;
+  for (int32_t i = 0; i < array->num_chunks(); ++i) {
+    auto binary_geo_chunk = std::static_pointer_cast<arrow::BinaryArray>(array->chunk(i));
+    for (int32_t j = 0; j < binary_geo_chunk->length(); ++j) {
+      auto geo = Wrapper_createFromWkb(binary_geo_chunk, j);
+      if (geo == nullptr) {
+        builder.AppendNull();
+      } else {
+        op(builder, geo);
+      }
+      OGRGeometryFactory::destroyGeometry(geo);
+    }
+  }
+  std::shared_ptr<arrow::Array> results_array;
+  CHECK_ARROW(builder.Finish(&results_array));
+  auto results = std::make_shared<arrow::ChunkedArray>(std::move(results_array));
+  return results;
+}
+
+template <typename T>
+typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
+                        std::shared_ptr<typename arrow::ChunkedArray>>::type
+BinaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
+          const std::shared_ptr<typename arrow::ChunkedArray>& geo2,
+          std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
+          std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
+  T builder;
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> chunked_arrays;
+  chunked_arrays.push_back(geo1);
+  chunked_arrays.push_back(geo2);
+
+  auto align_geos = arctern::AlignChunkedArray(chunked_arrays);
+
+  for (int32_t i = 0; i < align_geos[0]->num_chunks(); ++i) {
+    auto binary_geo1_chunk =
+        std::static_pointer_cast<arrow::BinaryArray>(align_geos[0]->chunk(i));
+    auto binary_geo2_chunk =
+        std::static_pointer_cast<arrow::BinaryArray>(align_geos[1]->chunk(i));
+    auto len1 = binary_geo1_chunk->length();
+    auto len2 = binary_geo2_chunk->length();
+    assert(len1 == len2);
+    for (int32_t j = 0; j < len1; ++j) {
+      auto ogr1 = Wrapper_createFromWkb(binary_geo1_chunk, j);
+      auto ogr2 = Wrapper_createFromWkb(binary_geo2_chunk, j);
+
+      if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+        builder.AppendNull();
+      } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+        if (null_op == nullptr) {
+          builder.AppendNull();
+        } else {
+          null_op(builder, ogr1, ogr2);
+        }
+      } else {
+        op(builder, ogr1, ogr2);
+      }
+
+      OGRGeometryFactory::destroyGeometry(ogr1);
+      OGRGeometryFactory::destroyGeometry(ogr2);
+    }
+  }
+
+  std::shared_ptr<arrow::Array> result_array;
+  CHECK_ARROW(builder.Finish(&result_array));
+  auto results = std::make_shared<arrow::ChunkedArray>(std::move(result_array));
+  return results;
 }
 
 template <typename T>
@@ -1070,6 +1161,35 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Disjoint(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
+      CHECK_ARROW(builder.Append(true));
+    } else if (ogr1->Disjoint(ogr2)) {
+      CHECK_ARROW(builder.Append(true));
+    } else {
+      CHECK_ARROW(builder.Append(false));
+    }
+  };
+  auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
+                    OGRGeometry* ogr2) { CHECK_ARROW(builder.Append(false)); };
+  return BinaryOp1<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Boundary(
+    const std::shared_ptr<arrow::ChunkedArray>& geo) {
+  auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
+    if (ogr->IsEmpty()) {
+      AppendWkb(builder, ogr);
+    } else {
+      AppendWkb(builder, ogr->Boundary());
+    }
+  };
+  return UnaryOp1<arrow::BinaryBuilder>(geo, op);
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
