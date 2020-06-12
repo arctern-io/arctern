@@ -18,7 +18,7 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{BooleanType, DataType}
+import org.apache.spark.sql.types.{BooleanType, DataType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
@@ -194,6 +194,17 @@ case class ST_IsValid(inputsExpr: Seq[Expression])extends ST_UnaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.operation.valid.IsValidOp($geo).isValid()")
 
   override def dataType: DataType = BooleanType
+
+}
+
+case class ST_GeometryType(inputsExpr: Seq[Expression])extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getGeometryType()")
+
+  override def dataType: DataType = StringType
 
 }
 
