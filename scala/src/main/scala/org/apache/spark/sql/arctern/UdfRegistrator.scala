@@ -23,5 +23,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Buffer", ST_Buffer)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PrecisionReduce", ST_PrecisionReduce)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Intersection", ST_Intersection)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_SimplifyPreserveTopology", ST_SimplifyPreserveTopology)
   }
 }
