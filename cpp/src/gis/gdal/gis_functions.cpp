@@ -378,7 +378,6 @@ BinaryOp1(
     std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
     std::function<std::shared_ptr<typename arrow::Array>(T&, OGRGeometry*, OGRGeometry*)>
         null_op = nullptr) {
-
   std::vector<ChunkedArrayPtr> chunked_arrays;
   chunked_arrays.push_back(geo1);
   chunked_arrays.push_back(geo2);
