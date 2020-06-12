@@ -177,7 +177,7 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
     val nullSafeEval =
       jsonGen.code + ctx.nullSafeExec(jsonExpr.nullable, jsonGen.isNull) {
         s"""
-           |${ev.value}_geo = new org.wololo.jts2geojson.GeoJSONReader().read(${jsonGen.value}.toString());
+           |${ev.value}_geo = ${GeometryUDT.getClass.getName.dropRight(1)}.FromGeoJSON(${jsonGen.value}.toString());
            |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
        """.stripMargin
       }
@@ -212,7 +212,7 @@ case class ST_AsGeoJSON(inputsExpr: Seq[Expression])extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"new org.wololo.jts2geojson.GeoJSONWriter().write($geo).toString()"))
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"${GeometryUDT.getClass.getName.dropRight(1)}.ToGeoJSON($geo)"))
 
   override def dataType: DataType = StringType
 

@@ -17,7 +17,6 @@
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.types._
-import org.locationtech.jts.io.WKTReader
 
 class ConstructorsTest extends AdapterTest {
   test("ST_GeomFromText-Null") {
@@ -242,11 +241,11 @@ class ConstructorsTest extends AdapterTest {
 
   test("ST_AsText-FromNormalExpr") {
     val data = Seq(
-      Row(new WKTReader().read("POINT (10 20)")),
-      Row(new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
-      Row(new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
-      Row(new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
-      Row(new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(GeometryUDT.FromWkt("POINT (10 20)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
       Row(null)
     )
 
@@ -308,11 +307,11 @@ class ConstructorsTest extends AdapterTest {
 
   test("ST_AsGeoJSON-FromNormalExpr") {
     val data = Seq(
-      Row(new WKTReader().read("POINT (10 20)")),
-      Row(new WKTReader().read("LINESTRING (0 0, 10 10, 20 20)")),
-      Row(new WKTReader().read("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
-      Row(new WKTReader().read("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
-      Row(new WKTReader().read("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(GeometryUDT.FromWkt("POINT (10 20)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
       Row(null)
     )
 
