@@ -19,5 +19,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeometryType", ST_GeometryType)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_IsSimple", ST_IsSimple)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_NPoints", ST_NPoints)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Envelope", ST_Envelope)
   }
 }

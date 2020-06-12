@@ -116,7 +116,7 @@ class FunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
     val rst = spark.sql("select idx, st_within(st_centroid(ST_GeomFromText(geo1)), st_centroid(ST_GeomFromText(geo2))) from data")
-    rst.queryExecution.debug.codegen()
+    // rst.queryExecution.debug.codegen()
     val collect = rst.collect()
     assert(collect(0).getBoolean(1))
     assert(collect(1).isNullAt(1))
@@ -286,6 +286,49 @@ class FunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("data")
 
     val rst = spark.sql("select ST_NPoints(ST_GeomFromText(geo)) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show()
+  }
+
+  test("ST_Envelope") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Envelope(geo) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show()
+  }
+
+  test("ST_Envelope-Null") {
+    val data = Seq(
+      Row("error geo"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row(null),
+      Row("POLYGON ((1 2,3 4,5 6,1 2))"),
+      Row("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Envelope(ST_GeomFromText(geo)) from data ")
     val collect = rst.collect()
 
     //    rst.queryExecution.debug.codegen()

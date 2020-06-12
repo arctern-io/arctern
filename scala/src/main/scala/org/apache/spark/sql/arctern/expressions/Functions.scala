@@ -229,3 +229,14 @@ case class ST_NPoints(inputsExpr: Seq[Expression])extends ST_UnaryOp {
   override def dataType: DataType = IntegerType
 
 }
+
+case class ST_Envelope(inputsExpr: Seq[Expression])extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getEnvelope()")
+
+  override def dataType: DataType = new GeometryUDT
+
+}
