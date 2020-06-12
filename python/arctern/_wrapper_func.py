@@ -1285,15 +1285,15 @@ def within_which(left, right):
     Parameters
     ----------
     left : GeoSeries
-        A GeoSeries that contains some geometries.
+        Sequence of geometries.
     right : GeoSeries
-        A GeoSeries that contains some geometries.
+        Sequence of geometries.
 
     Returns
     -------
     Series
         The indexes of geometries in ``right``.
-        For example, the *i*th value *j* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
+        For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
         * When there are multiple candidates, return one of them.
         * When there is no candidate, return NA.
 
