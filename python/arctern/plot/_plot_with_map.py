@@ -300,7 +300,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
     >>> arctern.plot.choroplethmap(ax, polygon, input['color_weights'], bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean")
     >>> plt.show()
-    """ 
+    """
     from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
@@ -381,7 +381,7 @@ def fishnetmap(ax, points, weights, bounding_box,
                     aggregation_type='sum',
                     **extra_contextily_params):
     """
-    [summary]
+    Plots a fishnet map in Matplotlib.
 
     Parameters
     ----------
