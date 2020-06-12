@@ -338,4 +338,48 @@ class FunctionsTest extends AdapterTest {
 
     rst.show()
   }
+
+  test("ST_Buffer") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Buffer(geo, 1) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show()
+  }
+
+  test("ST_Buffer-Null") {
+    val data = Seq(
+      Row("error geo"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row(null),
+      Row("POLYGON ((1 2,3 4,5 6,1 2))"),
+      Row("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Buffer(ST_GeomFromText(geo), 1) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show()
+  }
 }
