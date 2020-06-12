@@ -15,7 +15,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include <gtest/gtest.h>
+#pragma once
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 #include "utils/arrow_alias.h"
-TEST(ArrowAlias, naive) { SUCCEED(); }
+
+namespace arctern {
+// by default, the max_rows_limit is up to 8 millions
+std::vector<ChunkedArrayPtr> AlignChunkedArray(
+    const std::vector<ChunkedArrayPtr>& chunked_arrays,
+    size_t max_rows_limit = 8 * 1024 * 1024);
+
+}  // namespace arctern

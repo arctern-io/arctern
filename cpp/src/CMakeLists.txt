@@ -92,7 +92,12 @@ set(index_src
         )
 
 set(map_match_src
-        map_match/map_match.cpp)
+        map_match/map_match.cpp
+        )
+
+set(utils_src
+        utils/arrow_utils.cpp          
+        )
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
@@ -109,6 +114,7 @@ if (BUILD_WITH_GPU)
             ${arrow_src}
             ${index_src}
             ${map_match_src}
+            ${utils_src}
     )
 else ()
     add_library(
@@ -119,6 +125,7 @@ else ()
             ${arrow_src}
             ${index_src}
             ${map_match_src}
+            ${utils_src}
     )
 endif ()
 
