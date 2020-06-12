@@ -15,7 +15,7 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, pyarrow_wrap_chunked_array, pyarrow_unwrap_chunked_array, pyarrow_wrap_array, pyarrow_unwrap_array)
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
@@ -184,6 +184,10 @@ def ST_Equals(object left_geometries,object right_geometries):
         right.push_back(pyarrow_unwrap_array(geo))
     result = arctern_core_pxd.ST_Equals(left, right)
     return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def ST_Equals1(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Equals1(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
 
 def ST_Touches(object left_geometries,object right_geometries):
     cdef vector[shared_ptr[CArray]] left

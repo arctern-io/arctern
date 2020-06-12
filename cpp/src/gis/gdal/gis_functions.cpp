@@ -32,6 +32,7 @@
 #include "gis/gdal/geometry_visitor.h"
 #include "gis/parser.h"
 #include "utils/check_status.h"
+#include "utils/arrow_utils.h"
 
 namespace arctern {
 namespace gis {
@@ -319,23 +320,11 @@ BinaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
           std::function<void(T&,OGRGeometry*, OGRGeometry*)> op,
           std::function<void(T&,OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
   T builder;
-  std::vector<arrow::ChunkedArray> chunked_arrays;
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> chunked_arrays;
   chunked_arrays.push_back(geo1);
   chunked_arrays.push_back(geo2);
 
-  auto max_size_of_chunk = 0;
-  auto get_max_chunk_size = [&max_size_of_chunk](const std::shared_ptr<arrow::ChunkedArray>& ca){
-    for (int32_t i = 0; i < ca->num_chunks(); i++) {
-      int ca_len = ca->chunk(i)->length();
-      if(ca_len > max_size_of_chunk){
-        max_size_of_chunk = ca_len;
-      }
-    }
-  };
-  get_max_chunk_size(geo1);
-  get_max_chunk_size(geo2);
-
-  auto align_geos = arctern::AlignChunkedArray(chunked_arrays,max_size_of_chunk);
+  auto align_geos = arctern::AlignChunkedArray(chunked_arrays);
 
   for (int32_t i = 0; i < align_geos[0]->num_chunks(); ++i){
     auto binary_geo1_chunk = std::static_pointer_cast<arrow::BinaryArray>(align_geos[0]->chunk(i));
@@ -1065,6 +1054,24 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
+    if (ogr1->IsEmpty() && ogr2->IsEmpty()) {
+      CHECK_ARROW(builder.Append(false));
+    } else if (ogr1->Within(ogr2) && ogr2->Within(ogr1)) {
+      CHECK_ARROW(builder.Append(true));
+    } else {
+      CHECK_ARROW(builder.Append(false));
+    }
+  };
+  auto null_op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr1,
+                    OGRGeometry* ogr2) { CHECK_ARROW(builder.Append(false)); };
+  return BinaryOp1<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
 }
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(

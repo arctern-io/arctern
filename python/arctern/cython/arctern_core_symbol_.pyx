@@ -76,6 +76,9 @@ def ST_IsValid(object geometries):
 def ST_Equals(object left_geometries,object right_geometries):
     pass
 
+def ST_Equals1(object left_geometries,object right_geometries):
+    pass
+
 def ST_Touches(object left_geometries,object right_geometries):
     pass
 

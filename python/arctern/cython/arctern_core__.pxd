@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, int32_t)
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
@@ -46,6 +46,9 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     vector[shared_ptr[CArray]] ST_Equals(const vector[shared_ptr[CArray]] &left_geometries, \
                                          const vector[shared_ptr[CArray]] &right_geometries) except +
+
+    shared_ptr[CChunkedArray] ST_Equals1(const shared_ptr[CChunkedArray] &left_geometries, \
+                                         const shared_ptr[CChunkedArray] &right_geometries) except +
 
     vector[shared_ptr[CArray]] ST_Touches(const vector[shared_ptr[CArray]] &left_geometries, \
                                           const vector[shared_ptr[CArray]] &right_geometries) except +
