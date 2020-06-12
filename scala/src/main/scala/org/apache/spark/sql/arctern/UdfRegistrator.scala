@@ -34,5 +34,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Overlaps", ST_Overlaps)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Crosses", ST_Crosses)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Contains", ST_Contains)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Intersects", ST_Intersects)
   }
 }
