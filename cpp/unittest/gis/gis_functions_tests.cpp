@@ -3902,7 +3902,7 @@ TEST(geometry_test, test_st_symdifference) {
   OGR_G_ExportToWkb(geo1, OGRwkbByteOrder::wkbNDR, geo1_wkb);
   arrow::BinaryBuilder builder;
   std::shared_ptr<arrow::Array> geo1_array;
-  for (int32_t i = 0; i < 400000; i++) {
+  for (int32_t i = 0; i < 4; i++) {
     builder.Append(geo1_wkb,wkb_size);
   }
   builder.Finish(&geo1_array);
@@ -3911,7 +3911,7 @@ TEST(geometry_test, test_st_symdifference) {
   auto geo2_wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
   OGR_G_ExportToWkb(geo2, OGRwkbByteOrder::wkbNDR, geo2_wkb);
   std::shared_ptr<arrow::Array> geo2_array;
-  for (int32_t i = 0; i < 400000; i++) {
+  for (int32_t i = 0; i < 4; i++) {
     builder.Append(geo2_wkb,wkb_size);
   }
   builder.Finish(&geo2_array);
@@ -3936,7 +3936,7 @@ TEST(geometry_test, test_st_symdifference) {
       OGRGeometryFactory::createFromWkb(data_ptr.c_str(), nullptr, &geo);
       char* str;
       OGR_G_ExportToWkt(geo, &str);
-      assert(std::string(str) == "MULTILINESTRING ((5 0,6 0),(0 0,4 0))");
+      assert(std::string(str) == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))");
       OGRGeometryFactory::destroyGeometry(geo);
     }
   }

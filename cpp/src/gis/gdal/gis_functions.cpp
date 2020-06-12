@@ -387,25 +387,26 @@ BinaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
     T builder;
     arrow::ArrayVector result_arrays;
     bool is_null;
-    WkbItem geo1_wkb;
-    WkbItem geo2_wkb;
 
     for (int32_t i = 0; i < align_goes[0]->num_chunks(); i++) {
         auto binary_geo1_chunk = std::static_pointer_cast<arrow::BinaryArray>(align_goes[0]->chunk(i));
         auto binary_geo2_chunk = std::static_pointer_cast<arrow::BinaryArray>(align_goes[1]->chunk(i));
         for (int32_t j = 0; j < binary_geo1_chunk->length(); j++) {
-            arrow::BinaryArray::offset_type wkb_size;
-            WkbItem left;
-            left.data_ptr = binary_geo1_chunk->GetValue(j, &wkb_size);
-            left.wkb_size = wkb_size;
-            auto left_geo = left.ToGeometry();
-            WkbItem right;
-            right.data_ptr = binary_geo2_chunk->GetValue(j, &wkb_size);
-            right.wkb_size = wkb_size;
-            auto right_geo = right.ToGeometry();
-            op(builder,right_geo,left_geo);
-            OGRGeometryFactory::destroyGeometry(right_geo);
-            OGRGeometryFactory::destroyGeometry(left_geo);
+            auto ogr1 = Wrapper_createFromWkb(binary_geo1_chunk, j);
+            auto ogr2 = Wrapper_createFromWkb(binary_geo2_chunk, j);
+            if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+                builder.AppendNull();
+            } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+                if (null_op == nullptr) {
+                    builder.AppendNull();
+                } else {
+                    null_op(builder, ogr1, ogr2);
+                }
+            } else {
+                op(builder, ogr1, ogr2);
+            }
+            OGRGeometryFactory::destroyGeometry(ogr1);
+            OGRGeometryFactory::destroyGeometry(ogr2);
         }
         std::shared_ptr<arrow::Array> array;
         builder.Finish(&array);
@@ -908,7 +909,6 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
     };
 
     return BinaryOp1<arrow::BinaryBuilder>(geo1,geo2,op);
-
 //  arrow::BinaryBuilder builder;
 //
 //  for (int32_t i = 0; i < align_goes[0]->num_chunks(); i++) {
