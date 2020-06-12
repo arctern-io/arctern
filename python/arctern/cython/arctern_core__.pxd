@@ -50,6 +50,11 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CChunkedArray] ST_Equals1(const shared_ptr[CChunkedArray] &left_geometries, \
                                          const shared_ptr[CChunkedArray] &right_geometries) except +
 
+    shared_ptr[CChunkedArray] ST_Disjoint(const shared_ptr[CChunkedArray] &left_geometries, \
+                                         const shared_ptr[CChunkedArray] &right_geometries) except +
+
+    shared_ptr[CChunkedArray] ST_Boundary(const shared_ptr[CChunkedArray] &geometries) except +
+
     vector[shared_ptr[CArray]] ST_Touches(const vector[shared_ptr[CArray]] &left_geometries, \
                                           const vector[shared_ptr[CArray]] &right_geometries) except +
 

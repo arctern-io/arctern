@@ -275,6 +275,17 @@ std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
     const std::shared_ptr<arrow::ChunkedArray>& geometries_2){
   return gdal::ST_Equals1(geometries_1, geometries_2);
 }
+
+std::shared_ptr<arrow::ChunkedArray> ST_Disjoint(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_2){
+  return gdal::ST_Disjoint(geometries_1, geometries_2);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Boundary(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries){
+  return gdal::ST_Boundary(geometries);
+}
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2) {

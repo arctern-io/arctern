@@ -20,6 +20,8 @@ __all__ = [
     "ST_PrecisionReduce",
     "ST_Equals",
     "ST_Equals1",
+    "ST_Disjoint",
+    "ST_Boundary",
     "ST_Touches",
     "ST_Overlaps",
     "ST_Crosses",
@@ -437,7 +439,25 @@ def ST_Equals1(geo1, geo2):
     arr_geo1 = pa.chunked_array(arr_geo1)
     arr_geo2 = pa.chunked_array(arr_geo2)
     result = arctern_core_.ST_Equals1(arr_geo1, arr_geo2)
-    print(result.num_chunks)
+    return result.to_pandas()
+
+def ST_Disjoint(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    arr_geo1 = pa.chunked_array(arr_geo1)
+    arr_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Disjoint(arr_geo1, arr_geo2)
+    return result.to_pandas()
+
+def ST_Boundary(geo):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Boundary(arr_geo)
     return result.to_pandas()
 
 @arctern_udf('binary', 'binary')
