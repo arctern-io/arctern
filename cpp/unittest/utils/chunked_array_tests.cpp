@@ -18,8 +18,8 @@
 #include <arrow/testing/gtest_util.h>
 #include <gtest/gtest.h>
 
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <random>
 
 #include "utils/arrow_utils.h"
@@ -140,7 +140,7 @@ TEST(ChunkedArray, Large) {
     numA += sizeA;
     numB += sizeB;
     if (trunk == 1024 - 1) {
-      auto total_num = std::max(numA, numB);     
+      auto total_num = std::max(numA, numB);
       sizeA += total_num - numA;
       sizeB += total_num - numB;
     }
@@ -156,6 +156,7 @@ TEST(ChunkedArray, Large) {
   auto t1 = std::chrono::high_resolution_clock::now();
   auto t = std::chrono::duration<double>(t1 - t0);
   std::cout << "time elapse of Large Chunk is " << t.count() << std::endl;
+  EXPECT_LE(t.count(), 0.1);
 
   ASSERT_TRUE(ta->Equals(retrunked[0]));
   ASSERT_TRUE(tb->Equals(retrunked[1]));
