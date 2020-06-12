@@ -105,7 +105,10 @@ class GeoSeries(Series):
         The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
         Only supports SRID as a WKT representation of CRS by now, for example, ``"EPSG:4326"``.
     **kwargs :
-        Options to pass to the GeoSeries constructor, for example, ``copy``.
+        Parameters to pass to the GeoSeries constructor, for example, ``copy``.
+        ``copy`` is a boolean value, by default False.
+        * *True:* Copys input data.
+        * *False:* Points to input data.
 
     Examples
     -------
@@ -333,7 +336,7 @@ class GeoSeries(Series):
         -------
         GeoSeries or None
             * None if ``inplace=False``.
-            * Object with missing values filled if ``inplace=True``.
+            * A GeoSeries with missing values filled if ``inplace=True``.
 
         Examples
         -------
@@ -373,8 +376,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
-            * True: An element is a NA value, such as None.
-            * False: An element is a non-missing value.
+            * *True*: An element is a NA value, such as None.
+            * *False*: An element is a non-missing value.
 
         Examples
         -------
@@ -397,8 +400,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
-            * True: An element is a non-missing value.
-            * False: An element is a NA value, such as None.
+            * *True*: An element is a non-missing value.
+            * *False*: An element is a NA value, such as None.
 
         Examples
         -------
@@ -425,8 +428,9 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            * *True:* All geometries are valid.
-            * *False:* At least one geometry is invalid.
+        Mask of boolean values for each element in the GeoSeries that indicates whether an element is valid.
+            * *True:* The geometry is valid.
+            * *False:* The geometry is invalid.
 
         Examples
         -------
@@ -478,8 +482,9 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            * *True:* All geometries are simple.
-            * *False:* At least one geometry is not simple.
+            Mask of boolean values for each element in the GeoSeries that indicates whether an element is simple.
+            * *True:* The geometry is simple.
+            * *False:* The geometry is not simple.
 
         Examples
         -------
@@ -580,7 +585,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            Convex Geometry of each geometry in the GeoSeries.
+            Sequence of convex geometries.
 
         Examples
         -------
@@ -645,7 +650,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            Number of points for each geometry in the GeoSeries.
+            Number of points of each geometry in the GeoSeries.
 
         Examples
         -------
@@ -668,7 +673,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            Minimum bounding box for each geometry in the GeoSeries.
+            Minimum bounding box of each geometry in the GeoSeries.
 
         Examples
         -------
@@ -762,7 +767,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            Simplified geometries.
+            Sequence of simplified geometries.
 
         Examples
         -------
@@ -794,7 +799,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            GeoSeries that contains the new geometries at a distance of ``distance`` from the original.
+            Sequence of geometries.
 
         Examples
         -------
@@ -824,7 +829,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that stores geometries with reduced precision.
+            Sequence of geometries with reduced precision.
 
         Examples
         -------
@@ -846,7 +851,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries with valid geometries.
+            Sequence of valid geometries.
 
         Examples
         -------
@@ -888,7 +893,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            Minimum bounding box for the union of all geometries in the GeoSeries.
+            A GeoSeries that contains only one geometry, which is the minimum bounding box for the union of all geometries in the first GeoSeries.
 
         Examples
         -------
@@ -920,6 +925,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+            * *True*: The two geometries intersect each other.
+            * *False*: The two geometries do not intersect each other.
 
         Examples
         -------
@@ -955,6 +962,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it is within the geometries in ``other``.
+            * *True*: The first geometry is within the other.
+            * *False*: The first geometry is not within the other.
 
         Examples
         -------
@@ -983,6 +992,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it contains the geometries in ``other``.
+            * *True*: The first geometry contains the other.
+            * *False*: The first geometry does not contain the other.
 
         Examples
         -------
@@ -1013,6 +1024,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it crosses the geometries in ``other``.
+            * *True*: The first geometry crosses the other.
+            * *False*: The first geometry does not cross the other.
 
         Examples
         -------
@@ -1043,6 +1056,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it equals the geometries in ``other``.
+            * *True*: The first geometry equals the other.
+            * *False*: The first geometry does not equal the other.
 
         Examples
         -------
@@ -1083,6 +1098,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it touches the geometries in ``other``.
+            * *True*: The first geometry touches the other.
+            * *False*: The first geometry does not touch the other.
 
         Examples
         -------
@@ -1113,6 +1130,8 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it overlaps the geometries in ``other``.
+            * *True*: The first geometry overlaps the other.
+            * *False*: The first geometry does not overlap the other.
 
         Examples
         -------
@@ -1130,6 +1149,8 @@ class GeoSeries(Series):
         """
         For each geometry in the GeoSeries and the corresponding geometry given in ``other``, calculates the minimum 2D Cartesian (planar) distance between them.
 
+        Parameters
+        ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the distance between it and the geometries in the first GeoSeries.
             * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
@@ -1138,7 +1159,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains the distances between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            Distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         -------
@@ -1172,7 +1193,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains the spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            Spherical distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Notes
         -------
@@ -1207,7 +1228,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains the Hausdorff distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            Hausdorff distance between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         -------
@@ -1263,7 +1284,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains geometries in WKT format.
+            Sequence of geometries in WKT format.
 
         Examples
         -------
@@ -1285,7 +1306,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains geometries in WKB format.
+            Sequence of geometries in WKB format.
 
         Examples
         -------
@@ -1304,7 +1325,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            A Series that contains geometries in GeoJSON format.
+            Sequence of geometries in GeoJSON format.
 
         Examples
         -------
@@ -1351,7 +1372,7 @@ class GeoSeries(Series):
 
         ``min_x``, ``min_y``, ``max_x``, and ``max_y`` are Series so that polygons can be created in batch. The number of values in the four Series should be the same.
 
-        Suppose that the demension of ``min_x`` is *N*, the returned GeoSeries of this function should contains *N* rectangles. The shape and position of the *i*th rectangle is defined by its bottom left vertex *(min_x, min_y)* and top right vertex *(max_x, max_y)*.
+        Suppose that the demension of ``min_x`` is *N*, the returned GeoSeries of this function should contains *N* rectangles. The shape and position of the rectangle with index *i* is defined by its bottom left vertex *(min_x[i], min_y[i])* and top right vertex *(max_x[i], max_y[i])*.
 
         Parameters
         ----------
@@ -1370,7 +1391,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains rectangular POLYGON objects within the given spatial range.
+            Sequence of rectangular POLYGON objects within the given spatial range.
 
         Examples
         -------
@@ -1410,7 +1431,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains POINT objects.
+            Sequence of POINT objects.
 
         Examples
         -------
@@ -1444,7 +1465,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries contains geometries.
+            Sequence of geometries.
 
         Examples
         -------

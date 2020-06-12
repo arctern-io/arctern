@@ -242,73 +242,62 @@ def _plot_pandas_series(ax, geoms, **style_kwds):
 
 def plot_geometry(ax, geoms, **style_kwds):
     """
-    Plot a collection of geometries to `ax`. Parameters 'linewidth', 'linestyle', 'edgecolor',
-    'facecolor', 'color', 'marker', 'markersize' are used to describe the style of plotted figure.
+    Plots a collection of geometries.
 
-    For geometry types `Polygon` and `MultiPolygon`, only 'linewidth', 'linestyle', 'edgecolor',
-    'facecolor' are effective.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        The axes where geometries will be plotted.
+    geoms : Series or DataFrame
+        Sequence of geometries.
+    **style_kwds:
+        ``style_kwds`` specify the properties that describe the style of geometric graphs.
+        Here is a list of availble style properties:
 
-    For geometry types `Linestring` and `MultiLinestring`, only 'color', 'linewidth', 'linestyle' are effective.
+        +----------+------------------+-------+--------------------------------------------------+
+        |Property  |Description       |Default|Applied to                                        |
+        +==========|==================|=======+==================================================+
+        |color     |str, color        |'C0'   |Point, MultiPoint, Linestring, MultiLinestring    |
+        |edgecolor |str, edge color   |'black'|Polygon, MultiPolygon                             |
+        |facecolor |str, face color   |'C0'   |Polygon, MultiPolygon                             |
+        |linewidth |float, line width |1.0    |Linestring, MultiLinestring, Polygon, MultiPolygon|
+        |linestyle |str, line style   |'-'    |Linestring, MultiLinestring, Polygon, MultiPolygon|
+        |marker    |str, marker style |'o'    |Point, MultiPoint                                 |
+        |markersize|float, marker size|6.0    |Point, MultiPoint                                 |
+        |alpha     |float, opacity    |1.0    |All                                               |
+        +----------+------------------|-------+--------------------------------------------------+
 
-    For geometry types `Point` and `MultiPoint`, only 'color', 'marker', 'markersize' are effective.
+    Notes
+    -------
+    See `matplotlib.pyplot.plot document <https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html?highlight=plot#matplotlib.pyplot.plot>`_ for detailed description of marker styles, line styles, and colors.
 
-    :type ax: matplotlib.axes.Axes
-    :param ax: The axes where geometries will be plotted.
-
-    :type geoms: Series or DataFrame
-    :param geoms: sequence of geometries.
-
-    :type linewidth: list(float)
-    :param linewidth: The width of line, the default value is 1.0.
-
-    :type linestyle: list(string)
-    :param linestyle: The style of the line， the default value is '-'.
-
-    :type edgecolor: list(string)
-    :param edgecolor: The edge color of the geometry, the default value is 'black'.
-
-    :type facecolor: list(string)
-    :param facecolor: The color of the face of the geometry, the default value is 'C0'.
-
-    :type color: list(string)
-    :param color: The color of the geometry, the default value is 'C0'.
-
-    :type marker: string
-    :param marker: The shape of point, the default value is 'o'.
-
-    :type markersize: double
-    :param markersize: The size of points, the default value is 6.0.
-
-    :type alpha: double
-    :param alpha: The transparency of the geometry, the default value is 1.0.
-
-
-    :example:
-       >>> import pandas
-       >>> import matplotlib.pyplot as plt
-       >>> import arctern
-       >>> raw_data = []
-       >>> raw_data.append('point(0 0)')
-       >>> raw_data.append('linestring(0 10, 5 5, 10 0)')
-       >>> raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
-       >>> raw_data.append("GEOMETRYCOLLECTION("
-       ...                 "polygon((1 1,1 2,2 2,2 1,1 1)),"
-       ...                 "linestring(0 1, 5 6, 10 11),"
-       ...                 "POINT(4 7))")
-       >>> arr_wkt = pandas.Series(raw_data)
-       >>> arr_wkb = (arctern.GeoSeries(arr_wkt)).curve_to_line()
-       >>> df = pandas.DataFrame({'wkb':arr_wkb})
-       >>> fig, ax = plt.subplots()
-       >>> arctern.plot.plot_geometry(ax, df,
-       ...                            color=['orange', 'green', 'blue', 'red'],
-       ...                            marker='^',
-       ...                            markersize=100,
-       ...                            linewidth=[None, 7, 8, 5],
-       ...                            linestyle=[None, 'dashed', 'dashdot', None],
-       ...                            edgecolor=[None, None, 'red', None],
-       ...                            facecolor=[None, None, 'black', None])
-       >>> ax.grid()
-       >>> fig.savefig('/tmp/plot_test.png')
+    Examples
+    -------
+    >>> import pandas
+    >>> import matplotlib.pyplot as plt
+    >>> import arctern
+    >>> raw_data = []
+    >>> raw_data.append('point(0 0)')
+    >>> raw_data.append('linestring(0 10, 5 5, 10 0)')
+    >>> raw_data.append('polygon((2 2,2 3,3 3,3 2,2 2))')
+    >>> raw_data.append("GEOMETRYCOLLECTION("
+    ...                 "polygon((1 1,1 2,2 2,2 1,1 1)),"
+    ...                 "linestring(0 1, 5 6, 10 11),"
+    ...                 "POINT(4 7))")
+    >>> arr_wkt = pandas.Series(raw_data)
+    >>> arr_wkb = (arctern.GeoSeries(arr_wkt)).curve_to_line()
+    >>> df = pandas.DataFrame({'wkb':arr_wkb})
+    >>> fig, ax = plt.subplots()
+    >>> arctern.plot.plot_geometry(ax, df,
+    ...                            color=['orange', 'green', 'blue', 'red'],
+    ...                            marker='^',
+    ...                            markersize=100,
+    ...                            linewidth=[None, 7, 8, 5],
+    ...                            linestyle=[None, 'dashed', 'dashdot', None],
+    ...                            edgecolor=[None, None, 'red', None],
+    ...                            facecolor=[None, None, 'black', None])
+    >>> ax.grid()
+    >>> fig.savefig('/tmp/plot_test.png')
     """
     import pandas.core.series
     if isinstance(geoms, pandas.core.series.Series):

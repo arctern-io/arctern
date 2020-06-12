@@ -1268,29 +1268,34 @@ def ST_CurveToLine(geos):
 
 def within_which(left, right):
     """
-    For each geometry in left, search geometries that satisfy "within" relationship in right
+    For each geometry in ``left``, search for a geometry in ``right`` that contains it.
 
-    :type left: GeoSeries
-    :param left: Sequence of Geometries
+    Parameters
+    ----------
+    left : GeoSeries
+        Sequence of geometries.
+    right : GeoSeries
+        Sequence of geometries.
 
-    :type right: GeoSeries
-    :param right: Sequence of Geometries
+    Returns
+    -------
+    Series
+        The indexes of geometries in ``right``.
+        For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
+        * When there are multiple candidates, return one of them.
+        * When there is no candidate, return NA.
 
-    :rtype: Series(dtype: object)
-    :return: For each `left[i]`, find `j` satisfying that `left[i]` is within `right[j]`.
-             When there are multiple candidates, return one of them.
-             When not exists, return `pandas.NA`
-
-    :example:
-      >>> from arctern import *
-      >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-      >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
-      >>> res = within_which(data1, data2)
-      >>> print(res)
-          0    1
-          1    <NA>
-          2    0
-          dtype: object
+    Examples
+    -------
+    >>> from arctern import *
+    >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
+    >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
+    >>> res = within_which(data1, data2)
+    >>> print(res)
+        0    1
+        1    <NA>
+        2    0
+        dtype: object
     """
     import pyarrow as pa
     import pandas
@@ -1599,19 +1604,19 @@ def fishnet_map_layer(vega, points, weights, transform=True):
 
 def nearest_location_on_road(roads, points):
     """
-    Compute the location on roads closest to each point in points, The points passed do not need to be part of a continuous path.
+    Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
 
     Parameters
     ----------
     roads : Series
-        LineStrings in WKB form.
+        LINGSTRING objects in WKB format.
     points : Series
-        Points in WKB form.
+        POINT objects in WKB format.
 
     Returns
     -------
     Series
-        Points in WKB form.
+        A POINT object in WKB format.
 
     Examples
     -------
@@ -1635,25 +1640,29 @@ def nearest_location_on_road(roads, points):
 
 def nearest_road(roads, points,):
     """
-    Compute the closest road for each point in points, The points passed do not need to be part of a continuous path.
+    Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
 
-    :type roads: Series(dtype: object)
-    :param roads: LineStrings in WKB form.
+    Parameters
+    ----------
+    roads : Series
+        LINGSTRING objects in WKB format.
+    points : Series
+        POINT objects in WKB format.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form.
+    Returns
+    -------
+    Series
+        A LINGSTRING object in WKB format.
 
-    :rtype: Series(dtype: object)
-    :return: Points in WKB form.
-
-    :example:
-      >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-      >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
-      >>> rst
-          0    LINESTRING (1 2,1 3)
-          dtype: object
+    Examples
+    -------
+    >>> import arctern
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+    >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
+    >>> rst
+        0    LINESTRING (1 2,1 3)
+        dtype: object
     """
     import pyarrow as pa
     arr_roads = pa.array(roads, type='binary')
@@ -1667,22 +1676,27 @@ def nearest_road(roads, points,):
 
 def near_road(roads, points, distance=100):
     """
-    Check if there is a road within distance meters of each point. The points passed do not need to be part of a continuous path.
+    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
 
-    :type roads: Series(dtype: object)
-    :param roads: LineStrings in WKB form.
+    Parameters
+    ----------
+    roads : Series
+        LINGSTRING objects in WKB format.
+    points : Series
+        POINT objects in WKB format.
+    distance : double, optional
+        Searching distance around the points, by default 100.
 
-    :type points: Series(dtype: object)
-    :param points: Points in WKB form.
+    Returns
+    -------
+    Series
+        A Series that contains only one boolean value that indicates whether there is a road within the given ``distance`` of all ``points``.
+        * *True*: The road exists.
+        * *False*: The road does not exist.
 
-    :type distance: double
-    :param distance: distance meters around the point in points
-
-    :rtype: Series(dtype: bool)
-    :return: True if there is a road within 100 meters of the point.
-
-    :example:
-      >>> import arctern
+    Examples
+    -------
+    >>> import arctern
       >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
       >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
       >>> rst = arctern.near_road(data1, data2)
