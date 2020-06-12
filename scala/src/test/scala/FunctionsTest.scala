@@ -855,4 +855,46 @@ class FunctionsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_Crosses") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 80 80)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(GeometryUDT.FromWkt("POLYGON ((40 40, 80 40, 80 80, 40 80, 40 40))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"))
+    )
+
+    val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Crosses(left_geo, right_geo) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_Crosses-Null") {
+    val data = Seq(
+      Row(null, "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
+      Row("POINT (50 50)", null),
+      Row(null, null),
+      Row("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))", "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")
+    )
+
+    val schema = StructType(Array(StructField("left_geo", StringType, nullable = true), StructField("right_geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Crosses(ST_GeomFromText(left_geo), ST_GeomFromText(right_geo)) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show(false)
+  }
 }
