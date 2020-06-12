@@ -191,7 +191,7 @@ case class ST_IsValid(inputsExpr: Seq[Expression])extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.operation.valid.IsValidOp($geo).isValid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo != null && new org.locationtech.jts.operation.valid.IsValidOp($geo).isValid()")
 
   override def dataType: DataType = BooleanType
 
