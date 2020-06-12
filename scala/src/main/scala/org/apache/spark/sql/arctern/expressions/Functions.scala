@@ -442,3 +442,15 @@ case class ST_Equals(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def dataType: DataType = BooleanType
 }
+
+case class ST_Touches(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+  assert(inputsExpr.length == 2)
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.touches($right)")
+
+  override def dataType: DataType = BooleanType
+}
