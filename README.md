@@ -8,20 +8,20 @@
 
 Arctern is a fast scalable spatial-temporal analytics framework. 
 
-Scalability is key to building productive data science pipelines. To address the scalability challenge, we launched Arctern, an open source spatial-temporal analytic framework for boosting end-to-end data science performance. Arctern aims to improve scalability from two aspects: 
+Scalability is key to building productive data science pipelines. To address the scalability challenge, we launched Arctern, an open-source spatial-temporal analytic framework for boosting end-to-end data science performance. Arctern aims to improve scalability from two aspects: 
 
 * Unified data analytic and processing interface across different platforms, from laptops to clusters and cloud.
-* Rich and consistent algorithms and models, including trajectory processing, spatial clustering and regression, etc., across different data science pipeline stages.
+* Rich and consistent algorithms and models, including trajectory processing, spatial clustering, and regression, etc., across different data science pipeline stages.
 
 ## Arctern's approach and current progress
 
 We adopt GeoPandas‘s interface and plan to build the GeoDataFrame/GeoSeries that scale both up and out. On top of GeoDataFrame/GeoSeries, we will develop a consistent spatial-temporal algorithm set across execution environments.
 
-We have now developed an efficient multi-thread GeoSeries implementation, and the distributed version is in progress. In the latest version 0.2.0, Arctern achieves 24x speed up against GeoPandas. Even under single-thread execution, Arctern outperforms GeoPandas 7x on average. The detailed evaluation results are illustrated in the figure below.
+We have now developed an efficient multi-thread GeoSeries implementation, and the distributed version is in progress. In the latest version 0.2.0, Arctern achieves 24x speedup against GeoPandas. Even under single-thread execution, Arctern outperforms GeoPandas 7x on average. The detailed evaluation results are illustrated in the figure below.
 
 <img src="./doc/img/v0.2.0_intro/performance_geopandas_vs_arctern.png" width = "700">
 
-We are also conducting experimental GPU acceleration for spatial-temporal data analysis and rendering. By now Arctern provides six GPU-accelerated rendering methods and eight spatial-relation operations, which outperform their CPU-based counterparts with up to 36x speed up.
+We are also conducting experimental GPU acceleration for spatial-temporal data analysis and rendering. By now Arctern provides six GPU-accelerated rendering methods and eight spatial-relation operations, which outperform their CPU-based counterparts with up to 36x speedup.
 
 In the next few releases, our team will focus on:
 
