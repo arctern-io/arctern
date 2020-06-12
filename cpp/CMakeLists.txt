@@ -129,6 +129,8 @@ endif()
 #message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+
 # EnARCTERNhat a default make is set
 if ("${MAKE}" STREQUAL "")
     if (NOT MSVC)

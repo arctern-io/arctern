@@ -171,5 +171,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
 
 std::string GIS_Version();
 
+void set_parallelism(int parallelism);
+int get_parallelism();
+
 }  // namespace gis
 }  // namespace arctern

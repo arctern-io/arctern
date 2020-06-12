@@ -18,6 +18,7 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+#include <omp.h>
 
 #include <functional>
 #include <iomanip>
@@ -37,6 +38,13 @@
 namespace arctern {
 namespace gis {
 namespace gdal {
+
+constexpr int chunk_ratio = 10;
+constexpr int parallel_threshold =
+    10000;  // won't spawn multi threads unless number of lines exceed parallel_threshold.
+
+static int omp_parallelism = 0;
+static int num_of_procs = 0;
 
 // inline void* Wrapper_OGR_G_Centroid(void* geo) {
 //   void* centroid = new OGRPoint();
@@ -378,20 +386,30 @@ BinaryOp1(
     std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
     std::function<std::shared_ptr<typename arrow::Array>(T&, OGRGeometry*, OGRGeometry*)>
         null_op = nullptr) {
-  std::vector<ChunkedArrayPtr> chunked_arrays;
-  chunked_arrays.push_back(geo1);
-  chunked_arrays.push_back(geo2);
 
-  auto align_goes = arctern::AlignChunkedArray(chunked_arrays);
-  T builder;
-  arrow::ArrayVector result_arrays;
-  bool is_null;
+  auto total_lines = geo1->length();
+  int parallelism = total_lines >= parallel_threshold ? get_parallelism(): 1;
+  int expect_num_chunks = parallelism == 1 ? 1 : parallelism * chunk_ratio;
 
-  for (int32_t i = 0; i < align_goes[0]->num_chunks(); i++) {
+  std::size_t max_chunk_size = total_lines / expect_num_chunks;
+
+  std::vector<ChunkedArrayPtr> chunked_arrays{geo1, geo2};
+  auto align_goes = arctern::AlignChunkedArray(chunked_arrays, max_chunk_size);
+
+  int32_t num_chunks = align_goes[0]->num_chunks();
+
+  arrow::ArrayVector result_arrays(num_chunks);
+
+  omp_set_num_threads(parallelism);
+  omp_set_dynamic(0);
+  #pragma omp parallel for num_threads(parallelism)
+  for (int32_t i = 0; i < num_chunks; i++) {
+    T builder;
     auto binary_geo1_chunk =
         std::static_pointer_cast<arrow::BinaryArray>(align_goes[0]->chunk(i));
     auto binary_geo2_chunk =
         std::static_pointer_cast<arrow::BinaryArray>(align_goes[1]->chunk(i));
+
     for (int32_t j = 0; j < binary_geo1_chunk->length(); j++) {
       auto ogr1 = Wrapper_createFromWkb(binary_geo1_chunk, j);
       auto ogr2 = Wrapper_createFromWkb(binary_geo2_chunk, j);
@@ -409,9 +427,9 @@ BinaryOp1(
       OGRGeometryFactory::destroyGeometry(ogr1);
       OGRGeometryFactory::destroyGeometry(ogr2);
     }
+
     std::shared_ptr<arrow::Array> array;
-    builder.Finish(&array);
-    result_arrays.push_back(array);
+    builder.Finish(&result_arrays[i]);
   }
 
   return std::make_shared<arrow::ChunkedArray>(result_arrays);
@@ -1366,6 +1384,22 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   std::shared_ptr<arrow::Array> results;
   CHECK_ARROW(builder.Finish(&results));
   return results;
+}
+
+void set_parallelism(int parallelism) {
+  if (parallelism >= 0) {
+    omp_parallelism = parallelism;
+  }
+}
+
+int get_parallelism() {
+  if (omp_parallelism) {
+    return omp_parallelism;
+  }
+  if (0 == num_of_procs) {
+    num_of_procs = omp_get_num_procs();
+  }
+  return num_of_procs;
 }
 
 }  // namespace gdal
