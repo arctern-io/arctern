@@ -21,5 +21,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_NPoints", ST_NPoints)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Envelope", ST_Envelope)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Buffer", ST_Buffer)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PrecisionReduce", ST_PrecisionReduce)
   }
 }

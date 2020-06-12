@@ -382,4 +382,48 @@ class FunctionsTest extends AdapterTest {
 
     rst.show()
   }
+
+  test("ST_PrecisionReduce") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32435, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0.12 0.12, 10.234 10.456, 20.1 20.5566)")),
+      Row(GeometryUDT.FromWkt("POINT (0.12345 0.346577)")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0.1234 0.1234, 1.1234 0.1234, 1.1234 1.1234,0.1234 0.1234)) )"))
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_PrecisionReduce(geo, 2) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_PrecisionReduce-Null") {
+    val data = Seq(
+      Row("error geo"),
+      Row("LINESTRING (0.12 0.12, 10.234 10.456, 20.1 20.5566)"),
+      Row(null),
+      Row("POLYGON ((1 2,3 4,5 6,1 2))"),
+      Row("MULTIPOLYGON ( ((0.1234 0.1234, 1.1234 0.1234, 1.1234 1.1234,0.1234 0.1234)) )"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_PrecisionReduce(ST_GeomFromText(geo), 2) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show(false)
+  }
 }

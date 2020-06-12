@@ -335,3 +335,16 @@ case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_BinaryOpWithConst {
   override def dataType: DataType = new GeometryUDT
 
 }
+
+case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_BinaryOpWithConst {
+  assert(inputsExpr.length == 2)
+
+  override def geoExpr: Expression = inputsExpr.head
+
+  override def constExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (geo, const) => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel($const))")
+
+  override def dataType: DataType = new GeometryUDT
+
+}
