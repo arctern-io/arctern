@@ -79,18 +79,18 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
       xGen.code + ctx.nullSafeExec(xExpr.nullable, xGen.isNull) {
         yGen.code + ctx.nullSafeExec(yExpr.nullable, yGen.isNull) {
           s"""
-             |${ev.value}_point = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
-             |if (${ev.value}_point != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_point")}
+             |${ev.value}_geo = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
+             |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
           """.stripMargin
         }
       }
 
     ev.copy(code =
       code"""
-          org.locationtech.jts.geom.Point ${ev.value}_point = null;
+          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_point == null);
+          boolean ${ev.isNull} = (${ev.value}_geo == null);
           """)
   }
 
@@ -138,8 +138,8 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
                  |coordinates[2] = ${coordinateCode(maxXGen, maxYGen)}
                  |coordinates[3] = ${coordinateCode(maxXGen, minYGen)}
                  |coordinates[4] = coordinates[0];
-                 |${ev.value}_polygon = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
-                 |if (${ev.value}_polygon != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_polygon")}
+                 |${ev.value}_geo = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
+                 |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
               """.stripMargin
             }
           }
@@ -148,10 +148,10 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
 
     ev.copy(code =
       code"""
-          org.locationtech.jts.geom.Polygon ${ev.value}_polygon = null;
+          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_polygon == null);
+          boolean ${ev.isNull} = (${ev.value}_geo == null);
           """)
   }
 
