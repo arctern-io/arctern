@@ -384,3 +384,14 @@ case class ST_ConvexHull(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def dataType: DataType = new GeometryUDT
 
 }
+
+case class ST_Area(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getArea()")
+
+  override def dataType: DataType = DoubleType
+
+}
