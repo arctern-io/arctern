@@ -26,7 +26,7 @@
 namespace arctern {
 // by default, the max_rows_limit is up to 8 millions
 std::vector<ChunkedArrayPtr> AlignChunkedArray(
-    const arrow::ChunkedArrayVector& chunked_arrays,
+    const std::vector<ChunkedArrayPtr>& chunked_arrays,
     size_t max_rows_limit = 8 * 1024 * 1024);
 
 }  // namespace arctern
