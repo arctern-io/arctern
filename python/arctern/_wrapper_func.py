@@ -1272,9 +1272,9 @@ def ST_SymDifference(geo1, geo2):
     arr_geo2 = pa.array(geo2, type='binary')
     arr_geo1 = _to_arrow_array_list(arr_geo1)
     arr_geo2 = _to_arrow_array_list(arr_geo2)
-    arr_geo1 = pa.ChunkedArray(arr_geo1)
-    arr_geo2 = pa.ChunkedArray(arr_geo2)
-    result = arctern_core_.ST_SymDifference(arr_geo1, arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_SymDifference(chunked_array_geo1, chunked_array_geo2)
     return result.to_pandas()
 
 
