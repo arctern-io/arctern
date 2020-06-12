@@ -1187,7 +1187,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
-            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
+            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" by default.
             * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
