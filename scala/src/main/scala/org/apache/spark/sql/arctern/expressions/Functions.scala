@@ -406,3 +406,15 @@ case class ST_Length(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def dataType: DataType = DoubleType
 
 }
+
+case class ST_HausdorffDistance(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+  assert(inputsExpr.length == 2)
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance.distance($left, $right)")
+
+  override def dataType: DataType = DoubleType
+}

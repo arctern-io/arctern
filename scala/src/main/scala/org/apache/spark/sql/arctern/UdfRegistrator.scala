@@ -27,5 +27,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_ConvexHull", ST_ConvexHull)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Area", ST_Area)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Length", ST_Length)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_HausdorffDistance", ST_HausdorffDistance)
   }
 }
