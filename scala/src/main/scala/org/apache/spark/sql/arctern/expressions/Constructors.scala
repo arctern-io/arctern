@@ -201,7 +201,7 @@ case class ST_AsText(inputsExpr: Seq[Expression])extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.unsafe.types.UTF8String.fromString(${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt($geo));")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"${GeometryUDT.getClass.getName.dropRight(1)}.ToWkt($geo)"))
 
   override def dataType: DataType = StringType
 
@@ -212,7 +212,7 @@ case class ST_AsGeoJSON(inputsExpr: Seq[Expression])extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.unsafe.types.UTF8String.fromString(new org.wololo.jts2geojson.GeoJSONWriter().write($geo).toString());")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => CodeGenUtil.utf8StringFromStringCode(s"new org.wololo.jts2geojson.GeoJSONWriter().write($geo).toString()"))
 
   override def dataType: DataType = StringType
 
