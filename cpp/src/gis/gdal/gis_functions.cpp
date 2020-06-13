@@ -422,14 +422,12 @@ UnaryOp(const std::shared_ptr<arrow::Array>& array,
 template <typename T>
 typename std::enable_if<std::is_base_of<arrow::ArrayBuilder, T>::value,
                         std::shared_ptr<typename arrow::ChunkedArray>>::type
-BinaryOp1(
-    const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
-    const std::shared_ptr<typename arrow::ChunkedArray>& geo2,
-    std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
-    std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
-
+BinaryOp1(const std::shared_ptr<typename arrow::ChunkedArray>& geo1,
+          const std::shared_ptr<typename arrow::ChunkedArray>& geo2,
+          std::function<void(T&, OGRGeometry*, OGRGeometry*)> op,
+          std::function<void(T&, OGRGeometry*, OGRGeometry*)> null_op = nullptr) {
   auto total_lines = geo1->length();
-  int parallelism = total_lines >= parallel_threshold ? get_parallelism(): 1;
+  int parallelism = total_lines >= parallel_threshold ? get_parallelism() : 1;
   int expect_num_chunks = parallelism == 1 ? 1 : parallelism * chunk_ratio;
 
   std::size_t max_chunk_size = total_lines / expect_num_chunks;
@@ -443,7 +441,7 @@ BinaryOp1(
 
   omp_set_num_threads(parallelism);
   omp_set_dynamic(0);
-  #pragma omp parallel for num_threads(parallelism)
+#pragma omp parallel for num_threads(parallelism)
   for (int32_t i = 0; i < num_chunks; i++) {
     T builder;
     auto binary_geo1_chunk =
