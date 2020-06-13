@@ -70,7 +70,7 @@ class ChunkedArrayAligner {
       last_arr_offset += slice_length;
       result.push_back(std::move(slice));
     }
-    return std::make_shared<arrow::ChunkedArray>(result);
+    return std::make_shared<arrow::ChunkedArray>(result, chunked_array->type());
   }
   int size() { return arr_indexes_.size(); }
 
@@ -83,7 +83,7 @@ class ChunkedArrayAligner {
 // by default, the max_rows_limit is up to 8 million
 std::vector<ChunkedArrayPtr> AlignChunkedArray(
     const std::vector<ChunkedArrayPtr>& chunked_arrays, size_t max_rows_limit) {
-  //
+  assert(max_rows_limit >= 1);
   ChunkedArrayAligner aligner(max_rows_limit);
   for (auto& chunked_array : chunked_arrays) {
     aligner.Register(chunked_array);
