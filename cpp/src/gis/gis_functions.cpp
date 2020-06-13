@@ -386,13 +386,9 @@ std::string GIS_Version() {
   return info;
 }
 
-void set_parallelism(int parallelism){
-    gdal::set_parallelism(parallelism);
-}
+void set_parallelism(int parallelism) { gdal::set_parallelism(parallelism); }
 
-int get_parallelism(){
-  return gdal::get_parallelism();
-}
+int get_parallelism() { return gdal::get_parallelism(); }
 
 }  // namespace gis
 }  // namespace arctern
