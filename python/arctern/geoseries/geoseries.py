@@ -103,10 +103,11 @@ class GeoSeries(Series):
         The name to give to the GeoSeries.
     crs : str, optional
         The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
-        Only supports SRID as a WKT representation of CRS by now, for example, ``"EPSG:4326"``.
+        Only supports SRID as a WKT representation of CRS by now, for example, "EPSG:4326".
     **kwargs :
         Parameters to pass to the GeoSeries constructor, for example, ``copy``.
         ``copy`` is a boolean value, by default False.
+
         * *True:* Copys input data.
         * *False:* Points to input data.
 
@@ -171,7 +172,7 @@ class GeoSeries(Series):
         ----------
         crs : str
             A string representation of CRS.
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Notes
         -------
@@ -216,7 +217,7 @@ class GeoSeries(Series):
         ----------
         crs : str
             A string representation of CRS.
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Examples
         -------
@@ -308,29 +309,25 @@ class GeoSeries(Series):
         ----------
         value :
             Value to use to fill holes. This value should be the representation of a geometry in WKT or WKB format. For exmaple, "POINT (1 1)".
-        method : {'backfill', 'bfill', 'pad', 'ffill', None}, by default None
-            Method to use for filling holes in reindexed Series.
+        method : {'backfill', 'bfill', 'pad', 'ffill', None}
+            Method to use for filling holes in reindexed Series, by default None.
+
             * *pad/ffill:* Propagates the last valid observation forward to fill gap.
             * *backfill/bfill:* Propagates the next valid observation backward to fill gap.
         axis : {0 or 'index'}
             Axis along which to fill missing values.
-        inplace : bool, by default False
+        inplace : bool, optional
+            Whether to fill NA values in-place, by default False
 
-            * *True:* Fills NA values in-place.
-                **Note:** This will modify any other views on this object.
+            * *True:* Fills NA values in-place. This will modify any other views on this object.
             * *False:* Create a new GeoSeries object, and then fill NA values in it.
+        limit : int, optional
+            Limited number of NA values to be filled, by default None It must be greater than 0 if not None.
 
-        limit : int, by default None
-            * If ``method`` is specified, this is the maximum number of consecutive
-            NA values to forward/backward fill. In other words, if there is
-            a gap with more than this number of consecutive NAs, it will only
-            be partially filled.
+            * If ``method`` is specified, this is the maximum number of consecutive NA values to forward/backward fill. In other words, if there is a gap with more than this number of consecutive NAs, it will only be partially filled.
             * If ``method`` is not specified, this is the maximum number of entries along the entire axis where NaNs will be filled.
-            **Note:** It must be greater than 0 if not None.
-        downcast : dict, by default None
-            A dict of item->dtype of what to downcast if possible,
-            or the string 'infer' which will try to downcast to an appropriate
-            equal type (for example, float64 to int64 if possible).
+        downcast : dict, optional
+            A dict of item->dtype of what to downcast if possible, or the string 'infer' which will try to downcast to an appropriate equal type (for example, float64 to int64 if possible). By default None.
 
         Returns
         -------
@@ -376,6 +373,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is an NA value.
+
             * *True*: An element is a NA value, such as None.
             * *False*: An element is a non-missing value.
 
@@ -400,6 +398,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
+
             * *True*: An element is a non-missing value.
             * *False*: An element is a NA value, such as None.
 
@@ -428,7 +427,8 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-        Mask of boolean values for each element in the GeoSeries that indicates whether an element is valid.
+            Mask of boolean values for each element in the GeoSeries that indicates whether an element is valid.
+
             * *True:* The geometry is valid.
             * *False:* The geometry is invalid.
 
@@ -483,6 +483,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether an element is simple.
+
             * *True:* The geometry is simple.
             * *False:* The geometry is not simple.
 
@@ -573,10 +574,6 @@ class GeoSeries(Series):
     def convex_hull(self):
         """
         For each geometry in the GeoSeries, returns the smallest convex geometry that encloses it.
-
-        * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
-        * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
-        * For a point or line, the returned geometry is the same as the original.
 
         * For a polygon, the returned geometry is the smallest convex geometry that encloses it.
         * For a geometry collection, the returned geometry is the smallest convex geometry that encloses all geometries in the collection.
@@ -724,7 +721,7 @@ class GeoSeries(Series):
         ----------
         crs : str
             A string representation of CRS.
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Returns
         -------
@@ -918,6 +915,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether it is intersected with the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -925,6 +923,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+
             * *True*: The two geometries intersect each other.
             * *False*: The two geometries do not intersect each other.
 
@@ -955,6 +954,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether the geometries in the first GeoSeries is within it.
+
             * If ``other`` is a geometry, this function tests the "within" relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the "within" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -985,6 +985,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether the geometries in the first GeoSeries contains it.
+
             * If ``other`` is a geometry, this function tests the "contain" relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the "contain" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -992,6 +993,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it contains the geometries in ``other``.
+
             * *True*: The first geometry contains the other.
             * *False*: The first geometry does not contain the other.
 
@@ -1017,6 +1019,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether it crosses the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function tests the "cross" relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the "cross" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1024,6 +1027,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it crosses the geometries in ``other``.
+
             * *True*: The first geometry crosses the other.
             * *False*: The first geometry does not cross the other.
 
@@ -1049,6 +1053,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether it equals the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function tests the equivalence relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the equivalence relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1056,6 +1061,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it equals the geometries in ``other``.
+
             * *True*: The first geometry equals the other.
             * *False*: The first geometry does not equal the other.
 
@@ -1091,6 +1097,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether it touches the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function tests the "touch" relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the "touch" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1098,6 +1105,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it touches the geometries in ``other``.
+
             * *True*: The first geometry touches the other.
             * *False*: The first geometry does not touch the other.
 
@@ -1123,6 +1131,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to test whether it overlaps the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function tests the "overlap" relation between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function tests the "overlap" relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1130,6 +1139,7 @@ class GeoSeries(Series):
         -------
         Series
             Mask of boolean values for each element in the GeoSeries that indicates whether it overlaps the geometries in ``other``.
+
             * *True*: The first geometry overlaps the other.
             * *False*: The first geometry does not overlap the other.
 
@@ -1153,6 +1163,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the distance between it and the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function calculates the distance between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function calculates the distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1187,6 +1198,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
             * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1222,6 +1234,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the Hausdorff distance between it and the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function calculates the Hausdorff distance between each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function calculates the Hausdorff distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1254,6 +1267,7 @@ class GeoSeries(Series):
         ----------
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the intersection of it and the geometries in the first GeoSeries.
+
             * If ``other`` is a geometry, this function calculates the intersection of each geometry in the GeoSeries and ``other``.
             * If ``other`` is a GeoSeries, this function calculates the intersection of each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
@@ -1386,7 +1400,7 @@ class GeoSeries(Series):
             The maximum y coordinates of the rectangles.
         crs : str, optional
             A string representation of Coordinate Reference System (CRS).
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Returns
         -------
@@ -1414,9 +1428,9 @@ class GeoSeries(Series):
         """
         Constructs POINT objects based on the given coordinates.
 
-        ``x``and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
+        ``x`` and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
 
-        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y)*.
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y).*
 
         Parameters
         ----------
@@ -1426,7 +1440,7 @@ class GeoSeries(Series):
             Y coordinates of points.
         crs : str, optional
             A string representation of Coordinate Reference System (CRS).
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Returns
         -------
@@ -1460,7 +1474,7 @@ class GeoSeries(Series):
             String representations of geometries in JSON format.
         crs : str, optional
             A string representation of Coordinate Reference System (CRS).
-            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, ``"EPSG:4326"``.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
 
         Returns
         -------

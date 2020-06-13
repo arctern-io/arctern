@@ -252,20 +252,28 @@ def plot_geometry(ax, geoms, **style_kwds):
         Sequence of geometries.
     **style_kwds:
         ``style_kwds`` specify the properties that describe the style of geometric graphs.
+        
         Here is a list of availble style properties:
 
         +----------+------------------+-------+--------------------------------------------------+
         |Property  |Description       |Default|Applied to                                        |
-        +==========|==================|=======+==================================================+
+        +==========+==================+=======+==================================================+
         |color     |str, color        |'C0'   |Point, MultiPoint, Linestring, MultiLinestring    |
+        +----------+------------------+-------+--------------------------------------------------+
         |edgecolor |str, edge color   |'black'|Polygon, MultiPolygon                             |
+        +----------+------------------+-------+--------------------------------------------------+
         |facecolor |str, face color   |'C0'   |Polygon, MultiPolygon                             |
+        +----------+------------------+-------+--------------------------------------------------+
         |linewidth |float, line width |1.0    |Linestring, MultiLinestring, Polygon, MultiPolygon|
+        +----------+------------------+-------+--------------------------------------------------+
         |linestyle |str, line style   |'-'    |Linestring, MultiLinestring, Polygon, MultiPolygon|
+        +----------+------------------+-------+--------------------------------------------------+
         |marker    |str, marker style |'o'    |Point, MultiPoint                                 |
+        +----------+------------------+-------+--------------------------------------------------+
         |markersize|float, marker size|6.0    |Point, MultiPoint                                 |
+        +----------+------------------+-------+--------------------------------------------------+
         |alpha     |float, opacity    |1.0    |All                                               |
-        +----------+------------------|-------+--------------------------------------------------+
+        +----------+------------------+-------+--------------------------------------------------+
 
     Notes
     -------
