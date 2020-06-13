@@ -317,12 +317,12 @@ class GeoSeries(Series):
         axis : {0 or 'index'}
             Axis along which to fill missing values.
         inplace : bool, optional
-            Whether to fill NA values in-place, by default False
+            Whether to fill NA values in-place, by default False.
 
             * *True:* Fills NA values in-place. This will modify any other views on this object.
             * *False:* Create a new GeoSeries object, and then fill NA values in it.
         limit : int, optional
-            Limited number of NA values to be filled, by default None It must be greater than 0 if not None.
+            Limited number of NA values to be filled, by default None. It must be greater than 0 if not None.
 
             * If ``method`` is specified, this is the maximum number of consecutive NA values to forward/backward fill. In other words, if there is a gap with more than this number of consecutive NAs, it will only be partially filled.
             * If ``method`` is not specified, this is the maximum number of entries along the entire axis where NaNs will be filled.
@@ -1314,7 +1314,7 @@ class GeoSeries(Series):
         return _property_op(arctern.ST_AsText, self)
 
     def to_wkb(self):
-        """
+        r"""
         Transforms all geometries in the GeoSeries to `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ strings.
 
         Returns
