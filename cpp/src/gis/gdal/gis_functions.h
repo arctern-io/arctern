@@ -175,7 +175,6 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries);
 
-
 /*************************** MISC FUNCTIONS *******************************/
 
 void set_parallelism(int parallelism);
