@@ -1413,7 +1413,7 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> min_x = Series([0.0, 1.0])
         >>> max_x = Series([2.0, 1.5])
-        >>> min_y = Series([0.0, 1.0])  
+        >>> min_y = Series([0.0, 1.0])
         >>> max_y = Series([1.0, 1.5])
         >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
         0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
