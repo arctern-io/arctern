@@ -76,6 +76,9 @@ std::shared_ptr<arrow::Array> ST_IsSimple(
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t num_dot);
 
+std::shared_ptr<arrow::Array> ST_Translate(
+    const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y);
+
 std::shared_ptr<arrow::Array> ST_GeometryType(
     const std::shared_ptr<arrow::Array>& geometries);
 

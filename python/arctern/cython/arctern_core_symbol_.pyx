@@ -106,6 +106,9 @@ def ST_MakeValid(object geometries):
 def ST_PrecisionReduce(object geometries,int num_dat):
     pass
 
+def ST_Translate(object geometries, double shifter_x, double shifter_y):
+    pass
+
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     pass
 

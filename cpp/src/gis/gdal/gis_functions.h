@@ -77,6 +77,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Buffer(
 std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t precision);
 
+std::shared_ptr<arrow::Array> ST_Translate(
+    const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y);
+
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);

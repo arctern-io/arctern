@@ -125,6 +125,13 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo) {
   geo->setY(coordinate_precision_reduce(coordinate_y));
 }
 
+void TranslateVisitor::visit(OGRPoint* geo){
+  double coordinate_x = geo->getX();
+  double coordinate_y = geo->getY();
+  geo->setX(coordinate_x + shifter_x);
+  geo->setY(coordinate_y + shifter_y);
+}
+
 }  // namespace gdal
 }  // namespace gis
 }  // namespace arctern
