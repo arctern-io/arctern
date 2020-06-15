@@ -36,5 +36,8 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Contains", ST_Contains)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Intersects", ST_Intersects)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_DistanceSphere", ST_DistanceSphere)
+    // Register aggregate function UDFs
+    spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
+    spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
   }
 }
