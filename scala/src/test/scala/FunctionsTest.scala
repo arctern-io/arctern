@@ -981,4 +981,46 @@ class FunctionsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_DistanceSphere") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (-73.981153 40.741841)"), GeometryUDT.FromWkt("POINT (-73.990167 40.729884)")),
+      Row(GeometryUDT.FromWkt("POINT (-74.123512 40.561438)"), GeometryUDT.FromWkt("POINT (-73.418598 41.681739)")),
+    )
+
+    val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_DistanceSphere(left_geo, right_geo) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_DistanceSphere-Null") {
+    val data = Seq(
+      Row(null, "POINT (-73.981153 40.741841)"),
+      Row("POINT (-73.990167 40.729884)", null),
+      Row(null, null),
+      Row("POINT (-73.981153 40.741841)", "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"), // illegal geometry
+      Row("POINT (-200 40.741841)", "POINT (-73.981153 40.741841)"), // illegal coordinate
+    )
+
+    val schema = StructType(Array(StructField("left_geo", StringType, nullable = true), StructField("right_geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_DistanceSphere(ST_GeomFromText(left_geo), ST_GeomFromText(right_geo)) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    rst.show(false)
+  }
 }
