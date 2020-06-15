@@ -983,18 +983,18 @@ std::shared_ptr<arrow::ChunkedArray> ST_Union(
     const std::shared_ptr<arrow::ChunkedArray>& geo2) {
   auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
     auto union_geom = ogr1->Union(ogr2);
-    AppendWkbNDR(builder,union_geom);
+    AppendWkbNDR(builder, union_geom);
     OGRGeometryFactory::destroyGeometry(union_geom);
   };
-  auto null_op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1,
-                    OGRGeometry* ogr2) {
-    if(ogr1 != nullptr){
-      AppendWkbNDR(builder,ogr1);
-    } else if (ogr2 != nullptr){
-      AppendWkbNDR(builder,ogr2);
+  auto null_op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    if (ogr1 != nullptr) {
+      AppendWkbNDR(builder, ogr1);
+    } else if (ogr2 != nullptr) {
+      AppendWkbNDR(builder, ogr2);
     } else {
       CHECK_ARROW(builder.AppendNull());
-    } };
+    }
+  };
   return BinaryOp<arrow::BinaryBuilder>(geo1, geo2, op, null_op);
 }
 
