@@ -1282,7 +1282,7 @@ def within_which(left, right):
     Series
         The indexes of geometries in ``right``.
         For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
-        
+
         * When there are multiple candidates, return one of them.
         * When there is no candidate, return NA.
 
