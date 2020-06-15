@@ -124,15 +124,15 @@ inline OGRGeometry* Wrapper_CurveToLine(OGRGeometry* geo, HasCurveVisitor* has_c
 
 inline void AppendWkbNDR(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
   if (geo == nullptr) {
-    builder.AppendNull();
+    CHECK_ARROW(builder.AppendNull());
   } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
-    builder.AppendNull();
+    CHECK_ARROW(builder.AppendNull());
   } else {
     auto wkb_size = geo->WkbSize();
     auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
     auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
     if (err_code != OGRERR_NONE) {
-      builder.AppendNull();
+      CHECK_ARROW(builder.AppendNull());
       // std::string err_msg =
       //     "failed to export to wkb, error code = " + std::to_string(err_code);
       // throw std::runtime_error(err_msg);
@@ -976,6 +976,26 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
   };
 
   return BinaryOp<arrow::BinaryBuilder>(geo1, geo2, op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Union(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    auto union_geom = ogr1->Union(ogr2);
+    AppendWkbNDR(builder,union_geom);
+    OGRGeometryFactory::destroyGeometry(union_geom);
+  };
+  auto null_op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1,
+                    OGRGeometry* ogr2) {
+    if(ogr1 != nullptr){
+      AppendWkbNDR(builder,ogr1);
+    } else if (ogr2 != nullptr){
+      AppendWkbNDR(builder,ogr2);
+    } else {
+      CHECK_ARROW(builder.AppendNull());
+    } };
+  return BinaryOp<arrow::BinaryBuilder>(geo1, geo2, op, null_op);
 }
 
 /************************ MEASUREMENT FUNCTIONS ************************/

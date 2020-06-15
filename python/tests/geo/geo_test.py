@@ -80,6 +80,14 @@ def test_ST_Intersection():
     assert len(rst) == 1
     assert rst[0] == "POINT (0 1)"
 
+def test_ST_Union():
+    data1 = pandas.Series(["POLYGON ((0 0,2 0,2 2,0 2,0 0))", "POINT (0 1)"])
+    data2 = pandas.Series(["POLYGON ((1 0,3 0,3 2,0 2,1 0))", "POINT (2 1)"])
+    rst = arctern.ST_AsText(arctern.ST_MakeValid(arctern.ST_SimplifyPreserveTopology(arctern.ST_Union(
+        arctern.ST_GeomFromText(data1), arctern.ST_GeomFromText(data2)),0.01)))
+    assert len(rst) == 2
+    assert rst[0] == "POLYGON ((1 0,0 0,0 2,3 2,3 0,1 0))"
+    assert rst[1] == "MULTIPOINT (0 1,2 1)"
 
 def test_ST_Equals():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
@@ -581,7 +589,7 @@ def test_ST_SymDifference():
     data2 = pandas.Series(arr2)
     rst = arctern.ST_AsText(arctern.ST_SymDifference(data1, data2))
     for i in rst:
-        assert(i == "MULTILINESTRING ((5 0,6 0),(0 0,4 0))")
+        assert(i == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))")
 
 def test_ST_NPoints():
     data = ["LINESTRING(1 1,1 4)"]

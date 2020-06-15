@@ -79,6 +79,9 @@ def ST_Equals(object left_geometries,object right_geometries):
 def ST_Disjoint(object left_geometries,object right_geometries):
     pass
 
+def ST_Union(object left_geometries,object right_geometries):
+    pass
+
 def ST_Boundary(object geometries):
     pass
 
