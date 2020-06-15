@@ -19,7 +19,6 @@ __all__ = [
     "ST_IsValid",
     "ST_PrecisionReduce",
     "ST_Equals",
-    "ST_Equals1",
     "ST_Disjoint",
     "ST_Boundary",
     "ST_Touches",
