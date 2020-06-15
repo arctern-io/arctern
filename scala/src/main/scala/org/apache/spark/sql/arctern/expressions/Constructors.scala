@@ -61,8 +61,8 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 2)
-  assert(inputExpr.head.dataType match { case _: NumericType => true })
-  assert(inputExpr(1).dataType match { case _: NumericType => true })
+//  assert(inputExpr.head.dataType match { case _: NumericType => true })
+//  assert(inputExpr(1).dataType match { case _: NumericType => true })
 
   override def nullable: Boolean = true
 

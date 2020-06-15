@@ -17,6 +17,8 @@
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.types._
+import org.apache.spark.sql.arctern.functions._
+import org.apache.spark.sql.functions._
 
 class ConstructorsTest extends AdapterTest {
   test("ST_GeomFromText-Null") {
@@ -103,10 +105,11 @@ class ConstructorsTest extends AdapterTest {
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_Point")
     val rst = spark.sql("select ST_Point(x, y) from table_ST_Point")
+    rst.show()
 
+    val rst2= df.select(st_point(col("x"),col("y")))
+    rst2.show()
     //    rst.queryExecution.debug.codegen()
-
-    rst.show(false)
   }
 
   test("ST_PolygonFromEnvelope-Null") {
