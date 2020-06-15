@@ -252,7 +252,7 @@ def plot_geometry(ax, geoms, **style_kwds):
         Sequence of geometries.
     **style_kwds:
         ``style_kwds`` specify the properties that describe the style of geometric graphs.
-        
+
         Here is a list of availble style properties:
 
         +----------+------------------+-------+--------------------------------------------------+
