@@ -175,6 +175,11 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
   return gdal::ST_SymDifference(geo1, geo2);
 }
 
+std::shared_ptr<arrow::ChunkedArray> ST_Union(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_2) {
+  return gdal::ST_Union(geometries_1, geometries_2);
+}
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(

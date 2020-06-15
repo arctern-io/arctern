@@ -51,6 +51,10 @@ std::shared_ptr<arrow::ChunkedArray> ST_Disjoint(
     const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
     const std::shared_ptr<arrow::ChunkedArray>& geometries_2);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Union(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_2);
+
 std::shared_ptr<arrow::ChunkedArray> ST_Boundary(
     const std::shared_ptr<arrow::ChunkedArray>& geometries);
 

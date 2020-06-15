@@ -104,6 +104,10 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Union(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
 std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
