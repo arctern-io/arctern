@@ -25,21 +25,21 @@ namespace gis {
 namespace gdal {
 
 struct AffineParams {
- AffineParams(double a, double b, double d, double e, double offsetX, double offsetY){
-   a_ = a;
-   b_ = b;
-   d_ = d;
-   e_ = e;
-   offsetX_ = offsetX;
-   offsetY_ = offsetY;
- }
+  AffineParams(double a, double b, double d, double e, double offsetX, double offsetY) {
+    a_ = a;
+    b_ = b;
+    d_ = d;
+    e_ = e;
+    offsetX_ = offsetX;
+    offsetY_ = offsetY;
+  }
 
- double a_;
- double b_;
- double d_;
- double e_;
- double offsetX_;
- double offsetY_;
+  double a_;
+  double b_;
+  double d_;
+  double e_;
+  double offsetX_;
+  double offsetY_;
 };
 
 class AreaVisitor : public OGRDefaultConstGeometryVisitor {
@@ -180,14 +180,14 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
 
 class AffineVisitor : public OGRDefaultGeometryVisitor {
  public:
-  explicit AffineVisitor(const AffineParams& params) : param_(params){}
+  explicit AffineVisitor(const AffineParams& params) : param_(params) {}
   ~AffineVisitor() = default;
 
-   void visit(OGRPoint*) override;
+  void visit(OGRPoint*) override;
 
  private:
   AffineParams param_;
-}; 
+};
 
 class TranslateVisitor : public OGRDefaultGeometryVisitor {
  public:
@@ -204,8 +204,8 @@ class TranslateVisitor : public OGRDefaultGeometryVisitor {
 
 class ScaleVisitor : public OGRDefaultGeometryVisitor {
  public:
-  explicit ScaleVisitor(double factor_x, double factor_y) : factor_x_(factor_x),
-                                                            factor_y_(factor_y) {}
+  explicit ScaleVisitor(double factor_x, double factor_y)
+      : factor_x_(factor_x), factor_y_(factor_y) {}
   ~ScaleVisitor() = default;
 
   void visit(OGRPoint*) override;

@@ -184,7 +184,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
 std::shared_ptr<arrow::ChunkedArray> ST_Difference(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2) {
-  return gdal::ST_Difference(geo1,geo2);
+  return gdal::ST_Difference(geo1, geo2);
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_ExteriorRing(
@@ -198,14 +198,14 @@ std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries,
-    double factor_x, double factor_y) {
-  return gdal::ST_Scale(geometries,factor_x,factor_y);
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y) {
+  return gdal::ST_Scale(geometries, factor_x, factor_y);
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Affine(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries,
-    double a, double b, double d, double e, double offset_x, double offset_y) {
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double a, double b, double d,
+    double e, double offset_x, double offset_y) {
   return gdal::ST_Affine(geometries, a, b, d, e, offset_x, offset_y);
 }
 
