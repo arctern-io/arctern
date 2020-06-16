@@ -715,7 +715,7 @@ class GeoSeries(Series):
 
     def to_crs(self, crs):
         """
-        Transforms the Coordinate Reference System (CRS) of the GeoSeries to `crs`.
+        Transforms the Coordinate Reference System (CRS) of the GeoSeries to ``crs``.
 
         Parameters
         ----------
@@ -1274,7 +1274,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains only one geometry, which is the intersection of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            Intersection of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         -------
