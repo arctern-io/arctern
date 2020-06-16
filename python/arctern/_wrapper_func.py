@@ -18,6 +18,7 @@ __all__ = [
     "ST_Intersection",
     "ST_IsValid",
     "ST_PrecisionReduce",
+    "ST_Translate",
     "ST_Equals",
     "ST_Disjoint",
     "ST_Boundary",
@@ -463,10 +464,10 @@ def ST_Union(geo1, geo2):
 
 def ST_Translate(geo, shifter_x, shifter_y):
     import pyarrow as pa
-    arr_geo = pa.array(geo1, type='binary')
+    arr_geo = pa.array(geo, type='binary')
     arr_geo = _to_arrow_array_list(arr_geo)
     arr_geo = pa.chunked_array(arr_geo)
-    result = arctern_core_.ST_Union(arr_geo, shifter_x, shifter_y)
+    result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
     return result.to_pandas()
 
 @arctern_udf('binary', 'binary')

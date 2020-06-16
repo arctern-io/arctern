@@ -53,6 +53,14 @@ def test_ST_PrecisionReduce():
     assert rst[0] == "POINT (1.33 2.67)"
     assert rst[1] == "POINT (2.66 4.45)"
 
+def test_ST_Translate():
+    data = pandas.Series(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
+    rst = arctern.ST_AsText(arctern.ST_Translate(arctern.ST_GeomFromText(data), 1.2, 0.3))
+
+    assert len(rst) == 3
+    assert rst[0] == "POINT (2.2 6.3)"
+    assert rst[1] == "LINESTRING (1.2 0.3,1.2 1.3,2.2 1.3)"
+    assert rst[2] == "POLYGON ((1.2 0.3,1.2 1.3,2.2 1.3,1.2 0.3))"
 
 def test_ST_Intersection():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POINT (0 1)"])
