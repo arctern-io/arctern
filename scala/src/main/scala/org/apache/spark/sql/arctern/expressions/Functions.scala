@@ -21,6 +21,38 @@ import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.locationtech.jts.geom.Geometry
+
+object functions {
+  def distanceSphere(from: Geometry, to: Geometry): Double = {
+    var distance = -1.0
+    if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
+      distance
+    } else {
+      // get coordinates
+      val fromlon = from.getInteriorPoint.getX
+      val fromlat = from.getInteriorPoint.getY
+      val tolon = to.getInteriorPoint.getX
+      val tolat = to.getInteriorPoint.getY
+      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
+        (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
+        distance
+      } else {
+        // calculate distance
+        val latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886
+        val longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886
+        var latitudeH = java.lang.Math.sin(latitudeArc * 0.5)
+        latitudeH *= latitudeH
+        var lontitudeH = java.lang.Math.sin(longitudeArc * 0.5)
+        lontitudeH *= lontitudeH
+        val tmp = java.lang.Math.cos(fromlat * 0.017453292519943295769236907684886) *
+          java.lang.Math.cos(tolat * 0.017453292519943295769236907684886)
+        distance =  6372797.560856 * (2.0 * java.lang.Math.asin(java.lang.Math.sqrt(latitudeH + tmp * lontitudeH)))
+        distance
+      }
+    }
+  }
+}
 
 abstract class ST_BinaryOp extends ArcternExpr {
 
@@ -433,119 +465,16 @@ case class ST_Intersects(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override def dataType: DataType = BooleanType
 }
 
-case class ST_DistanceSphere(inputsExpr: Seq[Expression]) extends ArcternExpr {
+case class ST_DistanceSphere(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   assert(inputsExpr.length == 2)
-  assert(CodeGenUtil.isGeometryExpr(inputsExpr.head))
-  assert(CodeGenUtil.isGeometryExpr(inputsExpr(1)))
 
-  override def nullable: Boolean = inputsExpr.head.nullable || inputsExpr(1).nullable
+  override def leftExpr: Expression = inputsExpr.head
 
-  override def eval(input: InternalRow): Any = {
-    throw new RuntimeException("call implement method")
-  }
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"org.apache.spark.sql.arctern.expressions.functions.distanceSphere($left, $right)")
 
   override def dataType: DataType = DoubleType
-
-  override def children: Seq[Expression] = inputsExpr
-
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    val leftExpr = inputsExpr.head
-    val rightExpr = inputsExpr(1)
-
-    var leftGeo: String = ""
-    var leftGeoDeclare: String = ""
-    var leftGeoCode: String = ""
-    var rightGeo: String = ""
-    var rightGeoDeclare: String = ""
-    var rightGeoCode: String = ""
-
-    val leftCode = leftExpr.genCode(ctx)
-    val rightCode = rightExpr.genCode(ctx)
-
-    if (CodeGenUtil.isArcternExpr(leftExpr)) {
-      val (geo, declare, code) = CodeGenUtil.geometryFromArcternExpr(leftCode.code.toString())
-      leftGeo = geo
-      leftGeoDeclare = declare
-      leftGeoCode = code
-    } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode)
-      leftGeo = geo
-      leftGeoDeclare = declare
-      leftGeoCode = code
-    }
-
-    if (CodeGenUtil.isArcternExpr(rightExpr)) {
-      val (geo, declare, code) = CodeGenUtil.geometryFromArcternExpr(rightCode.code.toString())
-      rightGeo = geo
-      rightGeoDeclare = declare
-      rightGeoCode = code
-    } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode)
-      rightGeo = geo
-      rightGeoDeclare = declare
-      rightGeoCode = code
-    }
-
-    val assignment =
-      s"""
-         |if (!$leftGeo.getGeometryType().equals("Point") || !$rightGeo.getGeometryType().equals("Point")) {
-         |    ${ev.value} = -1;
-         |} else {
-         |    // get coordinates
-         |    double fromlon = $leftGeo.getInteriorPoint().getX();
-         |    double fromlat = $leftGeo.getInteriorPoint().getY();
-         |    double tolon = $rightGeo.getInteriorPoint().getX();
-         |    double tolat = $rightGeo.getInteriorPoint().getY();
-         |    if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
-         |            (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
-         |        ${ev.value} = -1;
-         |    } else {
-         |        // calculate distance
-         |        double latitudeArc = (fromlat - tolat) * 0.017453292519943295769236907684886;
-         |        double longitudeArc = (fromlon - tolon) * 0.017453292519943295769236907684886;
-         |        double latitudeH = java.lang.Math.sin(latitudeArc * 0.5);
-         |        latitudeH *= latitudeH;
-         |        double lontitudeH = java.lang.Math.sin(longitudeArc * 0.5);
-         |        lontitudeH *= lontitudeH;
-         |        double tmp = java.lang.Math.cos(fromlat * 0.017453292519943295769236907684886) *
-         |                java.lang.Math.cos(tolat * 0.017453292519943295769236907684886);
-         |        double res =  6372797.560856 * (2.0 * java.lang.Math.asin(java.lang.Math.sqrt(latitudeH + tmp * lontitudeH)));
-         |        ${ev.value} = res;
-         |    }
-         |}
-         |""".stripMargin
-
-    if (nullable) {
-      val nullSafeEval =
-        leftGeoCode + ctx.nullSafeExec(leftExpr.nullable, leftCode.isNull) {
-          rightGeoCode + ctx.nullSafeExec(rightExpr.nullable, rightCode.isNull) {
-            s"""
-               |${ev.isNull} = false; // resultCode could change nullability.
-               |$assignment
-               |""".stripMargin
-          }
-        }
-      ev.copy(code =
-        code"""
-            boolean ${ev.isNull} = true;
-            $leftGeoDeclare
-            $rightGeoDeclare
-            ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-            $nullSafeEval
-            """)
-
-    }
-    else {
-      ev.copy(code =
-        code"""
-          $leftGeoDeclare
-          $rightGeoDeclare
-          $leftGeoCode
-          $rightGeoCode
-          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-          $assignment
-          """, FalseLiteral)
-    }
-  }
-
 }
+
+
