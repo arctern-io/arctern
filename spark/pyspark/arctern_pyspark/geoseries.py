@@ -97,6 +97,48 @@ class GeoSeries(ks.Series):
     def buffer(self, buffer=1.2):
         return _column_geo("ST_Buffer", self, F.lit(buffer))
 
+    def to_crs(self, crs):
+        return _column_geo("ST_Transform", crs)
+
+    def intersects(self, other):
+        return _column_op("ST_Intersects", self, other)
+
+    def within(self, other):
+        return _column_op("ST_Within", self, other)
+
+    def contains(self, other):
+        return _column_op("ST_Contains", self, other)
+
+    def crosses(self, other):
+        return _column_op("ST_Crosses", self, other)
+
+    def touches(self, other):
+        return _column_op("ST_Touches", self, other)
+
+    def overlaps(self, other):
+        return _column_op("ST_Overlaps", self, other)
+
+    def distance(self, other):
+        return _column_op("ST_Distance", self, other)
+
+    def distance_sphere(self, other):
+        return _column_op("ST_DistanceSphere", self, other)
+
+    def hausdorff_distance(self, other):
+        return _column_op("ST_HausdorffDistance", self, other)
+
+    def intersection(self, other):
+        return _column_geo("ST_Intersection", self, other)
+
+    def polygon_from_envelope(self, min_x, min_y, max_x, max_y, crs=None):
+        return _column_geo("ST_PolygonFromEnvelope", min_x, min_y, max_x, max_y, crs)
+
+    def point(self, x, y):
+        return _column_geo("ST_Point", x, y)
+
+    def geom_from_geojson(self, json):
+        return _column_geo("ST_GeoFromGeoJson", json)
+
 
 if __name__ == '__main__':
     rows = 2
