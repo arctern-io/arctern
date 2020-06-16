@@ -148,8 +148,8 @@ std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
   return gdal::ST_SimplifyPreserveTopology(geometries, distance_tolerance);
 }
 
-std::shared_ptr<arrow::Array> ST_Translate(
-    const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y){
+std::shared_ptr<arrow::ChunkedArray> ST_Translate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y){
   return gdal::ST_Translate(geometries, shifter_x, shifter_y);
 }
 

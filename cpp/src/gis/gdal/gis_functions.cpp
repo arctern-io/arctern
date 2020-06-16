@@ -803,8 +803,8 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   return results;
 }
 
-std::shared_ptr<arrow::Array> ST_Translate(
-    const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y) {
+std::shared_ptr<arrow::ChunkedArray> ST_Translate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y) {
   auto translate_visitor = new TranslateVisitor(shifter_x, shifter_y);
   auto op = [&translate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     geo->accept(translate_visitor);
