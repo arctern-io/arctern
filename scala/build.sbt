@@ -22,3 +22,18 @@ if (sparkVersion == "3.0.0-preview2") {
   libraryDependencies += "org.apache.spark" %% "spark-core" % "spark-3.0.0-preview2"
   libraryDependencies += "org.apache.spark" %% "spark-sql" % "spark-3.0.0-preview2"
 }
+
+resolvers ++= Seq(
+  "Open Source Geospatial Foundation Repository" at "http://download.osgeo.org/webdav/geotools/"
+)
+libraryDependencies ++= Seq(
+  "org.geotools" % "gt-main" % "17.0",
+  "org.geotools" % "gt-api" % "17.0",
+  "org.geotools" % "gt-referencing" % "17.0",
+  "org.geotools" % "gt-metadata" % "17.0",
+  "org.geotools" % "gt-opengis" % "17.0",
+  "org.geotools" % "gt-epsg-hsql" % "17.0",
+  "org.geotools" % "gt-epsg-extension" % "17.0",
+  "org.geotools" % "gt-shapefile" % "17.0",
+  "org.geotools" % "gt-data" % "17.0"
+)
