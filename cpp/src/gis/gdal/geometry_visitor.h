@@ -24,6 +24,24 @@ namespace arctern {
 namespace gis {
 namespace gdal {
 
+struct AffineParams {
+  AffineParams(double a, double b, double d, double e, double offsetX, double offsetY) {
+    a_ = a;
+    b_ = b;
+    d_ = d;
+    e_ = e;
+    offsetX_ = offsetX;
+    offsetY_ = offsetY;
+  }
+
+  double a_;
+  double b_;
+  double d_;
+  double e_;
+  double offsetX_;
+  double offsetY_;
+};
+
 class AreaVisitor : public OGRDefaultConstGeometryVisitor {
  public:
   ~AreaVisitor() = default;
@@ -160,6 +178,17 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
   int32_t precision_ = 0;
 };
 
+class AffineVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit AffineVisitor(const AffineParams& params) : param_(params) {}
+  ~AffineVisitor() = default;
+
+  void visit(OGRPoint*) override;
+
+ private:
+  AffineParams param_;
+};
+
 class TranslateVisitor : public OGRDefaultGeometryVisitor {
  public:
   explicit TranslateVisitor(double shifter_x, double shifter_y)
@@ -171,6 +200,19 @@ class TranslateVisitor : public OGRDefaultGeometryVisitor {
  private:
   double shifter_x = 0.0;
   double shifter_y = 0.0;
+};
+
+class ScaleVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit ScaleVisitor(double factor_x, double factor_y)
+      : factor_x_(factor_x), factor_y_(factor_y) {}
+  ~ScaleVisitor() = default;
+
+  void visit(OGRPoint*) override;
+
+ private:
+  double factor_x_;
+  double factor_y_;
 };
 
 }  // namespace gdal

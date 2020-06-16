@@ -353,6 +353,26 @@ def ST_SymDifference(object geo1,object geo2):
     result = arctern_core_pxd.ST_SymDifference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
     return pyarrow_wrap_chunked_array(result)
 
+def ST_Difference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_Difference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_ExteriorRing(object geos):
+    result = arctern_core_pxd.ST_ExteriorRing(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_IsEmpty(object geos):
+    result = arctern_core_pxd.ST_IsEmpty(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale(object geos, double factor_x, double factor_y):
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Affine(object geos, double a, double b, double d, double e, double offset_x, double offset_y):
+    result = arctern_core_pxd.ST_Affine(pyarrow_unwrap_chunked_array(geos), a, b, d, e, offset_x, offset_y)
+    return pyarrow_wrap_chunked_array(result)
+
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))
 

@@ -16,6 +16,8 @@
 
 #include "gis/gdal/geometry_visitor.h"
 
+#include <iostream>
+
 namespace arctern {
 namespace gis {
 namespace gdal {
@@ -123,6 +125,20 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo) {
   double coordinate_y = geo->getY();
   geo->setX(coordinate_precision_reduce(coordinate_x));
   geo->setY(coordinate_precision_reduce(coordinate_y));
+}
+
+void AffineVisitor::visit(OGRPoint* geo) {
+  double coordinate_x = geo->getX();
+  double coordinate_y = geo->getY();
+  geo->setX(param_.a_ * coordinate_x + param_.b_ * coordinate_y + param_.offsetX_);
+  geo->setY(param_.d_ * coordinate_x + param_.e_ * coordinate_y + param_.offsetY_);
+}
+
+void ScaleVisitor::visit(OGRPoint* geo) {
+  double coordinate_x = geo->getX();
+  double coordinate_y = geo->getY();
+  geo->setX(coordinate_x * factor_x_);
+  geo->setY(coordinate_y * factor_y_);
 }
 
 void TranslateVisitor::visit(OGRPoint* geo) {
