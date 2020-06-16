@@ -992,6 +992,119 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
   return BinaryOp<arrow::BinaryBuilder>(geo1, geo2, op);
 }
 
+std::shared_ptr<arrow::ChunkedArray> ST_Difference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr1, OGRGeometry* ogr2) {
+    if (ogr1->IsEmpty() || ogr2->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      auto rst = ogr1->Difference(ogr2);
+      auto rst_wkb_size = rst->WkbSize();
+      auto wkb = static_cast<unsigned char *>(CPLMalloc(rst_wkb_size));
+      auto err_code = rst->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
+      if (err_code != OGRERR_NONE) {
+        builder.AppendNull();
+      } else {
+        builder.Append(wkb, rst_wkb_size);
+      }
+      CPLFree(wkb);
+    }
+  };
+
+  return BinaryOp<arrow::BinaryBuilder>(geo1, geo2, op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_ExteriorRing(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries) {
+  auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
+    assert(std::string(ogr->getGeometryName()) == "POLYGON");
+    if (ogr->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      auto polygon_geo = dynamic_cast<OGRPolygon*>(ogr);
+      OGRLineString* rst = polygon_geo->getExteriorRing();
+      auto rst_wkb_size = rst->WkbSize();
+      auto wkb = static_cast<unsigned char *>(CPLMalloc(rst_wkb_size));
+      auto err_code = OGR_G_ExportToWkb(rst, OGRwkbByteOrder::wkbNDR, wkb);
+      if (err_code != OGRERR_NONE) {
+        builder.AppendNull();
+      } else {
+        builder.Append(wkb, rst_wkb_size);
+      }
+      CPLFree(wkb);
+    }
+  };
+
+  return UnaryOp<arrow::BinaryBuilder>(geometries, op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries) {
+  auto op = [](arrow::BooleanBuilder& builder, OGRGeometry* ogr) {
+    if (ogr->IsEmpty()) {
+      builder.Append(true);
+    } else {
+      builder.Append(false);
+    }
+  };
+
+  return UnaryOp<arrow::BooleanBuilder>(geometries, op);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Affine(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries,
+    double a, double b, double d, double e, double offset_x, double offset_y) {
+  AffineParams params(a, b, d, e, offset_x, offset_y);
+  auto affine_visitor = new AffineVisitor(params);
+  auto op = [&affine_visitor](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
+    ogr->accept(affine_visitor);
+    if (ogr->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      auto rst_wkb_size = ogr->WkbSize();
+      auto wkb = static_cast<unsigned char *>(CPLMalloc(rst_wkb_size));
+      auto err_code = OGR_G_ExportToWkb(ogr, OGRwkbByteOrder::wkbNDR, wkb);
+      if (err_code != OGRERR_NONE) {
+        builder.AppendNull();
+      } else {
+        builder.Append(wkb, rst_wkb_size);
+      }
+      CPLFree(wkb);
+    }
+  };
+
+  auto rst = UnaryOp<arrow::BinaryBuilder>(geometries, op);
+  delete affine_visitor;
+  return rst;
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries,
+    double factor_x, double factor_y){
+  auto scale_visitor = new ScaleVisitor(factor_x,factor_y);
+  auto op = [&scale_visitor](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
+    ogr->accept(scale_visitor);
+    if (ogr->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      auto rst_wkb_size = ogr->WkbSize();
+      auto wkb = static_cast<unsigned char *>(CPLMalloc(rst_wkb_size));
+      auto err_code = OGR_G_ExportToWkb(ogr, OGRwkbByteOrder::wkbNDR, wkb);
+      if (err_code != OGRERR_NONE) {
+        builder.AppendNull();
+      } else {
+        builder.Append(wkb, rst_wkb_size);
+      }
+      CPLFree(wkb);
+    }  
+  };
+
+  auto rst = UnaryOp<arrow::BinaryBuilder>(geometries, op);
+  delete scale_visitor;
+  return rst;
+}
+
 std::shared_ptr<arrow::ChunkedArray> ST_Union(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2) {

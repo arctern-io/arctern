@@ -108,6 +108,24 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Difference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
+std::shared_ptr<arrow::ChunkedArray> ST_ExteriorRing(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries);
+
+std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Affine(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries,
+    double a, double b, double d, double e, double offset_x, double offset_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries,
+    double factor_x, double factor_y);
+
 std::shared_ptr<arrow::ChunkedArray> ST_Union(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,
     const std::shared_ptr<arrow::ChunkedArray>& geo2);
