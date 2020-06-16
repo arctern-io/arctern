@@ -1,7 +1,7 @@
 import arctern
 import databricks.koalas as ks
 import pandas as pd
-from databricks.koalas import DataFrame, get_option
+from databricks.koalas import DataFrame, get_option, Series
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
 from databricks.koalas.series import REPR_PATTERN
@@ -34,7 +34,15 @@ def _validate_crs(crs):
     return crs
 
 
-class GeoSeries(ks.Series):
+def _validate_arg(arg, dtype):
+    if isinstance(arg, dtype):
+        arg = F.lit(arg)
+    elif not isinstance(arg, Series):
+        arg = Series(arg)
+    return arg
+
+
+class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False, anchor=None
     ):
@@ -221,7 +229,7 @@ class GeoSeries(ks.Series):
         return _column_geo("ST_CurveToLine", self, crs=self._crs)
 
     def simplify(self, tolerance):
-        return _column_geo("ST_SimplifyPreserveTopology", self, tolerance, crs=self._crs)
+        return _column_geo("ST_SimplifyPreserveTopology", self, F.lit(tolerance), crs=self._crs)
 
     def buffer(self, buffer):
         return _column_geo("ST_Buffer", self, F.lit(buffer), crs=self._crs)
@@ -263,56 +271,63 @@ class GeoSeries(ks.Series):
                 "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
-        return _column_geo("ST_Transform", self.crs, crs, crs=crs)
+        return _column_geo("ST_Transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
 
     def intersects(self, other):
-        return _column_op("ST_Intersects", self, other)
+        return _column_op("ST_Intersects", self, _validate_arg(other, bytearray))
 
     def within(self, other):
-        return _column_op("ST_Within", self, other)
+        return _column_op("ST_Within", self, _validate_arg(other, bytearray))
 
     def contains(self, other):
-        return _column_op("ST_Contains", self, other)
+        return _column_op("ST_Contains", self, _validate_arg(other, bytearray))
 
     def geom_equals(self, other):
-        return _column_op("ST_Equals", self, other)
+        return _column_op("ST_Equals", self, _validate_arg(other, bytearray))
 
     def crosses(self, other):
-        return _column_op("ST_Crosses", self, other)
+        return _column_op("ST_Crosses", self, _validate_arg(other, bytearray))
 
     def touches(self, other):
-        return _column_op("ST_Touches", self, other)
+        return _column_op("ST_Touches", self, _validate_arg(other, bytearray))
 
     def overlaps(self, other):
-        return _column_op("ST_Overlaps", self, other)
+        return _column_op("ST_Overlaps", self, _validate_arg(other, bytearray))
 
     def distance(self, other):
-        return _column_op("ST_Distance", self, other)
+        return _column_op("ST_Distance", self, _validate_arg(other, bytearray))
 
     def distance_sphere(self, other):
-        return _column_op("ST_DistanceSphere", self, other)
+        return _column_op("ST_DistanceSphere", self, _validate_arg(other, bytearray))
 
     def hausdorff_distance(self, other):
-        return _column_op("ST_HausdorffDistance", self, other)
+        return _column_op("ST_HausdorffDistance", self, _validate_arg(other, bytearray))
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
     def intersection(self, other):
-        return _column_geo("ST_Intersection", self, other, crs=self.crs)
+        return _column_geo("ST_Intersection", self, _validate_arg(other, bytearray), crs=self.crs)
 
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
-        return _column_geo("ST_PolygonFromEnvelope", min_x, min_y, max_x, max_y, crs=crs)
+        dtype = (float, int)
+        return _column_geo("ST_PolygonFromEnvelope", _validate_arg(min_x, dtype), _validate_arg(min_y, dtype),
+                           _validate_arg(max_x, dtype), _validate_arg(max_y, dtype), crs=crs)
 
     @classmethod
     def point(cls, x, y, crs=None):
-        return _column_geo("ST_Point", x, y, crs=crs)
+        dtype = (float, int)
+        return _column_geo("ST_Point", _validate_arg(x, dtype), _validate_arg(y, dtype), crs=crs)
 
-    def geom_from_geojson(self, json, crs=None):
-        return _column_geo("ST_GeoFromGeoJson", json, crs=crs)
+    @classmethod
+    def geom_from_geojson(cls, json, crs=None):
+        return _column_geo("ST_GeomFromGeoJSON", Series(json), crs=crs)
+
+    def to_wkt(self):
+        return _column_op("ST_AsText", self)

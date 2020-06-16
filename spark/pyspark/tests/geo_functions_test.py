@@ -127,7 +127,7 @@ def test_ST_SimplifyPreserveTopology():
 
 
 def test_ST_Point():
-    from pandas import Series
+    from databricks.koalas import Series
     data1 = [1.3, 2.5]
     data2 = [3.8, 4.9]
     string_ptr = GeoSeries.point(data1, data2).to_wkt()
