@@ -4036,3 +4036,65 @@ ASSERT_EQ(res_bool->Value(4), false);
 ASSERT_EQ(res_bool->Value(5), false);
 ASSERT_EQ(res_bool->Value(6), true);
 }
+
+TEST(geometry_test, test_ST_Union) {
+auto l1 = "POINT (0 1)";
+auto l2 = "LINESTRING (0 0, 0 1, 1 1)";
+auto l3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
+auto l4 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+auto l5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+auto l6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
+auto l7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+
+arrow::StringBuilder builder1;
+std::shared_ptr<arrow::Array> input1;
+builder1.Append(std::string(l1));
+builder1.Append(std::string(l2));
+builder1.Append(std::string(l3));
+builder1.Append(std::string(l4));
+builder1.Append(std::string(l5));
+builder1.Append(std::string(l6));
+builder1.Append(std::string(l7));
+builder1.Finish(&input1);
+
+auto r1 = "POLYGON ((0 0,0 2,2 2,0 0))";
+auto r2 = "LINESTRING (0 0, 0 1, 1 2)";
+auto r3 = "POINT (2 3)";
+auto r4 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
+auto r5 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
+auto r6 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
+auto r7 = "POINT (1 5)";
+
+arrow::StringBuilder builder2;
+std::shared_ptr<arrow::Array> input2;
+builder2.Append(std::string(r1));
+builder2.Append(std::string(r2));
+builder2.Append(std::string(r3));
+builder2.Append(std::string(r4));
+builder2.Append(std::string(r5));
+builder2.Append(std::string(r6));
+builder2.Append(std::string(r7));
+builder2.Finish(&input2);
+
+// temp solution bcz ST_GeomFromText and ST_AsText do not have Implementation based on ChunkedArray.
+auto wkb_chunks1 = arctern::gis::ST_GeomFromText(input1);
+auto wkb_chunked_array1 = std::make_shared<arrow::ChunkedArray>(std::move(wkb_chunks1));
+auto wkb_chunks2 = arctern::gis::ST_GeomFromText(input2);
+auto wkb_chunked_array2 = std::make_shared<arrow::ChunkedArray>(std::move(wkb_chunks2));
+
+auto res= arctern::gis::ST_Union(wkb_chunked_array1,wkb_chunked_array2);
+auto wkt_res = arctern::gis::ST_AsText(*(res->chunks().data()));
+auto res_str = std::static_pointer_cast<arrow::StringArray>(*wkt_res.data());
+
+for(int i=0;i<res_str->length();++i){
+  std::cout<<res_str->GetString(i)<<std::endl;
+}
+ ASSERT_EQ(res_str->GetString(0), "POLYGON ((0 0,0 2,2 2,0 0))");
+ ASSERT_EQ(res_str->GetString(1), "MULTILINESTRING ((0 0,0 1),(0 1,1 1),(0 1,1 2))");
+ ASSERT_EQ(res_str->GetString(2), "GEOMETRYCOLLECTION (LINESTRING (0 0,1 0,1 1,0 0),POINT (2 3))");
+ ASSERT_EQ(res_str->GetString(3), "GEOMETRYCOLLECTION (POINT (1 2),POLYGON ((0 0,0 1,1 1,1 0,0 0)))");
+ ASSERT_EQ(res_str->GetString(4), "MULTILINESTRING ((0 0,1 2),(0 0,1 0,1 1),(-1 2,3 4,1 -3,-2 1))");
+ ASSERT_EQ(res_str->GetString(5), "GEOMETRYCOLLECTION (LINESTRING (-1 2,0.714285714285714 2.85714285714286),LINESTRING (1 3,3 4,1 -3,-2 1),POLYGON ((1 0,0 0,0.714285714285714 2.85714285714286,1 4,1 3,1 2,1 1,1 0)))");
+ ASSERT_EQ(res_str->GetString(6), "GEOMETRYCOLLECTION (POLYGON ((0 0,1 4,1 0,0 0)),POINT (1 5))");
+}
+
