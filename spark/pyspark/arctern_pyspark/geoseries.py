@@ -1,13 +1,12 @@
 import arctern
-
 import databricks.koalas as ks
 import pandas as pd
-from pyspark.sql import functions as F
 from databricks.koalas import DataFrame, get_option
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
 from databricks.koalas.series import REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
+from pyspark.sql import functions as F
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -87,45 +86,70 @@ class GeoSeries(ks.Series):
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
 
+    # -------------------------------------------------------------------------
+    # Geometry related property
+    # -------------------------------------------------------------------------
+
     @property
     def area(self):
         return _column_op("ST_Area", self)
 
-    def geom_equals(self, other):
-        return _column_op("ST_Equals", self, other)
+    @property
+    def is_valid(self):
+        return _column_op("ST_IsValid", self)
 
-    def buffer(self, buffer=1.2):
+    @property
+    def length(self):
+        return _column_op("ST_Length", self)
+
+    @property
+    def is_simple(self):
+        return _column_op("ST_IsSimple", self)
+
+    @property
+    def geom_type(self):
+        return _column_op("ST_GeometryType", self)
+
+    @property
+    def centroid(self):
+        return _column_geo("ST_Centroid", self)
+
+    @property
+    def convex_hull(self):
+        return _column_geo("ST_ConvexHull", self)
+
+    @property
+    def npoints(self):
+        return _column_op("ST_NPoints", self)
+
+    @property
+    def envelope(self):
+        return _column_geo("ST_Envelope", self)
+
+    # -------------------------------------------------------------------------
+    # Geometry related unary methods, which return GeoSeries
+    # -------------------------------------------------------------------------
+
+    def curve_to_line(self):
+        return _column_geo("ST_CurveToLine", self)
+
+    def simplify(self, tolerance):
+        return _column_geo("ST_SimplifyPreserveTopology", self, tolerance)
+
+    def buffer(self, buffer):
         return _column_geo("ST_Buffer", self, F.lit(buffer))
 
+    def precision_reduce(self, precision):
+        return _column_geo("ST_PrecisionReduce", self, F.lit(precision))
 
-if __name__ == '__main__':
-    rows = 2
-    data_series = [
-                      'POLYGON ((1 1,1 2,2 2,2 1,1 1))',
-                      'POLYGON ((0 0,0 4,2 2,4 4,4 0,0 0))',
-                      'POLYGON ((0 0,0 4,4 4,0 0))',
-                  ] * rows
+    def make_valid(self):
+        return _column_geo("ST_MakeValid", self)
 
-    data_series2 = [
-                       'POLYGON ((1 1,1 2,3 2,2 1,1 1))',
-                       'POLYGON ((0 0,0 4,3 2,4 4,4 0,0 0))',
-                       'POLYGON ((0 0,0 4,3 4,0 0))',
-                   ] * rows
+    def unary_union(self):
+        return _column_geo("ST_Union_Aggr", self)
 
-    countries = ['London', 'New York', 'Helsinki'] * rows
-    s = ks.Series(data_series, name="haha", index=countries)
-    s1 = ks.Series(data_series, name="haha", index=countries)
-    s3 = ks.Series(data_series2, name="hehe", index=countries)
-    s4 = pd.Series(data_series, name="haha", index=countries)
-    s5 = pd.Series(data_series, name="hehe", index=countries)
+    def envelope_aggr(self):
+        return _column_geo("ST_Envelope_Aggr", self)
 
-    s2 = GeoSeries(data_series, name="haha", index=countries)
-    s6 = GeoSeries(data_series, name="hehe", index=countries)
-
-    # print(s + 'a')
-    # print(s2)
-    # print(s2.area)
-    # print(s1+s3)
-    # print(s2.area)
-    # print(s2.geom_equals(s6))
-    print(s2.buffer(1.2))
+    def geom_equals(self, other):
+        return _column_op("ST_Equals", self, other)
