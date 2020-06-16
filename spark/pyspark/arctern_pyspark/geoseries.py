@@ -188,11 +188,11 @@ class GeoSeries(ks.Series):
 
     @property
     def centroid(self):
-        return _column_geo("ST_Centroid", self)
+        return _column_geo("ST_Centroid", self, crs=self._crs)
 
     @property
     def convex_hull(self):
-        return _column_geo("ST_ConvexHull", self)
+        return _column_geo("ST_ConvexHull", self, crs=self._crs)
 
     @property
     def npoints(self):
@@ -200,31 +200,31 @@ class GeoSeries(ks.Series):
 
     @property
     def envelope(self):
-        return _column_geo("ST_Envelope", self)
+        return _column_geo("ST_Envelope", self, crs=self._crs)
 
     # -------------------------------------------------------------------------
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
     def make_valid(self):
-        return _column_geo("ST_MakeValid", self)
+        return _column_geo("ST_MakeValid", self, crs=self._crs)
 
     def precision_reduce(self, precision):
-        return _column_geo("ST_PrecisionReduce", self, F.lit(precision))
+        return _column_geo("ST_PrecisionReduce", self, F.lit(precision), crs=self._crs)
 
     def unary_union(self):
-        return _column_geo("ST_Union_Aggr", self)
+        return _column_geo("ST_Union_Aggr", self, crs=self._crs)
 
     def envelope_aggr(self):
-        return _column_geo("ST_Envelope_Aggr", self)
+        return _column_geo("ST_Envelope_Aggr", self, crs=self._crs)
 
     def curve_to_line(self):
-        return _column_geo("ST_CurveToLine", self)
+        return _column_geo("ST_CurveToLine", self, crs=self._crs)
 
     def simplify(self, tolerance):
-        return _column_geo("ST_SimplifyPreserveTopology", self, tolerance)
+        return _column_geo("ST_SimplifyPreserveTopology", self, tolerance, crs=self._crs)
 
     def buffer(self, buffer):
-        return _column_geo("ST_Buffer", self, F.lit(buffer))
+        return _column_geo("ST_Buffer", self, F.lit(buffer), crs=self._crs)
 
     def to_crs(self, crs):
         """
