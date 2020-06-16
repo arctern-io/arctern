@@ -160,6 +160,19 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
   int32_t precision_ = 0;
 };
 
+class TranslateVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit TranslateVisitor(double shifter_x, double shifter_y)
+      : shifter_x(shifter_x), shifter_y(shifter_y) {}
+  ~TranslateVisitor() = default;
+
+  void visit(OGRPoint*) override;
+
+ private:
+  double shifter_x = 0.0;
+  double shifter_y = 0.0;
+};
+
 }  // namespace gdal
 }  // namespace gis
 }  // namespace arctern

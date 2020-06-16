@@ -3902,7 +3902,7 @@ TEST(geometry_test, test_st_symdifference) {
   OGR_G_ExportToWkb(geo1, OGRwkbByteOrder::wkbNDR, geo1_wkb);
   arrow::BinaryBuilder builder;
   std::shared_ptr<arrow::Array> geo1_array;
-  int32_t  rows = 10000;
+  int32_t rows = 10000;
   for (int32_t i = 0; i < rows; i++) {
     builder.Append(geo1_wkb, wkb_size);
   }

@@ -803,6 +803,20 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
   return results;
 }
 
+std::shared_ptr<arrow::ChunkedArray> ST_Translate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
+    double shifter_y) {
+  auto translate_visitor = new TranslateVisitor(shifter_x, shifter_y);
+  auto op = [&translate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+    geo->accept(translate_visitor);
+    AppendWkbNDR(builder, geo);
+  };
+
+  auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
+  delete translate_visitor;
+  return results;
+}
+
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geo1,
     const std::vector<std::shared_ptr<arrow::Array>>& geo2) {
