@@ -15,6 +15,7 @@
  */
 
 #include "gis/gdal/geometry_visitor.h"
+#include <iostream>
 
 #include <iostream>
 

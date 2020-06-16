@@ -80,7 +80,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-
 def _validate_crs(crs):
     if crs is not None and not isinstance(crs, str):
         raise TypeError("`crs` should be spatial reference identifier string")
@@ -686,9 +685,145 @@ class GeoSeries(Series):
         """
         return _property_geo(arctern.ST_Envelope, self)
 
+    @property
+    def is_empty(self):
+        """
+        Returns true if this Geometry is an empty geometry.
+
+        Returns
+        --------
+        Mask of boolean values for each element in the GeoSeries that indicates whether an element is empty.
+            * *True:* The geometry is empty.
+            * *False:* The geometry is not empty.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["LINESTRING EMPTY", "POINT (100 200)"])
+        >>> s.is_empty
+        0     True
+        1    False
+        dtype: bool
+        """
+        return _property_op(arctern.ST_IsEmpty, self).astype(bool, copy=False)
+
     # -------------------------------------------------------------------------
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
+
+    def difference(self, other):
+        """
+        Returns a geometry that represents that part of geometry slef that does not intersect with geometry other.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the part of geometry slef that does not intersect with geometry other.
+            * If ``other`` is a geometry, this function calculates the difference of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries that represents that part of geometry slef that does not intersect with geometry other.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+        >>> s1.difference(s2)
+        0    LINESTRING (0 0,4 0)
+        1             POINT (6 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_Difference, self, other)
+
+    def sym_difference(self, other):
+        """
+        Returns a geometry that represents the portions of self and other that do not intersect.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the the portions of self and other that do not intersect.
+            * If ``other`` is a geometry, this function calculates the sym difference of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the sym difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries that represents the portions of self and other that do not intersect.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+        >>> s1.sym_difference(s2)
+        0    MULTILINESTRING ((0 0,4 0),(5 0,6 0))
+        1                              POINT (6 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_SymDifference, self, other)
+
+    def scale(self, factor_x, factor_y):
+        """
+        Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Parameters
+        ----------
+        factor_x : double
+            The factor to scale coordinate x.
+        factor_y : double
+            The factor to sclae coordinate y.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.scale(2,2)
+        0    LINESTRING (0 0,10 0)
+        1    MULTIPOINT (8 0,12 0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y)
+
+    def affine(self, a, b, d, e, offset_x, offset_y):
+        """
+        Applies a affine transformation to the geometry to do things like translate, rotate, scale in one step.
+
+        Parameters
+        -----------
+        a : double
+            The parameter in matrix.
+        b : double
+            The parameter in matrix.
+        d : double
+            The parameter in matrix.
+        e : double
+            The parameter in matrix.
+
+        Returns
+        --------
+        GeoSeries
+            A GeoSeries contains geometries which are tranformed by parameters in matrix.
+
+        Examples
+        ---------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.affine(2,2,2,2,2,2)
+        0      LINESTRING (2 2,12 12)
+        1    MULTIPOINT (10 10,14 14)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Affine, self, a, b, d, e, offset_x, offset_y)
 
     def curve_to_line(self):
         """

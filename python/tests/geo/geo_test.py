@@ -590,7 +590,6 @@ def test_ST_CurveToLine():
 
     assert str(rst[0]).startswith("POLYGON")
 
-
 def test_ST_SymDifference():
     p1 = "LINESTRING (0 0,5 0)"
     p2 = "LINESTRING (4 0,6 0)"
@@ -599,7 +598,7 @@ def test_ST_SymDifference():
     data1 = arctern.ST_GeomFromText(pandas.Series(data1))
     data2 = arctern.ST_GeomFromText(pandas.Series(data2))
     rst = arctern.ST_AsText(arctern.ST_SymDifference(data1, data2))
-    assert rst[0] == "MULTILINESTRING ((5 0,6 0),(0 0,4 0))"
+    assert rst[0] == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))"
 
 def test_ST_Difference():
     p1 = "LINESTRING (0 0,5 0)"
@@ -635,8 +634,8 @@ def test_ST_Affine():
     data = [p1, p2]
     data = arctern.ST_GeomFromText(pandas.Series(data))
     rst = arctern.ST_AsText(arctern.ST_Affine(data, 2, 2, 2, 2, 2, 2))
-    assert rst[0] == "LINESTRING (2 4,4 8)"
-    assert rst[1] == "LINESTRING (8 0,12 0)"
+    assert rst[0] == "LINESTRING (8 8,14 14)"
+    assert rst[1] == "LINESTRING (10 10,14 14)"
 
 def test_ST_NPoints():
     data = ["LINESTRING(1 1,1 4)"]
