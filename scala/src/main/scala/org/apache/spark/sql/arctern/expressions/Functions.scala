@@ -111,76 +111,6 @@ abstract class ST_BinaryOp extends ArcternExpr {
 
 }
 
-abstract class ST_BinaryOpWithConst extends ArcternExpr {
-
-  def geoExpr: Expression
-
-  def constExpr: Expression
-
-  override def nullable: Boolean = geoExpr.nullable
-
-  override def eval(input: InternalRow): Any = {
-    throw new RuntimeException("call implement method")
-  }
-
-  override def children: Seq[Expression] = Seq(geoExpr, constExpr)
-
-  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: (String, String) => String): ExprCode = {
-    assert(CodeGenUtil.isGeometryExpr(geoExpr))
-    assert(constExpr.dataType match { case _: NumericType => true })
-    assert(!constExpr.nullable)
-
-    var geo: String = ""
-    var geoDeclare: String = ""
-    var genCode: String = ""
-
-    val geoCode = geoExpr.genCode(ctx)
-    val constCode = constExpr.genCode(ctx)
-
-    if (CodeGenUtil.isArcternExpr(geoExpr)) {
-      val (geom, declare, code) = CodeGenUtil.geometryFromArcternExpr(geoCode.code.toString())
-      geo = geom
-      geoDeclare = declare
-      genCode = code
-    } else {
-      val (geom, declare, code) = CodeGenUtil.geometryFromNormalExpr(geoCode)
-      geo = geom
-      geoDeclare = declare
-      genCode = code
-    }
-
-    val assignment = CodeGenUtil.assignmentCode(f(geo, constCode.value), ev.value, dataType)
-
-    if (nullable) {
-      val nullSafeEval =
-        genCode + ctx.nullSafeExec(geoExpr.nullable, geoCode.isNull) {
-          s"""
-             |${ev.isNull} = false; // resultCode could change nullability.
-             |$assignment
-             |""".stripMargin
-        }
-      ev.copy(code =
-        code"""
-            boolean ${ev.isNull} = true;
-            $geoDeclare
-            ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-            $nullSafeEval
-            """)
-
-    }
-    else {
-      ev.copy(code =
-        code"""
-          $geoDeclare
-          $genCode
-          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
-          $assignment
-          """, FalseLiteral)
-    }
-  }
-
-}
-
 abstract class ST_UnaryOp extends ArcternExpr {
 
   def expr: Expression
@@ -323,27 +253,27 @@ case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
 }
 
-case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_BinaryOpWithConst {
+case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   assert(inputsExpr.length == 2)
 
-  override def geoExpr: Expression = inputsExpr.head
+  override def expr:Expression = inputsExpr(0)
 
-  override def constExpr: Expression = inputsExpr(1)
+  def distanceValue(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (geo, const) => s"$geo.buffer($const)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.buffer(${distanceValue(ctx)})")
 
   override def dataType: DataType = new GeometryUDT
 
 }
 
-case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_BinaryOpWithConst {
+case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   assert(inputsExpr.length == 2)
 
-  override def geoExpr: Expression = inputsExpr.head
+  override def expr: Expression = inputsExpr.head
 
-  override def constExpr: Expression = inputsExpr(1)
+  def precisionValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (geo, const) => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel($const))")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel(${precisionValue(ctx)}))")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -361,14 +291,14 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override def dataType: DataType = new GeometryUDT
 }
 
-case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_BinaryOpWithConst {
+case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   assert(inputsExpr.length == 2)
 
-  override def geoExpr: Expression = inputsExpr.head
+  override def expr: Expression = inputsExpr.head
 
-  override def constExpr: Expression = inputsExpr(1)
+  def toleranceValue(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (geo, const) => s"org.locationtech.jts.simplify.TopologyPreservingSimplifier.simplify($geo, $const)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.simplify.TopologyPreservingSimplifier.simplify($geo, ${toleranceValue(ctx)})")
 
   override def dataType: DataType = new GeometryUDT
 
