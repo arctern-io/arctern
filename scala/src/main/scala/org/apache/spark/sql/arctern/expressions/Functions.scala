@@ -193,7 +193,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(expr)
 
-  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String, additionalCode: String = null): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(expr))
 
     val exprCode = expr.genCode(ctx)

@@ -29,9 +29,9 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
-    df.createOrReplaceTempView("data")
+    df.createOrReplaceTempView("ST_Union_Aggr_data")
 
-    val rst = spark.sql("select ST_Union_Aggr(geo) from data")
+    val rst = spark.sql("select ST_Union_Aggr(geo) from ST_Union_Aggr_data")
 
     rst.show(false)
   }
@@ -48,9 +48,9 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
-    df.createOrReplaceTempView("data")
+    df.createOrReplaceTempView("ST_Union_Aggr_Null_data")
 
-    val rst = spark.sql("select ST_Union_Aggr(ST_GeomFromText(geo)) from data")
+    val rst = spark.sql("select ST_Union_Aggr(ST_GeomFromText(geo)) from ST_Union_Aggr_Null_data")
     val collect = rst.collect()
 
     assert(!collect(0).isNullAt(0))
@@ -68,9 +68,9 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
-    df.createOrReplaceTempView("data")
+    df.createOrReplaceTempView("ST_Envelope_Aggr_data")
 
-    val rst = spark.sql("select ST_Envelope_Aggr(geo) from data")
+    val rst = spark.sql("select ST_Envelope_Aggr(geo) from ST_Envelope_Aggr_data")
 
     rst.show(false)
   }
@@ -87,9 +87,9 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
-    df.createOrReplaceTempView("data")
+    df.createOrReplaceTempView("ST_Envelope_Aggr_Null_data")
 
-    val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from data")
+    val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from ST_Envelope_Aggr_Null_data")
     val collect = rst.collect()
 
     assert(!collect(0).isNullAt(0))
