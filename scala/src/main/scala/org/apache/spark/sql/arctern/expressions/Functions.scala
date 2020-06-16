@@ -15,6 +15,8 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
+import java.util
+
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
@@ -23,7 +25,7 @@ import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
 
 object functions {
   def distanceSphere(from: Geometry, to: Geometry): Double = {
@@ -49,19 +51,43 @@ object functions {
         lontitudeH *= lontitudeH
         val tmp = java.lang.Math.cos(fromlat * 0.017453292519943295769236907684886) *
           java.lang.Math.cos(tolat * 0.017453292519943295769236907684886)
-        distance =  6372797.560856 * (2.0 * java.lang.Math.asin(java.lang.Math.sqrt(latitudeH + tmp * lontitudeH)))
+        distance = 6372797.560856 * (2.0 * java.lang.Math.asin(java.lang.Math.sqrt(latitudeH + tmp * lontitudeH)))
         distance
       }
     }
   }
 
   def transform(geo: Geometry, sourceCRS: String, targetCRS: String): Geometry = {
-      System.setProperty("org.geotools.referencing.forceXY", "true")
-      val sourceCRScode = CRS.decode(sourceCRS)
-      val targetCRScode = CRS.decode(targetCRS)
-      val transform = CRS.findMathTransform(sourceCRScode, targetCRScode)
-      val res = JTS.transform(geo, transform)
-      res
+    System.setProperty("org.geotools.referencing.forceXY", "true")
+    val sourceCRScode = CRS.decode(sourceCRS)
+    val targetCRScode = CRS.decode(targetCRS)
+    val transform = CRS.findMathTransform(sourceCRScode, targetCRScode)
+    val res = JTS.transform(geo, transform)
+    res
+  }
+
+  def makeValid(geo: Geometry): Geometry = {
+    val geoType = geo.getGeometryType
+    if(geoType != "Polygon" || geoType != "MultiPolygon") return geo
+    val polygonList: java.util.List[Polygon] = geo match {
+      case g: Polygon =>
+        JTS.makeValid(g, true)
+      case g: MultiPolygon =>
+        val list = new java.util.ArrayList[Polygon]
+        for (i <- 0 until g.getNumGeometries) {
+          val polygon = g.getGeometryN(i).asInstanceOf[Polygon]
+          val polygons = JTS.makeValid(polygon, true)
+          for (j <- 0 until polygons.size()) list.add(polygons.get(j))
+        }
+        list
+      case _ => null
+    }
+    val result = polygonList.toArray.map(g => {
+      val polygon = g.asInstanceOf[Geometry]
+      polygon
+    })
+    val res = if (result.length == 1) result(0) else new GeometryFactory().createGeometryCollection(result)
+    res
   }
 
 }
@@ -300,9 +326,9 @@ case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   assert(inputsExpr.length == 2)
 
-  override def expr:Expression = inputsExpr(0)
+  override def expr: Expression = inputsExpr(0)
 
-  def distanceValue(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+  def distanceValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.buffer(${distanceValue(ctx)})")
 
@@ -340,7 +366,7 @@ case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_U
 
   override def expr: Expression = inputsExpr.head
 
-  def toleranceValue(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+  def toleranceValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.simplify.TopologyPreservingSimplifier.simplify($geo, ${toleranceValue(ctx)})")
 
@@ -494,11 +520,22 @@ case class ST_Transform(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  def sourceCRSCode(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+  def sourceCRSCode(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  def targetCRSCode(ctx:CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+  def targetCRSCode(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.functions.transform($geo, ${sourceCRSCode(ctx)}.toString(), ${targetCRSCode(ctx)}.toString())")
+
+  override def dataType: DataType = new GeometryUDT
+
+}
+
+case class ST_MakeValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+  assert(inputsExpr.length == 1)
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.functions.makeValid($geo)")
 
   override def dataType: DataType = new GeometryUDT
 

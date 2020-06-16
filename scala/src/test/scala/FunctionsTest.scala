@@ -1062,4 +1062,43 @@ class FunctionsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_MakeValid") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0,0 1,1 2,0 0))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_MakeValid(geo) from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_MakeValid-Null") {
+    val data = Seq(
+      Row(null),
+      Row("POINT (-73.990167 40.729884)"),
+      Row("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
+      Row("MULTIPOLYGON ( ((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)) )"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_MakeValid(ST_GeomFromText(geo)) from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+
+    rst.show(false)
+  }
 }
