@@ -27,4 +27,5 @@ resolvers += "Open Source Geospatial Foundation Repository" at "https://repo.osg
 libraryDependencies ++= Seq(
   "org.geotools" % "gt-main" % "23.1",
   "org.geotools" % "gt-referencing" % "23.1",
+  "org.geotools" % "gt-epsg-hsql" % "23.1"
 )

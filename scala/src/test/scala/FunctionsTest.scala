@@ -1023,4 +1023,43 @@ class FunctionsTest extends AdapterTest {
 
     rst.show(false)
   }
+
+  test("ST_Transform") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (-73.981153 40.741841)")),
+      Row(GeometryUDT.FromWkt("POINT (-74.123512 40.561438)")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Transform(geo, 'EPSG:4326', 'EPSG:3857') from data ")
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst.show(false)
+  }
+
+  test("ST_Transform-Null") {
+    val data = Seq(
+      Row(null),
+      Row("POINT (-73.990167 40.729884)"),
+      Row("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"),
+      Row("POINT (-73.981153 40.741841)"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Transform(ST_GeomFromText(geo), 'EPSG:4326', 'EPSG:3857') from data ")
+    val collect = rst.collect()
+
+    //    rst.queryExecution.debug.codegen()
+
+    assert(collect(0).isNullAt(0))
+
+    rst.show(false)
+  }
 }

@@ -18,9 +18,11 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
+import org.apache.spark.sql.types.{BooleanType, DataType, DoubleType, IntegerType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.geotools.geometry.jts.JTS
+import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.Geometry
 
 object functions {
@@ -52,6 +54,16 @@ object functions {
       }
     }
   }
+
+  def transform(geo: Geometry, sourceCRS: String, targetCRS: String): Geometry = {
+      System.setProperty("org.geotools.referencing.forceXY", "true")
+      val sourceCRScode = CRS.decode(sourceCRS)
+      val targetCRScode = CRS.decode(targetCRS)
+      val transform = CRS.findMathTransform(sourceCRScode, targetCRScode)
+      val res = JTS.transform(geo, transform)
+      res
+  }
+
 }
 
 abstract class ST_BinaryOp extends ArcternExpr {
@@ -155,7 +167,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(expr)
 
-  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String, additionalCode: String = null): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(expr))
 
     val exprCode = expr.genCode(ctx)
@@ -477,4 +489,17 @@ case class ST_DistanceSphere(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override def dataType: DataType = DoubleType
 }
 
+case class ST_Transform(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+  assert(inputsExpr.length == 3)
 
+  override def expr: Expression = inputsExpr.head
+
+  def sourceCRSCode(ctx:CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def targetCRSCode(ctx:CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.functions.transform($geo, ${sourceCRSCode(ctx)}.toString(), ${targetCRSCode(ctx)}.toString())")
+
+  override def dataType: DataType = new GeometryUDT
+
+}
