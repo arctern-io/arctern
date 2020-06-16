@@ -78,7 +78,8 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
     const std::shared_ptr<arrow::Array>& geometries, int32_t precision);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Translate(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y);
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
+    double shifter_y);
 
 std::shared_ptr<arrow::Array> ST_Translate(
     const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y);

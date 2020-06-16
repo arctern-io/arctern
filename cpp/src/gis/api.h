@@ -89,7 +89,8 @@ std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
     const std::shared_ptr<arrow::Array>& geometries, double distance_tolerance);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Translate(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y);
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
+    double shifter_y);
 
 std::shared_ptr<arrow::Array> ST_Centroid(
     const std::shared_ptr<arrow::Array>& geometries);

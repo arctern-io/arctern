@@ -162,7 +162,8 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
 
 class TranslateVisitor : public OGRDefaultGeometryVisitor {
  public:
-  explicit TranslateVisitor(double shifter_x, double shifter_y) : shifter_x(shifter_x), shifter_y(shifter_y) {}
+  explicit TranslateVisitor(double shifter_x, double shifter_y)
+      : shifter_x(shifter_x), shifter_y(shifter_y) {}
   ~TranslateVisitor() = default;
 
   void visit(OGRPoint*) override;
