@@ -27,9 +27,16 @@ def _column_geo(f, *args):
     return GeoSeries(kss._internal, anchor=kss._kdf)
 
 
+def _validate_crs(crs):
+    if crs is not None and not isinstance(crs, str):
+        raise TypeError("`crs` should be spatial reference identifier string")
+    crs = crs.upper() if crs is not None else crs
+    return crs
+
+
 class GeoSeries(ks.Series):
     def __init__(
-            self, data=None, index=None, dtype=None, name=None, copy=False, fastpath=False, anchor=None
+            self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False, anchor=None
     ):
         if isinstance(data, _InternalFrame):
             assert dtype is None
@@ -45,16 +52,85 @@ class GeoSeries(ks.Series):
                 assert name is None
                 assert not copy
                 assert not fastpath
+                if not data.crs == crs:
+                    raise ValueError("csr of the passed geometry data is different from crs.")
+                self.set_crs(crs)
                 pds = data.astype(object, copy=False)
             else:
                 pds = arctern.GeoSeries(
-                    data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
+                    data=data, index=index, dtype=dtype, name=name, crs=crs, copy=copy, fastpath=fastpath
                 )
+                self.set_crs(pds.crs)
                 pds = pds.astype(object, copy=False)
             kdf = DataFrame(pds)
             IndexOpsMixin.__init__(
                 self, kdf._internal.copy(spark_column=kdf._internal.data_spark_columns[0]), kdf
             )
+
+    def set_crs(self, crs):
+        """
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
+
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
+
+        Notes
+        -------
+        Arctern supports common CRSs listed at the `Spatial Reference <https://spatialreference.org/>`_ website.
+
+        Examples
+        -------
+        >>> from arctern_pyspark import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+        >>> s.set_crs("EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
+        """
+        crs = _validate_crs(crs)
+        self._crs = crs
+
+    @property
+    def crs(self):
+        """
+        Returns the Coordinate Reference System (CRS) of the GeoSeries.
+
+        Returns
+        -------
+        str
+            CRS of the GeoSeries.
+
+        Examples
+        -------
+        >>> from arctern_pyspark import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"], crs="EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
+        """
+        return self._crs
+
+    @crs.setter
+    def crs(self, crs):
+        """
+        Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
+
+        Parameters
+        ----------
+        crs : str
+            A string representation of CRS.
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
+
+        Examples
+        -------
+        >>> from arctern_pyspark import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+        >>> s.set_crs("EPSG:4326")
+        >>> s.crs
+        'EPSG:4326'
+        """
+        self.set_crs(crs)
 
     def __repr__(self):
         max_display_count = get_option("display.max_rows")
