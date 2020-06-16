@@ -18,7 +18,7 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{ArrayType, ByteType, DataType, NumericType, StringType}
+import org.apache.spark.sql.types.{ArrayType, ByteType, DataType, DoubleType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 
@@ -61,8 +61,8 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 2)
-  assert(inputExpr.head.dataType match { case _: NumericType => true })
-  assert(inputExpr(1).dataType match { case _: NumericType => true })
+  assert(inputExpr.head.dataType match { case _: DoubleType => true })
+  assert(inputExpr(1).dataType match { case _: DoubleType => true })
 
   override def nullable: Boolean = true
 
@@ -102,10 +102,10 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   assert(inputExpr.length == 4)
-  assert(inputExpr.head.dataType match { case _: NumericType => true })
-  assert(inputExpr(1).dataType match { case _: NumericType => true })
-  assert(inputExpr(2).dataType match { case _: NumericType => true })
-  assert(inputExpr(3).dataType match { case _: NumericType => true })
+  assert(inputExpr.head.dataType match { case _: DoubleType => true })
+  assert(inputExpr(1).dataType match { case _: DoubleType => true })
+  assert(inputExpr(2).dataType match { case _: DoubleType => true })
+  assert(inputExpr(3).dataType match { case _: DoubleType => true })
 
   override def nullable: Boolean = true
 

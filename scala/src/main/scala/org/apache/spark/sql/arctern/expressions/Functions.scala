@@ -15,8 +15,6 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
-import java.util
-
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
