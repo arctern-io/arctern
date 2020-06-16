@@ -81,9 +81,6 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
     double shifter_y);
 
-std::shared_ptr<arrow::Array> ST_Translate(
-    const std::shared_ptr<arrow::Array>& geometries, double shifter_x, double shifter_y);
-
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
