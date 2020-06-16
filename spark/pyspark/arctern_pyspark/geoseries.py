@@ -133,7 +133,8 @@ class GeoSeries(ks.Series):
     def polygon_from_envelope(self, min_x, min_y, max_x, max_y, crs=None):
         return _column_geo("ST_PolygonFromEnvelope", min_x, min_y, max_x, max_y, crs)
 
-    def point(self, x, y):
+    @classmethod
+    def point(cls, x, y):
         return _column_geo("ST_Point", x, y)
 
     def geom_from_geojson(self, json):
