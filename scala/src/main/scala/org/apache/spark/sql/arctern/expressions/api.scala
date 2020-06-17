@@ -53,6 +53,26 @@ object api {
     ST_NPoints(Seq(geo.expr))
   }
 
+  def st_envelope(geo: Column): Column = Column {
+    ST_Envelope(Seq(geo.expr))
+  }
+
+  def st_buffer(geo: Column, distance: Column): Column = Column {
+    ST_Buffer(Seq(geo.expr, distance.expr))
+  }
+
+  def st_precisionreduce(geo: Column, precision: Column): Column = Column {
+    ST_PrecisionReduce(Seq(geo.expr, precision.expr))
+  }
+
+  def st_intersection(left: Column, right: Column): Column = Column {
+    ST_Intersection(Seq(left.expr, right.expr))
+  }
+
+  def st_simplifypreservetopology(geo: Column, tolerance: Column): Column = Column {
+    ST_SimplifyPreserveTopology(Seq(geo.expr, tolerance.expr))
+  }
+
   def st_convexhull(geo: Column): Column = Column {
     ST_ConvexHull(Seq(geo.expr))
   }

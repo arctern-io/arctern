@@ -17,33 +17,38 @@
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
+import org.apache.spark.sql.arctern.expressions.api._
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.functions.col
 
 class FunctionsTest extends AdapterTest {
- test("ST_Within") {
-     val data = Seq(
-       Row(1, GeometryUDT.FromWkt("POINT (20 20)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-       Row(2, GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-       Row(3, GeometryUDT.FromWkt("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-       Row(4, GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"))
-     )
-  
-     val rdd_d = spark.sparkContext.parallelize(data)
-     val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geo1", new GeometryUDT, nullable = false), StructField("geo2", new GeometryUDT, nullable = false)))
-     val df = spark.createDataFrame(rdd_d, schema)
-     df.createOrReplaceTempView("data")
-     val rst = spark.sql("select idx, ST_Within(geo1, geo2) from data")
-    //  val rst = spark.sql("select idx, geo1, geo2 from data")
-  
-    //  rst.queryExecution.debug.codegen()
-     val collect = rst.collect()
-  
-     assert(collect(0).getBoolean(1) == true)
-     assert(collect(1).getBoolean(1) == false)
-     assert(collect(2).getBoolean(1) == true)
-     assert(collect(3).getBoolean(1) == false)
-  
-     rst.show(false)
-   }
+  test("ST_Within") {
+    val data = Seq(
+      Row(1, GeometryUDT.FromWkt("POINT (20 20)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(2, GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(3, GeometryUDT.FromWkt("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(4, GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"))
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geo1", new GeometryUDT, nullable = false), StructField("geo2", new GeometryUDT, nullable = false)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("data")
+    val rst = spark.sql("select idx, ST_Within(geo1, geo2) from data")
+
+    //    rst.queryExecution.debug.codegen()
+    val collect = rst.collect()
+
+    assert(collect(0).getBoolean(1) == true)
+    assert(collect(1).getBoolean(1) == false)
+    assert(collect(2).getBoolean(1) == true)
+    assert(collect(3).getBoolean(1) == false)
+
+    rst.show(false)
+
+    val rst2 = df.select(st_within(col("geo1"), col("geo2")))
+    rst2.show(false)
+  }
 
   test("ST_Within-Null") {
     val data = Seq(
@@ -60,6 +65,7 @@ class FunctionsTest extends AdapterTest {
     val rst = spark.sql("select idx, ST_Within(ST_GeomFromText(geo1), ST_GeomFromText(geo2)) from table_ST_Within")
 
     //    rst.queryExecution.debug.codegen()
+
     val collect = rst.collect()
 
     assert(collect(0).isNullAt(1))
@@ -68,6 +74,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(3).getBoolean(1) == false)
 
     rst.show(false)
+
+    val rst2 = df.select(st_within(st_geomfromtext(col("geo1")), st_geomfromtext(col("geo2"))))
+    rst2.show(false)
   }
 
   test("ST_Centroid") {
@@ -82,8 +91,10 @@ class FunctionsTest extends AdapterTest {
 
     val rst = spark.sql("select idx, ST_Centroid(geo) from data ")
     //    rst.queryExecution.debug.codegen()
-    rst.show()
+    rst.show(false)
 
+    val rst2 = df.select(st_centroid(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_Centroid-Null") {
@@ -98,15 +109,16 @@ class FunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("data")
 
     val rst = spark.sql("select idx, ST_Centroid(ST_GeomFromText(geo)) from data ")
-    //    val rst = spark.sql("select idx, ST_GeomFromText(geo) from data")
     //    rst.queryExecution.debug.codegen()
     val collect = rst.collect()
     assert(collect(0).isNullAt(1))
     assert(collect(2).isNullAt(1))
 
+    val rst2 = df.select(st_centroid(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
-  test("ST_Within-Nest"){
+  test("ST_Within-Nest") {
     val data = Seq(
       Row(1, "polygon((0 0, 0 1,1 1, 1 0, 0 0))", "polygon((0 0, 0 1,1 1, 1 0, 0 0))"),
       Row(2, "error geo", "polygon((0 0, 0 1,1 1, 1 0, 0 0))"),
@@ -121,7 +133,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).getBoolean(1))
     assert(collect(1).isNullAt(1))
     assert(collect(2).isNullAt(1))
-    // rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_within(st_centroid(st_geomfromtext(col("geo1"))), st_centroid(st_geomfromtext(col("geo2")))))
+    rst2.show(false)
   }
 
   test("ST_IsValid") {
@@ -139,7 +154,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_isvalid(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_IsValid-Null") {
@@ -161,7 +179,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_isvalid(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_GeometryType") {
@@ -181,7 +202,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_geometrytype(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_GeometryType-Null") {
@@ -205,7 +229,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_geometrytype(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_IsSimple") {
@@ -225,7 +252,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_issimple(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_IsSimple-Null") {
@@ -249,7 +279,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_centroid(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_NPoints") {
@@ -269,7 +302,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_npoints(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_NPoints-Null") {
@@ -293,7 +329,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_npoints(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_Envelope") {
@@ -312,7 +351,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_envelope(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_Envelope-Null") {
@@ -336,7 +378,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_envelope(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_Buffer") {
@@ -356,7 +401,10 @@ class FunctionsTest extends AdapterTest {
 
     //    rst.queryExecution.debug.codegen()
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_buffer(col("geo"), lit(1)))
+    rst2.show(false)
   }
 
   test("ST_Buffer-Null") {
@@ -380,7 +428,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
-    rst.show()
+    rst.show(false)
+
+    val rst2 = df.select(st_buffer(st_geomfromtext(col("geo")), lit(1)))
+    rst2.show(false)
   }
 
   test("ST_PrecisionReduce") {
@@ -401,6 +452,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_precisionreduce(col("geo"), lit(2)))
+    rst2.show(false)
   }
 
   test("ST_PrecisionReduce-Null") {
@@ -425,6 +479,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_precisionreduce(st_geomfromtext(col("geo")), lit(2)))
+    rst2.show(false)
   }
 
   test("ST_Intersection") {
@@ -445,6 +502,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_intersection(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Intersection-Null") {
@@ -468,6 +528,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_intersection(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_SimplifyPreserveTopology") {
@@ -488,6 +551,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_simplifypreservetopology(col("geo"), lit(2)))
+    rst2.show(false)
   }
 
   test("ST_SimplifyPreserveTopology-Null") {
@@ -512,6 +578,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_simplifypreservetopology(st_geomfromtext(col("geo")), lit(2)))
+    rst2.show(false)
   }
 
   test("ST_ConvexHull") {
@@ -532,6 +601,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_convexhull(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_ConvexHull-Null") {
@@ -556,6 +628,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_convexhull(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_Area") {
@@ -576,6 +651,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_area(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_Area-Null") {
@@ -600,6 +678,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_area(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_Length") {
@@ -620,6 +701,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_length(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_Length-Null") {
@@ -644,6 +728,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_length(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 
   test("ST_HausdorffDistance") {
@@ -663,6 +750,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_hausdorffdistance(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_HausdorffDistance-Null") {
@@ -686,6 +776,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_hausdorffdistance(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Distance") {
@@ -705,6 +798,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_distance(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Distance-Null") {
@@ -728,6 +824,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_distance(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Equals") {
@@ -747,6 +846,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_equals(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Equals-Null") {
@@ -770,6 +872,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_equals(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Touches") {
@@ -789,6 +894,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_touches(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Touches-Null") {
@@ -812,6 +920,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_touches(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Overlaps") {
@@ -831,6 +942,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_overlaps(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Overlaps-Null") {
@@ -854,6 +968,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_overlaps(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Crosses") {
@@ -873,6 +990,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_crosses(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Crosses-Null") {
@@ -896,6 +1016,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_crosses(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Contains") {
@@ -915,6 +1038,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_contains(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Contains-Null") {
@@ -938,6 +1064,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_contains(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Intersects") {
@@ -957,6 +1086,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_intersects(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_Intersects-Null") {
@@ -980,6 +1112,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_intersects(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_DistanceSphere") {
@@ -997,6 +1132,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_distancesphere(col("left_geo"), col("right_geo")))
+    rst2.show(false)
   }
 
   test("ST_DistanceSphere-Null") {
@@ -1022,6 +1160,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_distancesphere(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
   }
 
   test("ST_Transform") {
@@ -1039,6 +1180,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_transform(col("geo"), lit("EPSG:4326"), lit("EPSG:3857")))
+    rst2.show(false)
   }
 
   test("ST_Transform-Null") {
@@ -1061,6 +1205,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_transform(st_geomfromtext(col("geo")), lit("EPSG:4326"), lit("EPSG:3857")))
+    rst2.show(false)
   }
 
   test("ST_MakeValid") {
@@ -1078,6 +1225,9 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+
+    val rst2 = df.select(st_makevalid(col("geo")))
+    rst2.show(false)
   }
 
   test("ST_MakeValid-Null") {
@@ -1100,5 +1250,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
 
     rst.show(false)
+
+    val rst2 = df.select(st_makevalid(st_geomfromtext(col("geo"))))
+    rst2.show(false)
   }
 }
