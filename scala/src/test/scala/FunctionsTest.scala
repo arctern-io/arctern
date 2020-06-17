@@ -48,6 +48,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_within(col("geo1"), col("geo2")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Within-Null") {
@@ -77,6 +78,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_within(st_geomfromtext(col("geo1")), st_geomfromtext(col("geo2"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Centroid") {
@@ -92,9 +94,11 @@ class FunctionsTest extends AdapterTest {
     val rst = spark.sql("select idx, ST_Centroid(geo) from data ")
     //    rst.queryExecution.debug.codegen()
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_centroid(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Centroid-Null") {
@@ -116,6 +120,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_centroid(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Within-Nest") {
@@ -137,6 +142,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_within(st_centroid(st_geomfromtext(col("geo1"))), st_centroid(st_geomfromtext(col("geo2")))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_IsValid") {
@@ -155,9 +161,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_isvalid(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_IsValid-Null") {
@@ -183,6 +191,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_isvalid(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_GeometryType") {
@@ -203,9 +212,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_geometrytype(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_GeometryType-Null") {
@@ -233,6 +244,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_geometrytype(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_IsSimple") {
@@ -253,9 +265,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_issimple(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_IsSimple-Null") {
@@ -283,6 +297,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_centroid(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_NPoints") {
@@ -303,9 +318,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_npoints(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_NPoints-Null") {
@@ -333,6 +350,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_npoints(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Envelope") {
@@ -352,9 +370,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_envelope(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Envelope-Null") {
@@ -382,6 +402,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_envelope(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Buffer") {
@@ -402,9 +423,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_buffer(col("geo"), lit(1)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Buffer-Null") {
@@ -432,6 +455,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_buffer(st_geomfromtext(col("geo")), lit(1)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_PrecisionReduce") {
@@ -452,9 +476,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_precisionreduce(col("geo"), lit(2)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_PrecisionReduce-Null") {
@@ -482,6 +508,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_precisionreduce(st_geomfromtext(col("geo")), lit(2)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Intersection") {
@@ -502,9 +529,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_intersection(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Intersection-Null") {
@@ -531,6 +560,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_intersection(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_SimplifyPreserveTopology") {
@@ -551,9 +581,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_simplifypreservetopology(col("geo"), lit(2)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_SimplifyPreserveTopology-Null") {
@@ -581,6 +613,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_simplifypreservetopology(st_geomfromtext(col("geo")), lit(2)))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_ConvexHull") {
@@ -601,9 +634,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_convexhull(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_ConvexHull-Null") {
@@ -631,6 +666,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_convexhull(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Area") {
@@ -651,9 +687,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_area(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Area-Null") {
@@ -681,6 +719,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_area(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Length") {
@@ -701,9 +740,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_length(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Length-Null") {
@@ -731,6 +772,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_length(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_HausdorffDistance") {
@@ -750,9 +792,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_hausdorffdistance(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_HausdorffDistance-Null") {
@@ -779,6 +823,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_hausdorffdistance(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Distance") {
@@ -798,9 +843,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_distance(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Distance-Null") {
@@ -827,6 +874,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_distance(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Equals") {
@@ -846,9 +894,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_equals(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Equals-Null") {
@@ -875,6 +925,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_equals(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Touches") {
@@ -894,9 +945,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_touches(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Touches-Null") {
@@ -923,6 +976,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_touches(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Overlaps") {
@@ -942,9 +996,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_overlaps(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Overlaps-Null") {
@@ -971,6 +1027,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_overlaps(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Crosses") {
@@ -990,9 +1047,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_crosses(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Crosses-Null") {
@@ -1019,6 +1078,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_crosses(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Contains") {
@@ -1038,9 +1098,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_contains(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Contains-Null") {
@@ -1067,6 +1129,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_contains(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Intersects") {
@@ -1086,9 +1149,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_intersects(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Intersects-Null") {
@@ -1115,6 +1180,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_intersects(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_DistanceSphere") {
@@ -1132,9 +1198,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_distancesphere(col("left_geo"), col("right_geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_DistanceSphere-Null") {
@@ -1163,6 +1231,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_distancesphere(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Transform") {
@@ -1180,9 +1249,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_transform(col("geo"), lit("EPSG:4326"), lit("EPSG:3857")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_Transform-Null") {
@@ -1208,6 +1279,7 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_transform(st_geomfromtext(col("geo")), lit("EPSG:4326"), lit("EPSG:3857")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_MakeValid") {
@@ -1225,9 +1297,11 @@ class FunctionsTest extends AdapterTest {
     //    rst.queryExecution.debug.codegen()
 
     rst.show(false)
+    val collect = rst.collect()
 
     val rst2 = df.select(st_makevalid(col("geo")))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 
   test("ST_MakeValid-Null") {
@@ -1253,5 +1327,6 @@ class FunctionsTest extends AdapterTest {
 
     val rst2 = df.select(st_makevalid(st_geomfromtext(col("geo"))))
     rst2.show(false)
+    val collect2 = rst2.collect()
   }
 }

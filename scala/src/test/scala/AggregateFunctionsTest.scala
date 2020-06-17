@@ -32,8 +32,11 @@ class AggregateFunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("ST_Union_Aggr_data")
 
     val rst = spark.sql("select ST_Union_Aggr(geo) from ST_Union_Aggr_data")
-
     rst.show(false)
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Union_Aggr-Null") {
@@ -51,11 +54,11 @@ class AggregateFunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("ST_Union_Aggr_Null_data")
 
     val rst = spark.sql("select ST_Union_Aggr(ST_GeomFromText(geo)) from ST_Union_Aggr_Null_data")
+    rst.show(false)
+
     val collect = rst.collect()
 
-    assert(!collect(0).isNullAt(0))
-
-    rst.show(false)
+    assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Envelope_Aggr") {
@@ -71,8 +74,11 @@ class AggregateFunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("ST_Envelope_Aggr_data")
 
     val rst = spark.sql("select ST_Envelope_Aggr(geo) from ST_Envelope_Aggr_data")
-
     rst.show(false)
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((-1 -1, -1 20, 20 20, 20 -1, -1 -1))")
   }
 
   test("ST_Envelope_Aggr-Null") {
@@ -90,11 +96,11 @@ class AggregateFunctionsTest extends AdapterTest {
     df.createOrReplaceTempView("ST_Envelope_Aggr_Null_data")
 
     val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from ST_Envelope_Aggr_Null_data")
+    rst.show(false)
+
     val collect = rst.collect()
 
-    assert(!collect(0).isNullAt(0))
-
-    rst.show(false)
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
   }
 
 }
