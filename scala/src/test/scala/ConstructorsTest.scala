@@ -16,7 +16,7 @@
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
-import org.apache.spark.sql.arctern.expressions.functions._
+import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
