@@ -22,6 +22,37 @@ def test_ST_IsValid():
     assert rst[0]
     assert rst[1]
 
+def test_ST_IsEmpty():
+    data = GeoSeries(["LINESTRING EMPTY", "POINT (100 200)"])
+    rst = data.is_empty
+    assert rst[0] == 1
+    assert rst[1] == 0
+
+def test_ST_Difference():
+    data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+    rst = data1.difference(data2).to_wkt()
+    assert rst[0] == "LINESTRING (0 0,4 0)"
+    assert rst[1] == "POINT (6 0)"
+
+def test_ST_SymDifference():
+    data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+    rst = data1.sym_difference(data2).to_wkt()
+    assert rst[0] == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))"
+    assert rst[1] == "POINT (6 0)"
+
+def test_ST_Scale():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    rst = data.scale(2, 2).to_wkt()
+    assert rst[0] == "LINESTRING (0 0,10 0)"
+    assert rst[1] == "MULTIPOINT (8 0,12 0)"
+
+def test_ST_Affine():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    rst = data.affine(2, 2, 2, 2, 2, 2).to_wkt()
+    assert rst[0] == "LINESTRING (2 2,12 12)"
+    assert rst[1] == "MULTIPOINT (10 10,14 14)"
 
 def test_ST_PrecisionReduce():
     data = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])

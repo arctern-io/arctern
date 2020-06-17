@@ -25,6 +25,7 @@
 #include "gis/gdal/geometry_visitor.h"
 #include "map_match/map_match.h"
 #include "utils/check_status.h"
+#include "gis/gdal/geometry_visitor.h"
 
 #define COMMON_TEST_CASES                                                              \
   auto p1 = "POINT (0 1)";                                                             \
