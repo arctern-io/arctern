@@ -986,6 +986,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
         builder.Append(wkb, rst_wkb_size);
       }
       CPLFree(wkb);
+      OGRGeometryFactory::destroyGeometry(rst);
     }
   };
 
@@ -1009,6 +1010,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Difference(
         builder.Append(wkb, rst_wkb_size);
       }
       CPLFree(wkb);
+      OGRGeometryFactory::destroyGeometry(rst);
     }
   };
 
@@ -1018,21 +1020,26 @@ std::shared_ptr<arrow::ChunkedArray> ST_Difference(
 std::shared_ptr<arrow::ChunkedArray> ST_ExteriorRing(
     const std::shared_ptr<arrow::ChunkedArray>& geometries) {
   auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
-    assert(std::string(ogr->getGeometryName()) == "POLYGON");
-    if (ogr->IsEmpty()) {
+    if (ogr->IsEmpty() || std::string(ogr->getGeometryName()) != "POLYGON") {
       builder.AppendNull();
     } else {
       auto polygon_geo = dynamic_cast<OGRPolygon*>(ogr);
-      OGRLineString* rst = polygon_geo->getExteriorRing();
+      auto exterior_ring = polygon_geo->getExteriorRing();
+      auto num_points = exterior_ring->getNumPoints();
+      auto points = new OGRRawPoint[num_points];
+      auto rst = std::make_shared<OGRLineString>();
+      exterior_ring->getPoints(points);
+      rst->setPoints(num_points, points);
       auto rst_wkb_size = rst->WkbSize();
       auto wkb = static_cast<unsigned char*>(CPLMalloc(rst_wkb_size));
-      auto err_code = OGR_G_ExportToWkb(rst, OGRwkbByteOrder::wkbNDR, wkb);
+      auto err_code = OGR_G_ExportToWkb(rst.get(), OGRwkbByteOrder::wkbNDR, wkb);
       if (err_code != OGRERR_NONE) {
         builder.AppendNull();
       } else {
         builder.Append(wkb, rst_wkb_size);
       }
       CPLFree(wkb);
+      delete[] points;
     }
   };
 

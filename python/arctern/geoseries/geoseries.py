@@ -711,6 +711,26 @@ class GeoSeries(Series):
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
+    def exterior_ring(self):
+        """
+        Returns a line string representing the exterior ring of the POLYGON geometry. Return NULL if the geometry is not a polygon.
+
+        Returns
+        --------
+        GeoSeries
+            A GeoSeries contains geometries that represents the exterior ring of the POLYGON geometry.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+        >>> s.exterior_ring()
+        0                                None
+        1    LINESTRING (0 0,1 0,1 1,0 1,0 0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_ExteriorRing, self)
+
     def difference(self, other):
         """
         Returns a geometry that represents that part of geometry slef that does not intersect with geometry other.

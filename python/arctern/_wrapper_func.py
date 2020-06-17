@@ -50,6 +50,7 @@ __all__ = [
     "ST_CurveToLine",
     "ST_SymDifference",
     "ST_Difference",
+    "ST_ExteriorRing",
     "ST_IsEmpty",
     "ST_Scale",
     "ST_Affine",
