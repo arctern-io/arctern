@@ -1205,13 +1205,6 @@ class GeoSeries(Series):
         0    False
         1    False
         dtype: bool
-
-        Alternatively, ``other`` can be a geometry in WKB format.
-
-        >>> s2.disjoint(s1[0])
-        0    False
-        1    False
-        dtype: bool
         """
         return _binary_op(arctern.ST_Disjoint, self, other).astype(bool, copy=False)
 
