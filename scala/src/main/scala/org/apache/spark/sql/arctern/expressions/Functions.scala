@@ -18,7 +18,7 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{BooleanType, DataType, DoubleType, IntegerType, StringType}
+import org.apache.spark.sql.types.{AbstractDataType, BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.geotools.geometry.jts.JTS
@@ -244,7 +244,6 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
 
 case class ST_Within(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr(0)
 
@@ -253,10 +252,11 @@ case class ST_Within(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.within($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr(0)
 
@@ -264,10 +264,10 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_IsValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -275,10 +275,10 @@ case class ST_IsValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = BooleanType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_GeometryType(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -286,10 +286,10 @@ case class ST_GeometryType(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = StringType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_IsSimple(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -297,10 +297,10 @@ case class ST_IsSimple(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = BooleanType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_NPoints(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -308,10 +308,10 @@ case class ST_NPoints(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = IntegerType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -319,10 +319,10 @@ case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 2)
 
   override def expr: Expression = inputsExpr(0)
 
@@ -332,10 +332,10 @@ case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 2)
 
   override def expr: Expression = inputsExpr.head
 
@@ -345,10 +345,10 @@ case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType)
 }
 
 case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -357,10 +357,11 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right)")
 
   override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 2)
 
   override def expr: Expression = inputsExpr.head
 
@@ -370,10 +371,10 @@ case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_U
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType)
 }
 
 case class ST_ConvexHull(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -381,10 +382,10 @@ case class ST_ConvexHull(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_Area(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -392,10 +393,10 @@ case class ST_Area(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = DoubleType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_Length(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -403,10 +404,10 @@ case class ST_Length(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = DoubleType
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
 case class ST_HausdorffDistance(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -415,10 +416,11 @@ case class ST_HausdorffDistance(inputsExpr: Seq[Expression]) extends ST_BinaryOp
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance.distance($left, $right)")
 
   override def dataType: DataType = DoubleType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Distance(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -427,10 +429,11 @@ case class ST_Distance(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.distance($right)")
 
   override def dataType: DataType = DoubleType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Equals(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -439,10 +442,11 @@ case class ST_Equals(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.equals($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Touches(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -451,10 +455,11 @@ case class ST_Touches(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.touches($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Overlaps(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -463,10 +468,11 @@ case class ST_Overlaps(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.overlaps($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Crosses(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -475,10 +481,11 @@ case class ST_Crosses(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.crosses($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Contains(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -487,10 +494,11 @@ case class ST_Contains(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.contains($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Intersects(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -499,10 +507,11 @@ case class ST_Intersects(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersects($right)")
 
   override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_DistanceSphere(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
-  assert(inputsExpr.length == 2)
 
   override def leftExpr: Expression = inputsExpr.head
 
@@ -511,10 +520,11 @@ case class ST_DistanceSphere(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"org.apache.spark.sql.arctern.expressions.functions.distanceSphere($left, $right)")
 
   override def dataType: DataType = DoubleType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
 
 case class ST_Transform(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 3)
 
   override def expr: Expression = inputsExpr.head
 
@@ -526,10 +536,10 @@ case class ST_Transform(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, StringType, StringType)
 }
 
 case class ST_MakeValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
-  assert(inputsExpr.length == 1)
 
   override def expr: Expression = inputsExpr.head
 
@@ -537,4 +547,5 @@ case class ST_MakeValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
