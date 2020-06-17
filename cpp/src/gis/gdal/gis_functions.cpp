@@ -816,8 +816,8 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle, double rotate_x,
-    double rotate_y) {
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    double rotate_x, double rotate_y) {
   auto rotate_visitor = new RotateVisitor(rotation_angle, rotate_x, rotate_y);
   auto op = [&rotate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     geo->accept(rotate_visitor);

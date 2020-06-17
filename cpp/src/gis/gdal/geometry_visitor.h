@@ -214,7 +214,7 @@ class RotateVisitor : public OGRDefaultGeometryVisitor {
   double rotation_angle = 0.0;
   double rotate_x = 0.0;
   double rotate_y = 0.0;
-//  std::shared_ptr<OGRPoint> centrepoint = nullptr;
+  //  std::shared_ptr<OGRPoint> centrepoint = nullptr;
 };
 
 class ScaleVisitor : public OGRDefaultGeometryVisitor {
