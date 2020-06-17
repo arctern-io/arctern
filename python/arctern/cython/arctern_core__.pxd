@@ -67,6 +67,7 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_IsSimple(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot) except +
     shared_ptr[CChunkedArray] ST_Translate(const shared_ptr[CChunkedArray] &geometries, double shifter_x, double shifter_y) except +
+    shared_ptr[CChunkedArray] ST_Rotate(const shared_ptr[CChunkedArray] &geometries, double rotation_angle, double rotate_x, double rotate_y) except +
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_MakeValid(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_SimplifyPreserveTopology(const shared_ptr[CArray] &geometries, double distanceTolerance) except +

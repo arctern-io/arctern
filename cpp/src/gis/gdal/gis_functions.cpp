@@ -16,8 +16,6 @@
 
 #include "gis/gdal/gis_functions.h"
 
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
 #include <omp.h>
 
 #include <functional>
@@ -814,6 +812,20 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
 
   auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
   delete translate_visitor;
+  return results;
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle, double rotate_x,
+    double rotate_y) {
+  auto rotate_visitor = new RotateVisitor(rotation_angle, rotate_x, rotate_y);
+  auto op = [&rotate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+    geo->accept(rotate_visitor);
+    AppendWkbNDR(builder, geo);
+  };
+
+  auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
+  delete rotate_visitor;
   return results;
 }
 

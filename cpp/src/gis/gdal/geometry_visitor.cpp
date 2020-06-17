@@ -148,6 +148,14 @@ void TranslateVisitor::visit(OGRPoint* geo) {
   geo->setY(coordinate_y + shifter_y);
 }
 
+void RotateVisitor::visit(OGRPoint* geo) {
+  double coordinate_x = geo->getX();
+  double coordinate_y = geo->getY();
+    geo->setX(cos(rotation_angle)*(coordinate_x - rotate_x) - sin(rotation_angle)*(coordinate_y-rotate_y) + rotate_x);
+    geo->setY(sin(rotation_angle)*(coordinate_x - rotate_x) - cos(rotation_angle)*(coordinate_y-rotate_y) + rotate_y);
+
+}
+
 }  // namespace gdal
 }  // namespace gis
 }  // namespace arctern
