@@ -4234,36 +4234,39 @@ TEST(geometry_test, test_st_difference) {
   OGRGeometryFactory::destroyGeometry(geo2);
 }
 
-// TEST(geometry_test, test_st_exteriorring) {
-//  std::string str = "POLYGON ((0 0,1 0,1 1,0 1,0 0))";
-//  OGRGeometry* geo = nullptr;
-//  OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo);
-//  auto wkb_size = geo->WkbSize();
-//  auto geo_wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-//  OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, geo_wkb);
-//  arrow::BinaryBuilder builder;
-//  std::shared_ptr<arrow::Array> geo_array;
-//  for (int32_t i = 0; i < 4; i++) {
-//    builder.Append(geo_wkb,wkb_size);
-//  }
-//  builder.Finish(&geo_array);
-//  arrow::ArrayVector geo_arrays;
-//  geo_arrays.push_back(geo_array);
-//
-//  auto geo_chunked = std::make_shared<arrow::ChunkedArray>(geo_arrays);
-//  auto result = arctern::gis::ST_ExteriorRing(geo_chunked);
-//
-//
-//  for (int32_t i = 0; i < result->num_chunks(); i++) {
-//    auto binary_geos = std::static_pointer_cast<arrow::BinaryArray>(result->chunk(i));
-//    for (int32_t j = 0; j < result->chunk(i)->length(); j++) {
-//      auto data_ptr = binary_geos->GetString(j);
-//      OGRGeometry* result_geo = nullptr;
-//      OGRGeometryFactory::createFromWkb(data_ptr.c_str(), nullptrg space after
-//  }
-//
-//  OGRGeometryFactory::destroyGeometry(geo);
-//}
+TEST(geometry_test, test_st_exteriorring) {
+  std::string str = "POLYGON ((0 0,1 0,1 1,0 1,0 0))";
+  OGRGeometry* geo = nullptr;
+  OGRGeometryFactory::createFromWkt(str.c_str(), nullptr, &geo);
+  auto wkb_size = geo->WkbSize();
+  auto geo_wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
+  OGR_G_ExportToWkb(geo, OGRwkbByteOrder::wkbNDR, geo_wkb);
+  arrow::BinaryBuilder builder;
+  std::shared_ptr<arrow::Array> geo_array;
+  for (int32_t i = 0; i < 4; i++) {
+    builder.Append(geo_wkb, wkb_size);
+  }
+  builder.Finish(&geo_array);
+  arrow::ArrayVector geo_arrays;
+  geo_arrays.push_back(geo_array);
+
+  auto geo_chunked = std::make_shared<arrow::ChunkedArray>(geo_arrays);
+  auto result = arctern::gis::ST_ExteriorRing(geo_chunked);
+
+  for (int32_t i = 0; i < result->num_chunks(); i++) {
+    auto binary_geos = std::static_pointer_cast<arrow::BinaryArray>(result->chunk(i));
+    for (int32_t j = 0; j < binary_geos->length(); j++) {
+      auto data_ptr = binary_geos->GetString(j);
+      OGRGeometry* result_geo = nullptr;
+      OGRGeometryFactory::createFromWkb(data_ptr.c_str(), nullptr, &result_geo);
+      char* result_str;
+      OGR_G_ExportToWkt(result_geo, &result_str);
+      assert(std::string(result_str) == "LINESTRING (0 0,1 0,1 1,0 1,0 0)");
+    }
+  }
+
+  OGRGeometryFactory::destroyGeometry(geo);
+}
 
 TEST(geometry_test, test_st_isempty) {
   std::vector<std::string> geos_str;

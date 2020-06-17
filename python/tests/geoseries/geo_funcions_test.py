@@ -42,6 +42,12 @@ def test_ST_SymDifference():
     assert rst[0] == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))"
     assert rst[1] == "POINT (6 0)"
 
+def test_ST_ExteriorRing():
+    data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+    rst = data.exterior_ring().to_wkt()
+    assert rst[0] == None
+    assert rst[1] == "LINESTRING (0 0,1 0,1 1,0 1,0 0)"
+
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     rst = data.scale(2, 2).to_wkt()
