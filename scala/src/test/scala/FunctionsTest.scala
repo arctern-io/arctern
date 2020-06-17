@@ -17,7 +17,7 @@
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
-import org.apache.spark.sql.arctern.expressions.api._
+import org.apache.spark.sql.arctern.expressions.functions._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.functions.col
 
