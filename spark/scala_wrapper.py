@@ -106,16 +106,15 @@ _binary_functions = [
     'st_point',
 ]
 
-if 1:
-    import_scala_functions()
+import_scala_functions()
 
-    for _name in _unary_functions:
-        globals()[_name] = _create_unary_function(_name)
+for _name in _unary_functions:
+    globals()[_name] = _create_unary_function(_name)
 
-    for _name in _binary_functions:
-        globals()[_name] = _create_binary_function(_name)
+for _name in _binary_functions:
+    globals()[_name] = _create_binary_function(_name)
 
-    __all__ = [k for k, v in globals().items()
-               if k in _unary_functions or k in _binary_functions and callable(v)]
+__all__ = [k for k, v in globals().items()
+           if k in _unary_functions or k in _binary_functions and callable(v)]
 
-    __all__.sort()
+__all__.sort()
