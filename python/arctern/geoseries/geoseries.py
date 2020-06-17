@@ -569,6 +569,27 @@ class GeoSeries(Series):
         return _property_geo(arctern.ST_Centroid, self)
 
     @property
+    def boundary(self):
+        """
+        Returns the closure of the combinatorial boundary of each geometry in the GeoSeries.
+
+        Returns
+        -------
+        GeoSeries
+            The boundary(low-dimension) of each geometry in the GeoSeries.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.boundary
+        0            GEOMETRYCOLLECTION EMPTY
+        1    LINESTRING (1 1,3 1,3 3,1 3,1 1)
+        dtype: GeoDtype
+        """
+        return _property_geo(arctern.ST_Boundary, self)
+
+    @property
     def convex_hull(self):
         """
         For each geometry in the GeoSeries, returns the smallest convex geometry that encloses it.
@@ -1081,6 +1102,43 @@ class GeoSeries(Series):
         dtype: bool
         """
         return _binary_op(arctern.ST_Intersects, self, other).astype(bool, copy=False)
+
+    def disjoint(self, other):
+        """
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they do not intersect each other.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it is not intersected with the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+            * *True*: The two geometries do not intersect each other.
+            * *False*: The two geometries intersect each other.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.disjoint(s1)
+        0    False
+        1    False
+        dtype: bool
+
+        Alternatively, ``other`` can be a geometry in WKB format.
+
+        >>> s2.disjoint(s1[0])
+        0    False
+        1    False
+        dtype: bool
+        """
+        return _binary_op(arctern.ST_Disjoint, self, other).astype(bool, copy=False)
 
     def within(self, other):
         """
