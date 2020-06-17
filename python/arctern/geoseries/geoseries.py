@@ -140,7 +140,7 @@ class GeoSeries(Series):
             index = s.index
             name = s.name
 
-            from pandas.api.types import is_object_dtype, is_float_dtype
+            from pandas.api.types import is_float_dtype
             # The default dtype for empty Series is 'float64' in pandas
             if not is_geometry_array(s):
                 if is_float_dtype(s.dtype) and s.empty:
@@ -873,7 +873,7 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_Translate, self, shifter_x, shifter_y)
 
-    def rotate(self, rotation_angle, rotate_x = 0.0, rotate_y = 0.0):
+    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
         """
         Returns a rotated geometry on a 2D plane.
         Parameters
@@ -1672,7 +1672,7 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> min_x = Series([0.0, 1.0])
         >>> max_x = Series([2.0, 1.5])
-        >>> min_y = Series([0.0, 1.0])  
+        >>> min_y = Series([0.0, 1.0])
         >>> max_y = Series([1.0, 1.5])
         >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
         0                POLYGON ((0 0,0 1,2 1,2 0,0 0))
