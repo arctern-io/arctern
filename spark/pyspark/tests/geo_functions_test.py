@@ -409,7 +409,7 @@ def test_ST_Buffer():
 
 
 def test_ST_PolygonFromEnvelope():
-    from pandas import Series
+    from databricks.koalas import Series
     x_min = Series([0.0])
     x_max = Series([1.0])
     y_min = Series([0.0])

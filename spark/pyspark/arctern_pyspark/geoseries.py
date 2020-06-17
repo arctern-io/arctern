@@ -4,7 +4,7 @@ import pandas as pd
 from databricks.koalas import DataFrame, get_option, Series
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
-from databricks.koalas.series import REPR_PATTERN
+from databricks.koalas.series import REPR_PATTERN, _unpack_scalar
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
 
@@ -25,6 +25,14 @@ def _column_geo(f, *args, **kwargs):
     from arctern_pyspark import _wrapper_func
     kss = ks.base._column_op(getattr(_wrapper_func, f))(*args)
     return GeoSeries(kss._internal, anchor=kss._kdf, **kwargs)
+
+
+def _agg(f, kss):
+    from arctern_pyspark import _wrapper_func
+    scol = getattr(_wrapper_func, f)(kss.spark_column)
+    sdf = kss._internal._sdf.select(scol)
+    scalar_value = _unpack_scalar(sdf)
+    return GeoSeries(bytes(scalar_value), crs=kss._crs)
 
 
 def _validate_crs(crs):
@@ -220,10 +228,10 @@ class GeoSeries(Series):
         return _column_geo("ST_PrecisionReduce", self, F.lit(precision), crs=self._crs)
 
     def unary_union(self):
-        return _column_geo("ST_Union_Aggr", self, crs=self._crs)
+        return _agg("ST_Union_Aggr", self)
 
     def envelope_aggr(self):
-        return _column_geo("ST_Envelope_Aggr", self, crs=self._crs)
+        return _agg("ST_Envelope_Aggr", self)
 
     def curve_to_line(self):
         return _column_geo("ST_CurveToLine", self, crs=self._crs)
@@ -231,8 +239,8 @@ class GeoSeries(Series):
     def simplify(self, tolerance):
         return _column_geo("ST_SimplifyPreserveTopology", self, F.lit(tolerance), crs=self._crs)
 
-    def buffer(self, buffer):
-        return _column_geo("ST_Buffer", self, F.lit(buffer), crs=self._crs)
+    def buffer(self, distance):
+        return _column_geo("ST_Buffer", self, F.lit(distance), crs=self._crs)
 
     def to_crs(self, crs):
         """
