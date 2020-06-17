@@ -22,3 +22,17 @@ if (sparkVersion == "3.0.0-preview2") {
   libraryDependencies += "org.apache.spark" %% "spark-core" % "spark-3.0.0-preview2"
   libraryDependencies += "org.apache.spark" %% "spark-sql" % "spark-3.0.0-preview2"
 }
+
+// META-INF discarding
+//  `<<=` operator is removed. Use `key := { x.value }` or `key ~= (old => { newValue })`.
+//mergeStrategy in assembly := (mergeStrategy in assembly) { (old) =>
+//   {
+//    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+//    case x => MergeStrategy.first
+//   }
+//}
+
+assemblyMergeStrategy in assembly := {
+ case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+ case x => MergeStrategy.first
+}

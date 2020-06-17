@@ -17,7 +17,7 @@
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.arctern.functions._
+import org.apache.spark.sql.arctern.gis_functions._
 import org.apache.spark.sql.functions._
 
 class ConstructorsTest extends AdapterTest {
