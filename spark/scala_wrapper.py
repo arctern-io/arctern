@@ -38,7 +38,7 @@ class GeometryUDT(UserDefinedType):
 
     @classmethod
     def module(cls):
-        return 'udt'
+        return 'scala_wrapper'
 
     @classmethod
     def scalaUDT(cls):
@@ -66,7 +66,7 @@ def import_scala_functions():
 def _create_unary_function(name):
     def _func(col):
         sc = SparkContext._active_spark_context
-        jc = getattr(sc._jvm, name)(_to_java_column(col))
+        jc = getattr(sc._jvm.gis_functions, name)(_to_java_column(col))
         return Column(jc)
 
     _func.__name__ = name
