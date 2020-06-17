@@ -846,6 +846,61 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_Affine, self, a, b, d, e, offset_x, offset_y)
 
+    def translate(self, shifter_x, shifter_y):
+        """
+        Returns a translated geometry shifted by offsets along each dimension.
+
+        Parameters
+        ----------
+        shifter_x : double
+            The shifter of coordinate x.
+        shifter_y : double
+            The shifter of coordinate y.
+
+        Returns
+        -------
+        GeoSeries
+            A translated geometry shifted by offsets along each dimension.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.translate(2,1)
+        0    LINESTRING (2 1,7 1)
+        1    MULTIPOINT (6 1,8 1)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Translate, self, shifter_x, shifter_y)
+
+    def rotate(self, rotation_angle, rotate_x = 0.0, rotate_y = 0.0):
+        """
+        Returns a rotated geometry on a 2D plane.
+        Parameters
+        ----------
+        rotation_angle : double
+            rotation angle
+        rotate_x : double
+            The coordinate x of rotation centrepoint.
+        rotate_y : double
+            The coordinate y of rotation centrepoint.
+        Returns
+        -------
+        GeoSeries
+            A a rotated geometry.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> import math
+        >>> s1.rotate(math.pi, 0, 1)
+        0     LINESTRING (0.0 2.0,-5.0 2.0)
+        1    MULTIPOINT (-4.0 2.0,-6.0 2.0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Rotate, self, rotation_angle, rotate_x, rotate_y)
+
     def curve_to_line(self):
         """
         Converts curves in each geometry to approximate linear representation.
@@ -1465,6 +1520,31 @@ class GeoSeries(Series):
         dtype: GeoDtype
         """
         return _binary_geo(arctern.ST_Intersection, self, other)
+
+    def union(self, other):
+        """
+        This function returns a geometry being a union of two input geometries
+        Parameters
+        ----------
+        other : GeoSeries
+            The GeoSeries to calculate the union of it and the geometries in the first GeoSeries.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that is the union of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
+        >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
+        >>> s2.union(s1)
+        0    POLYGON ((0 0,0 1,0 2,1 1,1 0,0 0))
+        1                   MULTIPOINT (0 1,0 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_Union, self, other)
 
     # -------------------------------------------------------------------------
     # utils
