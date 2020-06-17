@@ -1222,7 +1222,10 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("POINT (20 20)"), GeometryUDT.FromWkt("POINT (20 20)")),
       Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
       Row(GeometryUDT.FromWkt("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-      Row(GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"))
+      Row(GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 5 5, 10 10)"), GeometryUDT.FromWkt("LINESTRING (0 0, 10 10)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (10 10, 0 0)"), GeometryUDT.FromWkt("LINESTRING (0 0, 10 10)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 1 1)"), GeometryUDT.FromWkt("LINESTRING (1 1, 0 0)"))
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -1240,6 +1243,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(1).getBoolean(0) == false)
     assert(collect(2).getBoolean(0) == false)
     assert(collect(3).getBoolean(0) == true)
+    assert(collect(4).getBoolean(0) == true)
+    assert(collect(5).getBoolean(0) == true)
+    assert(collect(6).getBoolean(0) == true)
 
     val rst2 = df.select(st_equals(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -1250,6 +1256,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).getBoolean(0) == false)
     assert(collect2(2).getBoolean(0) == false)
     assert(collect2(3).getBoolean(0) == true)
+    assert(collect2(4).getBoolean(0) == true)
+    assert(collect2(5).getBoolean(0) == true)
+    assert(collect2(6).getBoolean(0) == true)
   }
 
   test("ST_Equals-Null") {
