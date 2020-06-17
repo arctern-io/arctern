@@ -242,6 +242,9 @@ def ST_PrecisionReduce(object geometries,int num_dat):
 def ST_Translate(object geometries, double shifter_x, double shifter_y):
     return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Translate(pyarrow_unwrap_chunked_array(geometries), shifter_x, shifter_y))
 
+def ST_Rotate(object geometries, double rotation_angle, double rotate_x, double rotate_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, rotate_x, rotate_y))
+
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(arctern_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
 

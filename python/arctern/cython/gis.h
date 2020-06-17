@@ -20,6 +20,9 @@
 #include <string>
 #include "arrow/api.h"
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
+
 namespace arctern {
 namespace gis {
 
@@ -78,6 +81,10 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Translate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle, double rotate_x,
+    double rotate_y);
 
 std::shared_ptr<arrow::Array> ST_GeometryType(
     const std::shared_ptr<arrow::Array>& geometries);

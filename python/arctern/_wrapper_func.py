@@ -19,6 +19,7 @@ __all__ = [
     "ST_IsValid",
     "ST_PrecisionReduce",
     "ST_Translate",
+    "ST_Rotate",
     "ST_Equals",
     "ST_Disjoint",
     "ST_Boundary",
@@ -473,6 +474,14 @@ def ST_Translate(geo, shifter_x, shifter_y):
     arr_geo = _to_arrow_array_list(arr_geo)
     arr_geo = pa.chunked_array(arr_geo)
     result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
+    return result.to_pandas()
+
+def ST_Rotate(geo, rotation_angle, rotate_x = 0.0, rotate_y = 0.0, centrepoint = None):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Rotate(arr_geo, rotation_angle, rotate_x, rotate_y)
     return result.to_pandas()
 
 @arctern_udf('binary', 'binary')

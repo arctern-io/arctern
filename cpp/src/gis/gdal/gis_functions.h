@@ -22,6 +22,9 @@
 #include <string>
 #include <vector>
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
+
 #include "arrow/api.h"
 #include "arrow/array.h"
 
@@ -80,6 +83,10 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 std::shared_ptr<arrow::ChunkedArray> ST_Translate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
     double shifter_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    double rotate_x = 0.0, double rotate_y = 0.0);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,

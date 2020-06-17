@@ -62,6 +62,16 @@ def test_ST_Translate():
     assert rst[1] == "LINESTRING (1.2 0.3,1.2 1.3,2.2 1.3)"
     assert rst[2] == "POLYGON ((1.2 0.3,1.2 1.3,2.2 1.3,1.2 0.3))"
 
+def test_ST_Rotate():
+    data = pandas.Series(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
+    import math
+    rst = arctern.ST_AsText(arctern.ST_Rotate(arctern.ST_GeomFromText(data), math.pi, 1, 0))
+
+    assert len(rst) == 3
+    assert rst[0] == "POINT (1.0 -6.0)"
+    assert rst[1] == "LINESTRING (2.0 -0.0,2.0 -1.0,1.0 -1.0)"
+    assert rst[2] == "POLYGON ((2.0 -0.0,2.0 -1.0,1.0 -1.0,2.0 -0.0))"
+
 def test_ST_Intersection():
     data1 = pandas.Series(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POINT (0 1)"])
     data2 = pandas.Series(["POLYGON ((2 1,3 1,3 2,2 2,2 1))", "POINT (0 1)"])

@@ -109,6 +109,9 @@ def ST_PrecisionReduce(object geometries,int num_dat):
 def ST_Translate(object geometries, double shifter_x, double shifter_y):
     pass
 
+def ST_Rotate(object geometries, double rotation_angle, double rotate_x, double rotate_y):
+    pass
+
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     pass
 

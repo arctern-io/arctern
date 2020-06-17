@@ -202,6 +202,21 @@ class TranslateVisitor : public OGRDefaultGeometryVisitor {
   double shifter_y = 0.0;
 };
 
+class RotateVisitor : public OGRDefaultGeometryVisitor {
+ public:
+  explicit RotateVisitor(double rotation_angle, double rotate_x, double rotate_y)
+      : rotation_angle(rotation_angle), rotate_x(rotate_x), rotate_y(rotate_y) {}
+  ~RotateVisitor() = default;
+
+  void visit(OGRPoint*) override;
+
+ private:
+  double rotation_angle = 0.0;
+  double rotate_x = 0.0;
+  double rotate_y = 0.0;
+  //  std::shared_ptr<OGRPoint> centrepoint = nullptr;
+};
+
 class ScaleVisitor : public OGRDefaultGeometryVisitor {
  public:
   explicit ScaleVisitor(double factor_x, double factor_y)
