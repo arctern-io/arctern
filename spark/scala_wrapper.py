@@ -64,13 +64,13 @@ def import_scala_functions():
 
 
 def _create_unary_function(name):
-    def _func(col):
+    def _(col):
         sc = SparkContext._active_spark_context
         jc = getattr(sc._jvm.gis_functions, name)(_to_java_column(col))
         return Column(jc)
 
-    _func.__name__ = name
-    return _func
+    _.__name__ = name
+    return _
 
 
 def _create_binary_function(name, doc=""):
