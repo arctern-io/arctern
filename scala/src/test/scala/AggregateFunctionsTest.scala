@@ -16,6 +16,8 @@
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
+import org.apache.spark.sql.arctern.expressions.functions._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 class AggregateFunctionsTest extends AdapterTest {
@@ -37,6 +39,13 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+
+    val rst2 = df.agg(st_union_aggr(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Union_Aggr-Null") {
@@ -59,6 +68,13 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+
+    val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Envelope_Aggr") {
@@ -79,6 +95,13 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((-1 -1, -1 20, 20 20, 20 -1, -1 -1))")
+
+    val rst2 = df.agg(st_envelope_aggr(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((-1 -1, -1 20, 20 20, 20 -1, -1 -1))")
   }
 
   test("ST_Envelope_Aggr-Null") {
@@ -101,6 +124,12 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
-  }
 
+    val rst2 = df.agg(st_envelope_aggr(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
+  }
 }
