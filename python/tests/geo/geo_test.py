@@ -65,7 +65,7 @@ def test_ST_Translate():
 def test_ST_Rotate():
     data = pandas.Series(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
     import math
-    rst = arctern.ST_AsText(arctern.ST_Rotate(arctern.ST_GeomFromText(data),math.pi, 1, 0))
+    rst = arctern.ST_AsText(arctern.ST_Rotate(arctern.ST_GeomFromText(data), math.pi, 1, 0))
 
     assert len(rst) == 3
     assert rst[0] == "POINT (1.0 -6.0)"
