@@ -42,6 +42,26 @@ def _validate_arg(arg, dtype):
     return arg
 
 
+def _validate_args(*args, dtype=None):
+    series_length = 1
+    for arg in args:
+        if not isinstance(arg, dtype):
+            if series_length < len(arg):
+                series_length = len(arg)
+    args_list = []
+    for i, arg in enumerate(args):
+        if isinstance(arg, dtype):
+            if i == 0:
+                args_list.append(Series([arg] * series_length))
+            else:
+                args_list.append(F.lit(arg))
+        elif not isinstance(arg, Series):
+            args_list.append(Series(arg))
+        else:
+            args_list.append(arg)
+    return args_list
+
+
 class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False, anchor=None
@@ -278,52 +298,55 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
 
     def intersects(self, other):
-        return _column_op("ST_Intersects", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Intersects", self, _validate_arg(other, dtype=bytearray))
 
     def within(self, other):
-        return _column_op("ST_Within", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Within", self, _validate_arg(other, dtype=bytearray))
 
     def contains(self, other):
-        return _column_op("ST_Contains", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Contains", self, _validate_arg(other, dtype=bytearray))
 
     def geom_equals(self, other):
-        return _column_op("ST_Equals", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Equals", self, _validate_arg(other, dtype=bytearray))
 
     def crosses(self, other):
-        return _column_op("ST_Crosses", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Crosses", self, _validate_arg(other, dtype=bytearray))
 
     def touches(self, other):
-        return _column_op("ST_Touches", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Touches", self, _validate_arg(other, dtype=bytearray))
 
     def overlaps(self, other):
-        return _column_op("ST_Overlaps", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Overlaps", self, _validate_arg(other, dtype=bytearray))
 
     def distance(self, other):
-        return _column_op("ST_Distance", self, _validate_arg(other, bytearray))
+        return _column_op("ST_Distance", self, _validate_arg(other, dtype=bytearray))
 
     def distance_sphere(self, other):
-        return _column_op("ST_DistanceSphere", self, _validate_arg(other, bytearray))
+        return _column_op("ST_DistanceSphere", self, _validate_arg(other, dtype=bytearray))
 
     def hausdorff_distance(self, other):
-        return _column_op("ST_HausdorffDistance", self, _validate_arg(other, bytearray))
+        return _column_op("ST_HausdorffDistance", self, _validate_arg(other, dtype=bytearray))
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
     def intersection(self, other):
-        return _column_geo("ST_Intersection", self, _validate_arg(other, bytearray), crs=self.crs)
+        return _column_geo("ST_Intersection", self, _validate_arg(other, dtype=bytearray), crs=self.crs)
 
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
-        return _column_geo("ST_PolygonFromEnvelope", _validate_arg(min_x, dtype), _validate_arg(min_y, dtype),
-                           _validate_arg(max_x, dtype), _validate_arg(max_y, dtype), crs=crs)
+        # min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+        arg_list = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+        for arg in arg_list:
+            print(type(arg))
+        return _column_geo("ST_PolygonFromEnvelope", *arg_list, crs=crs)
 
     @classmethod
     def point(cls, x, y, crs=None):
         dtype = (float, int)
-        return _column_geo("ST_Point", _validate_arg(x, dtype), _validate_arg(y, dtype), crs=crs)
+        return _column_geo("ST_Point", *_validate_args(x, y, dtype=dtype), crs=crs)
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
@@ -331,3 +354,40 @@ class GeoSeries(Series):
 
     def to_wkt(self):
         return _column_op("ST_AsText", self)
+
+
+if __name__ == "__main__":
+    from pandas import Series as pds
+    x_min = pds([0.0])
+    x_max = pds([1.0])
+    y_min = pds([0.0])
+    y_max = pds([1.0])
+
+    # rst = GeoSeries.polygon_from_envelope(x_min, y_min, x_max, y_max).to_wkt()
+
+    # assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+
+
+    def test_ST_Point():
+        from databricks.koalas import Series
+        data1 = [1.3, 2.5]
+        data2 = [3.8, 4.9]
+        string_ptr = GeoSeries.point(data1, data2).to_wkt()
+        assert len(string_ptr) == 2
+        assert string_ptr[0] == "POINT (1.3 3.8)"
+        assert string_ptr[1] == "POINT (2.5 4.9)"
+
+        string_ptr = GeoSeries.point(Series([1, 2], dtype='double'), 5).to_wkt()
+        assert len(string_ptr) == 2
+        assert string_ptr[0] == "POINT (1 5)"
+        assert string_ptr[1] == "POINT (2 5)"
+
+        string_ptr = GeoSeries.point(5, Series([1, 2], dtype='double')).to_wkt()
+        assert len(string_ptr) == 2
+        assert string_ptr[0] == "POINT (5 1)"
+        assert string_ptr[1] == "POINT (5 2)"
+
+        string_ptr = GeoSeries.point(5.0, 1.0).to_wkt()
+        assert len(string_ptr) == 1
+        assert string_ptr[0] == "POINT (5 1)"
+    test_ST_Point()
