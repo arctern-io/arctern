@@ -17,6 +17,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -148,6 +149,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
 
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::string& geometries_2);
+
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Union_Aggr(
@@ -155,6 +160,10 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries);
+
+std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
+    const std::vector<std::shared_ptr<arrow::Array>>& points,
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons);
 
 std::string GIS_Version();
 

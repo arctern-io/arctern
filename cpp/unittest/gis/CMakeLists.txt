@@ -32,6 +32,7 @@ target_link_libraries(gis_tests
 install(TARGETS gis_tests DESTINATION unittest)
 
 add_subdirectory(gdal)
+add_subdirectory(spatial_join)
 if(BUILD_WITH_GPU)
     add_subdirectory(cuda)
 endif()

@@ -20,11 +20,12 @@
 #include <thrust/extrema.h>
 
 #include <algorithm>
+#include <cassert>
 #include <utility>
 
 #include "gis/cuda/container/kernel_vector.h"
+#include "gis/cuda/tools/bounding_box.h"
 #include "gis/cuda/tools/relation.h"
-
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -96,7 +97,16 @@ DEVICE_RUNNABLE inline bool IsRange01CoveredBy(
   return total_range.first <= 0 && 1 <= total_range.second;
 }
 
-// Note: when dealing with linestring, we view it as endpoints included
+// use self defined divisor to override default thrust::complex<>::operator/(...)
+// which has terrible property when a is parallel to b.
+DEVICE_RUNNABLE inline thrust::complex<double> safe_divide(thrust::complex<double> a,
+                                                           thrust::complex<double> b) {
+  auto up = a * thrust::conj(b);
+  auto down = b.imag() * b.imag() + b.real() * b.real();
+  return up / down;
+}
+
+// auto up = Note: when dealing with linestring, we view it as endpoints included
 // linestring, which is collection of endpoints
 DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_endpoints,
                                                            int right_size,
@@ -112,23 +122,34 @@ DEVICE_RUNNABLE inline LineRelationResult LineOnLineString(const double2* line_e
   // project left line to 0->1
   auto lv0 = to_complex(line_endpoints[0]);
   auto lv1 = to_complex(line_endpoints[0 + 1]) - lv0;
+  if (lv1 == 0) {
+    auto res = PointOnLineString(line_endpoints[0], right_size, right_points);
+    if (res) {
+      return LineRelationResult{1, true, 0};
+    } else {
+      return LineRelationResult{-1, false, 0};
+    }
+  }
   LineRelationResult result{-1, false, 0};
   for (int right_index = 0; right_index < right_size - 1; ++right_index) {
     // do similiar projection
-    auto rv0 = (to_complex(right_points[right_index]) - lv0) / lv1;
-    auto rv1 = (to_complex(right_points[right_index + 1]) - lv0) / lv1;
+    auto rv0 = safe_divide(to_complex(right_points[right_index]) - lv0, lv1);
+    auto tmp = to_complex(right_points[right_index + 1]) - lv0;
+    auto rv1 = safe_divide(tmp, lv1);
     // if projected complex nums are at x axis
     if (is_zero(rv0.imag()) && is_zero(rv1.imag())) {
       auto r0 = rv0.real();
       auto r1 = rv1.real();
       if ((r0 <= 0 && r1 <= 0) || (r0 >= 1 && r1 >= 1)) {
         // outside, just check endpoints
-        if (r0 == 0 || r0 == 1) {
-          ++result.cross_count;
-          result.CC = thrust::max(result.CC, 0);
-        } else if (r1 == 0 || r1 == 1) {
-          ++result.cross_count;
-          result.CC = thrust::max(result.CC, 0);
+        if (r0 == 0 || r0 == 1 || r1 == 0 || r1 == 1) {
+          if (r0 == r1) {
+            // degenerated to point
+            result.CC = 1;
+          } else {
+            ++result.cross_count;
+            result.CC = thrust::max(result.CC, 0);
+          }
         }
       } else {
         // at least intersect
@@ -269,10 +290,13 @@ DEVICE_RUNNABLE inline Matrix LineStringRelateToLineString(int left_size,
   return matrix;
 }
 
-DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_size,
-                                               const double2* right_points) {
+DEVICE_RUNNABLE inline Matrix PointRelateToLineString(
+    double2 left_point, ConstGpuContext::ConstIter& linestring_iter) {
+  auto right_size = linestring_iter.read_meta<int>();
+  auto right_points = linestring_iter.read_value_ptr<double2>(right_size);
+
   if (right_size == 0) {
-    return Matrix("FFFFFFFF*");
+    return Matrix("FF0FFFFF*");
   }
 
   if (right_size == 1) {
@@ -281,6 +305,23 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
     //    return is_eq ? Matrix("F0FFFFF0*") : Matrix("FF0FFFF0*");
     return de9im::INVALID_MATRIX;
   }
+  do {
+    bool is_degenerated = true;
+    auto first_point = right_points[0];
+    for (int i = 1; i < right_size; ++i) {
+      if (!IsEqual(right_points[i], first_point)) {
+        is_degenerated = false;
+        break;
+      }
+    }
+    if (is_degenerated) {
+      if (IsEqual(first_point, left_point)) {
+        return Matrix("0FFFFFFF*");
+      } else {
+        return Matrix("FF0FFF1F*");
+      }
+    }
+  } while (false);
 
   assert(right_size >= 2);
   Matrix mat;
@@ -293,8 +334,11 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   // endpoints
   auto ep0 = right_points[0];
   auto ep1 = right_points[right_size - 1];
-  int B_count = (int)IsEqual(left_point, ep0) + (int)IsEqual(left_point, ep1);
+  int B_count = (int)IsEqual(left_point, ep0);
 
+  if (right_size > 2) {
+    B_count += (int)IsEqual(left_point, ep1);
+  }
   assert(C_count - B_count >= 0);
   mat->II = C_count - B_count ? State::kDim0 : State::kFalse;
   mat->IB = B_count ? State::kDim0 : State::kFalse;
@@ -304,6 +348,67 @@ DEVICE_RUNNABLE Matrix PointRelateToLineString(double2 left_point, int right_siz
   mat->EB = B_count != 2 ? State::kDim0 : State::kFalse;
 
   return mat;
+}
+
+DEVICE_RUNNABLE inline double IsLeft(double x1, double y1, double x2, double y2) {
+  return x1 * y2 - x2 * y1;
+}
+
+struct Point {
+  double x;
+  double y;
+};
+
+DEVICE_RUNNABLE inline bool PointInSimplePolygonHelper(double2 point, int size,
+                                                       const double2* polygon) {
+  int winding_num = 0;
+  double dx2 = polygon[size - 1].x - point.x;
+  double dy2 = polygon[size - 1].y - point.y;
+  for (int index = 0; index < size; ++index) {
+    auto dx1 = dx2;
+    auto dy1 = dy2;
+    dx2 = polygon[index].x - point.x;
+    dy2 = polygon[index].y - point.y;
+
+    bool ref = dy1 < 0;
+    if (ref != (dy2 < 0)) {
+      bool cmp = IsLeft(dx1, dy1, dx2, dy2) < 0;
+      if (cmp != ref) {
+        winding_num += ref ? 1 : -1;
+      }
+    }
+  }
+  return winding_num != 0;
+}
+
+DEVICE_RUNNABLE inline de9im::Matrix PointRelateToPolygon(
+    double2 point, ConstGpuContext::ConstIter& polygon_iter) {
+  int shape_size = polygon_iter.read_meta<int>();
+
+  if (shape_size == 0) {
+    return Matrix("FF0FFFFF*");
+  }
+
+  bool final_is_in = false;
+  bool final_is_at_edge = false;
+  for (int shape_index = 0; shape_index < shape_size; shape_index++) {
+    auto vertex_size = polygon_iter.read_meta<int>();
+    auto values = polygon_iter.read_value_ptr<double2>(vertex_size);
+
+    auto is_in = PointInSimplePolygonHelper(point, vertex_size, values);
+    auto is_at_edge = PointOnLineString(point, vertex_size, values) != 0;
+
+    final_is_at_edge = final_is_at_edge || is_at_edge;
+
+    if (shape_index == 0) {
+      final_is_in = is_in;
+    } else {
+      final_is_in = final_is_in && !is_in;
+    }
+  }
+  final_is_in = final_is_in && !final_is_at_edge;
+  return final_is_at_edge ? Matrix("F0FFFF21*")
+                          : final_is_in ? Matrix("0FFFFF21*") : Matrix("FF0FFF21*");
 }
 
 }  // namespace cuda

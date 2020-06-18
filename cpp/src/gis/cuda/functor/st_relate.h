@@ -23,8 +23,8 @@ namespace arctern {
 namespace gis {
 namespace cuda {
 
-void ST_Relate(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               de9im::Matrix ref_matrix, bool* host_results);
+void ST_Relate(const ConstGpuContext& left_ctx, const ConstGpuContext& right_ctx,
+               de9im::Matrix* dev_results);
 
 }  // namespace cuda
 }  // namespace gis

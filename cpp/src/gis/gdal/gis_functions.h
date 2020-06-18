@@ -17,6 +17,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -146,6 +147,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Intersects(
 std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
+
+std::vector<std::shared_ptr<arrow::Array>> ST_WithinOpt(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
+    const std::string& geometry_2);
 
 /*************************** AGGREGATE FUNCTIONS ***************************/
 

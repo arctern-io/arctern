@@ -18,6 +18,7 @@
 #include <arrow/array.h>
 #include <gtest/gtest.h>
 #include <ogr_geometry.h>
+
 #include <ctime>
 #include <iostream>
 
@@ -262,9 +263,12 @@ TEST(geometry_test, test_ST_Point) {
     std::cout << "array len = " << len << std::endl;
     total_len += len;
   }
+
+  // if in debug mode
   if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
     ASSERT_GT(result.size(), 1);
   }
+
   ASSERT_EQ(total_len, 100 * 10000);
 
   total_len = 0;
@@ -273,9 +277,7 @@ TEST(geometry_test, test_ST_Point) {
     std::cout << "json result len = " << array->length() << std::endl;
     total_len += array->length();
   }
-  if (_ARROW_ARRAY_SIZE <= 16 * 1024 * 1024) {
-    ASSERT_GT(json_result.size(), 1);
-  }
+
   ASSERT_EQ(total_len, result[0]->length());
 }
 
@@ -2309,6 +2311,85 @@ TEST(geometry_test, test_ST_Intersects) {
   ASSERT_EQ(res_bool->Value(49), true);
 }
 
+TEST(geometry_test, test_ST_Within4) {
+  // ST_Within null test
+  auto l1 = "";
+  auto l2 = "";
+  auto l3 = "";
+  auto l4 = "";
+
+  arrow::StringBuilder builder1;
+  std::shared_ptr<arrow::Array> input1;
+  auto status = builder1.Append(std::string(l1));
+  status = builder1.Append(std::string(l2));
+  status = builder1.Append(std::string(l3));
+  status = builder1.Append(std::string(l4));
+  status = builder1.Finish(&input1);
+
+  OGRGeometry* polygon;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))",
+                                               nullptr, &polygon));
+  auto sz = polygon->WkbSize();
+  std::vector<char> wkb(sz);
+  polygon->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data());
+  std::string r1(wkb.begin(), wkb.end());
+
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1), r1)[0];
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), false);
+  ASSERT_EQ(res_bool->Value(1), false);
+  ASSERT_EQ(res_bool->Value(2), false);
+  ASSERT_EQ(res_bool->Value(3), false);
+
+  OGRGeometryFactory::destroyGeometry(polygon);
+}
+
+TEST(geometry_test, test_ST_Within3) {
+  auto l1 = "POINT (1 0)";
+  auto l2 = "POINT (1 3)";
+  auto l3 = "POINT (0.5 1)";
+  auto l4 = "POINT (1 2)";
+  auto l5 = "POINT (1 3)";
+  auto l6 = "POINT (1 2)";
+  auto l7 = "POINT (4 0)";
+  auto l8 = "POINT (4 8)";
+
+  arrow::StringBuilder builder1;
+  std::shared_ptr<arrow::Array> input1;
+  auto status = builder1.Append(std::string(l1));
+  status = builder1.Append(std::string(l2));
+  status = builder1.Append(std::string(l3));
+  status = builder1.Append(std::string(l4));
+  status = builder1.Append(std::string(l5));
+  status = builder1.Append(std::string(l6));
+  status = builder1.Append(std::string(l7));
+  status = builder1.Append(std::string(l8));
+  status = builder1.Finish(&input1);
+
+  OGRGeometry* polygon;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkt("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0))",
+                                               nullptr, &polygon));
+  auto sz = polygon->WkbSize();
+  std::vector<char> wkb(sz);
+  polygon->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)wkb.data());
+  std::string r1(wkb.begin(), wkb.end());
+
+  auto res = arctern::gis::ST_Within(arctern::gis::ST_GeomFromText(input1), r1)[0];
+  auto res_bool = std::static_pointer_cast<arrow::BooleanArray>(res);
+
+  ASSERT_EQ(res_bool->Value(0), false);
+  ASSERT_EQ(res_bool->Value(1), true);
+  ASSERT_EQ(res_bool->Value(2), true);
+  ASSERT_EQ(res_bool->Value(3), true);
+  ASSERT_EQ(res_bool->Value(4), true);
+  ASSERT_EQ(res_bool->Value(5), true);
+  ASSERT_EQ(res_bool->Value(6), false);
+  ASSERT_EQ(res_bool->Value(7), false);
+
+  OGRGeometryFactory::destroyGeometry(polygon);
+}
+
 TEST(geometry_test, test_ST_Within2) {
   auto circle = "curvepolygon(circularstring(-1 -1, 1 1, -1 -1))";
 
@@ -3589,8 +3670,7 @@ TEST(geometry_test, test_ST_AsGeoJSON) {
   auto res = arctern::gis::ST_AsGeoJSON(arctern::gis::ST_GeomFromGeoJSON(input)[0])[0];
   auto res_str = std::static_pointer_cast<arrow::StringArray>(res);
 
-  ASSERT_EQ(res_str->GetString(0),
-            R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
+  ASSERT_EQ(res_str->GetString(0), R"({ "type": "Point", "coordinates": [ 1.0, 2.0 ] })");
   ASSERT_EQ(
       res_str->GetString(1),
       R"({ "type": "LineString", "coordinates": [ [ 1.0, 2.0 ], [ 4.0, 5.0 ], [ 7.0, 8.0 ] ] })");

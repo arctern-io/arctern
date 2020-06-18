@@ -4,32 +4,21 @@
 
 set -e
 
-BRANCH_REGEX='^(master|(branch\-[0-9]+\.[0-9]+\.(x|[0-9]+)))$'
+BRANCH_REGEX='^(master|((v|branch\-)[0-9]+\.[0-9]+\.(x|[0-9]+|[0-9]+\-preview[0-9]*)))$'
 
 # Restrict uploads to master branch
 if [[ ! "${GIT_BRANCH}" =~ ${BRANCH_REGEX} ]]; then
     echo "Skipping upload"
-    return 0
+    exit 0
 fi
 
 if [ -z "$MY_UPLOAD_KEY" ]; then
     echo "No upload key"
-    return 0
-fi
-
-if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
-    export LIBARCTERN_FILE=`conda build conda/recipes/libarctern/cpu -c conda-forge -c defaults --output`
-    LABEL_OPTION="--label main"
-    echo "LABEL_OPTION=${LABEL_OPTION}"
-
-    test -e ${LIBARCTERN_FILE}
-    echo "Upload libarctern..."
-    echo ${LIBARCTERN_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${LIBARCTERN_FILE}
+    exit 0
 fi
 
 if [ "$UPLOAD_ARCTERN" == "1" ]; then
-    export ARCTERN_FILE=`conda build conda/recipes/arctern -c conda-forge -c defaults --output`
+    export ARCTERN_FILE=`conda build conda/recipes/arctern/cpu -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
@@ -39,13 +28,13 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
     anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
 fi
 
-if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
-    export ARCTERN_SPARK_FILE=`conda build conda/recipes/arctern-spark -c conda-forge -c defaults --output`
+if [ "$UPLOAD_ARCTERN_WEBSERVER" == "1" ]; then
+    export ARCTERN_WEBSERVER_FILE=`conda build conda/recipes/arctern-webserver -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
-    test -e ${ARCTERN_SPARK_FILE}
-    echo "Upload arctern-spark..."
-    echo ${ARCTERN_SPARK_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_SPARK_FILE}
+    test -e ${ARCTERN_WEBSERVER_FILE}
+    echo "Upload arctern-webserver..."
+    echo ${ARCTERN_WEBSERVER_FILE}
+    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_WEBSERVER_FILE}
 fi

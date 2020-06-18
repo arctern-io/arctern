@@ -1,0 +1,66 @@
+# Usage:
+#   conda build . -c defaults -c conda-forge
+
+{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v').replace('-', '.') + environ.get('VERSION_SUFFIX', '') %}
+# {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
+{% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+{% set git_commit_id=environ.get('GIT_COMMIT_ID', '') %}
+
+package:
+  name: arctern
+  version: {{ version }}
+
+source:
+  path: ../../../..
+
+# ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
+build:
+  number: {{ git_revision_count }}
+  string: {{ git_commit_id }}_{{ git_revision_count }}
+  script_env:
+    - CC
+    - CXX
+
+requirements:
+  build:
+    - libnetcdf ==4.7.3
+    - cmake>=3.14
+    - gdal ==3.0.4
+    - pyarrow ==0.16.0
+    - rapidjson ==1.1.0
+    - python ===3.7.6
+    - Cython ==0.29.15
+    - setuptools
+
+  run:
+    - python ===3.7.6
+    - libnetcdf ==4.7.3
+    - gdal ==3.0.4
+    - pyarrow ===0.16.0
+    - rapidjson ==1.1.0
+
+test:
+  commands:
+    # headers
+    # - test -f $PREFIX/include/
+
+    # shared
+    - test -f $PREFIX/lib/libminiz.so            # [linux]
+    - test -f $PREFIX/lib/libarctern.so         # [linux]
+    
+    # absence of static libraries
+    - test ! -f $PREFIX/lib/libminiz.a           # [unix]
+    - test ! -f $PREFIX/lib/libarctern.a        # [unix]
+
+    # python
+    - python -c "import arctern"
+    - python -c "import arctern_pyspark"
+
+    # conda tools
+
+about:
+  home: http://www.github.com/zilliztech/arctern
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: library for Arctern
