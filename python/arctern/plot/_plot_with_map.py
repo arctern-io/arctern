@@ -43,36 +43,30 @@ def pointmap(ax, points, bounding_box,
                   coordinate_system='EPSG:3857',
                   **extra_contextily_params):
     """
-    Plot pointmap in Matplotlib
+    Plots a point map in Matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    points : GeoSeries
+        Sequence of points.
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    point_size : int, optional
+        Diameter of points, by default 3.
+    point_color : str, optional
+        Point color in Hex Color Code, by default '#115f9a'.
+    opacity : float, optional
+        Opacity of points, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type points: GeoSeries
-    :param points: Sequence of Points
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
-
-    :type point_size: int
-    :param point_size: Diameter of point, default as 3
-
-    :type point_color: str
-    :param point_color: Specify point color in Hex Color Code, default as "#115f9a"
-
-    :type opacity: float
-    :param opacity: Opacity of point, ranged from 0.0 to 1.0, default as 1.0
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -115,56 +109,38 @@ def weighted_pointmap(ax, points, color_weights=None,
                            coordinate_system='EPSG:3857',
                            **extra_contextily_params):
     """
-    Plot weighted pointmap in Matplotlib
+    Plots a weighted point map in Matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    points : GeoSeries
+        Sequence of points.
+    color_weights : Series, optional
+        Weights of point color.
+    size_weights : Series, optional
+        Weights of point size.
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    color_gradient : list, optional
+        Range of color gradient, by default ["#115f9a", "#d0f400"].
+        Either use ["hex_color"] to specify a same color for all geometries, or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2".
+    color_bound : list, optional
+        Weight range [w1, w2] of ``color_gradient``, by default [0, 0].
+        Needed only when ``color_gradient`` has two values ["color1", "color2"]. Binds w1 to "color1", and w2 to "color2". When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
+    size_bound : list, optional
+        Weight range [w1, w2] of ``size_weights``, by default [3]. When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
+    opacity : float, optional
+        Opacity of points, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type points: GeoSeries
-    :param points: Sequence of Points
-
-    :type color_weights: Series(dtype: float|int64)
-    :param color_weights: Weights for point color, default as None
-
-    :type size_weights: Series(dtype: float|int64)
-    :param size_weights: Weights for point size, deciding diameter of point (after bounded by size_bound)
-                         Default as None
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north],
-                         Default as None
-
-    :type color_gradient: list
-    :param color_gradient: Specify range of color gradient.
-                           Either use ["hex_color"] to specify a same color for all points,
-                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
-                           Default as ["#115f9a", "#d0f400"]
-
-    :type color_bound: list
-    :param color_bound: Specify weight range [w1, w2] binding to color_gradient.
-                        Needed only when color_gradient has two value ["color1", "color2"].
-                        Bind w1 to "color1", and w2 to "color2".
-                        When weight < w1 or weight > w2, truncate to w1/w2 accordingly.
-                        Default as [0, 0]
-
-    :type size_bound: list
-    :param size_bound: Specify range [w1, w2] of size_weights.
-                       When weight < w1 or weight > w2, truncate to w1/w2 accordingly.
-                       Default as [3]
-
-    :type opacity: float
-    :param opacity: Opacity of point, ranged from 0.0 to 1.0, default as 1.0
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -221,36 +197,30 @@ def heatmap(ax, points, weights, bounding_box,
                  aggregation_type='max',
                  **extra_contextily_params):
     """
-    Plot heatmap in matplotlibs
+    Plots a heat map in matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    points : GeoSeries
+        Sequence of points.
+    weights : Series
+        Weights of point intensity.
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    map_zoom_level : [type], optional
+        Zoom level of the map by default 'auto'.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    aggregation_type : str, optional
+        Aggregation type, by default 'max'.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type points: GeoSeries
-    :param points: Sequence of Points
-
-    :type weights: Series(dtype: float|int64)
-    :param weights: Weights of point intensity
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
-
-    :type map_zoom_level: int
-    :param map_zoom_level: Zoom level of heatmap. Default as auto.
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type aggregation_type: str
-    :param aggregation_type: Aggregation type of data processing. Default as 'max'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -289,48 +259,36 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
                        aggregation_type='max',
                        **extra_contextily_params):
     """
-    Render region boundaries in matplotlib
+    Plots a choropleth map in matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    region_boundaries : GeoSeries
+        Sequence of polygons, as region boundaries to plot.
+    weights : Series
+        Color weights for polygons
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    color_gradient : list
+        Range of color gradient.
+        Either use ["hex_color"] to specify a same color for all geometries, or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2".
+    color_bound : list, optional
+        Weight range [w1, w2] of ``color_gradient``.
+        Needed only when ``color_gradient`` has two values ["color1", "color2"]. Binds w1 to "color1", and w2 to "color2". When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
+    opacity : float, optional
+        Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    aggregation_type : str, optional
+        Aggregation type, by default 'max'.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type region_boundaries: GeoSeries
-    :param region_boundaries: Sequence of polygons, as region boundaries to plot.
-
-    :type weights: Series(dtype: float|int64)
-    :param weights: Color weights for polygons
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
-
-    :type color_gradient: list
-    :param color_gradient: Specify range of color gradient.
-                           Either use ["hex_color"] to specify a same color for all polygons,
-                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
-
-    :type color_bound: list
-    :param color_bound: Specify weight range [w1, w2] binding to color_gradient.
-                        Needed only when color_gradient has two value ["color1", "color2"].
-                        Bind w1 to "color1", and w2 to "color2".
-                        When weight < w1 or weight > w2, truncate to w1/w2 accordingly.
-                        Default as None
-
-    :type opacity: float
-    :param opacity: Opacity of polygons, ranged from 0.0 to 1.0, default as 1.0
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type aggregation_type: str
-    :param aggregation_type: Aggregation type of data processing. Default as 'max'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -365,30 +323,26 @@ def iconviz(ax, points, bounding_box, icon_path,
                  coordinate_system='EPSG:3857',
                  **extra_contextily_params):
     """
-    Plot points as icons on map in Matplotlib
+    Plots an icon map in Matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    points : GeoSeries
+        Sequence of points.
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    icon_path : str
+        Absolute path to icon file.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type points: GeoSeries
-    :param points: Sequence of Points
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
-
-    :type icon_path: str
-    :param icon_path: Absolute path to icon file
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap.
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -402,7 +356,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
     >>> arctern.plot.iconviz(ax, points, bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], icon_path='/path/to/icon-viz.png', coordinate_system='EPSG:4326')
     >>> plt.show()
-   """
+    """
     from matplotlib import pyplot as plt
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
@@ -429,48 +383,37 @@ def fishnetmap(ax, points, weights, bounding_box,
                     aggregation_type='sum',
                     **extra_contextily_params):
     """
-    Plot fishnetmap in Matplotlib
+    Plots a fishnet map in Matplotlib.
 
-    :type ax: AxesSubplot
-    :param ax: Matplotlib axes object on which to add the basemap.
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    points : GeoSeries
+        Sequence of points.
+    weights : Series
+        Color weights of polygons.
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    color_gradient : list, optional
+        Range of color gradient, by default ["#0000FF", "#FF0000"].
+        Either use ["hex_color"] to specify a same color for all geometries, or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2".
+    cell_size : int, optional
+        Side length of fishnet cells, by default 4.
+    cell_spacing : int, optional
+        Margin between adjacent fishnet cells, by default 1.
+    opacity : float, optional
+        Opacity of the fishnet, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    aggregation_type : str, optional
+        Aggregation type, by default 'sum'.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
-    :type points: GeoSeries
-    :param points: Sequence of Points
-
-    :type weights: Series(dtype: float|int64)
-    :param weights: Color weight of points
-
-    :type bounding_box: list
-    :param bounding_box: Specify the bounding rectangle [west, south, east, north].
-
-    :type color_gradient: list
-    :param color_gradient: Specify range of color gradient.
-                           Either use ["hex_color"] to specify a same color for all points,
-                           or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2"
-                           Current only default value ["#0000FF", "#FF0000"] is supported
-
-    :type cell_size: int
-    :param cell_size: Side length of fishnet cells, default as 4
-
-    :type cell_spacing: int
-    :param cell_spacing: Margin between adjacent fishnet cells, default as 1
-
-    :type opacity: float
-    :param opacity: Opacity of fishnet, ranged from 0.0 to 1.0, default as 1.0
-
-    :type coordinate_system: str
-    :param coordinate_system: Coordinate Reference System of the geometry objects.
-                              Must be SRID formed, e.g. 'EPSG:4326' or 'EPSG:3857'
-                              Default as 'EPSG:3857'
-
-    :type aggregation_type: str
-    :param aggregation_type: Aggregation type of data processing. Default as 'sum'
-
-    :type extra_contextily_params: dict
-    :param extra_contextily_params: Extra parameters will be passed to contextily.add_basemap
-                                    See https://contextily.readthedocs.io/en/latest/reference.html for details
-
-    :example:
+    Examples
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
