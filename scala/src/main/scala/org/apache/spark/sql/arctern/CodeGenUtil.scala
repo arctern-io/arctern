@@ -15,11 +15,11 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.catalyst.expressions.Expression
+import org.apache.spark.sql.catalyst.expressions.{ExpectsInputTypes, Expression}
 import org.apache.spark.sql.catalyst.expressions.codegen.ExprCode
 import org.apache.spark.sql.types.DataType
 
-abstract class ArcternExpr extends Expression {
+abstract class ArcternExpr extends Expression with ExpectsInputTypes {
   def isArcternExpr = true
 }
 
@@ -69,20 +69,21 @@ object CodeGenUtil {
   def geometryFromNormalExpr(exrCode: ExprCode) = {
     val geoName = exrCode.value + "_geo"
     val geoDeclare = mutableGeometryInitCode(exrCode.value + "_geo")
-    val newCodeString = s"""
-                         |${exrCode.code}
-                         |$geoName = ${deserializeGeometryCode(exrCode.value)}
+    val newCodeString =
+      s"""
+         |${exrCode.code}
+         |$geoName = ${deserializeGeometryCode(exrCode.value)}
                          """.stripMargin
     (geoName, geoDeclare, newCodeString)
   }
 
-  def assignmentCode(callFunc: String, value: String, dt: DataType ) = {
+  def assignmentCode(callFunc: String, value: String, dt: DataType) = {
     dt match {
       case _: GeometryUDT =>
         s"""
-           |${mutableGeometryInitCode(value+"_geo")}
+           |${mutableGeometryInitCode(value + "_geo")}
            |${value}_geo = $callFunc;
-           |$value = ${serialGeometryCode(value+"_geo")}
+           |$value = ${serialGeometryCode(value + "_geo")}
            |""".stripMargin
       case _ => s"$value = $callFunc;"
     }
@@ -100,7 +101,9 @@ object CodeGenUtil {
   }
 
   def isArcternExpr(expr: Expression): Boolean = expr match {
-    case _ : ArcternExpr => true
+    case _: ArcternExpr => true
     case _ => false
   }
+
+  def utf8StringFromStringCode(string_name: String) = s"org.apache.spark.unsafe.types.UTF8String.fromString($string_name);"
 }

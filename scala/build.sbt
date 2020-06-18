@@ -6,6 +6,7 @@ scalaVersion := "2.12.11"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 libraryDependencies += "org.locationtech.jts" % "jts-core" % "1.16.1"
+libraryDependencies += "org.wololo" % "jts2geojson" % "0.12.0"
 
 val sparkVersion = Option(System.getProperty("sparkVersion")).getOrElse("3.0.0-preview2")
 if (sparkVersion == "3.0.0-preview2") {
@@ -21,3 +22,10 @@ if (sparkVersion == "3.0.0-preview2") {
   libraryDependencies += "org.apache.spark" %% "spark-core" % "spark-3.0.0-preview2"
   libraryDependencies += "org.apache.spark" %% "spark-sql" % "spark-3.0.0-preview2"
 }
+
+resolvers += "Open Source Geospatial Foundation Repository" at "https://repo.osgeo.org/repository/release/"
+libraryDependencies ++= Seq(
+  "org.geotools" % "gt-main" % "23.1",
+  "org.geotools" % "gt-referencing" % "23.1",
+  "org.geotools" % "gt-epsg-hsql" % "23.1"
+)

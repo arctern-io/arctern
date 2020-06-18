@@ -18,7 +18,8 @@ package org.apache.spark.sql.arctern
 import org.apache.spark.sql.catalyst.util._
 import org.apache.spark.sql.types._
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.io.{WKBReader, WKBWriter, WKTReader, WKTWriter, ParseException}
+import org.locationtech.jts.io.{ParseException, WKBReader, WKBWriter, WKTReader, WKTWriter}
+import org.wololo.jts2geojson.{GeoJSONReader, GeoJSONWriter}
 
 class GeometryUDT extends UserDefinedType[Geometry] {
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
@@ -36,6 +37,7 @@ object GeometryUDT {
   def GeomDeserialize(datum: Any): Geometry = {
     datum match {
       case values: ArrayData => FromWkb(values.toByteArray())
+      case null => null
     }
   }
 
@@ -60,4 +62,17 @@ object GeometryUDT {
       case _: ParseException => null
     }
   }
+
+  def ToGeoJSON(obj: Geometry): String = new GeoJSONWriter().write(obj).toString
+
+  def FromGeoJSON(obj: String): Geometry = {
+    try {
+      new GeoJSONReader().read(obj)
+    }
+    catch {
+      case _: UnsupportedOperationException => null
+    }
+  }
+
+  def GetGeoType(obj: Geometry): String = obj.getGeometryType
 }
