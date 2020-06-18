@@ -337,11 +337,14 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
-        # min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
-        arg_list = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
-        for arg in arg_list:
-            print(type(arg))
-        return _column_geo("ST_PolygonFromEnvelope", *arg_list, crs=crs)
+        min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+
+        _kdf = ks.DataFrame(min_x)
+        kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
+        kdf["min_y"] = min_y
+        kdf["max_x"] = max_x
+        kdf["max_y"] = max_y
+        return _column_geo("ST_PolygonFromEnvelope", kdf["min_x"], kdf["min_y"], kdf["max_x"], kdf["max_y"], crs=crs)
 
     @classmethod
     def point(cls, x, y, crs=None):
@@ -363,9 +366,9 @@ if __name__ == "__main__":
     y_min = pds([0.0])
     y_max = pds([1.0])
 
-    # rst = GeoSeries.polygon_from_envelope(x_min, y_min, x_max, y_max).to_wkt()
+    rst = GeoSeries.polygon_from_envelope(x_min, y_min, x_max, y_max).to_wkt()
 
-    # assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+    assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
 
 
     def test_ST_Point():
