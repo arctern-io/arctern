@@ -34,10 +34,17 @@ class UDTTest extends AdapterTest {
     val schema = StructType(Array(StructField("idx", IntegerType, nullable = false), StructField("geometry", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_GeometryUDT")
+
     val rst = spark.sql("select * from table_GeometryUDT")
+    rst.show(false)
 
     val collect = rst.collect()
-    collect.foreach(println)
+
+    assert(collect(0).getAs[GeometryUDT](1).toString == "POINT (10 20)")
+    assert(collect(1).getAs[GeometryUDT](1).toString == "LINESTRING (0 0, 10 10, 20 20)")
+    assert(collect(2).getAs[GeometryUDT](1).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect(3).getAs[GeometryUDT](1).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
+    assert(collect(4).getAs[GeometryUDT](1).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
     assert(collect(5).isNullAt(1))
   }
 

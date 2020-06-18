@@ -22,6 +22,8 @@ import org.locationtech.jts.io.{ParseException, WKBReader, WKBWriter, WKTReader,
 import org.wololo.jts2geojson.{GeoJSONReader, GeoJSONWriter}
 
 class GeometryUDT extends UserDefinedType[Geometry] {
+  override def pyUDT: String = "scala_wrapper.GeometryUDT"
+
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
 
   override def serialize(obj: Geometry): GenericArrayData = GeometryUDT.GeomSerialize(obj)
