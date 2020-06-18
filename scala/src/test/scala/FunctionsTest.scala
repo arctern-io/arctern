@@ -564,7 +564,7 @@ class FunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
-    val rst = spark.sql("select ST_Buffer(geo, 1) from data ")
+    val rst = spark.sql("select ST_Buffer(geo, 1 * 1) from data ")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
@@ -640,7 +640,7 @@ class FunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
-    val rst = spark.sql("select ST_PrecisionReduce(geo, 2) from data ")
+    val rst = spark.sql("select ST_PrecisionReduce(geo, 1 + 1) from data ")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
@@ -785,7 +785,7 @@ class FunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
-    val rst = spark.sql("select ST_SimplifyPreserveTopology(geo, 2) from data ")
+    val rst = spark.sql("select ST_SimplifyPreserveTopology(geo, 1 + 1) from data ")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
