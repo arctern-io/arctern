@@ -18,6 +18,7 @@
 #include <ogr_geometry.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 TEST(FISHNETMAP_TEST, INT8) {
   // param1: wkt string
@@ -88,7 +89,7 @@ TEST(FISHNETMAP_TEST, INT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -165,7 +166,7 @@ TEST(FISHNETMAP_TEST, INT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -242,7 +243,7 @@ TEST(FISHNETMAP_TEST, INT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -319,7 +320,7 @@ TEST(FISHNETMAP_TEST, INT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -396,7 +397,7 @@ TEST(FISHNETMAP_TEST, UINT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -473,7 +474,7 @@ TEST(FISHNETMAP_TEST, UINT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -550,7 +551,7 @@ TEST(FISHNETMAP_TEST, UINT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -627,7 +628,7 @@ TEST(FISHNETMAP_TEST, UINT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -704,7 +705,7 @@ TEST(FISHNETMAP_TEST, FLOAT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};
@@ -781,7 +782,7 @@ TEST(FISHNETMAP_TEST, DOUBLE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
   std::vector<std::shared_ptr<arrow::Array>> color_vec{c_array};

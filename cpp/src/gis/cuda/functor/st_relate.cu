@@ -42,9 +42,11 @@ DEVICE_RUNNABLE Matrix PointRelateOp(ConstIter& left_iter, WkbTag right_tag,
       break;
     }
     case WkbCategory::kLineString: {
-      auto right_size = right_iter.read_meta<int>();
-      auto right_points = right_iter.read_value_ptr<double2>(right_size);
-      result = PointRelateToLineString(left_point, right_size, right_points);
+      result = PointRelateToLineString(left_point, right_iter);
+      break;
+    }
+    case WkbCategory::kPolygon: {
+      result = PointRelateToPolygon(left_point, right_iter);
       break;
     }
     default: {
@@ -60,17 +62,17 @@ DEVICE_RUNNABLE Matrix LineStringRelateOp(ConstIter& left_iter, WkbTag right_tag
                                           ConstIter& right_iter, KernelBuffer& buffer) {
   assert(right_tag.get_space_type() == WkbSpaceType::XY);
 
-  auto left_size = left_iter.read_meta<int>();
-  auto left_points = left_iter.read_value_ptr<double2>(left_size);
   Matrix result;
   switch (right_tag.get_category()) {
     case WkbCategory::kPoint: {
       auto right_point = right_iter.read_value<double2>();
-      auto mat = PointRelateToLineString(right_point, left_size, left_points);
+      auto mat = PointRelateToLineString(right_point, left_iter);
       result = mat.get_transpose();
       break;
     }
     case WkbCategory::kLineString: {
+      auto left_size = left_iter.read_meta<int>();
+      auto left_points = left_iter.read_value_ptr<double2>(left_size);
       auto right_size = right_iter.read_meta<int>();
       auto right_points = right_iter.read_value_ptr<double2>(right_size);
       result = LineStringRelateToLineString(left_size, left_points, right_size,
@@ -100,17 +102,25 @@ DEVICE_RUNNABLE Matrix RelateOp(const ConstGpuContext& left, const ConstGpuConte
       result = PointRelateOp(left_iter, right.get_tag(index), right_iter);
       break;
     }
-    case WkbCategory::kMultiLineString: {
-      // TODO
+    case WkbCategory::kLineString: {
       result = LineStringRelateOp(left_iter, right.get_tag(index), right_iter, buffer);
       break;
     }
+    case WkbCategory::kPolygon: {
+      assert(right.get_tag(index).get_category() == WkbCategory::kPoint);
+      auto point = right_iter.read_value<double2>();
+      result = PointRelateToPolygon(point, left_iter).get_transpose();
+      break;
+    }
     default: {
+      assert(false);
       result = de9im::INVALID_MATRIX;
       left_iter = left.get_iter(index + 1);
       break;
     }
   }
+  assert(right_iter.values == right.get_value_ptr(index + 1));
+  assert(right_iter.metas == right.get_meta_ptr(index + 1));
   assert(left_iter.values == left.get_value_ptr(index + 1));
   assert(left_iter.metas == left.get_meta_ptr(index + 1));
 
@@ -133,27 +143,20 @@ DEVICE_RUNNABLE Matrix RelateOp(const ConstGpuContext& left, const ConstGpuConte
 //
 
 __global__ void ST_RelateImpl(ConstGpuContext left, ConstGpuContext right,
-                              Matrix ref_matrix, bool* output_matrixes) {
+                              Matrix* output_matrixes) {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < left.size) {
     auto matrix = RelateOp(left, right, index);
-    output_matrixes[index] = matrix.IsMatchTo(ref_matrix);
+    output_matrixes[index] = matrix;
   }
 }
 
-void ST_Relate(const GeometryVector& left_vec, const GeometryVector& right_vec,
-               de9im::Matrix ref_matrix, bool* host_results) {
-  assert(left_vec.size() == right_vec.size());
-  auto size = left_vec.size();
-  auto left_holder = left_vec.CreateReadGpuContext();
-  auto right_holder = right_vec.CreateReadGpuContext();
-  //  RelateOp();
+void ST_Relate(const ConstGpuContext& left_ctx, const ConstGpuContext& right_ctx,
+               de9im::Matrix* dev_results) {
+  assert(left_ctx.size == right_ctx.size);
+  auto size = left_ctx.size;
   auto config = GetKernelExecConfig(size);
-  auto results = GpuMakeUniqueArray<bool>(size);
-
-  ST_RelateImpl<<<config.grid_dim, config.block_dim>>>(*left_holder, *right_holder,
-                                                       ref_matrix, results.get());
-  GpuMemcpy(host_results, results.get(), size);
+  ST_RelateImpl<<<config.grid_dim, config.block_dim>>>(left_ctx, right_ctx, dev_results);
 }
 
 }  // namespace cuda

@@ -27,6 +27,7 @@
 namespace datasource {
 // csv format, for better readability in linestring.csv file
 constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
+0 0 0 0,-1 0 0 0 0 1,1FF0FF10*
 ,,FFFFFFFF*
 ,0 0 0 1,FFFFFF10*
 0 0 0 3,0 0 0 1 1 1 0 2 0 3,1F1F0F1F*
@@ -46,7 +47,7 @@ constexpr auto relation_csv = R"(left_linestring,right_linestring,matrix
 0 0 0 3,0 0 0 1 1 1 0 2 0 3 4 4 0 2 0 1.5,10100F1F*
 0 0 0 3,0 -100 0 -99 3 3 0 -1 0 1 0 2 0 4,1FF0FF10*
 0 1 1 0 0 0 0 -1 -1 0 0 0 0 1,0 1 0 -1 -1 0 1 0 0 1,1FFF0FFF*
-
+0 0 1 2,0 0 1 2 4 2,1FF00F10*
 )";
 }  // namespace datasource
 
@@ -109,9 +110,8 @@ inline vector<vector<string>> GetTableFromCsv(const string& csv_raw) {
 }
 
 // csv[keys..]
-inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
+inline std::vector<vector<string>> ProjectedTableFromCsv(vector<vector<string>> raw_table,
                                                          const vector<string>& keys) {
-  auto raw_table = GetTableFromCsv(csv_raw);
   auto raw_keys = raw_table[0];
   raw_table.erase(raw_table.begin());
 
@@ -132,4 +132,10 @@ inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
     result.push_back(std::move(line));
   }
   return result;
+}
+
+inline std::vector<vector<string>> ProjectedTableFromCsv(const string& csv_raw,
+                                                         const vector<string>& keys) {
+  auto raw_table = GetTableFromCsv(csv_raw);
+  return ProjectedTableFromCsv(std::move(raw_table), keys);
 }

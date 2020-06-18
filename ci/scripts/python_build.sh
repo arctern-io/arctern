@@ -17,8 +17,10 @@ Usage:
   $0 [flags] [Arguments]
 
     clean                     Remove all existing build artifacts and configuration (start over)
-    -i [ARCTERN_INSTALL_PREFIX] or --install_prefix=[ARCTERN_INSTALL_PREFIX]
-                              Install directory used by install.
+    -i [INSTALL_PREFIX] or --install_prefix=[INSTALL_PREFIX]
+                              Install prefix
+    --arctern_install_prefix=[ARCTERN_INSTALL_PREFIX]
+                              Arctern install directory used by install.
     -e [CONDA_ENV] or --conda_env=[CONDA_ENV]
                               Setting conda activate environment
     --library_dirs            Directories to search for external C libraries
@@ -28,7 +30,7 @@ Usage:
 Use \"$0  --help\" for more information about a given command.
 "
 
-ARGS=`getopt -o "i:e:h" -l "install_prefix::,conda_env::,library_dirs::,help" -n "$0" -- "$@"`
+ARGS=`getopt -o "i:e:h" -l "install_prefix::,conda_env::,library_dirs::,arctern_install_prefix::,help" -n "$0" -- "$@"`
 
 eval set -- "${ARGS}"
 
@@ -40,6 +42,11 @@ while true ; do
                         # argument is not found.
                         case "$2" in
                                 "") echo "Option install_prefix, no argument"; exit 1 ;;
+                                *)  INSTALL_PREFIX=$2 ; shift 2 ;;
+                        esac ;;
+                --arctern_install_prefix)
+                        case "$2" in
+                                "") echo "Option arctern_install_prefix, no argument"; exit 1 ;;
                                 *)  ARCTERN_INSTALL_PREFIX=$2 ; shift 2 ;;
                         esac ;;
                 -e|--conda_env)
@@ -107,6 +114,11 @@ if [[ -n ${LIBRARY_DIRS} ]];then
 else
     python setup.py build build_ext
 fi
-python setup.py install
+
+if [[ -n ${INSTALL_PREFIX} ]];then
+    python setup.py install --prefix=${INSTALL_PREFIX}
+else
+    python setup.py install
+fi
 
 popd

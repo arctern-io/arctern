@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 TEST(ICON_VIZ_TEST, WKT_TEST) {
   // param1: wkt string
@@ -72,7 +73,7 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 
   std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
 

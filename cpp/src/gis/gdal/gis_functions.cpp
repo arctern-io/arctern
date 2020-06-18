@@ -15,14 +15,10 @@
  */
 
 #include "gis/gdal/gis_functions.h"
-#include "common/version.h"
-#include "gis/gdal/arctern_geos.h"
-#include "gis/gdal/geometry_visitor.h"
-#include "gis/parser.h"
-#include "utils/check_status.h"
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
+
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -30,6 +26,12 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "common/version.h"
+#include "gis/gdal/arctern_geos.h"
+#include "gis/gdal/geometry_visitor.h"
+#include "gis/parser.h"
+#include "utils/check_status.h"
 
 namespace arctern {
 namespace gis {
@@ -1105,6 +1107,49 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
   auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
                     OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
   return BinaryOp<arrow::BooleanBuilder>(geo1, geo2, op, null_op);
+}
+
+std::vector<std::shared_ptr<arrow::Array>> ST_WithinOpt(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo1, const std::string& geo2) {
+  auto op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+               OGRGeometry* ogr2) {
+    return AppendBoolean(builder, ogr1->Within(ogr2) != 0);
+  };
+  auto null_op = [](ChunkArrayBuilder<arrow::BooleanBuilder>& builder, OGRGeometry* ogr1,
+                    OGRGeometry* ogr2) { return AppendBoolean(builder, false); };
+
+  std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_list{geo1};
+  std::vector<ChunkArrayIdx<WkbItem>> idx_list(2);
+  ChunkArrayBuilder<arrow::BooleanBuilder> builder;
+  std::vector<std::shared_ptr<arrow::Array>> result_array;
+
+  OGRGeometry* ogr2;
+  CHECK_GDAL(OGRGeometryFactory::createFromWkb(geo2.c_str(), nullptr, &ogr2));
+  bool is_null;
+
+  while (GetNextValue(array_list, idx_list, is_null)) {
+    auto ogr1 = idx_list[0].item_value.ToGeometry();
+    if ((ogr1 == nullptr) && (ogr2 == nullptr)) {
+      auto status = builder.array_builder.AppendNull();
+    } else if ((ogr1 == nullptr) || (ogr2 == nullptr)) {
+      if (null_op == nullptr) {
+        auto status = builder.array_builder.AppendNull();
+      } else {
+        auto array_ptr = null_op(builder, ogr1, ogr2);
+        if (array_ptr != nullptr) result_array.push_back(array_ptr);
+      }
+    } else {
+      auto array_ptr = op(builder, ogr1, ogr2);
+      if (array_ptr != nullptr) result_array.push_back(array_ptr);
+    }
+    OGRGeometryFactory::destroyGeometry(ogr1);
+  }
+
+  OGRGeometryFactory::destroyGeometry(ogr2);
+  std::shared_ptr<arrow::Array> array_ptr;
+  CHECK_ARROW(builder.array_builder.Finish(&array_ptr));
+  result_array.push_back(array_ptr);
+  return result_array;
 }
 
 /*********************** AGGREGATE FUNCTIONS ***************************/

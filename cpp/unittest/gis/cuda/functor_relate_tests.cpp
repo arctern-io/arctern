@@ -29,6 +29,32 @@
 #include "gis/cuda/tools/de9im_matrix.h"
 using de9im::Matrix;
 
+// below is for cout << std::tuple, copied from stackoverflow
+namespace aux {
+template <std::size_t...>
+struct seq {};
+template <std::size_t N, std::size_t... Is>
+struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
+
+template <std::size_t... Is>
+struct gen_seq<0, Is...> : seq<Is...> {};
+
+template <class Ch, class Tr, class Tuple, std::size_t... Is>
+void print_tuple(std::basic_ostream<Ch, Tr>& os, Tuple const& t, seq<Is...>) {
+  using swallow = int[];
+  (void)swallow{0, (void(os << (Is == 0 ? "" : ", ") << std::get<Is>(t)), 0)...};
+}
+}  // namespace aux
+
+template <class Ch, class Tr, class... Args>
+auto operator<<(std::basic_ostream<Ch, Tr>& os, std::tuple<Args...> const& t)
+    -> std::basic_ostream<Ch, Tr>& {
+  os << "(";
+  aux::print_tuple(os, t, aux::gen_seq<sizeof...(Args)>());
+  return os << ")";
+}
+// above is for cout << std::tuple, copied from stackoverflow
+
 namespace arctern {
 namespace gis {
 namespace cuda {
@@ -38,19 +64,45 @@ TEST(FunctorRelate, naive) {
   // simple unittest, the complex one is put into host_within_tests.cpp
   using mat = Matrix;
   vector<std::tuple<string, string, Matrix, bool>> raw_data = {
+      {"LineString(0 0, 1 0, 1 1)", "LineString(0 0, 1 0, 1 1)", mat{"1FFF0FFF*"}, true},
+      {"Point(1 1)", "LineString(1 1, 1 1)         ", mat{"0FFFFFFF*"}, true},
+      {"Point(0 1)", "LineString(1 1, 1 1)         ", mat{"FF0FFF1F*"}, true},
+      // standard answer from PostGis is F0FFFFFF*, but we use below for consistency
+      {"Point(1 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"F0FFFF21*"}, true},
+      // Below is standard answer from PostGis
+      {"Point(1 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"F0FFFF21*"}, true},
+      {"Point(0 1)", "Polygon((1 1, 1 1, 1 1, 1 1))", mat{"FF0FFF21*"}, true},
+
+      {"LineString(1 1, 1 1)         ", "Point(1 1)", mat{"0FFFFFFF*"}, true},
+      {"LineString(1 1, 1 1)         ", "Point(0 1)", mat{"FF1FFF0F*"}, true},
+      {"Polygon((1 1, 1 1, 1 1, 1 1))", "Point(1 1)", mat{"FF20F1FF*"}, true},
+      {"Polygon((1 1, 1 1, 1 1, 1 1))", "Point(0 1)", mat{"FF2FF10F*"}, true},
+
+      {"Point(0 1)", "LINESTRING (0 0, 0 1, 1 2)", mat("0FFFFF10*"), true},
+      {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2)", mat("1FFF0FFF*"), true},
+      {"LINESTRING (0 0, 1 2)", "LINESTRING (0 0, 1 2, 4 2)", mat("1FF00F10*"), true},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF1*"), false},
+
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF2*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF0*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFF**"), true},
       {"Point(0 0)", "Point(0 0)", mat("FFFFFFFF*"), false},
       {"Point(0 0)", "Point(0 0)", mat("2FFFFFFF*"), false},
+
       {"Point(0 0)", "Point(0 0)", mat("1FFFFFFF*"), false},
       {"Point(0 0)", "Point(0 0)", mat("0FFFFFFF*"), true},
-
       {"Point(0 0)", "Point(0 1)", mat("FF0FFF0F*"), true},
       {"Point(0 0)", "LineString(0 -1, 0 1)", mat("0FFFFF10*"), true},
       {"Point(0 0)", "LineString(0 0, 0 1)", mat("F0FFFF10*"), true},
+
       {"Point(0 0)", "LineString(0 1, 3 0)", mat("FF0FFF10*"), true},
+      {"Point(0 0)", "Polygon((-1 0, 1 0, 0 1))", mat{"F0FFFF21*"}, true},
+      {"Point(0 0.5)", "Polygon((-1 0, 1 0, 0 1))", mat{"0FFFFF21*"}, true},
+      {"Point(0 100)", "Polygon((-1 0, 1 0, 0 1))", mat{"FF0FFF21*"}, true},
+
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0)", mat{"FF20F1FF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 0.5)", mat{"0F2FF1FF*"}, true},
+      {"Polygon((-1 0, 1 0, 0 1))", "Point(0 100)", mat{"FF2FF10F*"}, true},
   };
   vector<string> left_vec;
   vector<string> right_vec;
@@ -71,18 +123,18 @@ TEST(FunctorRelate, naive) {
   auto right_geo = GeometryVectorFactory::CreateFromWkts(right_vec);
   auto size = left_geo.size();
 
-  for (auto mat : matrix_collection) {
-    vector<uint8_t> host_result(size);
-    auto result = GpuMakeUniqueArray<uint8_t>(size);
-    ST_Relate(left_geo, right_geo, mat, (bool*)result.get());
-    GpuMemcpy(host_result.data(), result.get(), size);
-    for (int i = 0; i < size; ++i) {
-      if (mat == matrices[i]) {
-        ASSERT_EQ(host_result[i], std_result[i]) << left_vec[i] << "\n"
-                                                 << right_vec[i] << "\n"
-                                                 << matrices[i];
-      }
-    }
+  vector<Matrix> host_result(size);
+  auto result = GpuMakeUniqueArray<Matrix>(size);
+  auto lch = left_geo.CreateReadGpuContext();
+  auto rch = right_geo.CreateReadGpuContext();
+  ST_Relate(*lch, *rch, result.get());
+  GpuMemcpy(host_result.data(), result.get(), size);
+  for (int index = 0; index < raw_data.size(); ++index) {
+    auto ref = raw_data[index];
+    auto ref_mat = std::get<2>(ref);
+    auto ref_tf = std::get<3>(ref);
+    auto v = host_result[index].IsMatchTo(ref_mat);
+    EXPECT_EQ(v, ref_tf) << host_result[index] << " vs " << ref;
   }
 }
 }  // namespace cuda

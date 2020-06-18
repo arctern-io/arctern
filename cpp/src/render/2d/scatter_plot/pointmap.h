@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "render/2d/general_2d.h"
 #include "render/2d/input.h"
 #include "render/utils/vega/vega_scatter_plot/vega_pointmap.h"
@@ -28,7 +30,7 @@ class PointMap : public General2D {
 
   PointMap(uint32_t* input_x, uint32_t* input_y, int64_t num_vertices);
 
-  uint8_t* Render() final;
+  std::vector<uint8_t> Render() final;
 
   void Shader();
 

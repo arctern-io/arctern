@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include "arrow/render_api.h"
+#include "gis/gdal/format_conversion.h"
 
 TEST(CHOROPLETHMAP_TEST, BLUE_TO_RED) {
   // param1: wkt string
@@ -73,7 +74,7 @@ TEST(CHOROPLETHMAP_TEST, BLUE_TO_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -136,7 +137,7 @@ TEST(CHOROPLETHMAP_TEST, SKYBLUE_TO_WHITE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -199,7 +200,7 @@ TEST(CHOROPLETHMAP_TEST, GREEN_YELLOW_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -262,7 +263,7 @@ TEST(CHOROPLETHMAP_TEST, BLUE_WHITE_RED) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -325,7 +326,7 @@ TEST(CHOROPLETHMAP_TEST, WHITE_BLUE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -388,7 +389,7 @@ TEST(CHOROPLETHMAP_TEST, BLUE_GREEN_YELLOW) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -451,7 +452,7 @@ TEST(CHOROPLETHMAP_TEST, BLUE_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -514,7 +515,7 @@ TEST(CHOROPLETHMAP_TEST, RED_TRANSPARENCY) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -577,7 +578,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -639,7 +640,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
 //      "  ]\n"
 //      "}";
 //
-//  auto wkb = arctern::render::WktToWkb(string_array);
+//  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
 
@@ -698,7 +699,7 @@ TEST(CHOROPLETHMAP_TEST, PURPLE_TO_YELLOW) {
 //      "  ]\n"
 //      "}";
 //
-//  auto wkb = arctern::render::WktToWkb(string_array);
+//  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
 
@@ -758,7 +759,7 @@ TEST(CHOROPLETHMAP_TEST, INT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -821,7 +822,7 @@ TEST(CHOROPLETHMAP_TEST, INT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -884,7 +885,7 @@ TEST(CHOROPLETHMAP_TEST, INT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -947,7 +948,7 @@ TEST(CHOROPLETHMAP_TEST, INT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1010,7 +1011,7 @@ TEST(CHOROPLETHMAP_TEST, UINT8) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1073,7 +1074,7 @@ TEST(CHOROPLETHMAP_TEST, UINT16) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1136,7 +1137,7 @@ TEST(CHOROPLETHMAP_TEST, UINT32) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1199,7 +1200,7 @@ TEST(CHOROPLETHMAP_TEST, UINT64) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1262,7 +1263,7 @@ TEST(CHOROPLETHMAP_TEST, FLOAT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1325,7 +1326,7 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1387,7 +1388,7 @@ TEST(CHOROPLETHMAP_TEST, DOUBLE) {
 //      "  ]\n"
 //      "}";
 //
-//  auto wkb = arctern::render::WktToWkb(string_array);
+//  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
 //  arctern::render::choropleth_map(wkb, color_array, vega);
 //}
 
@@ -1447,7 +1448,7 @@ TEST(CHOROPLETHMAP_TEST, MEAN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1510,7 +1511,7 @@ TEST(CHOROPLETHMAP_TEST, SUM) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1573,7 +1574,7 @@ TEST(CHOROPLETHMAP_TEST, MAX) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1636,7 +1637,7 @@ TEST(CHOROPLETHMAP_TEST, MIN) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1699,7 +1700,7 @@ TEST(CHOROPLETHMAP_TEST, COUNT) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
@@ -1762,7 +1763,7 @@ TEST(CHOROPLETHMAP_TEST, STD) {
       "  ]\n"
       "}";
 
-  auto wkb = arctern::render::WktToWkb(string_array);
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
   std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};

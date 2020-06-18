@@ -22,6 +22,7 @@
 #include <arrow/api.h>
 #endif
 #include <memory>
+#include <vector>
 namespace arctern {
 
 using ArrayPtr = std::shared_ptr<arrow::Array>;
@@ -34,5 +35,16 @@ using BooleanArrayPtr = std::shared_ptr<arrow::BooleanArray>;
 template <typename ArrowArrayType>
 using GetArrowBuilderType =
     typename arrow::TypeTraits<typename ArrowArrayType::TypeClass>::BuilderType;
+
+template <typename ArrowTo, typename ArrowFrom>
+inline std::vector<std::shared_ptr<ArrowTo>> VectorTypeCast(
+    const std::vector<std::shared_ptr<ArrowFrom>>& ptrs) {
+  std::vector<std::shared_ptr<ArrowTo>> res;
+  res.reserve(ptrs.size());
+  for (const auto& ptr : ptrs) {
+    res.emplace_back(std::static_pointer_cast<ArrowTo>(ptr));
+  }
+  return res;
+}
 
 }  // namespace arctern

@@ -58,6 +58,7 @@ set(gis_src
         gis/dispatch/wkb_type_scanner.cpp
         gis/dispatch/type_scanner.cpp
         gis/gdal/format_conversion.cpp
+        gis/spatial_join/st_indexed_within.cpp
         )
 
 set(cuda_gis_src
@@ -67,9 +68,13 @@ set(cuda_gis_src
         gis/cuda/conversion/arrow_encode.cpp
         gis/cuda/common/gis_definitions.cpp
         gis/cuda/common/gis_definitions.cu
-        gis/cuda/tools/bounding_box.cu
         gis/cuda/functor/st_distance.cu
         gis/cuda/functor/st_within.cu
+        gis/cuda/functor/st_intersects.cu
+        gis/cuda/functor/st_crosses.cu
+        gis/cuda/functor/st_overlaps.cu
+        gis/cuda/functor/st_touches.cu
+        gis/cuda/functor/st_equals.cu
         gis/cuda/functor/st_length.cu
         gis/cuda/functor/st_area.cu
         gis/cuda/functor/st_envelope.cu
@@ -81,6 +86,13 @@ set(cuda_gis_src
 set(arrow_src
         arrow/render_api.cpp
         )
+
+set(index_src
+        index/index_builder.cpp
+        )
+
+set(map_match_src
+        map_match/map_match.cpp)
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
@@ -95,6 +107,8 @@ if (BUILD_WITH_GPU)
             ${render_src}
             ${gpu_render_src}
             ${arrow_src}
+            ${index_src}
+            ${map_match_src}
     )
 else ()
     add_library(
@@ -103,6 +117,8 @@ else ()
             ${render_src}
             ${cpu_render_src}
             ${arrow_src}
+            ${index_src}
+            ${map_match_src}
     )
 endif ()
 

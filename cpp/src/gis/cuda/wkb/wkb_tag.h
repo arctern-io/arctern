@@ -40,6 +40,27 @@ struct WkbTag {
   constexpr DEVICE_RUNNABLE WkbSpaceType get_space_type() {
     return static_cast<WkbSpaceType>(data / kWkbSpaceTypeEncodeBase);
   }
+  constexpr DEVICE_RUNNABLE int get_dimension() {
+    auto cat = get_category();
+    switch (cat) {
+      case WkbCategory::kPoint:
+      case WkbCategory::kMultiPoint: {
+        return 0;
+      }
+      case WkbCategory::kLineString:
+      case WkbCategory::kMultiLineString: {
+        return 1;
+      }
+      case WkbCategory::kPolygon:
+      case WkbCategory::kMultiPolygon: {
+        return 2;
+      }
+      default: {
+        // unknown dimension
+        return -1;
+      }
+    }
+  }
   uint32_t data;
 };
 
