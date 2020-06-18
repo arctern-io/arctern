@@ -29,3 +29,8 @@ libraryDependencies ++= Seq(
   "org.geotools" % "gt-referencing" % "23.1",
   "org.geotools" % "gt-epsg-hsql" % "23.1"
 )
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
