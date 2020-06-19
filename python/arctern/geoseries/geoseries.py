@@ -689,7 +689,7 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Converts curves in each geometry to approximate linear representation.
+        Converts curves in each geometry to approximate linear representations.
 
         For example,
 
@@ -1430,7 +1430,7 @@ class GeoSeries(Series):
 
         ``x`` and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
 
-        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y).*
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x[i], y[i]).*
 
         Parameters
         ----------
