@@ -397,7 +397,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
+            Mask of boolean values for each element in the GeoSeries that indicates whether an element is not an NA value.
 
             * *True*: An element is a non-missing value.
             * *False*: An element is a NA value, such as None.
