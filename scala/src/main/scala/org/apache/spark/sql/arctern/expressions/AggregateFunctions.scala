@@ -36,6 +36,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
   }
 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
+    if (input.isNullAt(0)) return
     val accumulateUnion = buffer.getAs[Geometry](0)
     val newGeo = input.getAs[Geometry](0)
     if (accumulateUnion.getArea == 0) buffer(0) = newGeo
