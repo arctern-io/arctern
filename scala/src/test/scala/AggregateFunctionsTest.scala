@@ -25,7 +25,7 @@ class AggregateFunctionsTest extends AdapterTest {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (0 0)")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
-      Row(GeometryUDT.FromWkt("POLYGON ((1 1,2 1,2 2,2 1,1 1))")),
+      Row(GeometryUDT.FromWkt("POLYGON ((1 1,2 1,2 2,1 2,1 1))")),
       Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)) )")),
     )
 
@@ -38,14 +38,18 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==2)
+
+    //assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
 
     val rst2 = df.agg(st_union_aggr(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==2)
+
+    //assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Union_Aggr-Null") {
@@ -54,7 +58,7 @@ class AggregateFunctionsTest extends AdapterTest {
       Row("POINT (0 0)"),
       Row("LINESTRING (0 0, 10 10, 20 20)"),
       Row(null),
-      Row("POLYGON ((1 1,2 1,2 2,2 1,1 1))"),
+      Row("POLYGON ((1 1,2 1,2 2,1 2,1 1))"),
       Row("MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)) )"),
     )
 
@@ -67,14 +71,18 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==2)
+
+    //assert(collect(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
 
     val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==2)
+
+    //assert(collect2(0).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (1 1, 2 2), LINESTRING (2 2, 10 10, 20 20), LINESTRING (1 1, 2 1, 2 2), POLYGON ((1 1, 1 0, 0 0, 0 1, 1 1)))")
   }
 
   test("ST_Envelope_Aggr") {
