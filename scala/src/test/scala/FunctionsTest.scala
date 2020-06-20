@@ -1840,4 +1840,59 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 0 4, 4 4, 4 0, 0 0)), ((0 0, 4 0, 4 1, 0 1, 0 0)))")
   }
+
+  test("ST_CurveToLine") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_CurveToLine(geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
+
+    val rst2 = df.select(st_makevalid(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
+  }
+
+  test("ST_CurveToLine-Null") {
+    val data = Seq(
+      Row(null),
+      Row("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0))"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_CurveToLine(ST_GeomFromText(geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(1).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
+
+    val rst2 = df.select(st_makevalid(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).isNullAt(0))
+    assert(collect2(1).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
+  }
 }

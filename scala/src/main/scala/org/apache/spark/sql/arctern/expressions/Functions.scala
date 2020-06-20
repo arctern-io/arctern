@@ -555,3 +555,14 @@ case class ST_MakeValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
+
+case class ST_CurveToLine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
