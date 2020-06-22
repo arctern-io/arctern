@@ -51,22 +51,16 @@ class GeometryUDT(UserDefinedType):
         return binData
 
 
-def import_scala_functions():
+def import_arctern_functions():
     sc = SparkContext._active_spark_context
     jvm = sc._jvm
-    java_import(jvm, "org.apache.spark.sql.arctern.UdtRegistratorWrapper")
-    jvm.UdtRegistratorWrapper.registerUDT()
-
-    old_functions = jvm.functions
-    java_import(jvm, "org.apache.spark.sql.arctern.functions")
-    jvm.gis_functions = jvm.functions
-    jvm.functions = old_functions
-
+    java_import(jvm, "org.apache.spark.sql.arctern")
+    jvm.org.apache.spark.sql.arctern.UdtRegistratorWrapper.registerUDT()
 
 def _create_unary_function(name):
     def _(col, *args):
         sc = SparkContext._active_spark_context
-        jc = getattr(sc._jvm.gis_functions, name)(_to_java_column(col), *args)
+        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col), *args)
         return Column(jc)
 
     _.__name__ = name
@@ -86,7 +80,7 @@ def _create_binary_function(name, doc=""):
         elif isinstance(col2, basestring):
             arg2 = _create_column_from_name(col2)
 
-        jc = getattr(sc._jvm.gis_functions, name)(arg1, arg2)
+        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(arg1, arg2)
         return Column(jc)
 
     _.__name__ = name
@@ -132,7 +126,7 @@ _binary_functions = [
     "st_distancesphere",
 ]
 
-import_scala_functions()
+import_arctern_functions()
 
 for _name in _unary_functions:
     globals()[_name] = _create_unary_function(_name)
