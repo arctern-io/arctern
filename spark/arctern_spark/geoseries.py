@@ -103,6 +103,7 @@ class GeoSeries(Series):
             IndexOpsMixin.__init__(
                 self, kdf._internal.copy(spark_column=kss.spark_column), kdf
             )
+            self.set_crs(crs)
 
     def set_crs(self, crs):
         """
@@ -353,8 +354,3 @@ class GeoSeries(Series):
 
     def to_wkt(self):
         return _column_op("st_astext", self)
-
-data = "Point (1 2)"
-s = GeoSeries(data)
-print(s)
-print(s.centroid)
