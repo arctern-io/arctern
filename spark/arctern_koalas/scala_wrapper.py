@@ -18,16 +18,13 @@ if sys.version >= '3':
     basestring = str
 
 from pyspark import SparkContext
-from pyspark.sql.column import Column, _to_java_column, _create_column_from_literal, \
-    _create_column_from_name
-
-
-from pyspark.sql.functions import col, lit
+from pyspark.sql.column import Column, _to_java_column, _create_column_from_name
 
 from py4j.java_gateway import java_import
 
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
+
 
 class GeometryUDT(UserDefinedType):
     jvm = None
@@ -38,7 +35,7 @@ class GeometryUDT(UserDefinedType):
 
     @classmethod
     def module(cls):
-        return 'udt'
+        return 'scala_wrapper'
 
     @classmethod
     def scalaUDT(cls):
@@ -55,22 +52,23 @@ class GeometryUDT(UserDefinedType):
             java_import(self.jvm, "org.apache.spark.sql.arctern.GeometryUDT")
         return self.jvm.GeometryUDT.deserialize(datum[0])
 
+
 def import_scala_functions():
     sc = SparkContext._active_spark_context
     jvm = sc._jvm
     java_import(jvm, "org.apache.spark.sql.arctern.UdtRegistratorWrapper")
     jvm.UdtRegistratorWrapper.registerUDT()
-    java_import(jvm, "org.apache.spark.sql.arctern.gis_functions")
+    java_import(jvm, "org.apache.spark.sql.arctern.functions")
 
 
 def _create_unary_function(name):
-    def _func(col):
+    def _(col, *args):
         sc = SparkContext._active_spark_context
-        jc = getattr(sc._jvm, name)(_to_java_column(col))
+        jc = getattr(sc._jvm.gis_functions, name)(_to_java_column(col), *args)
         return Column(jc)
 
-    _func.__name__ = name
-    return _func
+    _.__name__ = name
+    return _
 
 
 def _create_binary_function(name, doc=""):
@@ -96,26 +94,50 @@ def _create_binary_function(name, doc=""):
 
 # functions that take one argument as input
 _unary_functions = [
-    #'ST_Centroid',
+    "st_geomfromgeojson",
+    "st_astext",
+    "st_asgeojson",
+    "st_centroid",
+    "st_isvalid",
+    "st_geometrytype",
+    "st_issimple",
+    "st_npoints",
+    "st_envelope",
+    "st_buffer",
+    "st_precisionreduce",
+    "st_simplifypreservetopology",
+    "st_convexhull",
+    "st_area",
+    "st_length",
+    "st_hausdorffdistance",
+    "st_transform",
+    "st_makevalid",
 ]
-
 
 # functions that take two arguments as input
 _binary_functions = [
-    #'ST_Within',
-    'st_point',
+    "st_point",
+    "st_within",
+    "st_intersection",
+    "st_distance",
+    "st_equals",
+    "st_touches",
+    "st_overlaps",
+    "st_crosses",
+    "st_contains",
+    "st_intersects",
+    "st_distancesphere",
 ]
 
-if 1:
-    import_scala_functions()
+import_scala_functions()
 
-    for _name in _unary_functions:
-        globals()[_name] = _create_unary_function(_name)
+for _name in _unary_functions:
+    globals()[_name] = _create_unary_function(_name)
 
-    for _name in _binary_functions:
-        globals()[_name] = _create_binary_function(_name)
+for _name in _binary_functions:
+    globals()[_name] = _create_binary_function(_name)
 
-    __all__ = [k for k, v in globals().items()
-               if k in _unary_functions or k in _binary_functions and callable(v)]
+__all__ = [k for k, v in globals().items()
+           if k in _unary_functions or k in _binary_functions and callable(v)]
 
-    __all__.sort()
+__all__.sort()

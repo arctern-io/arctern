@@ -23,6 +23,13 @@ if (sparkVersion == "3.0.0-preview2") {
   libraryDependencies += "org.apache.spark" %% "spark-sql" % "spark-3.0.0-preview2"
 }
 
+resolvers += "Open Source Geospatial Foundation Repository" at "https://repo.osgeo.org/repository/release/"
+libraryDependencies ++= Seq(
+  "org.geotools" % "gt-main" % "23.1",
+  "org.geotools" % "gt-referencing" % "23.1",
+  "org.geotools" % "gt-epsg-hsql" % "23.1"
+)
+
 // META-INF discarding
 //  `<<=` operator is removed. Use `key := { x.value }` or `key ~= (old => { newValue })`.
 //mergeStrategy in assembly := (mergeStrategy in assembly) { (old) =>
