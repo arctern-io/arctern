@@ -18,7 +18,7 @@ import pandas as pd
 from databricks.koalas import DataFrame, get_option, Series
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
-from databricks.koalas.series import REPR_PATTERN, _unpack_scalar
+from databricks.koalas.series import REPR_PATTERN, _unpack_scalar, _col
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
 
@@ -76,25 +76,26 @@ class GeoSeries(Series):
             IndexOpsMixin.__init__(self, data, anchor)
         else:
             assert anchor is None
-            if isinstance(data, arctern.GeoSeries):
+            if isinstance(data, pd.Series):
                 assert index is None
                 assert dtype is None
                 assert name is None
                 assert not copy
                 assert not fastpath
-                if not data.crs == crs:
-                    raise ValueError("csr of the passed geometry data is different from crs.")
-                self.set_crs(crs)
-                pds = data.astype(object, copy=False)
+                s = data
             else:
-                pds = arctern.GeoSeries(
-                    data=data, index=index, dtype=dtype, name=name, crs=crs, copy=copy, fastpath=fastpath
+                s = pd.Series(
+                    data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
                 )
-                self.set_crs(pds.crs)
-                pds = pds.astype(object, copy=False)
-            kdf = DataFrame(pds)
+            kdf = DataFrame(s)
+            kss = _col(kdf)
+            from pyspark.sql.types import StringType, BinaryType
+            if kss.spark_type == BinaryType:
+                scol = kss.spark_column
+            elif kss.spark_type == StringType:
+                scol = _column_op("ST_GeometryFromText")
             IndexOpsMixin.__init__(
-                self, kdf._internal.copy(spark_column=kdf._internal.data_spark_columns[0]), kdf
+                self, kdf._internal.copy(spark_column=scol), kdf
             )
 
     def set_crs(self, crs):
@@ -355,5 +356,5 @@ class GeoSeries(Series):
         return _column_op("st_astext", self)
 
 
-d = GeoSeries.point([1, 2], [2, 3])
+d = GeoSeries([1, 2], [2, 3])
 print(d)
