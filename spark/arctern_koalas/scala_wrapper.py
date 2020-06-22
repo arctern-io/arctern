@@ -47,10 +47,8 @@ class GeometryUDT(UserDefinedType):
         return Row(obj.toBytes)
 
     def deserialize(self, datum):
-        if self.jvm is None:
-            self.jvm = SparkContext._active_spark_context._gateway.jvm
-            java_import(self.jvm, "org.apache.spark.sql.arctern.GeometryUDT")
-        return self.jvm.GeometryUDT.deserialize(datum[0])
+        binData = bytearray([x % 256 for x in datum])
+        return binData
 
 
 def import_scala_functions():
