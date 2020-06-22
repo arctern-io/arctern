@@ -29,20 +29,20 @@ ks.set_option('compute.ops_on_diff_frames', True)
 
 # for unary or binary operation, which return koalas Series.
 def _column_op(f, *args):
-    import scala_wrapper as _wrapper_func
-    return ks.base._column_op(getattr(_wrapper_func, f))(*args)
+    from . import scala_wrapper
+    return ks.base._column_op(getattr(scala_wrapper, f))(*args)
 
 
 # for unary or binary operation, which return GeoSeries.
 def _column_geo(f, *args, **kwargs):
-    import scala_wrapper as _wrapper_func
-    kss = ks.base._column_op(getattr(_wrapper_func, f))(*args)
+    from . import scala_wrapper
+    kss = ks.base._column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss._internal, anchor=kss._kdf, **kwargs)
 
 
 def _agg(f, kss):
-    from arctern_pyspark import _wrapper_func
-    scol = getattr(_wrapper_func, f)(kss.spark_column)
+    from . import scala_wrapper
+    scol = getattr(scala_wrapper, f)(kss.spark_column)
     sdf = kss._internal._sdf.select(scol)
     scalar_value = _unpack_scalar(sdf)
     return GeoSeries(bytes(scalar_value), crs=kss._crs)
