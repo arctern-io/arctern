@@ -5,7 +5,7 @@ ks.set_option('compute.ops_on_diff_frames', True)
 import scala_wrapper
 
 
-def point( x, y):
+def point(x, y):
     series1 = ks.Series(x, name="col1", dtype=int)
     series2 = ks.Series(y, dtype=int)
     kdf2 = ks.DataFrame(data=series1)

@@ -97,7 +97,7 @@ class GeoSeries(Series):
             if isinstance(kss.spark_type, BinaryType):
                 pass
             elif isinstance(kss.spark_type, StringType):
-                kss = _column_op("ST_GeomFromText", kss)
+                kss = _column_op("st_geomfromtext", kss)
             else:
                 raise TypeError("Can not use no StringType or BinaryType data to construct GeoSeries.")
             IndexOpsMixin.__init__(
@@ -172,10 +172,10 @@ class GeoSeries(Series):
     def __repr__(self):
         max_display_count = get_option("display.max_rows")
         if max_display_count is None:
-            wkt_ks = _column_op("ST_AsText", self)
+            wkt_ks = _column_op("st_astext", self)
             return wkt_ks._to_internal_pandas().to_string(name=self.name, dtype=self.dtype)
 
-        wkt_ks = _column_op("ST_AsText", self.head(max_display_count + 1))
+        wkt_ks = _column_op("st_astext", self.head(max_display_count + 1))
         pser = wkt_ks._to_internal_pandas()
         pser_length = len(pser)
         pser = pser.iloc[:max_display_count]
@@ -354,6 +354,7 @@ class GeoSeries(Series):
     def to_wkt(self):
         return _column_op("st_astext", self)
 
-
-d = GeoSeries([1, 2], [2, 3])
-print(d)
+data = "Point (1 2)"
+s = GeoSeries(data)
+print(s)
+print(s.centroid)

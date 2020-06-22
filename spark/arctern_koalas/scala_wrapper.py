@@ -110,6 +110,7 @@ _unary_functions = [
     "st_hausdorffdistance",
     "st_transform",
     "st_makevalid",
+    "st_geomfromtext",
 ]
 
 # functions that take two arguments as input
