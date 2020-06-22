@@ -1,9 +1,10 @@
 import databricks.koalas as ks
 import pandas as pd
-from databricks.koalas import DataFrame, Series
+from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
-from databricks.koalas.series import _unpack_scalar, _col
+from databricks.koalas.series import _unpack_scalar, _col, REPR_PATTERN
+from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -98,6 +99,8 @@ class GeoSeries(Series):
                 pass
             elif isinstance(kss.spark_type, StringType):
                 kss = _column_op("ST_GeomFromText", kss)
+            else:
+                raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             IndexOpsMixin.__init__(
                 self, kdf._internal.copy(spark_column=kss.spark_column), kdf
             )
@@ -168,8 +171,27 @@ class GeoSeries(Series):
         self.set_crs(crs)
 
     def __repr__(self):
-        wkt_ks = _column_op("ST_AsText", self)
-        return repr(wkt_ks)
+        max_display_count = get_option("display.max_rows")
+        if max_display_count is None:
+            wkt_ks = _column_op("ST_AsText", self)
+            return wkt_ks._to_internal_pandas().to_string(name=self.name, dtype=self.dtype)
+
+        wkt_ks = _column_op("ST_AsText", self.head(max_display_count + 1))
+        pser = wkt_ks._to_internal_pandas()
+        pser_length = len(pser)
+        pser = pser.iloc[:max_display_count]
+        if pser_length > max_display_count:
+            repr_string = pser.to_string(length=True)
+            rest, prev_footer = repr_string.rsplit("\n", 1)
+            match = REPR_PATTERN.search(prev_footer)
+            if match is not None:
+                length = match.group("length")
+                name = str(self.dtype.name)
+                footer = "\nName: {name}, dtype: {dtype}\nShowing only the first {length}".format(
+                    length=length, name=self.name, dtype=pprint_thing(name)
+                )
+                return rest + footer
+        return pser.to_string(name=self.name, dtype=self.dtype)
 
     # -------------------------------------------------------------------------
     # Geometry related property
