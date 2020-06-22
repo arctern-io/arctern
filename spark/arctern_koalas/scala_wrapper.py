@@ -56,7 +56,11 @@ def import_scala_functions():
     jvm = sc._jvm
     java_import(jvm, "org.apache.spark.sql.arctern.UdtRegistratorWrapper")
     jvm.UdtRegistratorWrapper.registerUDT()
+
+    old_functions = jvm.functions
     java_import(jvm, "org.apache.spark.sql.arctern.functions")
+    jvm.gis_functions = jvm.functions
+    jvm.functions = old_functions
 
 
 def _create_unary_function(name):
