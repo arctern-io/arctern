@@ -17,22 +17,11 @@ if [ -z "$MY_UPLOAD_KEY" ]; then
     exit 0
 fi
 
-if [ "$UPLOAD_LIBARCTERN" == "1" ]; then
-    export LIBARCTERN_FILE=`conda build conda/recipes/libarctern/gpu -c conda-forge -c defaults -c nvidia --output`
+if [ "$UPLOAD_ARCTERN" == "1" ]; then
+    export ARCTERN_FILE=`conda build conda/recipes/arctern/gpu -c conda-forge -c defaults -c nvidia --output`
     SPLIT_VERSION=(${CUDA_VERSION//./ })
     MINOR_VERSION=${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}
     LABEL_OPTION="--label cuda${MINOR_VERSION}"
-    echo "LABEL_OPTION=${LABEL_OPTION}"
-
-    test -e ${LIBARCTERN_FILE}
-    echo "Upload libarctern..."
-    echo ${LIBARCTERN_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${LIBARCTERN_FILE}
-fi
-
-if [ "$UPLOAD_ARCTERN" == "1" ]; then
-    export ARCTERN_FILE=`conda build conda/recipes/arctern -c conda-forge -c defaults --output`
-    LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
     test -e ${ARCTERN_FILE}
@@ -41,13 +30,13 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
     anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
 fi
 
-if [ "$UPLOAD_ARCTERN_SPARK" == "1" ]; then
-    export ARCTERN_SPARK_FILE=`conda build conda/recipes/arctern-spark -c conda-forge -c defaults --output`
+if [ "$UPLOAD_ARCTERN_WEBSERVER" == "1" ]; then
+    export ARCTERN_WEBSERVER_FILE=`conda build conda/recipes/arctern-webserver -c conda-forge -c defaults --output`
     LABEL_OPTION="--label main"
     echo "LABEL_OPTION=${LABEL_OPTION}"
 
-    test -e ${ARCTERN_SPARK_FILE}
-    echo "Upload arctern-spark..."
-    echo ${ARCTERN_SPARK_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_SPARK_FILE}
+    test -e ${ARCTERN_WEBSERVER_FILE}
+    echo "Upload arctern-webserver..."
+    echo ${ARCTERN_WEBSERVER_FILE}
+    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_WEBSERVER_FILE}
 fi

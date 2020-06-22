@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "render/2d/general_2d.h"
 #include "render/utils/vega/vega_fishnet_map/vega_fishnet_map.h"
 
@@ -32,7 +34,7 @@ class FishNetMap : public General2D {
 
   void DataInit();
 
-  uint8_t* Render() final;
+  std::vector<uint8_t> Render() final;
 
   void Shader();
 

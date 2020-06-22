@@ -15,6 +15,8 @@
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
 import pytest
+import pandas as pd
+import numpy as np
 from pandas.testing import assert_series_equal
 from arctern.geoseries import GeoSeries
 from arctern.geoseries.geoarray import GeoDtype
@@ -22,7 +24,7 @@ from arctern._wrapper_func import ST_GeomFromText
 
 
 def make_point(x, y):
-    return "Point (%s %s)" % (x, y)
+    return "POINT (%s %s)" % (x, y)
 
 
 @pytest.fixture(params=['wkt', 'wkb'])
@@ -67,9 +69,18 @@ class TestConstructor:
         assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_empty(self):
-        s = GeoSeries([])
+        s = GeoSeries([], dtype="GeoDtype")
         assert_is_geoseries(s)
         assert len(s) == 0
+
+        s = GeoSeries()
+        assert_is_geoseries(s)
+        assert len(s) == 0
+
+    def test_explicate_dtype(self, sequence, expected_series):
+        s = GeoSeries(sequence, dtype="GeoDtype")
+        assert_is_geoseries(s)
+        assert_series_equal(s, expected_series, check_dtype=False)
 
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
@@ -85,12 +96,13 @@ class TestConstructor:
         with pytest.raises(TypeError):
             GeoSeries(wrong_type_data)
 
-    # only support None as na value
     def test_from_with_na_data(self):
-        s = GeoSeries(['Point (1 2)', None])
+        s = GeoSeries(['Point (1 2)', None, np.nan])
         assert_is_geoseries(s)
-        assert len(s) == 2
+        assert len(s) == 3
         assert s.hasnans
+        assert s[1] is None
+        assert s[2] is None
 
     def test_from_mismatch_crs(self):
         data = GeoSeries('Point (1 2)', crs='epsg:7777')
@@ -104,6 +116,25 @@ class TestConstructor:
         assert len(s) == 5
         for i in index:
             assert s[i] == s[index[0]]
+
+    def test_form_series_with_index(self):
+        index = [1, 2, 3, 4, 5]
+        s = pd.Series(make_point(1, 1), index=index)
+        geo_s = GeoSeries(s)
+        assert_is_geoseries(geo_s)
+        assert len(geo_s) == 5
+        for i in index:
+            assert geo_s[i] == geo_s[index[0]]
+
+    def test_from_geopandas(self):
+        import geopandas as gpd
+        from shapely.geometry import Point
+        gpd_s = gpd.GeoSeries([Point(1, 1), Point(1, 2), None], index=[1, 2, 3], crs='EPSG:4326')
+        s = GeoSeries.from_geopandas(gpd_s)
+        assert_is_geoseries(s)
+        assert s.crs == "EPSG:4326"
+        assert s.to_wkt().to_list() == [make_point(1, 1), make_point(1, 2), None]
+        assert s.index.to_list() == [1, 2, 3]
 
 
 class TestType:
@@ -152,7 +183,7 @@ class TestCRS:
         assert self.s.centroid.crs == self.crs.upper()
 
 
-# other method will be tested in geoarray_test.py
+# other method will be tested in geoarray_test.py and series_method_test.py
 class TestPandasMethod:
     def test_missing_values(self):
         s = GeoSeries([make_point(1, 2), None])
@@ -173,9 +204,20 @@ class TestPandasMethod:
         s1 = s[::-1].fillna(method="bfill")
         assert s1[0] == s1[1]
 
+        # set item with na value
+        s[0] = np.nan
+        assert s[0] is None
+
+        s[0] = pd.NA
+        assert s[0] is None
+
     def test_equals(self):
         s1 = GeoSeries([make_point(1, 1), None])
         s2 = GeoSeries([make_point(1, 1), None])
+        assert s1.equals(s2)
+
+        s1 = GeoSeries()
+        s2 = GeoSeries()
         assert s1.equals(s2)
 
     def test_unique(self):
@@ -192,11 +234,72 @@ class TestPandasMethod:
         r = s != s[0]
         assert r.tolist() == [False, True, True]
 
+    def test_astype(self):
+        s = GeoSeries([make_point(1, 1), make_point(1, 2)])
+        assert s.astype(str).tolist() == [make_point(1, 1), make_point(1, 2)]
+        assert s.astype('string').tolist() == [make_point(1, 1), make_point(1, 2)]
 
-def test_geo_method_with_missing_value():
-    s1 = GeoSeries([make_point(1, 1), None])
-    s2 = GeoSeries([None, make_point(1, 1)])
-    s3 = GeoSeries([make_point(1, 1), None])
 
-    assert s1.geom_equals(s3).all()
-    assert not s1.geom_equals(s2).any()
+class TestGeoMethods:
+    def test_geom_equals_with_missing_value(self):
+        s1 = GeoSeries([make_point(1, 1), None])
+        s2 = GeoSeries([None, make_point(1, 1)])
+        s3 = GeoSeries([make_point(1, 1), None])
+        assert s1.geom_equals(s3).all()
+        assert not s1.geom_equals(s2).any()
+
+    def test_geom_with_index(self):
+        index = ['a', 'b']
+
+        # property
+        s = GeoSeries([make_point(1, 1), None], index=index)
+        s1 = s.length
+        assert s1.index.to_list() == index
+        assert s1[index[0]] == 0
+        assert pd.isna(s1[index[1]])
+
+        # unary
+        s1 = s.precision_reduce(3)
+        assert not pd.isna(s1[index[0]])
+        assert pd.isna(s1[index[1]])
+
+        # binary with same index
+        left = GeoSeries([make_point(1, 1), None], index=index)
+        right = GeoSeries([make_point(1, 1), None], index=index)
+        s1 = left.geom_equals(right)
+        assert s1.index.to_list() == index
+
+        # binary with different index will align index
+        left = GeoSeries([make_point(1, 1), None], index=[1, 2])
+        right = GeoSeries([make_point(1, 1), None], index=[3, 4])
+        s1 = left.geom_equals(right)
+        assert s1.index.to_list() == [1, 2, 3, 4]
+        assert s1.to_list() == [False, True, False, True]
+
+    def test_to_wkb(self):
+        s = GeoSeries(make_point(1, 1))
+        s1 = s.to_wkb()
+        assert isinstance(s1, pd.Series)
+
+
+def test_geoseries_type_by_df_box_col_values():
+    from pandas import DataFrame, Series
+    series = GeoSeries(["POINT (0 0)", None, "POINT (0 1)", "POINT (2 0)"])
+    df = DataFrame({'s': series})
+    assert isinstance(df['s'], type(series))
+
+    series = Series([1, None, 2, 3])
+    df = DataFrame({'s': series})
+    assert isinstance(df['s'], type(series))
+
+
+def test_to_geopandas():
+    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
+    p2 = None
+    data = GeoSeries([p1, p2], crs="EPSG:4326")
+    rst = data.to_geopandas()
+
+    import shapely
+    assert rst[0] == shapely.geometry.Polygon(((0, 0), (4, 0), (4, 4), (0, 4), (0, 0)))
+    assert rst[1] is None
+    assert rst.crs.to_string() == "EPSG:4326"

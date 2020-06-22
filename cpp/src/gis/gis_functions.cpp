@@ -27,6 +27,8 @@
 #include "dispatch/aligned_execute.h"
 #include "gis/api.h"
 #include "gis/gdal/gis_functions.h"
+#include "gis/spatial_join/st_indexed_within.h"
+#include "utils/arrow_alias.h"
 #include "utils/check_status.h"
 
 namespace arctern {
@@ -329,6 +331,12 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
 #endif
 }
 
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_left_raws,
+    const std::string& geo_right_raw) {
+  return gdal::ST_WithinOpt(geo_left_raws, geo_right_raw);
+}
+
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::shared_ptr<arrow::Array> ST_Union_Aggr(
@@ -341,10 +349,17 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   return gdal::ST_Envelope_Aggr(geometries);
 }
 
+/****************************** JOIN FUNCTIONS *****************************/
+std::vector<ArrayPtr> ST_IndexedWithin(const std::vector<ArrayPtr>& points_raw,
+                                       const std::vector<ArrayPtr>& polygons_raw) {
+  auto res = spatial_join::ST_IndexedWithin(points_raw, polygons_raw, "RTREE");
+  return VectorTypeCast<arrow::Array>(res);
+}
+
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::string GIS_Version() {
-  const std::string info = "gis version : " + std::string(LIB_VERSION) + "\n" +
+  const std::string info = "version : " + std::string(LIB_VERSION) + "\n" +
 #ifdef USE_GPU
                            "build type : " + CMAKE_BUILD_TYPE + "/GPU \n" +
 #else

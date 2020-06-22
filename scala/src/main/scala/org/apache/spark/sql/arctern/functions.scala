@@ -130,6 +130,10 @@ object functions {
     ST_MakeValid(Seq(geo.expr))
   }
 
+  def st_curvetoline(geo: Column): Column = Column {
+    ST_CurveToLine(Seq(geo.expr))
+  }
+
   // Aggregate Function UDF API
   val st_union_aggr = new ST_Union_Aggr
   val st_envelope_aggr = new ST_Envelope_Aggr

@@ -24,9 +24,6 @@
 namespace arctern {
 namespace render {
 
-std::shared_ptr<arrow::Array> WktToWkb(const std::shared_ptr<arrow::Array>& arr_wkt);
-std::shared_ptr<arrow::Array> WkbToWkt(const std::shared_ptr<arrow::Array>& arr_wkt);
-
 const std::vector<std::shared_ptr<arrow::Array>> projection(
     const std::vector<std::shared_ptr<arrow::Array>>& geos,
     const std::string& bottom_right, const std::string& top_left, const int& height,
@@ -37,43 +34,43 @@ const std::vector<std::shared_ptr<arrow::Array>> transform_and_projection(
     const std::string& dst_rs, const std::string& bottom_right,
     const std::string& top_left, const int& height, const int& width);
 
-std::shared_ptr<arrow::Array> point_map(
+std::shared_ptr<arrow::BinaryArray> point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
 // two args api: point_map(wkt, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
 // three args api: point_map(wkt, c, conf), point_map(wkt, s, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
 // four args api: point_map(wkt, c, s, conf)
-std::shared_ptr<arrow::Array> weighted_point_map(
+std::shared_ptr<arrow::BinaryArray> weighted_point_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& color_weights_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& size_weights_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::Array> heat_map(
+std::shared_ptr<arrow::BinaryArray> heat_map(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::Array> choropleth_map(
+std::shared_ptr<arrow::BinaryArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::Array> icon_viz(
+std::shared_ptr<arrow::BinaryArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::Array> fishnet_map(
+std::shared_ptr<arrow::BinaryArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);

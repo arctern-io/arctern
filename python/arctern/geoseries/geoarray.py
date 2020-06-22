@@ -30,7 +30,7 @@ import arctern
 class GeoDtype(ExtensionDtype):
     type = object
     name = "GeoDtype"
-    na_value = np.nan
+    na_value = pd.NA
     kind = 'O'
 
     def __repr__(self):
@@ -66,32 +66,38 @@ def from_wkt(data):
 
 def to_wkt(data):
     """
-    Convert GeoArray or np.ndarray or list to a numpy object array of wkt formed string.
+    Convert GeoArray or np.ndarray or list to a numpy string array of wkt formed string.
     """
     if not isinstance(data, (GeoArray, np.ndarray, list)):
         raise ValueError("'data' must be a GeoArray or np.ndarray or list.")
-    return arctern.ST_AsText(data).values
+    return np.asarray(arctern.ST_AsText(data), dtype=str)
 
 
-def from_wkb(data):
+def from_wkb_or_wkt(data):
     """
     Convert a list or array of wkb objects to a GeoArray.
     :param data: array-like
             list or array of wkb objects
     :return: GeoArray
     """
-    # pandas.infer_type can't infer custom ExtensionDtype
-    if not isinstance(getattr(data, "dtype", None), GeoDtype) and len(data) != 0:
-        from pandas.api.types import infer_dtype
-        inferred = infer_dtype(data, skipna=True)
-        if inferred not in ("bytes", "empty"):
-            raise ValueError("'data' must be bytes type array or list.")
     if not isinstance(data, np.ndarray):
         array = np.empty(len(data), dtype=object)
         array[:] = data
     else:
-        array = data
+        array = data.astype(object)
 
+    mask = pd.isna(array)
+    array[mask] = None
+
+    if not isinstance(getattr(array, "dtype", None), GeoDtype) and len(array) != 0:
+        from pandas.api.types import infer_dtype
+        inferred = infer_dtype(array, skipna=True)
+        if inferred in ("bytes", "empty"):
+            pass
+        elif inferred == "string":
+            array = arctern.ST_GeomFromText(array).values
+        else:
+            raise TypeError("'data' must be bytes type array or list.")
     return GeoArray(array)
 
 
@@ -113,13 +119,13 @@ class GeoArray(ExtensionArray):
     _dtype = GeoDtype()
 
     def __init__(self, data):
-        if not isinstance(data, np.ndarray):
+        if not isinstance(data, (np.ndarray, GeoArray)):
             raise TypeError(
                 "'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
         if not data.ndim == 1:
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
-        self.data = data
+        self.data = np.asarray(data)
 
     @property
     def dtype(self):
@@ -252,6 +258,10 @@ class GeoArray(ExtensionArray):
             # keys to numpy array, pass-through non-array-like indexers
             key = pd.api.indexers.check_array_indexer(self, key)
 
+        if isinstance(key, np.ndarray) and key.dtype == bool:
+            if not key.any():
+                return
+
         scalar_key = pd.api.types.is_scalar(key)
         scalar_value = pd.api.types.is_scalar(value)
         if scalar_key and not scalar_value:
@@ -260,18 +270,20 @@ class GeoArray(ExtensionArray):
         if isinstance(value, pd.Series):
             value = value.values
         if isinstance(value, (list, np.ndarray)):
-            value = from_wkb(value)
+            value = from_wkb_or_wkt(value)
         if isinstance(value, GeoArray):
             self.data[key] = value.data
 
-        elif isinstance(value, bytes) or value is None or value is np.nan:
+        elif isinstance(value, bytes):
             self.data[key] = value
+        elif pd.isna(value):
+            self.data[key] = None
         else:
-            raise TypeError("Value should be array-like or scalar value, got %s" % str(value))
+            raise TypeError("Value must be bytes value, got %s" % str(value))
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-        return from_wkb(scalars)
+        return from_wkb_or_wkt(scalars)
 
     def _values_for_factorize(self):
         # we store geometry as bytes internally, just return it.
@@ -333,9 +345,10 @@ class GeoArray(ExtensionArray):
             if copy:
                 return self.copy()
             return self
-        if pd.api.types.is_string_dtype(dtype) and not pd.api.types.is_object_dtype(dtype):
-            # as string type means to wkt formed string
+        # as str or string type means to wkt formed string
+        if pd.api.types.is_dtype_equal(dtype, str) or pd.api.types.is_dtype_equal(dtype, 'string'):
             return to_wkt(self)
+        # TODO(shengjh): Currently we can not handle dtype which is not numpy.dtype, if get here
         return np.array(self, dtype=dtype, copy=copy)
 
     def _formatter(self, boxed=False):

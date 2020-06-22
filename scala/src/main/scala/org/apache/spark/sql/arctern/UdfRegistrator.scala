@@ -38,6 +38,7 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_DistanceSphere", ST_DistanceSphere)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Transform", ST_Transform)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_MakeValid", ST_MakeValid)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
     spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)

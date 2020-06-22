@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef GIS_H
-#define GIS_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -93,6 +92,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_Within(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
     const std::vector<std::shared_ptr<arrow::Array>>& geo_arr2);
 
+std::vector<std::shared_ptr<arrow::Array>> ST_Within(
+    const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
+    const std::string& geo2);
+
 std::vector<std::shared_ptr<arrow::Array>> ST_Distance(
     const std::vector<std::shared_ptr<arrow::Array>>& geo_arr1,
     const std::vector<std::shared_ptr<arrow::Array>>& geo_arr2);
@@ -132,9 +135,11 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(const std::shared_ptr<arrow::Array>&
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geo_arr);
 
+std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
+    const std::vector<std::shared_ptr<arrow::Array>>& points,
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons);
+
 std::string GIS_Version();
 
 }  // namespace gis
 }  // namespace arctern
-
-#endif

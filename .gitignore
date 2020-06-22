@@ -165,7 +165,9 @@ gui/server/arctern_server/spark-warehouse/
 
 # sbt
 scala/bin/
-scala/project/
+scala/project/target
+scala/project/target/*
+scala/project/build.properties
 scala/target/
 scala/build/
 scala/*.log

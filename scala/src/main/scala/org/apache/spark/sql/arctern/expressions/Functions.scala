@@ -324,7 +324,7 @@ case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
 case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
-  override def expr: Expression = inputsExpr(0)
+  override def expr: Expression = inputsExpr.head
 
   def distanceValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
@@ -332,7 +332,9 @@ case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def dataType: DataType = new GeometryUDT
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, DoubleType)
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
 }
 
 case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
@@ -346,6 +348,8 @@ case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def dataType: DataType = new GeometryUDT
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
 }
 
 case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
@@ -372,6 +376,8 @@ case class ST_SimplifyPreserveTopology(inputsExpr: Seq[Expression]) extends ST_U
   override def dataType: DataType = new GeometryUDT
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
 }
 
 case class ST_ConvexHull(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
@@ -544,6 +550,17 @@ case class ST_MakeValid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def expr: Expression = inputsExpr.head
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.makeValid($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_CurveToLine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo")
 
   override def dataType: DataType = new GeometryUDT
 
