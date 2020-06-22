@@ -82,6 +82,11 @@ class GeoSeries(Series):
                 assert not copy
                 assert not fastpath
                 s = data
+            elif isinstance(data, ks.Series):
+                assert index is None
+                assert dtype is None
+                assert not copy
+                s = data
             else:
                 s = pd.Series(
                     data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
