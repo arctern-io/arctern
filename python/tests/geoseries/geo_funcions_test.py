@@ -45,7 +45,7 @@ def test_ST_SymDifference():
 def test_ST_ExteriorRing():
     data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior_ring().to_wkt()
-    assert rst[0] == None
+    assert rst[0] is None
     assert rst[1] == "LINESTRING (0 0,1 0,1 1,0 1,0 0)"
 
 def test_ST_Scale():
