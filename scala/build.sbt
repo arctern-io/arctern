@@ -19,8 +19,8 @@ if (sparkVersion == "3.0.0") {
   libraryDependencies += "org.apache.spark" %% "spark-sql" % sparkVersion
 } else {
   println("Unrecognized spark version, build arctern with default version: spark-3.0.0")
-  libraryDependencies += "org.apache.spark" %% "spark-core" % "spark-3.0.0"
-  libraryDependencies += "org.apache.spark" %% "spark-sql" % "spark-3.0.0"
+  libraryDependencies += "org.apache.spark" %% "spark-core" % "3.0.0"
+  libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.0.0"
 }
 
 resolvers += "Open Source Geospatial Foundation Repository" at "https://repo.osgeo.org/repository/release/"
