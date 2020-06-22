@@ -20,9 +20,6 @@
 #include <string>
 #include "arrow/api.h"
 
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
-
 namespace arctern {
 namespace gis {
 
