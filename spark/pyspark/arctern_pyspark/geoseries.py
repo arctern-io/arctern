@@ -100,7 +100,7 @@ class GeoSeries(Series):
             elif isinstance(kss.spark_type, StringType):
                 kss = _column_op("ST_GeomFromText", kss)
             else:
-                raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
+                raise TypeError("Can not use no StringType or BinaryType data to construct GeoSeries.")
             IndexOpsMixin.__init__(
                 self, kdf._internal.copy(spark_column=kss.spark_column), kdf
             )
