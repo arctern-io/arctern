@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /opt/spark && \
-    wget -qO- "http://mirror.bit.edu.cn/apache/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop2.7.tgz" | tar --strip-components=1 -xz -C /opt/spark && \
+    wget -qO- "http://mirror.bit.edu.cn/apache/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz" | tar --strip-components=1 -xz -C /opt/spark && \
     chown -R root:root /opt/spark && \
     cd /opt/spark/python && \
     python setup.py install && \
