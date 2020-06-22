@@ -28,7 +28,7 @@ class GeometryUDT extends UserDefinedType[Geometry] {
 
   override def deserialize(datum: Any): Geometry = GeometryUDT.GeomDeserialize(datum)
 
-  override def pyUDT: String = "scala_wrapper.GeometryUDT"
+  override def pyUDT: String = "arctern_spark.scala_wrapper.GeometryUDT"
 
   override def userClass: Class[Geometry] = classOf[Geometry]
 }

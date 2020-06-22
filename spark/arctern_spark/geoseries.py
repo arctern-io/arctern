@@ -17,7 +17,7 @@ import pandas as pd
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.internal import _InternalFrame
-from databricks.koalas.series import _unpack_scalar, _col, REPR_PATTERN
+from databricks.koalas.series import _col, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
 
@@ -43,9 +43,9 @@ def _column_geo(f, *args, **kwargs):
 def _agg(f, kss):
     from . import scala_wrapper
     scol = getattr(scala_wrapper, f)(kss.spark_column)
-    sdf = kss._internal._sdf.select(scol)
-    scalar_value = _unpack_scalar(sdf)
-    return GeoSeries(bytes(scalar_value), crs=kss._crs)
+    sdf = kss._internal._sdf.agg(scol)
+    kdf = sdf.to_koalas()
+    return GeoSeries(_col(kdf), crs=kss._crs)
 
 
 def _validate_crs(crs):
@@ -94,7 +94,8 @@ class GeoSeries(Series):
             kdf = DataFrame(s)
             kss = _col(kdf)
             from pyspark.sql.types import StringType, BinaryType
-            if isinstance(kss.spark_type, BinaryType):
+            from .scala_wrapper import GeometryUDT
+            if isinstance(kss.spark_type, (BinaryType, GeometryUDT)):
                 pass
             elif isinstance(kss.spark_type, StringType):
                 kss = _column_op("st_geomfromtext", kss)
