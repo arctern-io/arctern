@@ -35,7 +35,7 @@ class AggregateFunctionsTest extends AdapterTest {
     val rst = spark.sql("select naive_envelop_aggr(geo) from raw_data")
 
     rst.queryExecution.debug.codegen()
-//    rst.show(false)
+    rst.show(false)
   }
 
   test("ST_Union_Aggr") {

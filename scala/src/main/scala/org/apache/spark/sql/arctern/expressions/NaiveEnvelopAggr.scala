@@ -11,7 +11,7 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override def nullable: Boolean = true
 
-  override def dataType: DataType = StringType // TODO: use GeometryUDT
+  override def dataType: DataType = DoubleType // TODO: use GeometryUDT
   override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType) // TODO: use GeometryUDT
 
   protected val minX = AttributeReference("minX", DoubleType, nullable = false)()
@@ -28,9 +28,8 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override lazy val updateExpressions: Seq[Expression] = updateExpressionDef
 
-  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
-
   def dslMin(e1: Expression, e2: Expression): Expression = If(e1 < e2, e1, e2)
+  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
 
   override val mergeExpressions: Seq[Expression] = {
     def getMin(attr: AttributeReference): Expression = dslMin(attr.left, attr.right)
@@ -41,18 +40,19 @@ case class NaiveEnvelopAggr(geom: Expression)
   }
 
   protected def updateExpressionDef: Seq[Expression] = {
-    val input_envelop: Seq[Expression] = Seq(geom, Literal(0.0), geom + 5, Literal(1.0)) // TODO: use GeometryUDT, currently a fake one
+    // TODO: use GeometryUDT and jtx, currently a fake one
+    val input_envelop: Seq[Expression] = Seq(geom, Literal(0.0), geom + 5, Literal(1.0))
     Seq(
-      dslMax(envelop(0), input_envelop(0)),
-      dslMax(envelop(1), input_envelop(1)),
+      dslMin(envelop(0), input_envelop(0)),
+      dslMin(envelop(1), input_envelop(1)),
       dslMax(envelop(2), input_envelop(2)),
       dslMax(envelop(3), input_envelop(3)),
     )
   }
 
   override val evaluateExpression: Expression = {
-//    Literal("Evelope(") + envelop.map(_.cast(StringType)).reduce((a, b) => a + Literal(", ") + b) + Literal(")")
-    Literal("Evelope")
+    // TODO: convert back to envelop
+    (maxX - minX) * (maxY - minY)
   }
 
   override def prettyName: String = "naive_envelop_aggr"
