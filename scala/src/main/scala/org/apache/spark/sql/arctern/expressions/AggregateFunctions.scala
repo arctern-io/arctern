@@ -39,7 +39,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     if (input.isNullAt(0)) return
     val accumulateUnion = buffer.getAs[Geometry](0)
     val newGeo = input.getAs[Geometry](0)
-    if (accumulateUnion.getArea == 0) buffer(0) = newGeo
+    if (accumulateUnion.getCoordinates()(0).x == -999999999) buffer(0) = newGeo
     else buffer(0) = accumulateUnion.union(newGeo)
   }
 
