@@ -1,7 +1,11 @@
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{AnalysisException, SparkSession}
 import org.apache.spark.sql.arctern.expressions._
+import org.apache.spark.sql.catalyst.analysis.FunctionRegistry.{FunctionBuilder}
+import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ExpressionInfo, RuntimeReplaceable}
+
+import scala.reflect.ClassTag
 
 object UdfRegistrator {
   def register(spark: SparkSession) = {
@@ -39,8 +43,107 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Transform", ST_Transform)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_MakeValid", ST_MakeValid)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
+
+    // TODO: remove ExpressionInfo
+    //    val (naive_name, (naive_info, naive_builder)) = expression[NaiveEnvelopAggr]("naive_envelop_aggr")
+    val naive_builder = (seq: Seq[Expression]) =>  {
+      assert(seq.size == 1)
+      NaiveEnvelopAggr(seq(0))
+    }
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("naive_envelop_aggr", naive_builder)
+
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
     spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
   }
+
+
+//   // TODO: copy from spark, need to simplify
+//   private def expression[T <: Expression](name: String)
+//                                          (implicit tag: ClassTag[T]): (String, (ExpressionInfo, FunctionBuilder)) = {
+
+//     // For `RuntimeReplaceable`, skip the constructor with most arguments, which is the main
+//     // constructor and contains non-parameter `child` and should not be used as function builder.
+//     val constructors = if (classOf[RuntimeReplaceable].isAssignableFrom(tag.runtimeClass)) {
+//       val all = tag.runtimeClass.getConstructors
+//       val maxNumArgs = all.map(_.getParameterCount).max
+//       all.filterNot(_.getParameterCount == maxNumArgs)
+//     } else {
+//       tag.runtimeClass.getConstructors
+//     }
+//     // See if we can find a constructor that accepts Seq[Expression]
+//     val varargCtor = constructors.find(_.getParameterTypes.toSeq == Seq(classOf[Seq[_]]))
+//     val builder = (expressions: Seq[Expression]) => {
+//       if (varargCtor.isDefined) {
+//         // If there is an apply method that accepts Seq[Expression], use that one.
+//         try {
+//           val exp = varargCtor.get.newInstance(expressions).asInstanceOf[Expression]
+//           exp
+//         } catch {
+//           // the exception is an invocation exception. To get a meaningful message, we need the
+//           // cause.
+//           case e: Exception => throw new AnalysisException(e.getCause.getMessage)
+//         }
+//       } else {
+//         // Otherwise, find a constructor method that matches the number of arguments, and use that.
+//         val params = Seq.fill(expressions.size)(classOf[Expression])
+//         val f = constructors.find(_.getParameterTypes.toSeq == params).getOrElse {
+//           val validParametersCount = constructors
+//             .filter(_.getParameterTypes.forall(_ == classOf[Expression]))
+//             .map(_.getParameterCount).distinct.sorted
+//           val invalidArgumentsMsg = if (validParametersCount.length == 0) {
+//             s"Invalid arguments for function $name"
+//           } else {
+//             val expectedNumberOfParameters = if (validParametersCount.length == 1) {
+//               validParametersCount.head.toString
+//             } else {
+//               validParametersCount.init.mkString("one of ", ", ", " and ") +
+//                 validParametersCount.last
+//             }
+//             s"Invalid number of arguments for function $name. " +
+//               s"Expected: $expectedNumberOfParameters; Found: ${params.length}"
+//           }
+//           throw new AnalysisException(invalidArgumentsMsg)
+//         }
+//         try {
+//           val exp = f.newInstance(expressions : _*).asInstanceOf[Expression]
+//           exp
+//         } catch {
+//           // the exception is an invocation exception. To get a meaningful message, we need the
+//           // cause.
+//           case e: Exception => throw new AnalysisException(e.getCause.getMessage)
+//         }
+//       }
+//     }
+
+//     (name, (expressionInfo[T](name), builder))
+
+//   }
+
+//   // TODO: copy from spark, need to simplify
+//   private def expressionInfo[T <: Expression : ClassTag](name: String): ExpressionInfo = {
+//     val clazz = scala.reflect.classTag[T].runtimeClass
+//     val df = clazz.getAnnotation(classOf[ExpressionDescription])
+//     if (df != null) {
+//       if (df.extended().isEmpty) {
+//         new ExpressionInfo(
+//           clazz.getCanonicalName,
+//           null,
+//           name,
+//           df.usage(),
+//           df.arguments(),
+//           df.examples(),
+//           df.note(),
+// //          df.group(),  // TODO: uncomment me for spark 3.0
+//           df.since(),
+//           df.deprecated())
+//       } else {
+//         // This exists for the backward compatibility with old `ExpressionDescription`s defining
+//         // the extended description in `extended()`.
+//         new ExpressionInfo(clazz.getCanonicalName, null, name, df.usage(), df.extended())
+//       }
+//     } else {
+//       new ExpressionInfo(clazz.getCanonicalName, name)
+//     }
+//   }
 }
