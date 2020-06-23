@@ -2123,4 +2123,62 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
   }
+
+  test("ST_Difference") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)"), GeometryUDT.FromWkt("LINESTRING (4 0,6 0)")),
+    )
+
+    val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Difference(left_geo, right_geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+
+    val rst2 = df.select(st_difference(col("left_geo"), col("right_geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+  }
+
+  test("ST_Difference-Null") {
+    val data = Seq(
+      Row("LINESTRING (0 0,5 0)", "LINESTRING (4 0,6 0)"),
+      Row(null, "LINESTRING (4 0,6 0)"),
+      Row(null, null),
+    )
+
+    val schema = StructType(Array(StructField("left_geo", StringType, nullable = true), StructField("right_geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Difference(ST_GeomFromText(left_geo), ST_GeomFromText(right_geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    val rst2 = df.select(st_difference(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
+  }
 }
