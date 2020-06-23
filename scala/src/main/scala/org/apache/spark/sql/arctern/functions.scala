@@ -9,6 +9,10 @@ object functions {
     ST_GeomFromText(Seq(wkt.expr))
   }
 
+  def st_geomfromwkb(wkt: Column): Column = Column {
+    ST_GeomFromWKB(Seq(wkt.expr))
+  }
+
   def st_point(x: Column, y: Column): Column = Column {
     ST_Point(Seq(x.expr, y.expr))
   }
