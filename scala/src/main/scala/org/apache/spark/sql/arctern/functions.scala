@@ -134,6 +134,10 @@ object functions {
     ST_CurveToLine(Seq(geo.expr))
   }
 
+  def st_translate(geo: Column, shifterXValue: Column, shifterYValue: Column): Column = Column {
+    ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr

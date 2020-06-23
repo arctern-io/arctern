@@ -1859,7 +1859,7 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect(0).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
 
-    val rst2 = df.select(st_makevalid(col("geo")))
+    val rst2 = df.select(st_curvetoline(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
@@ -1887,12 +1887,88 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
 
-    val rst2 = df.select(st_makevalid(st_geomfromtext(col("geo"))))
+    val rst2 = df.select(st_curvetoline(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).getAs[GeometryUDT](0).toString.substring(0, 7) == "POLYGON")
+  }
+
+  test("ST_Translate") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Translate(geo, 1 + 1, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((2 2, 2 3, 3 3, 3 2, 2 2))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 2, 12 12, 22 22)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (2 2)")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 2, 3 2, 3 3, 2 2)))")
+
+    val rst2 = df.select(st_translate(col("geo"), lit(2), lit(2.0)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((2 2, 2 3, 3 3, 3 2, 2 2))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 2, 12 12, 22 22)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (2 2)")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 2, 3 2, 3 3, 2 2)))")
+  }
+
+  test("ST_Translate-Null") {
+    val data = Seq(
+      Row("error geo"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row(null),
+      Row("POLYGON ((1 2,3 4,5 6,1 2))"),
+      Row("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Translate(ST_GeomFromText(geo), 1 + 1, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).isNullAt(0))
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 2, 12 12, 22 22)")
+    assert(collect(2).isNullAt(0))
+    assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((3 4, 5 6, 7 8, 3 4))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 2, 3 2, 3 3, 2 2)))")
+
+    val rst2 = df.select(st_translate(st_geomfromtext(col("geo")), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).isNullAt(0))
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 2, 12 12, 22 22)")
+    assert(collect2(2).isNullAt(0))
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((3 4, 5 6, 7 8, 3 4))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 2, 3 2, 3 3, 2 2)))")
   }
 }
