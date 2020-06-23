@@ -146,6 +146,30 @@ object functions {
     ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
   }
 
+  def st_symdifference(left: Column, right: Column): Column = Column {
+    ST_SymDifference(Seq(left.expr, right.expr))
+  }
+
+  def st_difference(left: Column, right: Column): Column = Column {
+    ST_Difference(Seq(left.expr, right.expr))
+  }
+
+  def st_union(left: Column, right: Column): Column = Column {
+    ST_Union(Seq(left.expr, right.expr))
+  }
+
+  def st_disjoint(left: Column, right: Column): Column = Column {
+    ST_Disjoint(Seq(left.expr, right.expr))
+  }
+
+  def st_isempty(geo: Column): Column = Column {
+    ST_IsEmpty(Seq(geo.expr))
+  }
+
+  def st_boundary(geo: Column): Column = Column {
+    ST_Boundary(Seq(geo.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr
