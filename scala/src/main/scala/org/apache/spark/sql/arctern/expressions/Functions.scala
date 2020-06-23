@@ -665,3 +665,14 @@ case class ST_IsEmpty(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
+
+case class ST_Boundary(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getBoundary()")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
