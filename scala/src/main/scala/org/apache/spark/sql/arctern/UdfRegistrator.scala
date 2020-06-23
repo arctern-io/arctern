@@ -7,6 +7,7 @@ object UdfRegistrator {
   def register(spark: SparkSession) = {
     // Register constructor UDFs
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromWKB", ST_GeomFromWKB)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Point", ST_Point)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PolygonFromEnvelope", ST_PolygonFromEnvelope)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromGeoJSON", ST_GeomFromGeoJSON)
