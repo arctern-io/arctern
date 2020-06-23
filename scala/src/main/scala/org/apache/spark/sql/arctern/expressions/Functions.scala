@@ -26,6 +26,11 @@ import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
 
 object utils {
+  def envelopeAsList(geom: Geometry): Array[Double] = {
+    val env = geom.getEnvelopeInternal
+    Array(env.getMinX, env.getMinY, env.getMaxX, env.getMinY)
+  }
+
   def distanceSphere(from: Geometry, to: Geometry): Double = {
     var distance = -1.0
     if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
