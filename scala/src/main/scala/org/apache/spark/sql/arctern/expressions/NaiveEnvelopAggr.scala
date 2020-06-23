@@ -97,7 +97,7 @@ case class NaiveEnvelopeAggr(geom: Expression)
 
   override def nullable: Boolean = true
 
-  override def dataType: DataType = DoubleType
+  override def dataType: DataType = GeometryType
 
   override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType)
 
