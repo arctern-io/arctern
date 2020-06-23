@@ -1269,29 +1269,35 @@ def ST_CurveToLine(geos):
 
 def within_which(left, right):
     """
-    For each geometry in left, search geometries that satisfy "within" relationship in right
+    For each geometry in ``left``, search for a geometry in ``right`` that contains it.
 
-    :type left: GeoSeries
-    :param left: Sequence of Geometries
+    Parameters
+    ----------
+    left : GeoSeries
+        Sequence of geometries.
+    right : GeoSeries
+        Sequence of geometries.
 
-    :type right: GeoSeries
-    :param right: Sequence of Geometries
+    Returns
+    -------
+    Series
+        The indexes of geometries in ``right``.
+        For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
 
-    :rtype: Series(dtype: object)
-    :return: For each `left[i]`, find `j` satisfying that `left[i]` is within `right[j]`.
-             When there are multiple candidates, return one of them.
-             When not exists, return `pandas.NA`
+        * When there are multiple candidates, return one of them.
+        * When there is no candidate, return NA.
 
-    :example:
-      >>> from arctern import *
-      >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-      >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
-      >>> res = within_which(data1, data2)
-      >>> print(res)
-          0    1
-          1    <NA>
-          2    0
-          dtype: object
+    Examples
+    -------
+    >>> from arctern import *
+    >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
+    >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
+    >>> res = within_which(data1, data2)
+    >>> print(res)
+        0    1
+        1    <NA>
+        2    0
+        dtype: object
     """
     import pyarrow as pa
     import pandas
