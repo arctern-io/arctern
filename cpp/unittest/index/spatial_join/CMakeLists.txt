@@ -12,21 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(map_match_tests_src
+set(IndexedWithin_tests_src
         ${unittest_srcs}
-        map_match_test.cpp
+        indexed_with_test.cpp
         )
 
-add_executable(map_match_tests ${map_match_tests_src})
+add_executable(IndexedWithin_tests ${IndexedWithin_tests_src})
 
-#add_dependencies(map_match_tests googletest_ep)
-
-target_link_libraries(map_match_tests
+target_link_libraries(IndexedWithin_tests
         arctern
         arrow
         gtest
         pthread
-        gdal
         )
 
-install(TARGETS map_match_tests DESTINATION unittest)
+install(TARGETS IndexedWithin_tests DESTINATION unittest)

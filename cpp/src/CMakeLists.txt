@@ -85,19 +85,19 @@ set(cuda_gis_src
 
 set(arrow_src
         arrow/render_api.cpp
-        arrow/index_tree.cpp
         )
 
 set(index_src
-        index/index_builder.cpp
+        index/index_tree.cpp
+        index/geo_index.cpp
         )
 
 set(map_match_src
-        map_match/map_match.cpp)
+        gis/map_match/map_match.cpp)
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
-    set(LIBRARY_TYPE STATIC)
+    set(LIBRARY_TYPE STATIC index/geo_index.h index/geo_index.cpp)
 endif (STATIC_LIB_SWITCH)
 
 if (BUILD_WITH_GPU)

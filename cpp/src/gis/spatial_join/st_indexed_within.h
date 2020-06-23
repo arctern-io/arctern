@@ -19,23 +19,23 @@
 #include <string>
 #include <vector>
 
-#include "index/index.h"
+#include "index/index_tree.h"
 #include "utils/arrow_alias.h"
 
 namespace arctern {
 namespace gis {
 namespace spatial_join {
 
-using arctern::geo_indexing::IndexType;
 using arctern::geo_indexing::IndexTree;
+using arctern::geo_indexing::IndexType;
 
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
     const std::vector<std::shared_ptr<arrow::Array>>& polygons, std::string index_type);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
-        const IndexTree* index_tree,
-        const std::vector<std::shared_ptr<arrow::Array>>& points);
+    const IndexTree& index_tree,
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
 
 }  // namespace spatial_join
 }  // namespace gis

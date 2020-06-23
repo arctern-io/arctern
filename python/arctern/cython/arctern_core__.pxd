@@ -110,16 +110,11 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     string GIS_Version() except +
 
-cdef extern from "map_match.h" namespace "arctern::map_match":
-    vector[shared_ptr[CArray]] nearest_location_on_road(const vector[shared_ptr[CArray]] &roads, \
-                                                        const vector[shared_ptr[CArray]] &gps_points) except +
-    vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]] &roads, \
-                                            const vector[shared_ptr[CArray]] &gps_points) except +
-    vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]] &roads, \
-                                            const vector[shared_ptr[CArray]] &gps_points, const double distance) except +
-
-cdef extern from "index.h" namespace "arctern::geo_indexing":
+cdef extern from "spatial_index.h" namespace "arctern::geo_indexing":
     cdef cppclass GeosIndex:
         GeosIndex() except +
         void append(const vector[shared_ptr[CArray]]& geos)
         vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]]& gps_points, const double distance)
+        vector[shared_ptr[CArray]] nearest_location_on_road(const vector[shared_ptr[CArray]]& gps_points)
+        vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]]& gps_points)
+        vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]]& gps_points)

@@ -367,37 +367,6 @@ def ST_Envelope_Aggr(object geo_arr):
 def GIS_Version():
     return arctern_core_pxd.GIS_Version()
 
-# map match func api:
-def nearest_location_on_road(object roads,object gps_points):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.nearest_location_on_road(network, gps_points_to_match)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
-
-def nearest_road(object roads,object gps_points):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.nearest_road(network, gps_points_to_match)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
-
-def near_road(object roads,object gps_points, distance):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.near_road(network, gps_points_to_match, distance)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
-
 def _to_arrow_array_list(arrow_array):
     if hasattr(arrow_array, 'chunks'):
         return list(arrow_array.chunks)
@@ -421,7 +390,8 @@ def _to_pandas_series(array_list):
     return result
 
 cdef class SpatialIndex:
-    cdef arctern_core_pxd.GeosIndex* thisptr 
+    cdef arctern_core_pxd.GeosIndex* thisptr
+    cdef object data
 
     def __cinit__(self):
         self.thisptr = new arctern_core_pxd.GeosIndex()
@@ -430,6 +400,7 @@ cdef class SpatialIndex:
         del self.thisptr
 
     def Append(self, geometries):
+        self.data = geometries
         import pyarrow as pa
         arr_geos = pa.array(geometries, type='binary')
         list_geos = _to_arrow_array_list(arr_geos)
@@ -448,3 +419,40 @@ cdef class SpatialIndex:
         result = self.thisptr.near_road(gps_points_to_match, distance)
         pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
         return _to_pandas_series(pyarrow_res)
+
+    def nearest_location_on_road(self, gps_points):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.nearest_location_on_road(gps_points_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
+
+    def nearest_road(self, gps_points):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.nearest_road(gps_points_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
+
+    def within_which(self, left):
+        import pyarrow as pa
+        import pandas
+        arr_left = pa.array(left, type='binary')
+        list_left = _to_arrow_array_list(arr_left)
+        cdef vector[shared_ptr[CArray]] left_to_match
+        for geo in list_left:
+            left_to_match.push_back(pyarrow_unwrap_array(geo))
+        result = self.thisptr.ST_IndexedWithin(left_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        res = _to_pandas_series(pyarrow_res)
+        res = res.apply(lambda x: self.data.index[x] if x >= 0 else pandas.NA)
+        res = res.set_axis(left.index)
+        return res

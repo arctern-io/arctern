@@ -30,7 +30,7 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "index/index.h"
+#include "index/index_tree.h"
 #include "render/utils/render_utils.h"
 
 namespace arctern {
@@ -87,9 +87,9 @@ void IndexTree::Append(const std::vector<ArrayPtr>& right) {
   }
 }
 
-const std::vector<OGRGeometry*> IndexTree::get_road(const OGRGeometry* gps_point,
-                                                    const bool greedy_search,
-                                                    const double distance) const {
+const std::vector<OGRGeometry*> IndexTree::map_match_query(const OGRGeometry* gps_point,
+                                                           const bool greedy_search,
+                                                           const double distance) const {
   auto deg_distance = RAD2DEG(distance / 6371251.46);
   std::vector<void*> matches;
   std::vector<OGRGeometry*> results;
@@ -113,33 +113,6 @@ const std::vector<OGRGeometry*> IndexTree::get_road(const OGRGeometry* gps_point
           deg_distance > 90.0 - ogr_env.MinX)
         break;
     } while (greedy_search);
-  }
-
-  return results;
-}
-
-std::vector<std::shared_ptr<arrow::Array>> IndexTree::near_road(const std::vector<ArrayPtr> &gps_points, const double distance){
-  std::vector<std::shared_ptr<arrow::Array>> results;
-  auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
-
-  arrow::BooleanBuilder builder;
-  int32_t offset = 0;
-  for (int i = 0; i < gps_points.size(); ++i) {
-    int size = gps_points[i]->length();
-    for (int j = 0; j < size; ++j) {
-      auto index = offset + j;
-      auto vector_road =
-              get_road(gps_points_geo[index].get(), false, distance);
-      if (vector_road.empty()) {
-        builder.Append(false);
-      } else {
-        builder.Append(true);
-      }
-    }
-    std::shared_ptr<arrow::BooleanArray> result;
-    builder.Finish(&result);
-    results.emplace_back(result);
-    offset += size;
   }
 
   return results;

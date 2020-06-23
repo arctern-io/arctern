@@ -166,7 +166,6 @@ class GeoSeries(Series):
     def sindex(self):
         if not self._sindex_generated:
             _sindex = arctern.get_sindex_tree()
-            # _sindex = arctern_core_.SpatialIndex
             if _sindex is not None:
                 _sindex.Append(self)
             self._sindex = _sindex
