@@ -23,7 +23,6 @@ import org.locationtech.jts.io.{ParseException, WKBReader, WKBWriter, WKTWriter}
 import org.wololo.jts2geojson.{GeoJSONReader, GeoJSONWriter}
 
 class GeometryUDT extends UserDefinedType[Geometry] {
-
   override def pyUDT: String = "arctern_spark.scala_wrapper.GeometryUDT"
 
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
