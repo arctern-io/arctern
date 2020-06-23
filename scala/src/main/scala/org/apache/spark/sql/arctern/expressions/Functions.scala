@@ -676,3 +676,14 @@ case class ST_Boundary(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
+
+case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"""$geo.getGeometryType().equals("Polygon") ? new org.locationtech.jts.geom.GeometryFactory().createPolygon($geo.getCoordinates()).getExteriorRing() : $geo """)
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}

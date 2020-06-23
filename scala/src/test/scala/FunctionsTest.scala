@@ -2550,4 +2550,74 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(5).isNullAt(0))
     assert(collect2(6).isNullAt(0))
   }
+
+  test("ST_ExteriorRing") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+
+    val rst2 = df.select(st_exteriorring(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+  }
+
+  test("ST_ExteriorRing-Null") {
+    val data = Seq(
+      Row("POINT (0 1)"),
+      Row("LINESTRING (0 0, 0 1, 1 1)"),
+      Row("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"),
+      Row("POLYGON EMPTY"),
+      Row("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(ST_GeomFromText(geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(5).isNullAt(0))
+    assert(collect(6).isNullAt(0))
+
+    val rst2 = df.select(st_exteriorring(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(5).isNullAt(0))
+    assert(collect2(6).isNullAt(0))
+  }
 }
