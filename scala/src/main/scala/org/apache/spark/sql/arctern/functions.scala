@@ -134,6 +134,14 @@ object functions {
     ST_CurveToLine(Seq(geo.expr))
   }
 
+  def st_translate(geo: Column, shifterXValue: Column, shifterYValue: Column): Column = Column {
+    ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, rotateX: Column, rotateY: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr

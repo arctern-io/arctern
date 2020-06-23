@@ -566,3 +566,39 @@ case class ST_CurveToLine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
+
+case class ST_Translate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def shifterXValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def shifterYValue(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().translate(${shifterXValue(ctx)}, ${shifterYValue(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
+
+case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def rotationAngle(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def rotateX(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  def rotateY(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().rotate(${rotationAngle(ctx)}, ${rotateX(ctx)}, ${rotateY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
