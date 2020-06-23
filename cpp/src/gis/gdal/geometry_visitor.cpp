@@ -15,7 +15,6 @@
  */
 
 #include "gis/gdal/geometry_visitor.h"
-#include <iostream>
 
 namespace arctern {
 namespace gis {
