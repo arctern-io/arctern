@@ -1,12 +1,12 @@
 dir ("docker/spark/${BINARY_VERSION}") {
     def channelPackage = "conda-bld.tar.gz"
-    def downloadStatus = sh(returnStatus: true, script: "curl -C - -o arctern/${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
+    def downloadStatus = sh(returnStatus: true, script: "curl -C - -o ${channelPackage} ${ARTFACTORY_URL}/${channelPackage}")
 
     if (downloadStatus != 0) {
         error("\" Download \" ${ARTFACTORY_URL}/${channelPackage} \" failed!")
     }
 
-    sh "tar zxvf arctern/${channelPackage} -C ./${OS_NAME}/arctern"
+    sh "tar zxvf ${channelPackage} -C ./${OS_NAME}/arctern"
 
     def sourceImage = "${ARCTERN_SPARK_SOURCE_REPO}:${ARCTERN_SPARK_SOURCE_TAG}"
 
