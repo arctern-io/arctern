@@ -602,3 +602,16 @@ case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def children: Seq[Expression] = inputsExpr
 }
+
+case class ST_SymDifference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}

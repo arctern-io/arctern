@@ -146,6 +146,10 @@ object functions {
     ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
   }
 
+  def st_symdifference(left: Column, right: Column): Column = Column {
+    ST_SymDifference(Seq(left.expr, right.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr

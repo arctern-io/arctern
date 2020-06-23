@@ -42,6 +42,7 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Translate", ST_Translate)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Rotate", ST_Rotate)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_SymDifference", ST_SymDifference)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
     spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
