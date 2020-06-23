@@ -162,6 +162,10 @@ object functions {
     ST_Disjoint(Seq(left.expr, right.expr))
   }
 
+  def st_isempty(geo: Column): Column = Column {
+    ST_IsEmpty(Seq(geo.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr

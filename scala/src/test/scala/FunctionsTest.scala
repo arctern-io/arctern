@@ -2369,4 +2369,103 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(7).isNullAt(0))
     assert(collect2(8).isNullAt(0))
   }
+
+  test("ST_IsEmpty") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (0 1)")),
+      // TODO: fix Empty Points cannot be represented in WKB
+      // Row(GeometryUDT.FromWkt("POINT EMPTY")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 0 1, 1 1)")),
+      Row(GeometryUDT.FromWkt("LINESTRING EMPTY")),
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON EMPTY")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_IsEmpty(geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getBoolean(0) == false)
+    assert(collect(1).getBoolean(0) == false)
+    assert(collect(2).getBoolean(0) == true)
+    assert(collect(3).getBoolean(0) == false)
+    assert(collect(4).getBoolean(0) == true)
+    assert(collect(5).getBoolean(0) == false)
+    assert(collect(6).getBoolean(0) == true)
+
+    val rst2 = df.select(st_isempty(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getBoolean(0) == false)
+    assert(collect2(1).getBoolean(0) == false)
+    assert(collect2(2).getBoolean(0) == true)
+    assert(collect2(3).getBoolean(0) == false)
+    assert(collect2(4).getBoolean(0) == true)
+    assert(collect2(5).getBoolean(0) == false)
+    assert(collect2(6).getBoolean(0) == true)
+  }
+
+  test("ST_IsEmpty-Null") {
+    val data = Seq(
+      Row("POINT (0 1)"),
+      Row("POINT EMPTY"),
+      Row("LINESTRING (0 0, 0 1, 1 1)"),
+      Row("LINESTRING EMPTY"),
+      Row("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"),
+      Row("POLYGON EMPTY"),
+      Row("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"),
+      Row("MULTIPOLYGON EMPTY"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_IsEmpty(ST_GeomFromText(geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getBoolean(0) == false)
+    assert(collect(1).getBoolean(0) == true)
+    assert(collect(2).getBoolean(0) == false)
+    assert(collect(3).getBoolean(0) == true)
+    assert(collect(4).getBoolean(0) == false)
+    assert(collect(5).getBoolean(0) == true)
+    assert(collect(6).getBoolean(0) == false)
+    assert(collect(7).getBoolean(0) == true)
+    assert(collect(8).isNullAt(0))
+    assert(collect(9).isNullAt(0))
+
+    val rst2 = df.select(st_isempty(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getBoolean(0) == false)
+    assert(collect2(1).getBoolean(0) == true)
+    assert(collect2(2).getBoolean(0) == false)
+    assert(collect2(3).getBoolean(0) == true)
+    assert(collect2(4).getBoolean(0) == false)
+    assert(collect2(5).getBoolean(0) == true)
+    assert(collect2(6).getBoolean(0) == false)
+    assert(collect2(7).getBoolean(0) == true)
+    assert(collect2(8).isNullAt(0))
+    assert(collect2(9).isNullAt(0))
+  }
 }

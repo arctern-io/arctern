@@ -654,3 +654,14 @@ case class ST_Disjoint(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
 }
+
+case class ST_IsEmpty(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.isEmpty()")
+
+  override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}

@@ -46,6 +46,7 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Difference", ST_Difference)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Union", ST_Union)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Disjoint", ST_Disjoint)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_IsEmpty", ST_IsEmpty)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
     spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
