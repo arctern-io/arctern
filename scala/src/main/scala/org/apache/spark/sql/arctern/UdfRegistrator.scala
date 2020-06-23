@@ -7,6 +7,7 @@ object UdfRegistrator {
   def register(spark: SparkSession) = {
     // Register constructor UDFs
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromText", ST_GeomFromText)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromWKB", ST_GeomFromWKB)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Point", ST_Point)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PolygonFromEnvelope", ST_PolygonFromEnvelope)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromGeoJSON", ST_GeomFromGeoJSON)
@@ -39,6 +40,8 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Transform", ST_Transform)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_MakeValid", ST_MakeValid)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Translate", ST_Translate)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Rotate", ST_Rotate)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
     spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
