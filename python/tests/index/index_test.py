@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(.)
-set(unittest_srcs ${CMAKE_CURRENT_SOURCE_DIR}/unittest_entry.cpp)
+import arctern
 
-set(unittest_libs
-        arctern
-        gtest
-        pthread
-        )
+def test_near_road():
+    roads = arctern.GeoSeries(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
+    points = arctern.GeoSeries(["POINT (1.0001 0.0001)"])
+    index = roads.sindex
+    result = index.near_road(points, 100)
+    
 
-add_subdirectory(render)
-add_subdirectory(gis)
-add_subdirectory(map_match)
-add_subdirectory(index)

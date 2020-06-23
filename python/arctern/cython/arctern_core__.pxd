@@ -117,3 +117,9 @@ cdef extern from "map_match.h" namespace "arctern::map_match":
                                             const vector[shared_ptr[CArray]] &gps_points) except +
     vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]] &roads, \
                                             const vector[shared_ptr[CArray]] &gps_points, const double distance) except +
+
+cdef extern from "index.h" namespace "arctern::geo_indexing":
+    cdef cppclass GeosIndex:
+        GeosIndex() except +
+        void append(const vector[shared_ptr[CArray]]& geos)
+        vector[shared_ptr[CArray]] near_road(const vector[shared_ptr[CArray]]& gps_points, const double distance)

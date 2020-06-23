@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(.)
-set(unittest_srcs ${CMAKE_CURRENT_SOURCE_DIR}/unittest_entry.cpp)
-
-set(unittest_libs
-        arctern
-        gtest
-        pthread
+set(index_tree_tests_src
+        ${unittest_srcs}
+        index_test.cpp
         )
 
-add_subdirectory(render)
-add_subdirectory(gis)
-add_subdirectory(map_match)
-add_subdirectory(index)
+add_executable(index_tree_tests ${index_tree_tests_src})
+
+#add_dependencies(map_match_tests googletest_ep)
+
+target_link_libraries(index_tree_tests
+        arctern
+        arrow
+        gtest
+        pthread
+        gdal
+        )
+
+install(TARGETS index_tree_tests DESTINATION unittest)

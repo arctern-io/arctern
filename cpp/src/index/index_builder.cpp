@@ -36,17 +36,19 @@
 namespace arctern {
 namespace geo_indexing {
 
-IndexTree IndexTree::Create(IndexType type) {
+#define PI 3.14159
+#define RAD2DEG(x) ((x)*180.0 / PI)
+
+void IndexTree::Create(IndexType type) {
   using RTree = GEOS_DLL::geos::index::strtree::STRtree;
   using QuadTree = GEOS_DLL::geos::index::quadtree::Quadtree;
-  IndexTree tree;
   switch (type) {
     case IndexType::kQuadTree: {
-      tree.tree_ = std::make_unique<QuadTree>();
+      tree_ = std::make_unique<QuadTree>();
       break;
     }
     case IndexType::kRTree: {
-      tree.tree_ = std::make_unique<RTree>();
+      tree_ = std::make_unique<RTree>();
       break;
     }
     default: {
@@ -54,7 +56,6 @@ IndexTree IndexTree::Create(IndexType type) {
       break;
     }
   }
-  return tree;
 }
 
 void IndexTree::Append(const WkbArrayPtr& right) {
@@ -84,6 +85,64 @@ void IndexTree::Append(const std::vector<ArrayPtr>& right) {
     auto ptr = std::static_pointer_cast<arrow::BinaryArray>(ptr_raw);
     this->Append(ptr);
   }
+}
+
+const std::vector<OGRGeometry*> IndexTree::get_road(const OGRGeometry* gps_point,
+                                                    const bool greedy_search,
+                                                    const double distance) const {
+  auto deg_distance = RAD2DEG(distance / 6371251.46);
+  std::vector<void*> matches;
+  std::vector<OGRGeometry*> results;
+  {
+    OGREnvelope ogr_env;
+    gps_point->getEnvelope(&ogr_env);
+    do {
+      results.clear();
+      matches.clear();
+      geos::geom::Envelope env(ogr_env.MinX - deg_distance, ogr_env.MaxX + deg_distance,
+                               ogr_env.MinY - deg_distance, ogr_env.MaxY + deg_distance);
+      get_tree()->query(&env, matches);
+      for (auto match : matches) {
+        // match(void*) contains index as binary representation.
+        auto index = reinterpret_cast<size_t>(match);
+        auto geo = get_geometry(index);
+        results.emplace_back(geo);
+      }
+      deg_distance *= 2;
+      if (!results.empty() || deg_distance > ogr_env.MinX + 90.0 ||
+          deg_distance > 90.0 - ogr_env.MinX)
+        break;
+    } while (greedy_search);
+  }
+
+  return results;
+}
+
+std::vector<std::shared_ptr<arrow::Array>> IndexTree::near_road(const std::vector<ArrayPtr> &gps_points, const double distance){
+  std::vector<std::shared_ptr<arrow::Array>> results;
+  auto gps_points_geo = arctern::render::GeometryExtraction(gps_points);
+
+  arrow::BooleanBuilder builder;
+  int32_t offset = 0;
+  for (int i = 0; i < gps_points.size(); ++i) {
+    int size = gps_points[i]->length();
+    for (int j = 0; j < size; ++j) {
+      auto index = offset + j;
+      auto vector_road =
+              get_road(gps_points_geo[index].get(), false, distance);
+      if (vector_road.empty()) {
+        builder.Append(false);
+      } else {
+        builder.Append(true);
+      }
+    }
+    std::shared_ptr<arrow::BooleanArray> result;
+    builder.Finish(&result);
+    results.emplace_back(result);
+    offset += size;
+  }
+
+  return results;
 }
 
 }  // namespace geo_indexing

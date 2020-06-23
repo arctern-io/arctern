@@ -48,11 +48,21 @@ enum class IndexType {
 class IndexTree {
  public:
   using SpatialIndex = GEOS_DLL::geos::index::SpatialIndex;
-  static IndexTree Create(IndexType type);
+
+  IndexTree(){ Create(IndexType::kRTree); }
+
+  IndexTree(IndexType type){ Create(type); }
 
   void Append(const WkbArrayPtr& right);
 
   void Append(const std::vector<ArrayPtr>& right);
+
+  std::vector<std::shared_ptr<arrow::Array>> near_road(const std::vector<std::shared_ptr<arrow::Array>>& gps_points,
+                                                       const double distance);
+
+  const std::vector<OGRGeometry*> get_road (const OGRGeometry* gps_point,
+                                           const bool greedy_search = false,
+                                           const double distance = 100.0) const ;
 
   //  const geos::geom::Envelope& get_envelop(size_t index) const {
   //    return envelopes_[index];
@@ -62,8 +72,8 @@ class IndexTree {
 
   SpatialIndex* get_tree() const { return tree_.get(); }
 
- private:
-  IndexTree() = default;
+private:
+  void Create(IndexType type);
 
  private:
   // use deque instead of vector for validation of references

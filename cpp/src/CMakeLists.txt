@@ -85,6 +85,7 @@ set(cuda_gis_src
 
 set(arrow_src
         arrow/render_api.cpp
+        arrow/index_tree.cpp
         )
 
 set(index_src

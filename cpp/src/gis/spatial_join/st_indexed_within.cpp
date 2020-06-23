@@ -69,6 +69,46 @@ std::vector<ArrayPtr> left_join(const std::vector<ArrayPtr>& left_vec,
   return results;
 }
 
+Int32ArrayPtr left_join(const WkbArrayPtr& lefts, const IndexTree* index_tree) {
+  arrow::Int32Builder builder;
+  for (int s = 0; s < lefts->length(); ++s) {
+    auto left_view = lefts->GetView(s);
+    auto left_geo = render::GeometryExtraction(left_view);
+    std::vector<void*> matches;
+    {
+      OGREnvelope ogr_env;
+      left_geo->getEnvelope(&ogr_env);
+      geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX, ogr_env.MinY, ogr_env.MaxY);
+      index_tree->get_tree()->query(&env, matches);
+    }
+
+    int32_t final_index = -1;
+    for (auto match : matches) {
+      // match(void*) contains index as binary representation.
+      auto index = reinterpret_cast<size_t>(match);
+      auto right_geo = index_tree->get_geometry(index);
+      if (left_geo->Within(right_geo)) {
+        final_index = static_cast<int>(index);
+        break;
+      }
+    }
+    CHECK_ARROW(builder.Append(final_index));
+  }
+  Int32ArrayPtr arr;
+  CHECK_ARROW(builder.Finish(&arr));
+  return arr;
+}
+
+std::vector<ArrayPtr> left_join(const std::vector<ArrayPtr>& left_vec,
+                                const IndexTree* index_tree) {
+  std::vector<ArrayPtr> results;
+  for (const auto& arr_raw : left_vec) {
+    auto arr = std::static_pointer_cast<arrow::BinaryArray>(arr_raw);
+    results.emplace_back(left_join(arr, index_tree));
+  }
+  return results;
+}
+
 std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
     const std::vector<std::shared_ptr<arrow::Array>>& polygons,
@@ -82,9 +122,15 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     throw std::invalid_argument("wrong index_type: " + index_type);
   }
 
-  auto index = geo_indexing::IndexTree::Create(type);
+  IndexTree index(type);
   index.Append(polygons);
   return left_join(points, index);
+}
+
+std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
+        const IndexTree* index_tree,
+        const std::vector<std::shared_ptr<arrow::Array>>& points) {
+  return left_join(points, index_tree);
 }
 
 }  // namespace spatial_join

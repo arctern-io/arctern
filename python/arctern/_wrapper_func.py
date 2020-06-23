@@ -60,6 +60,7 @@ __all__ = [
     "nearest_location_on_road",
     "nearest_road",
     "near_road",
+    "get_sindex_tree",
     "version"
 ]
 
@@ -1695,6 +1696,10 @@ def near_road(roads, points, distance=100):
     res = _to_pandas_series(bool_rst)
     res = res.set_axis(points.index)
     return res
+
+def get_sindex_tree():
+    indextree = arctern_core_.SpatialIndex()
+    return indextree
 
 def version(verbose=False):
     """

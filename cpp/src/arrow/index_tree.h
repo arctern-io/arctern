@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #pragma once
+
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "arrow/api.h"
 #include "index/index.h"
-#include "utils/arrow_alias.h"
-
 namespace arctern {
-namespace gis {
-namespace spatial_join {
+namespace geo_indexing {
 
-using arctern::geo_indexing::IndexType;
-using arctern::geo_indexing::IndexTree;
+class GeosIndex {
+public:
+  GeosIndex();
 
-std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
-    const std::vector<std::shared_ptr<arrow::Array>>& points,
-    const std::vector<std::shared_ptr<arrow::Array>>& polygons, std::string index_type);
+  void append(const std::vector<std::shared_ptr<arrow::Array>>& geos);
 
-std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
-        const IndexTree* index_tree,
-        const std::vector<std::shared_ptr<arrow::Array>>& points);
+  std::vector<std::shared_ptr<arrow::Array>> near_road(
+          const std::vector<std::shared_ptr<arrow::Array>>& gps_points,
+          const double distance);
 
-}  // namespace spatial_join
-}  // namespace gis
-}  // namespace arctern
+private:
+  IndexTree* index_;
+};
+
+}
+}

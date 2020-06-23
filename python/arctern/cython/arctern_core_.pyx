@@ -397,3 +397,54 @@ def near_road(object roads,object gps_points, distance):
         gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
     result = arctern_core_pxd.near_road(network, gps_points_to_match, distance)
     return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def _to_arrow_array_list(arrow_array):
+    if hasattr(arrow_array, 'chunks'):
+        return list(arrow_array.chunks)
+    return [arrow_array]
+
+def _to_pandas_series(array_list):
+    result = None
+
+    for array in array_list:
+        if isinstance(array, list):
+            for arr in array:
+                if result is None:
+                    result = arr.to_pandas()
+                else:
+                    result = result.append(arr.to_pandas(), ignore_index=True)
+        else:
+            if result is None:
+                result = array.to_pandas()
+            else:
+                result = result.append(array.to_pandas(), ignore_index=True)
+    return result
+
+cdef class SpatialIndex:
+    cdef arctern_core_pxd.GeosIndex* thisptr 
+
+    def __cinit__(self):
+        self.thisptr = new arctern_core_pxd.GeosIndex()
+
+    def __dealloc__(self):
+        del self.thisptr
+
+    def Append(self, geometries):
+        import pyarrow as pa
+        arr_geos = pa.array(geometries, type='binary')
+        list_geos = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] geos
+        for geo in list_geos:
+            geos.push_back(pyarrow_unwrap_array(geo))
+        self.thisptr.append(geos)
+
+    def near_road(self, gps_points, distance):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.near_road(gps_points_to_match, distance)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
