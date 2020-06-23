@@ -66,7 +66,7 @@ object utils {
 
   def makeValid(geo: Geometry): Geometry = {
     val geoType = geo.getGeometryType
-    if(geoType != "Polygon" || geoType != "MultiPolygon") return geo
+    if (geoType != "Polygon" || geoType != "MultiPolygon") return geo
     val polygonList: java.util.List[Polygon] = geo match {
       case g: Polygon =>
         JTS.makeValid(g, true)
@@ -124,7 +124,7 @@ abstract class ST_BinaryOp extends ArcternExpr {
       leftGeoDeclare = declare;
       leftGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode, ctx.freshNamePrefix)
       leftGeo = geo;
       leftGeoDeclare = declare;
       leftGeoCode = code
@@ -136,13 +136,13 @@ abstract class ST_BinaryOp extends ArcternExpr {
       rightGeoDeclare = declare;
       rightGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode, ctx.freshNamePrefix)
       rightGeo = geo;
       rightGeoDeclare = declare;
       rightGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, ctx.freshNamePrefix, dataType)
 
     if (nullable) {
       val nullSafeEval =
@@ -206,13 +206,13 @@ abstract class ST_UnaryOp extends ArcternExpr {
       exprGeoDeclare = declare;
       exprGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshNamePrefix)
       exprGeo = geo;
       exprGeoDeclare = declare;
       exprGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, ctx.freshNamePrefix, dataType)
 
     if (nullable) {
       val nullSafeEval =
