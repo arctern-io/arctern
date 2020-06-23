@@ -38,13 +38,13 @@ def test_ST_Difference():
 def test_ST_SymDifference():
     data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
-    rst = data1.sym_difference(data2).to_wkt()
+    rst = data1.symmetric_difference(data2).to_wkt()
     assert rst[0] == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))"
     assert rst[1] == "POINT (6 0)"
 
 def test_ST_ExteriorRing():
     data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
-    rst = data.exterior_ring().to_wkt()
+    rst = data.exterior.to_wkt()
     assert rst[0] is None
     assert rst[1] == "LINESTRING (0 0,1 0,1 1,0 1,0 0)"
 

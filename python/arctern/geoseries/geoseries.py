@@ -729,6 +729,7 @@ class GeoSeries(Series):
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
+    @property
     def exterior(self):
         """
         Returns a line string representing the exterior ring of the POLYGON geometry. Return NULL if the geometry is not a polygon.
