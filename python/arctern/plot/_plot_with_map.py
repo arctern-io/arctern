@@ -53,14 +53,14 @@ def pointmap(ax, points, bounding_box,
         Sequence of points.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
-    point_size : int, by default 3
-        Diameter of points.
-    point_color : str, by default '#115f9a'
-        Point color in Hex Color Code.
-    opacity : float, by default 1.0
-        Opacity of points, ranged from 0.0 to 1.0.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    point_size : int, optional
+        Diameter of points, by default 3.
+    point_color : str, optional
+        Point color in Hex Color Code, by default '#115f9a'.
+    opacity : float, optional
+        Opacity of points, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
@@ -110,6 +110,8 @@ def weighted_pointmap(ax, points, color_weights=None,
                            **extra_contextily_params):
     """
     Plots a weighted point map in Matplotlib.
+
+    Parameters
     ----------
     ax : matplotlib.axes.Axes
         Axes where geometries will be plotted.
@@ -121,18 +123,18 @@ def weighted_pointmap(ax, points, color_weights=None,
         Weights of point size.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
-    color_gradient : list, by default ["#115f9a", "#d0f400"]
-        Range of color gradient.
+    color_gradient : list, optional
+        Range of color gradient, by default ["#115f9a", "#d0f400"].
         Either use ["hex_color"] to specify a same color for all geometries, or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2".
-    color_bound : list, by default [0, 0]
-        Weight range [w1, w2] of ``color_gradient``.
+    color_bound : list, optional
+        Weight range [w1, w2] of ``color_gradient``, by default [0, 0].
         Needed only when ``color_gradient`` has two values ["color1", "color2"]. Binds w1 to "color1", and w2 to "color2". When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
-    size_bound : list, by default [3]
-        Weight range [w1, w2] of ``size_weights``. When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
-    opacity : float, by default 1.0
-        Opacity of points, ranged from 0.0 to 1.0.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    size_bound : list, optional
+        Weight range [w1, w2] of ``size_weights``, by default [3]. When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
+    opacity : float, optional
+        Opacity of points, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
@@ -207,13 +209,13 @@ def heatmap(ax, points, weights, bounding_box,
         Weights of point intensity.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
-    map_zoom_level : [type], by default 'auto'
-        Zoom level of the map.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    map_zoom_level : [type], optional
+        Zoom level of the map by default 'auto'.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
-    aggregation_type : str, by default 'max'
-        Aggregation type.
+    aggregation_type : str, optional
+        Aggregation type, by default 'max'.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
@@ -275,13 +277,13 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     color_bound : list, optional
         Weight range [w1, w2] of ``color_gradient``.
         Needed only when ``color_gradient`` has two values ["color1", "color2"]. Binds w1 to "color1", and w2 to "color2". When weight < w1 or weight > w2, the weight will be truncated to w1 or w2 accordingly.
-    opacity : float, by default 1.0
-        Opacity of polygons, ranged from 0.0 to 1.0.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    opacity : float, optional
+        Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
-    aggregation_type : str, by default 'max'
-        Aggregation type.
+    aggregation_type : str, optional
+        Aggregation type, by default 'max'.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
@@ -333,8 +335,8 @@ def iconviz(ax, points, bounding_box, icon_path,
         Bounding box of the map. For example, [west, south, east, north].
     icon_path : str
         Absolute path to icon file.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
@@ -393,20 +395,20 @@ def fishnetmap(ax, points, weights, bounding_box,
         Color weights of polygons.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
-    color_gradient : list, by default ["#0000FF", "#FF0000"]
-        Range of color gradient.
+    color_gradient : list, optional
+        Range of color gradient, by default ["#0000FF", "#FF0000"].
         Either use ["hex_color"] to specify a same color for all geometries, or ["hex_color1", "hex_color2"] to specify a color gradient ranging from "hex_color1" to "hex_color2".
-    cell_size : int, by default 4
-        Side length of fishnet cells.
-    cell_spacing : int, by default 1
-        Margin between adjacent fishnet cells.
-    opacity : float, by default 1.0
-        Opacity of the fishnet, ranged from 0.0 to 1.0.
-    coordinate_system : str, by default 'EPSG:3857'
-        The Coordinate Reference System (CRS) set to all geometries.
+    cell_size : int, optional
+        Side length of fishnet cells, by default 4.
+    cell_spacing : int, optional
+        Margin between adjacent fishnet cells, by default 1.
+    opacity : float, optional
+        Opacity of the fishnet, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
-    aggregation_type : str, by default 'sum'
-        Aggregation type.
+    aggregation_type : str, optional
+        Aggregation type, by default 'sum'.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
