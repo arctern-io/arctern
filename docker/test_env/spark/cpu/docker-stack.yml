@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   spark-master:
-    image: ${ARCTERN_REPO:-arcternio/arctern-spark}:${ARCTERN_TAG:-latest}
+    image: ${ARCTERN_SPARK_TARGET_REPO:-arcternio/arctern-spark}:${ARCTERN_SPARK_TARGET_TAG:-latest}
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -24,7 +24,7 @@ services:
 #       - source: spark-defaults-conf
 #         target: /opt/spark/conf/spark-defaults.conf
   spark-worker:
-    image: ${ARCTERN_REPO:-arcternio/arctern-spark}:${ARCTERN_TAG:-latest}
+    image: ${ARCTERN_SPARK_TARGET_REPO:-arcternio/arctern-spark}:${ARCTERN_SPARK_TARGET_TAG:-latest}
     depends_on:
       - spark-master
     environment:
