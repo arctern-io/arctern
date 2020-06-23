@@ -476,7 +476,7 @@ def ST_Translate(geo, shifter_x, shifter_y):
     result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
     return result.to_pandas()
 
-def ST_Rotate(geo, rotation_angle, rotate_x=0, rotate_y=0):
+def ST_Rotate(geo, rotation_angle, rotate_x=0.0, rotate_y=0.0):
     import pyarrow as pa
     arr_geo = pa.array(geo, type='binary')
     arr_geo = _to_arrow_array_list(arr_geo)
