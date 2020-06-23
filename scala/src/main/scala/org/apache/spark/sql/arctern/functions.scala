@@ -135,6 +135,13 @@ object functions {
   }
 
   // Aggregate Function UDF API
-  val st_union_aggr = new ST_Union_Aggr
-  val st_envelope_aggr = new ST_Envelope_Aggr
+  def st_union_aggr(geo: Column): Column = {
+    val st_union_aggr_obj = new ST_Union_Aggr
+    st_union_aggr_obj(geo)
+  }
+
+  def st_envelope_aggr(geo: Column): Column = {
+    val st_envelope_aggr_obj = new ST_Envelope_Aggr
+    st_envelope_aggr_obj(geo)
+  }
 }
