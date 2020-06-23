@@ -24,9 +24,14 @@ class AggregateFunctionsTest extends AdapterTest {
   test("naive_envelop_aggr") {
     assert(true)
     val data = Seq(
-      Row(1.0), Row(2.0), Row(20.0)
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((1 2,3 4,5 6,1 2))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )")),
     )
-    val schema = StructType(Array(StructField("geo", DoubleType, nullable = true)))
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("raw_data")
 
@@ -57,14 +62,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
 
     val rst2 = df.agg(st_union_aggr(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
   }
 
   test("ST_Union_Aggr-Null") {
@@ -88,14 +93,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
 
     val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
   }
 
   test("ST_Envelope_Aggr") {

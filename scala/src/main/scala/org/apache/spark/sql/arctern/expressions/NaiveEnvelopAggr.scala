@@ -13,7 +13,7 @@ case class NaiveEnvelopAggr(geom: Expression)
   override def nullable: Boolean = true
 
   override def dataType: DataType = GeometryType
-  override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType) // TODO: use GeometryUDT
+  override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType) // TODO: use GeometryUDT
 
   protected val minX = AttributeReference("minX", DoubleType, nullable = false)()
   protected val minY = AttributeReference("minY", DoubleType, nullable = false)()
@@ -41,19 +41,22 @@ case class NaiveEnvelopAggr(geom: Expression)
   }
 
   protected def updateExpressionDef: Seq[Expression] = {
-    // TODO: use GeometryUDT and jtx, currently a fake one
-    val input_envelop: Seq[Expression] = Seq(geom, Literal(0.0), geom + 5, Literal(1.0))
-    Seq(
-      dslMin(envelop(0), input_envelop(0)),
-      dslMin(envelop(1), input_envelop(1)),
-      dslMax(envelop(2), input_envelop(2)),
-      dslMax(envelop(3), input_envelop(3)),
-    )
+    val input_envelope = ST_Envelope(Seq(geom))
+    val input_minX = EnvelopeGet("MinX", input_envelope)
+//    val input_minY = EnvelopeGet("MinY", input_envelope)
+//    val input_maxX = EnvelopeGet("MaxX", input_envelope)
+//    val input_maxY = EnvelopeGet("MaxY", input_envelope)
+//    Seq(
+//      dslMin(minX, input_minX),
+//      dslMin(minY, input_minY),
+//      dslMax(maxX, input_maxX),
+//      dslMax(maxY, input_maxY),
+//    )
+    val newMinX = dslMin(minX, input_minX)
+    Seq(newMinX, minY, maxX, maxY)
   }
 
   override val evaluateExpression: Expression = {
-    // TODO: convert back to envelop
-//    (maxX - minX) * (maxY - minY)
     ST_PolygonFromEnvelope(envelop)
   }
 
