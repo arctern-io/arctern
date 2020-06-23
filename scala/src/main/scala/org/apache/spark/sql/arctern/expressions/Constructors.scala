@@ -68,20 +68,21 @@ case class ST_GeomFromWKB(inputExpr: Seq[Expression]) extends ArcternExpr {
 
     val wktExpr = inputExpr.head
     val wktGen = inputExpr.head.genCode(ctx)
+    val geoName = ctx.freshName(ev.value)
 
     val nullSafeEval =
       wktGen.code + ctx.nullSafeExec(wktExpr.nullable, wktGen.isNull) {
         s"""
-           |${ev.value}_geo = ${GeometryUDT.getClass.getName.dropRight(1)}.FromWkb(${wktGen.value});
-           |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+           |$geoName = ${GeometryUDT.getClass.getName.dropRight(1)}.FromWkb(${wktGen.value});
+           |if ($geoName != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(geoName)}
        """.stripMargin
       }
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenUtil.mutableGeometryInitCode(geoName)}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_geo == null);
+          boolean ${ev.isNull} = ($geoName == null);
             """)
 
   }
