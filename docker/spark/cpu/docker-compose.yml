@@ -5,7 +5,7 @@ services:
     image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     build:
       context: ${OS_NAME}/
-      dockerfile: ${OS_NAME}/Dockerfile
+      dockerfile: Dockerfile
       cache_from:
         - ${ARCTERN_SPARK_SOURCE_REPO}:${ARCTERN_SPARK_SOURCE_TAG}
     environment:

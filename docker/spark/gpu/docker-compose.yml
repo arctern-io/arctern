@@ -4,8 +4,8 @@ services:
   spark-master:
     image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     build:
-      context: ./
-      dockerfile: ${OS_NAME}/Dockerfile
+      context: ${OS_NAME}/
+      dockerfile: Dockerfile
       cache_from:
         - ${ARCTERN_SPARK_SOURCE_REPO}:${ARCTERN_SPARK_SOURCE_TAG}
     runtime: nvidia
