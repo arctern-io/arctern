@@ -45,12 +45,12 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
 
     // TODO: remove ExpressionInfo
-    //    val (naive_name, (naive_info, naive_builder)) = expression[NaiveEnvelopAggr]("naive_envelop_aggr")
+    //    val (naive_name, (naive_info, naive_builder)) = expression[NaiveEnvelopeAggr]("naive_envelope_aggr")
     val naive_builder = (seq: Seq[Expression]) =>  {
       assert(seq.size == 1)
-      NaiveEnvelopAggr(seq(0))
+      NaiveEnvelopeAggr(seq(0))
     }
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("naive_envelop_aggr", naive_builder)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("naive_envelope_aggr", naive_builder)
 
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)

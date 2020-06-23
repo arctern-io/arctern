@@ -21,7 +21,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 class AggregateFunctionsTest extends AdapterTest {
-  test("naive_envelop_aggr") {
+  test("naive_envelope_aggr") {
     assert(true)
     val data = Seq(
       Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
@@ -37,7 +37,7 @@ class AggregateFunctionsTest extends AdapterTest {
 
     df.show()
 
-    val rst = spark.sql("select naive_envelop_aggr(geo) from raw_data")
+    val rst = spark.sql("select naive_envelope_aggr(geo) from raw_data")
 
     rst.queryExecution.debug.codegen()
     rst.show(false)

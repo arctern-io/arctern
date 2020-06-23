@@ -21,14 +21,16 @@ import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.{AbstractDataType, BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
+import org.apache.spark.sql.catalyst.util.ArrayData._
 
 object utils {
-  def envelopeAsList(geom: Geometry): Array[Double] = {
+  def envelopeAsList(geom: Geometry): ArrayData = {
     val env = geom.getEnvelopeInternal
-    Array(env.getMinX, env.getMinY, env.getMaxX, env.getMinY)
+    toArrayData(Array(env.getMinX, env.getMinY, env.getMaxX, env.getMinY))
   }
 
   def distanceSphere(from: Geometry, to: Geometry): Double = {

@@ -3,7 +3,7 @@ package org.apache.spark.sql.arctern.expressions
 import java.util.function.UnaryOperator
 
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
-import org.apache.spark.sql.arctern.GeometryType
+import org.apache.spark.sql.arctern.{ArcternExpr, GeometryType}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions._
@@ -18,7 +18,7 @@ import org.apache.spark.sql.types._
 //
 //  override def child: Expression = geom
 //
-//  override def toString(): String = s"$child.getEnvelopArray"
+//  override def toString(): String = s"$child.getEnvelopeArray"
 //
 //  override def nullSafeEval(input: Any): Any = throw new Exception("no eval")
 //
@@ -44,9 +44,9 @@ case class GeometryEnvelope(expression: Expression) extends ST_UnaryOp {
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)")
 
-  override def dataType: DataType = GeometryType
+  override def dataType: DataType = ArrayType(DoubleType)
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(ArrayType(DoubleType))
+  override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType)
 }
 
 case class GetElementByIndex(index: Int, elementDataType: DataType, input: Expression) extends UnaryExpression with ExpectsInputTypes {
@@ -63,11 +63,35 @@ case class GetElementByIndex(index: Int, elementDataType: DataType, input: Expre
   override def nullSafeEval(input: Any): Any = throw new Exception("no eval")
 
   override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    defineCodeGen(ctx, ev, eval => s"${eval}[$index]")
+    defineCodeGen(ctx, ev, eval => s"${eval}.getDouble($index)")
   }
 }
 
-case class NaiveEnvelopAggr(geom: Expression)
+case class dslMin(leftExpr: Expression, rightExpr: Expression) extends BinaryExpression with ExpectsInputTypes {
+  override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType, DoubleType)
+  override def dataType: DataType = DoubleType
+  override def left: Expression = leftExpr
+  override def right: Expression = rightExpr
+  override def toString(): String = s"min($left, $right)"
+  override def nullSafeEval(left: Any, right: Any): Any = throw new Exception("no eval")
+  override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    defineCodeGen(ctx, ev, (eval1, eval2) => s"$eval1 < $eval2 ? $eval1 : $eval2")
+  }
+}
+
+case class dslMax(leftExpr: Expression, rightExpr: Expression) extends BinaryExpression with ExpectsInputTypes {
+  override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType, DoubleType)
+  override def dataType: DataType = DoubleType
+  override def left: Expression = leftExpr
+  override def right: Expression = rightExpr
+  override def toString(): String = s"max($left, $right)"
+  override def nullSafeEval(left: Any, right: Any): Any = throw new Exception("no eval")
+  override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    defineCodeGen(ctx, ev, (eval1, eval2) => s"$eval1 > $eval2 ? $eval1 : $eval2")
+  }
+}
+
+case class NaiveEnvelopeAggr(geom: Expression)
   extends DeclarativeAggregate with ImplicitCastInputTypes {
   override def children: Seq[Expression] = Seq(geom)
 
@@ -75,14 +99,14 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override def dataType: DataType = DoubleType
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType) // TODO: use GeometryUDT
+  override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType)
 
   protected val minX = AttributeReference("minX", DoubleType, nullable = false)()
   protected val minY = AttributeReference("minY", DoubleType, nullable = false)()
   protected val maxX = AttributeReference("maxX", DoubleType, nullable = false)()
   protected val maxY = AttributeReference("maxY", DoubleType, nullable = false)()
-  protected val envelop = Seq(minX, minY, maxX, maxY)
-  override val aggBufferAttributes: Seq[AttributeReference] = envelop
+  protected val envelope = Seq(minX, minY, maxX, maxY)
+  override val aggBufferAttributes: Seq[AttributeReference] = envelope
   override val initialValues: Seq[Expression] = {
     val negInf = Literal(scala.Double.NegativeInfinity)
     val posInf = Literal(scala.Double.PositiveInfinity)
@@ -91,9 +115,9 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override lazy val updateExpressions: Seq[Expression] = updateExpressionDef
 
-  def dslMin(e1: Expression, e2: Expression): Expression = If(e1 < e2, e1, e2)
-
-  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
+//  def dslMin(e1: Expression, e2: Expression): Expression = If(e1 < e2, e1, e2)
+//
+//  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
 
   override val mergeExpressions: Seq[Expression] = {
     def getMin(attr: AttributeReference): Expression = dslMin(attr.left, attr.right)
@@ -106,27 +130,22 @@ case class NaiveEnvelopAggr(geom: Expression)
   protected def updateExpressionDef: Seq[Expression] = {
     val input_envelope = GeometryEnvelope(geom)
     val input_minX = GetElementByIndex(0, DoubleType, input_envelope)
-
-    //    val input_minY = EnvelopeGet("MinY", input_envelope)
-    //    val input_maxX = EnvelopeGet("MaxX", input_envelope)
-    //    val input_maxY = EnvelopeGet("MaxY", input_envelope)
-    //    Seq(
-    //      dslMin(minX, input_minX),
-    //      dslMin(minY, input_minY),
-    //      dslMax(maxX, input_maxX),
-    //      dslMax(maxY, input_maxY),
-    //    )
-    val fuck = -minX
-    val newMinX = dslMin(minX, input_minX)
-    Seq(newMinX, minY, maxX, maxY)
+    val input_minY = GetElementByIndex(1, DoubleType, input_envelope)
+    val input_maxX = GetElementByIndex(2, DoubleType, input_envelope)
+    val input_maxY = GetElementByIndex(3, DoubleType, input_envelope)
+    Seq(
+      dslMin(minX, input_minX),
+      dslMin(minY, input_minY),
+      dslMax(maxX, input_maxX),
+      dslMax(maxY, input_maxY),
+    )
   }
 
   override val evaluateExpression: Expression = {
-    minX
-//    ST_PolygonFromEnvelope(envelop)
+    ST_PolygonFromEnvelope(envelope)
   }
 
-  override def prettyName: String = "naive_envelop_aggr"
+  override def prettyName: String = "naive_envelope_aggr"
 }
 
 
