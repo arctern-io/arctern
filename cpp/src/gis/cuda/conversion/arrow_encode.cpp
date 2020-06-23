@@ -30,9 +30,8 @@ namespace {
 
 template <typename T>
 std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_ptr) {
-  std::shared_ptr<arrow::Buffer> buffer;
   auto len = sizeof(T) * size;
-  CHECK_ARROW(arrow::AllocateBuffer(len, &buffer));
+  auto buffer = arrow::AllocateBuffer(len);
   GpuMemcpy((T*)buffer->mutable_data(), dev_ptr, size);
   return buffer;
 }
