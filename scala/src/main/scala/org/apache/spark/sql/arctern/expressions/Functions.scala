@@ -124,7 +124,7 @@ abstract class ST_BinaryOp extends ArcternExpr {
       leftGeoDeclare = declare;
       leftGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode, ctx.freshNamePrefix)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode, ctx.freshName(leftCode.value))
       leftGeo = geo;
       leftGeoDeclare = declare;
       leftGeoCode = code
@@ -136,13 +136,13 @@ abstract class ST_BinaryOp extends ArcternExpr {
       rightGeoDeclare = declare;
       rightGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode, ctx.freshNamePrefix)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode, ctx.freshName(rightCode.value))
       rightGeo = geo;
       rightGeoDeclare = declare;
       rightGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, ctx.freshNamePrefix, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, ctx.freshName(ev.value), dataType)
 
     if (nullable) {
       val nullSafeEval =
@@ -206,13 +206,13 @@ abstract class ST_UnaryOp extends ArcternExpr {
       exprGeoDeclare = declare;
       exprGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshNamePrefix)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshName(exprCode.value))
       exprGeo = geo;
       exprGeoDeclare = declare;
       exprGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, ctx.freshNamePrefix, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, ctx.freshName(ev.value), dataType)
 
     if (nullable) {
       val nullSafeEval =
