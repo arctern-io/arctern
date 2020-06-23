@@ -1,5 +1,6 @@
 package org.apache.spark.sql.arctern.expressions
 
+import org.apache.spark.sql.arctern.GeometryType
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.DeclarativeAggregate
@@ -11,7 +12,7 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override def nullable: Boolean = true
 
-  override def dataType: DataType = DoubleType // TODO: use GeometryUDT
+  override def dataType: DataType = GeometryType
   override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType) // TODO: use GeometryUDT
 
   protected val minX = AttributeReference("minX", DoubleType, nullable = false)()
@@ -52,7 +53,8 @@ case class NaiveEnvelopAggr(geom: Expression)
 
   override val evaluateExpression: Expression = {
     // TODO: convert back to envelop
-    (maxX - minX) * (maxY - minY)
+//    (maxX - minX) * (maxY - minY)
+    ST_PolygonFromEnvelope(envelop)
   }
 
   override def prettyName: String = "naive_envelop_aggr"
