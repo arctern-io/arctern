@@ -6,7 +6,7 @@ dir ("docker/spark/${BINARY_VERSION}") {
         error("\" Download \" ${ARTFACTORY_URL}/${channelPackage} \" failed!")
     }
 
-    sh "tar zxvf arctern/${channelPackage} -C ./arctern"
+    sh "tar zxvf arctern/${channelPackage} -C ./${OS_NAME}/arctern"
 
     def sourceImage = "${ARCTERN_SPARK_SOURCE_REPO}:${ARCTERN_SPARK_SOURCE_TAG}"
 
