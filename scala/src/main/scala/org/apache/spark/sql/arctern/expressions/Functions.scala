@@ -322,17 +322,6 @@ case class ST_Envelope(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
-case class EnvelopeGet(attribute: String, envelope: Expression) extends ST_UnaryOp {
-  assert(Set("MinX", "MinY", "MaxX", "MaxY").contains(attribute))
-  override def expr: Expression = envelope
-
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"((org.locationtech.jts.geom.Envelope)$geo).get$attribute()")
-
-  override def dataType: DataType = DoubleType
-
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
-}
-
 case class ST_Buffer(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
