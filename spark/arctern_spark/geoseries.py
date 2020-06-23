@@ -19,6 +19,7 @@ from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
+from pyspark.sql.column import _create_column_from_literal
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -41,7 +42,7 @@ def _column_geo(f, *args, **kwargs):
 
 def _agg(f, kss):
     from . import scala_wrapper
-    scol = getattr(scala_wrapper, f)(kss.spark_column)
+    scol = getattr(scala_wrapper, f)(kss.spark.column)
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
     return GeoSeries(first_series(kdf), crs=kss._crs)
@@ -56,7 +57,7 @@ def _validate_crs(crs):
 
 def _validate_arg(arg, dtype):
     if isinstance(arg, dtype):
-        arg = F.lit(arg)
+        arg = _create_column_from_literal(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
     return arg
@@ -109,7 +110,7 @@ class GeoSeries(Series):
             spark_dtype = kss.spark.data_type
             if isinstance(spark_dtype, GeometryUDT):
                 pass
-            if isinstance(spark_dtype, BinaryType):
+            elif isinstance(spark_dtype, BinaryType):
                 pass
             elif isinstance(spark_dtype, StringType):
                 kss = _column_op("st_geomfromtext", kss)
@@ -257,7 +258,7 @@ class GeoSeries(Series):
         return _column_geo("st_makevalid", self, crs=self._crs)
 
     def precision_reduce(self, precision):
-        return _column_geo("st_precisionreduce", self, F.lit(precision), crs=self._crs)
+        return _column_geo("st_precisionreduce", self, _create_column_from_literal(precision), crs=self._crs)
 
     def unary_union(self):
         return _agg("st_union_aggr", self)
@@ -269,10 +270,10 @@ class GeoSeries(Series):
         return _column_geo("ST_CurveToLine", self, crs=self._crs)
 
     def simplify(self, tolerance):
-        return _column_geo("st_simplifypreservetopology", self, F.lit(tolerance), crs=self._crs)
+        return _column_geo("st_simplifypreservetopology", self, _create_column_from_literal(tolerance), crs=self._crs)
 
     def buffer(self, distance):
-        return _column_geo("st_buffer", self, F.lit(distance), crs=self._crs)
+        return _column_geo("st_buffer", self, _create_column_from_literal(distance), crs=self._crs)
 
     def to_crs(self, crs):
         """
@@ -311,7 +312,7 @@ class GeoSeries(Series):
                 "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
-        return _column_geo("st_transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
+        return _column_geo("st_transform", self, _create_column_from_literal(self.crs), _create_column_from_literal(crs), crs=crs)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
