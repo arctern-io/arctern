@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .geoseries import GeoSeries
-from .gis_func import *
-from .plot import plot
 from .register import register_funcs
 from .render_func import *
-
+from .gis_func import *
+from .plot import plot
 
 def version(verbose=False):
     """
