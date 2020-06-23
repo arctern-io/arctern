@@ -32,20 +32,21 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
     val wktExpr = inputExpr.head
     val wktGen = inputExpr.head.genCode(ctx)
+    val geoName = ctx.freshName(ev.value)
 
     val nullSafeEval =
       wktGen.code + ctx.nullSafeExec(wktExpr.nullable, wktGen.isNull) {
         s"""
-           |${ev.value}_geo = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wktGen.value}.toString());
-           |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+           |$geoName = ${GeometryUDT.getClass().getName().dropRight(1)}.FromWkt(${wktGen.value}.toString());
+           |if ($geoName != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(geoName)}
        """.stripMargin
       }
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenUtil.mutableGeometryInitCode(geoName)}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_geo == null);
+          boolean ${ev.isNull} = ($geoName == null);
             """)
 
   }
@@ -69,23 +70,24 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
     val yExpr = inputExpr(1)
     val xGen = inputExpr.head.genCode(ctx)
     val yGen = inputExpr(1).genCode(ctx)
+    val geoName = ctx.freshName(ev.value)
 
     val nullSafeEval =
       xGen.code + ctx.nullSafeExec(xExpr.nullable, xGen.isNull) {
         yGen.code + ctx.nullSafeExec(yExpr.nullable, yGen.isNull) {
           s"""
-             |${ev.value}_geo = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
-             |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+             |$geoName = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(${xGen.value},${yGen.value}));
+             |if ($geoName != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(geoName)}
           """.stripMargin
         }
       }
 
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenUtil.mutableGeometryInitCode(geoName)}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_geo == null);
+          boolean ${ev.isNull} = ($geoName == null);
           """)
   }
 
@@ -112,6 +114,7 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
     val minYGen = inputExpr(1).genCode(ctx)
     val maxXGen = inputExpr(2).genCode(ctx)
     val maxYGen = inputExpr(3).genCode(ctx)
+    val geoName = ctx.freshName(ev.value)
 
     def coordinateCode(x: ExprCode, y: ExprCode) = {
       s"new org.locationtech.jts.geom.Coordinate(${x.value}, ${y.value});"
@@ -129,8 +132,8 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
                  |coordinates[2] = ${coordinateCode(maxXGen, maxYGen)}
                  |coordinates[3] = ${coordinateCode(maxXGen, minYGen)}
                  |coordinates[4] = coordinates[0];
-                 |${ev.value}_geo = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
-                 |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+                 |$geoName = new org.locationtech.jts.geom.GeometryFactory().createPolygon(coordinates);
+                 |if ($geoName != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(geoName)}
               """.stripMargin
             }
           }
@@ -139,10 +142,10 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
 
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenUtil.mutableGeometryInitCode(geoName)}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_geo == null);
+          boolean ${ev.isNull} = ($geoName == null);
           """)
   }
 
@@ -163,20 +166,21 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
 
     val jsonExpr = inputExpr.head
     val jsonGen = inputExpr.head.genCode(ctx)
+    val geoName = ctx.freshName(ev.value)
 
     val nullSafeEval =
       jsonGen.code + ctx.nullSafeExec(jsonExpr.nullable, jsonGen.isNull) {
         s"""
-           |${ev.value}_geo = ${GeometryUDT.getClass.getName.dropRight(1)}.FromGeoJSON(${jsonGen.value}.toString());
-           |if (${ev.value}_geo != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(s"${ev.value}_geo")}
+           |$geoName = ${GeometryUDT.getClass.getName.dropRight(1)}.FromGeoJSON(${jsonGen.value}.toString());
+           |if ($geoName != null) ${ev.value} = ${CodeGenUtil.serialGeometryCode(geoName)}
        """.stripMargin
       }
     ev.copy(code =
       code"""
-          ${CodeGenUtil.mutableGeometryInitCode(ev.value + "_geo")}
+          ${CodeGenUtil.mutableGeometryInitCode(geoName)}
           ${CodeGenerator.javaType(ArrayType(ByteType, containsNull = false))} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
           $nullSafeEval
-          boolean ${ev.isNull} = (${ev.value}_geo == null);
+          boolean ${ev.isNull} = ($geoName == null);
             """)
 
   }
