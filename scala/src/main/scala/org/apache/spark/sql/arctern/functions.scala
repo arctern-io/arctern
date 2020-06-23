@@ -9,6 +9,10 @@ object functions {
     ST_GeomFromText(Seq(wkt.expr))
   }
 
+  def st_geomfromwkb(wkt: Column): Column = Column {
+    ST_GeomFromWKB(Seq(wkt.expr))
+  }
+
   def st_point(x: Column, y: Column): Column = Column {
     ST_Point(Seq(x.expr, y.expr))
   }
@@ -132,6 +136,14 @@ object functions {
 
   def st_curvetoline(geo: Column): Column = Column {
     ST_CurveToLine(Seq(geo.expr))
+  }
+
+  def st_translate(geo: Column, shifterXValue: Column, shifterYValue: Column): Column = Column {
+    ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, rotateX: Column, rotateY: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
   }
 
   // Aggregate Function UDF API
