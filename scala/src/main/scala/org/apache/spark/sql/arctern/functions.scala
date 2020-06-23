@@ -154,6 +154,10 @@ object functions {
     ST_Difference(Seq(left.expr, right.expr))
   }
 
+  def st_union(left: Column, right: Column): Column = Column {
+    ST_Union(Seq(left.expr, right.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr

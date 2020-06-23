@@ -2181,4 +2181,98 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
   }
+
+  test("ST_Union") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (0 1)"), GeometryUDT.FromWkt("POLYGON ((0 0,0 2,2 2,0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 0 1, 1 1)"), GeometryUDT.FromWkt("LINESTRING (0 0, 0 1, 1 2)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 1 0, 1 1, 0 0)"), GeometryUDT.FromWkt("POINT (2 3)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"), GeometryUDT.FromWkt("MULTIPOINT (0 0, 1 0, 1 2, 1 2)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT (0 0, 1 0, 1 2, 1 2)"), GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )")),
+      Row(GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"), GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"), GeometryUDT.FromWkt("POINT (1 5)")),
+    )
+
+    val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Union(left_geo, right_geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 2, 2 2, 0 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1), (0 1, 1 2))")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (2 3), LINESTRING (0 0, 1 0, 1 1, 0 0))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 2), POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
+    assert(collect(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
+    assert(collect(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+
+    val rst2 = df.select(st_union(col("left_geo"), col("right_geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 2, 2 2, 0 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1), (0 1, 1 2))")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (2 3), LINESTRING (0 0, 1 0, 1 1, 0 0))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 2), POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
+    assert(collect2(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
+    assert(collect2(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+  }
+
+  test("ST_Union-Null") {
+    val data = Seq(
+      Row("POINT (0 1)", "POLYGON ((0 0,0 2,2 2,0 0))"),
+      Row("LINESTRING (0 0, 0 1, 1 1)", "LINESTRING (0 0, 0 1, 1 2)"),
+      Row("LINESTRING (0 0, 1 0, 1 1, 0 0)", "POINT (2 3)"),
+      Row("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", "MULTIPOINT (0 0, 1 0, 1 2, 1 2)"),
+      Row("MULTIPOINT (0 0, 1 0, 1 2, 1 2)", "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"),
+      Row("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )", "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"),
+      Row("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )", "POINT (1 5)"),
+      Row(null, "POINT (1 5)"),
+      Row("error geometry", "POINT (1 5)"),
+    )
+
+    val schema = StructType(Array(StructField("left_geo", StringType, nullable = true), StructField("right_geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Union(ST_GeomFromText(left_geo), ST_GeomFromText(right_geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 2, 2 2, 0 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1), (0 1, 1 2))")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (2 3), LINESTRING (0 0, 1 0, 1 1, 0 0))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 2), POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
+    assert(collect(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
+    assert(collect(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(7).isNullAt(0))
+    assert(collect(8).isNullAt(0))
+
+    val rst2 = df.select(st_union(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 2, 2 2, 0 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1), (0 1, 1 2))")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (2 3), LINESTRING (0 0, 1 0, 1 1, 0 0))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 2), POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
+    assert(collect2(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
+    assert(collect2(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(7).isNullAt(0))
+    assert(collect2(8).isNullAt(0))
+  }
 }

@@ -15,6 +15,7 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
+import javassist.bytecode.SignatureAttribute.ArrayType
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
@@ -623,6 +624,19 @@ case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
   override def rightExpr: Expression = inputsExpr(1)
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}
+
+case class ST_Union(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.union($right)")
 
   override def dataType: DataType = new GeometryUDT
 
