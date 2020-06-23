@@ -43,7 +43,7 @@ def _column_geo(f, *args, **kwargs):
 def _agg(f, kss):
     from . import scala_wrapper
     scol = getattr(scala_wrapper, f)(kss.spark_column)
-    sdf = kss._internal._sdf.agg(scol)
+    sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
     return GeoSeries(_col(kdf), crs=kss._crs)
 
@@ -91,16 +91,27 @@ class GeoSeries(Series):
                 s = pd.Series(
                     data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
                 )
+                import numpy as np
+                # The default dtype for empty Series is 'float64' in pandas, but it will be object in future.
+                # see https://github.com/pandas-dev/pandas/pull/29405
+                if s.empty and (s.dtype == np.dtype("float64") or s.dtype == np.dtype("object")):
+                    # we can't create an empty pandas series, which dtype can be infered as
+                    # pyspark StringType or Binary Type, so we create a koalas empty series
+                    # and cast it's type to StringType
+                    s = Series([], dtype=int).astype(str)
+
             kdf = DataFrame(s)
             kss = _col(kdf)
             from pyspark.sql.types import StringType, BinaryType
             from .scala_wrapper import GeometryUDT
-            if isinstance(kss.spark_type, (BinaryType, GeometryUDT)):
+            if isinstance(kss.spark_type, GeometryUDT):
+                pass
+            if isinstance(kss.spark_type, BinaryType):
                 pass
             elif isinstance(kss.spark_type, StringType):
                 kss = _column_op("st_geomfromtext", kss)
             else:
-                raise TypeError("Can not use no StringType or BinaryType data to construct GeoSeries.")
+                raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
             IndexOpsMixin.__init__(
                 self, kdf._internal.copy(spark_column=kss.spark_column), kdf
             )
