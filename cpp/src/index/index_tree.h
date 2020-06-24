@@ -34,9 +34,10 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "index/index.h"
+#include "index/index_tree.h"
 #include "render/utils/render_utils.h"
 #include "utils/arrow_alias.h"
+
 namespace arctern {
 namespace geo_indexing {
 enum class IndexType {
@@ -48,11 +49,18 @@ enum class IndexType {
 class IndexTree {
  public:
   using SpatialIndex = GEOS_DLL::geos::index::SpatialIndex;
-  static IndexTree Create(IndexType type);
+
+  IndexTree() { Create(IndexType::kRTree); }
+
+  explicit IndexTree(IndexType type) { Create(type); }
 
   void Append(const WkbArrayPtr& right);
 
   void Append(const std::vector<ArrayPtr>& right);
+
+  const std::vector<OGRGeometry*> map_match_query(const OGRGeometry* gps_point,
+                                                  const bool greedy_search = false,
+                                                  const double distance = 100.0) const;
 
   //  const geos::geom::Envelope& get_envelop(size_t index) const {
   //    return envelopes_[index];
@@ -63,7 +71,7 @@ class IndexTree {
   SpatialIndex* get_tree() const { return tree_.get(); }
 
  private:
-  IndexTree() = default;
+  void Create(IndexType type);
 
  private:
   // use deque instead of vector for validation of references
