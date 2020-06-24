@@ -18,14 +18,28 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{AbstractDataType, BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
-import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.catalyst.util.ArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData._
+import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
 
 object utils {
+  def envelopeAsList(geom: Geometry): ArrayData = {
+    if (geom == null || geom.isEmpty) {
+      val negInf = scala.Double.NegativeInfinity
+      val posInf = scala.Double.PositiveInfinity
+      toArrayData(Array(posInf, posInf, negInf, negInf))
+    } else {
+      val env = geom.getEnvelopeInternal
+      val arr = Array(env.getMinX, env.getMinY, env.getMaxX, env.getMaxY)
+      toArrayData(arr)
+    }
+  }
+
   def distanceSphere(from: Geometry, to: Geometry): Double = {
     var distance = -1.0
     if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
@@ -66,7 +80,7 @@ object utils {
 
   def makeValid(geo: Geometry): Geometry = {
     val geoType = geo.getGeometryType
-    if(geoType != "Polygon" || geoType != "MultiPolygon") return geo
+    if (geoType != "Polygon" || geoType != "MultiPolygon") return geo
     val polygonList: java.util.List[Polygon] = geo match {
       case g: Polygon =>
         JTS.makeValid(g, true)
