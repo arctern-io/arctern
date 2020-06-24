@@ -30,7 +30,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {
     val env = geom.getEnvelopeInternal
-    toArrayData(Array(env.getMinX, env.getMinY, env.getMaxX, env.getMinY))
+    toArrayData(Array(env.getMinX, env.getMinY, env.getMaxX, env.getMaxY))
   }
 
   def distanceSphere(from: Geometry, to: Geometry): Double = {

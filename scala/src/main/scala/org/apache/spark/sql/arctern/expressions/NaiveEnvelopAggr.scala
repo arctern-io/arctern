@@ -91,7 +91,7 @@ case class dslMax(leftExpr: Expression, rightExpr: Expression) extends BinaryExp
   }
 }
 
-case class NaiveEnvelopeAggr(geom: Expression)
+case class EnvelopeAggr(geom: Expression)
   extends DeclarativeAggregate with ImplicitCastInputTypes {
   override def children: Seq[Expression] = Seq(geom)
 
@@ -145,7 +145,7 @@ case class NaiveEnvelopeAggr(geom: Expression)
     ST_PolygonFromEnvelope(envelope)
   }
 
-  override def prettyName: String = "naive_envelope_aggr"
+  override def prettyName: String = "ST_Envelope_Aggr"
 }
 
 
