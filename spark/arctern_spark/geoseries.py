@@ -65,6 +65,14 @@ def _validate_arg(arg, dtype):
     return arg
 
 
+def _validate_arg_for_double(arg, dtype):
+    if isinstance(arg, dtype):
+        arg = F.lit(arg)
+    elif not isinstance(arg, Series):
+        arg = Series(arg)
+    return arg
+
+
 class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
@@ -367,7 +375,7 @@ class GeoSeries(Series):
     @classmethod
     def point(cls, x, y, crs=None):
         dtype = (float, int)
-        return _column_geo("st_point", _validate_arg(x, dtype), _validate_arg(y, dtype), crs=crs)
+        return _column_geo("st_point", _validate_arg_for_double(x, dtype), _validate_arg_for_double(y, dtype), crs=crs)
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
