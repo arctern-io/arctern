@@ -3,7 +3,7 @@ package org.apache.spark.sql.arctern.expressions
 import java.util.function.UnaryOperator
 
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
-import org.apache.spark.sql.arctern.{ArcternExpr, GeometryType}
+import org.apache.spark.sql.arctern.{ArcternExpr, GeometryType, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions._
@@ -103,11 +103,15 @@ case class dslMax(leftExpr: Expression, rightExpr: Expression) extends BinaryExp
   }
 }
 
+object EnvelopeAggr {
+  val emptyResponse = ST_GeomFromText(Seq(Literal("Polygon Empty")))
+}
+
 case class EnvelopeAggr(geom: Expression)
   extends DeclarativeAggregate with ImplicitCastInputTypes {
   override def children: Seq[Expression] = Seq(geom)
 
-  override def nullable: Boolean = true
+  override def nullable: Boolean = false
 
   override def dataType: DataType = GeometryType
 
@@ -157,7 +161,7 @@ case class EnvelopeAggr(geom: Expression)
   override val evaluateExpression: Expression = {
     val condition = envelope(0) <= envelope(2)
     val data = ST_PolygonFromEnvelope(envelope)
-    If(condition, data, Literal(null, GeometryType))
+    If(condition, data, EnvelopeAggr.emptyResponse)
   }
 
   override def prettyName: String = "ST_Envelope_Aggr"
