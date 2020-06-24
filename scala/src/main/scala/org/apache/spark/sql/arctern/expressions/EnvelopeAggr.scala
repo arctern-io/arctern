@@ -119,9 +119,10 @@ case class EnvelopeAggr(geom: Expression)
   protected val maxY = AttributeReference("maxY", DoubleType, nullable = false)()
   protected val envelope = Seq(minX, minY, maxX, maxY)
   override val aggBufferAttributes: Seq[AttributeReference] = envelope
+
+  val negInf = Literal(scala.Double.NegativeInfinity)
+  val posInf = Literal(scala.Double.PositiveInfinity)
   override val initialValues: Seq[Expression] = {
-    val negInf = Literal(scala.Double.NegativeInfinity)
-    val posInf = Literal(scala.Double.PositiveInfinity)
     Seq(posInf, posInf, negInf, negInf)
   }
 
@@ -154,7 +155,9 @@ case class EnvelopeAggr(geom: Expression)
   }
 
   override val evaluateExpression: Expression = {
-    ST_PolygonFromEnvelope(envelope)
+    val condition = envelope(0) <= envelope(2)
+    val data = ST_PolygonFromEnvelope(envelope)
+    If(condition, data, Literal(null, GeometryType))
   }
 
   override def prettyName: String = "ST_Envelope_Aggr"
