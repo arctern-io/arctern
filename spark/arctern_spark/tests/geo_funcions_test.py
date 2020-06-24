@@ -35,7 +35,7 @@ def test_ST_Intersection():
     data2 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))", "POINT (0 1)"])
     rst = data1.intersection(data2).to_wkt()
     assert len(rst) == 2
-    assert rst[0] == "LINESTRING (2 2,2 1)"
+    assert rst[0] == "LINESTRING (2 2, 2 1)"
     assert rst[1] == "POINT (0 1)"
 
     rst = data1.intersection(GeoSeries("POINT (0 1)")[0]).to_wkt()
@@ -110,8 +110,8 @@ def test_ST_IsSimple():
 def test_ST_GeometryType():
     data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = data.geom_type
-    assert rst[0] == "ST_POLYGON"
-    assert rst[1] == "ST_POLYGON"
+    assert rst[0] == "Polygon"
+    assert rst[1] == "Polygon"
 
 
 def test_ST_MakeValid():
@@ -123,7 +123,7 @@ def test_ST_MakeValid():
 def test_ST_SimplifyPreserveTopology():
     data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = data.simplify(10000).to_wkt()
-    assert rst[0] == "POLYGON ((1 1,1 2,2 2,2 1,1 1))"
+    assert rst[0] == "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))"
 
 
 def test_ST_Point():
@@ -158,8 +158,8 @@ def test_ST_GeomFromGeoJSON():
     data = Series([j0, j1, j2])
     str_ptr = GeoSeries.geom_from_geojson(data).to_wkt()
     assert str_ptr[0] == "POINT (1 2)"
-    assert str_ptr[1] == "LINESTRING (1 2,4 5,7 8)"
-    assert str_ptr[2] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+    assert str_ptr[1] == "LINESTRING (1 2, 4 5, 7 8)"
+    assert str_ptr[2] == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"
 
 
 def test_ST_AsGeoJSON():
@@ -390,13 +390,13 @@ def test_ST_Envelope():
     rst = data.envelope.to_wkt()
 
     assert rst[0] == "POINT (10 10)"
-    assert rst[1] == "LINESTRING (0 0,0 10)"
-    assert rst[2] == "LINESTRING (0 0,10 0)"
-    assert rst[3] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
-    assert rst[4] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
-    assert rst[5] == "POLYGON ((0 0,0 5,10 5,10 0,0 0))"
-    assert rst[6] == "POLYGON ((0 0,0 10,10 10,10 0,0 0))"
-    assert rst[7] == "POLYGON ((0 0,0 20,20 20,20 0,0 0))"
+    assert rst[1] == "LINESTRING (0 0, 0 10)"
+    assert rst[2] == "LINESTRING (0 0, 10 0)"
+    assert rst[3] == "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))"
+    assert rst[4] == "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))"
+    assert rst[5] == "POLYGON ((0 0, 0 5, 10 5, 10 0, 0 0))"
+    assert rst[6] == "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))"
+    assert rst[7] == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))"
 
 
 def test_ST_Buffer():
@@ -425,19 +425,19 @@ def test_ST_Union_Aggr():
     p2 = "POLYGON ((2 1,3 1,3 2,2 2,2 1))"
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == "POLYGON ((1 1,1 2,2 2,3 2,3 1,2 1,1 1))"
+    assert rst[0] == "POLYGON ((1 1, 1 2, 2 2, 3 2, 3 1, 2 1, 1 1))"
 
     p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
     p2 = "POLYGON ((3 1,5 1,5 2,3 2,3 1))"
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == "POLYGON ((4 1,4 0,0 0,0 4,4 4,4 2,5 2,5 1,4 1))"
+    assert rst[0] == "POLYGON ((4 1, 4 0, 0 0, 0 4, 4 4, 4 2, 5 2, 5 1, 4 1))"
 
     p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == "MULTIPOLYGON (((0 0,4 0,4 4,0 4,0 0)),((5 1,7 1,7 2,5 2,5 1)))"
+    assert rst[0] == "MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)),((5 1, 7 1, 7 2, 5 2, 5 1)))"
 
     p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
     p2 = "POINT (2 3)"
@@ -452,4 +452,4 @@ def test_ST_Envelope_Aggr():
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = GeoSeries([p1, p2])
     rst = data.envelope_aggr().to_wkt()
-    assert rst[0] == "POLYGON ((0 0,0 4,7 4,7 0,0 0))"
+    assert rst[0] == "POLYGON ((0 0, 0 4, 7 4, 7 0, 0 0))"

@@ -90,6 +90,7 @@ def _create_binary_function(name, doc=""):
 
 # functions that take one argument as input
 _unary_functions = [
+    "st_curvetoline",
     "st_geomfromgeojson",
     "st_astext",
     "st_asgeojson",
