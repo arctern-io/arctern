@@ -416,7 +416,7 @@ def test_ST_PolygonFromEnvelope():
 
     rst = GeoSeries.polygon_from_envelope(x_min, y_min, x_max, y_max).to_wkt()
 
-    assert rst[0] == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+    assert rst[0] == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"
 
 
 def test_ST_Union_Aggr():
@@ -436,7 +436,7 @@ def test_ST_Union_Aggr():
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == "MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)),((5 1, 7 1, 7 2, 5 2, 5 1)))"
+    assert rst[0] == "MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)), ((5 1, 7 1, 7 2, 5 2, 5 1)))"
 
     p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
     p2 = "POINT (2 3)"

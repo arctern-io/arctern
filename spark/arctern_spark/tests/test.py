@@ -10,8 +10,8 @@ from arctern_spark.geoseries import GeoSeries
 from pandas import Series
 import pandas as pd
 pd.set_option("max_colwidth", 100000)
-data = ["POLYGON((0 0,1 0,1 1,0 0))"]
+data = ["Polygon((0.1 0.1, 0.0001 1.32435, 1.341312 1.32435, 1.341312 0.0001, 0.1 0.1))"]
 data = GeoSeries(data)
-rst = data.buffer(1.2).to_wkt()
+rst = data.precision_reduce(10)
 
 print(rst)

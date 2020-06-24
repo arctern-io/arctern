@@ -382,8 +382,12 @@ class GeoSeries(Series):
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
         min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
-        kdf = ks.DataFrame(min_x)
-        return _column_geo("st_polygonfromenvelope", *_validate_args(min_x, min_y, max_x, max_y, dtype=dtype), crs=crs)
+        _kdf = ks.DataFrame(min_x)
+        kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
+        kdf["min_y"] = min_y
+        kdf["max_x"] = max_x
+        kdf["max_y"] = max_y
+        return _column_geo("st_polygonfromenvelope", kdf["min_x"], kdf["min_y"], kdf["max_x"], kdf["max_y"], crs=crs)
 
     @classmethod
     def point(cls, x, y, crs=None):
