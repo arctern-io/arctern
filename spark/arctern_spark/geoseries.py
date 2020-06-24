@@ -59,7 +59,7 @@ def _validate_arg(arg, dtype):
     from . import scala_wrapper
     if isinstance(arg, dtype):
         arg = F.lit(arg)
-        # arg = getattr(scala_wrapper, "st_geom_fromwkb")(kss.spark.column)
+        arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
     return arg

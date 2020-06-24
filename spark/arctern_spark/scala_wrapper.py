@@ -110,6 +110,8 @@ _unary_functions = [
     "st_makevalid",
     "st_geomfromtext",
     "st_union_aggr",
+    "st_geomfromwkb",
+    "st_envelope_aggr",
 ]
 
 # functions that take two arguments as input
