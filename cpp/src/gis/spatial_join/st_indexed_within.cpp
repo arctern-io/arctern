@@ -16,12 +16,12 @@
 
 #include "gis/spatial_join/st_indexed_within.h"
 
-#include <src/index/index.h>
+#include <src/index/index_tree.h>
 
 #include <string>
 #include <vector>
 
-#include "index/index.h"
+#include "index/index_tree.h"
 #include "render/utils/render_utils.h"
 
 namespace arctern {
@@ -82,9 +82,15 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     throw std::invalid_argument("wrong index_type: " + index_type);
   }
 
-  auto index = geo_indexing::IndexTree::Create(type);
+  IndexTree index(type);
   index.Append(polygons);
   return left_join(points, index);
+}
+
+std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
+    const IndexTree& index_tree,
+    const std::vector<std::shared_ptr<arrow::Array>>& points) {
+  return left_join(points, index_tree);
 }
 
 }  // namespace spatial_join

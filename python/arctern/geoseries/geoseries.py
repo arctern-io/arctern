@@ -121,6 +121,8 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
+    _sindex = None
+    _sindex_generated = None
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -163,6 +165,16 @@ class GeoSeries(Series):
 
         self._crs = None
         self.set_crs(crs)
+
+    @property
+    def sindex(self):
+        if not self._sindex_generated:
+            _sindex = arctern.get_sindex_tree()
+            if _sindex is not None:
+                _sindex.Append(self)
+            self._sindex = _sindex
+            self._sindex_generated = True
+        return self._sindex
 
     def set_crs(self, crs):
         """
@@ -397,7 +409,7 @@ class GeoSeries(Series):
         Returns
         -------
         Series
-            Mask of boolean values for each element in GeoSeries that indicates whether an element is not an NA value.
+            Mask of boolean values for each element in the GeoSeries that indicates whether an element is not an NA value.
 
             * *True*: An element is a non-missing value.
             * *False*: An element is a NA value, such as None.
@@ -689,7 +701,7 @@ class GeoSeries(Series):
 
     def curve_to_line(self):
         """
-        Converts curves in each geometry to approximate linear representation.
+        Converts curves in each geometry to approximate linear representations.
 
         For example,
 
@@ -1430,7 +1442,7 @@ class GeoSeries(Series):
 
         ``x`` and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
 
-        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x, y).*
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x[i], y[i]).*
 
         Parameters
         ----------

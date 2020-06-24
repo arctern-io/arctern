@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   spark-master:
-    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -20,7 +20,7 @@ services:
     volumes:
       - ../../../..:/arctern
   spark-worker:
-    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     depends_on:
       - spark-master
     environment:

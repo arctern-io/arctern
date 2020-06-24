@@ -580,3 +580,166 @@ case class ST_CurveToLine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
+
+case class ST_Translate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def shifterXValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def shifterYValue(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().translate(${shifterXValue(ctx)}, ${shifterYValue(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
+
+case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def rotationAngle(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def rotateX(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  def rotateY(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().rotate(${rotationAngle(ctx)}, ${rotateX(ctx)}, ${rotateY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
+
+case class ST_SymDifference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}
+
+case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}
+
+case class ST_Union(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.union($right)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}
+
+case class ST_Disjoint(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
+
+  override def leftExpr: Expression = inputsExpr.head
+
+  override def rightExpr: Expression = inputsExpr(1)
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.disjoint($right)")
+
+  override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, new GeometryUDT)
+}
+
+case class ST_IsEmpty(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.isEmpty()")
+
+  override def dataType: DataType = BooleanType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_Boundary(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getBoundary()")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"""$geo.getGeometryType().equals("Polygon") ? new org.locationtech.jts.geom.GeometryFactory().createPolygon($geo.getCoordinates()).getExteriorRing() : $geo """)
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_Scale(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def factorX(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def factorY(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().scale(${factorX(ctx)}, ${factorY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
+
+case class ST_Affine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def a(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def b(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  def d(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+
+  def e(ctx: CodegenContext): ExprValue = inputsExpr(4).genCode(ctx).value
+
+  def offsetX(ctx: CodegenContext): ExprValue = inputsExpr(5).genCode(ctx).value
+
+  def offsetY(ctx: CodegenContext): ExprValue = inputsExpr(6).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation(${a(ctx)}, ${b(ctx)}, ${d(ctx)}, ${e(ctx)}, ${offsetX(ctx)}, ${offsetY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType, NumericType, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}

@@ -142,7 +142,6 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
-//    val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], schema)
     df.createOrReplaceTempView("ST_Envelope_Aggr_Null_data")
 
     val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from ST_Envelope_Aggr_Null_data")
