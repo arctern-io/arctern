@@ -16,10 +16,10 @@ import databricks.koalas as ks
 import pandas as pd
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
-from databricks.koalas.internal import _InternalFrame
-from databricks.koalas.series import _col, REPR_PATTERN
+from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
+from pyspark.sql.column import _create_column_from_literal
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -30,22 +30,22 @@ ks.set_option('compute.ops_on_diff_frames', True)
 # for unary or binary operation, which return koalas Series.
 def _column_op(f, *args):
     from . import scala_wrapper
-    return ks.base._column_op(getattr(scala_wrapper, f))(*args)
+    return ks.base.column_op(getattr(scala_wrapper, f))(*args)
 
 
 # for unary or binary operation, which return GeoSeries.
 def _column_geo(f, *args, **kwargs):
     from . import scala_wrapper
-    kss = ks.base._column_op(getattr(scala_wrapper, f))(*args)
-    return GeoSeries(kss._internal, anchor=kss._kdf, **kwargs)
+    kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
+    return GeoSeries(kss, **kwargs)
 
 
 def _agg(f, kss):
     from . import scala_wrapper
-    scol = getattr(scala_wrapper, f)(kss.spark_column)
+    scol = getattr(scala_wrapper, f)(kss.spark.column)
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
-    return GeoSeries(_col(kdf), crs=kss._crs)
+    return GeoSeries(first_series(kdf), crs=kss._crs)
 
 
 def _validate_crs(crs):
@@ -57,7 +57,7 @@ def _validate_crs(crs):
 
 def _validate_arg(arg, dtype):
     if isinstance(arg, dtype):
-        arg = F.lit(arg)
+        arg = _create_column_from_literal(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
     return arg
@@ -65,16 +65,17 @@ def _validate_arg(arg, dtype):
 
 class GeoSeries(Series):
     def __init__(
-            self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False, anchor=None
+            self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
     ):
-        if isinstance(data, _InternalFrame):
+        if isinstance(data, DataFrame):
+            assert index is not None
             assert dtype is None
             assert name is None
             assert not copy
             assert not fastpath
-            IndexOpsMixin.__init__(self, data, anchor)
+            anchor = data
+            column_label = index
         else:
-            assert anchor is None
             if isinstance(data, pd.Series):
                 assert index is None
                 assert dtype is None
@@ -100,22 +101,27 @@ class GeoSeries(Series):
                     # and cast it's type to StringType
                     s = Series([], dtype=int).astype(str)
 
-            kdf = DataFrame(s)
-            kss = _col(kdf)
+            anchor = DataFrame(s)
+            kss = first_series(anchor)
+            column_label = anchor._internal.column_labels[0]
+
             from pyspark.sql.types import StringType, BinaryType
             from .scala_wrapper import GeometryUDT
-            if isinstance(kss.spark_type, GeometryUDT):
+            spark_dtype = kss.spark.data_type
+            if isinstance(spark_dtype, GeometryUDT):
                 pass
-            if isinstance(kss.spark_type, BinaryType):
+            elif isinstance(spark_dtype, BinaryType):
                 pass
-            elif isinstance(kss.spark_type, StringType):
+            elif isinstance(spark_dtype, StringType):
                 kss = _column_op("st_geomfromtext", kss)
             else:
                 raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
-            IndexOpsMixin.__init__(
-                self, kdf._internal.copy(spark_column=kss.spark_column), kdf
-            )
-            self.set_crs(crs)
+            anchor = kss.to_dataframe()
+            anchor._kseries = {column_label: kss}
+
+        super(Series, self).__init__(anchor)
+        self._column_label = column_label
+        self.set_crs(crs)
 
     def set_crs(self, crs):
         """
@@ -252,7 +258,7 @@ class GeoSeries(Series):
         return _column_geo("st_makevalid", self, crs=self._crs)
 
     def precision_reduce(self, precision):
-        return _column_geo("st_precisionreduce", self, F.lit(precision), crs=self._crs)
+        return _column_geo("st_precisionreduce", self, _create_column_from_literal(precision), crs=self._crs)
 
     def unary_union(self):
         return _agg("st_union_aggr", self)
@@ -264,10 +270,10 @@ class GeoSeries(Series):
         return _column_geo("ST_CurveToLine", self, crs=self._crs)
 
     def simplify(self, tolerance):
-        return _column_geo("st_simplifypreservetopology", self, F.lit(tolerance), crs=self._crs)
+        return _column_geo("st_simplifypreservetopology", self, _create_column_from_literal(tolerance), crs=self._crs)
 
     def buffer(self, distance):
-        return _column_geo("st_buffer", self, F.lit(distance), crs=self._crs)
+        return _column_geo("st_buffer", self, _create_column_from_literal(distance), crs=self._crs)
 
     def to_crs(self, crs):
         """
@@ -306,7 +312,7 @@ class GeoSeries(Series):
                 "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
-        return _column_geo("st_transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
+        return _column_geo("st_transform", self, _create_column_from_literal(self.crs), _create_column_from_literal(crs), crs=crs)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
