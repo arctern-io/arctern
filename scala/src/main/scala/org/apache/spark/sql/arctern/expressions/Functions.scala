@@ -29,8 +29,15 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {
-    val env = geom.getEnvelopeInternal
-    toArrayData(Array(env.getMinX, env.getMinY, env.getMaxX, env.getMaxY))
+    if(geom == null || geom.isEmpty)  {
+      val negInf = scala.Double.NegativeInfinity
+      val posInf = scala.Double.PositiveInfinity
+      toArrayData(Array(posInf, posInf, negInf, negInf))
+    } else {
+      val env = geom.getEnvelopeInternal
+      val arr = Array(env.getMinX, env.getMinY, env.getMaxX, env.getMaxY)
+      toArrayData(arr)
+    }
   }
 
   def distanceSphere(from: Geometry, to: Geometry): Double = {
@@ -198,7 +205,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(expr)
 
-  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String, skipNullSafe: Boolean = false): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(expr))
 
     val exprCode = expr.genCode(ctx)
@@ -221,7 +228,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
     val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, dataType)
 
-    if (nullable) {
+    if (nullable && !skipNullSafe) {
       val nullSafeEval =
         exprGeoCode + ctx.nullSafeExec(expr.nullable, exprCode.isNull) {
           s"""

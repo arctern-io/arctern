@@ -42,7 +42,7 @@ case class GeometryEnvelope(expression: Expression) extends ST_UnaryOp {
 
   override def expr: Expression = expression
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)", true)
 
   override def dataType: DataType = ArrayType(DoubleType)
 
@@ -69,11 +69,17 @@ case class GetElementByIndex(index: Int, elementDataType: DataType, input: Expre
 
 case class dslMin(leftExpr: Expression, rightExpr: Expression) extends BinaryExpression with ExpectsInputTypes {
   override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType, DoubleType)
+
   override def dataType: DataType = DoubleType
+
   override def left: Expression = leftExpr
+
   override def right: Expression = rightExpr
+
   override def toString(): String = s"min($left, $right)"
+
   override def nullSafeEval(left: Any, right: Any): Any = throw new Exception("no eval")
+
   override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
     defineCodeGen(ctx, ev, (eval1, eval2) => s"$eval1 < $eval2 ? $eval1 : $eval2")
   }
@@ -81,11 +87,17 @@ case class dslMin(leftExpr: Expression, rightExpr: Expression) extends BinaryExp
 
 case class dslMax(leftExpr: Expression, rightExpr: Expression) extends BinaryExpression with ExpectsInputTypes {
   override def inputTypes: Seq[AbstractDataType] = Seq(DoubleType, DoubleType)
+
   override def dataType: DataType = DoubleType
+
   override def left: Expression = leftExpr
+
   override def right: Expression = rightExpr
+
   override def toString(): String = s"max($left, $right)"
+
   override def nullSafeEval(left: Any, right: Any): Any = throw new Exception("no eval")
+
   override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
     defineCodeGen(ctx, ev, (eval1, eval2) => s"$eval1 > $eval2 ? $eval1 : $eval2")
   }
@@ -115,9 +127,9 @@ case class EnvelopeAggr(geom: Expression)
 
   override lazy val updateExpressions: Seq[Expression] = updateExpressionDef
 
-//  def dslMin(e1: Expression, e2: Expression): Expression = If(e1 < e2, e1, e2)
-//
-//  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
+  //  def dslMin(e1: Expression, e2: Expression): Expression = If(e1 < e2, e1, e2)
+  //
+  //  def dslMax(e1: Expression, e2: Expression): Expression = If(e1 > e2, e1, e2)
 
   override val mergeExpressions: Seq[Expression] = {
     def getMin(attr: AttributeReference): Expression = dslMin(attr.left, attr.right)
