@@ -23,7 +23,7 @@ import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
+import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPolygon, Polygon}
 
 object utils {
   def distanceSphere(from: Geometry, to: Geometry): Double = {
@@ -86,6 +86,27 @@ object utils {
     })
     val res = if (result.length == 1) result(0) else new GeometryFactory().createGeometryCollection(result)
     res
+  }
+
+  def arcternUnion(left: Geometry, right: Geometry): Geometry = {
+    if (left.getGeometryType != "GeometryCollection") {
+      left.union(right)
+    } else {
+      val geometryCollection = left.asInstanceOf[GeometryCollection]
+      var geometries = Array[Geometry]()
+      var haveBeenUnion = false
+      for (i <- 0 until geometryCollection.getNumGeometries) {
+        var geometry = geometryCollection.getGeometryN(i)
+        val unionGeo = geometry.union(right)
+        if (unionGeo.getGeometryType != "GeometryCollection") {
+          geometry = unionGeo
+          haveBeenUnion = true
+        }
+        geometries = geometries :+ geometry
+      }
+      if (!haveBeenUnion) geometries = geometries :+ right
+      new GeometryFactory().createGeometryCollection(geometries)
+    }
   }
 
 }

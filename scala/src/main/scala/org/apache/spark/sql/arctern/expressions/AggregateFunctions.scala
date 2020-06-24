@@ -17,6 +17,7 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
+import org.apache.spark.sql.arctern.expressions.utils.arcternUnion
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
 import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryFactory}
@@ -49,7 +50,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     val rightGeo = buffer2.getAs[Geometry](0)
     if (leftGeo.getCoordinates()(0).x == -999999999) buffer1(0) = rightGeo
     else if (rightGeo.getCoordinates()(0).x == -999999999) buffer1(0) = leftGeo
-    else buffer1(0) = leftGeo.union(rightGeo)
+    else buffer1(0) = arcternUnion(leftGeo, rightGeo)
   }
 
   override def evaluate(buffer: Row): Any = buffer.getAs[Geometry](0)
