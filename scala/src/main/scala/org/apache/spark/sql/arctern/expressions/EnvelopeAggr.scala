@@ -11,32 +11,6 @@ import org.apache.spark.sql.catalyst.expressions.aggregate.DeclarativeAggregate
 import org.apache.spark.sql.catalyst.expressions.codegen.{CodegenContext, ExprCode}
 import org.apache.spark.sql.types._
 
-//case class GeometryEnvelope(geom: Expression) extends UnaryExpression with ExpectsInputTypes {
-//  override def inputTypes: Seq[AbstractDataType] = Seq(GeometryType)
-//
-//  override def dataType: DataType = ArrayType(DoubleType, false)
-//
-//  override def child: Expression = geom
-//
-//  override def toString(): String = s"$child.getEnvelopeArray"
-//
-//  override def nullSafeEval(input: Any): Any = throw new Exception("no eval")
-//
-//  override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-//    val env = ctx.freshVariable("env", classOf[org.locationtech.jts.geom.Envelope])
-//    val geomEval = geom.genCode(ctx)
-//    println("fuck" + env.javaType.getCanonicalName)
-//    println("fuck" + ev.value.javaType.getCanonicalName)
-//    val geo_name = = ctx.freshName("init")
-//    val code = code"""
-//                     |${geomEval.code}
-//                     |org.locationtech.jts.geom.Envelope ${env} = ${geomEval.value}_geo.getEnvelopeInternal(); // this is a dirty hack, consider remove it
-//                     |double[] ${ev.value} = {${env}.getMinX(), ${env}.getMinY(), ${env}.getMaxX(), ${env}.getMaxY()};
-//                     |""".stripMargin
-//    ev.copy(code = code)
-//  }
-//}
-
 
 case class GeometryEnvelope(expression: Expression) extends ST_UnaryOp {
 
