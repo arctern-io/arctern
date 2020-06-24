@@ -106,7 +106,6 @@ _unary_functions = [
     "st_convexhull",
     "st_area",
     "st_length",
-    "st_hausdorffdistance",
     "st_transform",
     "st_makevalid",
     "st_geomfromtext",
@@ -128,6 +127,7 @@ _binary_functions = [
     "st_contains",
     "st_intersects",
     "st_distancesphere",
+    "st_hausdorffdistance",
 ]
 
 import_arctern_functions()
