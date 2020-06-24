@@ -205,7 +205,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
   override def children: Seq[Expression] = Seq(expr)
 
-  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String, skipNullSafe: Boolean = false): ExprCode = {
+  protected def codeGenJob(ctx: CodegenContext, ev: ExprCode, f: String => String): ExprCode = {
     assert(CodeGenUtil.isGeometryExpr(expr))
 
     val exprCode = expr.genCode(ctx)
@@ -228,7 +228,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
     val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, dataType)
 
-    if (nullable && !skipNullSafe) {
+    if (nullable) {
       val nullSafeEval =
         exprGeoCode + ctx.nullSafeExec(expr.nullable, exprCode.isNull) {
           s"""

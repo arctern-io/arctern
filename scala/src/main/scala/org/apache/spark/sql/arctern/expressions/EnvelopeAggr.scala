@@ -12,7 +12,9 @@ case class GeometryEnvelope(expression: Expression) extends ST_UnaryOp {
 
   override def expr: Expression = expression
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)", true)
+  override def nullable: Boolean = false
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)")
 
   override def dataType: DataType = ArrayType(DoubleType)
 
