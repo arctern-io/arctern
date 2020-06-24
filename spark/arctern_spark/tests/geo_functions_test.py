@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from osgeo import ogr
+import pandas as pd
 from arctern_spark.geoseries import GeoSeries
+from databricks.koalas import Series
+from osgeo import ogr
 
 
 def test_ST_IsValid():
@@ -127,7 +129,6 @@ def test_ST_SimplifyPreserveTopology():
 
 
 def test_ST_Point():
-    from pandas import Series
     data1 = [1.3, 2.5]
     data2 = [3.8, 4.9]
     string_ptr = GeoSeries.point(data1, data2).to_wkt()
@@ -135,6 +136,7 @@ def test_ST_Point():
     assert string_ptr[0] == "POINT (1.3 3.8)"
     assert string_ptr[1] == "POINT (2.5 4.9)"
 
+    # data is koalas series
     string_ptr = GeoSeries.point(Series([1, 2], dtype='double'), 5).to_wkt()
     assert len(string_ptr) == 2
     assert string_ptr[0] == "POINT (1 5)"
@@ -145,13 +147,25 @@ def test_ST_Point():
     assert string_ptr[0] == "POINT (5 1)"
     assert string_ptr[1] == "POINT (5 2)"
 
+    # data is pandas series
+    string_ptr = GeoSeries.point(pd.Series([1, 2], dtype='double'), 5).to_wkt()
+    assert len(string_ptr) == 2
+    assert string_ptr[0] == "POINT (1 5)"
+    assert string_ptr[1] == "POINT (2 5)"
+
+    string_ptr = GeoSeries.point(5, pd.Series([1, 2], dtype='double')).to_wkt()
+    assert len(string_ptr) == 2
+    assert string_ptr[0] == "POINT (5 1)"
+    assert string_ptr[1] == "POINT (5 2)"
+
+    # data is literal
     string_ptr = GeoSeries.point(5.0, 1.0).to_wkt()
     assert len(string_ptr) == 1
     assert string_ptr[0] == "POINT (5 1)"
 
 
 def test_ST_GeomFromGeoJSON():
-    from pandas import Series
+    # data is koalas series
     j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
     j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
     j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
@@ -161,9 +175,15 @@ def test_ST_GeomFromGeoJSON():
     assert str_ptr[1] == "LINESTRING (1 2, 4 5, 7 8)"
     assert str_ptr[2] == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"
 
+    # data is pandas series
+    data = pd.Series([j0, j1, j2])
+    str_ptr = GeoSeries.geom_from_geojson(data).to_wkt()
+    assert str_ptr[0] == "POINT (1 2)"
+    assert str_ptr[1] == "LINESTRING (1 2, 4 5, 7 8)"
+    assert str_ptr[2] == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"
+
 
 def test_ST_AsGeoJSON():
-    from pandas import Series
     j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
     j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
     j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
@@ -408,7 +428,6 @@ def test_ST_Buffer():
 
 
 def test_ST_PolygonFromEnvelope():
-    from pandas import Series
     x_min = Series([0.0])
     x_max = Series([1.0])
     y_min = Series([0.0])
