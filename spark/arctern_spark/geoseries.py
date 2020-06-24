@@ -65,6 +65,26 @@ def _validate_arg(arg, dtype):
     return arg
 
 
+def _validate_args(*args, dtype=None):
+    series_length = 1
+    for arg in args:
+        if not isinstance(arg, dtype):
+            if series_length < len(arg):
+                series_length = len(arg)
+    args_list = []
+    for i, arg in enumerate(args):
+        if isinstance(arg, dtype):
+            if i == 0:
+                args_list.append(Series([arg] * series_length))
+            else:
+                args_list.append(F.lit(arg))
+        elif not isinstance(arg, Series):
+            args_list.append(Series(arg))
+        else:
+            args_list.append(arg)
+    return args_list
+
+
 class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
@@ -361,13 +381,18 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
-        return _column_geo("st_polygonfromenvelope", _validate_arg(min_x, dtype), _validate_arg(min_y, dtype),
-                           _validate_arg(max_x, dtype), _validate_arg(max_y, dtype), crs=crs)
+        min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+        _kdf = ks.DataFrame(min_x)
+        kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
+        kdf["min_y"] = min_y
+        kdf["max_x"] = max_x
+        kdf["max_y"] = max_y
+        return _column_geo("st_polygonfromenvelope", kdf["min_x"], kdf["min_y"], kdf["max_x"], kdf["max_y"], crs=crs)
 
     @classmethod
     def point(cls, x, y, crs=None):
         dtype = (float, int)
-        return _column_geo("st_point", _validate_arg(x, dtype), _validate_arg(y, dtype), crs=crs)
+        return _column_geo("st_point", *_validate_args(x, y, dtype=dtype), crs=crs)
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
