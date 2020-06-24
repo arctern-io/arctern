@@ -66,7 +66,7 @@ object utils {
 
   def makeValid(geo: Geometry): Geometry = {
     val geoType = geo.getGeometryType
-    if(geoType != "Polygon" || geoType != "MultiPolygon") return geo
+    if (geoType != "Polygon" || geoType != "MultiPolygon") return geo
     val polygonList: java.util.List[Polygon] = geo match {
       case g: Polygon =>
         JTS.makeValid(g, true)
@@ -88,24 +88,36 @@ object utils {
     res
   }
 
-  def arcternUnion(left: Geometry, right: Geometry): Geometry = {
-    if (left.getGeometryType != "GeometryCollection") {
-      left.union(right)
-    } else {
-      val geometryCollection = left.asInstanceOf[GeometryCollection]
-      var geometries = Array[Geometry]()
-      var haveBeenUnion = false
-      for (i <- 0 until geometryCollection.getNumGeometries) {
-        var geometry = geometryCollection.getGeometryN(i)
-        val unionGeo = geometry.union(right)
-        if (unionGeo.getGeometryType != "GeometryCollection") {
-          geometry = unionGeo
-          haveBeenUnion = true
-        }
-        geometries = geometries :+ geometry
+  private def collectionUnionGeometry(geo1: Geometry, geo2: Geometry): Geometry = {
+    val geometryCollection = geo1.asInstanceOf[GeometryCollection]
+    var geometries = Array[Geometry]()
+    var haveBeenUnion = false
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      var geometry = geometryCollection.getGeometryN(i)
+      val unionGeo = geometry.union(geo2)
+      if (unionGeo.getGeometryType != "GeometryCollection") {
+        geometry = unionGeo
+        haveBeenUnion = true
       }
-      if (!haveBeenUnion) geometries = geometries :+ right
-      new GeometryFactory().createGeometryCollection(geometries)
+      geometries = geometries :+ geometry
+    }
+    if (!haveBeenUnion) geometries = geometries :+ geo2
+    new GeometryFactory().createGeometryCollection(geometries)
+  }
+
+  private def collectionUnionCollection(geo1: Geometry, geo2: Geometry): Geometry = {
+
+  }
+
+  def arcternUnion(left: Geometry, right: Geometry): Geometry = {
+    if (left.getGeometryType != "GeometryCollection" && right.getGeometryType != "GeometryCollection") {
+      left.union(right)
+    } else if (left.getGeometryType == "GeometryCollection") {
+      collectionUnionGeometry(left, right)
+    } else if (right.getGeometryType == "GeometryCollection"){
+      collectionUnionGeometry(right, left)
+    } else {
+
     }
   }
 
