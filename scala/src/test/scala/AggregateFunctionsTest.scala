@@ -35,12 +35,12 @@ class AggregateFunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("raw_data")
 
-    //    df.show()
-
+    df.show(false)
     val rst = spark.sql("select ST_Envelope_Aggr(geo) from raw_data")
-
     //    rst.queryExecution.debug.codegen()
     rst.show(false)
+    val collect = rst.collect()
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
   }
 
   test("ST_Union_Aggr") {
