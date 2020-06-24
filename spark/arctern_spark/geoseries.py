@@ -55,9 +55,9 @@ def _validate_crs(crs):
     return crs
 
 
-def _validate_arg(arg, dtype):
+def _validate_arg(arg, dtype=None):
     from . import scala_wrapper
-    if isinstance(arg, dtype):
+    if dtype is not None and isinstance(arg, dtype):
         arg = F.lit(arg)
         arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
@@ -396,7 +396,7 @@ class GeoSeries(Series):
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
-        return _column_geo("st_geomfromgeojson", _validate_arg(json, dtype=None), crs=crs)
+        return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
     def as_geojson(self):
         return _column_op("st_asgeojson", self)
