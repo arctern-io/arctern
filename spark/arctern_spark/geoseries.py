@@ -396,7 +396,7 @@ class GeoSeries(Series):
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
-        return _column_geo("st_geomfromgeojson", Series(json), crs=crs)
+        return _column_geo("st_geomfromgeojson", _validate_arg(json, dtype=None), crs=crs)
 
     def as_geojson(self):
         return _column_op("st_asgeojson", self)
