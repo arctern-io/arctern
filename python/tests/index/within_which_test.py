@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import arctern
 import pandas
 
 def test_within_which():
     # assert False
-    from arctern import GeoSeries, within_which
+    from arctern import GeoSeries
     left = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
     right = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "POLYGON ((-1 0, 1 2, 1 -2, -1 0))"])
     index = right.sindex

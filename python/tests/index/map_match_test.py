@@ -23,16 +23,16 @@ def test_near_road():
     assert rst[0]
 
 def test_nearest_location_on_road():
-    roads =  arctern.GeoSeries("LINESTRING (1 2,1 3)")
-    gps_points =  arctern.GeoSeries("POINT (1.0001 2.5)")
+    roads = arctern.GeoSeries("LINESTRING (1 2,1 3)")
+    gps_points = arctern.GeoSeries("POINT (1.0001 2.5)")
     index = roads.sindex
     rst = arctern.ST_AsText(index.nearest_location_on_road(gps_points))
     assert len(rst) == 1
     assert rst[0] == "POINT (1.0 2.5)"
 
 def test_nearest_road():
-    roads =  arctern.GeoSeries(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
-    gps_points =  arctern.GeoSeries("POINT (1.0001 1)")
+    roads = arctern.GeoSeries(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
+    gps_points = arctern.GeoSeries("POINT (1.0001 1)")
     index = roads.sindex
     rst = arctern.ST_AsText(index.nearest_road(gps_points))
     assert len(rst) == 1
