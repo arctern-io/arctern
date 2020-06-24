@@ -2,7 +2,12 @@ version: '2.3'
 
 services:
   spark-master:
-    image: registry.zilliz.com/arctern/arctern-spark-gpu:v0.1.0-ubuntu18.04
+    image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
+    build:
+      context: ${OS_NAME}/
+      dockerfile: Dockerfile
+      cache_from:
+        - ${ARCTERN_SPARK_SOURCE_REPO}:${ARCTERN_SPARK_SOURCE_TAG}
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -15,7 +20,7 @@ services:
       - '8080:8080'
       - '7077:7077'
   spark-worker:
-    image: registry.zilliz.com/arctern/arctern-spark-gpu:v0.1.0-ubuntu18.04
+    image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     runtime: nvidia
     depends_on:
       - spark-master

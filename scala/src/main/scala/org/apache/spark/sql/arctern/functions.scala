@@ -9,6 +9,10 @@ object functions {
     ST_GeomFromText(Seq(wkt.expr))
   }
 
+  def st_geomfromwkb(wkt: Column): Column = Column {
+    ST_GeomFromWKB(Seq(wkt.expr))
+  }
+
   def st_point(x: Column, y: Column): Column = Column {
     ST_Point(Seq(x.expr, y.expr))
   }
@@ -132,6 +136,38 @@ object functions {
 
   def st_curvetoline(geo: Column): Column = Column {
     ST_CurveToLine(Seq(geo.expr))
+  }
+
+  def st_translate(geo: Column, shifterXValue: Column, shifterYValue: Column): Column = Column {
+    ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, rotateX: Column, rotateY: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
+  }
+
+  def st_symdifference(left: Column, right: Column): Column = Column {
+    ST_SymDifference(Seq(left.expr, right.expr))
+  }
+
+  def st_difference(left: Column, right: Column): Column = Column {
+    ST_Difference(Seq(left.expr, right.expr))
+  }
+
+  def st_union(left: Column, right: Column): Column = Column {
+    ST_Union(Seq(left.expr, right.expr))
+  }
+
+  def st_disjoint(left: Column, right: Column): Column = Column {
+    ST_Disjoint(Seq(left.expr, right.expr))
+  }
+
+  def st_isempty(geo: Column): Column = Column {
+    ST_IsEmpty(Seq(geo.expr))
+  }
+
+  def st_boundary(geo: Column): Column = Column {
+    ST_Boundary(Seq(geo.expr))
   }
 
   // Aggregate Function UDF API

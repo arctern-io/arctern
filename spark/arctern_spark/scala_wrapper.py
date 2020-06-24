@@ -70,17 +70,17 @@ def _create_unary_function(name):
 def _create_binary_function(name, doc=""):
     def _(col1, col2):
         sc = SparkContext._active_spark_context
-        if isinstance(col1, Column):
-            arg1 = col1._jc
-        elif isinstance(col1, basestring):
-            arg1 = _create_column_from_name(col1)
+        # if isinstance(col1, Column):
+        #     arg1 = col1._jc
+        # elif isinstance(col1, basestring):
+        #     arg1 = _create_column_from_name(col1)
+        #
+        # if isinstance(col2, Column):
+        #     arg2 = col2._jc
+        # elif isinstance(col2, basestring):
+        #     arg2 = _create_column_from_name(col2)
 
-        if isinstance(col2, Column):
-            arg2 = col2._jc
-        elif isinstance(col2, basestring):
-            arg2 = _create_column_from_name(col2)
-
-        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(arg1, arg2)
+        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2))
         return Column(jc)
 
     _.__name__ = name
@@ -110,6 +110,8 @@ _unary_functions = [
     "st_makevalid",
     "st_geomfromtext",
     "st_union_aggr",
+    "st_geomfromwkb",
+    "st_envelope_aggr",
 ]
 
 # functions that take two arguments as input
