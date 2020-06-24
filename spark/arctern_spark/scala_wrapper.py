@@ -20,7 +20,7 @@ if sys.version >= '3':
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column, _create_column_from_name
 
-from py4j.java_gateway import java_import
+from py4j.java_gateway import java_import, JavaObject
 
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
@@ -90,6 +90,7 @@ def _create_binary_function(name, doc=""):
 
 # functions that take one argument as input
 _unary_functions = [
+    "st_curvetoline",
     "st_geomfromgeojson",
     "st_astext",
     "st_asgeojson",

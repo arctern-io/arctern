@@ -269,7 +269,7 @@ class GeoSeries(Series):
         return _agg("st_envelope_aggr", self)
 
     def curve_to_line(self):
-        return _column_geo("ST_CurveToLine", self, crs=self._crs)
+        return _column_geo("st_curvetoline", self, crs=self._crs)
 
     def simplify(self, tolerance):
         return _column_geo("st_simplifypreservetopology", self, _create_column_from_literal(tolerance), crs=self._crs)
@@ -373,5 +373,9 @@ class GeoSeries(Series):
     def geom_from_geojson(cls, json, crs=None):
         return _column_geo("st_geomfromgeojson", Series(json), crs=crs)
 
+    def as_geojson(self):
+        return _column_op("st_asgeojson", self)
+
     def to_wkt(self):
         return _column_op("st_astext", self)
+
