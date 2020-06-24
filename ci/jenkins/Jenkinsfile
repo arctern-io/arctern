@@ -26,6 +26,7 @@ pipeline {
         FLASK_IMAGE_REPOSITORY = "${PROJECT_NAME}/${PROJECT_NAME}-flask"
         ARCTERN_FLASK_REPO = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}"
         ARCTERN_FLASK_TAG = "${SEMVER}"
+        ARCTERN_FLASK_TARGET_TAG = "${CHANGE_TARGET ? CHANGE_TARGET : ARCTERN_FLASK_TAG}"
         CONDA_CUSTOM_CHANNEL = "https://mirrors.sjtug.sjtu.edu.cn/anaconda/cloud/conda-forge/"
     }
 
@@ -169,9 +170,11 @@ pipeline {
                 environment {
                     ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${CPU_ARCH}/${BINARY_VERSION}"
                     REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                    ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
-                    TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-                    ARCTERN_TAG = "${TAG_NAME}"
+                    ARCTERN_SPARK_TARGET_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
+                    ARCTERN_SPARK_SOURCE_REPO = "${ARCTERN_SPARK_TARGET_REPO}"
+                    ARCTERN_SPARK_TARGET_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                    ARCTERN_SPARK_CHANGE_TAG = "${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                    ARCTERN_SPARK_SOURCE_TAG = "${CHANGE_TARGET ? ARCTERN_SPARK_CHANGE_TAG : ARCTERN_SPARK_TARGET_TAG}"
                 }
 
                 stages {
@@ -216,9 +219,8 @@ pipeline {
 
                 environment {
                     REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-                    ARCTERN_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
-                    TAG_NAME = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-                    ARCTERN_TAG = "${TAG_NAME}"
+                    ARCTERN_SPARK_TARGET_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
+                    ARCTERN_SPARK_TARGET_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
                     RESTFUL_PYTEST_REPO = "${params.DOKCER_REGISTRY_URL}/${PROJECT_NAME}/restful-pytest"
                     RESTFUL_PYTEST_TAG = "latest"
                 }
