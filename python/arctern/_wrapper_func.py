@@ -57,9 +57,6 @@ __all__ = [
     "fishnet_map_layer",
     "projection",
     "transform_and_projection",
-    # "nearest_location_on_road",
-    # "nearest_road",
-    # "near_road",
     "get_sindex_tree",
     "version"
 ]
