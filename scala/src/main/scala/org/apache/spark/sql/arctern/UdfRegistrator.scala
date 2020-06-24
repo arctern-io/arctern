@@ -1,11 +1,7 @@
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.{AnalysisException, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.arctern.expressions._
-import org.apache.spark.sql.catalyst.analysis.FunctionRegistry.{FunctionBuilder}
-import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ExpressionInfo, RuntimeReplaceable}
-
-import scala.reflect.ClassTag
 
 object UdfRegistrator {
   def register(spark: SparkSession) = {
@@ -57,6 +53,6 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Affine", ST_Affine)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
-    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Envelope_Aggr", seqs=>EnvelopeAggr(seqs(0)))
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Envelope_Aggr", seqs => EnvelopeAggr(seqs(0)))
   }
 }

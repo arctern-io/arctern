@@ -15,11 +15,10 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
 import org.apache.spark.sql.arctern.functions._
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.functions.{col, _}
+import org.apache.spark.sql.types._
 
 class FunctionsTest extends AdapterTest {
   test("ST_Within") {

@@ -175,14 +175,15 @@ class AggregateFunctionsTest extends AdapterTest {
     val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from ST_Envelope_Aggr_Null_data")
     rst.show(false)
 
-    val collect = rst.collect()
 
-    // TODO: spark native API, currently wrong
+    val collect = rst.collect()
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
+
     val rst2 = df.agg(st_envelope_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
     val collect2 = rst2.collect()
 
-    //    assert(collect2(0).getAs[GeometryUDT](0) == null)
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
 
   }
 }

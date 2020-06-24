@@ -1,10 +1,6 @@
 package org.apache.spark.sql.arctern.expressions
 
-import java.util.function.UnaryOperator
-
-import org.apache.spark.sql.catalyst.expressions.codegen.Block._
-import org.apache.spark.sql.arctern.{ArcternExpr, GeometryType, GeometryUDT}
-import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.arctern.GeometryType
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.DeclarativeAggregate
