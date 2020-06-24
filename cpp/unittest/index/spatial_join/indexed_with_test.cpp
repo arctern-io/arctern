@@ -24,8 +24,11 @@
 #include <random>
 
 #include "arrow/gis_api.h"
-#include "gis/test_common/transforms.h"
 #include "gis/gdal/format_conversion.h"
+#include "gis/test_common/transforms.h"
+#include "index/geo_index.h"
+
+using GeosIndex = arctern::geo_indexing::GeosIndex;
 
 using std::string;
 using std::vector;
@@ -168,6 +171,66 @@ TEST(IndexedWithin, Sheet) {
 
   auto beg_time = std::chrono::high_resolution_clock::now();
   auto res_vec = arctern::gis::ST_IndexedWithin({lg}, {rg});
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time = end_time - beg_time;
+  assert(res_vec.size() == 1);
+  auto res = std::static_pointer_cast<arrow::Int32Array>(res_vec[0]);
+  ASSERT_EQ(res->length(), N);
+  for (int i = 0; i < res->length(); ++i) {
+    ASSERT_EQ(res->GetView(i), std_res[i]);
+  }
+}
+
+TEST(IndexedWithin, geo_index_Sheet) {
+  vector<string> points_raw;
+  vector<string> polygons_raw;
+  using std::to_string;
+  int S = 100;
+  auto proj_str = [](double row, double col) {
+    auto nr = row * 3 + col * 2;
+    auto nc = row * 2 + col * -2;
+    return to_string(nr) + " " + to_string(nc);
+  };
+  for (int row = 0; row < S; ++row) {
+    for (int col = 0; col < S; ++col) {
+      auto polygon_str = "Polygon((" + proj_str(row, col) + ", " +
+                         proj_str(row + 1, col) + ", " + proj_str(row + 1, col + 1) +
+                         ", " + proj_str(row, col + 1) + ", " + proj_str(row, col) + "))";
+
+      polygons_raw.push_back(polygon_str);
+      auto point_raw = "Point(" + proj_str(row + 0.5, col + 0.5) + ")";
+      points_raw.push_back(point_raw);
+    }
+  }
+  auto vol = S * S;
+  vector<int> poly_shuf(vol);
+  for (int i = 0; i < vol; ++i) {
+    poly_shuf[i] = i;
+  }
+  std::default_random_engine eng(42);
+  std::shuffle(poly_shuf.begin(), poly_shuf.end(), eng);
+  vector<string> right(vol);
+
+  for (int i = 0; i < vol; ++i) {
+    auto ans = poly_shuf[i];
+    right[ans] = polygons_raw[i];
+  }
+
+  int N = 10000;
+  vector<int> std_res;
+  vector<string> left;
+  for (int i = 0; i < N; ++i) {
+    auto index = eng() % vol;
+    left.push_back(points_raw[index]);
+    std_res.push_back(poly_shuf[index]);
+  }
+  auto lg = arctern::gis::StrsToWkb(left);
+  auto rg = arctern::gis::StrsToWkb(right);
+
+  auto beg_time = std::chrono::high_resolution_clock::now();
+  GeosIndex index;
+  index.append({rg});
+  auto res_vec = index.ST_IndexedWithin({lg});
   auto end_time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> time = end_time - beg_time;
   assert(res_vec.size() == 1);
