@@ -56,9 +56,10 @@ def _validate_crs(crs):
 
 
 def _validate_arg(arg, dtype):
+    from . import scala_wrapper
     if isinstance(arg, dtype):
-        arg = _create_column_from_literal(arg)
-        # arg = F.lit(arg)
+        arg = F.lit(arg)
+        arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
     return arg
@@ -117,7 +118,7 @@ class GeoSeries(Series):
                 kss = _column_op("st_geomfromtext", kss)
             else:
                 raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
-            anchor = kss.to_dataframe()
+            anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
         super(Series, self).__init__(anchor)
@@ -313,7 +314,8 @@ class GeoSeries(Series):
                 "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
-        return _column_geo("st_transform", self, _create_column_from_literal(self.crs), _create_column_from_literal(crs), crs=crs)
+        return _column_geo("st_transform", self, _create_column_from_literal(self.crs),
+                           _create_column_from_literal(crs), crs=crs)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
