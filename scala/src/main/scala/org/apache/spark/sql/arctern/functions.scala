@@ -170,6 +170,18 @@ object functions {
     ST_Boundary(Seq(geo.expr))
   }
 
+  def st_exteriorring(geo: Column): Column = Column {
+    ST_ExteriorRing(Seq(geo.expr))
+  }
+
+  def st_scale(geo: Column, factorX: Column, factorY: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr))
+  }
+
+  def st_affine(geo: Column, a: Column, b: Column, d: Column, e: Column, offsetX: Column, offsetY: Column): Column = Column {
+    ST_Affine(Seq(geo.expr, a.expr, b.expr, d.expr, e.expr, offsetX.expr, offsetY.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr
