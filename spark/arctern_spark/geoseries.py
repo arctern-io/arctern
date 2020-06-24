@@ -116,7 +116,7 @@ class GeoSeries(Series):
                 kss = _column_op("st_geomfromtext", kss)
             else:
                 raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
-            anchor = kss.to_dataframe()
+            anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
         super(Series, self).__init__(anchor)
