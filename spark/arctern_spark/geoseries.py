@@ -113,7 +113,7 @@ class GeoSeries(Series):
             if isinstance(spark_dtype, GeometryUDT):
                 pass
             elif isinstance(spark_dtype, BinaryType):
-                pass
+                kss = _column_op("st_geomfromwkb", kss)
             elif isinstance(spark_dtype, StringType):
                 kss = _column_op("st_geomfromtext", kss)
             else:
