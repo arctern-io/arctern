@@ -58,6 +58,7 @@ def _validate_crs(crs):
 def _validate_arg(arg, dtype):
     if isinstance(arg, dtype):
         arg = _create_column_from_literal(arg)
+        # arg = F.lit(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
     return arg

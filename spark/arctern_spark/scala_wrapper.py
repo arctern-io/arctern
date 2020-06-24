@@ -20,7 +20,7 @@ if sys.version >= '3':
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column, _create_column_from_name
 
-from py4j.java_gateway import java_import
+from py4j.java_gateway import java_import, JavaObject
 
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
@@ -74,11 +74,19 @@ def _create_binary_function(name, doc=""):
             arg1 = col1._jc
         elif isinstance(col1, basestring):
             arg1 = _create_column_from_name(col1)
+        elif isinstance(col1, JavaObject):
+            arg1 = col1
+        else:
+            raise TypeError(f"unsupported type: {type(col1)}")
 
         if isinstance(col2, Column):
             arg2 = col2._jc
         elif isinstance(col2, basestring):
             arg2 = _create_column_from_name(col2)
+        elif isinstance(col2, JavaObject):
+            arg2 = col2
+        else:
+            raise TypeError(f"unsupported type: {type(col2)}")
 
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(arg1, arg2)
         return Column(jc)
