@@ -57,6 +57,7 @@ def import_arctern_functions():
     java_import(jvm, "org.apache.spark.sql.arctern")
     jvm.org.apache.spark.sql.arctern.UdtRegistratorWrapper.registerUDT()
 
+
 def _create_unary_function(name):
     def _(col, *args):
         sc = SparkContext._active_spark_context
@@ -85,6 +86,18 @@ def _create_binary_function(name, doc=""):
 
     _.__name__ = name
     _.__doc__ = doc
+    return _
+
+
+def _create_multible_function(name):
+    def _(col1, col2, col3, col4, *args):
+        sc = SparkContext._active_spark_context
+        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2),
+                                                                           _to_java_column(col3), _to_java_column(col4),
+                                                                           *args)
+        return Column(jc)
+
+    _.__name__ = name
     return _
 
 
@@ -130,6 +143,11 @@ _binary_functions = [
     "st_distancesphere",
 ]
 
+_multible_functions = [
+    "st_polygonfromenvelope"
+]
+
+
 import_arctern_functions()
 
 for _name in _unary_functions:
@@ -138,7 +156,10 @@ for _name in _unary_functions:
 for _name in _binary_functions:
     globals()[_name] = _create_binary_function(_name)
 
+for _name in _multible_functions:
+    globals()[_name] = _create_multible_function(_name)
+
 __all__ = [k for k, v in globals().items()
-           if k in _unary_functions or k in _binary_functions and callable(v)]
+           if k in _unary_functions or k in _binary_functions or k in _multible_functions and callable(v)]
 
 __all__.sort()
