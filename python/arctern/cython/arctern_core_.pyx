@@ -242,8 +242,12 @@ def ST_PrecisionReduce(object geometries,int num_dat):
 def ST_Translate(object geometries, double shifter_x, double shifter_y):
     return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Translate(pyarrow_unwrap_chunked_array(geometries), shifter_x, shifter_y))
 
-def ST_Rotate(object geometries, double rotation_angle, double rotate_x, double rotate_y):
-    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, rotate_x, rotate_y))
+def ST_Rotate(object geometries, double rotation_angle, double origin_x, double origin_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_x, origin_y))
+
+def ST_Rotate2(object geometries, double rotation_angle, string origin):
+    cdef string origin_ = origin
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_))
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(arctern_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
@@ -368,8 +372,13 @@ def ST_IsEmpty(object geos):
     result = arctern_core_pxd.ST_IsEmpty(pyarrow_unwrap_chunked_array(geos))
     return pyarrow_wrap_chunked_array(result)
 
-def ST_Scale(object geos, double factor_x, double factor_y):
-    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y)
+def ST_Scale2(object geos, double factor_x, double factor_y, string origin):
+    cdef string origin_ = origin
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale(object geos, double factor_x, double factor_y, double origin_x, double origin_y):
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_x, origin_y)
     return pyarrow_wrap_chunked_array(result)
 
 def ST_Affine(object geos, double a, double b, double d, double e, double offset_x, double offset_y):

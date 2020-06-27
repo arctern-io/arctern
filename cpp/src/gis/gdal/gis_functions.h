@@ -86,7 +86,11 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    double rotate_x = 0.0, double rotate_y = 0.0);
+    double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    const std::string &origin);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
@@ -131,7 +135,12 @@ std::shared_ptr<arrow::ChunkedArray> ST_Affine(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y);
+    double factor_y, double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, const std::string &origin);
+
 
 std::shared_ptr<arrow::ChunkedArray> ST_Union(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,

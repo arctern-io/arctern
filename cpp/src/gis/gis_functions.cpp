@@ -156,8 +156,14 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    double rotate_x, double rotate_y) {
-  return gdal::ST_Rotate(geometries, rotation_angle, rotate_x, rotate_y);
+    double origin_x, double origin_y) {
+  return gdal::ST_Rotate(geometries, rotation_angle, origin_x, origin_y);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    const std::string &origin) {
+  return gdal::ST_Rotate(geometries, rotation_angle, origin);
 }
 
 std::shared_ptr<arrow::Array> ST_Centroid(
@@ -205,8 +211,14 @@ std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y) {
-  return gdal::ST_Scale(geometries, factor_x, factor_y);
+    double factor_y, double origin_x, double origin_y) {
+  return gdal::ST_Scale(geometries, factor_x, factor_y, origin_x, origin_y);
+}
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, const std::string &origin) {
+  return gdal::ST_Scale(geometries, factor_x, factor_y, origin);
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Affine(

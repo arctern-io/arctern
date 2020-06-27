@@ -128,31 +128,9 @@ void PrecisionReduceVisitor::visit(OGRPoint* geo) {
 void AffineVisitor::visit(OGRPoint* geo) {
   double coordinate_x = geo->getX();
   double coordinate_y = geo->getY();
-  geo->setX(param_.a_ * coordinate_x + param_.b_ * coordinate_y + param_.offsetX_);
-  geo->setY(param_.d_ * coordinate_x + param_.e_ * coordinate_y + param_.offsetY_);
-}
 
-void ScaleVisitor::visit(OGRPoint* geo) {
-  double coordinate_x = geo->getX();
-  double coordinate_y = geo->getY();
-  geo->setX(coordinate_x * factor_x_);
-  geo->setY(coordinate_y * factor_y_);
-}
-
-void TranslateVisitor::visit(OGRPoint* geo) {
-  double coordinate_x = geo->getX();
-  double coordinate_y = geo->getY();
-  geo->setX(coordinate_x + shifter_x);
-  geo->setY(coordinate_y + shifter_y);
-}
-
-void RotateVisitor::visit(OGRPoint* geo) {
-  double coordinate_x = geo->getX();
-  double coordinate_y = geo->getY();
-  geo->setX(cos(rotation_angle) * (coordinate_x - rotate_x) -
-            sin(rotation_angle) * (coordinate_y - rotate_y) + rotate_x);
-  geo->setY(sin(rotation_angle) * (coordinate_x - rotate_x) +
-            cos(rotation_angle) * (coordinate_y - rotate_y) + rotate_y);
+  geo->setX(param_.a_ * coordinate_x + param_.b_ * coordinate_y + param_.xoff_);
+  geo->setY(param_.d_ * coordinate_x + param_.e_ * coordinate_y + param_.yoff_);
 }
 
 }  // namespace gdal

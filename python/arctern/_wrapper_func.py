@@ -476,12 +476,17 @@ def ST_Translate(geo, shifter_x, shifter_y):
     result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
     return result.to_pandas()
 
-def ST_Rotate(geo, rotation_angle, rotate_x=0.0, rotate_y=0.0):
+def ST_Rotate(geo, rotation_angle, origin="center"):
     import pyarrow as pa
     arr_geo = pa.array(geo, type='binary')
     arr_geo = _to_arrow_array_list(arr_geo)
     arr_geo = pa.chunked_array(arr_geo)
-    result = arctern_core_.ST_Rotate(arr_geo, rotation_angle, rotate_x, rotate_y)
+
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Rotate2(arr_geo, rotation_angle, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Rotate(arr_geo, rotation_angle, origin[0], origin[1])
     return result.to_pandas()
 
 @arctern_udf('binary', 'binary')
@@ -1359,13 +1364,26 @@ def ST_IsEmpty(geos):
     result = arctern_core_.ST_IsEmpty(chunked_array_geo)
     return result.to_pandas()
 
-def ST_Scale(geos, factor_x, factor_y):
+#def ST_Scale(geos, factor_x, factor_y):
+#    import pyarrow as pa
+#    arr_geo = pa.array(geos, type='binary')
+#    arr_geo = _to_arrow_array_list(arr_geo)
+#    chunked_array_geo = pa.chunked_array(arr_geo)
+#    result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y)
+#    return result.to_pandas()
+
+def ST_Scale(geos, factor_x, factor_y, origin="center"):
     import pyarrow as pa
     arr_geo = pa.array(geos, type='binary')
     arr_geo = _to_arrow_array_list(arr_geo)
     chunked_array_geo = pa.chunked_array(arr_geo)
-    result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y)
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Scale2(chunked_array_geo, factor_x, factor_y, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y, origin[0], origin[1])
     return result.to_pandas()
+
 
 def ST_Affine(geos, a, b, d, e, offset_x, offset_y):
     import pyarrow as pa

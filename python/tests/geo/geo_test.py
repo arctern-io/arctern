@@ -65,7 +65,7 @@ def test_ST_Translate():
 def test_ST_Rotate():
     data = pandas.Series(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
     import math
-    rst = arctern.ST_AsText(arctern.ST_Rotate(arctern.ST_GeomFromText(data), math.pi, 1, 0))
+    rst = arctern.ST_AsText(arctern.ST_Rotate(arctern.ST_GeomFromText(data), math.pi, (1, 0)))
 
     assert len(rst) == 3
     assert rst[0] == "POINT (1.0 -6.0)"
@@ -642,8 +642,8 @@ def test_ST_Scale():
     data = [p1, p2]
     data = arctern.ST_GeomFromText(pandas.Series(data))
     rst = arctern.ST_AsText(arctern.ST_Scale(data, 2, 2))
-    assert rst[0] == "LINESTRING (2 4,4 8)"
-    assert rst[1] == "LINESTRING (8 0,12 0)"
+    assert rst[0] == "LINESTRING (0.5 1.0,2.5 5.0)"
+    assert rst[1] == "LINESTRING (3 0,7 0)"
 
 def test_ST_Affine():
     p1 = "LINESTRING (1 2,2 4)"

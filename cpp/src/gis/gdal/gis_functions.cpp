@@ -71,6 +71,20 @@ struct WkbItem {
   }
 };
 
+void _calculate_affine_origin(OGRGeometry * geo, double &x, double &y, const std::string& origin){
+    if (origin == "center"){
+      OGREnvelope env;
+      OGR_G_GetEnvelope(geo, &env);
+      x = (env.MinX + env.MaxX) / 2.;
+      y = (env.MinY + env.MaxY) / 2.;
+    }else if (origin == "centroid"){
+	OGRPoint centro_point;
+        auto err_code = geo->Centroid(&centro_point);
+        x = centro_point.getX();
+        y = centro_point.getY();
+    }
+}
+
 inline OGRGeometry* Wrapper_createFromWkt(
     const std::shared_ptr<arrow::StringArray>& array, int idx) {
   if (array->IsNull(idx)) return nullptr;
@@ -804,28 +818,51 @@ std::shared_ptr<arrow::Array> ST_PrecisionReduce(
 std::shared_ptr<arrow::ChunkedArray> ST_Translate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
     double shifter_y) {
-  auto translate_visitor = new TranslateVisitor(shifter_x, shifter_y);
-  auto op = [&translate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
-    geo->accept(translate_visitor);
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+    TranslateVisitor translate_visitor{shifter_x, shifter_y};
+    geo->accept(&translate_visitor);
     AppendWkbNDR(builder, geo);
   };
 
   auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
-  delete translate_visitor;
   return results;
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    double rotate_x, double rotate_y) {
-  auto rotate_visitor = new RotateVisitor(rotation_angle, rotate_x, rotate_y);
-  auto op = [&rotate_visitor](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
-    geo->accept(rotate_visitor);
-    AppendWkbNDR(builder, geo);
+    const std::string & origin="center") {
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+    if (geo->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      double origin_x = 0.;
+      double origin_y = 0.;
+      _calculate_affine_origin(geo, origin_x, origin_y, origin);
+      RotateVisitor rotate_visitor{rotation_angle, origin_x, origin_y};
+      geo->accept(&rotate_visitor);
+      AppendWkbNDR(builder, geo);
+    }
   };
 
   auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
-  delete rotate_visitor;
+  return results;
+}
+
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    double origin_x, double origin_y) {
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
+    if (geo->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      RotateVisitor rotate_visitor{rotation_angle, origin_x, origin_y};
+      geo->accept(&rotate_visitor);
+      AppendWkbNDR(builder, geo);
+     }
+  };
+
+  auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
   return results;
 }
 
@@ -1074,13 +1111,12 @@ std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
 std::shared_ptr<arrow::ChunkedArray> ST_Affine(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double a, double b, double d,
     double e, double offset_x, double offset_y) {
-  AffineParams params(a, b, d, e, offset_x, offset_y);
-  auto affine_visitor = new AffineVisitor(params);
-  auto op = [&affine_visitor](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
-    ogr->accept(affine_visitor);
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
     if (ogr->IsEmpty()) {
       builder.AppendNull();
     } else {
+      AffineVisitor affine_visitor{a, b, d, e, offset_x, offset_y};
+      ogr->accept(&affine_visitor);
       auto rst_wkb_size = ogr->WkbSize();
       auto wkb = static_cast<unsigned char*>(CPLMalloc(rst_wkb_size));
       auto err_code = OGR_G_ExportToWkb(ogr, OGRwkbByteOrder::wkbNDR, wkb);
@@ -1094,19 +1130,18 @@ std::shared_ptr<arrow::ChunkedArray> ST_Affine(
   };
 
   auto rst = UnaryOp<arrow::BinaryBuilder>(geometries, op);
-  delete affine_visitor;
   return rst;
 }
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y) {
-  auto scale_visitor = new ScaleVisitor(factor_x, factor_y);
-  auto op = [&scale_visitor](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
-    ogr->accept(scale_visitor);
+    double factor_y, double origin_x, double origin_y) {
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
     if (ogr->IsEmpty()) {
       builder.AppendNull();
     } else {
+      ScaleVisitor scale_visitor{factor_x, factor_y, origin_x, origin_y};
+      ogr->accept(&scale_visitor);
       auto rst_wkb_size = ogr->WkbSize();
       auto wkb = static_cast<unsigned char*>(CPLMalloc(rst_wkb_size));
       auto err_code = OGR_G_ExportToWkb(ogr, OGRwkbByteOrder::wkbNDR, wkb);
@@ -1120,7 +1155,36 @@ std::shared_ptr<arrow::ChunkedArray> ST_Scale(
   };
 
   auto rst = UnaryOp<arrow::BinaryBuilder>(geometries, op);
-  delete scale_visitor;
+  return rst;
+}
+
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, const std::string& origin = "center") {
+
+  auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
+    if (ogr->IsEmpty()) {
+      builder.AppendNull();
+    } else {
+      double origin_x = 0.;
+      double origin_y = 0.;
+      _calculate_affine_origin(ogr, origin_x, origin_y, origin);
+      ScaleVisitor scale_visitor{factor_x, factor_y, origin_x, origin_y};
+      ogr->accept(&scale_visitor);
+      auto rst_wkb_size = ogr->WkbSize();
+      auto wkb = static_cast<unsigned char*>(CPLMalloc(rst_wkb_size));
+      auto err_code = OGR_G_ExportToWkb(ogr, OGRwkbByteOrder::wkbNDR, wkb);
+      if (err_code != OGRERR_NONE) {
+        builder.AppendNull();
+      } else {
+        builder.Append(wkb, rst_wkb_size);
+      }
+      CPLFree(wkb);
+    }
+  };
+
+  auto rst = UnaryOp<arrow::BinaryBuilder>(geometries, op);
   return rst;
 }
 

@@ -4147,7 +4147,7 @@ TEST(geometry_test, test_ST_Rotate) {
   auto p3 = "LINESTRING (0 0, 1 0, 1 1, 0 0)";
   auto p4 = "POLYGON ((0 0, 0 1, 1 1, 0 0))";
   auto p5 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)";
-  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )";
+  auto p6 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1) )";
   auto p7 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )";
 
   arrow::StringBuilder builder;
@@ -4175,7 +4175,7 @@ TEST(geometry_test, test_ST_Rotate) {
   ASSERT_EQ(res_str->GetString(3), "POLYGON ((2.0 -0.0,2.0 -1.0,1.0 -1.0,2.0 -0.0))");
   ASSERT_EQ(res_str->GetString(4), "MULTIPOINT (2.0 -0.0,1 0,1.0 -2.0,1.0 -2.0)");
   ASSERT_EQ(res_str->GetString(5),
-            "MULTILINESTRING ((2.0 -0.0,1.0 -2.0),(2.0 -0.0,1 0,1.0 -1.0),(3.0 -2.0,-1.0 "
+            "MULTILINESTRING ((2.0 -0.0,1.0 -2.0),(2.0 -0.0,1 0,1.0 -1.0),(3 -2,-1.0 "
             "-4.0,1.0 3.0,4.0 -1.0))");
   ASSERT_EQ(res_str->GetString(6), "MULTIPOLYGON (((2.0 -0.0,1.0 -4.0,1 0,2.0 -0.0)))");
 }
@@ -4313,7 +4313,7 @@ TEST(geometry_test, test_st_scale) {
   geo_arrays.push_back(geo_array);
 
   auto geo_chunked = std::make_shared<arrow::ChunkedArray>(geo_arrays);
-  auto result = arctern::gis::ST_Scale(geo_chunked, 2, 2);
+  auto result = arctern::gis::ST_Scale(geo_chunked, 2, 2, 0, 0);
   auto binary_boolean = std::static_pointer_cast<arrow::BinaryArray>(result->chunk(0));
   for (int32_t i = 0; i < binary_boolean->length(); i++) {
     auto data_ptr = binary_boolean->GetString(i);

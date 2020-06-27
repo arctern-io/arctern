@@ -80,8 +80,13 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x, double shifter_y);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle, double rotate_x,
-    double rotate_y);
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    const std::string &origin);
+
 
 std::shared_ptr<arrow::Array> ST_GeometryType(
     const std::shared_ptr<arrow::Array>& geometries);
@@ -155,8 +160,13 @@ std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
     const std::shared_ptr<arrow::ChunkedArray>& geometries);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
-    const std::shared_ptr<arrow::ChunkedArray>& geometries,
-    double factor_x, double factor_y);
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, const std::string &origin);
+
 
 std::shared_ptr<arrow::ChunkedArray> ST_Affine(
   const std::shared_ptr<arrow::ChunkedArray>& geometries,

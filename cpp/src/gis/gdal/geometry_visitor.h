@@ -17,30 +17,13 @@
 #pragma once
 
 #include <ogr_geometry.h>
-
+#include <cmath>
 #include <string>
 
 namespace arctern {
 namespace gis {
 namespace gdal {
 
-struct AffineParams {
-  AffineParams(double a, double b, double d, double e, double offsetX, double offsetY) {
-    a_ = a;
-    b_ = b;
-    d_ = d;
-    e_ = e;
-    offsetX_ = offsetX;
-    offsetY_ = offsetY;
-  }
-
-  double a_;
-  double b_;
-  double d_;
-  double e_;
-  double offsetX_;
-  double offsetY_;
-};
 
 class AreaVisitor : public OGRDefaultConstGeometryVisitor {
  public:
@@ -178,57 +161,121 @@ class PrecisionReduceVisitor : public OGRDefaultGeometryVisitor {
   int32_t precision_ = 0;
 };
 
+/*
+ *
+ *  For 3D affine transformations, the 12 parameters represent the augmented matrix:
+
+        [x']   | a  b  c xoff | [x]
+        [y'] = | d  e  f yoff | [y]
+        [z']   | g  h  i zoff | [z]
+        [1 ]   | 0  0  0   1  | [1]
+
+    the equations are:
+
+        x' = a * x + b * y + c * z + xoff
+        y' = d * x + e * y + f * z + yoff
+        z' = g * x + h * y + i * z + zoff
+ */
+struct AffineParams {
+  double a_ = 1.;
+  double b_ = 0.;
+  double c_ = 0.;
+  double d_ = 0.;
+  double e_ = 1.;
+  double f_ = 0.;
+  double g_ = 0.;
+  double h_ = 1.;
+  double i_ = 0.;
+  double xoff_ = 0.;
+  double yoff_ = 0.;
+  double zoff_ = 0.;
+};
+
 class AffineVisitor : public OGRDefaultGeometryVisitor {
  public:
-  explicit AffineVisitor(const AffineParams& params) : param_(params) {}
+
+  AffineVisitor() = default;
+  explicit AffineVisitor(const AffineParams & param): param_(param){}
+  AffineVisitor(double a, double b, double d, double e, double xoff, double yoff){
+  	param_.a_ = a;
+  	param_.b_ = b;
+  	param_.d_ = d;
+  	param_.e_ = e;
+  	param_.xoff_ = xoff;
+  	param_.yoff_ = yoff;
+  }
   ~AffineVisitor() = default;
 
   void visit(OGRPoint*) override;
 
- private:
+ protected:
   AffineParams param_;
 };
 
-class TranslateVisitor : public OGRDefaultGeometryVisitor {
+class TranslateVisitor : public AffineVisitor {
  public:
-  explicit TranslateVisitor(double shifter_x, double shifter_y)
-      : shifter_x(shifter_x), shifter_y(shifter_y) {}
+  TranslateVisitor(double xoff, double yoff){
+	param_.xoff_ = xoff;
+	param_.yoff_ = yoff;
+  }
+
   ~TranslateVisitor() = default;
 
-  void visit(OGRPoint*) override;
-
- private:
-  double shifter_x = 0.0;
-  double shifter_y = 0.0;
 };
 
-class RotateVisitor : public OGRDefaultGeometryVisitor {
+class RotateVisitor : public AffineVisitor {
  public:
-  explicit RotateVisitor(double rotation_angle, double rotate_x, double rotate_y)
-      : rotation_angle(rotation_angle), rotate_x(rotate_x), rotate_y(rotate_y) {}
+
+  RotateVisitor(double rotation_angle, double origin_x, double origin_y){
+
+    auto cosp = std::cos(rotation_angle);
+    auto sinp = std::sin(rotation_angle);
+    
+    param_.a_ = cosp;
+    param_.b_ = -sinp;
+    param_.d_ = sinp;
+    param_.e_ = cosp;
+    param_.h_ = cosp;
+    param_.i_ = cosp;
+
+    param_.xoff_ = origin_x - origin_x * cosp + origin_y * sinp;
+    param_.yoff_ = origin_y - origin_x * sinp - origin_y * cosp;
+
+  }
+
   ~RotateVisitor() = default;
 
-  void visit(OGRPoint*) override;
-
- private:
-  double rotation_angle = 0.0;
-  double rotate_x = 0.0;
-  double rotate_y = 0.0;
-  //  std::shared_ptr<OGRPoint> centrepoint = nullptr;
 };
 
-class ScaleVisitor : public OGRDefaultGeometryVisitor {
+class ScaleVisitor : public AffineVisitor {
  public:
-  explicit ScaleVisitor(double factor_x, double factor_y)
-      : factor_x_(factor_x), factor_y_(factor_y) {}
+  ScaleVisitor(double factor_x, double factor_y, double origin_x, double origin_y){
+    param_.a_ = factor_x;
+    param_.e_ = factor_y;
+    param_.xoff_ = origin_x - origin_x * factor_x;
+    param_.yoff_ = origin_y - origin_y * factor_y;
+  }
+
   ~ScaleVisitor() = default;
 
-  void visit(OGRPoint*) override;
-
- private:
-  double factor_x_;
-  double factor_y_;
 };
+
+class SkewVisitor : public AffineVisitor {
+ public:
+
+  SkewVisitor(double xs, double ys, double origin_x, double origin_y){
+    auto tanx = std::tan(xs);
+    auto tany = std::tan(ys);
+    param_.b_ = tanx;
+    param_.d_ = tany;
+    param_.xoff_ = -origin_y * tanx;
+    param_.yoff_ = -origin_x * tany;
+  }
+
+  ~SkewVisitor() = default;
+
+};
+
 
 }  // namespace gdal
 }  // namespace gis
