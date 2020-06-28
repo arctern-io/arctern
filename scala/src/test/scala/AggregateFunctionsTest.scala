@@ -142,6 +142,7 @@ class AggregateFunctionsTest extends AdapterTest {
     spark.sql("cache table res")
 
     val t2 = System.currentTimeMillis
+
     rst.show(false)
     println((t2 - t1)/1000.0 + " secs")
   }
