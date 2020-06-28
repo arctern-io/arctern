@@ -474,17 +474,20 @@ def ST_Translate(geo, shifter_x, shifter_y):
     result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
     return result.to_pandas()
 
-def ST_Rotate(geo, rotation_angle, origin="center"):
+def ST_Rotate(geo, angle, origin="center", use_radians=False):
+    import math
     import pyarrow as pa
+    if not use_radians:  # convert from degrees
+        angle = angle * math.pi/180.0
     arr_geo = pa.array(geo, type='binary')
     arr_geo = _to_arrow_array_list(arr_geo)
     arr_geo = pa.chunked_array(arr_geo)
 
     if isinstance(origin, str):
         origin = origin.encode('utf-8')
-        result = arctern_core_.ST_Rotate2(arr_geo, rotation_angle, origin)
+        result = arctern_core_.ST_Rotate2(arr_geo, angle, origin)
     elif isinstance(origin, tuple) and len(origin) == 2:
-        result = arctern_core_.ST_Rotate(arr_geo, rotation_angle, origin[0], origin[1])
+        result = arctern_core_.ST_Rotate(arr_geo, angle, origin[0], origin[1])
     return result.to_pandas()
 
 @arctern_udf('binary', 'binary')

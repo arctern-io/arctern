@@ -818,16 +818,19 @@ class GeoSeries(Series):
         """
         return _binary_geo(arctern.ST_SymDifference, self, other)
 
-    def scale(self, factor_x, factor_y):
+    def scale(self, factor_x, factor_y, origin="center"):
         """
         Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
 
         Parameters
         ----------
-        factor_x : double
-            The factor to scale coordinate x.
-        factor_y : double
-            The factor to sclae coordinate y.
+        factor_x : float
+            Scaling factor for x dimension.
+        factor_y : float
+            Scaling factor for y dimension.
+
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
 
         Returns
         -------
@@ -845,20 +848,14 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y)
 
-    def affine(self, a, b, d, e, offset_x, offset_y):
+    def affine_transform(self, matrix):
         """
-        Applies a affine transformation to the geometry to do things like translate, rotate, scale in one step.
+        Return a GeoSeries with transformed geometries.
 
         Parameters
         -----------
-        a : double
-            The parameter in matrix.
-        b : double
-            The parameter in matrix.
-        d : double
-            The parameter in matrix.
-        e : double
-            The parameter in matrix.
+        matrix: List or tuple
+            6 items for 2D transformations. The 6 parameter matrix is [a, b, d, e, offset_x, offset_y].
 
         Returns
         --------
@@ -869,28 +866,29 @@ class GeoSeries(Series):
         ---------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
-        >>> s1.affine(2,2,2,2,2,2)
+        >>> matrix = (2,2,2,2,2,2)
+        >>> s1.affine_transfrom(matrix)
         0      LINESTRING (2 2,12 12)
         1    MULTIPOINT (10 10,14 14)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_Affine, self, a, b, d, e, offset_x, offset_y)
+        return _unary_geo(arctern.ST_Affine, self, *matrix)
 
     def translate(self, shifter_x, shifter_y):
         """
-        Returns a translated geometry shifted by offsets along each dimension.
+        Return a GeoSeries with translated geometries.
 
         Parameters
         ----------
-        shifter_x : double
-            The shifter of coordinate x.
-        shifter_y : double
-            The shifter of coordinate y.
+        shifter_x : float
+            Amount of offset along x dimension.
+        shifter_y : float
+            Amount of offset along y dimension.
 
         Returns
         -------
         GeoSeries
-            A translated geometry shifted by offsets along each dimension.
+            A GeoSeries with translated geometries which shifted by offsets along each dimension.
 
         Examples
         --------
@@ -903,33 +901,34 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_Translate, self, shifter_x, shifter_y)
 
-    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
+    def rotate(self, angle, origin="center", use_radians=False):
         """
         Returns a rotated geometry on a 2D plane.
         Parameters
         ----------
-        rotation_angle : double
-            rotation angle
-        rotate_x : double
-            The coordinate x of rotation centrepoint.
-        rotate_y : double
-            The coordinate y of rotation centrepoint.
+        angle : float
+            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+        use_radians : boolean
+            Whether to interpret the angle of rotation as degrees or radians.
+
         Returns
         -------
         GeoSeries
-            A a rotated geometry.
+            a GeoSeries with rotated geometries.
 
         Examples
         --------
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
         >>> import math
-        >>> s1.rotate(math.pi, 0, 1)
+        >>> s1.rotate(math.pi, 0, 1, use_radians=True)
         0     LINESTRING (0.0 2.0,-5.0 2.0)
         1    MULTIPOINT (-4.0 2.0,-6.0 2.0)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_Rotate, self, rotation_angle, rotate_x, rotate_y)
+        return _unary_geo(arctern.ST_Rotate, self, angle, origin)
 
     def curve_to_line(self):
         """
