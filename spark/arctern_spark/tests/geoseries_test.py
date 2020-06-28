@@ -17,10 +17,8 @@
 import pytest
 import pandas as pd
 import numpy as np
-from pandas.testing import assert_series_equal
-from arctern.geoseries import GeoSeries
-from arctern.geoseries.geoarray import GeoDtype
-from arctern._wrapper_func import ST_GeomFromText
+from arctern_spark import GeoSeries
+from osgeo import ogr
 
 
 def make_point(x, y):
@@ -31,7 +29,7 @@ def make_point(x, y):
 def sequence(request):
     if request.param == 'wkt':
         return [make_point(x, x) for x in range(5)]
-    return ST_GeomFromText([make_point(x, x) for x in range(5)]).tolist()
+    return [ogr.CreateGeometryFromWkt(make_point(x, x)).ExportToWkb() for x in range(5)]
 
 
 @pytest.fixture(params=[1, 1.0, ('1', '1')])
@@ -43,17 +41,17 @@ def wrong_type_data(request):
 def dic(request):
     if request.param == 'wkt':
         return {x: make_point(x, x) for x in range(5)}
-    return {x: ST_GeomFromText(make_point(x, x))[0] for x in range(5)}
+    return {x: ogr.CreateGeometryFromWkt(make_point(x, x)).ExportToWkb() for x in range(5)}
 
 
 @pytest.fixture
 def expected_series():
-    return ST_GeomFromText([make_point(x, x) for x in range(5)])
+    return [ogr.CreateGeometryFromWkt(make_point(x, x)).ExportToWkb() for x in range(5)]
 
 
 def assert_is_geoseries(s):
     assert isinstance(s, GeoSeries)
-    assert isinstance(s.dtype, GeoDtype)
+    assert isinstance(s.dtype, object)
 
 
 class TestConstructor:
@@ -61,15 +59,15 @@ class TestConstructor:
     def test_from_sequence(self, sequence, expected_series):
         s = GeoSeries(sequence)
         assert_is_geoseries(s)
-        assert_series_equal(s, expected_series, check_dtype=False)
+        assert s.to_list() == expected_series
 
     def test_from_dict(self, dic, expected_series):
         s = GeoSeries(dic)
         assert_is_geoseries(s)
-        assert_series_equal(s, expected_series, check_dtype=False)
+        assert s.to_list() == expected_series
 
     def test_from_empty(self):
-        s = GeoSeries([], dtype="GeoDtype")
+        s = GeoSeries([])
         assert_is_geoseries(s)
         assert len(s) == 0
 
@@ -78,19 +76,14 @@ class TestConstructor:
         assert len(s) == 0
 
     def test_explicate_dtype(self, sequence, expected_series):
-        s = GeoSeries(sequence, dtype="GeoDtype")
+        s = GeoSeries(sequence)
         assert_is_geoseries(s)
-        assert_series_equal(s, expected_series, check_dtype=False)
+        assert s.to_list() == expected_series
 
     def test_from_series(self, expected_series):
         s = GeoSeries(expected_series)
         assert_is_geoseries(s)
-        assert_series_equal(s, expected_series, check_dtype=False)
-
-    def test_fom_geoarray(self, expected_series):
-        s = GeoSeries(expected_series.values)
-        assert_is_geoseries(s)
-        assert_series_equal(s, expected_series, check_dtype=False)
+        assert s.to_list() == expected_series
 
     def test_from_wrong_type_data(self, wrong_type_data):
         with pytest.raises(TypeError):
@@ -125,16 +118,6 @@ class TestConstructor:
         assert len(geo_s) == 5
         for i in index:
             assert geo_s[i] == geo_s[index[0]]
-
-    def test_from_geopandas(self):
-        import geopandas as gpd
-        from shapely.geometry import Point
-        gpd_s = gpd.GeoSeries([Point(1, 1), Point(1, 2), None], index=[1, 2, 3], crs='EPSG:4326')
-        s = GeoSeries.from_geopandas(gpd_s)
-        assert_is_geoseries(s)
-        assert s.crs == "EPSG:4326"
-        assert s.to_wkt().to_list() == [make_point(1, 1), make_point(1, 2), None]
-        assert s.index.to_list() == [1, 2, 3]
 
 
 class TestType:
@@ -292,14 +275,3 @@ def test_geoseries_type_by_df_box_col_values():
     df = DataFrame({'s': series})
     assert isinstance(df['s'], type(series))
 
-
-def test_to_geopandas():
-    p1 = "POLYGON ((0 0,4 0,4 4,0 4,0 0))"
-    p2 = None
-    data = GeoSeries([p1, p2], crs="EPSG:4326")
-    rst = data.to_geopandas()
-
-    import shapely
-    assert rst[0] == shapely.geometry.Polygon(((0, 0), (4, 0), (4, 4), (0, 4), (0, 0)))
-    assert rst[1] is None
-    assert rst.crs.to_string() == "EPSG:4326"

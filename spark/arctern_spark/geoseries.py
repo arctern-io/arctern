@@ -404,3 +404,6 @@ class GeoSeries(Series):
     def to_wkt(self):
         return _column_op("st_astext", self)
 
+    def head(self, n: int):
+        return GeoSeries(super().head(n))
+
