@@ -88,7 +88,7 @@ object utils {
     res
   }
 
-  private def collectionUnionGeometry(geo1: Geometry, geo2: Geometry): Geometry = {
+  def collectionUnionGeometry(geo1: Geometry, geo2: Geometry): Geometry = {
     val geometryCollection = geo1.asInstanceOf[GeometryCollection]
     var geometries = Array[Geometry]()
     var haveBeenUnion = false
@@ -103,33 +103,6 @@ object utils {
     }
     if (!haveBeenUnion) geometries = geometries :+ geo2
     new GeometryFactory().createGeometryCollection(geometries)
-  }
-
-  private def collectionUnionCollection(geo1: Geometry, geo2: Geometry): Geometry = {
-    val geometryCollection1 = geo1.asInstanceOf[GeometryCollection]
-    val geometryCollection2 = geo2.asInstanceOf[GeometryCollection]
-    var geometries = Array[Geometry]()
-    for (i <- 0 until geometryCollection1.getNumGeometries) {
-      val geometry = geometryCollection1.getGeometryN(i)
-      geometries = geometries :+ geometry
-    }
-    for (i <- 0 until geometryCollection2.getNumGeometries) {
-      val geometry = geometryCollection2.getGeometryN(i)
-      geometries = geometries :+ geometry
-    }
-    new GeometryFactory().createGeometryCollection(geometries)
-  }
-
-  def arcternUnion(left: Geometry, right: Geometry): Geometry = {
-    if (left.getGeometryType != "GeometryCollection" && right.getGeometryType != "GeometryCollection") {
-      left.union(right)
-    } else if (left.getGeometryType == "GeometryCollection" && right.getGeometryType == "GeometryCollection") {
-      collectionUnionCollection(left, right)
-    } else if (right.getGeometryType == "GeometryCollection"){
-      collectionUnionGeometry(right, left)
-    } else {
-      collectionUnionGeometry(left, right)
-    }
   }
 
 }

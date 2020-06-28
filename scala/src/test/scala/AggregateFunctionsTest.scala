@@ -19,8 +19,6 @@ import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.arctern.expressions.utils.arcternUnion
-import org.locationtech.jts.io.WKTReader
 
 class AggregateFunctionsTest extends AdapterTest {
   test("ST_Union_Aggr") {
@@ -78,28 +76,6 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
-  }
-
-  test("arcternUnion") {
-    val g0 = new WKTReader().read("GEOMETRYCOLLECTION (POINT (5 5), POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)))")
-    val g1 = new WKTReader().read("GEOMETRYCOLLECTION (LINESTRING (0 0, 10 10, 20 20), POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10)))")
-    val g2 = new WKTReader().read("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))")
-    val g3 = new WKTReader().read("POINT (10 10)")
-
-    val res0 = arcternUnion(g0, g1)
-    val res1 = arcternUnion(g0, g2)
-    val res2 = arcternUnion(g3, g1)
-    val res3 = arcternUnion(g2, g3)
-
-    println(res0)
-    println(res1)
-    println(res2)
-    println(res3)
-
-    assert(res0.toString.equals("GEOMETRYCOLLECTION (POINT (5 5), POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)), LINESTRING (0 0, 10 10, 20 20), POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10)))"))
-    assert(res1.toString.equals("GEOMETRYCOLLECTION (POINT (5 5), MULTIPOLYGON (((0 0, 0 1, 1 1, 1 0, 0 0)), ((10 10, 10 20, 20 20, 20 10, 10 10))))"))
-    assert(res2.toString.equals("GEOMETRYCOLLECTION (LINESTRING (0 0, 10 10, 20 20), POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10)))"))
-    assert(res3.toString.equals("POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))"))
   }
 
   test("ST_Envelope_Aggr") {
