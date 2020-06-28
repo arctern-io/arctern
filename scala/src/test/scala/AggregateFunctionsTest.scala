@@ -49,6 +49,7 @@ class AggregateFunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
       Row(GeometryUDT.FromWkt("POINT (-1 -1)")),
       Row(GeometryUDT.FromWkt("POINT (5 5)")),
+      Row(GeometryUDT.FromWkt("POINT (1 1)")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
       Row(GeometryUDT.FromWkt("POLYGON ((1 1,2 1,2 2,1 2,1 1))")),
       Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)) )")),
