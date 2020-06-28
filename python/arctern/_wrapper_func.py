@@ -1365,14 +1365,6 @@ def ST_IsEmpty(geos):
     result = arctern_core_.ST_IsEmpty(chunked_array_geo)
     return result.to_pandas()
 
-#def ST_Scale(geos, factor_x, factor_y):
-#    import pyarrow as pa
-#    arr_geo = pa.array(geos, type='binary')
-#    arr_geo = _to_arrow_array_list(arr_geo)
-#    chunked_array_geo = pa.chunked_array(arr_geo)
-#    result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y)
-#    return result.to_pandas()
-
 def ST_Scale(geos, factor_x, factor_y, origin="center"):
     import pyarrow as pa
     arr_geo = pa.array(geos, type='binary')
