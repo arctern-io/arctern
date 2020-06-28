@@ -14,9 +14,9 @@
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 from arctern_spark import GeoSeries
 from osgeo import ogr
 
@@ -32,7 +32,7 @@ def sequence(request):
     return [ogr.CreateGeometryFromWkt(make_point(x, x)).ExportToWkb() for x in range(5)]
 
 
-@pytest.fixture(params=[1, 1.0, ('1', '1')])
+@pytest.fixture(params=[1, 1.0])
 def wrong_type_data(request):
     return [request.param for _ in range(5)]
 
@@ -263,4 +263,3 @@ class TestGeoMethods:
         s = GeoSeries(make_point(1, 1))
         s1 = s.to_wkb()
         assert isinstance(s1, pd.Series)
-

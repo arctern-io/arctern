@@ -84,10 +84,6 @@ def _validate_args(*args, dtype=None):
     return args_list
 
 
-class SparkPandasIndexingError(Exception):
-    pass
-
-
 class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
@@ -111,7 +107,11 @@ class GeoSeries(Series):
             elif isinstance(data, ks.Series):
                 assert index is None
                 assert dtype is None
-                assert not copy
+                assert name is None
+                if hasattr(data, "crs") and crs:
+                    if not data.crs == crs:
+                        raise ValueError("csr of the passed geometry data is different from crs.")
+
                 s = data
             else:
                 s = pd.Series(
