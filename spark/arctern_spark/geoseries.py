@@ -19,7 +19,6 @@ from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
-from pyspark.sql.column import _create_column_from_literal
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -292,7 +291,7 @@ class GeoSeries(Series):
         return _column_geo("st_makevalid", self, crs=self._crs)
 
     def precision_reduce(self, precision):
-        return _column_geo("st_precisionreduce", self, _create_column_from_literal(precision), crs=self._crs)
+        return _column_geo("st_precisionreduce", self, F.lit(precision), crs=self._crs)
 
     def unary_union(self):
         return _agg("st_union_aggr", self)
@@ -304,10 +303,10 @@ class GeoSeries(Series):
         return _column_geo("st_curvetoline", self, crs=self._crs)
 
     def simplify(self, tolerance):
-        return _column_geo("st_simplifypreservetopology", self, _create_column_from_literal(tolerance), crs=self._crs)
+        return _column_geo("st_simplifypreservetopology", self, F.lit(tolerance), crs=self._crs)
 
     def buffer(self, distance):
-        return _column_geo("st_buffer", self, _create_column_from_literal(distance), crs=self._crs)
+        return _column_geo("st_buffer", self, F.lit(distance), crs=self._crs)
 
     def to_crs(self, crs):
         """
@@ -352,7 +351,7 @@ class GeoSeries(Series):
         return _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y))
 
     def affine(self, a, b, d, e, offset_x, offset_y):
-        return _column_op("st_affine", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
+        return _column_geo("st_affine", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
 
     def translate(self, shifter_x, shifter_y):
         return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))

@@ -44,7 +44,7 @@ def test_ST_SymDifference():
     data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
     rst = data1.symmetric_difference(data2).to_wkt()
-    assert rst[0] == "MULTILINESTRING ((0 0, 4 0),(5 0, 6 0))"
+    assert rst[0] == "MULTILINESTRING ((0 0, 4 0), (5 0, 6 0))"
     assert rst[1] == "POINT (6 0)"
 
 
@@ -60,14 +60,14 @@ def test_ST_Translate():
     rst = data.translate(1.2, 0.3).to_wkt()
     assert len(rst) == 3
     assert rst[0] == "POINT (2.2 6.3)"
-    assert rst[1] == "LINESTRING (1.2 0.3,1.2 1.3,2.2 1.3)"
-    assert rst[2] == "POLYGON ((1.2 0.3,1.2 1.3,2.2 1.3,1.2 0.3))"
+    assert rst[1] == "LINESTRING (1.2 0.3, 1.2 1.3, 2.2 1.3)"
+    assert rst[2] == "POLYGON ((1.2 0.3, 1.2 1.3, 2.2 1.3, 1.2 0.3))"
 
 
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     rst = data.scale(2, 2).to_wkt()
-    assert rst[0] == "LINESTRING (-2.5 0.0,7.5 0.0)"
+    assert rst[0] == "LINESTRING (-2.5 0.0, 7.5 0.0)"
     assert rst[1] == "MULTIPOINT (3 0,7 0)"
 
 
