@@ -102,6 +102,19 @@ object utils {
     res
   }
 
+  def collectionUnionPoint(geometries: Geometry, point: Geometry): Geometry = {
+    var geometryArray = Array[Geometry]()
+    val geometryCollection = geometries.asInstanceOf[GeometryCollection]
+    var canUnion = false
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      val geometry = geometryCollection.getGeometryN(i)
+      geometryArray = geometryArray :+ geometry
+      if (point.union(geometry).getGeometryType != "GeometryCollection") canUnion = true
+    }
+    if (!canUnion) geometryArray = geometryArray :+ point
+    new GeometryFactory().createGeometryCollection(geometryArray)
+  }
+
   def collectionUnionPoints(geometries: Geometry, points: Geometry): Geometry = {
     var geometryArray = Array[Geometry]()
     var pointsArray = Array[Geometry]()

@@ -17,7 +17,7 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
-import org.apache.spark.sql.arctern.expressions.utils.collectionUnionPoints
+import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoints, collectionUnionPoint}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
 import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryCollection, GeometryFactory}
@@ -83,7 +83,8 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     val points = buffer.getAs[Geometry](0)
     val lineStrings = buffer.getAs[Geometry](1)
     val polygons = buffer.getAs[Geometry](2)
-    collectionUnionPoints(lineStrings.union(polygons), points)
+    if (points.getGeometryType == "Point") collectionUnionPoint(lineStrings.union(polygons), points)
+    else if (points.getGeometryType == "MultiPoint") collectionUnionPoints(lineStrings.union(polygons), points)
   }
 }
 
