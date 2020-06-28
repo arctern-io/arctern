@@ -45,6 +45,8 @@ class AggregateFunctionsTest extends AdapterTest {
 
   test("ST_Union_Aggr") {
     val data = Seq(
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
       Row(GeometryUDT.FromWkt("POINT (-1 -1)")),
       Row(GeometryUDT.FromWkt("POINT (5 5)")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
@@ -73,6 +75,8 @@ class AggregateFunctionsTest extends AdapterTest {
 
   test("ST_Union_Aggr-Null") {
     val data = Seq(
+      Row("POLYGON EMPTY"),
+      Row("POLYGON EMPTY"),
       Row("error geo"),
       Row("POINT (-1 -1)"),
       Row("LINESTRING (0 0, 10 10, 20 20)"),
