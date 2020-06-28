@@ -51,8 +51,8 @@ def test_ST_ExteriorRing():
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     rst = data.scale(2, 2).to_wkt()
-    assert rst[0] == "LINESTRING (0 0,10 0)"
-    assert rst[1] == "MULTIPOINT (8 0,12 0)"
+    assert rst[0] == "LINESTRING (-2.5 0.0,7.5 0.0)"
+    assert rst[1] == "MULTIPOINT (3 0,7 0)"
 
 def test_ST_Affine():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
