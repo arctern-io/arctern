@@ -15,11 +15,11 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 
+from warnings import warn
+
 import pandas as pd
-import numpy as np
 from pandas import DataFrame
 from arctern import GeoSeries
-from warnings import warn
 
 try:
     from rtree.core import RTreeError
@@ -47,12 +47,13 @@ class GeoDataFrame(DataFrame):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
+        print(self['geo1'])
 
         if geometries is None and "geometry" in self.columns:
             index = self.index
             try:
                 self["geometry"] = GeoSeries(self["geometry"].values)
-                geometries = ["geometries"]
+                self._geometry_column_name = ["geometry"]
                 self._crs = None
             except TypeError:
                 pass
@@ -64,7 +65,8 @@ class GeoDataFrame(DataFrame):
                 self._geometry_column_name = geometries
                 for geometry in geometries:
                     try:
-                        self[geometry] = GeoSeries(self[geometry].values)
+                        a = GeoSeries(self[geometry])
+                        self[geometry] = GeoSeries(self[geometry])
                     except TypeError:
                         pass
                 crs_length = len(crs)
@@ -82,8 +84,7 @@ class GeoDataFrame(DataFrame):
 
         self._invalidate_sindex()
 
-    @property
-    def _constructor(self):
+    def _constructor_expanddim():
         pass
 
     def to_crs(self, col, epsg, inplace=False):
@@ -136,7 +137,9 @@ class GeoDataFrame(DataFrame):
         g = self.groupby(by=by, group_keys=False)[col].agg(
             merge_geometries
         )
-        aggregated_geometry = GeoDataFrame(g)
+
+        crs_str = self[col].crs
+        aggregated_geometry = GeoDataFrame(g, geometries=[col], crs=[crs_str])
 
         aggregated = aggregated_geometry.join(aggregated_data)
 
