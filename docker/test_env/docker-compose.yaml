@@ -4,7 +4,7 @@ services:
   regression:
     # Usage:
     #   docker-compose run --rm regression
-    image: ${ARCTERN_REPO}:${ARCTERN_TAG}
+    image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     volumes:
       - ../..:/arctern
     command: &spark-test

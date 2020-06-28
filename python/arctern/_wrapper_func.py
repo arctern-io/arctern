@@ -68,9 +68,7 @@ __all__ = [
     "fishnet_map_layer",
     "projection",
     "transform_and_projection",
-    "nearest_location_on_road",
-    "nearest_road",
-    "near_road",
+    "get_sindex_tree",
     "version"
 ]
 
@@ -1730,118 +1728,9 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.to_pandas()[0])
 
-def nearest_location_on_road(roads, points):
-    """
-    Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-
-    Returns
-    -------
-    Series
-        A POINT object in WKB format.
-
-    Examples
-    -------
-    >>> import arctern
-    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-    >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
-    >>> rst
-        0    POINT (1.0 2.5)
-        dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    location_rst = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
-    res = _to_pandas_series(location_rst)
-    res = res.set_axis(points.index)
-    return res
-
-def nearest_road(roads, points,):
-    """
-    Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-
-    Returns
-    -------
-    Series
-        A LINGSTRING object in WKB format.
-
-    Examples
-    -------
-    >>> import arctern
-    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-    >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
-    >>> rst
-        0    LINESTRING (1 2,1 3)
-        dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    road_rst = arctern_core_.nearest_road(arr_roads, arr_gps_points)
-    res = _to_pandas_series(road_rst)
-    res = res.set_axis(points.index)
-    return res
-
-def near_road(roads, points, distance=100):
-    """
-    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-    distance : double, optional
-        Searching distance around the points, by default 100.
-
-    Returns
-    -------
-    Series
-        A Series that contains only one boolean value that indicates whether there is a road within the given ``distance`` of all ``points``.
-
-        * *True*: The road exists.
-        * *False*: The road does not exist.
-
-    Examples
-    -------
-    >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
-      >>> rst = arctern.near_road(data1, data2)
-      >>> rst
-          0    True
-          dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    bool_rst = arctern_core_.near_road(arr_roads, arr_gps_points, float(distance))
-    res = _to_pandas_series(bool_rst)
-    res = res.set_axis(points.index)
-    return res
+def get_sindex_tree():
+    indextree = arctern_core_.SpatialIndex()
+    return indextree
 
 def version(verbose=False):
     """

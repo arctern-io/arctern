@@ -120,6 +120,8 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
+    _sindex = None
+    _sindex_generated = None
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -162,6 +164,16 @@ class GeoSeries(Series):
 
         self._crs = None
         self.set_crs(crs)
+
+    @property
+    def sindex(self):
+        if not self._sindex_generated:
+            _sindex = arctern.get_sindex_tree()
+            if _sindex is not None:
+                _sindex.Append(self)
+            self._sindex = _sindex
+            self._sindex_generated = True
+        return self._sindex
 
     def set_crs(self, crs):
         """

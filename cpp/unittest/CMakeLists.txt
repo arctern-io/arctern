@@ -25,5 +25,4 @@ set(unittest_libs
 
 add_subdirectory(render)
 add_subdirectory(gis)
-add_subdirectory(map_match)
-add_subdirectory(utils)
+add_subdirectory(index)

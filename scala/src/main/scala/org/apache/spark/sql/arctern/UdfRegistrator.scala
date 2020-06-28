@@ -42,8 +42,17 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_CurveToLine", ST_CurveToLine)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Translate", ST_Translate)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Rotate", ST_Rotate)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_SymDifference", ST_SymDifference)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Difference", ST_Difference)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Union", ST_Union)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Disjoint", ST_Disjoint)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_IsEmpty", ST_IsEmpty)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Boundary", ST_Boundary)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_ExteriorRing", ST_ExteriorRing)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Scale", ST_Scale)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Affine", ST_Affine)
     // Register aggregate function UDFs
     spark.udf.register("ST_Union_Aggr", new ST_Union_Aggr)
-    spark.udf.register("ST_Envelope_Aggr", new ST_Envelope_Aggr)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Envelope_Aggr", seqs => EnvelopeAggr(seqs(0)))
   }
 }
