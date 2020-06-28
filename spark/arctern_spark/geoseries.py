@@ -55,13 +55,15 @@ def _validate_crs(crs):
     return crs
 
 
-def _validate_arg(arg, dtype=None):
+def _validate_arg(arg, dtype=(bytes, bytearray)):
     from . import scala_wrapper
     if dtype is not None and isinstance(arg, dtype):
         arg = F.lit(arg)
         arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
+    else:
+        raise TypeError(f"not support dtype {type(arg)} yet")
     return arg
 
 
@@ -273,6 +275,18 @@ class GeoSeries(Series):
     def envelope(self):
         return _column_geo("st_envelope", self, crs=self._crs)
 
+    @property
+    def exterior(self):
+        return _column_geo("st_exteriorring", self)
+
+    @property
+    def is_empty(self):
+        return _column_op("st_isempty", self)
+
+    @property
+    def boundary(self):
+        return _column_geo("st_boundary", self)
+
     # -------------------------------------------------------------------------
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
@@ -334,42 +348,57 @@ class GeoSeries(Series):
                 "Can not transform geometries without crs. Set crs for this GeoSeries first.")
         if self.crs == crs:
             return self
-        return _column_geo("st_transform", self, _create_column_from_literal(self.crs),
-                           _create_column_from_literal(crs), crs=crs)
+        return _column_geo("st_transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
+
+    def scale(self, factor_x, factor_y):
+        return _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y))
+
+    def affine(self, a, b, d, e, offset_x, offset_y):
+        return _column_op("st_scale", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
+
+    def translate(self, shifter_x, shifter_y):
+        return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))
+
+    # TODO: add origin
+    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
+        return _column_geo("st_rotate", F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
 
     def intersects(self, other):
-        return _column_op("st_intersects", self, _validate_arg(other, bytearray))
+        return _column_op("st_intersects", self, _validate_arg(other))
 
     def within(self, other):
-        return _column_op("st_within", self, _validate_arg(other, bytearray))
+        return _column_op("st_within", self, _validate_arg(other))
 
     def contains(self, other):
-        return _column_op("st_contains", self, _validate_arg(other, bytearray))
+        return _column_op("st_contains", self, _validate_arg(other))
 
     def geom_equals(self, other):
-        return _column_op("st_equals", self, _validate_arg(other, bytearray))
+        return _column_op("st_equals", self, _validate_arg(other))
 
     def crosses(self, other):
-        return _column_op("st_crosses", self, _validate_arg(other, bytearray))
+        return _column_op("st_crosses", self, _validate_arg(other))
 
     def touches(self, other):
-        return _column_op("st_touches", self, _validate_arg(other, bytearray))
+        return _column_op("st_touches", self, _validate_arg(other))
 
     def overlaps(self, other):
-        return _column_op("st_overlaps", self, _validate_arg(other, bytearray))
+        return _column_op("st_overlaps", self, _validate_arg(other))
 
     def distance(self, other):
-        return _column_op("st_distance", self, _validate_arg(other, bytearray))
+        return _column_op("st_distance", self, _validate_arg(other))
 
     def distance_sphere(self, other):
-        return _column_op("st_distancesphere", self, _validate_arg(other, bytearray))
+        return _column_op("st_distancesphere", self, _validate_arg(other))
 
     def hausdorff_distance(self, other):
-        return _column_op("st_hausdorffdistance", self, _validate_arg(other, bytearray))
+        return _column_op("st_hausdorffdistance", self, _validate_arg(other))
+
+    def disjoint(self, other):
+        return _column_op("st_disjoint", self, _validate_arg(other))
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return GeoSeries
@@ -377,6 +406,19 @@ class GeoSeries(Series):
 
     def intersection(self, other):
         return _column_geo("st_intersection", self, _validate_arg(other, bytearray), crs=self.crs)
+
+    def difference(self, other):
+        return _column_geo("st_difference", self, _validate_arg(other))
+
+    def symmetric_difference(self, other):
+        return _column_geo("st_symdifference", self, _validate_arg(other))
+
+    def union(self, other):
+        return _column_geo("st_union", self, _validate_arg(other))
+
+    # -------------------------------------------------------------------------
+    # utils
+    # -------------------------------------------------------------------------
 
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
@@ -406,4 +448,3 @@ class GeoSeries(Series):
 
     def head(self, n: int):
         return GeoSeries(super().head(n))
-
