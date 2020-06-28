@@ -55,6 +55,8 @@ def test_ST_Rotate():
     assert rst[1] == "LINESTRING (2.0 -0.0,2.0 -1.0,1.0 -1.0)"
     assert rst[2] == "POLYGON ((2.0 -0.0,2.0 -1.0,1.0 -1.0,2.0 -0.0))"
 
+
+
 def test_ST_Translate():
     data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
     rst = data.translate(1.2, 0.3).to_wkt()
@@ -69,6 +71,10 @@ def test_ST_Scale():
     rst = data.scale(2, 2).to_wkt()
     assert rst[0] == "LINESTRING (-2.5 0.0,7.5 0.0)"
     assert rst[1] == "MULTIPOINT (3 0,7 0)"
+
+    data = GeoSeries('LINESTRING(1 1, 2 2)')
+    rst = data.scale(2, 2, origin=(1, 1)) .to_wkt()
+    assert rst[0] == "LINESTRING (1 1,3 3)"
 
 def test_ST_Affine():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])

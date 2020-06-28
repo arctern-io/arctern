@@ -842,11 +842,11 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
         >>> s1.scale(2,2)
-        0    LINESTRING (0 0,10 0)
-        1    MULTIPOINT (8 0,12 0)
+        0    LINESTRING (-2.5 0.0,7.5 0.0)
+        1             MULTIPOINT (3 0,7 0)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y)
+        return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y, origin=origin)
 
     def affine_transform(self, matrix):
         """
@@ -923,12 +923,12 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
         >>> import math
-        >>> s1.rotate(math.pi, 0, 1, use_radians=True)
+        >>> s1.rotate(math.pi, origin=(0, 1), use_radians=True)
         0     LINESTRING (0.0 2.0,-5.0 2.0)
         1    MULTIPOINT (-4.0 2.0,-6.0 2.0)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_Rotate, self, angle, origin)
+        return _unary_geo(arctern.ST_Rotate, self, angle, origin=origin, use_radians=use_radians)
 
     def curve_to_line(self):
         """
