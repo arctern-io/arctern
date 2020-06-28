@@ -79,3 +79,5 @@ object GeometryUDT {
 
   def GetGeoType(obj: Geometry): String = obj.getGeometryType
 }
+
+case object GeometryType extends GeometryUDT
