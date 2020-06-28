@@ -47,7 +47,6 @@ class GeoDataFrame(DataFrame):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
-        print(self['geo1'])
 
         if geometries is None and "geometry" in self.columns:
             index = self.index
@@ -65,7 +64,6 @@ class GeoDataFrame(DataFrame):
                 self._geometry_column_name = geometries
                 for geometry in geometries:
                     try:
-                        a = GeoSeries(self[geometry])
                         self[geometry] = GeoSeries(self[geometry])
                     except TypeError:
                         pass
