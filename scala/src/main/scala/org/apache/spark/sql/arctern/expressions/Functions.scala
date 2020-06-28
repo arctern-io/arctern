@@ -25,7 +25,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
+import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
 
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {
@@ -100,6 +100,40 @@ object utils {
     })
     val res = if (result.length == 1) result(0) else new GeometryFactory().createGeometryCollection(result)
     res
+  }
+
+  def collectionUnionPoint(geometries: Geometry, point: Geometry): Geometry = {
+    var geometryArray = Array[Geometry]()
+    val geometryCollection = geometries.asInstanceOf[GeometryCollection]
+    var canUnion = false
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      val geometry = geometryCollection.getGeometryN(i)
+      geometryArray = geometryArray :+ geometry
+      if (point.union(geometry).getGeometryType != "GeometryCollection") canUnion = true
+    }
+    if (!canUnion) geometryArray = geometryArray :+ point
+    new GeometryFactory().createGeometryCollection(geometryArray)
+  }
+
+  def collectionUnionPoints(geometries: Geometry, points: Geometry): Geometry = {
+    var geometryArray = Array[Geometry]()
+    var pointsArray = Array[Geometry]()
+    val multiPoints = points.asInstanceOf[MultiPoint]
+    val geometryCollection = geometries.asInstanceOf[GeometryCollection]
+    for (i <- 0 until multiPoints.getNumPoints) {
+      val point = multiPoints.getGeometryN(i)
+      pointsArray = pointsArray :+ point
+    }
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      val geometry = geometryCollection.getGeometryN(i)
+      geometryArray = geometryArray :+ geometry
+      for (j <- pointsArray.indices) {
+        val point = pointsArray(j)
+        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsArray = pointsArray.filter(! _.contains(point))
+      }
+    }
+    geometryArray = geometryArray ++ pointsArray
+    new GeometryFactory().createGeometryCollection(geometryArray)
   }
 
 }

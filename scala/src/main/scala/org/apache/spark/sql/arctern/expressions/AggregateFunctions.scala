@@ -17,42 +17,75 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
+import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoints, collectionUnionPoint}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
-import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryFactory}
+import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryCollection, GeometryFactory}
+import org.locationtech.jts.io.WKTReader
 
 class ST_Union_Aggr extends UserDefinedAggregateFunction {
   override def inputSchema: StructType = StructType(StructField("Union", new GeometryUDT) :: Nil)
 
-  override def bufferSchema: StructType = StructType(StructField("Union", new GeometryUDT) :: Nil)
+  override def bufferSchema: StructType = StructType(StructField("points", new GeometryUDT) :: StructField("lineStrings", new GeometryUDT) :: StructField("polygons", new GeometryUDT) :: Nil)
 
   override def dataType: DataType = new GeometryUDT
 
   override def deterministic: Boolean = true
 
   override def initialize(buffer: MutableAggregationBuffer): Unit = {
-    val coordinate = new Coordinate(-999999999, -999999999)
-    buffer(0) = new GeometryFactory().createPoint(coordinate)
+    buffer(0) = new WKTReader().read("POLYGON EMPTY")
+    buffer(1) = new WKTReader().read("POLYGON EMPTY")
+    buffer(2) = new WKTReader().read("POLYGON EMPTY")
   }
 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
     if (input.isNullAt(0)) return
-    val accumulateUnion = buffer.getAs[Geometry](0)
+    val pointAccumulateUnion = buffer.getAs[Geometry](0)
+    val lineStringAccumulateUnion = buffer.getAs[Geometry](1)
+    val polygonAccumulateUnion = buffer.getAs[Geometry](2)
     val newGeo = input.getAs[Geometry](0)
-    if (accumulateUnion.getCoordinates()(0).x == -999999999) buffer(0) = newGeo
-    else buffer(0) = accumulateUnion.union(newGeo)
+    val newGeoType = newGeo.getGeometryType
+    newGeoType match {
+      case "Point" | "MultiPoint" => buffer(0) = pointAccumulateUnion.union(newGeo)
+      case "LineString" | "MultiLineString" => buffer(1) = lineStringAccumulateUnion.union(newGeo)
+      case "Polygon" | "MultiPolygon" => buffer(2) = polygonAccumulateUnion.union(newGeo)
+      case "GeometryCollection" =>
+        val geometryCollection = newGeo.asInstanceOf[GeometryCollection]
+        for (i <- 0 until geometryCollection.getNumGeometries) {
+          val geometry = geometryCollection.getGeometryN(i)
+          val geoType = geometry.getGeometryType
+          geoType match {
+            case "Point" | "MultiPoint"  => buffer(0) = pointAccumulateUnion.union(geometry)
+            case "LineString" | "MultiLineString" => buffer(1) = lineStringAccumulateUnion.union(geometry)
+            case "Polygon" | "MultiPolygon" => buffer(2) = polygonAccumulateUnion.union(geometry)
+            case _ => throw new Exception("Unsupported geometry type " + newGeoType)
+          }
+        }
+      case _ => throw new Exception("Unsupported geometry type " + newGeoType)
+    }
   }
 
   override def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {
-    if (buffer2.isNullAt(0)) return
-    val leftGeo = buffer1.getAs[Geometry](0)
-    val rightGeo = buffer2.getAs[Geometry](0)
-    if (leftGeo.getCoordinates()(0).x == -999999999) buffer1(0) = rightGeo
-    else if (rightGeo.getCoordinates()(0).x == -999999999) buffer1(0) = leftGeo
-    else buffer1(0) = leftGeo.union(rightGeo)
+    val leftPoints = buffer1.getAs[Geometry](0)
+    val leftLineStrings = buffer1.getAs[Geometry](1)
+    val leftPolygons = buffer1.getAs[Geometry](2)
+
+    val rightPoints = if (buffer2.isNullAt(0)) null else buffer2.getAs[Geometry](0)
+    val rightLineStrings = if (buffer2.isNullAt(1)) null else buffer2.getAs[Geometry](1)
+    val rightPolygons = if (buffer2.isNullAt(2)) null else buffer2.getAs[Geometry](2)
+
+    if (rightPoints != null) buffer1(0) = leftPoints.union(rightPoints)
+    if (rightLineStrings != null) buffer1(1) = leftLineStrings.union(rightLineStrings)
+    if (rightPolygons != null) buffer1(2) = leftPolygons.union(rightPolygons)
   }
 
-  override def evaluate(buffer: Row): Any = buffer.getAs[Geometry](0)
+  override def evaluate(buffer: Row): Any = {
+    val points = buffer.getAs[Geometry](0)
+    val lineStrings = buffer.getAs[Geometry](1)
+    val polygons = buffer.getAs[Geometry](2)
+    if (points.getGeometryType == "Point") collectionUnionPoint(lineStrings.union(polygons), points)
+    else if (points.getGeometryType == "MultiPoint") collectionUnionPoints(lineStrings.union(polygons), points)
+  }
 }
 
 ////deprecated
