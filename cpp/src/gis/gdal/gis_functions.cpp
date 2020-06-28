@@ -242,24 +242,6 @@ inline std::shared_ptr<arrow::Array> AppendWkb(
   return array_ptr;
 }
 
-inline void AppendWkb(arrow::BinaryBuilder& builder, const OGRGeometry* geo) {
-  if (geo == nullptr) {
-    CHECK_ARROW(builder.AppendNull());
-  } else if (geo->IsEmpty() && (geo->getGeometryType() == wkbPoint)) {
-    CHECK_ARROW(builder.AppendNull());
-  } else {
-    auto wkb_size = geo->WkbSize();
-    auto wkb = static_cast<unsigned char*>(CPLMalloc(wkb_size));
-    auto err_code = geo->exportToWkb(OGRwkbByteOrder::wkbNDR, wkb);
-    if (err_code != OGRERR_NONE) {
-      CHECK_ARROW(builder.AppendNull());
-    } else {
-      CHECK_ARROW(builder.Append(wkb, wkb_size));
-    }
-    CPLFree(wkb);
-  }
-}
-
 bool GetNextValue(const std::vector<std::shared_ptr<arrow::Array>>& chunk_array,
                   ChunkArrayIdx<WkbItem>& idx) {
   if (idx.chunk_idx >= (int)chunk_array.size()) return false;
@@ -1372,9 +1354,9 @@ std::shared_ptr<arrow::ChunkedArray> ST_Boundary(
     const std::shared_ptr<arrow::ChunkedArray>& geo) {
   auto op = [](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
     if (ogr->IsEmpty()) {
-      AppendWkb(builder, ogr);
+      AppendWkbNDR(builder, ogr);
     } else {
-      AppendWkb(builder, ogr->Boundary());
+      AppendWkbNDR(builder, ogr->Boundary());
     }
   };
   return UnaryOp<arrow::BinaryBuilder>(geo, op);
