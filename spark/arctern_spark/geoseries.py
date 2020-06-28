@@ -85,6 +85,10 @@ def _validate_args(*args, dtype=None):
     return args_list
 
 
+class SparkPandasIndexingError(Exception):
+    pass
+
+
 class GeoSeries(Series):
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
@@ -124,8 +128,8 @@ class GeoSeries(Series):
                     s = Series([], dtype=int).astype(str)
 
             anchor = DataFrame(s)
-            kss = first_series(anchor)
             column_label = anchor._internal.column_labels[0]
+            kss = anchor._kser_for(column_label)
 
             from pyspark.sql.types import StringType, BinaryType
             from .scala_wrapper import GeometryUDT
@@ -209,6 +213,16 @@ class GeoSeries(Series):
         'EPSG:4326'
         """
         self.set_crs(crs)
+
+    @property
+    def hasnans(self):
+        """
+        Return True if it has any missing values. Otherwise, it returns False.
+        """
+        sdf = self._internal.spark_frame
+        scol = self.spark.column
+
+        return sdf.select(F.max(scol.isNull())).collect()[0][0]
 
     def __repr__(self):
         max_display_count = get_option("display.max_rows")
@@ -404,6 +418,27 @@ class GeoSeries(Series):
     def to_wkt(self):
         return _column_op("st_astext", self)
 
-    def head(self, n: int):
+    def head(self, n: int = 5):
         return GeoSeries(super().head(n))
 
+    def take(self, indices):
+        return GeoSeries(super().take(indices))
+
+
+def first_series(df):
+    """
+    Takes a DataFrame and returns the first column of the DataFrame as a Series
+    """
+    from .scala_wrapper import GeometryUDT
+    assert isinstance(df, (DataFrame, pd.DataFrame)), type(df)
+    if isinstance(df, DataFrame):
+        kss = df._kser_for(df._internal.column_labels[0])
+        if isinstance(kss.spark.data_type, GeometryUDT):
+            return GeoSeries(kss)
+        else:
+            return kss
+    else:
+        return df[df.columns[0]]
+
+
+ks.series.first_series = first_series
