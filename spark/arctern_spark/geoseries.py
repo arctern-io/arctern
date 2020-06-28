@@ -62,8 +62,6 @@ def _validate_arg(arg, dtype=(bytes, bytearray)):
         arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
         arg = Series(arg)
-    else:
-        raise TypeError(f"not support dtype {type(arg)} yet")
     return arg
 
 
@@ -354,7 +352,7 @@ class GeoSeries(Series):
         return _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y))
 
     def affine(self, a, b, d, e, offset_x, offset_y):
-        return _column_op("st_scale", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
+        return _column_op("st_affine", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
 
     def translate(self, shifter_x, shifter_y):
         return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))

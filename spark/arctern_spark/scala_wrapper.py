@@ -125,6 +125,13 @@ _unary_functions = [
     "st_union_aggr",
     "st_geomfromwkb",
     "st_envelope_aggr",
+    "st_exteriorring",
+    "st_isempty",
+    "st_boundary",
+    "st_scale",
+    "st_affine",
+    "st_translate",
+    "st_rotate",
 ]
 
 # functions that take two arguments as input
@@ -141,6 +148,9 @@ _binary_functions = [
     "st_intersects",
     "st_distancesphere",
     "st_hausdorffdistance",
+    "st_difference",
+    "st_symdifference",
+    "st_union"
 ]
 
 _multible_functions = [
