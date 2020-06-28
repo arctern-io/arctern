@@ -23,25 +23,28 @@
 #include <memory>
 #include <vector>
 
-#include "index/index.h"
+#include "index/index_tree.h"
 #include "render/utils/render_utils.h"
 
 namespace arctern {
+namespace gis {
 namespace map_match {
 
-using IndexType = arctern::geo_indexing::IndexType;
-
-std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
-    const std::vector<std::shared_ptr<arrow::Array>>& roads,
-    const std::vector<std::shared_ptr<arrow::Array>>& points);
+using arctern::geo_indexing::IndexType;
+using geo_indexing::IndexTree;
 
 std::vector<std::shared_ptr<arrow::Array>> nearest_road(
-    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const IndexTree& index_tree,
+    const std::vector<std::shared_ptr<arrow::Array>>& points);
+
+std::vector<std::shared_ptr<arrow::Array>> nearest_location_on_road(
+    const IndexTree& index_tree,
     const std::vector<std::shared_ptr<arrow::Array>>& points);
 
 std::vector<std::shared_ptr<arrow::Array>> near_road(
-    const std::vector<std::shared_ptr<arrow::Array>>& roads,
+    const IndexTree& index_tree,
     const std::vector<std::shared_ptr<arrow::Array>>& gps_points, const double distance);
 
 }  // namespace map_match
+}  // namespace gis
 }  // namespace arctern

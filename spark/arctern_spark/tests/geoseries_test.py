@@ -14,10 +14,10 @@
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
-import pytest
-import pandas as pd
 import numpy as np
 import databricks.koalas as ks
+import pandas as pd
+import pytest
 from arctern_spark import GeoSeries
 from osgeo import ogr
 
@@ -33,7 +33,7 @@ def sequence(request):
     return [ogr.CreateGeometryFromWkt(make_point(x, x)).ExportToWkb() for x in range(5)]
 
 
-@pytest.fixture(params=[1, 1.0, ('1', '1')])
+@pytest.fixture(params=[1, 1.0])
 def wrong_type_data(request):
     return [request.param for _ in range(5)]
 
@@ -263,5 +263,9 @@ class TestGeoMethods:
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
         s1 = s.to_wkb()
+<<<<<<< HEAD
         assert isinstance(s1, ks.Series)
 
+=======
+        assert isinstance(s1, pd.Series)
+>>>>>>> 7b7e2afe33b1277520a43b741197141dad897678

@@ -15,20 +15,28 @@
  */
 package org.apache.spark.sql.arctern.index
 
-import org.locationtech.jts.geom.Envelope
-import org.locationtech.jts.index.{ItemVisitor, SpatialIndex}
-import org.locationtech.jts.index.quadtree.Quadtree
-
 import java.util
 
+import org.locationtech.jts.geom.Envelope
+import org.locationtech.jts.index.quadtree.Quadtree
+import org.locationtech.jts.index.{ItemVisitor, SpatialIndex}
+
 class QuadTreeIndex extends SpatialIndex with Serializable {
-  private var index = new Quadtree
+  private val index = new Quadtree
 
-  override def insert(itemEnv: Envelope, item: Any): Unit = {index.insert(itemEnv, item)}
+  override def insert(itemEnv: Envelope, item: Any): Unit = {
+    index.insert(itemEnv, item)
+  }
 
-  override def query(searchEnv: Envelope): util.List[_] = {index.query(searchEnv)}
+  override def query(searchEnv: Envelope): util.List[_] = {
+    index.query(searchEnv)
+  }
 
-  override def query(searchEnv: Envelope, visitor: ItemVisitor): Unit = {index.query(searchEnv, visitor)}
+  override def query(searchEnv: Envelope, visitor: ItemVisitor): Unit = {
+    index.query(searchEnv, visitor)
+  }
 
-  override def remove(itemEnv: Envelope, item: Any): Boolean = {index.remove(itemEnv, item)}
+  override def remove(itemEnv: Envelope, item: Any): Boolean = {
+    index.remove(itemEnv, item)
+  }
 }

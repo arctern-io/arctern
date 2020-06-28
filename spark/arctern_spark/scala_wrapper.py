@@ -18,9 +18,9 @@ if sys.version >= '3':
     basestring = str
 
 from pyspark import SparkContext
-from pyspark.sql.column import Column, _to_java_column, _create_column_from_name
+from pyspark.sql.column import Column, _to_java_column
 
-from py4j.java_gateway import java_import, JavaObject
+from py4j.java_gateway import java_import
 
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
@@ -61,6 +61,7 @@ def import_arctern_functions():
 def _create_unary_function(name):
     def _(col, *args):
         sc = SparkContext._active_spark_context
+        args = [_to_java_column(arg) for arg in args]
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col), *args)
         return Column(jc)
 
@@ -71,16 +72,6 @@ def _create_unary_function(name):
 def _create_binary_function(name, doc=""):
     def _(col1, col2):
         sc = SparkContext._active_spark_context
-        # if isinstance(col1, Column):
-        #     arg1 = col1._jc
-        # elif isinstance(col1, basestring):
-        #     arg1 = _create_column_from_name(col1)
-        #
-        # if isinstance(col2, Column):
-        #     arg2 = col2._jc
-        # elif isinstance(col2, basestring):
-        #     arg2 = _create_column_from_name(col2)
-
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2))
         return Column(jc)
 
@@ -92,6 +83,7 @@ def _create_binary_function(name, doc=""):
 def _create_multible_function(name):
     def _(col1, col2, col3, col4, *args):
         sc = SparkContext._active_spark_context
+        args = [_to_java_column(arg) for arg in args]
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2),
                                                                            _to_java_column(col3), _to_java_column(col4),
                                                                            *args)
@@ -125,6 +117,13 @@ _unary_functions = [
     "st_union_aggr",
     "st_geomfromwkb",
     "st_envelope_aggr",
+    "st_exteriorring",
+    "st_isempty",
+    "st_boundary",
+    "st_scale",
+    "st_affine",
+    "st_translate",
+    "st_rotate",
 ]
 
 # functions that take two arguments as input
@@ -141,12 +140,14 @@ _binary_functions = [
     "st_intersects",
     "st_distancesphere",
     "st_hausdorffdistance",
+    "st_difference",
+    "st_symdifference",
+    "st_union"
 ]
 
 _multible_functions = [
     "st_polygonfromenvelope"
 ]
-
 
 import_arctern_functions()
 

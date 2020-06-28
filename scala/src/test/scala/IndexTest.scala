@@ -19,7 +19,6 @@ import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.arctern.expressions.IndexedJoin
 import org.apache.spark.sql.arctern.index.{IndexBuilder, RTreeIndex}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
-import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 
 class IndexTest extends AdapterTest {
@@ -78,7 +77,7 @@ class IndexTest extends AdapterTest {
     val broadcastVar = spark.sparkContext.broadcast(index)
     val joincase = new IndexedJoin(broadcastVar)
     val result = joincase.join(geo1)
-    result.foreach{ out =>
+    result.foreach { out =>
       println(out.toString)
     }
   }
@@ -89,7 +88,7 @@ class IndexTest extends AdapterTest {
     val PolygonLocation = resourceFolder + "polygon.csv"
 
     val conf_array = spark.sparkContext.getConf.getAll
-    for( x <- conf_array ){
+    for (x <- conf_array) {
       println(x)
     }
 
@@ -109,21 +108,21 @@ class IndexTest extends AdapterTest {
     val index = new IndexBuilder("RTREE")
     index.insert(geo2)
     val t2 = System.currentTimeMillis
-    println((t2 - t1)/1000.0 + " secs")
+    println((t2 - t1) / 1000.0 + " secs")
     println("preference test 2++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     val broadcastVar = spark.sparkContext.broadcast(index)
     println(broadcastVar.value)
     val joincase = new IndexedJoin(broadcastVar)
     val t3 = System.currentTimeMillis
-    println((t3 - t2)/1000.0 + " secs")
+    println((t3 - t2) / 1000.0 + " secs")
     println("preference test 3++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     val result = joincase.join(geo1)
     val t4 = System.currentTimeMillis
-    println((t4 - t3)/1000.0 + " secs")
+    println((t4 - t3) / 1000.0 + " secs")
     println("preference test 4++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-//    result.foreach{ out =>
-//      println(out.toString)
-//    }
+    //    result.foreach{ out =>
+    //      println(out.toString)
+    //    }
   }
 
 }

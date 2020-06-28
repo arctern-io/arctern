@@ -21,6 +21,28 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 class AggregateFunctionsTest extends AdapterTest {
+  test("ST_Envelope_Aggr_codegen") {
+    assert(true)
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((1 2,3 4,5 6,1 2))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("raw_data")
+
+    df.show(false)
+    val rst = spark.sql("select ST_Envelope_Aggr(geo) from raw_data")
+    //    rst.queryExecution.debug.codegen()
+    rst.show(false)
+    val collect = rst.collect()
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
+  }
+
   test("ST_Union_Aggr") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (0 0)")),
@@ -40,14 +62,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
 
     val rst2 = df.agg(st_union_aggr(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
   }
 
   test("ST_Union_Aggr-Null") {
@@ -71,14 +93,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
 
     val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea()==125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
   }
 
   test("ST_Envelope_Aggr") {
@@ -136,4 +158,33 @@ class AggregateFunctionsTest extends AdapterTest {
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
   }
+
+  test("ST_Envelope_Aggr-AllNull") {
+    val data = Seq(
+      Row("error geo"),
+      Row("LINESTRING EMPTY"),
+      Row(null),
+      Row("POLYGON EMPTY"),
+      Row("MULTIPOLYGON EMPTY"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("ST_Envelope_Aggr_Null_data")
+
+    val rst = spark.sql("select ST_Envelope_Aggr(ST_GeomFromText(geo)) from ST_Envelope_Aggr_Null_data")
+    rst.show(false)
+
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
+
+    val rst2 = df.agg(st_envelope_aggr(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
+
+  }
 }
+
