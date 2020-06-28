@@ -18,14 +18,28 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{AbstractDataType, BooleanType, DataType, DoubleType, IntegerType, NumericType, StringType}
-import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.catalyst.util.ArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData._
+import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
 
 object utils {
+  def envelopeAsList(geom: Geometry): ArrayData = {
+    if (geom == null || geom.isEmpty) {
+      val negInf = scala.Double.NegativeInfinity
+      val posInf = scala.Double.PositiveInfinity
+      toArrayData(Array(posInf, posInf, negInf, negInf))
+    } else {
+      val env = geom.getEnvelopeInternal
+      val arr = Array(env.getMinX, env.getMinY, env.getMaxX, env.getMaxY)
+      toArrayData(arr)
+    }
+  }
+
   def distanceSphere(from: Geometry, to: Geometry): Double = {
     var distance = -1.0
     if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
@@ -66,7 +80,7 @@ object utils {
 
   def makeValid(geo: Geometry): Geometry = {
     val geoType = geo.getGeometryType
-    if(geoType != "Polygon" || geoType != "MultiPolygon") return geo
+    if (geoType != "Polygon" || geoType != "MultiPolygon") return geo
     val polygonList: java.util.List[Polygon] = geo match {
       case g: Polygon =>
         JTS.makeValid(g, true)
@@ -675,4 +689,57 @@ case class ST_Boundary(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def dataType: DataType = new GeometryUDT
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"""$geo.getGeometryType().equals("Polygon") ? new org.locationtech.jts.geom.GeometryFactory().createPolygon($geo.getCoordinates()).getExteriorRing() : $geo """)
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
+case class ST_Scale(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def factorX(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def factorY(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().scale(${factorX(ctx)}, ${factorY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
+}
+
+case class ST_Affine(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  def a(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
+
+  def b(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+
+  def d(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+
+  def e(ctx: CodegenContext): ExprValue = inputsExpr(4).genCode(ctx).value
+
+  def offsetX(ctx: CodegenContext): ExprValue = inputsExpr(5).genCode(ctx).value
+
+  def offsetY(ctx: CodegenContext): ExprValue = inputsExpr(6).genCode(ctx).value
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation(${a(ctx)}, ${b(ctx)}, ${d(ctx)}, ${e(ctx)}, ${offsetX(ctx)}, ${offsetY(ctx)}).transform($geo)")
+
+  override def dataType: DataType = new GeometryUDT
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType, NumericType, NumericType, NumericType)
+
+  override def children: Seq[Expression] = inputsExpr
 }

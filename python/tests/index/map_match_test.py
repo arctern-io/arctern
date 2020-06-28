@@ -12,26 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pandas
 import arctern
 
+def test_near_road():
+    roads = arctern.GeoSeries(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
+    points = arctern.GeoSeries(["POINT (1.0001 0.0001)"])
+    index = roads.sindex
+    rst = index.near_road(points, 100)
+    assert len(rst) == 1
+    assert rst[0]
+
 def test_nearest_location_on_road():
-    roads = pandas.Series("LINESTRING (1 2,1 3)")
-    gps_points = pandas.Series("POINT (1.0001 2.5)")
-    rst = arctern.ST_AsText(arctern.nearest_location_on_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
+    roads = arctern.GeoSeries("LINESTRING (1 2,1 3)")
+    gps_points = arctern.GeoSeries("POINT (1.0001 2.5)")
+    index = roads.sindex
+    rst = arctern.ST_AsText(index.nearest_location_on_road(gps_points))
     assert len(rst) == 1
     assert rst[0] == "POINT (1.0 2.5)"
 
 def test_nearest_road():
-    roads = pandas.Series(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
-    gps_points = pandas.Series("POINT (1.0001 1)")
-    rst = arctern.ST_AsText(arctern.nearest_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points)))
+    roads = arctern.GeoSeries(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
+    gps_points = arctern.GeoSeries("POINT (1.0001 1)")
+    index = roads.sindex
+    rst = arctern.ST_AsText(index.nearest_road(gps_points))
     assert len(rst) == 1
     assert rst[0] == "LINESTRING (0 0,2 0)"
-
-def test_near_road():
-    roads = pandas.Series(["LINESTRING (0 0,2 0)", "LINESTRING (5 0,5 5)"])
-    gps_points = pandas.Series("POINT (1.0001 0.0001)")
-    rst = arctern.near_road(arctern.ST_GeomFromText(roads), arctern.ST_GeomFromText(gps_points), 100)
-    assert len(rst) == 1
-    assert rst[0]

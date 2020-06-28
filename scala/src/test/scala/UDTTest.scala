@@ -15,8 +15,8 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
+import org.apache.spark.sql.types._
 import org.locationtech.jts.io.WKTReader
 
 class UDTTest extends AdapterTest {

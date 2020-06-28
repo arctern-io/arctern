@@ -12,18 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(index_tests_src
+set(geo_index_tests_src
         ${unittest_srcs}
-        indexed_with_test.cpp
+        map_match_test.cpp
         )
 
-add_executable(index_tests ${index_tests_src})
+add_executable(geo_index_tests ${geo_index_tests_src})
 
-target_link_libraries(index_tests
+#add_dependencies(map_match_tests googletest_ep)
+
+target_link_libraries(geo_index_tests
         arctern
         arrow
         gtest
         pthread
+        gdal
         )
 
-install(TARGETS index_tests DESTINATION unittest)
+install(TARGETS geo_index_tests DESTINATION unittest)
+add_subdirectory(spatial_join)

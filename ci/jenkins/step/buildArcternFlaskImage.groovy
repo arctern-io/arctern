@@ -1,6 +1,6 @@
 def imageName = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}:${ARCTERN_FLASK_TAG}"
 
-def cacheImageName = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}:${CHANGE_TARGET ? CHANGE_TARGET : ARCTERN_FLASK_TAG}"
+def cacheImageName = "${params.DOKCER_REGISTRY_URL}/${FLASK_IMAGE_REPOSITORY}:${ARCTERN_FLASK_TARGET_TAG}"
 
 try {
     sh(returnStatus: true, script: "docker pull ${cacheImageName}")

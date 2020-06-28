@@ -15,11 +15,10 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
 import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.types._
 
 class FunctionsTest extends AdapterTest {
   test("ST_Within") {
@@ -2549,5 +2548,191 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 4, 1 0, 0 0))")
     assert(collect2(5).isNullAt(0))
     assert(collect2(6).isNullAt(0))
+  }
+
+  test("ST_ExteriorRing") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+
+    val rst2 = df.select(st_exteriorring(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+  }
+
+  test("ST_ExteriorRing-Null") {
+    val data = Seq(
+      Row("POINT (0 1)"),
+      Row("LINESTRING (0 0, 0 1, 1 1)"),
+      Row("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"),
+      Row("POLYGON EMPTY"),
+      Row("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(ST_GeomFromText(geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(5).isNullAt(0))
+    assert(collect(6).isNullAt(0))
+
+    val rst2 = df.select(st_exteriorring(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(5).isNullAt(0))
+    assert(collect2(6).isNullAt(0))
+  }
+
+  test("ST_Scale") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (120.6 100.999)")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Scale(geo, 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+
+    val rst2 = df.select(st_scale(col("geo"), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+  }
+
+  test("ST_Scale-Null") {
+    val data = Seq(
+      Row("POINT (120.6 100.999)"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Scale(ST_GeomFromText(geo), 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    val rst2 = df.select(st_scale(st_geomfromtext(col("geo")), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
+  }
+
+  test("ST_Affine") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (120.6 100.999)")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Affine(geo, 2, 2, 2, 2, 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+
+    val rst2 = df.select(st_affine(col("geo"), lit(2), lit(2), lit(2), lit(2), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+  }
+
+  test("ST_Affine-Null") {
+    val data = Seq(
+      Row("POINT (120.6 100.999)"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Affine(ST_GeomFromText(geo), 2, 2, 2, 2, 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    val rst2 = df.select(st_affine(st_geomfromtext(col("geo")), lit(2), lit(2), lit(2), lit(2), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
   }
 }
