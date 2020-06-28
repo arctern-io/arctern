@@ -105,6 +105,47 @@ class AggregateFunctionsTest extends AdapterTest {
     assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
   }
 
+  test("ST_Union_Aggr-Perf") {
+    val r = scala.util.Random
+    val dataNum = 100
+    val randomRange = 50
+
+    var data = List[Row]()
+    for( a <- 0 to dataNum){
+      data = data :+ Row(GeometryUDT.FromWkt(s"""POINT (${r.nextInt(randomRange)} ${r.nextInt(randomRange)})"""))
+    }
+
+    for( a <- 0 to dataNum){
+      val minX = r.nextInt(randomRange)
+      val minY = r.nextInt(randomRange)
+      data = data :+ Row(GeometryUDT.FromWkt(s"""LINESTRING (${minX} ${minY}, ${minX + 10} ${minY + 10}, ${minX + 20} ${minY + 20})"""))
+    }
+
+    for( a <- 0 to dataNum){
+      val minX = r.nextInt(randomRange)
+      val minY = r.nextInt(randomRange)
+      val maxX = minX + 2
+      val maxY = minY + 2
+      data = data :+ Row(GeometryUDT.FromWkt(s"""POLYGON (($minX $minY, $maxX $minY, $maxX $maxY, $minX $maxY, $minX $minY))"""))
+    }
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = false)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("data")
+    spark.sql("cache table data")
+
+    val t1 = System.currentTimeMillis
+
+    val rst = spark.sql("select ST_Union_Aggr(geo) from data")
+    rst.createOrReplaceTempView("res")
+    spark.sql("cache table res")
+
+    val t2 = System.currentTimeMillis
+    rst.show(false)
+    println((t2 - t1)/1000.0 + " secs")
+  }
+
   test("ST_Envelope_Aggr") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (-1 -1)")),

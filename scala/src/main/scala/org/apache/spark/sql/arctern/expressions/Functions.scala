@@ -118,21 +118,23 @@ object utils {
   def collectionUnionPoints(geometries: Geometry, points: Geometry): Geometry = {
     var geometryArray = Array[Geometry]()
     var pointsArray = Array[Geometry]()
+    var pointsTmpArray = Array[Geometry]()
     val multiPoints = points.asInstanceOf[MultiPoint]
     val geometryCollection = geometries.asInstanceOf[GeometryCollection]
     for (i <- 0 until multiPoints.getNumPoints) {
       val point = multiPoints.getGeometryN(i)
       pointsArray = pointsArray :+ point
+      pointsTmpArray = pointsTmpArray :+ point
     }
     for (i <- 0 until geometryCollection.getNumGeometries) {
       val geometry = geometryCollection.getGeometryN(i)
       geometryArray = geometryArray :+ geometry
       for (j <- pointsArray.indices) {
         val point = pointsArray(j)
-        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsArray = pointsArray.filter(! _.contains(point))
+        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(! _.contains(point))
       }
     }
-    geometryArray = geometryArray ++ pointsArray
+    geometryArray = geometryArray ++ pointsTmpArray
     new GeometryFactory().createGeometryCollection(geometryArray)
   }
 
