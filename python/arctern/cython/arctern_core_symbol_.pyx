@@ -15,6 +15,8 @@
 # cython: language_level=3
 # distutils: language = c++
 
+from libcpp.string cimport string
+
 
 # render func api:
 def projection(geos_list, bottom_right, top_left, height, width):
