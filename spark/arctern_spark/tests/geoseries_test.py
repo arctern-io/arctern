@@ -263,9 +263,4 @@ class TestGeoMethods:
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
         s1 = s.to_wkb()
-<<<<<<< HEAD
         assert isinstance(s1, ks.Series)
-
-=======
-        assert isinstance(s1, pd.Series)
->>>>>>> 7b7e2afe33b1277520a43b741197141dad897678
