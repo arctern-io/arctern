@@ -162,7 +162,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    const std::string &origin) {
+    const std::string& origin) {
   return gdal::ST_Rotate(geometries, rotation_angle, origin);
 }
 
@@ -217,7 +217,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Scale(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y, const std::string &origin) {
+    double factor_y, const std::string& origin) {
   return gdal::ST_Scale(geometries, factor_x, factor_y, origin);
 }
 

@@ -23,7 +23,7 @@
 
 #include "arrow/gis_api.h"
 #include "gis/gdal/geometry_visitor.h"
-#include "map_match/map_match.h"
+#include "gis/map_match/map_match.h"
 #include "utils/check_status.h"
 
 #define COMMON_TEST_CASES                                                              \

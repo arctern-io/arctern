@@ -17,13 +17,13 @@
 #pragma once
 
 #include <ogr_geometry.h>
+
 #include <cmath>
 #include <string>
 
 namespace arctern {
 namespace gis {
 namespace gdal {
-
 
 class AreaVisitor : public OGRDefaultConstGeometryVisitor {
  public:
@@ -193,16 +193,15 @@ struct AffineParams {
 
 class AffineVisitor : public OGRDefaultGeometryVisitor {
  public:
-
   AffineVisitor() = default;
-  explicit AffineVisitor(const AffineParams & param): param_(param){}
-  AffineVisitor(double a, double b, double d, double e, double xoff, double yoff){
-  	param_.a_ = a;
-  	param_.b_ = b;
-  	param_.d_ = d;
-  	param_.e_ = e;
-  	param_.xoff_ = xoff;
-  	param_.yoff_ = yoff;
+  explicit AffineVisitor(const AffineParams& param) : param_(param) {}
+  AffineVisitor(double a, double b, double d, double e, double xoff, double yoff) {
+    param_.a_ = a;
+    param_.b_ = b;
+    param_.d_ = d;
+    param_.e_ = e;
+    param_.xoff_ = xoff;
+    param_.yoff_ = yoff;
   }
   ~AffineVisitor() = default;
 
@@ -214,23 +213,20 @@ class AffineVisitor : public OGRDefaultGeometryVisitor {
 
 class TranslateVisitor : public AffineVisitor {
  public:
-  TranslateVisitor(double xoff, double yoff){
-	param_.xoff_ = xoff;
-	param_.yoff_ = yoff;
+  TranslateVisitor(double xoff, double yoff) {
+    param_.xoff_ = xoff;
+    param_.yoff_ = yoff;
   }
 
   ~TranslateVisitor() = default;
-
 };
 
 class RotateVisitor : public AffineVisitor {
  public:
-
-  RotateVisitor(double rotation_angle, double origin_x, double origin_y){
-
+  RotateVisitor(double rotation_angle, double origin_x, double origin_y) {
     auto cosp = std::cos(rotation_angle);
     auto sinp = std::sin(rotation_angle);
-    
+
     param_.a_ = cosp;
     param_.b_ = -sinp;
     param_.d_ = sinp;
@@ -240,16 +236,14 @@ class RotateVisitor : public AffineVisitor {
 
     param_.xoff_ = origin_x - origin_x * cosp + origin_y * sinp;
     param_.yoff_ = origin_y - origin_x * sinp - origin_y * cosp;
-
   }
 
   ~RotateVisitor() = default;
-
 };
 
 class ScaleVisitor : public AffineVisitor {
  public:
-  ScaleVisitor(double factor_x, double factor_y, double origin_x, double origin_y){
+  ScaleVisitor(double factor_x, double factor_y, double origin_x, double origin_y) {
     param_.a_ = factor_x;
     param_.e_ = factor_y;
     param_.xoff_ = origin_x - origin_x * factor_x;
@@ -257,13 +251,11 @@ class ScaleVisitor : public AffineVisitor {
   }
 
   ~ScaleVisitor() = default;
-
 };
 
 class SkewVisitor : public AffineVisitor {
  public:
-
-  SkewVisitor(double xs, double ys, double origin_x, double origin_y){
+  SkewVisitor(double xs, double ys, double origin_x, double origin_y) {
     auto tanx = std::tan(xs);
     auto tany = std::tan(ys);
     param_.b_ = tanx;
@@ -273,9 +265,7 @@ class SkewVisitor : public AffineVisitor {
   }
 
   ~SkewVisitor() = default;
-
 };
-
 
 }  // namespace gdal
 }  // namespace gis

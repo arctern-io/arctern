@@ -16,14 +16,13 @@
 
 #pragma once
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
 
 #include "arrow/api.h"
 #include "arrow/array.h"
@@ -90,7 +89,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    const std::string &origin);
+    const std::string& origin);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Intersection(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
@@ -139,8 +138,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Scale(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y, const std::string &origin);
-
+    double factor_y, const std::string& origin);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Union(
     const std::shared_ptr<arrow::ChunkedArray>& geo1,

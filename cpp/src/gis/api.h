@@ -16,14 +16,13 @@
 
 #pragma once
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <ogr_api.h>
-#include <ogrsf_frmts.h>
 
 #include "arrow/api.h"
 #include "arrow/array.h"
@@ -101,7 +100,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    const std::string &origin);
+    const std::string& origin);
 
 std::shared_ptr<arrow::Array> ST_Centroid(
     const std::shared_ptr<arrow::Array>& geometries);
@@ -136,7 +135,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Scale(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
-    double factor_y, const std::string &origin);
+    double factor_y, const std::string& origin);
 
 std::shared_ptr<arrow::ChunkedArray> ST_Affine(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double a, double b, double d,

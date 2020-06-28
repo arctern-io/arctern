@@ -71,18 +71,19 @@ struct WkbItem {
   }
 };
 
-void _calculate_affine_origin(OGRGeometry * geo, double &x, double &y, const std::string& origin){
-    if (origin == "center"){
-      OGREnvelope env;
-      OGR_G_GetEnvelope(geo, &env);
-      x = (env.MinX + env.MaxX) / 2.;
-      y = (env.MinY + env.MaxY) / 2.;
-    }else if (origin == "centroid"){
-	OGRPoint centro_point;
-        auto err_code = geo->Centroid(&centro_point);
-        x = centro_point.getX();
-        y = centro_point.getY();
-    }
+void _calculate_affine_origin(OGRGeometry* geo, double& x, double& y,
+                              const std::string& origin) {
+  if (origin == "center") {
+    OGREnvelope env;
+    OGR_G_GetEnvelope(geo, &env);
+    x = (env.MinX + env.MaxX) / 2.;
+    y = (env.MinY + env.MaxY) / 2.;
+  } else if (origin == "centroid") {
+    OGRPoint centro_point;
+    auto err_code = geo->Centroid(&centro_point);
+    x = centro_point.getX();
+    y = centro_point.getY();
+  }
 }
 
 inline OGRGeometry* Wrapper_createFromWkt(
@@ -830,7 +831,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Translate(
 
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
-    const std::string & origin="center") {
+    const std::string& origin = "center") {
   auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* geo) {
     if (geo->IsEmpty()) {
       builder.AppendNull();
@@ -848,7 +849,6 @@ std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
   return results;
 }
 
-
 std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
     double origin_x, double origin_y) {
@@ -859,7 +859,7 @@ std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
       RotateVisitor rotate_visitor{rotation_angle, origin_x, origin_y};
       geo->accept(&rotate_visitor);
       AppendWkbNDR(builder, geo);
-     }
+    }
   };
 
   auto results = UnaryOp<arrow::BinaryBuilder>(geometries, op);
@@ -1158,11 +1158,9 @@ std::shared_ptr<arrow::ChunkedArray> ST_Scale(
   return rst;
 }
 
-
 std::shared_ptr<arrow::ChunkedArray> ST_Scale(
     const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
     double factor_y, const std::string& origin = "center") {
-
   auto op = [&](arrow::BinaryBuilder& builder, OGRGeometry* ogr) {
     if (ogr->IsEmpty()) {
       builder.AppendNull();
