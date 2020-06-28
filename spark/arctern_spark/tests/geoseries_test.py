@@ -17,6 +17,7 @@
 import pytest
 import pandas as pd
 import numpy as np
+import databricks.koalas as ks
 from arctern_spark import GeoSeries
 from osgeo import ogr
 
@@ -195,13 +196,13 @@ class TestPandasMethod:
         assert s[0] is None
 
     def test_equals(self):
-        s1 = GeoSeries([make_point(1, 1), None])
-        s2 = GeoSeries([make_point(1, 1), None])
-        assert s1.equals(s2)
+        s1 = GeoSeries([make_point(1, 1), make_point(2, 2)])
+        s2 = GeoSeries([make_point(1, 1), make_point(2, 2)])
+        assert (s1.equals(s2)).all()
 
         s1 = GeoSeries()
         s2 = GeoSeries()
-        assert s1.equals(s2)
+        assert (s1.equals(s2)).all()
 
     def test_unique(self):
         s = GeoSeries([make_point(1, 1), make_point(1, 1), make_point(1, 2), None])
@@ -237,7 +238,7 @@ class TestGeoMethods:
         # property
         s = GeoSeries([make_point(1, 1), None], index=index)
         s1 = s.length
-        assert s1.index.to_list() == index
+        assert s1.index.to_pandas().to_list() == index
         assert s1[index[0]] == 0
         assert pd.isna(s1[index[1]])
 
@@ -250,17 +251,17 @@ class TestGeoMethods:
         left = GeoSeries([make_point(1, 1), None], index=index)
         right = GeoSeries([make_point(1, 1), None], index=index)
         s1 = left.geom_equals(right)
-        assert s1.index.to_list() == index
+        assert s1.index.to_pandas().to_list() == index
 
         # binary with different index will align index
         left = GeoSeries([make_point(1, 1), None], index=[1, 2])
         right = GeoSeries([make_point(1, 1), None], index=[3, 4])
         s1 = left.geom_equals(right)
-        assert s1.index.to_list() == [1, 2, 3, 4]
+        assert s1.index.to_pandas().to_list() == [1, 2, 3, 4]
         assert s1.to_list() == [False, True, False, True]
 
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
         s1 = s.to_wkb()
-        assert isinstance(s1, pd.Series)
+        assert isinstance(s1, ks.Series)
 

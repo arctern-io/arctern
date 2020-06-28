@@ -418,8 +418,11 @@ class GeoSeries(Series):
     def to_wkt(self):
         return _column_op("st_astext", self)
 
+    def to_wkb(self):
+        return self.astype(bytearray)
+
     def head(self, n: int = 5):
-        return GeoSeries(super().head(n))
+        return GeoSeries(super().head(n), crs=self.crs)
 
     def take(self, indices):
         return GeoSeries(super().take(indices))
