@@ -162,6 +162,30 @@ object utils {
   }
 
   def scale(geo: Geometry, factorX: Double, factorY: Double, originX: Double, originY: Double): Geometry = org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, originX, originY).transform(geo)
+
+  def rotate(geo: Geometry, rotationAngle: Double): Geometry = {
+    val centre = geo.getEnvelopeInternal.centre
+    val scalaX = centre.x
+    val scalaY = centre.y
+    org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, scalaX, scalaY).transform(geo)
+  }
+
+  def rotate(geo: Geometry, rotationAngle: Double, origin: String): Geometry = {
+    var scalaX: Double = 0
+    var scalaY: Double = 0
+    if (origin.equalsIgnoreCase("Center")) {
+      val centre = geo.getEnvelopeInternal.centre
+      scalaX = centre.x
+      scalaY = centre.y
+    } else if (origin.equalsIgnoreCase("Centroid")) {
+      val centroid = geo.getCentroid
+      scalaX = centroid.getX
+      scalaY = centroid.getY
+    } else throw new Exception("Illegal rotate origin: " + origin)
+    org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, scalaX, scalaY).transform(geo)
+  }
+
+  def rotate(geo: Geometry, rotationAngle: Double, originX: Double, originY: Double): Geometry = org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, originX, originY).transform(geo)
 }
 
 abstract class ST_BinaryOp extends ArcternExpr {
@@ -664,15 +688,25 @@ case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def rotationAngle(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  def rotateX(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+  def origin(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 3) inputsExpr(2).genCode(ctx).value else null
 
-  def rotateY(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+  def originX(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(2).genCode(ctx).value else null
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().rotate(${rotationAngle(ctx)}, ${rotateX(ctx)}, ${rotateY(ctx)}).transform($geo)")
+  def originY(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(3).genCode(ctx).value else null
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => {
+    val originValue = origin(ctx)
+    val originXValue = originX(ctx)
+    val originYValue = originY(ctx)
+    if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)})"
+    else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originValue.toString())"
+    else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originXValue, $originYValue)"
+    else throw new Exception("Illegal argument in ST_Scale")
+  })
 
   override def dataType: DataType = new GeometryUDT
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType)
+  override def inputTypes: Seq[AbstractDataType] = if (inputsExpr.length == 2) Seq(new GeometryUDT, NumericType) else if (inputsExpr.length == 3) Seq(new GeometryUDT, NumericType, StringType) else Seq(new GeometryUDT, NumericType, NumericType, NumericType)
 
   override def children: Seq[Expression] = inputsExpr
 }
