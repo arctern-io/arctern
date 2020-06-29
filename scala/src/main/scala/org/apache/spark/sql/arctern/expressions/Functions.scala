@@ -41,7 +41,7 @@ object utils {
   }
 
   def distanceSphere(from: Geometry, to: Geometry): Double = {
-    var distance = -1.0
+    var distance = Double.NaN
     if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
       distance
     } else {
@@ -394,7 +394,7 @@ case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def precisionValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel(${precisionValue(ctx)}))")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel(java.lang.Math.pow(10, ${precisionValue(ctx)})))")
 
   override def dataType: DataType = new GeometryUDT
 
