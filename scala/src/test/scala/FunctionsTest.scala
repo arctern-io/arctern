@@ -482,7 +482,8 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
       Row(GeometryUDT.FromWkt("POINT (0 0)")),
-      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((0 0, 10 0, 10 10, 0 10, 0 0)), ((11 11, 20 11, 20 20, 20 11, 11 11)))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
@@ -500,6 +501,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(1).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
     assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0 0)")
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
 
     val rst2 = df.select(st_envelope(col("geo")))
     rst2.show(false)
@@ -510,6 +512,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
     assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0 0)")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
   }
 
   test("ST_Envelope-Null") {
@@ -705,8 +708,7 @@ class FunctionsTest extends AdapterTest {
   test("ST_Intersection") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (20 20)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-      // TODO: Add empty geometry support
-      // Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
       Row(GeometryUDT.FromWkt("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
       Row(GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"))
     )
@@ -723,8 +725,9 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (20 20)")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
-    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
 
     val rst2 = df.select(st_intersection(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -732,8 +735,9 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (20 20)")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
-    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
   }
 
   test("ST_Intersection-Null") {
