@@ -16,12 +16,15 @@ import databricks.koalas as ks
 import pandas as pd
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
+from databricks.koalas.exceptions import SparkPandasIndexingError
 from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F, Column
+from pyspark.sql.types import IntegerType, LongType
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
+
 
 ks.set_option('compute.ops_on_diff_frames', True)
 
@@ -109,8 +112,8 @@ class GeoSeries(Series):
                 assert dtype is None
                 assert name is None
                 if hasattr(data, "crs") and crs:
-                    if not data.crs == crs:
-                        raise ValueError("csr of the passed geometry data is different from crs.")
+                    if not data.crs == crs and data.crs is not None:
+                        raise ValueError("crs of the passed geometry data is different from crs.")
 
                 s = data
             else:
@@ -147,6 +150,26 @@ class GeoSeries(Series):
         super(Series, self).__init__(anchor)
         self._column_label = column_label
         self.set_crs(crs)
+
+    def __getitem__(self, key):
+        try:
+            if (isinstance(key, slice) and any(type(n) == int for n in [key.start, key.stop])) or (
+                type(key) == int
+                and not isinstance(self.index.spark.data_type, (IntegerType, LongType))
+            ):
+                # Seems like pandas Series always uses int as positional search when slicing
+                # with ints, searches based on index values when the value is int.
+                r = self.iloc[key]
+                return GeoSeries(r, crs=self.crs) if isinstance(r, Series) else r
+            r = self.loc[key]
+            return GeoSeries(r, crs=self.crs) if isinstance(r, Series) else r
+        except SparkPandasIndexingError:
+            raise KeyError(
+                "Key length ({}) exceeds index depth ({})".format(
+                    len(key), len(self._internal.index_map)
+                )
+            )
+
 
     def set_crs(self, crs):
         """
@@ -463,11 +486,18 @@ class GeoSeries(Series):
     def to_wkt(self):
         return _column_op("st_astext", self)
 
+    def to_wkb(self):
+        return self.astype(bytearray)
+
     def head(self, n: int = 5):
-        return GeoSeries(super().head(n))
+        r = super().head(n)
+        r.set_crs(self.crs)
+        return r
 
     def take(self, indices):
-        return GeoSeries(super().take(indices))
+        r = super().take(indices)
+        r.set_crs(self.crs)
+        return r
 
 
 def first_series(df):
