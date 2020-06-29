@@ -20,8 +20,7 @@ import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoints, collectionUnionPoint}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
-import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryCollection, GeometryFactory}
-import org.locationtech.jts.io.WKTReader
+import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory}
 
 class ST_Union_Aggr extends UserDefinedAggregateFunction {
   override def inputSchema: StructType = StructType(StructField("Union", new GeometryUDT) :: Nil)
@@ -33,9 +32,9 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
   override def deterministic: Boolean = true
 
   override def initialize(buffer: MutableAggregationBuffer): Unit = {
-    buffer(0) = new WKTReader().read("POLYGON EMPTY")
-    buffer(1) = new WKTReader().read("POLYGON EMPTY")
-    buffer(2) = new WKTReader().read("POLYGON EMPTY")
+    buffer(0) = new GeometryFactory().createPolygon
+    buffer(1) = new GeometryFactory().createPolygon
+    buffer(2) = new GeometryFactory().createPolygon
   }
 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
@@ -85,6 +84,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     val polygons = buffer.getAs[Geometry](2)
     if (points.getGeometryType == "Point") collectionUnionPoint(lineStrings.union(polygons), points)
     else if (points.getGeometryType == "MultiPoint") collectionUnionPoints(lineStrings.union(polygons), points)
+    else lineStrings.union(polygons)
   }
 }
 
