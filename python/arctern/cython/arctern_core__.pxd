@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyarrow.lib cimport (shared_ptr, CArray, int32_t)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, int32_t)
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
@@ -47,6 +47,14 @@ cdef extern from "gis.h" namespace "arctern::gis":
     vector[shared_ptr[CArray]] ST_Equals(const vector[shared_ptr[CArray]] &left_geometries, \
                                          const vector[shared_ptr[CArray]] &right_geometries) except +
 
+    shared_ptr[CChunkedArray] ST_Disjoint(const shared_ptr[CChunkedArray] &left_geometries, \
+                                         const shared_ptr[CChunkedArray] &right_geometries) except +
+
+    shared_ptr[CChunkedArray] ST_Union(const shared_ptr[CChunkedArray] &left_geometries, \
+                                         const shared_ptr[CChunkedArray] &right_geometries) except +
+
+    shared_ptr[CChunkedArray] ST_Boundary(const shared_ptr[CChunkedArray] &geometries) except +
+
     vector[shared_ptr[CArray]] ST_Touches(const vector[shared_ptr[CArray]] &left_geometries, \
                                           const vector[shared_ptr[CArray]] &right_geometries) except +
 
@@ -58,6 +66,9 @@ cdef extern from "gis.h" namespace "arctern::gis":
 
     shared_ptr[CArray] ST_IsSimple(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_PrecisionReduce(const shared_ptr[CArray] &geometries, int32_t num_dot) except +
+    shared_ptr[CChunkedArray] ST_Translate(const shared_ptr[CChunkedArray] &geometries, double shifter_x, double shifter_y) except +
+    shared_ptr[CChunkedArray] ST_Rotate(const shared_ptr[CChunkedArray] &geometries, double rotation_angle, double origin_x, double origin_y) except +
+    shared_ptr[CChunkedArray] ST_Rotate(const shared_ptr[CChunkedArray] &geometries, double rotation_angle, const string& origin) except +
     shared_ptr[CArray] ST_GeometryType(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_MakeValid(const shared_ptr[CArray] &geometries) except +
     shared_ptr[CArray] ST_SimplifyPreserveTopology(const shared_ptr[CArray] &geometries, double distanceTolerance) except +
@@ -96,6 +107,22 @@ cdef extern from "gis.h" namespace "arctern::gis":
     shared_ptr[CArray] ST_Transform(const shared_ptr[CArray] &geo_arr, const string& src_rs, const string& dst_rs) except +
 
     vector[shared_ptr[CArray]] ST_CurveToLine(const shared_ptr[CArray] &geo_arr) except +
+    
+    shared_ptr[CChunkedArray] ST_SymDifference(const shared_ptr[CChunkedArray] &geo1, \
+                                               const shared_ptr[CChunkedArray] &geo2) except +
+
+    shared_ptr[CChunkedArray] ST_Difference(const shared_ptr[CChunkedArray] &geo1, \
+                                               const shared_ptr[CChunkedArray] &geo2) except +
+                                        
+    shared_ptr[CChunkedArray] ST_ExteriorRing(const shared_ptr[CChunkedArray] &geos) except +
+    
+    shared_ptr[CChunkedArray] ST_IsEmpty(const shared_ptr[CChunkedArray] &geos) except +
+
+    shared_ptr[CChunkedArray] ST_Scale(const shared_ptr[CChunkedArray] &geos, double factor_x, double factor_y, double origin_x, double origin_y) except +
+    shared_ptr[CChunkedArray] ST_Scale(const shared_ptr[CChunkedArray] &geos, double factor_x, double factor_y, const string& origin) except +
+
+    shared_ptr[CChunkedArray] ST_Affine(const shared_ptr[CChunkedArray] &geos, \
+                                        double a, double b, double d, double e, double offset_x, double offset_y) except +
 
     shared_ptr[CArray] ST_NPoints(const shared_ptr[CArray] &geo_arr) except +
     shared_ptr[CArray] ST_Envelope(const shared_ptr[CArray] &geo_arr) except +

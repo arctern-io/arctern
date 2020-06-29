@@ -18,7 +18,12 @@ __all__ = [
     "ST_Intersection",
     "ST_IsValid",
     "ST_PrecisionReduce",
+    "ST_Translate",
+    "ST_Rotate",
     "ST_Equals",
+    "ST_Disjoint",
+    "ST_Boundary",
+    "ST_Union",
     "ST_Touches",
     "ST_Overlaps",
     "ST_Crosses",
@@ -44,6 +49,12 @@ __all__ = [
     "ST_Envelope_Aggr",
     "ST_Transform",
     "ST_CurveToLine",
+    "ST_SymDifference",
+    "ST_Difference",
+    "ST_ExteriorRing",
+    "ST_IsEmpty",
+    "ST_Scale",
+    "ST_Affine",
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "ST_AsText",
@@ -425,6 +436,59 @@ def ST_Equals(geo1, geo2):
     result = arctern_core_.ST_Equals(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+def ST_Disjoint(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    arr_geo1 = pa.chunked_array(arr_geo1)
+    arr_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Disjoint(arr_geo1, arr_geo2)
+    return result.to_pandas()
+
+def ST_Boundary(geo):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Boundary(arr_geo)
+    return result.to_pandas()
+
+def ST_Union(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    arr_geo1 = pa.chunked_array(arr_geo1)
+    arr_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Union(arr_geo1, arr_geo2)
+    return result.to_pandas()
+
+def ST_Translate(geo, shifter_x, shifter_y):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
+    return result.to_pandas()
+
+def ST_Rotate(geo, angle, origin="center", use_radians=False):
+    import math
+    import pyarrow as pa
+    if not use_radians:  # convert from degrees
+        angle = angle * math.pi/180.0
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Rotate2(arr_geo, angle, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Rotate(arr_geo, angle, origin[0], origin[1])
+    return result.to_pandas()
 
 @arctern_udf('binary', 'binary')
 def ST_Touches(geo1, geo2):
@@ -1263,6 +1327,64 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
+def ST_SymDifference(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_SymDifference(chunked_array_geo1, chunked_array_geo2)
+    return result.to_pandas()
+
+def ST_Difference(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Difference(chunked_array_geo1, chunked_array_geo2)
+    return result.to_pandas()
+
+def ST_ExteriorRing(geos):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_ExteriorRing(chunked_array_geo)
+    return result.to_pandas()
+
+def ST_IsEmpty(geos):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_IsEmpty(chunked_array_geo)
+    return result.to_pandas()
+
+def ST_Scale(geos, factor_x, factor_y, origin="center"):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Scale2(chunked_array_geo, factor_x, factor_y, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y, origin[0], origin[1])
+    return result.to_pandas()
+
+
+def ST_Affine(geos, a, b, d, e, offset_x, offset_y):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Affine(chunked_array_geo, a, b, d, e, offset_x, offset_y)
+    return result.to_pandas()
 
 def within_which(left, right):
     """

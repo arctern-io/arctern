@@ -35,7 +35,6 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-COPY docker/build_env/docker-entrypoint.sh /opt/docker-entrypoint.sh
 WORKDIR /root
 
 # use login shell to activate environment un the RUN commands
