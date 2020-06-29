@@ -2644,7 +2644,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect11(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
     assert(collect11(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
 
-    val rst12 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, "Centroid")""")
+    val rst12 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, "centroid")""")
     rst12.show(false)
 
     val collect12 = rst12.collect()

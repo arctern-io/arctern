@@ -149,11 +149,11 @@ object utils {
   def scale(geo: Geometry, factorX: Double, factorY: Double, origin: String): Geometry = {
     var scalaX: Double = 0
     var scalaY: Double = 0
-    if (origin == "Center") {
+    if (origin.equalsIgnoreCase("Center")) {
       val centre = geo.getEnvelopeInternal.centre
       scalaX = centre.x
       scalaY = centre.y
-    } else if (origin == "Centroid") {
+    } else if (origin.equalsIgnoreCase("Centroid")) {
       val centroid = geo.getCentroid
       scalaX = centroid.getX
       scalaY = centroid.getY
