@@ -16,13 +16,14 @@ from arctern.geoseries import GeoSeries as python_series
 # print(r1)
 # print(r2)
 # print(r3)
-index = [5, 1]
+index = ['a', 'b', 'c', 'd']
 
 # property
-left = spark_series(["POINT(1 1)", None], index=index)
-right = spark_series(["POINT(1 1)", None], index=index)
-a = left.equals(right)
-print(a)
+s = spark_series(["POINT(1 1)", None, np.nan, np.nan], index=index, crs="EPSG:4326")
+# r = s.fillna(s[0])
+print(s)
+print(s['a'])
+# print(a)
 
 # print(type(r2))
 # print(type(r3))
