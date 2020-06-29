@@ -22,7 +22,7 @@ import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.catalyst.util.ArrayData._
-import org.apache.spark.sql.types.{AbstractDataType, _}
+import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
