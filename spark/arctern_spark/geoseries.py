@@ -18,7 +18,7 @@ from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
-from pyspark.sql import functions as F
+from pyspark.sql import functions as F, Column
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -245,6 +245,12 @@ class GeoSeries(Series):
                 )
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
+
+    def __eq__(self, other):
+        return ks.base.column_op(Column.__eq__)(self, _validate_arg(other))
+
+    def __ne__(self, other):
+        return ks.base.column_op(Column.__ne__)(self, _validate_arg(other))
 
     # -------------------------------------------------------------------------
     # Geometry related property
