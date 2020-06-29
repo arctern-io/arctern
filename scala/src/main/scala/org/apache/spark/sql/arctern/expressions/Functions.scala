@@ -22,7 +22,7 @@ import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.catalyst.util.ArrayData._
-import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.{AbstractDataType, _}
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
@@ -131,7 +131,7 @@ object utils {
       geometryArray = geometryArray :+ geometry
       for (j <- pointsArray.indices) {
         val point = pointsArray(j)
-        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(! _.contains(point))
+        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(!_.contains(point))
       }
       pointsArray = pointsTmpArray
     }
@@ -139,6 +139,29 @@ object utils {
     new GeometryFactory().createGeometryCollection(geometryArray)
   }
 
+  def scale(geo: Geometry, factorX: Double, factorY: Double): Geometry = {
+    val centre = geo.getEnvelopeInternal.centre
+    val scalaX = centre.x
+    val scalaY = centre.y
+    org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, scalaX, scalaY).transform(geo)
+  }
+
+  def scale(geo: Geometry, factorX: Double, factorY: Double, origin: String): Geometry = {
+    var scalaX: Double = 0
+    var scalaY: Double = 0
+    if (origin == "Center") {
+      val centre = geo.getEnvelopeInternal.centre
+      scalaX = centre.x
+      scalaY = centre.y
+    } else if (origin == "Centroid") {
+      val centroid = geo.getCentroid
+      scalaX = centroid.getX
+      scalaY = centroid.getY
+    } else throw new Exception("Illegal scale origin: " + origin)
+    org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, scalaX, scalaY).transform(geo)
+  }
+
+  def scale(geo: Geometry, factorX: Double, factorY: Double, originX: Double, originY: Double): Geometry = org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, originX, originY).transform(geo)
 }
 
 abstract class ST_BinaryOp extends ArcternExpr {
@@ -747,11 +770,25 @@ case class ST_Scale(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def factorY(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().scale(${factorX(ctx)}, ${factorY(ctx)}).transform($geo)")
+  def origin(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(3).genCode(ctx).value else null
+
+  def originX(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 5) inputsExpr(3).genCode(ctx).value else null
+
+  def originY(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 5) inputsExpr(4).genCode(ctx).value else null
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => {
+    val originValue = origin(ctx)
+    val originXValue = originX(ctx)
+    val originYValue = originY(ctx)
+    if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)})"
+    else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)}, $originValue.toString())"
+    else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)}, $originXValue, $originYValue)"
+    else throw new Exception("Illegal argument in ST_Scale")
+  })
 
   override def dataType: DataType = new GeometryUDT
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+  override def inputTypes: Seq[AbstractDataType] = if (inputsExpr.length == 3) Seq(new GeometryUDT, NumericType, NumericType) else if (inputsExpr.length == 4) Seq(new GeometryUDT, NumericType, NumericType, StringType) else Seq(new GeometryUDT, NumericType, NumericType, NumericType, NumericType)
 
   override def children: Seq[Expression] = inputsExpr
 }

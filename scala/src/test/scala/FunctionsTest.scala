@@ -2626,33 +2626,50 @@ class FunctionsTest extends AdapterTest {
 
   test("ST_Scale") {
     val data = Seq(
-      Row(GeometryUDT.FromWkt("POINT (120.6 100.999)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT ((4 0),(6 0))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
-    val rst = spark.sql("select ST_Scale(geo, 2, 2) from data ")
-    rst.show(false)
+    val rst11 = spark.sql("select ST_Scale(geo, 2, 2) from data ")
+    rst11.show(false)
 
     //    rst.queryExecution.debug.codegen()
 
-    val collect = rst.collect()
+    val collect11 = rst11.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect11(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect11(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
 
-    val rst2 = df.select(st_scale(col("geo"), lit(2), lit(2)))
-    rst2.show(false)
+    val rst12 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, "Centroid")""")
+    rst12.show(false)
 
-    val collect2 = rst2.collect()
+    val collect12 = rst12.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect12(0).getAs[GeometryUDT](0).toString == "LINESTRING (0.5 0.5, 2.5 2.5)")
+
+    val rst13 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, 1, 1)""")
+    rst13.show(false)
+
+    val collect13 = rst13.collect()
+
+    assert(collect13(0).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 3 3)")
+
+    val rst21 = df.select(st_scale(col("geo"), lit(2), lit(2)))
+    rst21.show(false)
+
+    val collect21 = rst21.collect()
+
+    assert(collect21(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect21(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
   }
 
   test("ST_Scale-Null") {
     val data = Seq(
-      Row("POINT (120.6 100.999)"),
+      Row("LINESTRING (0 0,5 0)"),
       Row(null),
       Row("error geometry"),
     )
@@ -2668,7 +2685,7 @@ class FunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
     assert(collect(1).isNullAt(0))
     assert(collect(2).isNullAt(0))
 
@@ -2677,7 +2694,7 @@ class FunctionsTest extends AdapterTest {
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (241.2 201.998)")
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
   }
