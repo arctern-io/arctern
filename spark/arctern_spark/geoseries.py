@@ -17,10 +17,22 @@ import pandas as pd
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.exceptions import SparkPandasIndexingError
+from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
 from databricks.koalas.series import first_series, REPR_PATTERN
+from databricks.koalas.utils import (
+    validate_axis,
+    validate_bool_kwarg,
+)
 from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F
-from pyspark.sql.types import IntegerType, LongType
+from pyspark.sql.window import Window
+from pyspark.sql.types import (
+    DoubleType,
+    FloatType,
+    IntegerType,
+    LongType,
+)
+
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -268,6 +280,112 @@ class GeoSeries(Series):
                 )
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
+
+    def _with_new_scol(self, scol):
+        """
+        Copy Koalas Series with the new Spark Column.
+
+        :param scol: the new Spark Column
+        :return: the copied Series
+        """
+        internal = self._kdf._internal.copy(
+            column_labels=[self._column_label], data_spark_columns=[scol]
+        )
+        return first_series(DataFrame(internal))
+
+    def fillna(self, value=None, method=None, axis=None, inplace=False, limit=None):
+        """Fill NA/NaN values.
+
+        .. note:: the current implementation of 'method' parameter in fillna uses Spark's Window
+            without specifying partition specification. This leads to move all data into
+            single partition in single machine and could cause serious
+            performance degradation. Avoid this method against very large dataset.
+
+        Parameters
+        ----------
+        value : scalar, dict, Series
+            Value to use to fill holes. alternately a dict/Series of values
+            specifying which value to use for each column.
+            DataFrame is not supported.
+        method : {'backfill', 'bfill', 'pad', 'ffill', None}, default None
+            Method to use for filling holes in reindexed Series pad / ffill: propagate last valid
+            observation forward to next valid backfill / bfill:
+            use NEXT valid observation to fill gap
+        axis : {0 or `index`}
+            1 and `columns` are not supported.
+        inplace : boolean, default False
+            Fill in place (do not create a new object)
+        limit : int, default None
+            If method is specified, this is the maximum number of consecutive NaN values to
+            forward/backward fill. In other words, if there is a gap with more than this number of
+            consecutive NaNs, it will only be partially filled. If method is not specified,
+            this is the maximum number of entries along the entire axis where NaNs will be filled.
+            Must be greater than 0 if not None
+
+        Returns
+        -------
+        Series
+            Series with NA entries filled.
+        """
+        return self._fillna(value, method, axis, inplace, limit)
+
+    def _fillna(self, value=None, method=None, axis=None, inplace=False, limit=None, part_cols=()):
+        axis = validate_axis(axis)
+        inplace = validate_bool_kwarg(inplace, "inplace")
+        if axis != 0:
+            raise NotImplementedError("fillna currently only works for axis=0 or axis='index'")
+        if (value is None) and (method is None):
+            raise ValueError("Must specify a fillna 'value' or 'method' parameter.")
+        if (method is not None) and (method not in ["ffill", "pad", "backfill", "bfill"]):
+            raise ValueError("Expecting 'pad', 'ffill', 'backfill' or 'bfill'.")
+
+        scol = self.spark.column
+
+        if isinstance(self.spark.data_type, (FloatType, DoubleType)):
+            cond = scol.isNull() | F.isnan(scol)
+        else:
+            if not self.spark.nullable:
+                if inplace:
+                    return
+                else:
+                    return self
+            cond = scol.isNull()
+
+        if value is not None:
+            if not isinstance(value, (float, int, str, bool, bytearray, bytes)):
+                raise TypeError("Unsupported type %s" % type(value))
+            if limit is not None:
+                raise ValueError("limit parameter for value is not support now")
+            scol = F.when(cond, value).otherwise(scol)
+        else:
+            if method in ["ffill", "pad"]:
+                func = F.last
+                end = Window.currentRow - 1
+                if limit is not None:
+                    begin = Window.currentRow - limit
+                else:
+                    begin = Window.unboundedPreceding
+            elif method in ["bfill", "backfill"]:
+                func = F.first
+                begin = Window.currentRow + 1
+                if limit is not None:
+                    end = Window.currentRow + limit
+                else:
+                    end = Window.unboundedFollowing
+
+            window = (
+                Window.partitionBy(*part_cols)
+                .orderBy(NATURAL_ORDER_COLUMN_NAME)
+                .rowsBetween(begin, end)
+            )
+            scol = F.when(cond, func(scol, True).over(window)).otherwise(scol)
+
+        if inplace:
+            self._kdf._update_internal_frame(
+                self._kdf._internal.with_new_spark_column(self._column_label, scol)
+            )
+        else:
+            return self._with_new_scol(scol).rename(self.name)
 
     # -------------------------------------------------------------------------
     # Geometry related property
