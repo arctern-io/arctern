@@ -631,7 +631,7 @@ class FunctionsTest extends AdapterTest {
 
   test("ST_PrecisionReduce") {
     val data = Seq(
-      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32435, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
+      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32436, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0.12 0.12, 10.234 10.456, 20.1 20.5566)")),
       Row(GeometryUDT.FromWkt("POINT (0.12345 0.346577)")),
       Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
@@ -649,22 +649,22 @@ class FunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.5, 1.5 1.5, 1.5 0, 0 0))")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
-    assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0 0.5)")
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.32, 1.34 1.32, 1.34 0, 0 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0.12 0.35)")
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
 
     val rst2 = df.select(st_precisionreduce(col("geo"), lit(2)))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.5, 1.5 1.5, 1.5 0, 0 0))")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
-    assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0 0.5)")
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.32, 1.34 1.32, 1.34 0, 0 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0.12 0.35)")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
   }
 
   test("ST_PrecisionReduce-Null") {
@@ -688,10 +688,10 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).isNullAt(0))
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
     assert(collect(2).isNullAt(0))
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
 
     val rst2 = df.select(st_precisionreduce(st_geomfromtext(col("geo")), lit(2)))
     rst2.show(false)
@@ -699,10 +699,10 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).isNullAt(0))
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
     assert(collect2(2).isNullAt(0))
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
   }
 
   test("ST_Intersection") {
@@ -1701,8 +1701,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).isNullAt(0))
     assert(collect(2).isNullAt(0))
-    assert(collect(3).getDouble(0) == -1.0)
-    assert(collect(4).getDouble(0) == -1.0)
+    assert(collect(3).getDouble(0).isNaN)
+    assert(collect(4).getDouble(0).isNaN)
 
     val rst2 = df.select(st_distancesphere(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
@@ -1712,8 +1712,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
-    assert(collect2(3).getDouble(0) == -1.0)
-    assert(collect2(4).getDouble(0) == -1.0)
+    assert(collect2(3).getDouble(0).isNaN)
+    assert(collect2(4).getDouble(0).isNaN)
   }
 
   test("ST_Transform") {
