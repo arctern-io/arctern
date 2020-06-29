@@ -132,12 +132,12 @@ class AggregateFunctionsTest extends AdapterTest {
     val rdd_d = spark.sparkContext.parallelize(data)
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = false)))
     val df = spark.createDataFrame(rdd_d, schema)
-    df.createOrReplaceTempView("data")
-    spark.sql("cache table data")
+    df.createOrReplaceTempView("Perf_data")
+    spark.sql("cache table Perf_data")
 
     val t1 = System.currentTimeMillis
 
-    val rst = spark.sql("select ST_Union_Aggr(geo) from data")
+    val rst = spark.sql("select ST_Union_Aggr(geo) from Perf_data")
     rst.createOrReplaceTempView("res")
     spark.sql("cache table res")
 
