@@ -631,7 +631,7 @@ class FunctionsTest extends AdapterTest {
 
   test("ST_PrecisionReduce") {
     val data = Seq(
-      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32435, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
+      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32436, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0.12 0.12, 10.234 10.456, 20.1 20.5566)")),
       Row(GeometryUDT.FromWkt("POINT (0.12345 0.346577)")),
       Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
