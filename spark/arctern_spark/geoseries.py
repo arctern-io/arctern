@@ -24,7 +24,7 @@ from databricks.koalas.utils import (
     validate_bool_kwarg,
 )
 from pandas.io.formats.printing import pprint_thing
-from pyspark.sql import functions as F
+from pyspark.sql import functions as F, Column
 from pyspark.sql.window import Window
 from pyspark.sql.types import (
     DoubleType,
@@ -32,7 +32,6 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
-
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
 # os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -386,6 +385,11 @@ class GeoSeries(Series):
             )
         else:
             return self._with_new_scol(scol).rename(self.name)
+    def __eq__(self, other):
+        return ks.base.column_op(Column.__eq__)(self, _validate_arg(other))
+
+    def __ne__(self, other):
+        return ks.base.column_op(Column.__ne__)(self, _validate_arg(other))
 
     # -------------------------------------------------------------------------
     # Geometry related property
