@@ -133,6 +133,7 @@ object utils {
         val point = pointsArray(j)
         if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(! _.contains(point))
       }
+      pointsArray = pointsTmpArray
     }
     geometryArray = geometryArray ++ pointsTmpArray
     new GeometryFactory().createGeometryCollection(geometryArray)
