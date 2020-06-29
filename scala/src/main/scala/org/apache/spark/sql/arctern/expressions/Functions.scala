@@ -118,21 +118,24 @@ object utils {
   def collectionUnionPoints(geometries: Geometry, points: Geometry): Geometry = {
     var geometryArray = Array[Geometry]()
     var pointsArray = Array[Geometry]()
+    var pointsTmpArray = Array[Geometry]()
     val multiPoints = points.asInstanceOf[MultiPoint]
     val geometryCollection = geometries.asInstanceOf[GeometryCollection]
     for (i <- 0 until multiPoints.getNumPoints) {
       val point = multiPoints.getGeometryN(i)
       pointsArray = pointsArray :+ point
+      pointsTmpArray = pointsTmpArray :+ point
     }
     for (i <- 0 until geometryCollection.getNumGeometries) {
       val geometry = geometryCollection.getGeometryN(i)
       geometryArray = geometryArray :+ geometry
       for (j <- pointsArray.indices) {
         val point = pointsArray(j)
-        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsArray = pointsArray.filter(! _.contains(point))
+        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(! _.contains(point))
       }
+      pointsArray = pointsTmpArray
     }
-    geometryArray = geometryArray ++ pointsArray
+    geometryArray = geometryArray ++ pointsTmpArray
     new GeometryFactory().createGeometryCollection(geometryArray)
   }
 
@@ -406,7 +409,7 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.intersection($right)")
 
   override def dataType: DataType = new GeometryUDT
 
