@@ -15,7 +15,7 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, pyarrow_wrap_array, pyarrow_unwrap_array, pyarrow_wrap_chunked_array, pyarrow_unwrap_chunked_array)
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
@@ -185,6 +185,18 @@ def ST_Equals(object left_geometries,object right_geometries):
     result = arctern_core_pxd.ST_Equals(left, right)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_Disjoint(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Disjoint(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Union(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Union(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Boundary(object geometries ):
+    result = arctern_core_pxd.ST_Boundary(pyarrow_unwrap_chunked_array(geometries))
+    return pyarrow_wrap_chunked_array(result)
+
 def ST_Touches(object left_geometries,object right_geometries):
     cdef vector[shared_ptr[CArray]] left
     for geo in left_geometries:
@@ -226,6 +238,16 @@ def ST_MakeValid(object geometries):
 
 def ST_PrecisionReduce(object geometries,int num_dat):
     return pyarrow_wrap_array(arctern_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
+
+def ST_Translate(object geometries, double shifter_x, double shifter_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Translate(pyarrow_unwrap_chunked_array(geometries), shifter_x, shifter_y))
+
+def ST_Rotate(object geometries, double rotation_angle, double origin_x, double origin_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_x, origin_y))
+
+def ST_Rotate2(object geometries, double rotation_angle, string origin):
+    cdef string origin_ = origin
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_))
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(arctern_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
@@ -333,6 +355,35 @@ def ST_Transform(object geo_arr, bytes src_rs, bytes dst_rs):
 def ST_CurveToLine(object geo_arr):
     result = arctern_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr))
     return [pyarrow_wrap_array(ptr) for ptr in result]
+
+def ST_SymDifference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_SymDifference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Difference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_Difference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_ExteriorRing(object geos):
+    result = arctern_core_pxd.ST_ExteriorRing(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_IsEmpty(object geos):
+    result = arctern_core_pxd.ST_IsEmpty(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale2(object geos, double factor_x, double factor_y, string origin):
+    cdef string origin_ = origin
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale(object geos, double factor_x, double factor_y, double origin_x, double origin_y):
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_x, origin_y)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Affine(object geos, double a, double b, double d, double e, double offset_x, double offset_y):
+    result = arctern_core_pxd.ST_Affine(pyarrow_unwrap_chunked_array(geos), a, b, d, e, offset_x, offset_y)
+    return pyarrow_wrap_chunked_array(result)
 
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))

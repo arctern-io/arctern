@@ -49,14 +49,13 @@ MACRO(GET_LAST_COMMIT_ID LAST_COMMIT_ID)
 ENDMACRO(GET_LAST_COMMIT_ID)
 
 GET_LAST_COMMIT_ID(LAST_COMMIT_ID)
-string(REGEX REPLACE "\n" "" LAST_COMMIT_ID ${LAST_COMMIT_ID})
-message(STATUS "Building commit ${LAST_COMMIT_ID}")
 if (NOT LAST_COMMIT_ID STREQUAL "")
     string(REGEX REPLACE "\n" "" LAST_COMMIT_ID ${LAST_COMMIT_ID})
     set(LAST_COMMIT_ID "${LAST_COMMIT_ID}")
 else ()
     set(LAST_COMMIT_ID "Unknown")
 endif ()
+message(STATUS "Building commit ${LAST_COMMIT_ID}")
 
 set(LIB_VERSION "0.2.0")
 
@@ -128,6 +127,8 @@ endif()
 
 #message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 # Arch info over
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 # EnARCTERNhat a default make is set
 if ("${MAKE}" STREQUAL "")

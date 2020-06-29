@@ -32,7 +32,12 @@ template <typename T>
 std::shared_ptr<arrow::Buffer> AllocArrowBufferAndCopy(int size, const T* dev_ptr) {
   std::shared_ptr<arrow::Buffer> buffer;
   auto len = sizeof(T) * size;
-  CHECK_ARROW(arrow::AllocateBuffer(len, &buffer));
+  auto result = arrow::AllocateBuffer(len);
+  if (result.ok()) {
+    buffer = std::move(result).ValueOrDie();
+  } else {
+    throw std::runtime_error(result.status().message());
+  }
   GpuMemcpy((T*)buffer->mutable_data(), dev_ptr, size);
   return buffer;
 }
