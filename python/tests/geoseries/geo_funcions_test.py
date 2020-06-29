@@ -22,6 +22,66 @@ def test_ST_IsValid():
     assert rst[0]
     assert rst[1]
 
+def test_ST_IsEmpty():
+    data = GeoSeries(["LINESTRING EMPTY", "POINT (100 200)"])
+    rst = data.is_empty
+    assert rst[0] == 1
+    assert rst[1] == 0
+
+def test_ST_Difference():
+    data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+    rst = data1.difference(data2).to_wkt()
+    assert rst[0] == "LINESTRING (0 0,4 0)"
+    assert rst[1] == "POINT (6 0)"
+
+def test_ST_SymDifference():
+    data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+    rst = data1.symmetric_difference(data2).to_wkt()
+    assert rst[0] == "MULTILINESTRING ((0 0,4 0),(5 0,6 0))"
+    assert rst[1] == "POINT (6 0)"
+
+def test_ST_ExteriorRing():
+    data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+    rst = data.exterior.to_wkt()
+    assert rst[0] is None
+    assert rst[1] == "LINESTRING (0 0,1 0,1 1,0 1,0 0)"
+
+def test_ST_Rotate():
+    data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
+    rst = data.rotate(180, origin=(1, 0)).to_wkt()
+    assert rst[0] == "POINT (1.0 -6.0)"
+    assert rst[1] == "LINESTRING (2.0 -0.0,2.0 -1.0,1.0 -1.0)"
+    assert rst[2] == "POLYGON ((2.0 -0.0,2.0 -1.0,1.0 -1.0,2.0 -0.0))"
+
+
+
+def test_ST_Translate():
+    data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
+    rst = data.translate(1.2, 0.3).to_wkt()
+    assert len(rst) == 3
+    assert rst[0] == "POINT (2.2 6.3)"
+    assert rst[1] == "LINESTRING (1.2 0.3,1.2 1.3,2.2 1.3)"
+    assert rst[2] == "POLYGON ((1.2 0.3,1.2 1.3,2.2 1.3,1.2 0.3))"
+
+
+def test_ST_Scale():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    rst = data.scale(2, 2).to_wkt()
+    assert rst[0] == "LINESTRING (-2.5 0.0,7.5 0.0)"
+    assert rst[1] == "MULTIPOINT (3 0,7 0)"
+
+    data = GeoSeries('LINESTRING(1 1, 2 2)')
+    rst = data.scale(2, 2, origin=(1, 1)) .to_wkt()
+    assert rst[0] == "LINESTRING (1 1,3 3)"
+
+def test_ST_Affine():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    matrix = (2, 2, 2, 2, 2, 2)
+    rst = data.affine_transform(matrix).to_wkt()
+    assert rst[0] == "LINESTRING (2 2,12 12)"
+    assert rst[1] == "MULTIPOINT (10 10,14 14)"
 
 def test_ST_PrecisionReduce():
     data = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])

@@ -88,7 +88,6 @@ def _plot_polygons(ax, polygons, **style_kwds):
 def _plot_lines(ax, lines, **style_kwds):
     try:
         from matplotlib.collections import LineCollection
-        import matplotlib as mpl
     except ImportError:
         raise ImportError(
             "The matplotlib package is required for plotting polygons in arctern. "

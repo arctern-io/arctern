@@ -15,6 +15,8 @@
 # cython: language_level=3
 # distutils: language = c++
 
+from libcpp.string cimport string
+
 
 # render func api:
 def projection(geos_list, bottom_right, top_left, height, width):
@@ -76,6 +78,15 @@ def ST_IsValid(object geometries):
 def ST_Equals(object left_geometries,object right_geometries):
     pass
 
+def ST_Disjoint(object left_geometries,object right_geometries):
+    pass
+
+def ST_Union(object left_geometries,object right_geometries):
+    pass
+
+def ST_Boundary(object geometries):
+    pass
+
 def ST_Touches(object left_geometries,object right_geometries):
     pass
 
@@ -95,6 +106,21 @@ def ST_MakeValid(object geometries):
     pass
 
 def ST_PrecisionReduce(object geometries,int num_dat):
+    pass
+
+def ST_Translate(object geometries, double shifter_x, double shifter_y):
+    pass
+
+def ST_Rotate(object geometries, double rotation_angle, double origin_x, double origin_y):
+    pass
+
+def ST_Rotate2(object geometries, double rotation_angle, string origin):
+    pass
+
+def ST_Scale(object geos, double factor_x, double factor_y, double origin_x, double origin_y):
+    pass
+
+def ST_Scale2(object geos, double factor_x, double factor_y, string origin):
     pass
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):

@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <stdint.h>
 
 #include <memory>
@@ -88,6 +90,18 @@ std::shared_ptr<arrow::Array> ST_MakeValid(
 std::shared_ptr<arrow::Array> ST_SimplifyPreserveTopology(
     const std::shared_ptr<arrow::Array>& geometries, double distance_tolerance);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Translate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double shifter_x,
+    double shifter_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Rotate(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double rotation_angle,
+    const std::string& origin);
+
 std::shared_ptr<arrow::Array> ST_Centroid(
     const std::shared_ptr<arrow::Array>& geometries);
 
@@ -100,6 +114,36 @@ std::shared_ptr<arrow::Array> ST_Transform(const std::shared_ptr<arrow::Array>& 
 
 std::vector<std::shared_ptr<arrow::Array>> ST_CurveToLine(
     const std::shared_ptr<arrow::Array>& geometries);
+
+std::shared_ptr<arrow::ChunkedArray> ST_SymDifference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Difference(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
+std::shared_ptr<arrow::ChunkedArray> ST_ExteriorRing(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries);
+
+std::shared_ptr<arrow::ChunkedArray> ST_IsEmpty(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, double origin_x, double origin_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Scale(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double factor_x,
+    double factor_y, const std::string& origin);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Affine(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries, double a, double b, double d,
+    double e, double offset_x, double offset_y);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Union(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_2);
 
 /*************************** MEASUREMENT FUNCTIONS ***************************/
 
@@ -124,6 +168,13 @@ std::vector<std::shared_ptr<arrow::Array>> ST_HausdorffDistance(
 std::vector<std::shared_ptr<arrow::Array>> ST_Equals(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_2);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Disjoint(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_1,
+    const std::shared_ptr<arrow::ChunkedArray>& geometries_2);
+
+std::shared_ptr<arrow::ChunkedArray> ST_Boundary(
+    const std::shared_ptr<arrow::ChunkedArray>& geometries);
 
 std::vector<std::shared_ptr<arrow::Array>> ST_Touches(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_1,
@@ -166,6 +217,9 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& polygons);
 
 std::string GIS_Version();
+
+void set_parallelism(int parallelism);
+int get_parallelism();
 
 }  // namespace gis
 }  // namespace arctern

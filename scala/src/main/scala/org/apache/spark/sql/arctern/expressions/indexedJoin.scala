@@ -1,9 +1,9 @@
 package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.broadcast.Broadcast
-import org.apache.spark.sql.arctern.GeometryUDT
 import org.apache.spark.sql.arctern.index.IndexBuilder
 import org.locationtech.jts.geom.Geometry
+
 import scala.util.control.Breaks._
 
 case class IndexedJoin(broadcast: Broadcast[IndexBuilder]) {
@@ -16,7 +16,7 @@ case class IndexedJoin(broadcast: Broadcast[IndexBuilder]) {
       val env = geo_search.getEnvelopeInternal
       val geo_list = index.query(env)
       breakable {
-        geo_list.forEach{geo =>
+        geo_list.forEach { geo =>
           val loop_geo = geo.asInstanceOf[Geometry]
           if (geo_search.intersects(loop_geo)) {
             //TODO::mutil indexed result intersects with searched geometry

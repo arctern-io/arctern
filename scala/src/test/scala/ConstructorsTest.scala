@@ -323,7 +323,7 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("xMin", DoubleType, nullable = true), StructField("yMin", DoubleType, nullable = true), StructField("xMax", DoubleType, nullable = true), StructField("yMax", DoubleType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_PolygonFromEnvelope")
-    
+
     val rst = spark.sql("select ST_PolygonFromEnvelope(xMin, yMin, xMax, yMax) from table_ST_PolygonFromEnvelope")
     rst.show(false)
 
@@ -337,7 +337,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_polygonfromenvelope(col("xMin"), col("yMin"), col("xMax"), col("yMax")))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))")
@@ -357,12 +357,12 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("json", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_GeomFromGeoJSON")
-    
+
     val rst = spark.sql("select ST_GeomFromGeoJSON(json) from table_ST_GeomFromGeoJSON")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
-    
+
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (1 2)")
@@ -372,7 +372,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_geomfromgeojson(col("json")))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (1 2)")
@@ -392,12 +392,12 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("json", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_GeomFromGeoJSON")
-    
+
     val rst = spark.sql("select ST_GeomFromGeoJSON(json) from table_ST_GeomFromGeoJSON")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
-    
+
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (1 2)")
@@ -427,10 +427,10 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_AsText")
-    
+
     val rst = spark.sql("select ST_AsText(ST_GeomFromText(wkt)) from table_ST_AsText")
     rst.show(false)
-    
+
     //    rst.queryExecution.debug.codegen()
 
     val collect = rst.collect()
@@ -443,7 +443,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_astext(st_geomfromtext(col("wkt"))))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
@@ -466,7 +466,7 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_AsText")
-    
+
     val rst = spark.sql("select ST_AsText(ST_GeomFromText(wkt)) from table_ST_AsText")
     rst.show(false)
 
@@ -482,7 +482,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_astext(st_geomfromtext(col("wkt"))))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
@@ -511,7 +511,7 @@ class ConstructorsTest extends AdapterTest {
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
-    
+
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
@@ -520,10 +520,10 @@ class ConstructorsTest extends AdapterTest {
     assert(collect(3).getAs[GeometryUDT](0).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
     assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
     assert(collect(5).isNullAt(0))
-    
+
     val rst2 = df.select(st_astext(col("geo")))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
@@ -547,12 +547,12 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_AsGeoJSON")
-    
+
     val rst = spark.sql("select ST_AsGeoJSON(ST_GeomFromText(wkt)) from table_ST_AsGeoJSON")
     rst.show(false)
 
     //    rst.queryExecution.debug.codegen()
-    
+
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == """{"type":"Point","coordinates":[10.0,20.0]}""")
@@ -563,7 +563,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_asgeojson(st_geomfromtext(col("wkt"))))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == """{"type":"Point","coordinates":[10.0,20.0]}""")
@@ -586,7 +586,7 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_AsGeoJSON")
-    
+
     val rst = spark.sql("select ST_AsGeoJSON(ST_GeomFromText(wkt)) from table_ST_AsGeoJSON")
     rst.show(false)
 
@@ -602,7 +602,7 @@ class ConstructorsTest extends AdapterTest {
 
     val rst2 = df.select(st_asgeojson(st_geomfromtext(col("wkt"))))
     rst2.show(false)
-    
+
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == """{"type":"Point","coordinates":[10.0,20.0]}""")
@@ -626,7 +626,7 @@ class ConstructorsTest extends AdapterTest {
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
     val df = spark.createDataFrame(rdd_d, schema)
     df.createOrReplaceTempView("table_ST_AsGeoJSON")
-    
+
     val rst = spark.sql("select ST_AsGeoJSON(geo) from table_ST_AsGeoJSON")
     rst.show(false)
 

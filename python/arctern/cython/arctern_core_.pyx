@@ -15,7 +15,7 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, pyarrow_wrap_array, pyarrow_unwrap_array, pyarrow_wrap_chunked_array, pyarrow_unwrap_chunked_array)
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
@@ -185,6 +185,18 @@ def ST_Equals(object left_geometries,object right_geometries):
     result = arctern_core_pxd.ST_Equals(left, right)
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_Disjoint(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Disjoint(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Union(object left_geometries,object right_geometries ):
+    result = arctern_core_pxd.ST_Union(pyarrow_unwrap_chunked_array(left_geometries),pyarrow_unwrap_chunked_array(right_geometries))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Boundary(object geometries ):
+    result = arctern_core_pxd.ST_Boundary(pyarrow_unwrap_chunked_array(geometries))
+    return pyarrow_wrap_chunked_array(result)
+
 def ST_Touches(object left_geometries,object right_geometries):
     cdef vector[shared_ptr[CArray]] left
     for geo in left_geometries:
@@ -226,6 +238,16 @@ def ST_MakeValid(object geometries):
 
 def ST_PrecisionReduce(object geometries,int num_dat):
     return pyarrow_wrap_array(arctern_core_pxd.ST_PrecisionReduce(pyarrow_unwrap_array(geometries),num_dat))
+
+def ST_Translate(object geometries, double shifter_x, double shifter_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Translate(pyarrow_unwrap_chunked_array(geometries), shifter_x, shifter_y))
+
+def ST_Rotate(object geometries, double rotation_angle, double origin_x, double origin_y):
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_x, origin_y))
+
+def ST_Rotate2(object geometries, double rotation_angle, string origin):
+    cdef string origin_ = origin
+    return pyarrow_wrap_chunked_array(arctern_core_pxd.ST_Rotate(pyarrow_unwrap_chunked_array(geometries), rotation_angle, origin_))
 
 def ST_SimplifyPreserveTopology(object geometries,double distanceTolerance):
     return pyarrow_wrap_array(arctern_core_pxd.ST_SimplifyPreserveTopology(pyarrow_unwrap_array(geometries),distanceTolerance))
@@ -334,6 +356,35 @@ def ST_CurveToLine(object geo_arr):
     result = arctern_core_pxd.ST_CurveToLine(pyarrow_unwrap_array(geo_arr))
     return [pyarrow_wrap_array(ptr) for ptr in result]
 
+def ST_SymDifference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_SymDifference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Difference(object geo1,object geo2):
+    result = arctern_core_pxd.ST_Difference(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_ExteriorRing(object geos):
+    result = arctern_core_pxd.ST_ExteriorRing(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_IsEmpty(object geos):
+    result = arctern_core_pxd.ST_IsEmpty(pyarrow_unwrap_chunked_array(geos))
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale2(object geos, double factor_x, double factor_y, string origin):
+    cdef string origin_ = origin
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Scale(object geos, double factor_x, double factor_y, double origin_x, double origin_y):
+    result = arctern_core_pxd.ST_Scale(pyarrow_unwrap_chunked_array(geos), factor_x, factor_y, origin_x, origin_y)
+    return pyarrow_wrap_chunked_array(result)
+
+def ST_Affine(object geos, double a, double b, double d, double e, double offset_x, double offset_y):
+    result = arctern_core_pxd.ST_Affine(pyarrow_unwrap_chunked_array(geos), a, b, d, e, offset_x, offset_y)
+    return pyarrow_wrap_chunked_array(result)
+
 def ST_NPoints(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_NPoints(pyarrow_unwrap_array(geo_arr)))
 
@@ -367,33 +418,92 @@ def ST_Envelope_Aggr(object geo_arr):
 def GIS_Version():
     return arctern_core_pxd.GIS_Version()
 
-# map match func api:
-def nearest_location_on_road(object roads,object gps_points):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.nearest_location_on_road(network, gps_points_to_match)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
+def _to_arrow_array_list(arrow_array):
+    if hasattr(arrow_array, 'chunks'):
+        return list(arrow_array.chunks)
+    return [arrow_array]
 
-def nearest_road(object roads,object gps_points):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.nearest_road(network, gps_points_to_match)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
+def _to_pandas_series(array_list):
+    result = None
 
-def near_road(object roads,object gps_points, distance):
-    cdef vector[shared_ptr[CArray]] network
-    for road in roads:
-        network.push_back(pyarrow_unwrap_array(road))
-    cdef vector[shared_ptr[CArray]] gps_points_to_match
-    for gps_point in gps_points:
-        gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
-    result = arctern_core_pxd.near_road(network, gps_points_to_match, distance)
-    return [pyarrow_wrap_array(ptr) for ptr in result]
+    for array in array_list:
+        if isinstance(array, list):
+            for arr in array:
+                if result is None:
+                    result = arr.to_pandas()
+                else:
+                    result = result.append(arr.to_pandas(), ignore_index=True)
+        else:
+            if result is None:
+                result = array.to_pandas()
+            else:
+                result = result.append(array.to_pandas(), ignore_index=True)
+    return result
+
+cdef class SpatialIndex:
+    cdef arctern_core_pxd.GeosIndex* thisptr
+    cdef object data
+
+    def __cinit__(self):
+        self.thisptr = new arctern_core_pxd.GeosIndex()
+
+    def __dealloc__(self):
+        del self.thisptr
+
+    def Append(self, geometries):
+        self.data = geometries
+        import pyarrow as pa
+        arr_geos = pa.array(geometries, type='binary')
+        list_geos = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] geos
+        for geo in list_geos:
+            geos.push_back(pyarrow_unwrap_array(geo))
+        self.thisptr.append(geos)
+
+    def near_road(self, gps_points, distance):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.near_road(gps_points_to_match, distance)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
+
+    def nearest_location_on_road(self, gps_points):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.nearest_location_on_road(gps_points_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
+
+    def nearest_road(self, gps_points):
+        import pyarrow as pa
+        arr_geos = pa.array(gps_points, type='binary')
+        list_gps_points = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] gps_points_to_match
+        for gps_point in list_gps_points:
+            gps_points_to_match.push_back(pyarrow_unwrap_array(gps_point))
+        result = self.thisptr.nearest_road(gps_points_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)
+
+    def within_which(self, left):
+        import pyarrow as pa
+        import pandas
+        arr_left = pa.array(left, type='binary')
+        list_left = _to_arrow_array_list(arr_left)
+        cdef vector[shared_ptr[CArray]] left_to_match
+        for geo in list_left:
+            left_to_match.push_back(pyarrow_unwrap_array(geo))
+        result = self.thisptr.ST_IndexedWithin(left_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        res = _to_pandas_series(pyarrow_res)
+        res = res.apply(lambda x: self.data.index[x] if x >= 0 else pandas.NA)
+        res = res.set_axis(left.index)
+        return res
