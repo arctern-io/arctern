@@ -84,6 +84,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     val polygons = buffer.getAs[Geometry](2)
     if (points.getGeometryType == "Point") collectionUnionPoint(lineStrings.union(polygons), points)
     else if (points.getGeometryType == "MultiPoint") collectionUnionPoints(lineStrings.union(polygons), points)
+    else lineStrings.union(polygons)
   }
 }
 
