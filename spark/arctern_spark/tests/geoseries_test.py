@@ -14,8 +14,8 @@
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
-import numpy as np
 import databricks.koalas as ks
+import numpy as np
 import pandas as pd
 import pytest
 from arctern_spark import GeoSeries
@@ -223,7 +223,7 @@ class TestGeoMethods:
         assert not s1.geom_equals(s2).any()
 
     def test_geom_with_index(self):
-        index = ['a', 'b']
+        index = [1, 2]
 
         # property
         s = GeoSeries([make_point(1, 1), None], index=index)
@@ -247,8 +247,10 @@ class TestGeoMethods:
         left = GeoSeries([make_point(1, 1), None], index=[1, 2])
         right = GeoSeries([make_point(1, 1), None], index=[3, 4])
         s1 = left.geom_equals(right)
-        assert s1.index.to_pandas().to_list() == [1, 2, 3, 4]
-        assert s1.to_list() == [False, True, False, True]
+        assert s1[1] is False
+        assert s1[2] is True
+        assert s1[3] is False
+        assert s1[4] is True
 
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
