@@ -66,7 +66,7 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "          \"icon_path\": {\"value\": \"" +
       icon_path +
       "\"},\n"
-      "          \"icon_size\": [-1, -1],\n"
+      "          \"icon_size\": {\"value\": [-1, -1]},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
       "      }\n"
@@ -129,7 +129,7 @@ TEST(ICON_VIZ_TEST, ZOOM_TEST) {
       "          \"icon_path\": {\"value\": \"" +
       icon_path +
       "\"},\n"
-      "          \"icon_size\": [200, 200],\n"
+      "          \"icon_size\": {\"value\": [200, 200]},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
       "      }\n"
@@ -192,7 +192,7 @@ TEST(ICON_VIZ_TEST, ZOOM_OUT_TEST) {
       "          \"icon_path\": {\"value\": \"" +
       icon_path +
       "\"},\n"
-      "          \"icon_size\": [30, 30],\n"
+      "          \"icon_size\": {\"value\": [30, 30]},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
       "      }\n"
