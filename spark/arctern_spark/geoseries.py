@@ -601,7 +601,7 @@ class GeoSeries(Series):
         return _column_op("st_astext", self)
 
     def to_wkb(self):
-        return self.astype(bytearray)
+        return _column_op("st_aswkb", self)
 
     def head(self, n: int = 5):
         r = super().head(n)

@@ -98,6 +98,7 @@ _unary_functions = [
     "st_curvetoline",
     "st_geomfromgeojson",
     "st_astext",
+    "st_aswkb",
     "st_asgeojson",
     "st_centroid",
     "st_isvalid",

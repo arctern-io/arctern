@@ -20,10 +20,8 @@ import base64
 index = ['a', 'b', 'c', 'd']
 
 # property
-# s = spark_series(["POINT(1 1)", "POINT(2 2)", None, np.nan], index=index, crs="EPSG:4326")
-# a = s['a']
-# print(np.uint8(a))
-print(bytes([1,2,3,4,5]))
+s = spark_series(["POINT(1 1)", "POINT(2 2)", None, np.nan], index=index, crs="EPSG:4326")
+print(s.to_wkb())
 # r = s.fillna(a)
 # print(r)
 # print(r)
