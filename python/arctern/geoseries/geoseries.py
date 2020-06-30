@@ -80,7 +80,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-
 def _validate_crs(crs):
     if crs is not None and not isinstance(crs, str):
         raise TypeError("`crs` should be spatial reference identifier string")
@@ -144,7 +143,7 @@ class GeoSeries(Series):
             index = s.index
             name = s.name
 
-            from pandas.api.types import is_object_dtype, is_float_dtype
+            from pandas.api.types import is_float_dtype
             # The default dtype for empty Series is 'float64' in pandas
             if not is_geometry_array(s):
                 if is_float_dtype(s.dtype) and s.empty:
@@ -583,6 +582,27 @@ class GeoSeries(Series):
         return _property_geo(arctern.ST_Centroid, self)
 
     @property
+    def boundary(self):
+        """
+        Returns the closure of the combinatorial boundary of each geometry in the GeoSeries.
+
+        Returns
+        -------
+        GeoSeries
+            The boundary(low-dimension) of each geometry in the GeoSeries.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)", "POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))"])
+        >>> s.boundary
+        0            GEOMETRYCOLLECTION EMPTY
+        1    LINESTRING (1 1,3 1,3 3,1 3,1 1)
+        dtype: GeoDtype
+        """
+        return _property_geo(arctern.ST_Boundary, self)
+
+    @property
     def convex_hull(self):
         """
         For each geometry in the GeoSeries, returns the smallest convex geometry that encloses it.
@@ -695,9 +715,220 @@ class GeoSeries(Series):
         """
         return _property_geo(arctern.ST_Envelope, self)
 
+    @property
+    def is_empty(self):
+        """
+        Returns true if this Geometry is an empty geometry.
+
+        Returns
+        --------
+        Mask of boolean values for each element in the GeoSeries that indicates whether an element is empty.
+            * *True:* The geometry is empty.
+            * *False:* The geometry is not empty.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["LINESTRING EMPTY", "POINT (100 200)"])
+        >>> s.is_empty
+        0     True
+        1    False
+        dtype: bool
+        """
+        return _property_op(arctern.ST_IsEmpty, self).astype(bool, copy=False)
+
     # -------------------------------------------------------------------------
     # Geometry related unary methods, which return GeoSeries
     # -------------------------------------------------------------------------
+
+    @property
+    def exterior(self):
+        """
+        Returns a line string representing the exterior ring of the POLYGON geometry. Return NULL if the geometry is not a polygon.
+
+        Returns
+        --------
+        GeoSeries
+            A GeoSeries contains geometries that represents the exterior ring of the POLYGON geometry.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+        >>> s.exterior()
+        0                                None
+        1    LINESTRING (0 0,1 0,1 1,0 1,0 0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_ExteriorRing, self)
+
+    def difference(self, other):
+        """
+        Returns a geometry that represents that part of geometry slef that does not intersect with geometry other.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the part of geometry slef that does not intersect with geometry other.
+            * If ``other`` is a geometry, this function calculates the difference of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries that represents that part of geometry slef that does not intersect with geometry other.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+        >>> s1.difference(s2)
+        0    LINESTRING (0 0,4 0)
+        1             POINT (6 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_Difference, self, other)
+
+    def symmetric_difference(self, other):
+        """
+        Returns a geometry that represents the portions of self and other that do not intersect.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to calculate the the portions of self and other that do not intersect.
+            * If ``other`` is a geometry, this function calculates the sym difference of each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the sym difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries that represents the portions of self and other that do not intersect.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
+        >>> s1.symmetric_difference(s2)
+        0    MULTILINESTRING ((0 0,4 0),(5 0,6 0))
+        1                              POINT (6 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_SymDifference, self, other)
+
+    def scale(self, factor_x, factor_y, origin="center"):
+        """
+        Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Parameters
+        ----------
+        factor_x : float
+            Scaling factor for x dimension.
+        factor_y : float
+            Scaling factor for y dimension.
+
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.scale(2,2)
+        0    LINESTRING (-2.5 0.0,7.5 0.0)
+        1             MULTIPOINT (3 0,7 0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y, origin=origin)
+
+    def affine_transform(self, matrix):
+        """
+        Return a GeoSeries with transformed geometries.
+
+        Parameters
+        -----------
+        matrix: List or tuple
+            6 items for 2D transformations. The 6 parameter matrix is [a, b, d, e, offset_x, offset_y].
+
+        Returns
+        --------
+        GeoSeries
+            A GeoSeries contains geometries which are tranformed by parameters in matrix.
+
+        Examples
+        ---------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> matrix = (2,2,2,2,2,2)
+        >>> s1.affine_transfrom(matrix)
+        0      LINESTRING (2 2,12 12)
+        1    MULTIPOINT (10 10,14 14)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Affine, self, *matrix)
+
+    def translate(self, shifter_x, shifter_y):
+        """
+        Return a GeoSeries with translated geometries.
+
+        Parameters
+        ----------
+        shifter_x : float
+            Amount of offset along x dimension.
+        shifter_y : float
+            Amount of offset along y dimension.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with translated geometries which shifted by offsets along each dimension.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.translate(2,1)
+        0    LINESTRING (2 1,7 1)
+        1    MULTIPOINT (6 1,8 1)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Translate, self, shifter_x, shifter_y)
+
+    def rotate(self, angle, origin="center", use_radians=False):
+        """
+        Returns a rotated geometry on a 2D plane.
+        Parameters
+        ----------
+        angle : float
+            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+        use_radians : boolean
+            Whether to interpret the angle of rotation as degrees or radians.
+
+        Returns
+        -------
+        GeoSeries
+            a GeoSeries with rotated geometries.
+
+        Examples
+        --------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> import math
+        >>> s1.rotate(math.pi, origin=(0, 1), use_radians=True)
+        0     LINESTRING (0.0 2.0,-5.0 2.0)
+        1    MULTIPOINT (-4.0 2.0,-6.0 2.0)
+        dtype: GeoDtype
+        """
+        return _unary_geo(arctern.ST_Rotate, self, angle, origin=origin, use_radians=use_radians)
 
     def curve_to_line(self):
         """
@@ -957,6 +1188,36 @@ class GeoSeries(Series):
         dtype: bool
         """
         return _binary_op(arctern.ST_Intersects, self, other).astype(bool, copy=False)
+
+    def disjoint(self, other):
+        """
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they do not intersect each other.
+
+        Parameters
+        ----------
+        other : geometry or GeoSeries
+            The geometry or GeoSeries to test whether it is not intersected with the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
+
+        Returns
+        -------
+        Series
+            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
+            * *True*: The two geometries do not intersect each other.
+            * *False*: The two geometries intersect each other.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0,1 0,1 1,0 1,0 0))", "POLYGON((8 0,9 0,9 1,8 1,8 0))"])
+        >>> s2 = GeoSeries(["POLYGON((0 0,0 8,8 8,8 0,0 0))", "POLYGON((0 0,0 8,8 8,8 0,0 0))"])
+        >>> s2.disjoint(s1)
+        0    False
+        1    False
+        dtype: bool
+        """
+        return _binary_op(arctern.ST_Disjoint, self, other).astype(bool, copy=False)
 
     def within(self, other):
         """
@@ -1298,6 +1559,31 @@ class GeoSeries(Series):
         dtype: GeoDtype
         """
         return _binary_geo(arctern.ST_Intersection, self, other)
+
+    def union(self, other):
+        """
+        This function returns a geometry being a union of two input geometries
+        Parameters
+        ----------
+        other : GeoSeries
+            The GeoSeries to calculate the union of it and the geometries in the first GeoSeries.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that is the union of each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+
+        Examples
+        -------
+        >>> from arctern import GeoSeries
+        >>> s1 = GeoSeries(["POLYGON((0 0 ,0 1, 1 1, 1 0, 0 0))", "POINT(0 0)"])
+        >>> s2 = GeoSeries(["POLYGON((0 0 ,0 2, 1 1, 1 0, 0 0))", "POINT(0 1)"])
+        >>> s2.union(s1)
+        0    POLYGON ((0 0,0 1,0 2,1 1,1 0,0 0))
+        1                   MULTIPOINT (0 1,0 0)
+        dtype: GeoDtype
+        """
+        return _binary_geo(arctern.ST_Union, self, other)
 
     # -------------------------------------------------------------------------
     # utils

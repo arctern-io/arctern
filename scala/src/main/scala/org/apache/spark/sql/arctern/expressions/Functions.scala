@@ -25,7 +25,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryFactory, MultiPolygon, Polygon}
+import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
 
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {
@@ -41,7 +41,7 @@ object utils {
   }
 
   def distanceSphere(from: Geometry, to: Geometry): Double = {
-    var distance = -1.0
+    var distance = Double.NaN
     if (!from.getGeometryType.equals("Point") || !to.getGeometryType.equals("Point")) {
       distance
     } else {
@@ -102,6 +102,90 @@ object utils {
     res
   }
 
+  def collectionUnionPoint(geometries: Geometry, point: Geometry): Geometry = {
+    var geometryArray = Array[Geometry]()
+    val geometryCollection = geometries.asInstanceOf[GeometryCollection]
+    var canUnion = false
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      val geometry = geometryCollection.getGeometryN(i)
+      geometryArray = geometryArray :+ geometry
+      if (point.union(geometry).getGeometryType != "GeometryCollection") canUnion = true
+    }
+    if (!canUnion) geometryArray = geometryArray :+ point
+    new GeometryFactory().createGeometryCollection(geometryArray)
+  }
+
+  def collectionUnionPoints(geometries: Geometry, points: Geometry): Geometry = {
+    var geometryArray = Array[Geometry]()
+    var pointsArray = Array[Geometry]()
+    var pointsTmpArray = Array[Geometry]()
+    val multiPoints = points.asInstanceOf[MultiPoint]
+    val geometryCollection = geometries.asInstanceOf[GeometryCollection]
+    for (i <- 0 until multiPoints.getNumPoints) {
+      val point = multiPoints.getGeometryN(i)
+      pointsArray = pointsArray :+ point
+      pointsTmpArray = pointsTmpArray :+ point
+    }
+    for (i <- 0 until geometryCollection.getNumGeometries) {
+      val geometry = geometryCollection.getGeometryN(i)
+      geometryArray = geometryArray :+ geometry
+      for (j <- pointsArray.indices) {
+        val point = pointsArray(j)
+        if (point.union(geometry).getGeometryType != "GeometryCollection") pointsTmpArray = pointsTmpArray.filter(!_.contains(point))
+      }
+      pointsArray = pointsTmpArray
+    }
+    geometryArray = geometryArray ++ pointsTmpArray
+    new GeometryFactory().createGeometryCollection(geometryArray)
+  }
+
+  def scale(geo: Geometry, factorX: Double, factorY: Double): Geometry = {
+    val centre = geo.getEnvelopeInternal.centre
+    val scalaX = centre.x
+    val scalaY = centre.y
+    org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, scalaX, scalaY).transform(geo)
+  }
+
+  def scale(geo: Geometry, factorX: Double, factorY: Double, origin: String): Geometry = {
+    var scalaX: Double = 0
+    var scalaY: Double = 0
+    if (origin.equalsIgnoreCase("Center")) {
+      val centre = geo.getEnvelopeInternal.centre
+      scalaX = centre.x
+      scalaY = centre.y
+    } else if (origin.equalsIgnoreCase("Centroid")) {
+      val centroid = geo.getCentroid
+      scalaX = centroid.getX
+      scalaY = centroid.getY
+    } else throw new Exception("Illegal scale origin: " + origin)
+    org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, scalaX, scalaY).transform(geo)
+  }
+
+  def scale(geo: Geometry, factorX: Double, factorY: Double, originX: Double, originY: Double): Geometry = org.locationtech.jts.geom.util.AffineTransformation.scaleInstance(factorX, factorY, originX, originY).transform(geo)
+
+  def rotate(geo: Geometry, rotationAngle: Double): Geometry = {
+    val centre = geo.getEnvelopeInternal.centre
+    val scalaX = centre.x
+    val scalaY = centre.y
+    org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, scalaX, scalaY).transform(geo)
+  }
+
+  def rotate(geo: Geometry, rotationAngle: Double, origin: String): Geometry = {
+    var scalaX: Double = 0
+    var scalaY: Double = 0
+    if (origin.equalsIgnoreCase("Center")) {
+      val centre = geo.getEnvelopeInternal.centre
+      scalaX = centre.x
+      scalaY = centre.y
+    } else if (origin.equalsIgnoreCase("Centroid")) {
+      val centroid = geo.getCentroid
+      scalaX = centroid.getX
+      scalaY = centroid.getY
+    } else throw new Exception("Illegal rotate origin: " + origin)
+    org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, scalaX, scalaY).transform(geo)
+  }
+
+  def rotate(geo: Geometry, rotationAngle: Double, originX: Double, originY: Double): Geometry = org.locationtech.jts.geom.util.AffineTransformation.rotationInstance(rotationAngle, originX, originY).transform(geo)
 }
 
 abstract class ST_BinaryOp extends ArcternExpr {
@@ -357,7 +441,7 @@ case class ST_PrecisionReduce(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def precisionValue(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel(${precisionValue(ctx)}))")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.locationtech.jts.precision.GeometryPrecisionReducer.reduce($geo, new org.locationtech.jts.geom.PrecisionModel(java.lang.Math.pow(10, ${precisionValue(ctx)})))")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -372,7 +456,7 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.intersection($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -604,15 +688,25 @@ case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def rotationAngle(ctx: CodegenContext): ExprValue = inputsExpr(1).genCode(ctx).value
 
-  def rotateX(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
+  def origin(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 3) inputsExpr(2).genCode(ctx).value else null
 
-  def rotateY(ctx: CodegenContext): ExprValue = inputsExpr(3).genCode(ctx).value
+  def originX(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(2).genCode(ctx).value else null
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().rotate(${rotationAngle(ctx)}, ${rotateX(ctx)}, ${rotateY(ctx)}).transform($geo)")
+  def originY(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(3).genCode(ctx).value else null
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => {
+    val originValue = origin(ctx)
+    val originXValue = originX(ctx)
+    val originYValue = originY(ctx)
+    if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)})"
+    else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originValue.toString())"
+    else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originXValue, $originYValue)"
+    else throw new Exception("Illegal argument in ST_Scale")
+  })
 
   override def dataType: DataType = new GeometryUDT
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType, NumericType)
+  override def inputTypes: Seq[AbstractDataType] = if (inputsExpr.length == 2) Seq(new GeometryUDT, NumericType) else if (inputsExpr.length == 3) Seq(new GeometryUDT, NumericType, StringType) else Seq(new GeometryUDT, NumericType, NumericType, NumericType)
 
   override def children: Seq[Expression] = inputsExpr
 }
@@ -710,11 +804,25 @@ case class ST_Scale(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   def factorY(ctx: CodegenContext): ExprValue = inputsExpr(2).genCode(ctx).value
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"new org.locationtech.jts.geom.util.AffineTransformation().scale(${factorX(ctx)}, ${factorY(ctx)}).transform($geo)")
+  def origin(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 4) inputsExpr(3).genCode(ctx).value else null
+
+  def originX(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 5) inputsExpr(3).genCode(ctx).value else null
+
+  def originY(ctx: CodegenContext): ExprValue = if (inputsExpr.length == 5) inputsExpr(4).genCode(ctx).value else null
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => {
+    val originValue = origin(ctx)
+    val originXValue = originX(ctx)
+    val originYValue = originY(ctx)
+    if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)})"
+    else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)}, $originValue.toString())"
+    else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.scale($geo, ${factorX(ctx)}, ${factorY(ctx)}, $originXValue, $originYValue)"
+    else throw new Exception("Illegal argument in ST_Scale")
+  })
 
   override def dataType: DataType = new GeometryUDT
 
-  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT, NumericType, NumericType)
+  override def inputTypes: Seq[AbstractDataType] = if (inputsExpr.length == 3) Seq(new GeometryUDT, NumericType, NumericType) else if (inputsExpr.length == 4) Seq(new GeometryUDT, NumericType, NumericType, StringType) else Seq(new GeometryUDT, NumericType, NumericType, NumericType, NumericType)
 
   override def children: Seq[Expression] = inputsExpr
 }
