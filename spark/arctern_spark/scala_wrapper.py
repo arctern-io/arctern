@@ -47,7 +47,7 @@ class GeometryUDT(UserDefinedType):
         return Row(obj.toBytes)
 
     def deserialize(self, datum):
-        binData = bytearray([x % 256 for x in datum])
+        binData = bytes([x % 256 for x in datum])
         return binData
 
 

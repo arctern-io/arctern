@@ -185,16 +185,6 @@ class TestPandasMethod:
         s1 = s.fillna(method='ffill')
         assert s1[0] == s1[1]
 
-        s1 = s[::-1].fillna(method="bfill")
-        assert s1[0] == s1[1]
-
-        # set item with na value
-        s[0] = np.nan
-        assert s[0] is None
-
-        s[0] = pd.NA
-        assert s[0] is None
-
     def test_equals(self):
         s1 = GeoSeries([make_point(1, 1), make_point(2, 2)])
         s2 = GeoSeries([make_point(1, 1), make_point(2, 2)])

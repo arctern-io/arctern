@@ -16,13 +16,16 @@ from arctern.geoseries import GeoSeries as python_series
 # print(r1)
 # print(r2)
 # print(r3)
-index = ['a', 'b', 'c']
+import base64
+index = ['a', 'b', 'c', 'd']
 
 # property
-s = spark_series(["POINT(1 1)", "POINT(2 2)", np.nan], index=index, crs="EPSG:4326")
-a = s['a']
-print(spark_series(a))
-# r = s.fillna(spark_series(a))
+# s = spark_series(["POINT(1 1)", "POINT(2 2)", None, np.nan], index=index, crs="EPSG:4326")
+# a = s['a']
+# print(np.uint8(a))
+print(bytes([1,2,3,4,5]))
+# r = s.fillna(a)
+# print(r)
 # print(r)
 # print(s)
 # print(s['a'])

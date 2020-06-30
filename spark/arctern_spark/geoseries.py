@@ -68,9 +68,12 @@ def _validate_crs(crs):
     return crs
 
 
-def _validate_arg(arg, dtype=(bytes, bytearray)):
+def _validate_arg(arg):
     from . import scala_wrapper
-    if dtype is not None and isinstance(arg, dtype):
+    if isinstance(arg, str):
+        arg = F.lit(arg)
+        arg = getattr(scala_wrapper, "st_geomfromtext")(arg)
+    elif isinstance(arg, (bytearray, bytes)):
         arg = F.lit(arg)
         arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
@@ -339,22 +342,14 @@ class GeoSeries(Series):
             raise ValueError("Expecting 'pad', 'ffill', 'backfill' or 'bfill'.")
 
         scol = self.spark.column
-
-        if isinstance(self.spark.data_type, (FloatType, DoubleType)):
-            cond = scol.isNull() | F.isnan(scol)
-        else:
-            if not self.spark.nullable:
-                if inplace:
-                    return
-                else:
-                    return self
-            cond = scol.isNull()
+        cond = scol.isNull()
 
         if value is not None:
-            if not isinstance(value, (float, int, str, bool, bytearray, bytes)):
+            if not isinstance(value, (str, bytearray, bytes)):
                 raise TypeError("Unsupported type %s" % type(value))
             if limit is not None:
                 raise ValueError("limit parameter for value is not support now")
+            value = _validate_arg(value)
             scol = F.when(cond, value).otherwise(scol)
         else:
             if method in ["ffill", "pad"]:
@@ -561,7 +556,7 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
 
     def intersection(self, other):
-        return _column_geo("st_intersection", self, _validate_arg(other, bytearray), crs=self.crs)
+        return _column_geo("st_intersection", self, _validate_arg(other), crs=self.crs)
 
     def difference(self, other):
         return _column_geo("st_difference", self, _validate_arg(other))
