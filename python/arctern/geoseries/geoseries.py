@@ -618,6 +618,7 @@ class GeoSeries(Series):
 
         First, create a MULTIPOLYGON object that contains a concave polygon and a rectangle.
 
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
         >>> from arctern.plot import plot_geometry
         >>> fig, ax = plt.subplots()
@@ -633,37 +634,37 @@ class GeoSeries(Series):
         Let's see how ``convex_hull`` deals with a GEOMETRYCOLLECTION that contains a semicircle and a rectangle.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
         >>> plot_geometry(ax,g4.curve_to_line())
 
         Use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the GEOMETRYCOLLECTION object. Since semicircle and rectangle are convex, the returned convex geometry is just a combination of the two gemetries and looks the same as the original.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> print(g4.convex_hull.to_wkt()[0])
-        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
         CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
+        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
 
         ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
 
         The GeoSeries ``s1`` below contains a point, a line, and a convex polygon.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> s = GeoSeries(["POINT(2 0.5)", "LINESTRING(0 0,3 0.5)",  "POLYGON ((1 1,3 1,3 3,1 3, 1 1))"])
         >>> plot_geometry(ax,s)
 
         The returned geometries from ``convex_hull`` looks exactly the same as the original.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> print(s.convex_hull)
-        >>> plot_geometry(ax,s.convex_hull)
         0                    POINT (2.0 0.5)
         1           LINESTRING (0 0,3.0 0.5)
         2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
+        >>> plot_geometry(ax,s.convex_hull)
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
@@ -1006,6 +1007,8 @@ class GeoSeries(Series):
             Sequence of simplified geometries.
 
         Examples
+        .. doctest::
+           :skipif: True
         -------
         >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
@@ -1013,7 +1016,7 @@ class GeoSeries(Series):
         >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
         >>> g0 = g0.curve_to_line()
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> ax.grid()
         >>> plot_geometry(ax,g0,facecolor="red",alpha=0.2)
         >>> plot_geometry(ax,g0.simplify(1),facecolor="green",alpha=0.2)
@@ -1038,6 +1041,8 @@ class GeoSeries(Series):
             Sequence of geometries.
 
         Examples
+        .. doctest::
+           :skipif: True
         -------
         >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
@@ -1045,7 +1050,7 @@ class GeoSeries(Series):
         >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
         >>> g0 = g0.curve_to_line()
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> ax.grid()
         >>> plot_geometry(ax,g0,facecolor=["red"],alpha=0.2)
         >>> plot_geometry(ax,g0.buffer(-2),facecolor=["green"],alpha=0.2)

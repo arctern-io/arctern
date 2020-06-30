@@ -1413,10 +1413,10 @@ def within_which(left, right):
     >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
     >>> res = within_which(data1, data2)
     >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
+    0       1
+    1    <NA>
+    2       0
+    dtype: object
     """
     import pyarrow as pa
     import pandas

@@ -66,9 +66,9 @@ def pointmap(ax, points, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
     .. doctest:
         :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -142,9 +142,9 @@ def weighted_pointmap(ax, points, color_weights=None,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
     .. doctest:
         :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -224,9 +224,9 @@ def heatmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
     .. doctest:
         :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -294,9 +294,9 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
     .. doctest:
         :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -350,9 +350,9 @@ def iconviz(ax, points, bounding_box, icon_path,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
-    :example:
     .. doctest:
+        :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
@@ -423,9 +423,9 @@ def fishnetmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    -------
     .. doctest:
         :skipif: True
+    -------
     >>> import pandas as pd
     >>> import numpy as np
     >>> import arctern
