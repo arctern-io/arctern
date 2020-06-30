@@ -14,9 +14,8 @@
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
-import pytest
-import tempfile
 import os
+import pytest
 import pandas as pd
 import numpy as np
 from pandas.testing import assert_series_equal
