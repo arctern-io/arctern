@@ -1,1 +1,0 @@
-from .geoseries import GeoSeries
