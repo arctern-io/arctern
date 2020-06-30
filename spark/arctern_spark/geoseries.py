@@ -27,10 +27,12 @@ from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F, Column
 from pyspark.sql.window import Window
 from pyspark.sql.types import (
+    BooleanType,
     DoubleType,
     FloatType,
     IntegerType,
     LongType,
+    StringType,
 )
 
 # os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
@@ -380,11 +382,65 @@ class GeoSeries(Series):
             )
         else:
             return self._with_new_scol(scol).rename(self.name)
+
     def __eq__(self, other):
         return ks.base.column_op(Column.__eq__)(self, _validate_arg(other))
 
     def __ne__(self, other):
         return ks.base.column_op(Column.__ne__)(self, _validate_arg(other))
+
+    def astype(self, dtype):
+        """
+        Cast a Koalas object to a specified dtype ``dtype``.
+
+        Parameters
+        ----------
+        dtype : data type
+            Use a numpy.dtype or Python type to cast entire pandas object to
+            the same type.
+
+        Returns
+        -------
+        casted : same type as caller
+
+        See Also
+        --------
+        to_datetime : Convert argument to datetime.
+
+        Examples
+        --------
+        >>> ser = ks.Series([1, 2], dtype='int32')
+        >>> ser
+        0    1
+        1    2
+        Name: 0, dtype: int32
+
+        >>> ser.astype('int64')
+        0    1
+        1    2
+        Name: 0, dtype: int64
+        """
+        from databricks.koalas.typedef import as_spark_type
+
+        spark_type = as_spark_type(dtype)
+        if not spark_type:
+            raise ValueError("Type {} not understood".format(dtype))
+        if isinstance(spark_type, BooleanType):
+            if isinstance(self.spark.data_type, StringType):
+                scol = F.when(self.spark.column.isNull(), F.lit(False)).otherwise(
+                    F.length(self.spark.column) > 0
+                )
+            elif isinstance(self.spark.data_type, (FloatType, DoubleType)):
+                scol = F.when(
+                    self.spark.column.isNull() | F.isnan(self.spark.column), F.lit(True)
+                ).otherwise(self.spark.column.cast(spark_type))
+            else:
+                scol = F.when(self.spark.column.isNull(), F.lit(False)).otherwise(
+                    self.spark.column.cast(spark_type)
+                )
+        else:
+            scol = self.spark.column.cast(spark_type)
+        return self._with_new_scol(scol)
 
     # -------------------------------------------------------------------------
     # Geometry related property
