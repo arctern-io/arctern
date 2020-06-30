@@ -15,9 +15,13 @@
  */
 #include <dirent.h>
 #include <stdexcept>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize.h"
 
 #include "render/utils/image/image_loader.h"
 
@@ -74,6 +78,22 @@ void ImageLoader::LoadDir(const std::string& file_path) {
   }
 
   closedir(dir);
+}
+
+void ImageLoader::Resize(ImageLoader::ImageBuffer &image_buffer, int output_w, int output_h) {
+  auto input_w = image_buffer.image_params.width;
+  auto input_h = image_buffer.image_params.height;
+
+  auto output_pixels = (unsigned char *)malloc(output_w * output_h * 4 * sizeof(unsigned char));
+
+  stbir_resize_uint8(image_buffer.buffer, input_w, input_h, 0,
+                     output_pixels, output_w, output_h, 0, 4);
+
+  free(image_buffer.buffer);
+
+  image_buffer.buffer = output_pixels;
+  image_buffer.image_params.width = output_w;
+  image_buffer.image_params.height = output_h;
 }
 
 }  // namespace render

@@ -66,6 +66,133 @@ TEST(ICON_VIZ_TEST, WKT_TEST) {
       "          \"icon_path\": {\"value\": \"" +
       icon_path +
       "\"},\n"
+      "          \"icon_size\": [-1, -1],\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+
+  arctern::render::icon_viz(point_vec, vega);
+}
+
+TEST(ICON_VIZ_TEST, ZOOM_TEST) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (100 100)";
+  std::string wkt2 = "POINT (200 200)";
+  std::string wkt3 = "POINT (300 300)";
+  std::string wkt4 = "POINT (400 400)";
+  std::string wkt5 = "POINT (500 500)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  std::string path = __FILE__;
+  path.resize(path.size() - 16);
+  std::string icon_path = path + "images/taxi.png";
+
+  // param2: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 800,\n"
+      "  \"height\": 600,\n"
+      "  \"description\": \"icon\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"icon\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"icon_path\": {\"value\": \"" +
+      icon_path +
+      "\"},\n"
+      "          \"icon_size\": [200, 200],\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
+
+  std::vector<std::shared_ptr<arrow::Array>> point_vec{wkb};
+
+  arctern::render::icon_viz(point_vec, vega);
+}
+
+TEST(ICON_VIZ_TEST, ZOOM_OUT_TEST) {
+  // param1: wkt string
+  std::string wkt1 = "POINT (100 100)";
+  std::string wkt2 = "POINT (200 200)";
+  std::string wkt3 = "POINT (300 300)";
+  std::string wkt4 = "POINT (400 400)";
+  std::string wkt5 = "POINT (500 500)";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt1);
+  status = string_builder.Append(wkt2);
+  status = string_builder.Append(wkt3);
+  status = string_builder.Append(wkt4);
+  status = string_builder.Append(wkt5);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  std::string path = __FILE__;
+  path.resize(path.size() - 16);
+  std::string icon_path = path + "images/taxi.png";
+
+  // param2: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 800,\n"
+      "  \"height\": 600,\n"
+      "  \"description\": \"icon\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"icon\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"icon_path\": {\"value\": \"" +
+      icon_path +
+      "\"},\n"
+      "          \"icon_size\": [30, 30],\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
       "      }\n"

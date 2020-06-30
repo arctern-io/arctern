@@ -57,6 +57,16 @@ void VegaIcon::Parse(const std::string& json) {
     return;
   }
   icon_path_ = mark_enter["icon_path"]["value"].GetString();
+
+  if (!JsonLabelCheck(mark_enter, "icon_size") ||
+      !JsonTypeCheck(mark_enter["icon_size"], rapidjson::Type::kArrayType) ||
+      !JsonSizeCheck(mark_enter["icon_size"], "icon_size", 2) ||
+      !JsonTypeCheck(mark_enter["icon_size"][0], rapidjson::Type::kNumberType) ||
+      !JsonTypeCheck(mark_enter["icon_size"][1], rapidjson::Type::kNumberType)) {
+    return;
+  }
+  icon_width_ = mark_enter["icon_size"][0].GetInt();
+  icon_height_ = mark_enter["icon_size"][1].GetInt();
 }
 
 }  // namespace render
