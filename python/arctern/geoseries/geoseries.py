@@ -1897,6 +1897,7 @@ class GeoSeries(Series):
                 feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
             yield feature
 
+    # pylint: disable=arguments-differ
     def to_json(self, show_bbox=True, **kwargs):
         """
         Returns a GeoJSON string representation of the GeoSeries.
