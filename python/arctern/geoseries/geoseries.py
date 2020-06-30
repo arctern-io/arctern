@@ -121,7 +121,7 @@ class GeoSeries(Series):
     """
 
     _sindex = None
-    _sindex_generated = None
+    _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -425,6 +425,28 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
+
+    def _invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
+    def _wrapped_pandas_method(self, mtd, *args, **kwargs):
+        """Wrap a generic pandas method to ensure it returns a GeoSeries"""
+        val = getattr(super(GeoSeries, self), mtd)(*args, **kwargs)
+        if type(val) == Series:
+            val.__class__ = GeoSeries
+            val.crs = self.crs
+            val._invalidate_sindex()
+        return val
+
+    def append(self, *args, **kwargs):
+        return self._wrapped_pandas_method("append", *args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        return self._wrapped_pandas_method("update", *args, **kwargs)
+
+    def drop(self, *args, **kwargs):
+        return self._wrapped_pandas_method("drop", *args, **kwargs)
 
     # -------------------------------------------------------------------------
     # Geometry related property
