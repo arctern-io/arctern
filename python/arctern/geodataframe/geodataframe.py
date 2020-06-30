@@ -17,31 +17,15 @@
 
 from warnings import warn
 
-import pandas as pd
-from pandas import DataFrame
+from pandas import DataFrame,Series
 from arctern import GeoSeries
-
-try:
-    from rtree.core import RTreeError
-
-    HAS_SINDEX = True
-except ImportError:
-
-    class RTreeError(Exception):
-        pass
-
-
-    HAS_SINDEX = False
-
-DEFAULT_GEO_COLUMN_NAME = ["geometry"]
 
 
 class GeoDataFrame(DataFrame):
     _metadata = ["_crs", "_geometry_column_name"]
-    _geometry_column_name = DEFAULT_GEO_COLUMN_NAME
+    _geometry_column_name = []
     _sindex = None
     _sindex_generated = False
-    _crs = {}
 
     def __init__(self, *args, **kwargs):
         crs = kwargs.pop("crs", None)
@@ -51,9 +35,8 @@ class GeoDataFrame(DataFrame):
         if geometries is None and "geometry" in self.columns:
             index = self.index
             try:
-                self["geometry"] = GeoSeries(self["geometry"].values)
+                self["geometry"] = GeoSeries(self["geometry"])
                 self._geometry_column_name = ["geometry"]
-                self._crs = None
             except TypeError:
                 pass
             else:
@@ -74,55 +57,67 @@ class GeoDataFrame(DataFrame):
                         crs.append("None")
 
                 for (crs_element, geo_element) in zip(crs, geometries):
-                    self._crs[geo_element] = crs_element
                     self[geo_element].set_crs(crs_element)
             else:
                 self._geometry_column_name = None
-                self._crs = None
 
         self._invalidate_sindex()
 
-    def _constructor_expanddim():
-        pass
-
-    def to_crs(self, col, epsg, inplace=False):
-        if self._geometry_column_name.count(col) == 0:
-            raise TypeError("Input column name {0} is not exist in dataframe".format(col))
+    def set_geometries(self, cols, inplace=False, crs=None):
         if inplace:
-            gdf = self
+            frame = self
         else:
-            gdf = self.copy()
-        geom = gdf[col].to_crs(epsg)
-        gdf[col] = geom
-        gdf._crs[col] = epsg
-        return gdf
+            frame = self.copy()
+
+        geos_crs = {}
+        crs_length = len(crs)
+        geo_length = len(cols)
+        if crs_length < geo_length:
+            for i in range(0, geo_length - crs_length):
+                crs.append("None")
+        for col, geo_crs in zip(cols, crs):
+            geos_crs[col] = geo_crs
+        for col in frame._geometry_column_name:
+            geos_crs[col] = frame[col].crs
+
+        geometry_cols = frame._geometry_column_name
+        for col in cols:
+            if col not in geometry_cols:
+                frame[col] = GeoSeries(frame[col])
+
+        frame._geometry_column_name = frame._geometry_column_name + cols
+
+        for col in frame._geometry_column_name:
+            frame[col].set_crs(geos_crs[col])
+
+        if not inplace:
+            return frame
+
+    def to_geopandas(self):
+        import geopandas
+        if self._geometry_column_name is not None:
+            for col in self._geometry_column_name:
+                self[col] = Series(self[col].to_geopandas())
+        return geopandas.GeoDataFrame(self.values ,columns=self.columns.values.tolist())
+
+    @classmethod
+    def from_geopandas(cls, pdf):
+        import geopandas
+        import shapely
+        if not isinstance(pdf, geopandas.GeoDataFrame):
+            raise TypeError(f"pdf must be {geopandas.GeoSeries}, got {type(pdf)}")
+        result = cls(pdf.values, columns=pdf.columns.values.tolist())
+        column_names = pdf.columns.values.tolist()
+        for col in column_names:
+            if isinstance(pdf[col][0], shapely.geometry.base.BaseGeometry):
+                geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
+                result[col] = geo_col
+                result._geometry_column_name.append(col)
+        return result
 
     def _invalidate_sindex(self):
         self._sindex = None
         self._sindex_generated = False
-
-    def _generate_sindex(self):
-        if not HAS_SINDEX:
-            warn("Cannot generate spatial index: Missing package `rtree`.")
-        else:
-            from geopandas.sindex import SpatialIndex
-
-            stream = (
-                (i, item.bounds, idx)
-                for i, (idx, item) in enumerate(self.geometry.iteritems())
-                if pd.notnull(item) and not item.is_empty
-            )
-            try:
-                self._sindex = SpatialIndex(stream)
-            except RTreeError:
-                pass
-        self._sindex_generated = True
-
-    @property
-    def sindex(self):
-        if not self._sindex_generated:
-            self._generate_sindex()
-        return self._sindex
 
     def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         data = self.drop(labels=col, axis=1)
@@ -157,3 +152,10 @@ class GeoDataFrame(DataFrame):
         elif isinstance(result, DataFrame) and geo_col not in result:
             result.__class__ = DataFrame
         return result
+
+    @property
+    def _constructor(self):
+        return GeoDataFrame
+
+    def _constructor_expanddim():
+        pass

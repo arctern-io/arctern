@@ -16,4 +16,4 @@
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 
 from .geodataframe import GeoDataFrame
-from .sjoin import sjoin
+# from .sjoin import sjoin
