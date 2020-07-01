@@ -2378,6 +2378,7 @@ TEST(ICON_VIZ_TEST, RAW_POINT_TEST) {
       "          \"icon_path\": {\"value\": \"" +
       icon_path +
       "\"},\n"
+      "          \"icon_size\": {\"value\": [-1, -1]},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
       "      }\n"

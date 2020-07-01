@@ -51,6 +51,11 @@ void IconViz::Draw() {
     throw std::runtime_error(err_msg);
   }
 
+  // resize icon
+  if (icon_vega_.icon_width() > 0 && icon_vega_.icon_height() > 0) {
+    image_loader.Resize(image_buffer, icon_vega_.icon_width(), icon_vega_.icon_height());
+  }
+
   for (int i = 0; i < num_icons_; i++) {
     glRasterPos2f(vertices_x_[i], vertices_y_[i]);
     glDrawPixels(image_buffer.image_params.width, image_buffer.image_params.height,

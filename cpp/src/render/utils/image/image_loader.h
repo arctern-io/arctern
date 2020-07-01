@@ -43,6 +43,8 @@ class ImageLoader {
 
   void LoadDir(const std::string& file_path);
 
+  void Resize(ImageBuffer& image_buffer, int output_w, int output_h);
+
   const std::map<std::string, ImageBuffer>& image_buffers() const {
     return image_buffers_;
   }

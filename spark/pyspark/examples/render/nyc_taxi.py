@@ -134,7 +134,7 @@ def draw_icon_viz(spark):
     res = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude), ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
 
     icon_path = "/tmp/taxi.png"
-    vega = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], icon_path, "EPSG:4326")
+    vega = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], icon_path, coordinate_system="EPSG:4326")
     res = icon_viz(vega, res)
     save_png(res, '/tmp/icon_viz.png')
 
