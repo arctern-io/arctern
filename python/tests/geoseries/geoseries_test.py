@@ -14,6 +14,7 @@
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
 
+import os
 import pytest
 import pandas as pd
 import numpy as np
@@ -303,3 +304,74 @@ def test_to_geopandas():
     assert rst[0] == shapely.geometry.Polygon(((0, 0), (4, 0), (4, 4), (0, 4), (0, 0)))
     assert rst[1] is None
     assert rst.crs.to_string() == "EPSG:4326"
+
+
+geometry_list = ["POINT (1 1)",
+                 "MULTIPOINT (1 1,3 4)",
+                 "POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                 "MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,-2 3,1 1,1 -1,0 0)))",
+                 "LINESTRING (1 1,1 2,2 3,1 1)",
+                 "MULTILINESTRING ((1 1,1 2),(2 4,1 9,1 8))",
+                 # "GEOMETRYCOLLECTION ( LINESTRING ( 90 190, 120 190, 50 60, 130 10, 190 50, 160 90, 10 150, 90 190 ), POINT(90 190) )"
+                 ]
+
+
+@pytest.fixture(params=geometry_list)
+def source(request):
+    return GeoSeries([request.param] * 1, name="geometry", crs="EPSG:4326")
+
+
+class TestFile:
+    @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
+    def test_to_from_file(self, driver, extension, tmpdir, source):
+        file_name = os.path.join(str(tmpdir), "test." + extension)
+        source.to_file(file_name, driver=driver)
+
+        dest = GeoSeries.from_file(file_name)
+        assert_series_equal(dest, source)
+        # since fiona's crs format is different to GeoSeries.crs,
+        # we can't assert crs is equal, apply to_crs an check out
+        # the transformed GeoSeries
+        source = source.to_crs("EPSG:3857")
+        dest = dest.to_crs("EPSG:3857")
+        assert_series_equal(dest, source)
+
+    @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
+    def test_complex_geometry(self, driver, extension, tmpdir):
+        source = GeoSeries(geometry_list, name="geometry", crs="EPSG:4326")
+        file_name = os.path.join(str(tmpdir), "test." + extension)
+        if driver == "ESRI Shapefile":
+            with pytest.xfail("ESRI shapefiles can only store one kind of geometry per layer"):
+                source.to_file(file_name, driver=driver)
+        else:
+            source.to_file(file_name, driver=driver)
+            dest = GeoSeries.from_file(file_name)
+            assert_series_equal(dest, source)
+            source = source.to_crs("EPSG:3857")
+            dest = dest.to_crs("EPSG:3857")
+            assert_series_equal(dest, source)
+
+    @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
+    def test_empty_series(self, driver, extension, tmpdir):
+        file_name = os.path.join(str(tmpdir), "test." + extension)
+        source = GeoSeries([], crs="EPSG:4316", name="geometry")
+        source.to_file(file_name, driver=driver)
+
+        dest = GeoSeries.from_file(file_name)
+        assert_series_equal(dest, source)
+
+    @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
+    def test_missing_geometry(self, driver, extension, tmpdir):
+        file_name = os.path.join(str(tmpdir), "test." + extension)
+        source = GeoSeries([make_point(1, 1), None], name="geometry")
+        source.to_file(file_name, driver=driver)
+
+        dest = GeoSeries.from_file(file_name)
+        assert_series_equal(dest, source)
+
+    def test_from_esri_zip(self):
+        data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "dataset"))
+        file_name = "zip://" + os.path.join(data_dir, "taxi_zones.zip")
+        dest = GeoSeries.from_file(file_name)
+        assert len(dest) == 9
+        assert dest.crs == "EPSG:2263"

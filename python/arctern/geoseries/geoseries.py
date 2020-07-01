@@ -246,13 +246,8 @@ class GeoSeries(Series):
         # e.g.(isna, notna)
         def _try_constructor(data, index=None, crs=self.crs, **kwargs):
             try:
-                from pandas.core.internals import SingleBlockManager
-                # astype will dispatch to here,Only if `dtype` is `GeoDtype`
-                # will return GeoSeries
-                if isinstance(data, SingleBlockManager):
-                    dtype = getattr(data, 'dtype')
-                    if not isinstance(dtype, GeoDtype):
-                        raise TypeError
+                if not isinstance(getattr(data, "dtype", None), GeoDtype):
+                    raise TypeError
                 return GeoSeries(data, index=index, crs=crs, **kwargs)
             except TypeError:
                 return Series(data, index=index, **kwargs)
@@ -348,6 +343,7 @@ class GeoSeries(Series):
 
         Examples
         -------
+        >>> from arctern import GeoSeries
         >>> s = GeoSeries(["Point (1 1)", "POLYGON ((1 1,2 1,2 2,1 2,1 1))", None, ""])
         >>> s
         0                        POINT (1 1)
@@ -622,6 +618,7 @@ class GeoSeries(Series):
 
         First, create a MULTIPOLYGON object that contains a concave polygon and a rectangle.
 
+        >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
         >>> from arctern.plot import plot_geometry
         >>> fig, ax = plt.subplots()
@@ -637,37 +634,37 @@ class GeoSeries(Series):
         Let's see how ``convex_hull`` deals with a GEOMETRYCOLLECTION that contains a semicircle and a rectangle.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> g4=GeoSeries(["GEOMETRYCOLLECTION(CURVEPOLYGON(CIRCULARSTRING(1 0,0 1,1 2,1 1,1 0)),polygon((1 0,1 2,2 2,2 0,1 0)))"])
         >>> plot_geometry(ax,g4.curve_to_line())
 
         Use ``convex_hull`` to get the smallest convex geometry that encloses all geometries in the GEOMETRYCOLLECTION object. Since semicircle and rectangle are convex, the returned convex geometry is just a combination of the two gemetries and looks the same as the original.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> print(g4.convex_hull.to_wkt()[0])
-        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
         CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (1 0,0 1,1 2),(1 2,2 2,2 0,1 0)))
+        >>> plot_geometry(ax,g4.convex_hull.curve_to_line())
 
         ``convex_hull`` will not make any changes to POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, and CIRCULARSTRING.
 
         The GeoSeries ``s1`` below contains a point, a line, and a convex polygon.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> s = GeoSeries(["POINT(2 0.5)", "LINESTRING(0 0,3 0.5)",  "POLYGON ((1 1,3 1,3 3,1 3, 1 1))"])
         >>> plot_geometry(ax,s)
 
         The returned geometries from ``convex_hull`` looks exactly the same as the original.
 
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> print(s.convex_hull)
-        >>> plot_geometry(ax,s.convex_hull)
         0                    POINT (2.0 0.5)
         1           LINESTRING (0 0,3.0 0.5)
         2    POLYGON ((1 1,1 3,3 3,3 1,1 1))
         dtype: GeoDtype
+        >>> plot_geometry(ax,s.convex_hull)
         """
         return _property_geo(arctern.ST_ConvexHull, self)
 
@@ -1010,6 +1007,8 @@ class GeoSeries(Series):
             Sequence of simplified geometries.
 
         Examples
+        .. doctest::
+           :skipif: True
         -------
         >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
@@ -1017,7 +1016,7 @@ class GeoSeries(Series):
         >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
         >>> g0 = g0.curve_to_line()
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> ax.grid()
         >>> plot_geometry(ax,g0,facecolor="red",alpha=0.2)
         >>> plot_geometry(ax,g0.simplify(1),facecolor="green",alpha=0.2)
@@ -1042,6 +1041,8 @@ class GeoSeries(Series):
             Sequence of geometries.
 
         Examples
+        .. doctest::
+           :skipif: True
         -------
         >>> import matplotlib.pyplot as plt
         >>> from arctern import GeoSeries
@@ -1049,7 +1050,7 @@ class GeoSeries(Series):
         >>> g0 = GeoSeries(["CURVEPOLYGON(CIRCULARSTRING(0 0, 10 0, 10 10, 0 10, 0 0))"])
         >>> g0 = g0.curve_to_line()
         >>> fig, ax = plt.subplots()
-        >>> ax.axis('equal')
+        >>> ax.axis('equal') # doctest: +SKIP
         >>> ax.grid()
         >>> plot_geometry(ax,g0,facecolor=["red"],alpha=0.2)
         >>> plot_geometry(ax,g0.buffer(-2),facecolor=["green"],alpha=0.2)
@@ -1096,6 +1097,8 @@ class GeoSeries(Series):
         Examples
         -------
         >>> from arctern import GeoSeries
+        >>> import pandas as pd
+        >>> pd.set_option("max_colwidth", 1000)
         >>> s = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
         >>> s.make_valid()
         0    GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))
@@ -1623,6 +1626,8 @@ class GeoSeries(Series):
         Examples
         -------
         >>> from arctern import GeoSeries
+        >>> import pandas as pd
+        >>> pd.set_option("max_colwidth", 1000)
         >>> s = GeoSeries(["POINT(1 1)"])
         >>> s.to_wkb()
         0    b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?'
@@ -1835,3 +1840,182 @@ class GeoSeries(Series):
             return shapely.wkb.dumps(x)
 
         return cls(data.apply(f), crs=crs)
+
+
+    @classmethod
+    def _calculate_bbox_from_wkb(cls, geom_wkb):
+        """
+        Calculate bounding box for the geom_wkb geometry.
+        """
+        from osgeo import ogr
+        geometry = ogr.CreateGeometryFromWkb(geom_wkb)
+        env = geometry.GetEnvelope()
+        return [env[0], env[2], env[1], env[3]]
+
+    @property
+    def bbox(self):
+        """
+        Calculate bounding box for the union of all geometries in the GeoSeries.
+
+        :rtype: a (minx, miny, maxx, maxy) list
+        :return: A list of Arctern.GeoSeries's bound box.
+        """
+        geom_wkb = self.envelope_aggr().to_wkb()[0]
+        return GeoSeries._calculate_bbox_from_wkb(geom_wkb)
+
+    def iterfeatures(self, na="null", show_bbox=False):
+        """
+        Returns an iterator that yields feature dictionaries that comply with
+        Arctern.GeoSeries.
+
+        :type na: str
+        :param na: {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame
+            * null: ouput the missing entries as JSON null
+            * drop: remove the property from the feature. This applies to
+                    each feature individually so that features may have
+                    different properties
+            * keep: output the missing entries as NaN
+
+        :type show_bbox: bool
+        :param show_bbox: include bbox (bounds box) in the geojson. default False
+        """
+        import json
+        if na not in ["null", "drop", "keep"]:
+            raise ValueError("Unknown na method {0}".format(na))
+
+        ids = np.array(self.index, copy=False)
+
+        for fid, geom in zip(ids, self):
+            feature = {
+                "id": str(fid),
+                "type": "Feature",
+                "properties": {},
+                "geometry": json.loads(arctern.GeoSeries(geom).as_geojson()[0]) if geom else None,
+            }
+            if show_bbox:
+                feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
+            yield feature
+
+    # pylint: disable=arguments-differ
+    def to_json(self, show_bbox=True, **kwargs):
+        """
+        Returns a GeoJSON string representation of the GeoSeries.
+
+        :type show_bbox: bool
+        :param show_bbox: include bbox (bounds box) in the geojson. default False
+
+        :param kwargs: that will be passed to json.dumps().
+        """
+        import json
+        geo = {
+            "type": "FeatureCollection",
+            "features": list(self.iterfeatures(na="null", show_bbox=show_bbox)),
+        }
+
+        if show_bbox:
+            geo["bbox"] = self.bbox
+
+        return json.dumps(geo, **kwargs)
+
+    @classmethod
+    def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
+        """
+        Read a file or OGR dataset to GeoSeries.
+
+        Supported file format is listed in
+        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type bbox: a (minx, miny, maxx, maxy) tuple
+        :param bbox: Filter for geometries which spatial intersects with by the provided bounding box.
+
+        :type mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
+        :param mask: Filter for geometries which spatial intersects with by the provided geometry.
+
+        :param item: int or slice
+        :param item: Load special items by skipping over items or stopping at a specific item.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+
+        :rtype: GeoSeries
+        :return: A GeoSeries read from file.
+        """
+        import fiona
+        import json
+        with fiona.Env():
+            with fiona.open(fp, "r", **kwargs) as features:
+                if features.crs is not None:
+                    crs = features.crs.get("init", None)
+                else:
+                    crs = features.crs_wkt
+
+                if mask is not None:
+                    if isinstance(mask, (str, bytes)):
+                        mask = GeoSeries(mask)
+                    if not isinstance(mask, GeoSeries):
+                        raise TypeError(f"unsupported mask type {type(mask)}")
+                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                if isinstance(item, (int, type(None))):
+                    item = (item,)
+                elif isinstance(item, slice):
+                    item = (item.start, item.stop, item.step)
+                else:
+                    raise TypeError(f"unsupported item type {type(item)}")
+                features = features.filter(*item, bbox=bbox, mask=mask)
+
+                geoms = []
+                for feature in features:
+                    geometry = feature["geometry"]
+                    geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
+                geoms = arctern.ST_GeomFromGeoJSON(geoms).values
+
+                return cls(geoms, crs=crs, name="geometry")
+
+    def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
+        """
+        Store GeoSeries to a file or OGR dataset.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type mode: str, default "w"
+        :param mode: 'a' to append, or 'w' to write. Not all driver support
+                      append, see "Supported driver list" below for more info.
+
+        :type driver: str, default "ESRI Shapefile"
+        :param driver: The OGR format driver. It's  represents a
+                       translator for a specific format. Supported driver is listed in
+                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
+                       write data to multi-layer dataset.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+        """
+        geo_type_map = dict([
+            ("ST_POINT", "Point"),
+            ("ST_LINESTRING", "LineString"),
+            ("ST_POLYGON", "Polygon"),
+            ("ST_MULTIPOINT", "MultiPoint"),
+            ("ST_MULTILINESTRING", "MultiLineString"),
+            ("ST_MULTIPOLYGON", "MultiPolygon"),
+            ("ST_GEOMETRYCOLLECTION", "GeometryCollection")
+        ])
+
+        geo_types = self.geom_type.map(geo_type_map)
+        if len(geo_types) == 0:
+            geo_types = "Unknown"
+        else:
+            geo_types = set(geo_types.dropna().unique())
+        schema = {"properties": {}, "geometry": geo_types}
+        # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
+        crs = self.crs
+        import fiona
+        with fiona.Env():
+            with fiona.open(fp, mode, driver, crs=crs, schema=schema, **kwargs) as sink:
+                sink.writerecords(self.iterfeatures())
