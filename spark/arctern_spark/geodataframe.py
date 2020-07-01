@@ -7,7 +7,7 @@ _crs_dtype = str
 
 class GeoDataFrame(DataFrame):
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
-        # (col_name, crs) dict to store crs data of columns which are GeoSeries
+        # (col_name, crs) dict to store crs data of those columns are GeoSeries
         self._crs_for_cols = {}
         if isinstance(data, GeoSeries):
             self._crs_for_cols[data.name] = data.crs
@@ -19,6 +19,7 @@ class GeoDataFrame(DataFrame):
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
+        # TODO: do we need it?
         self._geometry_column_names = set()
         if geometries is None:
             if "geometry" in self.columns:
@@ -106,6 +107,7 @@ r = gdf[:]
 print(r['a'].crs)
 print(r['b'].crs)
 
-gdf = GeoDataFrame(gdf)
+gdf1 = GeoDataFrame({"a": psa, "b": psb}, geometries=['a', 'b'], crs="EPSG:0001")
+gdf[['a', 'b']] = gdf1
 print(gdf['a'].crs)
 print(gdf['b'].crs)
