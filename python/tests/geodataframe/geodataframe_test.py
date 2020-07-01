@@ -38,7 +38,6 @@ def test_from_geoseries():
     data = GeoSeries(["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"], crs="epsg:4326")
     gdf = GeoDataFrame(data)
     assert isinstance(gdf[0], GeoSeries) == True
-    assert gdf[0].crs == "EPSG:4326"
 
 def test_to_geopandas():
     import geopandas

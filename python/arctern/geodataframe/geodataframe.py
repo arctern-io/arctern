@@ -32,34 +32,23 @@ class GeoDataFrame(DataFrame):
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
 
-        if geometries is None and "geometry" in self.columns:
-            index = self.index
-            try:
-                self["geometry"] = GeoSeries(self["geometry"])
-                self._geometry_column_name = ["geometry"]
-            except TypeError:
-                pass
-            else:
-                if self.index is not index:
-                    self.index = index
-        else:
-            if geometries is not None:
-                self._geometry_column_name = geometries
-                for geometry in geometries:
-                    try:
-                        self[geometry] = GeoSeries(self[geometry])
-                    except TypeError:
-                        pass
-                crs_length = len(crs)
-                geo_length = len(geometries)
-                if crs_length < geo_length:
-                    for i in range(0, geo_length - crs_length):
-                        crs.append("None")
+        if geometries is not None:
+            self._geometry_column_name = geometries
+            for geometry in geometries:
+                try:
+                    self[geometry] = GeoSeries(self[geometry])
+                except TypeError:
+                    pass
+            crs_length = len(crs)
+            geo_length = len(geometries)
+            if crs_length < geo_length:
+                for i in range(0, geo_length - crs_length):
+                    crs.append("None")
 
-                for (crs_element, geo_element) in zip(crs, geometries):
-                    self[geo_element].set_crs(crs_element)
-            else:
-                self._geometry_column_name = None
+            for (crs_element, geo_element) in zip(crs, geometries):
+                self[geo_element].set_crs(crs_element)
+        else:
+            self._geometry_column_name = []
 
         self._invalidate_sindex()
 
