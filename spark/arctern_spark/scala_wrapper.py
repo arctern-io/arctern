@@ -18,7 +18,7 @@ if sys.version >= '3':
     basestring = str
 
 from pyspark import SparkContext
-from pyspark.sql.column import Column, _to_java_column, _create_column_from_name
+from pyspark.sql.column import Column, _to_java_column
 
 from py4j.java_gateway import java_import
 
@@ -47,7 +47,7 @@ class GeometryUDT(UserDefinedType):
         return Row(obj.toBytes)
 
     def deserialize(self, datum):
-        binData = bytearray([x % 256 for x in datum])
+        binData = bytes([x % 256 for x in datum])
         return binData
 
 
@@ -57,9 +57,11 @@ def import_arctern_functions():
     java_import(jvm, "org.apache.spark.sql.arctern")
     jvm.org.apache.spark.sql.arctern.UdtRegistratorWrapper.registerUDT()
 
+
 def _create_unary_function(name):
     def _(col, *args):
         sc = SparkContext._active_spark_context
+        args = [_to_java_column(arg) for arg in args]
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col), *args)
         return Column(jc)
 
@@ -70,16 +72,6 @@ def _create_unary_function(name):
 def _create_binary_function(name, doc=""):
     def _(col1, col2):
         sc = SparkContext._active_spark_context
-        # if isinstance(col1, Column):
-        #     arg1 = col1._jc
-        # elif isinstance(col1, basestring):
-        #     arg1 = _create_column_from_name(col1)
-        #
-        # if isinstance(col2, Column):
-        #     arg2 = col2._jc
-        # elif isinstance(col2, basestring):
-        #     arg2 = _create_column_from_name(col2)
-
         jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2))
         return Column(jc)
 
@@ -88,10 +80,25 @@ def _create_binary_function(name, doc=""):
     return _
 
 
+def _create_multible_function(name):
+    def _(col1, col2, col3, col4, *args):
+        sc = SparkContext._active_spark_context
+        args = [_to_java_column(arg) for arg in args]
+        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(_to_java_column(col1), _to_java_column(col2),
+                                                                           _to_java_column(col3), _to_java_column(col4),
+                                                                           *args)
+        return Column(jc)
+
+    _.__name__ = name
+    return _
+
+
 # functions that take one argument as input
 _unary_functions = [
+    "st_curvetoline",
     "st_geomfromgeojson",
     "st_astext",
+    "st_aswkb",
     "st_asgeojson",
     "st_centroid",
     "st_isvalid",
@@ -105,13 +112,19 @@ _unary_functions = [
     "st_convexhull",
     "st_area",
     "st_length",
-    "st_hausdorffdistance",
     "st_transform",
     "st_makevalid",
     "st_geomfromtext",
     "st_union_aggr",
     "st_geomfromwkb",
     "st_envelope_aggr",
+    "st_exteriorring",
+    "st_isempty",
+    "st_boundary",
+    "st_scale",
+    "st_affine",
+    "st_translate",
+    "st_rotate",
 ]
 
 # functions that take two arguments as input
@@ -127,6 +140,14 @@ _binary_functions = [
     "st_contains",
     "st_intersects",
     "st_distancesphere",
+    "st_hausdorffdistance",
+    "st_difference",
+    "st_symdifference",
+    "st_union"
+]
+
+_multible_functions = [
+    "st_polygonfromenvelope"
 ]
 
 import_arctern_functions()
@@ -137,7 +158,10 @@ for _name in _unary_functions:
 for _name in _binary_functions:
     globals()[_name] = _create_binary_function(_name)
 
+for _name in _multible_functions:
+    globals()[_name] = _create_multible_function(_name)
+
 __all__ = [k for k, v in globals().items()
-           if k in _unary_functions or k in _binary_functions and callable(v)]
+           if k in _unary_functions or k in _binary_functions or k in _multible_functions and callable(v)]
 
 __all__.sort()
