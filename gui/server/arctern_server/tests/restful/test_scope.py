@@ -226,7 +226,8 @@ class TestScope():
                 'height': 896,
                 'bounding_box': [-75.37976, 40.191296, -71.714099, 41.897445],
                 'coordinate_system': 'EPSG:4326',
-                'icon_path': png_path
+                'icon_path': png_path,
+                'icon_size': [40, 40]
             }
         }
         r = requests.post(url=url, json=payload)
