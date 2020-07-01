@@ -31,7 +31,6 @@ class GeoDataFrame(DataFrame):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
-        print(self[0].crs)
 
         if geometries is None and "geometry" in self.columns:
             index = self.index
