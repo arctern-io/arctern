@@ -1880,7 +1880,7 @@ class GeoSeries(Series):
         :type show_bbox: bool
         :param show_bbox: include bbox (bounds box) in the geojson. default False
         """
-
+        import json
         if na not in ["null", "drop", "keep"]:
             raise ValueError("Unknown na method {0}".format(na))
 
@@ -1891,7 +1891,7 @@ class GeoSeries(Series):
                 "id": str(fid),
                 "type": "Feature",
                 "properties": {},
-                "geometry": eval(arctern.GeoSeries(geom).as_geojson()[0]) if geom else None,
+                "geometry": json.loads(arctern.GeoSeries(geom).as_geojson()[0]) if geom else None,
             }
             if show_bbox:
                 feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
