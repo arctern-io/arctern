@@ -111,10 +111,11 @@ class GeoSeries(Series):
                 assert index is None
                 assert dtype is None
                 assert name is None
-                if hasattr(data, "crs") and crs:
-                    if not data.crs == crs and data.crs is not None:
+                if hasattr(data, "crs"):
+                    if crs and data.crs and not data.crs == crs:
                         raise ValueError("crs of the passed geometry data is different from crs.")
-
+                    else:
+                        crs = data.crs
                 s = data
             else:
                 s = pd.Series(
@@ -154,8 +155,8 @@ class GeoSeries(Series):
     def __getitem__(self, key):
         try:
             if (isinstance(key, slice) and any(type(n) == int for n in [key.start, key.stop])) or (
-                type(key) == int
-                and not isinstance(self.index.spark.data_type, (IntegerType, LongType))
+                    type(key) == int
+                    and not isinstance(self.index.spark.data_type, (IntegerType, LongType))
             ):
                 # Seems like pandas Series always uses int as positional search when slicing
                 # with ints, searches based on index values when the value is int.
@@ -169,7 +170,6 @@ class GeoSeries(Series):
                     len(key), len(self._internal.index_map)
                 )
             )
-
 
     def set_crs(self, crs):
         """
