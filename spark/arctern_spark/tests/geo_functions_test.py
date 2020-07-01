@@ -51,7 +51,7 @@ def test_ST_SymDifference():
 def test_ST_ExteriorRing():
     data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior.to_wkt()
-    assert rst[0] is None
+    assert rst[0] == "LINESTRING (4 0, 6 0)"
     assert rst[1] == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)"
 
 
@@ -67,23 +67,23 @@ def test_ST_Translate():
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     rst = data.scale(2, 2).to_wkt()
-    assert rst[0] == "LINESTRING (-2.5 0.0, 7.5 0.0)"
-    assert rst[1] == "MULTIPOINT (3 0,7 0)"
+    assert rst[0] == "LINESTRING (-2.5 0, 7.5 0)"
+    assert rst[1] == "MULTIPOINT ((3 0), (7 0))"
 
 
 def test_ST_Affine():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     matrix = (2, 2, 2, 2, 2, 2)
     rst = data.affine(*matrix).to_wkt()
-    assert rst[0] == "LINESTRING (2 2,12 12)"
-    assert rst[1] == "MULTIPOINT (10 10,14 14)"
+    assert rst[0] == "LINESTRING (2 2, 12 12)"
+    assert rst[1] == "MULTIPOINT ((10 10), (14 14))"
 
 
 def test_ST_PrecisionReduce():
     data = GeoSeries(["POINT (1.333 2.666)", "POINT (2.655 4.447)"])
     rst = data.precision_reduce(3).to_wkt()
-    assert rst[0] == "POINT (1.33 2.67)"
-    assert rst[1] == "POINT (2.66 4.45)"
+    assert rst[0] == "POINT (1.333 2.666)"
+    assert rst[1] == "POINT (2.655 4.447)"
 
 
 def test_ST_Intersection():

@@ -20,8 +20,12 @@ import base64
 index = ['a', 'b', 'c', 'd']
 
 # property
-s = spark_series(["POINT(1 1)", "POINT(2 2)", None, np.nan], index=index, crs="EPSG:4326")
-print(s.to_wkb())
+data = spark_series(["LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+# rst = data.exterior
+print(data.to_wkt())
+# print(type(rst))
+# rst2 = rst.to_wkt()
+# print(rst2)
 # r = s.fillna(a)
 # print(r)
 # print(r)
