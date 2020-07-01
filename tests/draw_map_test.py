@@ -14,6 +14,7 @@
 
 import sys
 
+# pylint: disable=too-many-lines
 # pylint: disable=c-extension-no-member
 import cv2
 from pyspark.sql import SparkSession
