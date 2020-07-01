@@ -279,6 +279,8 @@ def plot_geometry(ax, geoms, **style_kwds):
     See `matplotlib.pyplot.plot document <https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html?highlight=plot#matplotlib.pyplot.plot>`_ for detailed description of marker styles, line styles, and colors.
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas
     >>> import matplotlib.pyplot as plt
