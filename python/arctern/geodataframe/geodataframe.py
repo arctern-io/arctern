@@ -24,16 +24,15 @@ import numpy as np
 class GeoDataFrame(DataFrame):
     _metadata = ["_crs", "_geometry_column_name"]
     _geometry_column_name = []
-    _sindex = None
-    _sindex_generated = False
+    _sindex = {}
+    _sindex_generated = {}
 
     def __init__(self, *args, **kwargs):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
-        print(self[0].crs)
 
-        if geometries is None and "geometry" in self.columns:
+        if geometries is None and "geometry" in self.columns.values:
             index = self.index
             try:
                 self["geometry"] = GeoSeries(self["geometry"])
@@ -239,5 +238,5 @@ class GeoDataFrame(DataFrame):
     def _constructor(self):
         return GeoDataFrame
 
-    def _constructor_expanddim():
+    def _constructor_expanddim(self):
         pass

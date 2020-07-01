@@ -126,13 +126,19 @@ class GeoSeries(Series):
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
 
-        if hasattr(data, "crs") and crs:
-            if not data.crs:
-                data = data.copy()
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+        if hasattr(data, "crs"):
+            if crs:
+                if not data.crs:
+                    data = data.copy()
+                elif not data.crs == crs:
+                    raise ValueError(
+                        "csr of the passed geometry data is different from crs."
+                    )
+            else:
+                if not data.crs:
+                    data = data.copy()
+                else:
+                    crs = data.crs
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
