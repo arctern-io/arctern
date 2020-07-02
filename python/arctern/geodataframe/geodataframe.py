@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 from arctern import GeoSeries
 from pandas import DataFrame, Series
+import arctern.tools
 
 
 class GeoDataFrame(DataFrame):
@@ -106,10 +107,8 @@ class GeoDataFrame(DataFrame):
         ids = np.array(self.index, copy=False)
         geometries = self[col].as_geojson()
         geometries_bbox = self[col].envelope
-        print(geometries_bbox)
 
         propertries_cols = self.columns.difference([col])
-        print(propertries_cols)
 
         if len(propertries_cols) > 0:
             properties = self[propertries_cols].astype(object).values
@@ -130,7 +129,7 @@ class GeoDataFrame(DataFrame):
                     "id": str(ids[i]),
                     "type": "Feature",
                     "properties": propertries_items,
-                    "geometry": geom
+                    "geometry": json.loads(geom) if geom else None,
                 }
 
                 if show_bbox:
@@ -171,6 +170,21 @@ class GeoDataFrame(DataFrame):
                 result[col] = geo_col
                 result._geometry_column_name.append(col)
         return result
+
+    @classmethod
+    def _from_features(cls, features, crs=None, columns=None):
+        rows = []
+        for feature in features:
+            if hasattr(feature, "__geo_interface__"):
+                feature = feature.__geo_interface__
+            row = {
+                "geometry": GeoSeries.geom_from_geojson(json.dumps(feature["geometry"]))[0] if feature[
+                    "geometry"] else None
+            }
+            # load properties
+            row.update(feature["properties"])
+            rows.append(row)
+        return GeoDataFrame(rows, columns=columns, geometries=["geometry"], crs=[crs])
 
     def _invalidate_sindex(self):
         self._sindex = None
@@ -223,6 +237,13 @@ class GeoDataFrame(DataFrame):
         elif isinstance(result, DataFrame) and flag:
             result.__class__ = DataFrame
         return result
+
+    @classmethod
+    def from_file(cls, filename, **kwargs):
+        return arctern.tools.file._read_file(filename, **kwargs)
+
+    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, **kwargs):
+        arctern.tools.file._to_file(self, filename=filename, driver=driver, schema=schema, index=index, col=col, **kwargs)
 
     @property
     def _constructor(self):
