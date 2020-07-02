@@ -138,7 +138,6 @@ class GeoArray(ExtensionArray):
                 raise ValueError("csr of the passed geometry data is different from crs.")
             else:
                 crs = data.crs or crs
-
         self.crs = crs
         self.data = np.asarray(data)
 

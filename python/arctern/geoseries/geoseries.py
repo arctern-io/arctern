@@ -157,8 +157,10 @@ class GeoSeries(Series):
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
             data = GeoArray(s.values, crs=crs)
-
         super().__init__(data, index=index, name=name, **kwargs)
+
+        if not self.array.crs:
+            self.array.crs = crs
 
     @property
     def sindex(self):
@@ -1712,7 +1714,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1750,7 +1751,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1782,7 +1782,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod
