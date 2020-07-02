@@ -513,10 +513,6 @@ class GeoSeries(Series):
     def translate(self, shifter_x, shifter_y):
         return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))
 
-    # TODO: add origin
-    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
-        return _column_geo("st_rotate", F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
-
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
@@ -569,6 +565,14 @@ class GeoSeries(Series):
 
     def union(self, other):
         return _column_geo("st_union", self, _validate_arg(other))
+
+    # -------------------------------------------------------------------------
+    # Geometry related quaternary methods, which return GeoSeries
+    # -------------------------------------------------------------------------
+
+    # TODO: add origin
+    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
+        return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
 
     # -------------------------------------------------------------------------
     # utils

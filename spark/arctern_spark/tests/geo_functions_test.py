@@ -32,6 +32,17 @@ def test_ST_IsEmpty():
     assert rst[1] == 0
 
 
+def test_ST_Boundary():
+    data = GeoSeries(["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", None, "LINESTRING (0 0, 0 1, 1 1)",
+                      "POINT (1 0)", "POINT EMPTY"])
+    rst = data.boundary.to_wkt()
+    assert rst[0] == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)"
+    assert rst[1] is None
+    assert rst[2] == "MULTIPOINT ((0 0), (1 1))"
+    assert rst[3] == "GEOMETRYCOLLECTION EMPTY"
+    assert rst[4] == "GEOMETRYCOLLECTION EMPTY"
+
+
 def test_ST_Difference():
     data1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
     data2 = GeoSeries(["LINESTRING (4 0,6 0)", "POINT (4 0)"])
@@ -77,6 +88,64 @@ def test_ST_Affine():
     rst = data.affine(*matrix).to_wkt()
     assert rst[0] == "LINESTRING (2 2, 12 12)"
     assert rst[1] == "MULTIPOINT ((10 10), (14 14))"
+
+
+def test_ST_Rotate():
+    import math
+    data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0, 0 1, 1 1)", "POLYGON ((0 0, 0 1, 1 1, 0 0))"])
+    rst = data.rotate(math.acos(0.0), 0, 0).precision_reduce(3).to_wkt()
+    assert rst[0] == "POINT (-6 1)"
+    assert rst[1] == "LINESTRING (0 0, -1 0, -1 1)"
+    assert rst[2] == "POLYGON ((0 0, -1 0, -1 1, 0 0))"
+
+
+def test_ST_Disjoint():
+    p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
+    p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
+    p13 = "LINESTRING(2 2,3 2)"
+    p14 = "POINT(10 2)"
+    data1 = GeoSeries([p11, p12, p13, p14])
+
+    p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+    p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+    p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+    p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+    data2 = GeoSeries([p21, p22, p23, p24])
+
+    rst = data2.disjoint(data1)
+    assert rst[0] == 0
+    assert rst[1] == 0
+    assert rst[2] == 0
+    assert rst[3] == 1
+
+
+def test_ST_Union():
+    p11 = "POINT (0 1)"
+    p12 = "LINESTRING (0 0, 0 1, 1 1)"
+    p13 = "LINESTRING (0 0, 1 0, 1 1, 0 0)"
+    p14 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"
+    p15 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)"
+    p16 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"
+    p17 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"
+    data1 = GeoSeries([p11, p12, p13, p14, p15, p16, p17])
+
+    p21 = "POLYGON ((0 0,0 2,2 2,0 0))"
+    p22 = "LINESTRING (0 0, 0 1, 1 2)"
+    p23 = "POINT (2 3)"
+    p24 = "MULTIPOINT (0 0, 1 0, 1 2, 1 2)"
+    p25 = "MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"
+    p26 = "MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"
+    p27 = "POINT (1 5)"
+    data2 = GeoSeries([p21, p22, p23, p24, p25, p26, p27])
+
+    rst = data1.union(data2).to_wkt()
+    assert rst[0] == "POLYGON ((0 0, 0 2, 2 2, 0 0))"
+    assert rst[1] == "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1), (0 1, 1 2))"
+    assert rst[2] == "GEOMETRYCOLLECTION (POINT (2 3), LINESTRING (0 0, 1 0, 1 1, 0 0))"
+    assert rst[3] == "GEOMETRYCOLLECTION (POINT (1 2), POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0)))"
+    assert rst[4] == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))"
+    assert rst[5] == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))"
+    assert rst[6] == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))"
 
 
 def test_ST_PrecisionReduce():

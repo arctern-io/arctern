@@ -17,30 +17,16 @@ from arctern.geoseries import GeoSeries as python_series
 # print(r2)
 # print(r3)
 import base64
+import math
+import pandas
 index = ['a', 'b', 'c', 'd']
 
 # property
-data = spark_series(["LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
-# rst = data.exterior
-print(data.to_wkt())
-# print(type(rst))
-# rst2 = rst.to_wkt()
-# print(rst2)
-# r = s.fillna(a)
-# print(r)
-# print(r)
-# print(s)
-# print(s['a'])
-# print(a)
+pandas.set_option("max_colwidth", 100)
+# data = spark_series(["LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+data = spark_series(["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", None, "LINESTRING (0 0, 0 1, 1 1)",
+                     "POINT (1 0)", "POINT EMPTY"])
+rst = data.boundary
 
-# print(type(r2))
-# print(type(r3))
-# r1 = s1.loc[1:]
-# print(r1)
-
-
-# r = s.loc[1:]
-# print(r)
-# s2 = GeoSeries(r)
-# print(type(r))
-# print(s2[1:])
+print(rst.to_wkt())
+# assert rst[0] == 0
