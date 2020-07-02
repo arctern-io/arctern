@@ -701,7 +701,7 @@ case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
     if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)})"
     else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originValue.toString())"
     else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originXValue, $originYValue)"
-    else throw new Exception("Illegal argument in ST_Scale")
+    else throw new Exception("Illegal argument in ST_Rotate")
   })
 
   override def dataType: DataType = new GeometryUDT
