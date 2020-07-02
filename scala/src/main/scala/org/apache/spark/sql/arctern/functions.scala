@@ -143,8 +143,16 @@ object functions {
     ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
   }
 
-  def st_rotate(geo: Column, rotationAngle: Column, rotateX: Column, rotateY: Column): Column = Column {
-    ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
+  def st_rotate(geo: Column, rotationAngle: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, origin: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, origin.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, originX: Column, originY: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, originX.expr, originY.expr))
   }
 
   def st_symdifference(left: Column, right: Column): Column = Column {

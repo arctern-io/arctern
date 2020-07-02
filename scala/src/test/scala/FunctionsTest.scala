@@ -2043,6 +2043,32 @@ class FunctionsTest extends AdapterTest {
     assert(collect21(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((2 0), (1 0), (1 -2), (1 -2))")
     assert(collect21(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((2 0, 1 -2), (2 0, 1 0, 1 -1), (3 -2, -1 -4, 1 3, 4 -1))")
     assert(collect21(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 0, 1 -4, 1 0, 2 0)))")
+
+    val rst22 = df.select(st_precisionreduce(st_rotate(col("geo"), lit(2 * scala.math.acos(0.0)), lit("Centroid")), lit(2)))
+    rst22.show(false)
+
+    val collect22 = rst22.collect()
+
+    assert(collect22(0).getAs[GeometryUDT](0).toString == "POINT (1 6)")
+    assert(collect22(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.5 1.5, 0.5 0.5, -0.5 0.5)")
+    assert(collect22(2).getAs[GeometryUDT](0).toString == "LINESTRING (1.29 0.71, 0.29 0.71, 0.29 -0.29, 1.29 0.71)")
+    assert(collect22(3).getAs[GeometryUDT](0).toString == "POLYGON ((0.67 1.33, 0.67 0.33, -0.33 0.33, 0.67 1.33))")
+    assert(collect22(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((1.5 2), (0.5 2), (0.5 0), (0.5 0))")
+    assert(collect22(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((1.82 1.41, 0.82 -0.59), (1.82 1.41, 0.82 1.41, 0.82 0.41), (2.82 -0.59, -1.18 -2.59, 0.82 4.41, 3.82 0.41))")
+    assert(collect22(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((1.33 2.67, 0.33 -1.33, 0.33 2.67, 1.33 2.67)))")
+
+    val rst23 = df.select(st_precisionreduce(st_rotate(col("geo"), lit(2 * scala.math.acos(0.0))), lit(2)))
+    rst23.show(false)
+
+    val collect23 = rst23.collect()
+
+    assert(collect23(0).getAs[GeometryUDT](0).toString == "POINT (1 6)")
+    assert(collect23(1).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 1 0, 0 0)")
+    assert(collect23(2).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 0 1, 0 0, 1 1)")
+    assert(collect23(3).getAs[GeometryUDT](0).toString == "POLYGON ((1 1, 1 0, 0 0, 1 1))")
+    assert(collect23(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((1 2), (0 2), (0 0), (0 0))")
+    assert(collect23(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((1 1, 0 -1), (1 1, 0 1, 0 0), (2 -1, -2 -3, 0 4, 3 0))")
+    assert(collect23(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((1 4, 0 0, 0 4, 1 4)))")
   }
 
   test("ST_Rotate-Null") {
