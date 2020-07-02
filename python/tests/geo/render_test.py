@@ -187,6 +187,11 @@ def test_icon_viz():
     icon_buf = arctern.icon_viz_layer(vega, points)
     save_png(icon_buf, "/tmp/test_icon_viz.png")
 
+    vega = vega_icon(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], icon_path=png_path, icon_size=[65, 65], coordinate_system="EPSG:4326")
+
+    icon_buf = arctern.icon_viz_layer(vega, points)
+    save_png(icon_buf, "/tmp/test_icon_viz_zoom_out.png")
+
 def test_fishnet_map():
     x_data = []
     y_data = []

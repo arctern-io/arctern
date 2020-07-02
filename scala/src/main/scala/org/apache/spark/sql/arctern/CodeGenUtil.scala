@@ -66,9 +66,8 @@ object CodeGenUtil {
     (geoName, geoDeclare, newCodeString)
   }
 
-  def geometryFromNormalExpr(exrCode: ExprCode) = {
-    val geoName = exrCode.value + "_geo"
-    val geoDeclare = mutableGeometryInitCode(exrCode.value + "_geo")
+  def geometryFromNormalExpr(exrCode: ExprCode, geoName: String) = {
+    val geoDeclare = mutableGeometryInitCode(geoName)
     val newCodeString =
       s"""
          |${exrCode.code}
@@ -77,13 +76,13 @@ object CodeGenUtil {
     (geoName, geoDeclare, newCodeString)
   }
 
-  def assignmentCode(callFunc: String, value: String, dt: DataType) = {
+  def assignmentCode(callFunc: String, value: String, geoName: String, dt: DataType) = {
     dt match {
       case _: GeometryUDT =>
         s"""
-           |${mutableGeometryInitCode(value + "_geo")}
-           |${value}_geo = $callFunc;
-           |$value = ${serialGeometryCode(value + "_geo")}
+           |${mutableGeometryInitCode(geoName)}
+           |${geoName} = $callFunc;
+           |$value = ${serialGeometryCode(geoName)}
            |""".stripMargin
       case _ => s"$value = $callFunc;"
     }

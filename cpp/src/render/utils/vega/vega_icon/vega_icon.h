@@ -35,12 +35,18 @@ class VegaIcon : public Vega {
  public:
   const std::string& icon_path() const { return icon_path_; }
 
+  const int& icon_width() const { return icon_width_; }
+
+  const int& icon_height() const { return icon_height_; }
+
  protected:
   // vega json to vega struct
   void Parse(const std::string& json) final;
 
  private:
   std::string icon_path_;
+  int icon_width_ = -1;
+  int icon_height_ = -1;
 };
 
 }  // namespace render

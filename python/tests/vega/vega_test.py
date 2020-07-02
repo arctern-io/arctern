@@ -115,7 +115,7 @@ def test_vega_choropleth_map():
 
 
 def test_vega_icon():
-    vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path", "EPSG:3857").build()
+    vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path", [30, 20], "EPSG:3857").build()
     vega_dict = json.loads(vega)
     assert vega_dict["width"] == 1900
     assert vega_dict["height"] == 1410
@@ -125,6 +125,8 @@ def test_vega_icon():
     assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][3] == 40.780816
     assert vega_dict["marks"][0]["encode"]["enter"]["icon_path"]["value"] == "icon_path"
     assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+    assert vega_dict["marks"][0]["encode"]["enter"]["icon_size"]["value"][0] == 30
+    assert vega_dict["marks"][0]["encode"]["enter"]["icon_size"]["value"][1] == 20
 
     vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path").build()
     vega_dict = json.loads(vega)

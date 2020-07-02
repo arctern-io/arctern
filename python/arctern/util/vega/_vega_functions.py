@@ -104,11 +104,14 @@ def vega_choroplethmap(width,
 
 
 def vega_icon(width, height,
-              bounding_box, icon_path,
+              bounding_box, icon_path, icon_size=None,
               coordinate_system="EPSG:3857"):
+    if icon_size is None:
+        icon_size = [-1, -1]
     return VegaIcon(width, height,
                     bounding_box,
                     icon_path,
+                    icon_size,
                     coordinate_system)
 
 def vega_fishnetmap(width,

@@ -582,10 +582,14 @@ class GeoSeries(Series):
         """
         Returns the closure of the combinatorial boundary of each geometry in the GeoSeries.
 
+        * For a polygon, the returned geometry is the same as the original.
+        * For a geometry collection, the returned geometry is the combinatorial boundary of all geometries in the collection.
+        * For a point or line, the returned geometry is an empty geometry collection.
+
         Returns
         -------
         GeoSeries
-            The boundary(low-dimension) of each geometry in the GeoSeries.
+            The boundary (low-dimension) of each geometry in the GeoSeries.
 
         Examples
         -------
@@ -715,7 +719,7 @@ class GeoSeries(Series):
     @property
     def is_empty(self):
         """
-        Returns true if this Geometry is an empty geometry.
+        Tests whether each geometry in the GeoSeries is empty.
 
         Returns
         --------
@@ -741,12 +745,15 @@ class GeoSeries(Series):
     @property
     def exterior(self):
         """
-        Returns a line string representing the exterior ring of the POLYGON geometry. Return NULL if the geometry is not a polygon.
+        For each geometry in the GeoSeries, returns a line string representing the exterior ring of the geometry.
+
+        * For a polygon, the returned geometry is a line string representing its exterior ring.
+        * For other geometries, returns None.
 
         Returns
         --------
         GeoSeries
-            A GeoSeries contains geometries that represents the exterior ring of the POLYGON geometry.
+            Sequence of line strings.
 
         Examples
         --------
@@ -761,19 +768,19 @@ class GeoSeries(Series):
 
     def difference(self, other):
         """
-        Returns a geometry that represents that part of geometry slef that does not intersect with geometry other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, returns a geometry representing the part of the first geometry that does not intersect with the other.
 
         Parameters
         ----------
         other : geometry or GeoSeries
-            The geometry or GeoSeries to calculate the part of geometry slef that does not intersect with geometry other.
-            * If ``other`` is a geometry, this function calculates the difference of each geometry in the GeoSeries and ``other``.
-            * If ``other`` is a GeoSeries, this function calculates the difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+            The geometry or GeoSeries to calculate the difference from the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the difference between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the difference between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         GeoSeries
-            A GeoSeries contains geometries that represents that part of geometry slef that does not intersect with geometry other.
+            A GeoSeries that contains geometries representing the difference between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         --------
@@ -801,7 +808,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries contains geometries that represents the portions of self and other that do not intersect.
+            A GeoSeries that contains geometries that represents the portions of self and other that do not intersect.
 
         Examples
         --------
@@ -832,7 +839,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+            A GeoSeries that contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
 
         Examples
         --------
@@ -857,7 +864,7 @@ class GeoSeries(Series):
         Returns
         --------
         GeoSeries
-            A GeoSeries contains geometries which are tranformed by parameters in matrix.
+            A GeoSeries that contains geometries which are tranformed by parameters in matrix.
 
         Examples
         ---------
