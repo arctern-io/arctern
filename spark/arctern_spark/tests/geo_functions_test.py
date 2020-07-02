@@ -36,7 +36,7 @@ def test_ST_Boundary():
     data = GeoSeries(["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", None, "LINESTRING (0 0, 0 1, 1 1)",
                       "POINT (1 0)", "POINT EMPTY"])
     rst = data.boundary.to_wkt()
-    assert rst[0] == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)"
+    assert rst[0] == "LINEARRING (0 0, 1 0, 1 1, 0 1, 0 0)"
     assert rst[1] is None
     assert rst[2] == "MULTIPOINT ((0 0), (1 1))"
     assert rst[3] == "GEOMETRYCOLLECTION EMPTY"
@@ -63,7 +63,7 @@ def test_ST_ExteriorRing():
     data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior.to_wkt()
     assert rst[0] == "LINESTRING (4 0, 6 0)"
-    assert rst[1] == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)"
+    assert rst[1] == "LINEARRING (0 0, 1 0, 1 1, 0 1, 0 0)"
 
 
 def test_ST_Translate():
@@ -242,7 +242,7 @@ def test_ST_GeometryType():
 def test_ST_MakeValid():
     data = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 8,2 1))"])
     rst = data.make_valid().to_wkt()
-    assert rst[0] == "GEOMETRYCOLLECTION (POLYGON ((2 2,3 2,3 1,2 1,2 2)),LINESTRING (2 2,2 8))"
+    assert rst[0] == "POLYGON ((2 1, 3 1, 3 2, 2 2, 2 8, 2 1))"
 
 
 def test_ST_SimplifyPreserveTopology():
@@ -578,7 +578,7 @@ def test_ST_Union_Aggr():
     p2 = "POLYGON ((5 1,7 1,7 2,5 2,5 1))"
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == "MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)), ((5 1, 7 1, 7 2, 5 2, 5 1)))"
+    assert rst[0] == "MULTIPOLYGON (((0 0, 0 4, 4 4, 4 0, 0 0)), ((5 1, 5 2, 7 2, 7 1, 5 1)))"
 
     p1 = "POLYGON ((0 0,0 4,4 4,4 0,0 0))"
     p2 = "POINT (2 3)"
