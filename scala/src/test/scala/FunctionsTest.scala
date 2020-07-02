@@ -2717,6 +2717,22 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect21(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
     assert(collect21(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
+
+    val rst22 = df.select(st_scale(col("geo"), lit(2), lit(2), lit("Centroid")))
+    rst22.show(false)
+
+    val collect22 = rst22.collect()
+
+    assert(collect22(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect22(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
+
+    val rst23 = df.select(st_scale(col("geo"), lit(2), lit(2), lit(1), lit(1)))
+    rst23.show(false)
+
+    val collect23 = rst23.collect()
+
+    assert(collect23(0).getAs[GeometryUDT](0).toString == "LINESTRING (-1 -1, 9 -1)")
+    assert(collect23(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((7 -1), (11 -1))")
   }
 
   test("ST_Scale-Null") {

@@ -187,6 +187,14 @@ object functions {
     ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr))
   }
 
+  def st_scale(geo: Column, factorX: Column, factorY: Column, origin: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr, origin.expr))
+  }
+
+  def st_scale(geo: Column, factorX: Column, factorY: Column, originX: Column, originY: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr, originX.expr, originY.expr))
+  }
+
   def st_affine(geo: Column, a: Column, b: Column, d: Column, e: Column, offsetX: Column, offsetY: Column): Column = Column {
     ST_Affine(Seq(geo.expr, a.expr, b.expr, d.expr, e.expr, offsetX.expr, offsetY.expr))
   }
