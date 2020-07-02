@@ -15,8 +15,8 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.catalyst.expressions.{ExpectsInputTypes, Expression}
 import org.apache.spark.sql.catalyst.expressions.codegen.ExprCode
+import org.apache.spark.sql.catalyst.expressions.{ExpectsInputTypes, Expression}
 import org.apache.spark.sql.types.DataType
 
 abstract class ArcternExpr extends Expression with ExpectsInputTypes {

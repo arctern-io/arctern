@@ -15,8 +15,8 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.types.UDTRegistration
+import org.locationtech.jts.geom.Geometry
 
 object UdtRegistratorWrapper {
   def registerUDT(): Unit = {

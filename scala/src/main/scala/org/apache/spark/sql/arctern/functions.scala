@@ -2,6 +2,7 @@ package org.apache.spark.sql.arctern
 
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.arctern.expressions._
+import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
 
 object functions {
   // Constructor UDF API
@@ -17,7 +18,7 @@ object functions {
     ST_Point(Seq(x.expr, y.expr))
   }
 
-  def st_polygonfromenvelope(xMin: Column, yMin: Column, xMax: Column, yMax:Column): Column = Column {
+  def st_polygonfromenvelope(xMin: Column, yMin: Column, xMax: Column, yMax: Column): Column = Column {
     ST_PolygonFromEnvelope(Seq(xMin.expr, yMin.expr, xMax.expr, yMax.expr))
   }
 
@@ -170,14 +171,31 @@ object functions {
     ST_Boundary(Seq(geo.expr))
   }
 
+  def st_exteriorring(geo: Column): Column = Column {
+    ST_ExteriorRing(Seq(geo.expr))
+  }
+
+  def st_scale(geo: Column, factorX: Column, factorY: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr))
+  }
+
+  def st_affine(geo: Column, a: Column, b: Column, d: Column, e: Column, offsetX: Column, offsetY: Column): Column = Column {
+    ST_Affine(Seq(geo.expr, a.expr, b.expr, d.expr, e.expr, offsetX.expr, offsetY.expr))
+  }
+
   // Aggregate Function UDF API
   def st_union_aggr(geo: Column): Column = {
     val st_union_aggr_obj = new ST_Union_Aggr
     st_union_aggr_obj(geo)
   }
 
-  def st_envelope_aggr(geo: Column): Column = {
-    val st_envelope_aggr_obj = new ST_Envelope_Aggr
-    st_envelope_aggr_obj(geo)
+  // copy from spark
+  private def withAggregateFunction(func: AggregateFunction,
+                                    isDistinct: Boolean = false): Column = {
+    Column(func.toAggregateExpression(isDistinct))
+  }
+
+  def st_envelope_aggr(geo: Column): Column = withAggregateFunction {
+    EnvelopeAggr(geo.expr)
   }
 }

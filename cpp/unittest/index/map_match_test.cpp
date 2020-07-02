@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#include "map_match/map_match.h"
-
 #include <gtest/gtest.h>
-
 #include <iostream>
 #include <limits>
+
+#include "index/geo_index.h"
+
+using GeosIndex = arctern::geo_indexing::GeosIndex;
 
 std::vector<OGRGeometry*> construct_geometry(const std::vector<std::string>& wkt) {
   std::vector<OGRGeometry*> result;
@@ -145,8 +146,9 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD1) {
   auto gps_points_binary_vec = wkb(gps_points);
   auto roads_binary_vec = wkb(roads);
 
-  auto result = arctern::map_match::nearest_location_on_road(roads_binary_vec,
-                                                             gps_points_binary_vec);
+  GeosIndex index;
+  index.append(roads_binary_vec);
+  auto result = index.nearest_location_on_road(gps_points_binary_vec);
   auto compare_result = min_distacne(roads, gps_points);
   auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
   assert(result_1->length() == gps_points_binary_vec[0]->length());
@@ -193,8 +195,9 @@ TEST(MAP_MATCH_TEST, NEAREST_LOCATION_ON_ROAD2) {
   auto roads_binary_vec = wkb(roads);
   auto gps_points_binary_vec = wkb(gps_points);
 
-  auto result = arctern::map_match::nearest_location_on_road(roads_binary_vec,
-                                                             gps_points_binary_vec);
+  GeosIndex index;
+  index.append(roads_binary_vec);
+  auto result = index.nearest_location_on_road(gps_points_binary_vec);
   auto compare_result = min_distacne(roads, gps_points);
 
   auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
@@ -242,7 +245,9 @@ TEST(MAP_MATCH_TEST, NEAREST_ROAD) {
 
   auto roads_binary_vec = wkb(roads);
 
-  auto result = arctern::map_match::nearest_road(roads_binary_vec, gps_points_binary_vec);
+  GeosIndex index;
+  index.append(roads_binary_vec);
+  auto result = index.nearest_road(gps_points_binary_vec);
   auto compare_result = nearest(roads, gps_points);
 
   auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);
@@ -288,8 +293,10 @@ TEST(MAP_MATCH_TEST, NEAR_ROAD) {
   auto gps_points_binary_vec = wkb(gps_points);
 
   auto roads_binary_vec = wkb(roads);
-  auto result =
-      arctern::map_match::near_road(roads_binary_vec, gps_points_binary_vec, 1000);
+
+  GeosIndex index;
+  index.append(roads_binary_vec);
+  auto result = index.near_road(gps_points_binary_vec, 1000);
   auto compare_result = nearest(roads, gps_points);
 
   auto result_1 = std::static_pointer_cast<arrow::BinaryArray>(result[0]);

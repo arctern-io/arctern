@@ -18,7 +18,12 @@ __all__ = [
     "ST_Intersection",
     "ST_IsValid",
     "ST_PrecisionReduce",
+    "ST_Translate",
+    "ST_Rotate",
     "ST_Equals",
+    "ST_Disjoint",
+    "ST_Boundary",
+    "ST_Union",
     "ST_Touches",
     "ST_Overlaps",
     "ST_Crosses",
@@ -44,6 +49,12 @@ __all__ = [
     "ST_Envelope_Aggr",
     "ST_Transform",
     "ST_CurveToLine",
+    "ST_SymDifference",
+    "ST_Difference",
+    "ST_ExteriorRing",
+    "ST_IsEmpty",
+    "ST_Scale",
+    "ST_Affine",
     "ST_GeomFromGeoJSON",
     "ST_GeomFromText",
     "ST_AsText",
@@ -57,9 +68,7 @@ __all__ = [
     "fishnet_map_layer",
     "projection",
     "transform_and_projection",
-    "nearest_location_on_road",
-    "nearest_road",
-    "near_road",
+    "get_sindex_tree",
     "version"
 ]
 
@@ -427,6 +436,59 @@ def ST_Equals(geo1, geo2):
     result = arctern_core_.ST_Equals(arr_geo1, arr_geo2)
     return _to_pandas_series(result)
 
+def ST_Disjoint(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    arr_geo1 = pa.chunked_array(arr_geo1)
+    arr_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Disjoint(arr_geo1, arr_geo2)
+    return result.to_pandas()
+
+def ST_Boundary(geo):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Boundary(arr_geo)
+    return result.to_pandas()
+
+def ST_Union(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    arr_geo1 = pa.chunked_array(arr_geo1)
+    arr_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Union(arr_geo1, arr_geo2)
+    return result.to_pandas()
+
+def ST_Translate(geo, shifter_x, shifter_y):
+    import pyarrow as pa
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Translate(arr_geo, shifter_x, shifter_y)
+    return result.to_pandas()
+
+def ST_Rotate(geo, angle, origin="center", use_radians=False):
+    import math
+    import pyarrow as pa
+    if not use_radians:  # convert from degrees
+        angle = angle * math.pi/180.0
+    arr_geo = pa.array(geo, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    arr_geo = pa.chunked_array(arr_geo)
+
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Rotate2(arr_geo, angle, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Rotate(arr_geo, angle, origin[0], origin[1])
+    return result.to_pandas()
 
 @arctern_udf('binary', 'binary')
 def ST_Touches(geo1, geo2):
@@ -1131,8 +1193,8 @@ def ST_Buffer(geos, distance):
       >>> data = pandas.Series(data)
       >>> rst = arctern.ST_AsText(arctern.ST_Buffer(arctern.ST_GeomFromText(data), 0))
       >>> print(rst)
-          0    POLYGON EMPTY
-          dtype: object
+      0    POLYGON EMPTY
+      dtype: object
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')
@@ -1265,6 +1327,64 @@ def ST_CurveToLine(geos):
     result = [arctern_core_.ST_CurveToLine(g) for g in arr_geos]
     return _to_pandas_series(result)
 
+def ST_SymDifference(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_SymDifference(chunked_array_geo1, chunked_array_geo2)
+    return result.to_pandas()
+
+def ST_Difference(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    chunked_array_geo1 = pa.chunked_array(arr_geo1)
+    chunked_array_geo2 = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Difference(chunked_array_geo1, chunked_array_geo2)
+    return result.to_pandas()
+
+def ST_ExteriorRing(geos):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_ExteriorRing(chunked_array_geo)
+    return result.to_pandas()
+
+def ST_IsEmpty(geos):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_IsEmpty(chunked_array_geo)
+    return result.to_pandas()
+
+def ST_Scale(geos, factor_x, factor_y, origin="center"):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    if isinstance(origin, str):
+        origin = origin.encode('utf-8')
+        result = arctern_core_.ST_Scale2(chunked_array_geo, factor_x, factor_y, origin)
+    elif isinstance(origin, tuple) and len(origin) == 2:
+        result = arctern_core_.ST_Scale(chunked_array_geo, factor_x, factor_y, origin[0], origin[1])
+    return result.to_pandas()
+
+
+def ST_Affine(geos, a, b, d, e, offset_x, offset_y):
+    import pyarrow as pa
+    arr_geo = pa.array(geos, type='binary')
+    arr_geo = _to_arrow_array_list(arr_geo)
+    chunked_array_geo = pa.chunked_array(arr_geo)
+    result = arctern_core_.ST_Affine(chunked_array_geo, a, b, d, e, offset_x, offset_y)
+    return result.to_pandas()
 
 def within_which(left, right):
     """
@@ -1293,10 +1413,10 @@ def within_which(left, right):
     >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
     >>> res = within_which(data1, data2)
     >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
+    0       1
+    1    <NA>
+    2       0
+    dtype: object
     """
     import pyarrow as pa
     import pandas
@@ -1603,118 +1723,9 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.to_pandas()[0])
 
-def nearest_location_on_road(roads, points):
-    """
-    Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-
-    Returns
-    -------
-    Series
-        A POINT object in WKB format.
-
-    Examples
-    -------
-    >>> import arctern
-    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-    >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
-    >>> rst
-        0    POINT (1.0 2.5)
-        dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    location_rst = arctern_core_.nearest_location_on_road(arr_roads, arr_gps_points)
-    res = _to_pandas_series(location_rst)
-    res = res.set_axis(points.index)
-    return res
-
-def nearest_road(roads, points,):
-    """
-    Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-
-    Returns
-    -------
-    Series
-        A LINGSTRING object in WKB format.
-
-    Examples
-    -------
-    >>> import arctern
-    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
-    >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
-    >>> rst
-        0    LINESTRING (1 2,1 3)
-        dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    road_rst = arctern_core_.nearest_road(arr_roads, arr_gps_points)
-    res = _to_pandas_series(road_rst)
-    res = res.set_axis(points.index)
-    return res
-
-def near_road(roads, points, distance=100):
-    """
-    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
-
-    Parameters
-    ----------
-    roads : Series
-        LINGSTRING objects in WKB format.
-    points : Series
-        POINT objects in WKB format.
-    distance : double, optional
-        Searching distance around the points, by default 100.
-
-    Returns
-    -------
-    Series
-        A Series that contains only one boolean value that indicates whether there is a road within the given ``distance`` of all ``points``.
-
-        * *True*: The road exists.
-        * *False*: The road does not exist.
-
-    Examples
-    -------
-    >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
-      >>> rst = arctern.near_road(data1, data2)
-      >>> rst
-          0    True
-          dtype: object
-    """
-    import pyarrow as pa
-    arr_roads = pa.array(roads, type='binary')
-    arr_gps_points = pa.array(points, type='binary')
-    arr_roads = _to_arrow_array_list(arr_roads)
-    arr_gps_points = _to_arrow_array_list(arr_gps_points)
-    bool_rst = arctern_core_.near_road(arr_roads, arr_gps_points, float(distance))
-    res = _to_pandas_series(bool_rst)
-    res = res.set_axis(points.index)
-    return res
+def get_sindex_tree():
+    indextree = arctern_core_.SpatialIndex()
+    return indextree
 
 def version(verbose=False):
     """

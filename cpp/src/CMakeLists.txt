@@ -88,15 +88,20 @@ set(arrow_src
         )
 
 set(index_src
-        index/index_builder.cpp
+        index/index_tree.cpp
+        index/geo_index.cpp
         )
 
 set(map_match_src
-        map_match/map_match.cpp)
+        gis/map_match/map_match.cpp)
+
+set(utils_src
+        utils/arrow_utils.cpp          
+        )
 
 set(LIBRARY_TYPE SHARED)
 if (STATIC_LIB_SWITCH)
-    set(LIBRARY_TYPE STATIC)
+    set(LIBRARY_TYPE STATIC index/geo_index.h index/geo_index.cpp)
 endif (STATIC_LIB_SWITCH)
 
 if (BUILD_WITH_GPU)
@@ -109,6 +114,7 @@ if (BUILD_WITH_GPU)
             ${arrow_src}
             ${index_src}
             ${map_match_src}
+            ${utils_src}
     )
 else ()
     add_library(
@@ -119,6 +125,7 @@ else ()
             ${arrow_src}
             ${index_src}
             ${map_match_src}
+            ${utils_src}
     )
 endif ()
 

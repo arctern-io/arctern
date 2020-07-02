@@ -18,9 +18,9 @@ package org.apache.spark.sql.arctern.expressions
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.types.{AbstractDataType, ArrayType, BinaryType, ByteType, DataType, DoubleType, NumericType, StringType}
-import org.apache.spark.sql.catalyst.expressions.codegen._
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
+import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.types._
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 

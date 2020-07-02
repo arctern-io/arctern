@@ -15,11 +15,10 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.arctern._
 import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.types._
 
 class FunctionsTest extends AdapterTest {
   test("ST_Within") {
@@ -483,7 +482,8 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
       Row(GeometryUDT.FromWkt("POINT (0 0)")),
-      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((0 0, 10 0, 10 10, 0 10, 0 0)), ((11 11, 20 11, 20 20, 20 11, 11 11)))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
@@ -501,6 +501,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(1).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
     assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0 0)")
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
 
     val rst2 = df.select(st_envelope(col("geo")))
     rst2.show(false)
@@ -511,6 +512,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
     assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0 0)")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 20, 20 20, 20 0, 0 0))")
   }
 
   test("ST_Envelope-Null") {
@@ -629,7 +631,7 @@ class FunctionsTest extends AdapterTest {
 
   test("ST_PrecisionReduce") {
     val data = Seq(
-      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32435, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
+      Row(GeometryUDT.FromWkt("Polygon((0.0001 0.0001, 0.0001 1.32436, 1.341312 1.32435, 1.341312 0.0001, 0.0001 0.0001))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0.12 0.12, 10.234 10.456, 20.1 20.5566)")),
       Row(GeometryUDT.FromWkt("POINT (0.12345 0.346577)")),
       Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
@@ -647,22 +649,22 @@ class FunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.5, 1.5 1.5, 1.5 0, 0 0))")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
-    assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0 0.5)")
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.32, 1.34 1.32, 1.34 0, 0 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POINT (0.12 0.35)")
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
 
     val rst2 = df.select(st_precisionreduce(col("geo"), lit(2)))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.5, 1.5 1.5, 1.5 0, 0 0))")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
-    assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0 0.5)")
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POLYGON ((0 0, 0 1.32, 1.34 1.32, 1.34 0, 0 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POINT (0.12 0.35)")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
   }
 
   test("ST_PrecisionReduce-Null") {
@@ -686,10 +688,10 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).isNullAt(0))
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
     assert(collect(2).isNullAt(0))
     assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
 
     val rst2 = df.select(st_precisionreduce(st_geomfromtext(col("geo")), lit(2)))
     rst2.show(false)
@@ -697,17 +699,16 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).isNullAt(0))
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10.5, 20 20.5)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.12 0.12, 10.23 10.46, 20.1 20.56)")
     assert(collect2(2).isNullAt(0))
     assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON EMPTY")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 0, 1 1, 0 0)))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0.12 0.12, 1.12 0.12, 1.12 1.12, 0.12 0.12)))")
   }
 
   test("ST_Intersection") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (20 20)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
-      // TODO: Add empty geometry support
-      // Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
+      Row(GeometryUDT.FromWkt("POINT (50 50)"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
       Row(GeometryUDT.FromWkt("POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))")),
       Row(GeometryUDT.FromWkt("POLYGON ((10 10, 50 10, 50 50, 10 50, 10 10))"), GeometryUDT.FromWkt("POLYGON ((0 0, 40 0, 40 40, 0 40, 0 0))"))
     )
@@ -724,8 +725,9 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (20 20)")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
-    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
 
     val rst2 = df.select(st_intersection(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -733,8 +735,9 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (20 20)")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
-    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((10 10, 10 20, 20 20, 20 10, 10 10))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((40 10, 10 10, 10 40, 40 40, 40 10))")
   }
 
   test("ST_Intersection-Null") {
@@ -1698,8 +1701,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).isNullAt(0))
     assert(collect(2).isNullAt(0))
-    assert(collect(3).getDouble(0) == -1.0)
-    assert(collect(4).getDouble(0) == -1.0)
+    assert(collect(3).getDouble(0).isNaN)
+    assert(collect(4).getDouble(0).isNaN)
 
     val rst2 = df.select(st_distancesphere(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
     rst2.show(false)
@@ -1709,8 +1712,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
-    assert(collect2(3).getDouble(0) == -1.0)
-    assert(collect2(4).getDouble(0) == -1.0)
+    assert(collect2(3).getDouble(0).isNaN)
+    assert(collect2(4).getDouble(0).isNaN)
   }
 
   test("ST_Transform") {
@@ -1987,33 +1990,59 @@ class FunctionsTest extends AdapterTest {
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
-    val rst = spark.sql("select ST_PrecisionReduce(ST_Rotate(geo, CAST(2 * acos(0.0) AS FLOAT), 1, 0), 2) from data ")
-    rst.show(false)
+    val rst11 = spark.sql("select ST_PrecisionReduce(ST_Rotate(geo, CAST(2 * acos(0.0) AS FLOAT), 1, 0), 2) from data ")
+    rst11.show(false)
 
     //    rst.queryExecution.debug.codegen()
 
-    val collect = rst.collect()
+    val collect11 = rst11.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (1 -6)")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 2 -1, 1 -1)")
-    assert(collect(2).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 1 0, 1 -1, 2 0)")
-    assert(collect(3).getAs[GeometryUDT](0).toString == "POLYGON ((2 0, 2 -1, 1 -1, 2 0))")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((2 0), (1 0), (1 -2), (1 -2))")
-    assert(collect(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((2 0, 1 -2), (2 0, 1 0, 1 -1), (3 -2, -1 -4, 1 3, 4 -1))")
-    assert(collect(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 0, 1 -4, 1 0, 2 0)))")
+    assert(collect11(0).getAs[GeometryUDT](0).toString == "POINT (1 -6)")
+    assert(collect11(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 2 -1, 1 -1)")
+    assert(collect11(2).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 1 0, 1 -1, 2 0)")
+    assert(collect11(3).getAs[GeometryUDT](0).toString == "POLYGON ((2 0, 2 -1, 1 -1, 2 0))")
+    assert(collect11(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((2 0), (1 0), (1 -2), (1 -2))")
+    assert(collect11(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((2 0, 1 -2), (2 0, 1 0, 1 -1), (3 -2, -1 -4, 1 3, 4 -1))")
+    assert(collect11(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 0, 1 -4, 1 0, 2 0)))")
 
-    val rst2 = df.select(st_precisionreduce(st_rotate(col("geo"), lit(2 * scala.math.acos(0.0)), lit(1), lit(0)), lit(2)))
-    rst2.show(false)
+    val rst12 = spark.sql("select ST_PrecisionReduce(ST_Rotate(geo, CAST(2 * acos(0.0) AS FLOAT)), 2) from data ")
+    rst12.show(false)
 
-    val collect2 = rst2.collect()
+    val collect12 = rst12.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (1 -6)")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 2 -1, 1 -1)")
-    assert(collect2(2).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 1 0, 1 -1, 2 0)")
-    assert(collect2(3).getAs[GeometryUDT](0).toString == "POLYGON ((2 0, 2 -1, 1 -1, 2 0))")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((2 0), (1 0), (1 -2), (1 -2))")
-    assert(collect2(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((2 0, 1 -2), (2 0, 1 0, 1 -1), (3 -2, -1 -4, 1 3, 4 -1))")
-    assert(collect2(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 0, 1 -4, 1 0, 2 0)))")
+    assert(collect12(0).getAs[GeometryUDT](0).toString == "POINT (1 6)")
+    assert(collect12(1).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 1 0, 0 0)")
+    assert(collect12(2).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 0 1, 0 0, 1 1)")
+    assert(collect12(3).getAs[GeometryUDT](0).toString == "POLYGON ((1 1, 1 0, 0 0, 1 1))")
+    assert(collect12(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((1 2), (0 2), (0 0), (0 0))")
+    assert(collect12(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((1 1, 0 -1), (1 1, 0 1, 0 0), (2 -1, -2 -3, 0 4, 3 0))")
+    assert(collect12(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((1 4, 0 0, 0 4, 1 4)))")
+
+    val rst13 = spark.sql("""select ST_PrecisionReduce(ST_Rotate(geo, CAST(2 * acos(0.0) AS FLOAT), "Centroid"), 2) from data""")
+    rst13.show(false)
+
+    val collect13 = rst13.collect()
+
+    assert(collect13(0).getAs[GeometryUDT](0).toString == "POINT (1 6)")
+    assert(collect13(1).getAs[GeometryUDT](0).toString == "LINESTRING (0.5 1.5, 0.5 0.5, -0.5 0.5)")
+    assert(collect13(2).getAs[GeometryUDT](0).toString == "LINESTRING (1.29 0.71, 0.29 0.71, 0.29 -0.29, 1.29 0.71)")
+    assert(collect13(3).getAs[GeometryUDT](0).toString == "POLYGON ((0.67 1.33, 0.67 0.33, -0.33 0.33, 0.67 1.33))")
+    assert(collect13(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((1.5 2), (0.5 2), (0.5 0), (0.5 0))")
+    assert(collect13(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((1.82 1.41, 0.82 -0.59), (1.82 1.41, 0.82 1.41, 0.82 0.41), (2.82 -0.59, -1.18 -2.59, 0.82 4.41, 3.82 0.41))")
+    assert(collect13(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((1.33 2.67, 0.33 -1.33, 0.33 2.67, 1.33 2.67)))")
+
+    val rst21 = df.select(st_precisionreduce(st_rotate(col("geo"), lit(2 * scala.math.acos(0.0)), lit(1), lit(0)), lit(2)))
+    rst21.show(false)
+
+    val collect21 = rst21.collect()
+
+    assert(collect21(0).getAs[GeometryUDT](0).toString == "POINT (1 -6)")
+    assert(collect21(1).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 2 -1, 1 -1)")
+    assert(collect21(2).getAs[GeometryUDT](0).toString == "LINESTRING (2 0, 1 0, 1 -1, 2 0)")
+    assert(collect21(3).getAs[GeometryUDT](0).toString == "POLYGON ((2 0, 2 -1, 1 -1, 2 0))")
+    assert(collect21(4).getAs[GeometryUDT](0).toString == "MULTIPOINT ((2 0), (1 0), (1 -2), (1 -2))")
+    assert(collect21(5).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((2 0, 1 -2), (2 0, 1 0, 1 -1), (3 -2, -1 -4, 1 3, 4 -1))")
+    assert(collect21(6).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((2 0, 1 -4, 1 0, 2 0)))")
   }
 
   test("ST_Rotate-Null") {
@@ -2549,5 +2578,208 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 4, 1 0, 0 0))")
     assert(collect2(5).isNullAt(0))
     assert(collect2(6).isNullAt(0))
+  }
+
+  test("ST_ExteriorRing") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(geo) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+
+    val rst2 = df.select(st_exteriorring(col("geo")))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+  }
+
+  test("ST_ExteriorRing-Null") {
+    val data = Seq(
+      Row("POINT (0 1)"),
+      Row("LINESTRING (0 0, 0 1, 1 1)"),
+      Row("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"),
+      Row("POLYGON EMPTY"),
+      Row("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_ExteriorRing(ST_GeomFromText(geo)) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(5).isNullAt(0))
+    assert(collect(6).isNullAt(0))
+
+    val rst2 = df.select(st_exteriorring(st_geomfromtext(col("geo"))))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(5).isNullAt(0))
+    assert(collect2(6).isNullAt(0))
+  }
+
+  test("ST_Scale") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT ((4 0),(6 0))")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst11 = spark.sql("select ST_Scale(geo, 2, 2) from data ")
+    rst11.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect11 = rst11.collect()
+
+    assert(collect11(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect11(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
+
+    val rst12 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, "centroid")""")
+    rst12.show(false)
+
+    val collect12 = rst12.collect()
+
+    assert(collect12(0).getAs[GeometryUDT](0).toString == "LINESTRING (0.5 0.5, 2.5 2.5)")
+
+    val rst13 = spark.sql("""select ST_Scale(ST_GeomFromText("LINESTRING(1 1, 2 2)"), 2, 2, 1, 1)""")
+    rst13.show(false)
+
+    val collect13 = rst13.collect()
+
+    assert(collect13(0).getAs[GeometryUDT](0).toString == "LINESTRING (1 1, 3 3)")
+
+    val rst21 = df.select(st_scale(col("geo"), lit(2), lit(2)))
+    rst21.show(false)
+
+    val collect21 = rst21.collect()
+
+    assert(collect21(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect21(1).getAs[GeometryUDT](0).toString == "MULTIPOINT ((3 0), (7 0))")
+  }
+
+  test("ST_Scale-Null") {
+    val data = Seq(
+      Row("LINESTRING (0 0,5 0)"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Scale(ST_GeomFromText(geo), 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    val rst2 = df.select(st_scale(st_geomfromtext(col("geo")), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (-2.5 0, 7.5 0)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
+  }
+
+  test("ST_Affine") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (120.6 100.999)")),
+    )
+
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Affine(geo, 2, 2, 2, 2, 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+
+    val rst2 = df.select(st_affine(col("geo"), lit(2), lit(2), lit(2), lit(2), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+  }
+
+  test("ST_Affine-Null") {
+    val data = Seq(
+      Row("POINT (120.6 100.999)"),
+      Row(null),
+      Row("error geometry"),
+    )
+
+    val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
+    val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
+    df.createOrReplaceTempView("data")
+
+    val rst = spark.sql("select ST_Affine(ST_GeomFromText(geo), 2, 2, 2, 2, 2, 2) from data ")
+    rst.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    val collect = rst.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+
+    val rst2 = df.select(st_affine(st_geomfromtext(col("geo")), lit(2), lit(2), lit(2), lit(2), lit(2), lit(2)))
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (445.198 445.198)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
   }
 }
