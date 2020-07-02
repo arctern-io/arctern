@@ -568,7 +568,23 @@ class GeoSeries(Series):
     # Geometry related quaternary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
-    def rotate(self, rotation_angle, origin, use_radians=False):
+    def rotate(self, rotation_angle, origin=None, use_radians=False):
+        """
+        Returns a rotated geometry on a 2D plane.
+        Parameters
+        ----------
+        rotation_angle : float
+            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+        use_radians : boolean
+            Whether to interpret the angle of rotation as degrees or radians.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with rotated geometries.
+        """
         import math
         if not use_radians:
             rotation_angle = rotation_angle * math.pi / 180.0

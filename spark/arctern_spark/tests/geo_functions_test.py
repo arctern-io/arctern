@@ -93,12 +93,25 @@ def test_ST_Affine():
 
 
 def test_ST_Rotate():
-    import math
-    data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0, 0 1, 1 1)", "POLYGON ((0 0, 0 1, 1 1, 0 0))"])
-    rst = data.rotate(math.acos(0.0), 0, 0).precision_reduce(3).to_wkt()
-    assert rst[0] == "POINT (-6 1)"
-    assert rst[1] == "LINESTRING (0 0, -1 0, -1 1)"
-    assert rst[2] == "POLYGON ((0 0, -1 0, -1 1, 0 0))"
+    p1 = "Point(1 2)"
+    p2 = "LineString (1 1, 2 2, 1 2)"
+    p3 = "Polygon ((3 3, 3 5, 5 5, 5 3, 3 3))"
+
+    data = GeoSeries([p1, p2, p3])
+    rst1 = data.rotate(90, (0, 0)).precision_reduce(3)
+    assert rst1[0] == "POINT (-2 1)"
+    assert rst1[1] == "LINESTRING (-1 1, -2 2, -2 1)"
+    assert rst1[2] == "POLYGON ((-3 3, -5 3, -5 5, -3 5, -3 3))"
+
+    rst2 = data.rotate(90, "centroid").precision_reduce(3)
+    assert rst2[0] == "POINT (1 2)"
+    assert rst2[1] == "LINESTRING (2.207 1.207, 1.207 2.207, 1.207 1.207)"
+    assert rst2[2] == "POLYGON ((5 3, 3 3, 3 5, 5 5, 5 3))"
+
+    rst3 = data.rotate(90).precision_reduce(3)
+    assert rst3[0] == "POINT (1 2)"
+    assert rst3[1] == "LINESTRING (2 1, 1 2, 1 1)"
+    assert rst3[2] == "POLYGON ((5 3, 3 3, 3 5, 5 5, 5 3))"
 
 
 def test_ST_Disjoint():
