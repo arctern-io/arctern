@@ -210,6 +210,10 @@ def test_iconviz():
                     icon_path=png_path, coordinate_system="EPSG:4326")
     _finalize(ax, "test_icon_viz")
 
+    ap.plot.iconviz(ax, points, bounding_box=bounding_box,
+                icon_path=png_path, icon_size=[65, 65], coordinate_system="EPSG:4326")
+    _finalize(ax, "test_icon_viz_zoom_out")
+
 def test_fishnet_map():
     x_data = []
     y_data = []

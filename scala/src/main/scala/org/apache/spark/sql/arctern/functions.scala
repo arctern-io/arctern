@@ -147,8 +147,16 @@ object functions {
     ST_Translate(Seq(geo.expr, shifterXValue.expr, shifterYValue.expr))
   }
 
-  def st_rotate(geo: Column, rotationAngle: Column, rotateX: Column, rotateY: Column): Column = Column {
-    ST_Rotate(Seq(geo.expr, rotationAngle.expr, rotateX.expr, rotateY.expr))
+  def st_rotate(geo: Column, rotationAngle: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, origin: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, origin.expr))
+  }
+
+  def st_rotate(geo: Column, rotationAngle: Column, originX: Column, originY: Column): Column = Column {
+    ST_Rotate(Seq(geo.expr, rotationAngle.expr, originX.expr, originY.expr))
   }
 
   def st_symdifference(left: Column, right: Column): Column = Column {
@@ -181,6 +189,14 @@ object functions {
 
   def st_scale(geo: Column, factorX: Column, factorY: Column): Column = Column {
     ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr))
+  }
+
+  def st_scale(geo: Column, factorX: Column, factorY: Column, origin: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr, origin.expr))
+  }
+
+  def st_scale(geo: Column, factorX: Column, factorY: Column, originX: Column, originY: Column): Column = Column {
+    ST_Scale(Seq(geo.expr, factorX.expr, factorY.expr, originX.expr, originY.expr))
   }
 
   def st_affine(geo: Column, a: Column, b: Column, d: Column, e: Column, offsetX: Column, offsetY: Column): Column = Column {
