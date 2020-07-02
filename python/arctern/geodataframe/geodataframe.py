@@ -15,10 +15,11 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 import json
-from pandas import DataFrame, Series
-from arctern import GeoSeries
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from arctern import GeoSeries
+from pandas import DataFrame, Series
 
 
 class GeoDataFrame(DataFrame):
@@ -154,7 +155,7 @@ class GeoDataFrame(DataFrame):
         if self._geometry_column_name is not None:
             for col in copy_df._geometry_column_name:
                 copy_df[col] = Series(copy_df[col].to_geopandas())
-        return geopandas.GeoDataFrame(copy_df.values , columns=copy_df.columns.values.tolist())
+        return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
     @classmethod
     def from_geopandas(cls, pdf):

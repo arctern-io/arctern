@@ -18,9 +18,11 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series, DataFrame
-import numpy as np
+
 import arctern
+import numpy as np
+from pandas import Series, DataFrame
+
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
 
@@ -80,12 +82,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-def _validate_crs(crs):
-    if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
-    return crs
-
 
 class GeoSeries(Series):
     """
@@ -129,6 +125,8 @@ class GeoSeries(Series):
         if hasattr(data, "crs") and crs:
             if not data.crs:
                 data = data.copy()
+            elif not crs:
+                crs = data.crs
             elif not data.crs == crs:
                 raise ValueError(
                     "csr of the passed geometry data is different from crs."
@@ -158,12 +156,9 @@ class GeoSeries(Series):
                     s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values)
+            data = GeoArray(s.values, crs=crs)
 
         super().__init__(data, index=index, name=name, **kwargs)
-
-        self._crs = None
-        self.set_crs(crs)
 
     @property
     def sindex(self):
@@ -197,8 +192,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.array.crs = crs
 
     @property
     def crs(self):
@@ -217,7 +211,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        return self._crs
+        return self.array.crs
 
     @crs.setter
     def crs(self, crs):

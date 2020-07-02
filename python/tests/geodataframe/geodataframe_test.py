@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from arctern import GeoDataFrame, GeoSeries
-import numpy as np
 import arctern
+import numpy as np
 import pandas
+from arctern import GeoDataFrame, GeoSeries
+
 
 def test_from_geopandas():
     import geopandas
@@ -25,7 +26,7 @@ def test_from_geopandas():
         "B": np.arange(5.0),
         "other_geom": range(5),
         "geometry": [Point(x, y) for x, y in zip(range(5), range(5))],
-        "copy_geo": [Point(x+1, y+1) for x, y in zip(range(5), range(5))],
+        "copy_geo": [Point(x + 1, y + 1) for x, y in zip(range(5), range(5))],
     }
     pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
     assert isinstance(pdf["geometry"], geopandas.GeoSeries)
@@ -34,10 +35,13 @@ def test_from_geopandas():
     assert isinstance(gdf['geometry'], arctern.geoseries.GeoSeries) == True
     assert isinstance(gdf['copy_geo'], arctern.geoseries.GeoSeries) == True
 
+
 def test_from_geoseries():
     data = GeoSeries(["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"], crs="epsg:4326")
     gdf = GeoDataFrame(data)
     assert isinstance(gdf[0], GeoSeries) == True
+    assert gdf[0].crs == "EPSG:4326"
+
 
 def test_to_geopandas():
     import geopandas
@@ -53,6 +57,7 @@ def test_to_geopandas():
     pdf.set_geometry("geo1", inplace=True)
     assert pdf.geometry.name == "geo1"
     assert isinstance(pdf["geo1"], geopandas.GeoSeries)
+
 
 def test_dissolve():
     data = {
@@ -86,6 +91,7 @@ def test_set_geometries():
     assert gdf["geo3"].crs == "EPSG:3857"
     assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
 
+
 def test_merge():
     data1 = {
         "A": range(5),
@@ -102,6 +108,7 @@ def test_merge():
     result = gdf1.merge(gdf2, left_on="A", right_on="A")
     assert isinstance(result, arctern.GeoDataFrame) == True
     assert isinstance(result["geometry"], arctern.GeoSeries) == True
+
 
 def test_to_json():
     data = {
