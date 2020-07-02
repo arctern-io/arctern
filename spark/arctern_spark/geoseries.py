@@ -570,9 +570,19 @@ class GeoSeries(Series):
     # Geometry related quaternary methods, which return GeoSeries
     # -------------------------------------------------------------------------
 
-    # TODO: add origin
-    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
-        return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
+    def rotate(self, rotation_angle, origin, use_radians=False):
+        import math
+        if not use_radians:
+            rotation_angle = rotation_angle * math.pi / 180.0
+
+        if origin is None:
+            return _column_geo("st_rotate", self, F.lit(rotation_angle))
+        elif isinstance(origin, str):
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
+        elif isinstance(origin, tuple):
+            origin_x = origin[0]
+            origin_y = origin[1]
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
 
     # -------------------------------------------------------------------------
     # utils
