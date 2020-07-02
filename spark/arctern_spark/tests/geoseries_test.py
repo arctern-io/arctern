@@ -13,13 +13,12 @@
 # limitations under the License.
 
 # pylint: disable=attribute-defined-outside-init, redefined-outer-name
-
-import databricks.koalas as ks
+from osgeo import ogr
 import numpy as np
 import pandas as pd
 import pytest
+import databricks.koalas as ks
 from arctern_spark import GeoSeries
-from osgeo import ogr
 
 
 def make_point(x, y):
@@ -195,7 +194,8 @@ class TestPandasMethod:
         assert (s1.equals(s2)).all()
 
     def test_unique(self):
-        s = GeoSeries([make_point(1, 1), make_point(1, 1), make_point(1, 2), None])
+        s = GeoSeries([make_point(1, 1), make_point(
+            1, 1), make_point(1, 2), None])
         assert len(s.unique()) == 3
 
     def test_operator(self):
@@ -211,7 +211,8 @@ class TestPandasMethod:
     def test_astype(self):
         s = GeoSeries([make_point(1, 1), make_point(1, 2)])
         assert s.astype(str).tolist() == [make_point(1, 1), make_point(1, 2)]
-        assert s.astype('string').tolist() == [make_point(1, 1), make_point(1, 2)]
+        assert s.astype('string').tolist() == [
+            make_point(1, 1), make_point(1, 2)]
 
 
 class TestGeoMethods:
