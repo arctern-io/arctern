@@ -66,12 +66,18 @@ def test_ST_Translate():
     assert rst[2] == "POLYGON ((1.2 0.3, 1.2 1.3, 2.2 1.3, 1.2 0.3))"
 
 
+def test_ST_Scale2():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    rst = data.scale(2, 2, origin=(0, 0)).to_wkt()
+    assert rst[0] == "LINESTRING (0 0, 10 0)"
+    assert rst[1] == "MULTIPOINT ((8 0), (12 0))"
+
+
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
-    rst = data.scale(2, 2).to_wkt()
-    assert rst[0] == "LINESTRING (-2.5 0.0, 7.5 0.0)"
-    assert rst[1] == "MULTIPOINT (3 0,7 0)"
-
+    rst = data.scale(2, 2, origin="center").to_wkt()
+    assert rst[0] == "LINESTRING (-2.5 0, 7.5 0)"
+    assert rst[1] == "MULTIPOINT ((3 0), (7 0))"
 
 def test_ST_Affine():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
