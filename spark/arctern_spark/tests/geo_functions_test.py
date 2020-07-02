@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import pandas as pd
+from osgeo import ogr
 from arctern_spark.geoseries import GeoSeries
 from databricks.koalas import Series
-from osgeo import ogr
 
 
 def test_ST_IsValid():
@@ -49,14 +49,16 @@ def test_ST_SymDifference():
 
 
 def test_ST_ExteriorRing():
-    data = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+    data = GeoSeries(
+        ["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior.to_wkt()
     assert rst[0] is None
     assert rst[1] == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)"
 
 
 def test_ST_Translate():
-    data = GeoSeries(["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
+    data = GeoSeries(
+        ["POINT (1 6)", "LINESTRING (0 0,0 1,1 1)", "POLYGON ((0 0,0 1,1 1,0 0))"])
     rst = data.translate(1.2, 0.3).to_wkt()
     assert len(rst) == 3
     assert rst[0] == "POINT (2.2 6.3)"
@@ -101,8 +103,10 @@ def test_ST_Intersection():
 
 
 def test_ST_Equals():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.geom_equals(data2)
     assert len(rst) == 2
     assert rst[0] == 1
@@ -115,8 +119,10 @@ def test_ST_Equals():
 
 
 def test_ST_Touches():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.touches(data2)
     assert len(rst) == 2
     assert rst[0] == 0
@@ -129,8 +135,10 @@ def test_ST_Touches():
 
 
 def test_ST_Overlaps():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.overlaps(data2)
     assert len(rst) == 2
     assert rst[0] == 0
@@ -143,8 +151,10 @@ def test_ST_Overlaps():
 
 
 def test_ST_Crosses():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
+    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.crosses(data2)
     assert len(rst) == 2
     assert rst[0] == 0
@@ -157,14 +167,16 @@ def test_ST_Crosses():
 
 
 def test_ST_IsSimple():
-    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                      "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = data.is_simple
     assert rst[0] == 1
     assert rst[1] == 1
 
 
 def test_ST_GeometryType():
-    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                      "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = data.geom_type
     assert rst[0] == "Polygon"
     assert rst[1] == "Polygon"
@@ -177,7 +189,8 @@ def test_ST_MakeValid():
 
 
 def test_ST_SimplifyPreserveTopology():
-    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))", "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
+    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
+                      "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
     rst = data.simplify(10000).to_wkt()
     assert rst[0] == "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))"
 
