@@ -50,15 +50,16 @@ class GeoDataFrame(DataFrame):
             else:
                 raise TypeError("The type of crs should be str or list!")
             for i in range(0, geo_length - crs_length):
-                crs.append("None")
+                crs.append(None)
             for (crs_element, geometry) in zip(crs, geometries):
                 self[geometry] = GeoSeries(self[geometry])
                 self[geometry].invalidate_sindex()
+            for (crs_element, geometry) in zip(crs, geometries):
                 if crs_element is not None:
                     self[geometry].set_crs(crs_element)
-                self[geometry].set_crs(crs_element)
 
             self._geometry_column_name = geometries
+            self._crs = crs
 
     def set_geometry(self, col, inplace=False, crs=None):
         if inplace:
@@ -66,27 +67,23 @@ class GeoDataFrame(DataFrame):
         else:
             frame = self.copy()
 
-        geos_crs = {}
-        crs_length = len(crs)
-        geo_length = len(cols)
-        if crs_length < geo_length:
-            for i in range(0, geo_length - crs_length):
-                crs.append("None")
-        for col, geo_crs in zip(cols, crs):
-            geos_crs[col] = geo_crs
-        for col in frame._geometry_column_name:
-            geos_crs[col] = frame[col].crs
-
         geometry_cols = frame._geometry_column_name
-        for col in cols:
-            if col not in geometry_cols and not isinstance(frame[col], GeoSeries):
-                frame[col] = GeoSeries(frame[col])
+        geometry_crs = frame._crs
+        if not isinstance(frame[col], GeoSeries):
+            frame[col] = GeoSeries(frame[col])
+            geometry_cols.append(col)
+            if crs is None:
+                geometry_crs.append(None)
+            else:
+                geometry_crs.append(crs)
+        if col in geometry_cols:
+            index = geometry_cols.index(col)
+            if crs is not None:
+                geometry_crs[index] = crs
 
-        frame._geometry_column_name = frame._geometry_column_name + cols
-
-        for col in frame._geometry_column_name:
-            if frame[col].crs is None:
-                frame[col].set_crs(geos_crs[col])
+        for (crs, col) in zip(geometry_crs, geometry_cols):
+            if crs is not None:
+                frame[col].set_crs(crs)
 
         if not inplace:
             return frame

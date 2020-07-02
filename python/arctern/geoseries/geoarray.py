@@ -118,7 +118,7 @@ def is_scalar_geometry(data):
 class GeoArray(ExtensionArray):
     _dtype = GeoDtype()
 
-    def __init__(self, data, crs):
+    def __init__(self, data):
         if not isinstance(data, (np.ndarray, GeoArray)):
             raise TypeError(
                 "'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
@@ -126,7 +126,6 @@ class GeoArray(ExtensionArray):
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
         self.data = np.asarray(data)
-        self._crs = crs
 
     @property
     def dtype(self):
@@ -138,14 +137,6 @@ class GeoArray(ExtensionArray):
     @property
     def shape(self):
         return (self.size,)
-
-    @property
-    def crs(self):
-        return self._crs
-
-    @property
-    def set_crs(self, crs):
-        self._crs = crs
 
     @property
     def size(self):
@@ -160,7 +151,7 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy(), self._crs)
+        return GeoArray(self.data.copy())
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)

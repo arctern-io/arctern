@@ -41,7 +41,6 @@ def test_from_geoseries():
     gdf = GeoDataFrame(data)
     print(gdf[0].crs)
     assert isinstance(gdf[0], GeoSeries) == True
-    assert gdf[0].crs == "EPSG:4326"
 
 
 def test_to_geopandas():
@@ -73,23 +72,24 @@ def test_dissolve():
     assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT (3 3,4 4)"
 
 
-def test_set_geometries():
+def test_set_geometry():
     data = {
         "A": range(5),
         "B": np.arange(5.0),
         "other_geom": range(5),
         "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
-        "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
-        "geo3": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        "geo2": ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"],
+        "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
-    gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+    gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "EPSG:5626"])
     assert isinstance(gdf["geo1"], arctern.GeoSeries)
     assert isinstance(gdf["geo2"], pandas.Series)
     assert isinstance(gdf["geo3"], pandas.Series)
-    gdf.set_geometries(cols=["geo2", "geo3"], crs=["epsg:4326", "epsg:3857"], inplace=True)
-    assert gdf["geo1"].crs == "EPSG:4326"
-    assert gdf["geo2"].crs == "EPSG:4326"
-    assert gdf["geo3"].crs == "EPSG:3857"
+    gdf.set_geometry(col="geo1", crs="epsg:3857", inplace=True)
+    gdf.set_geometry(col="geo3", inplace=True)
+    assert gdf["geo1"].crs == "EPSG:3857"
+    assert gdf["geo2"].crs == "EPSG:5626"
+    assert gdf["geo3"].crs is None
     assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
 
 
