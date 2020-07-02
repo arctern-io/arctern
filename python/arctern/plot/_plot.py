@@ -88,7 +88,6 @@ def _plot_polygons(ax, polygons, **style_kwds):
 def _plot_lines(ax, lines, **style_kwds):
     try:
         from matplotlib.collections import LineCollection
-        import matplotlib as mpl
     except ImportError:
         raise ImportError(
             "The matplotlib package is required for plotting polygons in arctern. "
@@ -280,6 +279,8 @@ def plot_geometry(ax, geoms, **style_kwds):
     See `matplotlib.pyplot.plot document <https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html?highlight=plot#matplotlib.pyplot.plot>`_ for detailed description of marker styles, line styles, and colors.
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas
     >>> import matplotlib.pyplot as plt

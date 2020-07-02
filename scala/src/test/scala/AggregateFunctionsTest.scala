@@ -45,12 +45,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
   test("ST_Union_Aggr") {
     val data = Seq(
-      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
+      Row(GeometryUDT.FromWkt("POINT (-1 -1)")),
+      Row(GeometryUDT.FromWkt("POINT (5 5)")),
       Row(GeometryUDT.FromWkt("POINT (1 1)")),
-      Row(GeometryUDT.FromWkt("POINT (2 2)")),
-      Row(GeometryUDT.FromWkt("POLYGON ((0 0,2 0,2 2,0 2,0 0))")),
-      Row(GeometryUDT.FromWkt("POLYGON ((0 0,5 0,5 5,0 5,0 0))")),
-      Row(GeometryUDT.FromWkt("POLYGON ((10 10,20 10,20 20,10 20,10 10))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((1 1,2 1,2 2,1 2,1 1))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)) )")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
@@ -62,25 +64,25 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea==2.0)
 
     val rst2 = df.agg(st_union_aggr(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
   }
 
   test("ST_Union_Aggr-Null") {
     val data = Seq(
+      Row("POLYGON EMPTY"),
+      Row("POLYGON EMPTY"),
       Row("error geo"),
-      Row("POINT (0 0)"),
-      Row("POINT (1 1)"),
-      Row("POINT (2 2)"),
-      Row("POLYGON ((0 0,2 0,2 2,0 2,0 0))"),
-      Row("POLYGON ((0 0,5 0,5 5,0 5,0 0))"),
-      Row("POLYGON ((10 10,20 10,20 20,10 20,10 10))"),
+      Row("POINT (-1 -1)"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row("POLYGON ((1 1,2 1,2 2,1 2,1 1))"),
+      Row("MULTIPOLYGON ( ((0 0, 1 0, 1 1, 0 1, 0 0)) )"),
       Row(null),
     )
 
@@ -93,14 +95,56 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea==2.0)
 
     val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea() == 125.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
+  }
+
+  test("ST_Union_Aggr-Perf") {
+    val r = scala.util.Random
+    val dataNum = 100
+    val randomRange = 50
+
+    var data = List[Row]()
+    for( a <- 0 to dataNum){
+      data = data :+ Row(GeometryUDT.FromWkt(s"""POINT (${r.nextInt(randomRange)} ${r.nextInt(randomRange)})"""))
+    }
+
+    for( a <- 0 to dataNum){
+      val minX = r.nextInt(randomRange)
+      val minY = r.nextInt(randomRange)
+      data = data :+ Row(GeometryUDT.FromWkt(s"""LINESTRING (${minX} ${minY}, ${minX + 10} ${minY + 10}, ${minX + 20} ${minY + 20})"""))
+    }
+
+    for( a <- 0 to dataNum){
+      val minX = r.nextInt(randomRange)
+      val minY = r.nextInt(randomRange)
+      val maxX = minX + 2
+      val maxY = minY + 2
+      data = data :+ Row(GeometryUDT.FromWkt(s"""POLYGON (($minX $minY, $maxX $minY, $maxX $maxY, $minX $maxY, $minX $minY))"""))
+    }
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = false)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("Perf_data")
+    spark.sql("cache table Perf_data")
+
+    val t1 = System.currentTimeMillis
+
+    val rst = spark.sql("select ST_Union_Aggr(geo) from Perf_data")
+    rst.createOrReplaceTempView("res")
+    spark.sql("cache table res")
+
+    val t2 = System.currentTimeMillis
+
+    rst.show(false)
+    println((t2 - t1)/1000.0 + " secs")
   }
 
   test("ST_Envelope_Aggr") {

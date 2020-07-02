@@ -14,7 +14,9 @@
 
 set(utils_tests_src
         ${unittest_srcs}
-        utils_tests.cpp)
+        arrow_alias_tests.cpp
+        chunked_array_tests.cpp
+        )
 
 add_executable(utils_tests ${utils_tests_src})
 
@@ -25,12 +27,6 @@ target_link_libraries(utils_tests
         arrow
         gtest
         pthread
-        gdal
         )
 
 install(TARGETS utils_tests DESTINATION unittest)
-
-add_subdirectory(gdal)
-if(BUILD_WITH_GPU)
-    add_subdirectory(cuda)
-endif()

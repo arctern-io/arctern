@@ -12,21 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import databricks.koalas as ks
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck
+
+
 import pandas as pd
-from databricks.koalas import DataFrame, Series, get_option
-from databricks.koalas.base import IndexOpsMixin
-from databricks.koalas.exceptions import SparkPandasIndexingError
-from databricks.koalas.series import first_series, REPR_PATTERN
 from pandas.io.formats.printing import pprint_thing
+import databricks.koalas as ks
+from databricks.koalas import DataFrame, Series, get_option
+from databricks.koalas.exceptions import SparkPandasIndexingError
+from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
+from databricks.koalas.series import REPR_PATTERN
+from databricks.koalas.utils import (
+    validate_axis,
+    validate_bool_kwarg,
+)
 from pyspark.sql import functions as F, Column
-from pyspark.sql.types import IntegerType, LongType
+from pyspark.sql.window import Window
+from pyspark.sql.types import (
+    IntegerType,
+    LongType,
+    StringType,
+    BinaryType,
+)
 
-# os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
-# os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
-
-
-ks.set_option('compute.ops_on_diff_frames', True)
+from . import scala_wrapper
 
 
 # for unary or binary operation, which return koalas Series.
@@ -43,7 +52,6 @@ def _column_geo(f, *args, **kwargs):
 
 
 def _agg(f, kss):
-    from . import scala_wrapper
     scol = getattr(scala_wrapper, f)(kss.spark.column)
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
@@ -57,9 +65,11 @@ def _validate_crs(crs):
     return crs
 
 
-def _validate_arg(arg, dtype=(bytes, bytearray)):
-    from . import scala_wrapper
-    if dtype is not None and isinstance(arg, dtype):
+def _validate_arg(arg):
+    if isinstance(arg, str):
+        arg = F.lit(arg)
+        arg = getattr(scala_wrapper, "st_geomfromtext")(arg)
+    elif isinstance(arg, (bytearray, bytes)):
         arg = F.lit(arg)
         arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
     elif not isinstance(arg, Series):
@@ -134,17 +144,16 @@ class GeoSeries(Series):
             column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
-            from pyspark.sql.types import StringType, BinaryType
-            from .scala_wrapper import GeometryUDT
             spark_dtype = kss.spark.data_type
-            if isinstance(spark_dtype, GeometryUDT):
+            if isinstance(spark_dtype, scala_wrapper.GeometryUDT):
                 pass
             elif isinstance(spark_dtype, BinaryType):
                 kss = _column_op("st_geomfromwkb", kss)
             elif isinstance(spark_dtype, StringType):
                 kss = _column_op("st_geomfromtext", kss)
             else:
-                raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
+                raise TypeError(
+                    "Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
             anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
@@ -269,6 +278,109 @@ class GeoSeries(Series):
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
 
+    def _with_new_scol(self, scol):
+        """
+        Copy Koalas Series with the new Spark Column.
+
+        :param scol: the new Spark Column
+        :return: the copied Series
+        """
+        internal = self._kdf._internal.copy(
+            column_labels=[self._column_label], data_spark_columns=[scol]
+        )
+        return first_series(DataFrame(internal))
+
+    def fillna(self, value=None, method=None, axis=None, inplace=False, limit=None):
+        """Fill NA/NaN values.
+
+        .. note:: the current implementation of 'method' parameter in fillna uses Spark's Window
+            without specifying partition specification. This leads to move all data into
+            single partition in single machine and could cause serious
+            performance degradation. Avoid this method against very large dataset.
+
+        Parameters
+        ----------
+        value : scalar, dict, Series
+            Value to use to fill holes. alternately a dict/Series of values
+            specifying which value to use for each column.
+            DataFrame is not supported.
+        method : {'backfill', 'bfill', 'pad', 'ffill', None}, default None
+            Method to use for filling holes in reindexed Series pad / ffill: propagate last valid
+            observation forward to next valid backfill / bfill:
+            use NEXT valid observation to fill gap
+        axis : {0 or `index`}
+            1 and `columns` are not supported.
+        inplace : boolean, default False
+            Fill in place (do not create a new object)
+        limit : int, default None
+            If method is specified, this is the maximum number of consecutive NaN values to
+            forward/backward fill. In other words, if there is a gap with more than this number of
+            consecutive NaNs, it will only be partially filled. If method is not specified,
+            this is the maximum number of entries along the entire axis where NaNs will be filled.
+            Must be greater than 0 if not None
+
+        Returns
+        -------
+        Series
+            Series with NA entries filled.
+        """
+        return self._fillna(value, method, axis, inplace, limit)
+
+    def _fillna(self, value=None, method=None, axis=None, inplace=False, limit=None, part_cols=()):
+        axis = validate_axis(axis)
+        inplace = validate_bool_kwarg(inplace, "inplace")
+        if axis != 0:
+            raise NotImplementedError(
+                "fillna currently only works for axis=0 or axis='index'")
+        if (value is None) and (method is None):
+            raise ValueError(
+                "Must specify a fillna 'value' or 'method' parameter.")
+        if (method is not None) and (method not in ["ffill", "pad", "backfill", "bfill"]):
+            raise ValueError(
+                "Expecting 'pad', 'ffill', 'backfill' or 'bfill'.")
+
+        scol = self.spark.column
+        cond = scol.isNull()
+
+        if value is not None:
+            if not isinstance(value, (str, bytearray, bytes)):
+                raise TypeError("Unsupported type %s" % type(value))
+            if limit is not None:
+                raise ValueError(
+                    "limit parameter for value is not support now")
+            value = _validate_arg(value)
+            scol = F.when(cond, value).otherwise(scol)
+        else:
+            if method in ["ffill", "pad"]:
+                func = F.last
+                end = Window.currentRow - 1
+                if limit is not None:
+                    begin = Window.currentRow - limit
+                else:
+                    begin = Window.unboundedPreceding
+            elif method in ["bfill", "backfill"]:
+                func = F.first
+                begin = Window.currentRow + 1
+                if limit is not None:
+                    end = Window.currentRow + limit
+                else:
+                    end = Window.unboundedFollowing
+
+            window = (
+                Window.partitionBy(*part_cols)
+                .orderBy(NATURAL_ORDER_COLUMN_NAME)
+                .rowsBetween(begin, end)
+            )
+            scol = F.when(cond, func(scol, True).over(window)).otherwise(scol)
+
+        if inplace:
+            self._kdf._update_internal_frame(
+                self._kdf._internal.with_new_spark_column(
+                    self._column_label, scol)
+            )
+        else:
+            return self._with_new_scol(scol).rename(self.name)
+
     def __eq__(self, other):
         return ks.base.column_op(Column.__eq__)(self, _validate_arg(other))
 
@@ -390,8 +502,39 @@ class GeoSeries(Series):
             return self
         return _column_geo("st_transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
 
-    def scale(self, factor_x, factor_y):
-        return _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y))
+    def scale(self, factor_x, factor_y, origin="center"):
+        """
+        Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Parameters
+        ----------
+        factor_x : float
+            Scaling factor for x dimension.
+        factor_y : float
+            Scaling factor for y dimension.
+
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.scale(2,2)
+        0    LINESTRING (-2.5 0.0,7.5 0.0)
+        1             MULTIPOINT (3 0,7 0)
+        dtype: GeoDtype
+        """
+        if isinstance(origin, str):
+            result = _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y), F.lit(origin))
+        elif isinstance(origin, tuple) and len(origin) == 2:
+            result = _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y), F.lit(origin[0]), F.lit(origin[1]))
+        return result
 
     def affine(self, a, b, d, e, offset_x, offset_y):
         return _column_geo("st_affine", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))
@@ -445,7 +588,7 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
 
     def intersection(self, other):
-        return _column_geo("st_intersection", self, _validate_arg(other, bytearray), crs=self.crs)
+        return _column_geo("st_intersection", self, _validate_arg(other), crs=self.crs)
 
     def difference(self, other):
         return _column_geo("st_difference", self, _validate_arg(other))
@@ -463,7 +606,8 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
-        min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+        min_x, min_y, max_x, max_y = _validate_args(
+            min_x, min_y, max_x, max_y, dtype=dtype)
         _kdf = ks.DataFrame(min_x)
         kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
         kdf["min_y"] = min_y
@@ -487,7 +631,7 @@ class GeoSeries(Series):
         return _column_op("st_astext", self)
 
     def to_wkb(self):
-        return self.astype(bytearray)
+        return _column_op("st_aswkb", self)
 
     def head(self, n: int = 5):
         r = super().head(n)
@@ -504,16 +648,13 @@ def first_series(df):
     """
     Takes a DataFrame and returns the first column of the DataFrame as a Series
     """
-    from .scala_wrapper import GeometryUDT
     assert isinstance(df, (DataFrame, pd.DataFrame)), type(df)
     if isinstance(df, DataFrame):
         kss = df._kser_for(df._internal.column_labels[0])
-        if isinstance(kss.spark.data_type, GeometryUDT):
+        if isinstance(kss.spark.data_type, scala_wrapper.GeometryUDT):
             return GeoSeries(kss)
-        else:
-            return kss
-    else:
-        return df[df.columns[0]]
+        return kss
+    return df[df.columns[0]]
 
 
 ks.series.first_series = first_series

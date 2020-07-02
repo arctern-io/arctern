@@ -58,3 +58,4 @@ assemblyMergeStrategy in assembly := {
     }
   case _ => MergeStrategy.first
 }
+
