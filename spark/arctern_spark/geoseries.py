@@ -551,25 +551,25 @@ class GeoSeries(Series):
     # -------------------------------------------------------------------------
 
     def intersects(self, other):
-        return _column_op("st_intersects", self, _validate_arg(other))
+        return _column_op("st_intersects", self, _validate_arg(other)).astype(bool)
 
     def within(self, other):
-        return _column_op("st_within", self, _validate_arg(other))
+        return _column_op("st_within", self, _validate_arg(other)).astype(bool)
 
     def contains(self, other):
-        return _column_op("st_contains", self, _validate_arg(other))
+        return _column_op("st_contains", self, _validate_arg(other)).astype(bool)
 
     def geom_equals(self, other):
-        return _column_op("st_equals", self, _validate_arg(other))
+        return _column_op("st_equals", self, _validate_arg(other)).astype(bool)
 
     def crosses(self, other):
-        return _column_op("st_crosses", self, _validate_arg(other))
+        return _column_op("st_crosses", self, _validate_arg(other)).astype(bool)
 
     def touches(self, other):
-        return _column_op("st_touches", self, _validate_arg(other))
+        return _column_op("st_touches", self, _validate_arg(other)).astype(bool)
 
     def overlaps(self, other):
-        return _column_op("st_overlaps", self, _validate_arg(other))
+        return _column_op("st_overlaps", self, _validate_arg(other)).astype(bool)
 
     def distance(self, other):
         return _column_op("st_distance", self, _validate_arg(other))
