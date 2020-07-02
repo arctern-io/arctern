@@ -20,7 +20,7 @@ from arctern import GeoDataFrame, GeoSeries
 
 def test_from_geopandas():
     import geopandas
-    from shapely.geometry import Point
+    from shapely.geometry import Point,LineString
     data = {
         "A": range(5),
         "B": np.arange(5.0),
