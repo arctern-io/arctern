@@ -11,26 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: disable=protected-access
 
 import sys
-
-if sys.version >= '3':
-    basestring = str
-
+from py4j.java_gateway import java_import
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column
-
-from py4j.java_gateway import java_import
-
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
 
+import databricks.koalas as ks
+ks.set_option('compute.ops_on_diff_frames', True)
+
+if sys.version >= '3':
+    basestring = str
 
 class GeometryUDT(UserDefinedType):
     jvm = None
 
     @classmethod
-    def sqlType(self):
+    def sqlType(cls):
         return StructField("wkb", BinaryType(), False)
 
     @classmethod
@@ -62,7 +62,8 @@ def _create_function(name):
     def _(*args):
         sc = SparkContext._active_spark_context
         args = [_to_java_column(arg) for arg in args]
-        jc = getattr(sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
+        jc = getattr(
+            sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
         return Column(jc)
 
     _.__name__ = name

@@ -12,34 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import databricks.koalas as ks
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck
+
+
 import pandas as pd
+from pandas.io.formats.printing import pprint_thing
+import databricks.koalas as ks
 from databricks.koalas import DataFrame, Series, get_option
-from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.exceptions import SparkPandasIndexingError
 from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
-from databricks.koalas.series import first_series, REPR_PATTERN
+from databricks.koalas.series import REPR_PATTERN
 from databricks.koalas.utils import (
     validate_axis,
     validate_bool_kwarg,
 )
-from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F, Column
 from pyspark.sql.window import Window
 from pyspark.sql.types import (
-    BooleanType,
-    DoubleType,
-    FloatType,
     IntegerType,
     LongType,
     StringType,
+    BinaryType,
 )
 
-# os.environ['PYSPARK_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
-# os.environ['PYSPARK_DRIVER_PYTHON'] = "/home/shengjh/miniconda3/envs/koalas/bin/python"
-
-
-ks.set_option('compute.ops_on_diff_frames', True)
+from . import scala_wrapper
 
 
 # for unary or binary operation, which return koalas Series.
@@ -56,7 +52,6 @@ def _column_geo(f, *args, **kwargs):
 
 
 def _agg(f, kss):
-    from . import scala_wrapper
     scol = getattr(scala_wrapper, f)(kss.spark.column)
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
@@ -71,7 +66,6 @@ def _validate_crs(crs):
 
 
 def _validate_arg(arg):
-    from . import scala_wrapper
     if isinstance(arg, str):
         arg = F.lit(arg)
         arg = getattr(scala_wrapper, "st_geomfromtext")(arg)
@@ -129,7 +123,8 @@ class GeoSeries(Series):
                 assert name is None
                 if hasattr(data, "crs") and crs:
                     if not data.crs == crs and data.crs is not None:
-                        raise ValueError("crs of the passed geometry data is different from crs.")
+                        raise ValueError(
+                            "crs of the passed geometry data is different from crs.")
 
                 s = data
             else:
@@ -149,17 +144,16 @@ class GeoSeries(Series):
             column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
-            from pyspark.sql.types import StringType, BinaryType
-            from .scala_wrapper import GeometryUDT
             spark_dtype = kss.spark.data_type
-            if isinstance(spark_dtype, GeometryUDT):
+            if isinstance(spark_dtype, scala_wrapper.GeometryUDT):
                 pass
             elif isinstance(spark_dtype, BinaryType):
                 kss = _column_op("st_geomfromwkb", kss)
             elif isinstance(spark_dtype, StringType):
                 kss = _column_op("st_geomfromtext", kss)
             else:
-                raise TypeError("Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
+                raise TypeError(
+                    "Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
             anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
@@ -185,7 +179,6 @@ class GeoSeries(Series):
                     len(key), len(self._internal.index_map)
                 )
             )
-
 
     def set_crs(self, crs):
         """
@@ -337,11 +330,14 @@ class GeoSeries(Series):
         axis = validate_axis(axis)
         inplace = validate_bool_kwarg(inplace, "inplace")
         if axis != 0:
-            raise NotImplementedError("fillna currently only works for axis=0 or axis='index'")
+            raise NotImplementedError(
+                "fillna currently only works for axis=0 or axis='index'")
         if (value is None) and (method is None):
-            raise ValueError("Must specify a fillna 'value' or 'method' parameter.")
+            raise ValueError(
+                "Must specify a fillna 'value' or 'method' parameter.")
         if (method is not None) and (method not in ["ffill", "pad", "backfill", "bfill"]):
-            raise ValueError("Expecting 'pad', 'ffill', 'backfill' or 'bfill'.")
+            raise ValueError(
+                "Expecting 'pad', 'ffill', 'backfill' or 'bfill'.")
 
         scol = self.spark.column
         cond = scol.isNull()
@@ -350,7 +346,8 @@ class GeoSeries(Series):
             if not isinstance(value, (str, bytearray, bytes)):
                 raise TypeError("Unsupported type %s" % type(value))
             if limit is not None:
-                raise ValueError("limit parameter for value is not support now")
+                raise ValueError(
+                    "limit parameter for value is not support now")
             value = _validate_arg(value)
             scol = F.when(cond, value).otherwise(scol)
         else:
@@ -378,7 +375,8 @@ class GeoSeries(Series):
 
         if inplace:
             self._kdf._update_internal_frame(
-                self._kdf._internal.with_new_spark_column(self._column_label, scol)
+                self._kdf._internal.with_new_spark_column(
+                    self._column_label, scol)
             )
         else:
             return self._with_new_scol(scol).rename(self.name)
@@ -577,7 +575,8 @@ class GeoSeries(Series):
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
         dtype = (float, int)
-        min_x, min_y, max_x, max_y = _validate_args(min_x, min_y, max_x, max_y, dtype=dtype)
+        min_x, min_y, max_x, max_y = _validate_args(
+            min_x, min_y, max_x, max_y, dtype=dtype)
         _kdf = ks.DataFrame(min_x)
         kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
         kdf["min_y"] = min_y
@@ -618,16 +617,13 @@ def first_series(df):
     """
     Takes a DataFrame and returns the first column of the DataFrame as a Series
     """
-    from .scala_wrapper import GeometryUDT
     assert isinstance(df, (DataFrame, pd.DataFrame)), type(df)
     if isinstance(df, DataFrame):
         kss = df._kser_for(df._internal.column_labels[0])
-        if isinstance(kss.spark.data_type, GeometryUDT):
+        if isinstance(kss.spark.data_type, scala_wrapper.GeometryUDT):
             return GeoSeries(kss)
-        else:
-            return kss
-    else:
-        return df[df.columns[0]]
+        return kss
+    return df[df.columns[0]]
 
 
 ks.series.first_series = first_series
