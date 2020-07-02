@@ -16,3 +16,4 @@ from ._wrapper_func import *
 from .geoseries import *
 from . import plot
 from .geodataframe import *
+from .tools import *

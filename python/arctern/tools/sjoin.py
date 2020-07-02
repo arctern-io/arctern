@@ -21,7 +21,8 @@ import numpy as np
 import pandas as pd
 
 from shapely import prepared
-from geodataframe import GeoDataframe
+from arctern import GeoDataFrame
+from arctern import GeoSeries
 
 def sjoin(
         left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"

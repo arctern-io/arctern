@@ -24,46 +24,43 @@ import numpy as np
 class GeoDataFrame(DataFrame):
     _metadata = ["_crs", "_geometry_column_name"]
     _geometry_column_name = []
-    _sindex = {}
-    _sindex_generated = {}
+    _crs = []
 
     def __init__(self, *args, **kwargs):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
 
-        if geometries is None and "geometry" in self.columns.values:
-            index = self.index
-            try:
-                self["geometry"] = GeoSeries(self["geometry"])
-                self._geometry_column_name = ["geometry"]
-            except TypeError:
-                pass
-            else:
-                if self.index is not index:
-                    self.index = index
+        if geometries is None and crs is not None:
+            raise ValueError("No geometry column specified!")
+        elif geometries is None:
+            self._geometry_column_name = []
         else:
-            if geometries is not None:
-                self._geometry_column_name = geometries
-                for geometry in geometries:
-                    try:
-                        self[geometry] = GeoSeries(self[geometry])
-                    except TypeError:
-                        pass
+            geo_length = len(geometries)
+            if crs is None:
+                crs = []
+                crs_length = 0
+            elif isinstance(crs, str):
+                crs = [crs]
+                crs_length = 1
+            elif isinstance(crs, list):
                 crs_length = len(crs)
-                geo_length = len(geometries)
-                if crs_length < geo_length:
-                    for i in range(0, geo_length - crs_length):
-                        crs.append("None")
-
-                for (crs_element, geo_element) in zip(crs, geometries):
-                    self[geo_element].set_crs(crs_element)
+                if geo_length < crs_length:
+                    raise ValueError("The length of crs should less than geometries!")
             else:
-                self._geometry_column_name = None
+                raise TypeError("The type of crs should be str or list!")
+            for i in range(0, geo_length - crs_length):
+                crs.append("None")
+            for (crs_element, geometry) in zip(crs, geometries):
+                self[geometry] = GeoSeries(self[geometry])
+                self[geometry].invalidate_sindex()
+                if crs_element is not None:
+                    self[geometry].set_crs(crs_element)
+                self[geometry].set_crs(crs_element)
 
-        self._invalidate_sindex()
+            self._geometry_column_name = geometries
 
-    def set_geometries(self, cols, inplace=False, crs=None):
+    def set_geometry(self, col, inplace=False, crs=None):
         if inplace:
             frame = self
         else:
@@ -181,10 +178,6 @@ class GeoDataFrame(DataFrame):
                 result[col] = geo_col
                 result._geometry_column_name.append(col)
         return result
-
-    def _invalidate_sindex(self):
-        self._sindex = None
-        self._sindex_generated = False
 
     def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         data = self.drop(labels=col, axis=1)

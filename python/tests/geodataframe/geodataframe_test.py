@@ -17,6 +17,7 @@ import numpy as np
 import arctern
 import pandas
 
+
 def test_from_geopandas():
     import geopandas
     from shapely.geometry import Point
@@ -34,11 +35,14 @@ def test_from_geopandas():
     assert isinstance(gdf['geometry'], arctern.geoseries.GeoSeries) == True
     assert isinstance(gdf['copy_geo'], arctern.geoseries.GeoSeries) == True
 
+
 def test_from_geoseries():
     data = GeoSeries(["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"], crs="epsg:4326")
     gdf = GeoDataFrame(data)
+    print(gdf[0].crs)
     assert isinstance(gdf[0], GeoSeries) == True
     assert gdf[0].crs == "EPSG:4326"
+
 
 def test_to_geopandas():
     import geopandas
@@ -54,6 +58,7 @@ def test_to_geopandas():
     pdf.set_geometry("geo1", inplace=True)
     assert pdf.geometry.name == "geo1"
     assert isinstance(pdf["geo1"], geopandas.GeoSeries)
+
 
 def test_dissolve():
     data = {
@@ -87,6 +92,7 @@ def test_set_geometries():
     assert gdf["geo3"].crs == "EPSG:3857"
     assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
 
+
 def test_merge():
     data1 = {
         "A": range(5),
@@ -104,6 +110,7 @@ def test_merge():
     assert isinstance(result, arctern.GeoDataFrame) == True
     assert isinstance(result["geometry"], arctern.GeoSeries) == True
 
+
 def test_to_json():
     data = {
         "A": range(1),
@@ -113,4 +120,6 @@ def test_to_json():
     }
     gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
     json = gdf.to_json()
-    assert json == '{"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": "{ \\"type\\": \\"Point\\", \\"coordinates\\": [ 0.0, 0.0 ] }"}]}'
+    assert json == '{"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", ' \
+                   '"properties": {"A": 0, "B": 0.0, "other_geom": 0},' \
+                   '"geometry": "{ \\"type\\": \\"Point\\", \\"coordinates\\": [ 0.0, 0.0 ] }"}]}'

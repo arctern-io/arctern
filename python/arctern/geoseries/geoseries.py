@@ -181,6 +181,10 @@ class GeoSeries(Series):
             self._sindex_generated = True
         return self._sindex
 
+    def invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
     def set_crs(self, crs):
         """
         Sets the Coordinate Reference System (CRS) for all geometries in GeoSeries.
