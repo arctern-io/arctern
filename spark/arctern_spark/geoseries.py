@@ -502,8 +502,39 @@ class GeoSeries(Series):
             return self
         return _column_geo("st_transform", self, F.lit(self.crs), F.lit(crs), crs=crs)
 
-    def scale(self, factor_x, factor_y):
-        return _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y))
+    def scale(self, factor_x, factor_y, origin="center"):
+        """
+        Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Parameters
+        ----------
+        factor_x : float
+            Scaling factor for x dimension.
+        factor_y : float
+            Scaling factor for y dimension.
+
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries that contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+        >>> s1.scale(2,2)
+        0    LINESTRING (-2.5 0.0,7.5 0.0)
+        1             MULTIPOINT (3 0,7 0)
+        dtype: GeoDtype
+        """
+        if isinstance(origin, str):
+            result = _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y), F.lit(origin))
+        elif isinstance(origin, tuple) and len(origin) == 2:
+            result = _column_geo("st_scale", self, F.lit(factor_x), F.lit(factor_y), F.lit(origin[0]), F.lit(origin[1]))
+        return result
 
     def affine(self, a, b, d, e, offset_x, offset_y):
         return _column_geo("st_affine", self, F.lit(a), F.lit(b), F.lit(d), F.lit(e), F.lit(offset_x), F.lit(offset_y))

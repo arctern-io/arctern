@@ -117,6 +117,7 @@ _functions = [
     "st_symdifference",
     "st_union",
     "st_polygonfromenvelope",
+    "st_disjoint",
 ]
 
 import_arctern_functions()

@@ -77,12 +77,18 @@ def test_ST_Translate():
     assert rst[2] == "POLYGON ((1.2 0.3, 1.2 1.3, 2.2 1.3, 1.2 0.3))"
 
 
+def test_ST_Scale2():
+    data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
+    rst = data.scale(2, 2, origin=(0, 0)).to_wkt()
+    assert rst[0] == "LINESTRING (0 0, 10 0)"
+    assert rst[1] == "MULTIPOINT ((8 0), (12 0))"
+
+
 def test_ST_Scale():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
-    rst = data.scale(2, 2).to_wkt()
+    rst = data.scale(2, 2, origin="center").to_wkt()
     assert rst[0] == "LINESTRING (-2.5 0, 7.5 0)"
     assert rst[1] == "MULTIPOINT ((3 0), (7 0))"
-
 
 def test_ST_Affine():
     data = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
@@ -98,17 +104,17 @@ def test_ST_Rotate():
     p3 = "Polygon ((3 3, 3 5, 5 5, 5 3, 3 3))"
 
     data = GeoSeries([p1, p2, p3])
-    rst1 = data.rotate(90, (0, 0)).precision_reduce(3)
+    rst1 = data.rotate(90, (0, 0)).precision_reduce(3).to_wkt()
     assert rst1[0] == "POINT (-2 1)"
     assert rst1[1] == "LINESTRING (-1 1, -2 2, -2 1)"
     assert rst1[2] == "POLYGON ((-3 3, -5 3, -5 5, -3 5, -3 3))"
 
-    rst2 = data.rotate(90, "centroid").precision_reduce(3)
+    rst2 = data.rotate(90, "centroid").precision_reduce(3).to_wkt()
     assert rst2[0] == "POINT (1 2)"
     assert rst2[1] == "LINESTRING (2.207 1.207, 1.207 2.207, 1.207 1.207)"
     assert rst2[2] == "POLYGON ((5 3, 3 3, 3 5, 5 5, 5 3))"
 
-    rst3 = data.rotate(90).precision_reduce(3)
+    rst3 = data.rotate(90).precision_reduce(3).to_wkt()
     assert rst3[0] == "POINT (1 2)"
     assert rst3[1] == "LINESTRING (2 1, 1 2, 1 1)"
     assert rst3[2] == "POLYGON ((5 3, 3 3, 3 5, 5 5, 5 3))"
