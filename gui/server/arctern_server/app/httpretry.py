@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from retrying import retry
 import requests
+from retrying import retry
 
 @retry(stop_max_attempt_number=3, wait_fixed=3000)
 def safe_requests(*args, **kwargs):
