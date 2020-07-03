@@ -55,6 +55,7 @@ class GeoDataFrame(DataFrame):
         result = super().__getitem__(item)
         if isinstance(result, Series) and isinstance(result.spark.data_type, GeometryUDT):
             result.__class__ = GeoSeries
+            result._gdf = self
             result.set_crs(self._crs_for_cols[result.name])
         if isinstance(result, DataFrame):
             crs = {}
@@ -83,5 +84,13 @@ class GeoDataFrame(DataFrame):
             self._crs_for_cols[key] = value.crs
         elif isinstance(value, GeoDataFrame):
             for col in value._crs_for_cols.keys():
-                self._crs_for_cols[col] = value[col].crs
-
+                v = value[col]
+                if hasattr(v, "crs"):
+                    self._crs_for_cols[col] = v.crs
+        else:
+            if isinstance(key, list):
+                pass
+            else:
+                key = [key]
+            for col in key:
+                self._crs_for_cols.pop(col)

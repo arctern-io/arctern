@@ -39,9 +39,16 @@ class TestCRS:
         assert gdf['b'].crs is None
 
         # set or get item with slice key
-
         gdf1 = GeoDataFrame([1], columns=['seq'])
         gdf1[['a', 'b']] = gdf[['a', 'b']]
         r = gdf1[:]
         assert r['a'].crs == "EPSG:4326"
         assert r['b'].crs is None
+
+    def test_geoseries_modify_crs(self):
+        gdf = GeoDataFrame(GeoSeries("point (1 2)", name='a', crs=None))
+        assert gdf['a'].crs is None
+
+        # modify geoseries crs
+        gdf['a'].crs = "EPSG:4326"
+        assert gdf['a'].crs == "EPSG:4326"
