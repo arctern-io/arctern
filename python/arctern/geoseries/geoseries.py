@@ -780,7 +780,7 @@ class GeoSeries(Series):
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains geometries representing the difference between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
+            Sequence of geometries representing the difference between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         --------
@@ -796,19 +796,19 @@ class GeoSeries(Series):
 
     def symmetric_difference(self, other):
         """
-        Returns a geometry that represents the portions of self and other that do not intersect.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, returns a geometry representing the portions of the two geometries that do not interset.
 
         Parameters
         ----------
         other : geometry or GeoSeries
-            The geometry or GeoSeries to calculate the the portions of self and other that do not intersect.
-            * If ``other`` is a geometry, this function calculates the sym difference of each geometry in the GeoSeries and ``other``.
-            * If ``other`` is a GeoSeries, this function calculates the sym difference of each geometry in the GeoSeries and the geometry with the same index in ``other``.
+            The geometry or GeoSeries to calculate the symmetric difference from the first GeoSeries.
+            * If ``other`` is a geometry, this function calculates the symmetric difference between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function calculates the symmetric difference between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains geometries that represents the portions of self and other that do not intersect.
+            Sequence of geometries representing the symmetric difference between each geometry in the GeoSeries and the corresponding geometry given in ``other``.
 
         Examples
         --------
@@ -824,7 +824,7 @@ class GeoSeries(Series):
 
     def scale(self, factor_x, factor_y, origin="center"):
         """
-        Scales the geometry to a new size by multiplying the ordinates with the corresponding factor parameters.
+        Scales all geometries in the GeoSeries to a new size.
 
         Parameters
         ----------
@@ -832,14 +832,16 @@ class GeoSeries(Series):
             Scaling factor for x dimension.
         factor_y : float
             Scaling factor for y dimension.
-
         origin : string or tuple
-            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+            The scale origin.
+            * 'center': The center of 2D bounding box (default).
+            * 'centroid': The geometry's 2D centroid
+            * tuple: a coordinate tuple (x, y).
 
         Returns
         -------
         GeoSeries
-            A GeoSeries that contains geometries with a new size by multiplying the ordinates with the corresponding factor parameters.
+            Sequence of scaled geometries.
 
         Examples
         --------
@@ -853,18 +855,48 @@ class GeoSeries(Series):
         return _unary_geo(arctern.ST_Scale, self, factor_x, factor_y, origin=origin)
 
     def affine_transform(self, matrix):
-        """
-        Return a GeoSeries with transformed geometries.
+        r"""
+        Returns a GeoSeries with transformed geometries.
+
+        If ``matrix`` is [a, b, d, e, offset_x, offset_y], the transform equation of a point [x, y] is as follows:
+
+        .. math::
+
+            \begin{equation}
+                \begin{bmatrix}
+                    x'\\
+                    y'
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                    a & b\\
+                    d & e
+                \end{bmatrix}
+                \begin{bmatrix}
+                    x\\
+                    y
+                \end{bmatrix}
+                +
+                \begin{bmatrix}
+                    offset\_x\\
+                    offset\_y
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                    ax + by + offset\_x\\
+                    dx + ey + offset\_y
+                \end{bmatrix}
+            \end{equation}
 
         Parameters
         -----------
         matrix: List or tuple
-            6 items for 2D transformations. The 6 parameter matrix is [a, b, d, e, offset_x, offset_y].
+            A matrix [a, b, d, e, offset_x, offset_y] for 2D transformation.
 
         Returns
         --------
         GeoSeries
-            A GeoSeries that contains geometries which are tranformed by parameters in matrix.
+            Sequence of geometries tranformed by ``matrix``.
 
         Examples
         ---------
@@ -878,21 +910,21 @@ class GeoSeries(Series):
         """
         return _unary_geo(arctern.ST_Affine, self, *matrix)
 
-    def translate(self, shifter_x, shifter_y):
+    def translate(self, offset_x, offset_y):
         """
-        Return a GeoSeries with translated geometries.
+        Returns a GeoSeries with translated geometries shifted by offsets along each dimension.
 
         Parameters
         ----------
-        shifter_x : float
-            Amount of offset along x dimension.
-        shifter_y : float
-            Amount of offset along y dimension.
+        offset_x: float
+            The offset along the X dimension.
+        offset_y: float
+            The offset along the Y dimension.
 
         Returns
         -------
         GeoSeries
-            A GeoSeries with translated geometries which shifted by offsets along each dimension.
+            Sequence of translated geometries.
 
         Examples
         --------
@@ -903,7 +935,7 @@ class GeoSeries(Series):
         1    MULTIPOINT (6 1,8 1)
         dtype: GeoDtype
         """
-        return _unary_geo(arctern.ST_Translate, self, shifter_x, shifter_y)
+        return _unary_geo(arctern.ST_Translate, self, offset_x, offset_y)
 
     def rotate(self, angle, origin="center", use_radians=False):
         """
