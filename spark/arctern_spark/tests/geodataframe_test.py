@@ -1,10 +1,35 @@
 import pandas as pd
+import pytest
 from arctern_spark.geodataframe import GeoDataFrame
 from arctern_spark.geoseries import GeoSeries
+from databricks.koalas import Series
+
+wkt = "point (1 1)"
+wkb = b'\x00\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00?\xf0\x00\x00\x00\x00\x00\x00'
 
 
 class TestConstructor:
-    pass
+    @pytest.mark.parametrize("data", [
+        wkt,
+        wkb,
+        [wkt],
+        [wkb],
+        {0: wkt},
+        {0: wkb},
+        pd.Series(wkt),
+        pd.Series(wkb),
+    ])
+    def test_from_pandas_data(self, data):
+        s = GeoSeries(data)
+        assert s.to_wkt().to_list() == ["POINT (1 1)"]
+
+    @pytest.mark.parametrize("data", [
+        Series(wkt),
+        Series(wkb),
+    ])
+    def test_from_koalas(self, data):
+        s = GeoSeries(data)
+        assert s.to_wkt().to_list() == ["POINT (1 1)"]
 
 
 # test operation will not lose crs info
