@@ -835,8 +835,8 @@ class GeoSeries(Series):
         origin : string or tuple
             The scale origin.
             * 'center': The center of 2D bounding box (default).
-            * 'centroid': The geometry's 2D centroid
-            * tuple: a coordinate tuple (x, y).
+            * 'centroid': The geometry's 2D centroid.
+            * tuple: A coordinate tuple (x, y).
 
         Returns
         -------
@@ -939,20 +939,28 @@ class GeoSeries(Series):
 
     def rotate(self, angle, origin="center", use_radians=False):
         """
-        Returns a rotated geometry on a 2D plane.
+        Returns a GeoSeries with rotated geometries on a 2D plane.
+
         Parameters
         ----------
-        angle : float
-            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
-        origin : string or tuple
-            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
-        use_radians : boolean
+        angle: float
+            The angle of rotation. It can be specified in either degrees (default) or radians by setting ``use_radians=True``.
+            * Positive angle: Counter-clockwise rotation.
+            * Negative angle: Clockwise rotation.
+        origin: string or tuple
+            The rotatation origin.
+            * 'center': The center of 2D bounding box (default).
+            * 'centroid': The geometry's 2D centroid.
+            * tuple: A coordinate tuple (x, y).
+        use_radians: boolean
             Whether to interpret the angle of rotation as degrees or radians.
+            * *True:* Use angle in radians.
+            * *False:* Use angle in degrees.
 
         Returns
         -------
         GeoSeries
-            a GeoSeries with rotated geometries.
+            Sequence of rotated geometries.
 
         Examples
         --------
