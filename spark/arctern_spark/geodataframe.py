@@ -81,7 +81,7 @@ class GeoDataFrame(DataFrame):
         super(GeoDataFrame, self).__setitem__(key, value)
         if isinstance(value, GeoSeries):
             self._crs_for_cols[key] = value.crs
-        if isinstance(value, GeoDataFrame):
+        elif isinstance(value, GeoDataFrame):
             for col in value._crs_for_cols.keys():
                 self._crs_for_cols[col] = value[col].crs
 
