@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck,unbalanced-tuple-unpacking
 
 
 import pandas as pd
 from pandas.io.formats.printing import pprint_thing
+from pandas.api.types import is_list_like
 import databricks.koalas as ks
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.exceptions import SparkPandasIndexingError
@@ -40,13 +41,11 @@ from . import scala_wrapper
 
 # for unary or binary operation, which return koalas Series.
 def _column_op(f, *args):
-    from . import scala_wrapper
     return ks.base.column_op(getattr(scala_wrapper, f))(*args)
 
 
 # for unary or binary operation, which return GeoSeries.
 def _column_geo(f, *args, **kwargs):
-    from . import scala_wrapper
     kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss, **kwargs)
 
@@ -67,13 +66,15 @@ def _validate_crs(crs):
 
 def _validate_arg(arg):
     if isinstance(arg, str):
-        arg = F.lit(arg)
-        arg = getattr(scala_wrapper, "st_geomfromtext")(arg)
+        arg = scala_wrapper.st_geomfromtext(F.lit(arg))
     elif isinstance(arg, (bytearray, bytes)):
-        arg = F.lit(arg)
-        arg = getattr(scala_wrapper, "st_geomfromwkb")(arg)
-    elif not isinstance(arg, Series):
+        arg = scala_wrapper.st_geomfromwkb(F.lit(arg))
+    elif isinstance(arg, (Series, pd.Series)):
+        pass
+    elif is_list_like(arg):
         arg = Series(arg)
+    else:
+        raise TypeError("Unsupported type %s" % type(arg))
     return arg
 
 
@@ -90,10 +91,12 @@ def _validate_args(*args, dtype=None):
                 args_list.append(Series([arg] * series_length))
             else:
                 args_list.append(F.lit(arg))
-        elif not isinstance(arg, Series):
+        elif isinstance(arg, (Series, pd.Series)):
+            pass
+        elif is_list_like(arg):
             args_list.append(Series(arg))
         else:
-            args_list.append(arg)
+            raise TypeError("Unsupported type %s" % type(arg))
     return args_list
 
 
@@ -157,7 +160,7 @@ class GeoSeries(Series):
             anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
-        super(Series, self).__init__(anchor)
+        Series.__init__(self, anchor)
         self._column_label = column_label
         self.set_crs(crs)
 
@@ -378,8 +381,8 @@ class GeoSeries(Series):
                 self._kdf._internal.with_new_spark_column(
                     self._column_label, scol)
             )
-        else:
-            return self._with_new_scol(scol).rename(self.name)
+            return self
+        return self._with_new_scol(scol).rename(self.name)
 
     def __eq__(self, other):
         return ks.base.column_op(Column.__eq__)(self, _validate_arg(other))

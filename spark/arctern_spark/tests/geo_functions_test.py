@@ -14,8 +14,8 @@
 
 import pandas as pd
 from osgeo import ogr
-from arctern_spark.geoseries import GeoSeries
 from databricks.koalas import Series
+from arctern_spark.geoseries import GeoSeries
 
 
 def test_ST_IsValid():
