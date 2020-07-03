@@ -128,8 +128,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).getAs[GeometryUDT](1).toString == "POINT (0.5 0.5)")
     assert(collect(1).getAs[GeometryUDT](1).toString == "POINT (10 10)")
 
-    val rst2 = df.select(st_centroid(col("geo")))
-    rst2.show(false)
+    val rst2 = df.select(st_centroid(col("geo")).alias("test"))
+    val r = rst2.select(rst2("test").cast(BinaryType))
+    r.show()
+//    rst2.show(false)
 
     val collect2 = rst2.collect()
 
@@ -1298,8 +1300,10 @@ class FunctionsTest extends AdapterTest {
     assert(collect(2).isNullAt(0))
     assert(collect(3).getBoolean(0) == true)
 
-    val rst2 = df.select(st_equals(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))))
-    rst2.show(false)
+    val rst2 = df.select(st_equals(st_geomfromtext(col("left_geo")), st_geomfromtext(col("right_geo"))).alias("test"))
+    val r= rst2.select(rst2("test").cast(ByteType))
+    r.show()
+    //    rst2.show(false)
 
     val collect2 = rst2.collect()
 
