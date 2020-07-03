@@ -22,3 +22,7 @@ class MyConf(configparser.ConfigParser):# pylint: disable=too-many-ancestors
 INSTANCE = MyConf()
 INSTANCE.read(os.path.split(os.path.realpath(__file__))[0]
               + '/../../config.ini')
+
+ZEPPELEN_HOST = INSTANCE.get("zeppelin", "zeppelin-host", fallback="127.0.0.1")
+ZEPPELEN_PORT = INSTANCE.get("zeppelin", "zeppelin-port", fallback=8888)
+ZEPPELEN_PREFIX = "http://" + ZEPPELEN_HOST + ":" + ZEPPELEN_PORT
