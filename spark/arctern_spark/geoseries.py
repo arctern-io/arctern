@@ -125,7 +125,7 @@ class GeoSeries(Series):
                     if crs and data.crs and not data.crs == crs:
                         raise ValueError("crs of the passed geometry data is different from crs.")
                     else:
-                        crs = data.crs
+                        crs = data.crs or crs
                 s = data
             else:
                 s = pd.Series(

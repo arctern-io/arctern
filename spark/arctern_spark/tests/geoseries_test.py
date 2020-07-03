@@ -220,7 +220,11 @@ class TestGeoMethods:
         s1 = GeoSeries([make_point(1, 1), None])
         s2 = GeoSeries([None, make_point(1, 1)])
         s3 = GeoSeries([make_point(1, 1), None])
-        assert s1.geom_equals(s3).all()
+
+        rst1 = s1.geom_equals(s3)
+        assert rst1[0]
+        assert not rst1[1]
+
         assert not s1.geom_equals(s2).any()
 
     def test_geom_with_index(self):
@@ -248,10 +252,7 @@ class TestGeoMethods:
         left = GeoSeries([make_point(1, 1), None], index=[1, 2])
         right = GeoSeries([make_point(1, 1), None], index=[3, 4])
         s1 = left.geom_equals(right)
-        assert s1[1] is False
-        assert s1[2] is True
-        assert s1[3] is False
-        assert s1[4] is True
+        assert s1.to_list() == [False, False, False, False]
 
     def test_to_wkb(self):
         s = GeoSeries(make_point(1, 1))
