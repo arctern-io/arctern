@@ -617,7 +617,7 @@ def test_ST_Union_Aggr():
 
     data = GeoSeries([p1, p2])
     rst = data.unary_union().to_wkt()
-    assert rst[0] == p1
+    assert rst[0] == "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 4, 4 4, 4 0, 0 0)))"
 
 
 def test_ST_Envelope_Aggr():
