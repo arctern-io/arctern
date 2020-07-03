@@ -129,7 +129,7 @@ class GeoSeries(Series):
                     if crs and data.crs and not data.crs == crs:
                         raise ValueError("crs of the passed geometry data is different from crs.")
                     else:
-                        crs = data.crs
+                        crs = data.crs or crs
                 s = data
             else:
                 s = pd.Series(
@@ -549,10 +549,6 @@ class GeoSeries(Series):
     def translate(self, shifter_x, shifter_y):
         return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))
 
-    # TODO: add origin
-    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
-        return _column_geo("st_rotate", F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
-
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
@@ -605,6 +601,40 @@ class GeoSeries(Series):
 
     def union(self, other):
         return _column_geo("st_union", self, _validate_arg(other))
+
+    # -------------------------------------------------------------------------
+    # Geometry related quaternary methods, which return GeoSeries
+    # -------------------------------------------------------------------------
+
+    def rotate(self, rotation_angle, origin=None, use_radians=False):
+        """
+        Returns a rotated geometry on a 2D plane.
+        Parameters
+        ----------
+        rotation_angle : float
+            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+        use_radians : boolean
+            Whether to interpret the angle of rotation as degrees or radians.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with rotated geometries.
+        """
+        import math
+        if not use_radians:
+            rotation_angle = rotation_angle * math.pi / 180.0
+
+        if origin is None:
+            return _column_geo("st_rotate", self, F.lit(rotation_angle))
+        elif isinstance(origin, str):
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
+        elif isinstance(origin, tuple):
+            origin_x = origin[0]
+            origin_y = origin[1]
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
 
     # -------------------------------------------------------------------------
     # utils
