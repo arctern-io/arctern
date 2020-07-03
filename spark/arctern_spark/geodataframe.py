@@ -81,33 +81,7 @@ class GeoDataFrame(DataFrame):
         super(GeoDataFrame, self).__setitem__(key, value)
         if isinstance(value, GeoSeries):
             self._crs_for_cols[key] = value.crs
-        if isinstance(value, GeoDataFrame):
+        elif isinstance(value, GeoDataFrame):
             for col in value._crs_for_cols.keys():
                 self._crs_for_cols[col] = value[col].crs
 
-
-sa = GeoSeries("point (1 1)", name='a', crs="EPSG:432688")
-df = GeoDataFrame(sa)
-print(df['a'].crs)
-sb = GeoSeries("point (2 2)", name='b', crs="EPSG:432699")
-
-import pandas as pd
-
-psb = pd.Series("point (99 99)", name='b')
-psa = pd.Series("point (1 2)", name='a')
-gdf = GeoDataFrame({"a": psa, "b": psb}, geometries=['a'], crs="EPSG:4326")
-print(gdf['a'].crs)
-gdf.set_geometry('b', "EPSG:000")
-print(gdf['b'].crs)
-
-gdf['a'] = sa
-gdf['b'] = sb
-r = gdf[:]
-# print(r['a'].crs)
-print(r['a'].crs)
-print(r['b'].crs)
-
-gdf1 = GeoDataFrame({"a": psa, "b": psb}, geometries=['a', 'b'], crs="EPSG:0001")
-gdf[['a', 'b']] = gdf1
-print(gdf['a'].crs)
-print(gdf['b'].crs)
