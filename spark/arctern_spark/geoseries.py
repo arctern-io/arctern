@@ -19,6 +19,7 @@ import pandas as pd
 from pandas.io.formats.printing import pprint_thing
 from pandas.api.types import is_list_like
 import databricks.koalas as ks
+from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.exceptions import SparkPandasIndexingError
 from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
@@ -160,7 +161,7 @@ class GeoSeries(Series):
             anchor = kss._kdf
             anchor._kseries = {column_label: kss}
 
-        Series.__init__(self, anchor)
+        IndexOpsMixin.__init__(self, anchor)
         self._column_label = column_label
         self.set_crs(crs)
 
