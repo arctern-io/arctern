@@ -18,24 +18,64 @@ from databricks.koalas import Series
 from arctern_spark.geoseries import GeoSeries
 
 
-s1 = ["POINT (1 1)", "POINT (0 0)"]
-s2 = ["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", "POINT (2 3)"]
-s3 = ["POINT (1 1)", "LINESTRING(0 2, 3 3, 3 8)", "POLYGON((8 0,9 0,9 1,8 1,8 0))"]
-s4 = ["POINT EMPTY", "LINESTRING EMPTY", "POLYGON EMPTY", "MULTIPOLYGON EMPTY", "MULTILINESTRING EMPTY", "MULTIPOINT EMPTY"]
+p1 = ["POINT (1 1)", "POINT (0 0)"]
+p2 = ["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", "POINT (2 3)", None]
+p3 = ["POINT (1 1)", "LINESTRING(0 2, 3 3, 3 8)", "POLYGON((8 0,9 0,9 1,8 1,8 0))", None]
+p4 = ["LINESTRING EMPTY", "POLYGON EMPTY", "MULTIPOLYGON EMPTY", "MULTILINESTRING EMPTY", "MULTIPOINT EMPTY"]
+p5 = ["POINT (1 1)", "LINESTRING (2 2)"]
+p6 = ["LINESTRING (2 2)", "POLYGON (0 0, 1 0, 1 1, 0 1)"]
 
 
 def test_ST_IsValid():
-    data = GeoSeries(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
-    rst = data.is_valid
-    assert rst[0]
-    assert rst[1]
+    s1 = GeoSeries(p1)
+    r1 = s1.is_valid
+    assert r1.all()
+
+    s2 = GeoSeries(p2)
+    r2 = s2.is_valid
+    assert not r2.any()
+
+    s3 = GeoSeries(p3)
+    r3 = s3.is_valid
+    assert not r3.any()
+
+    s4 = GeoSeries(p4)
+    r4 = s4.is_valid
+    assert r4.all()
+
+    s5 = GeoSeries(p5)
+    r5 = s5.is_valid
+    assert not r5.any()
+
+    s6 = GeoSeries(p6)
+    r6 = s6.is_valid
+    assert not r6.any()
 
 
 def test_ST_IsEmpty():
-    data = GeoSeries(["LINESTRING EMPTY", "POINT (100 200)"])
-    rst = data.is_empty
-    assert rst[0] == 1
-    assert rst[1] == 0
+    s1 = GeoSeries(p1)
+    r1 = s1.is_empty
+    assert not r1.all()
+
+    s2 = GeoSeries(p2)
+    r2 = s2.is_empty
+    assert r2.any()
+
+    s3 = GeoSeries(p3)
+    r3 = s3.is_empty
+    assert r3.any()
+
+    s4 = GeoSeries(p4)
+    r4 = s4.is_empty
+    assert r4.all()
+
+    s5 = GeoSeries(p5)
+    r5 = s5.is_empty
+    assert not r5.any()
+
+    s6 = GeoSeries(p6)
+    r6 = s6.is_empty
+    assert not r6.any()
 
 
 def test_ST_Boundary():

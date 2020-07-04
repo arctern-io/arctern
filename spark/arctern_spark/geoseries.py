@@ -695,7 +695,7 @@ class GeoSeries(Series):
         1    False
         Name: 0, dtype: bool
         """
-        return _column_op("st_isempty", self)
+        return _column_op("st_isempty", self).astype(bool)
 
     @property
     def boundary(self):
