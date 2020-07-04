@@ -126,11 +126,11 @@ class GeoSeries(Series):
                 assert index is None
                 assert dtype is None
                 assert name is None
-                if hasattr(data, "crs") and crs:
-                    if not data.crs == crs and data.crs is not None:
-                        raise ValueError(
-                            "crs of the passed geometry data is different from crs.")
-
+                if hasattr(data, "crs"):
+                    if crs and data.crs and not data.crs == crs:
+                        raise ValueError("crs of the passed geometry data is different from crs.")
+                    else:
+                        crs = data.crs or crs
                 s = data
             else:
                 s = pd.Series(
@@ -169,8 +169,8 @@ class GeoSeries(Series):
     def __getitem__(self, key):
         try:
             if (isinstance(key, slice) and any(type(n) == int for n in [key.start, key.stop])) or (
-                type(key) == int
-                and not isinstance(self.index.spark.data_type, (IntegerType, LongType))
+                    type(key) == int
+                    and not isinstance(self.index.spark.data_type, (IntegerType, LongType))
             ):
                 # Seems like pandas Series always uses int as positional search when slicing
                 # with ints, searches based on index values when the value is int.
@@ -547,34 +547,30 @@ class GeoSeries(Series):
     def translate(self, shifter_x, shifter_y):
         return _column_geo("st_translate", self, F.lit(shifter_x), F.lit(shifter_y))
 
-    # TODO: add origin
-    def rotate(self, rotation_angle, rotate_x=0.0, rotate_y=0.0):
-        return _column_geo("st_rotate", F.lit(rotation_angle), F.lit(rotate_x), F.lit(rotate_y))
-
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return Series[bool/float]
     # -------------------------------------------------------------------------
 
     def intersects(self, other):
-        return _column_op("st_intersects", self, _validate_arg(other))
+        return _column_op("st_intersects", self, _validate_arg(other)).astype(bool)
 
     def within(self, other):
-        return _column_op("st_within", self, _validate_arg(other))
+        return _column_op("st_within", self, _validate_arg(other)).astype(bool)
 
     def contains(self, other):
-        return _column_op("st_contains", self, _validate_arg(other))
+        return _column_op("st_contains", self, _validate_arg(other)).astype(bool)
 
     def geom_equals(self, other):
-        return _column_op("st_equals", self, _validate_arg(other))
+        return _column_op("st_equals", self, _validate_arg(other)).astype(bool)
 
     def crosses(self, other):
-        return _column_op("st_crosses", self, _validate_arg(other))
+        return _column_op("st_crosses", self, _validate_arg(other)).astype(bool)
 
     def touches(self, other):
-        return _column_op("st_touches", self, _validate_arg(other))
+        return _column_op("st_touches", self, _validate_arg(other)).astype(bool)
 
     def overlaps(self, other):
-        return _column_op("st_overlaps", self, _validate_arg(other))
+        return _column_op("st_overlaps", self, _validate_arg(other)).astype(bool)
 
     def distance(self, other):
         return _column_op("st_distance", self, _validate_arg(other))
@@ -603,6 +599,40 @@ class GeoSeries(Series):
 
     def union(self, other):
         return _column_geo("st_union", self, _validate_arg(other))
+
+    # -------------------------------------------------------------------------
+    # Geometry related quaternary methods, which return GeoSeries
+    # -------------------------------------------------------------------------
+
+    def rotate(self, rotation_angle, origin=None, use_radians=False):
+        """
+        Returns a rotated geometry on a 2D plane.
+        Parameters
+        ----------
+        rotation_angle : float
+            The angle of rotation which can be specified in either degrees (default) or radians by setting use_radians=True. Positive angles are counter-clockwise and negative are clockwise rotations.
+        origin : string or tuple
+            The point of origin can be a keyword ‘center’ for 2D bounding box center (default), ‘centroid’ for the geometry’s 2D centroid, or a coordinate tuple (x, y).
+        use_radians : boolean
+            Whether to interpret the angle of rotation as degrees or radians.
+
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries with rotated geometries.
+        """
+        import math
+        if not use_radians:
+            rotation_angle = rotation_angle * math.pi / 180.0
+
+        if origin is None:
+            return _column_geo("st_rotate", self, F.lit(rotation_angle))
+        elif isinstance(origin, str):
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
+        elif isinstance(origin, tuple):
+            origin_x = origin[0]
+            origin_y = origin[1]
+            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
 
     # -------------------------------------------------------------------------
     # utils
