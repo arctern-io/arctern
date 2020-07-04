@@ -56,6 +56,7 @@ def import_arctern_functions():
     jvm = sc._jvm
     java_import(jvm, "org.apache.spark.sql.arctern")
     jvm.org.apache.spark.sql.arctern.UdtRegistratorWrapper.registerUDT()
+    jvm.org.apache.spark.sql.arctern.UdfRegistrator.register(sc._jvm.SparkSession.getActiveSession().get())
 
 
 def _create_function(name):

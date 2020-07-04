@@ -13,8 +13,10 @@ class GeoDataFrame(DataFrame):
         self._crs_for_cols = {}
         if isinstance(data, GeoSeries):
             self._crs_for_cols[data.name] = data.crs
-        elif isinstance(data, GeoDataFrame):
+        elif isinstance(data, DataFrame):
             for col in data.columns:
+                if isinstance(data[col].spark.data_type, GeometryUDT):
+                    self._crs_for_cols[col] = None
                 if isinstance(data[col], GeoSeries):
                     self._crs_for_cols[col] = data[col].crs
             data = data._internal_frame
@@ -93,3 +95,12 @@ class GeoDataFrame(DataFrame):
                 key = [key]
             for col in key:
                 self._crs_for_cols.pop(col)
+
+    def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
+        if col not in self._geometry_column_names:
+            raise ValueError(f"`col` must be a column in geometries columns which set by `set_geometry`")
+        agg_dict = {aggfunc_col: aggfunc for aggfunc_col in self.columns.tolist() if aggfunc_col not in [col, by]}
+        agg_dict[col] = "ST_Union_Aggr"
+        aggregated = self.groupby(by=by, as_index=as_index).aggregate(agg_dict)
+        gdf = GeoDataFrame(aggregated, geometries=[col], crs=[self._crs_for_cols[col]])
+        return gdf
