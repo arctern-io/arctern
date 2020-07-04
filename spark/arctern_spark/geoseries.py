@@ -1573,6 +1573,45 @@ class GeoSeries(Series):
 
     @classmethod
     def polygon_from_envelope(cls, min_x, min_y, max_x, max_y, crs=None):
+        """
+        Constructs rectangular POLYGON objects within the given spatial range. The edges of the rectangles are parallel to the coordinate axises.
+
+        ``min_x``, ``min_y``, ``max_x``, and ``max_y`` are Series so that polygons can be created in batch. The number of values in the four Series should be the same.
+
+        Suppose that the demension of ``min_x`` is *N*, the returned GeoSeries of this function should contains *N* rectangles. The shape and position of the rectangle with index *i* is defined by its bottom left vertex *(min_x[i], min_y[i])* and top right vertex *(max_x[i], max_y[i])*.
+
+        Parameters
+        ----------
+        min_x : Series
+            The minimum x coordinates of the rectangles.
+        min_y : Series
+            The minimum y coordinates of the rectangles.
+        max_x : Series
+            The maximum x coordinates of the rectangles.
+        max_y : Series
+            The maximum y coordinates of the rectangles.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
+
+        Returns
+        -------
+        GeoSeries
+            Sequence of rectangular POLYGON objects within the given spatial range.
+
+        Examples
+        -------
+        >>> from pandas import Series
+        >>> from arctern_spark import GeoSeries
+        >>> min_x = Series([0.0, 1.0])
+        >>> max_x = Series([2.0, 1.5])
+        >>> min_y = Series([0.0, 1.0])
+        >>> max_y = Series([1.0, 1.5])
+        >>> GeoSeries.polygon_from_envelope(min_x, min_y, max_x, max_y)
+        0            POLYGON ((0 0, 0 1, 2 1, 2 0, 0 0))
+        1    POLYGON ((1 1, 1 1.5, 1.5 1.5, 1.5 1, 1 1))
+        Name: min_x, dtype: object
+        """
         dtype = (float, int)
         min_x, min_y, max_x, max_y = _validate_args(
             min_x, min_y, max_x, max_y, dtype=dtype)
@@ -1585,28 +1624,188 @@ class GeoSeries(Series):
 
     @classmethod
     def point(cls, x, y, crs=None):
+        """
+        Constructs POINT objects based on the given coordinates.
+
+        ``x`` and ``y`` are Series so that points can be created in batch. The number of values in the two Series should be the same.
+
+        Suppose that the demension of ``x`` is *N*, the returned GeoSeries of this function should contains *N* points. The position of the *i*th point is defined by its coordinates *(x[i], y[i]).*
+
+        Parameters
+        ----------
+        x : Series
+            X coordinates of points.
+        y : Series
+            Y coordinates of points.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
+
+        Returns
+        -------
+        GeoSeries
+            Sequence of POINT objects.
+
+        Examples
+        -------
+        >>> from pandas import Series
+        >>> from arctern_spark import GeoSeries
+        >>> x = Series([1.3, 2.5])
+        >>> y = Series([1.3, 2.5])
+        >>> GeoSeries.point(x, y)
+        0    POINT (1.3 1.3)
+        1    POINT (2.5 2.5)
+        Name: 0, dtype: object
+        """
         dtype = (float, int)
         return _column_geo("st_point", *_validate_args(x, y, dtype=dtype), crs=crs)
 
     @classmethod
     def geom_from_geojson(cls, json, crs=None):
+        """
+        Constructs geometries from GeoJSON strings.
+
+        ``json`` is Series so that geometries can be created in batch.
+
+        Parameters
+        ----------
+        json : Series
+            String representations of geometries in JSON format.
+        crs : str, optional
+            A string representation of Coordinate Reference System (CRS).
+            The string is made up of an authority code and a SRID (Spatial Reference Identifier), for example, "EPSG:4326".
+
+        Returns
+        -------
+        GeoSeries
+            Sequence of geometries.
+
+        Examples
+        -------
+        >>> from pandas import Series
+        >>> from arctern_spark import GeoSeries
+        >>> json = Series(['{"type":"LineString","coordinates":[[1,2],[4,5],[7,8]]}'])
+        >>> GeoSeries.geom_from_geojson(json)
+        0    LINESTRING (1 2, 4 5, 7 8)
+        Name: 0, dtype: object
+        """
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
     def as_geojson(self):
+        """
+        Transforms all geometries in the GeoSeries to GeoJSON strings.
+
+        Returns
+        -------
+        Koalas Series
+            Sequence of geometries in GeoJSON format.
+
+        Examples
+        -------
+        >>> from arctern_spark import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s.as_geojson()
+        0    {"type":"Point","coordinates":[1.0,1.0]}
+        Name: 0, dtype: object
+        """
         return _column_op("st_asgeojson", self)
 
     def to_wkt(self):
+        """
+        Transforms all geometries in the GeoSeries to `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ strings.
+
+        Returns
+        -------
+        Koalas Series
+            Sequence of geometries in WKT format.
+
+        Examples
+        -------
+        >>> from arctern_spark import GeoSeries
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s.to_wkt()
+        0    POINT (1 1)
+        Name: 0, dtype: object
+        """
         return _column_op("st_astext", self)
 
     def to_wkb(self):
+        """
+        Transforms all geometries in the GeoSeries to `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ strings.
+
+        Returns
+        -------
+        Koalas Series
+            Sequence of geometries in WKB format.
+
+        Examples
+        -------
+        >>> from arctern_spark import GeoSeries
+        >>> import pandas as pd
+        >>> pd.set_option("max_colwidth", 1000)
+        >>> s = GeoSeries(["POINT(1 1)"])
+        >>> s.to_wkb()
+        0    [0, 0, 0, 0, 1, 63, 240, 0, 0, 0, 0, 0, 0, 63, 240, 0, 0, 0, 0, 0, 0]
+        Name: 0, dtype: object
+        """
         return _column_op("st_aswkb", self)
 
     def head(self, n: int = 5):
+        """
+        Return the first n rows.
+
+        This function returns the first n rows for the object based on position.
+        It is useful for quickly testing if your object has the right type of data in it.
+
+        Parameters
+        ----------
+        n : Integer, default =  5
+
+        Returns
+        -------
+        GeoSeries
+            The first n rows of the GeoSeries.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> s = GeoSeries(["POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))", "LINESTRING (0 0, 1 1, 1 7)", "POINT(4 4)"])
+        >>> s.head(2)
+        0    POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
+        1             LINESTRING (0 0, 1 1, 1 7)
+        Name: 0, dtype: object
+        """
         r = super().head(n)
         r.set_crs(self.crs)
         return r
 
     def take(self, indices):
+        """
+        Return the elements in the given *positional* indices along an axis.
+
+        This means that we are not indexing according to actual values in
+        the index attribute of the object. We are indexing according to the
+        actual position of the element in the object.
+
+        Parameters
+        ----------
+        indices : array-like
+            An array of ints indicating which positions to take.
+
+        Returns
+        -------
+        GeoSeries
+            An array-like containing the elements taken from the GeoSeries.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> s = GeoSeries(["POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))", "LINESTRING (0 0, 1 1, 1 7)", "POINT(4 4)"])
+        >>> s.take([0,2])
+        0    POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
+        2                            POINT (4 4)
+        Name: 0, dtype: object
+        """
         r = super().take(indices)
         r.set_crs(self.crs)
         return r
