@@ -228,6 +228,8 @@ macro(build_stb)
 	    DESTINATION ${STB_INCLUDE_DIR})
     file(COPY ${STB_PREFIX}/stb-${STB_VERSION}/stb_image.h
             DESTINATION ${STB_INCLUDE_DIR})
+    file(COPY ${STB_PREFIX}/stb-${STB_VERSION}/stb_image_resize.h
+            DESTINATION ${STB_INCLUDE_DIR})
     endif ()
 endmacro()
 

@@ -174,7 +174,7 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy())
+        return GeoArray(self.data.copy(),self.crs)
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)
@@ -400,3 +400,27 @@ class GeoArray(ExtensionArray):
         if boxed:
             return lambda x: to_wkt([x])[0]
         return repr
+
+    def value_counts(self, dropna=True):
+        """
+        Return a Series containing counts of each GeoArray.
+
+        Parameters
+        ----------
+        dropna : bool, default True
+            Don't include counts of NaN.
+
+        Returns
+        -------
+        counts : Pandas Series
+        """
+
+        from pandas.core.algorithms import value_counts
+        if dropna:
+            values = self[~self.isna()].data
+        else:
+            values = self.data
+
+        result = value_counts(values, sort=False, dropna=dropna)
+
+        return pd.Series(result.values, index=result.index, name=result.name)

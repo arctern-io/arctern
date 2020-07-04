@@ -1196,8 +1196,8 @@ def ST_Buffer(geos, distance):
       >>> data = pandas.Series(data)
       >>> rst = arctern.ST_AsText(arctern.ST_Buffer(arctern.ST_GeomFromText(data), 0))
       >>> print(rst)
-          0    POLYGON EMPTY
-          dtype: object
+      0    POLYGON EMPTY
+      dtype: object
     """
     import pyarrow as pa
     arr_geos = pa.array(geos, type='binary')

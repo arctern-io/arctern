@@ -14,6 +14,7 @@
 
 import sys
 
+# pylint: disable=too-many-lines
 # pylint: disable=c-extension-no-member
 import cv2
 from pyspark.sql import SparkSession
@@ -859,7 +860,7 @@ def run_test_icon_viz(spark):
     draw_png_path = dir_path + "/draw_map/taxi.png"
 
     # 1 size:1024*896
-    vega_1 = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, "EPSG:4326")
+    vega_1 = vega_icon(1024, 896, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, coordinate_system="EPSG:4326")
     baseline1 = icon_viz(vega_1, res)
     icon_viz1_1 = icon_viz(vega_1, res)
     icon_viz1_2 = icon_viz(vega_1, res)
@@ -870,7 +871,7 @@ def run_test_icon_viz(spark):
     save_png(icon_viz1_2, png_path + "test_icon_viz_nyc_1-2.png")
 
     # 2 size:200*200
-    vega_2 = vega_icon(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, "EPSG:4326")
+    vega_2 = vega_icon(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, coordinate_system="EPSG:4326")
     baseline2 = icon_viz(vega_2, res)
     icon_viz2_1 = icon_viz(vega_2, res)
     icon_viz2_2 = icon_viz(vega_2, res)
@@ -880,12 +881,25 @@ def run_test_icon_viz(spark):
     save_png(icon_viz2_1, png_path + "test_icon_viz_nyc_2-1.png")
     save_png(icon_viz2_2, png_path + "test_icon_viz_nyc_2-2.png")
 
+    # 3 zoom out png size
+    vega_3 = vega_icon(200, 200, [-73.998427, 40.730309, -73.954348, 40.780816], draw_png_path, [10, 10], coordinate_system="EPSG:4326")
+    baseline3 = icon_viz(vega_3, res)
+    icon_viz3_1 = icon_viz(vega_3, res)
+    icon_viz3_2 = icon_viz(vega_3, res)
+
+    baseline_png3 = png_path + "icon_viz_nyc_3.png"
+    save_png(baseline3, baseline_png3)
+    save_png(icon_viz3_1, png_path + "test_icon_viz_nyc_3-1.png")
+    save_png(icon_viz3_2, png_path + "test_icon_viz_nyc_3-2.png")
+
     spark.catalog.dropGlobalTempView("nyc_taxi")
 
     assert run_diff_png(baseline_png1, png_path + "test_icon_viz_nyc_1-1.png")
     assert run_diff_png(baseline_png1, png_path + "test_icon_viz_nyc_1-2.png")
     assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-1.png")
     assert run_diff_png(baseline_png2, png_path + "test_icon_viz_nyc_2-2.png")
+    assert run_diff_png(baseline_png3, png_path + "test_icon_viz_nyc_3-2.png")
+    assert run_diff_png(baseline_png3, png_path + "test_icon_viz_nyc_3-2.png")
 
 # pylint: disable=too-many-statements
 def run_test_fishnet_map(spark):

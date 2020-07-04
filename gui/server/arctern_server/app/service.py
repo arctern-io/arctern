@@ -249,6 +249,7 @@ def db_query():
                 int(query_params['height']),
                 query_params['icon']['bounding_box'],
                 query_params['icon']['icon_path'],
+                query_params['icon']['icon_size'],
                 query_params['icon']['coordinate_system']
             )
             data = icon_viz(vega, res)

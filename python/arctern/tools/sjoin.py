@@ -21,12 +21,11 @@ import numpy as np
 import pandas as pd
 
 from shapely import prepared
-from arctern import GeoDataFrame
-from arctern import GeoSeries
 
 def sjoin(
         left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"
 ):
+    from arctern import GeoDataFrame
     if not isinstance(left_df, GeoDataFrame):
         raise ValueError(
             "'left_df' should be GeoDataFrame, got {}".format(type(left_df))
