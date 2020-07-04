@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck,unbalanced-tuple-unpacking
-
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches
+# pylint: disable=super-init-not-called,unidiomatic-typecheck,unbalanced-tuple-unpacking
+# pylint: disable=too-many-lines,non-parent-init-called
 
 import pandas as pd
 import numpy as np
@@ -131,8 +132,7 @@ class GeoSeries(Series):
                 if hasattr(data, "crs"):
                     if crs and data.crs and not data.crs == crs:
                         raise ValueError("crs of the passed geometry data is different from crs.")
-                    else:
-                        crs = data.crs or crs
+                    crs = data.crs or crs
                 s = data
             else:
                 s = pd.Series(
@@ -1555,17 +1555,19 @@ class GeoSeries(Series):
         Name: 0, dtype: object
         """
         import math
+        result = None
         if not use_radians:
             rotation_angle = rotation_angle * math.pi / 180.0
 
         if origin is None:
-            return _column_geo("st_rotate", self, F.lit(rotation_angle))
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle))
         elif isinstance(origin, str):
-            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
         elif isinstance(origin, tuple):
             origin_x = origin[0]
             origin_y = origin[1]
-            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
+        return result
 
     # -------------------------------------------------------------------------
     # utils
@@ -1924,7 +1926,7 @@ class GeoSeries(Series):
                 for feature in features:
                     geometry = feature["geometry"]
                     geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
-                return GeoSeries.geom_from_geojson(geoms, crs=crs, name="geometry")
+                return GeoSeries.geom_from_geojson(geoms, crs=crs)
 
 
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
