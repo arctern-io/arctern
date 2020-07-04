@@ -22,10 +22,11 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
+import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.catalyst.util.ArrayData
 
 object IndexSerializer {
-  def serialize(index: SpatialIndex): Array[Byte] = {
+  def serialize(index: RTreeIndex): Array[Byte] = {
     val out = new ByteArrayOutputStream()
     val kryo = new Kryo()
     val output = new Output(out)
@@ -34,28 +35,31 @@ object IndexSerializer {
     out.toByteArray
   }
 
-  def deserialize(values: ArrayData): SpatialIndex = {
+  def deserialize(values: ArrayData): RTreeIndex = {
     val in = new ByteArrayInputStream(values.toByteArray())
     val kryo = new Kryo()
     val input = new Input(in)
-    val spatialIndex = kryo.readObject(input, classOf[SpatialIndex])
+    val index = kryo.readObject(input, classOf[RTreeIndex])
     input.close()
-    spatialIndex.asInstanceOf[SpatialIndex]
+    index.asInstanceOf[RTreeIndex]
   }
 
 }
 
-class IndexUDT extends UserDefinedType[SpatialIndex] {
+class IndexUDT extends UserDefinedType[RTreeIndex] {
   override def sqlType: DataType = ArrayType(ByteType, containsNull = false)
 
-  override def serialize(obj: SpatialIndex): GenericArrayData = new GenericArrayData(IndexSerializer.serialize(obj))
+  override def serialize(obj: RTreeIndex): GenericArrayData = new GenericArrayData(IndexSerializer.serialize(obj))
 
-  override def deserialize(datum: Any): SpatialIndex = {
+  override def deserialize(datum: Any): RTreeIndex = {
     datum match {
       case values: ArrayData => IndexSerializer.deserialize(values)
-      case null => null
+      case null =>
+        println("get here")
+        throw new Exception("Null index")
+        null
     }
   }
 
-  override def userClass: Class[SpatialIndex] = classOf[SpatialIndex]
+  override def userClass: Class[RTreeIndex] = classOf[RTreeIndex]
 }
