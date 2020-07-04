@@ -136,7 +136,6 @@ class GeoSeries(Series):
                 s = pd.Series(
                     data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
                 )
-                import numpy as np
                 # The default dtype for empty Series is 'float64' in pandas, but it will be object in future.
                 # see https://github.com/pandas-dev/pandas/pull/29405
                 if s.empty and (s.dtype == np.dtype("float64") or s.dtype == np.dtype("object")):
