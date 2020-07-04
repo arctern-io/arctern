@@ -18,6 +18,12 @@ from databricks.koalas import Series
 from arctern_spark.geoseries import GeoSeries
 
 
+s1 = ["POINT (1 1)", "POINT (0 0)"]
+s2 = ["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", "POINT (2 3)"]
+s3 = ["POINT (1 1)", "LINESTRING(0 2, 3 3, 3 8)", "POLYGON((8 0,9 0,9 1,8 1,8 0))"]
+s4 = ["POINT EMPTY", "LINESTRING EMPTY", "POLYGON EMPTY", "MULTIPOLYGON EMPTY", "MULTILINESTRING EMPTY", "MULTIPOINT EMPTY"]
+
+
 def test_ST_IsValid():
     data = GeoSeries(["POINT (1.3 2.6)", "POINT (2.6 4.7)"])
     rst = data.is_valid
