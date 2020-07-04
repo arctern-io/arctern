@@ -36,6 +36,9 @@ def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
                 if not isinstance(mask, GeoSeries):
                     raise TypeError(f"unsupported mask type {type(mask)}")
                 mask = mask.as_geojson()[0]
+            if bbox is not None:
+                if isinstance(bbox, GeoSeries):
+                    bbox = bbox.bbox
             if rows is not None:
                 if isinstance(rows, int):
                     rows = slice(rows)

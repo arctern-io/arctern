@@ -33,14 +33,16 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, icon_path: Value, coordinate_system: Value):
+        def __init__(self, bounding_box: Value, icon_path: Value, icon_size: Value, coordinate_system: Value):
             if not (isinstance(bounding_box.v, list)
                     and isinstance(icon_path.v, str)
+                    and isinstance(icon_size.v, list)
                     and isinstance(coordinate_system.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
             self._bounding_box = bounding_box
             self._icon_path = icon_path
+            self._icon_size = icon_size
             self._coordinate_system = coordinate_system
 
         def to_dict(self):
@@ -48,6 +50,7 @@ class Marks(RootMarks):
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
                     "icon_path": self._icon_path.to_dict(),
+                    "icon_size": self._icon_size.to_dict(),
                     "coordinate_system": self._coordinate_system.to_dict(),
                 }
             }
@@ -64,11 +67,12 @@ class Marks(RootMarks):
 
 class VegaIcon:
     def __init__(self, width: int, height: int, bounding_box: list,
-                 icon_path: str, coordinate_system: str):
+                 icon_path: str, icon_size: list, coordinate_system: str):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
         self._icon_path = icon_path
+        self._icon_size = icon_size
         self._coordinate_system = coordinate_system
 
     def build(self):
@@ -79,6 +83,7 @@ class VegaIcon:
         scales = Scales([scale])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
                               icon_path=Marks.Encode.Value(self._icon_path),
+                              icon_size=Marks.Encode.Value(self._icon_size),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,

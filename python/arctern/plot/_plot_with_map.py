@@ -66,6 +66,8 @@ def pointmap(ax, points, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np
@@ -140,6 +142,8 @@ def weighted_pointmap(ax, points, color_weights=None,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np
@@ -220,6 +224,8 @@ def heatmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np
@@ -288,6 +294,8 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np
@@ -320,7 +328,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
 
 
 def iconviz(ax, points, bounding_box, icon_path,
-                 coordinate_system='EPSG:3857',
+                 icon_size=None, coordinate_system='EPSG:3857',
                  **extra_contextily_params):
     """
     Plots an icon map in Matplotlib.
@@ -335,6 +343,8 @@ def iconviz(ax, points, bounding_box, icon_path,
         Bounding box of the map. For example, [west, south, east, north].
     icon_path : str
         Absolute path to icon file.
+    icon_size : list
+        Size of the icon, a list with width and height of icon. For example, [width, height].
     coordinate_system : str, optional
         The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
@@ -342,6 +352,8 @@ def iconviz(ax, points, bounding_box, icon_path,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np
@@ -361,7 +373,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     import contextily as cx
     bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
-    vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path,
+    vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, icon_size=icon_size,
                      coordinate_system=coordinate_system)
     hexstr = arctern.icon_viz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
@@ -413,6 +425,8 @@ def fishnetmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
+    .. doctest:
+        :skipif: True
     -------
     >>> import pandas as pd
     >>> import numpy as np

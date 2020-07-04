@@ -222,7 +222,7 @@ abstract class ST_BinaryOp extends ArcternExpr {
       leftGeoDeclare = declare;
       leftGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode, ctx.freshName(leftCode.value))
       leftGeo = geo;
       leftGeoDeclare = declare;
       leftGeoCode = code
@@ -234,13 +234,13 @@ abstract class ST_BinaryOp extends ArcternExpr {
       rightGeoDeclare = declare;
       rightGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode, ctx.freshName(rightCode.value))
       rightGeo = geo;
       rightGeoDeclare = declare;
       rightGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, ctx.freshName(ev.value), dataType)
 
     if (nullable) {
       val nullSafeEval =
@@ -304,13 +304,13 @@ abstract class ST_UnaryOp extends ArcternExpr {
       exprGeoDeclare = declare;
       exprGeoCode = code
     } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode)
+      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshName(exprCode.value))
       exprGeo = geo;
       exprGeoDeclare = declare;
       exprGeoCode = code
     }
 
-    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, dataType)
+    val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, ctx.freshName(ev.value), dataType)
 
     if (nullable) {
       val nullSafeEval =
@@ -701,7 +701,7 @@ case class ST_Rotate(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
     if (originValue == null && originXValue == null && originYValue == null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)})"
     else if (originValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originValue.toString())"
     else if (originXValue != null && originYValue != null) s"org.apache.spark.sql.arctern.expressions.utils.rotate($geo, ${rotationAngle(ctx)}, $originXValue, $originYValue)"
-    else throw new Exception("Illegal argument in ST_Scale")
+    else throw new Exception("Illegal argument in ST_Rotate")
   })
 
   override def dataType: DataType = new GeometryUDT
