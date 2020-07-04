@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
+from databricks.koalas import Series
 from arctern_spark.geodataframe import GeoDataFrame
 from arctern_spark.geoseries import GeoSeries
-from databricks.koalas import Series
 
 wkt = "point (1 1)"
 wkb = b'\x00\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00?\xf0\x00\x00\x00\x00\x00\x00'

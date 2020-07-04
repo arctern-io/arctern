@@ -14,7 +14,6 @@
 
 from itertools import zip_longest
 from databricks.koalas import DataFrame, Series
-
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
 
@@ -113,13 +112,23 @@ class GeoDataFrame(DataFrame):
 
     def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
-            raise ValueError(f"`col` must be a column in geometries columns which set by `set_geometry`")
+            raise ValueError("`col` must be a column in geometries columns which set by `set_geometry`")
         agg_dict = {aggfunc_col: aggfunc for aggfunc_col in self.columns.tolist() if aggfunc_col not in [col, by]}
         agg_dict[col] = "ST_Union_Aggr"
         aggregated = self.groupby(by=by, as_index=as_index).aggregate(agg_dict)
         gdf = GeoDataFrame(aggregated, geometries=[col], crs=[self._crs_for_cols[col]])
         return gdf
 
-    def merge(self, right, *args, **kwargs):
+    def merge(
+            self,
+            right,
+            how="inner",
+            on=None,
+            left_on=None,
+            right_on=None,
+            left_index=False,
+            right_index=False,
+            suffixes=("_x", "_y")
+    ):
         # TODO: implement this
         pass

@@ -30,7 +30,6 @@ from databricks.koalas.utils import (
     validate_axis,
     validate_bool_kwarg,
 )
-from pandas.io.formats.printing import pprint_thing
 from pyspark.sql import functions as F, Column
 from pyspark.sql.types import (
     IntegerType,

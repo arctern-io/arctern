@@ -15,12 +15,12 @@
 
 import sys
 from py4j.java_gateway import java_import
+import databricks.koalas as ks
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
 from pyspark.sql import Row
 
-import databricks.koalas as ks
 ks.set_option('compute.ops_on_diff_frames', True)
 
 if sys.version >= '3':
