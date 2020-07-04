@@ -1,8 +1,22 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from itertools import zip_longest
+from databricks.koalas import DataFrame, Series
 
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
-from databricks.koalas import DataFrame, Series
 
 _crs_dtype = str
 
@@ -43,10 +57,10 @@ class GeoDataFrame(DataFrame):
         assert len(cols) >= len(crs), "The length of crs should less than geometries!"
 
         # align crs and cols, simply fill None to crs
-        for col, crs in zip_longest(cols, crs):
+        for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
-                self[col] = GeoSeries(self[col], crs=crs)
-                self._crs_for_cols[col] = crs
+                self[col] = GeoSeries(self[col], crs=_crs)
+                self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
 
     def set_geometry(self, col, crs):
@@ -63,7 +77,7 @@ class GeoDataFrame(DataFrame):
             geometry_column_names = []
             geometry_crs = []
 
-            for col in self._crs_for_cols.keys():
+            for col in self._crs_for_cols:
                 if col in result.columns:
                     crs[col] = self._crs_for_cols[col]
 
@@ -71,7 +85,8 @@ class GeoDataFrame(DataFrame):
                 if col in result.columns:
                     geometry_column_names.append(col)
                     geometry_crs.append(crs[col])
-            if len(crs) or len(geometry_column_names):
+
+            if crs or geometry_column_names:
                 result.__class__ = GeoDataFrame
                 result._crs_for_cols = crs
                 result._geometry_column_names = set()

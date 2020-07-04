@@ -62,7 +62,7 @@ object GeometryUDT {
       new WKTReader2().read(obj)
     }
     catch {
-      case _: ParseException => null
+      case _: Exception => null
     }
   }
 
