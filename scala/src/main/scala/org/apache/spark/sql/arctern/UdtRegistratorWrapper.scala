@@ -15,11 +15,14 @@
  */
 package org.apache.spark.sql.arctern
 
+import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.types.UDTRegistration
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.index.SpatialIndex
 
 object UdtRegistratorWrapper {
   def registerUDT(): Unit = {
     UDTRegistration.register(classOf[Geometry].getName, classOf[GeometryUDT].getName)
+    UDTRegistration.register(classOf[RTreeIndex].getName, classOf[IndexUDT].getName)
   }
 }
