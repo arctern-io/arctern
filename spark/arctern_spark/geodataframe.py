@@ -41,7 +41,7 @@ class GeoDataFrame(DataFrame):
         assert len(cols) >= len(crs), "The length of crs should less than geometries!"
 
         # align crs and cols, simply fill None to crs
-        for col, crs in zip_longest(cols, crs, None):
+        for col, crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
                 self[col] = GeoSeries(self[col], crs=crs)
                 self._crs_for_cols[col] = crs
