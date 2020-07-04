@@ -104,3 +104,7 @@ class GeoDataFrame(DataFrame):
         aggregated = self.groupby(by=by, as_index=as_index).aggregate(agg_dict)
         gdf = GeoDataFrame(aggregated, geometries=[col], crs=[self._crs_for_cols[col]])
         return gdf
+
+    def merge(self, right, *args, **kwargs):
+        # TODO: implement this
+        pass
