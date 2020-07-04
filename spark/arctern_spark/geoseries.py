@@ -531,7 +531,7 @@ class GeoSeries(Series):
         2    True
         Name: 0, dtype: bool
         """
-        return _column_op("st_issimple", self)
+        return _column_op("st_issimple", self).astype(bool)
 
     @property
     def geom_type(self):
@@ -1408,7 +1408,7 @@ class GeoSeries(Series):
         1     True
         Name: 0, dtype: bool
         """
-        return _column_op("st_disjoint", self, _validate_arg(other))
+        return _column_op("st_disjoint", self, _validate_arg(other)).astype(bool)
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return GeoSeries

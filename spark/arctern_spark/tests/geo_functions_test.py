@@ -25,6 +25,26 @@ p4 = ["LINESTRING EMPTY", "POLYGON EMPTY", "MULTIPOLYGON EMPTY", "MULTILINESTRIN
 p5 = ["POINT (1 1)", "LINESTRING (2 2)"]
 p6 = ["LINESTRING (2 2)", "POLYGON (0 0, 1 0, 1 1, 0 1)"]
 
+p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
+p12 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p13 = "POINT(2 2)"
+p14 = "POINT(200 2)"
+p15 = "LINESTRING EMPTY"
+p16 = "POLYGON EMPTY"
+p17 = "MULTIPOLYGON EMPTY"
+p18 = "POLYGON (0 0, 1 0, 1 1, 0 1)"
+data1 = GeoSeries([p11, p12, p13, p14, p15, p16, p17, p18])
+
+p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p25 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p26 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p27 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+p28 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
+data2 = GeoSeries([p21, p22, p23, p24, p25, p26, p27, p28])
+
 
 def test_ST_IsValid():
     s1 = GeoSeries(p1)
@@ -33,11 +53,11 @@ def test_ST_IsValid():
 
     s2 = GeoSeries(p2)
     r2 = s2.is_valid
-    assert not r2.any()
+    assert not r2.all()
 
     s3 = GeoSeries(p3)
     r3 = s3.is_valid
-    assert not r3.any()
+    assert not r3.all()
 
     s4 = GeoSeries(p4)
     r4 = s4.is_valid
@@ -45,7 +65,7 @@ def test_ST_IsValid():
 
     s5 = GeoSeries(p5)
     r5 = s5.is_valid
-    assert not r5.any()
+    assert not r5.all()
 
     s6 = GeoSeries(p6)
     r6 = s6.is_valid
@@ -59,11 +79,11 @@ def test_ST_IsEmpty():
 
     s2 = GeoSeries(p2)
     r2 = s2.is_empty
-    assert r2.any()
+    assert not r2.any()
 
     s3 = GeoSeries(p3)
     r3 = s3.is_empty
-    assert r3.any()
+    assert not r3.any()
 
     s4 = GeoSeries(p4)
     r4 = s4.is_empty
@@ -167,23 +187,15 @@ def test_ST_Rotate():
 
 
 def test_ST_Disjoint():
-    p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
-    p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
-    p13 = "LINESTRING(2 2,3 2)"
-    p14 = "POINT(10 2)"
-    data1 = GeoSeries([p11, p12, p13, p14])
-
-    p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    data2 = GeoSeries([p21, p22, p23, p24])
-
     rst = data2.disjoint(data1)
     assert rst[0] == 0
     assert rst[1] == 0
     assert rst[2] == 0
     assert rst[3] == 1
+    assert rst[4] == 1
+    assert rst[5] == 1
+    assert rst[6] == 1
+    assert rst[7] == 0
 
 
 def test_ST_Union():
@@ -237,75 +249,75 @@ def test_ST_Intersection():
 
 
 def test_ST_Equals():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.geom_equals(data2)
-    assert len(rst) == 2
-    assert rst[0] == 1
-    assert rst[1] == 0
+    assert rst[0] == 0
+    assert rst[1] == 1
+    assert rst[2] == 0
+    assert rst[3] == 0
+    assert rst[4] == 0
+    assert rst[5] == 0
+    assert rst[6] == 0
+    assert rst[7] == 0
 
-    rst = data2.geom_equals(GeoSeries("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
-    assert len(rst) == 2
-    assert rst[0] == 1
-    assert rst[1] == 0
+    rst = data1.geom_equals(data2[0])
+    assert rst[0] == 0
+    assert rst[1] == 1
+    assert rst[2] == 0
+    assert rst[3] == 0
+    assert rst[4] == 0
+    assert rst[5] == 0
+    assert rst[6] == 0
+    assert rst[7] == 0
 
 
 def test_ST_Touches():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.touches(data2)
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 1
+    assert not rst.any()
 
-    rst = data2.touches(GeoSeries("POLYGON ((1 1,1 2,2 2,2 1,1 1))")[0])
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 1
+    rst = data1.touches(data2[0])
+    assert not rst.any()
 
 
 def test_ST_Overlaps():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.overlaps(data2)
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 0
+    assert not rst.any()
 
-    rst = data2.overlaps(data1[0])
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 0
+    rst = data1.overlaps(data2[0])
+    assert not rst.any()
 
 
 def test_ST_Crosses():
-    data1 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    data2 = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                       "POLYGON ((2 1,3 1,3 2,2 2,2 1))"])
     rst = data1.crosses(data2)
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 0
+    assert not rst.any()
 
-    rst = data2.crosses(data2[0])
-    assert len(rst) == 2
-    assert rst[0] == 0
-    assert rst[1] == 0
+    rst = data1.crosses(data2[0])
+    assert not rst.any()
 
 
 def test_ST_IsSimple():
-    data = GeoSeries(["POLYGON ((1 1,1 2,2 2,2 1,1 1))",
-                      "POLYGON ((1 1,1 2,2 2,2 1,1 1))"])
-    rst = data.is_simple
-    assert rst[0] == 1
-    assert rst[1] == 1
+    s1 = GeoSeries(p1)
+    r1 = s1.is_simple
+    assert r1.all()
+
+    s2 = GeoSeries(p2)
+    r2 = s2.is_simple
+    assert not r2.all()
+
+    s3 = GeoSeries(p3)
+    r3 = s3.is_simple
+    assert not r3.all()
+
+    s4 = GeoSeries(p4)
+    r4 = s4.is_simple
+    assert r4.all()
+
+    s5 = GeoSeries(p5)
+    r5 = s5.is_simple
+    assert not r5.all()
+
+    s6 = GeoSeries(p6)
+    r6 = s6.is_simple
+    assert not r6.any()
 
 
 def test_ST_GeometryType():
