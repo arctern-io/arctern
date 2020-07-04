@@ -73,13 +73,10 @@ def pointmap(ax, points, bounding_box,
     >>> import numpy as np
     >>> import arctern
     >>> import matplotlib.pyplot as plt
-    >>> # read from test.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+    >>> df = pd.DataFrame({"longitude":range(10),"latitude":range(10)})
     >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>> # plot pointmap
     >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.pointmap(ax, points, [-74.01398981737215,40.71353244267465,-73.96979949831308,40.74480271529791], point_size=10, point_color='#115f9a',coordinate_system="EPSG:4326")
+    >>> arctern.plot.pointmap(ax, points, [0,0,10,10], point_size=10, point_color='#115f9a',coordinate_system="EPSG:4326")
     >>> plt.show()
     """
     from matplotlib import pyplot as plt
