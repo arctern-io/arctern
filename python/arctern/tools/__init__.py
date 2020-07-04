@@ -15,3 +15,4 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 from .file import *
+from .sjoin import sjoin

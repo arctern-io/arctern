@@ -26,61 +26,66 @@ import arctern.tools
 class GeoDataFrame(DataFrame):
     _metadata = ["_crs", "_geometry_column_name"]
     _geometry_column_name = []
-    _sindex = None
-    _sindex_generated = False
+    _crs = []
 
     def __init__(self, *args, **kwargs):
         crs = kwargs.pop("crs", None)
         geometries = kwargs.pop("geometries", None)
         super(GeoDataFrame, self).__init__(*args, **kwargs)
 
-        if geometries is not None:
-            self._geometry_column_name = geometries
-            for geometry in geometries:
-                try:
-                    self[geometry] = GeoSeries(self[geometry])
-                except TypeError:
-                    pass
-            crs_length = len(crs)
-            geo_length = len(geometries)
-            if crs_length < geo_length:
-                for i in range(0, geo_length - crs_length):
-                    crs.append("None")
-
-            for (crs_element, geo_element) in zip(crs, geometries):
-                self[geo_element].set_crs(crs_element)
-        else:
+        if geometries is None and crs is not None:
+            raise ValueError("No geometry column specified!")
+        elif geometries is None:
             self._geometry_column_name = []
+        else:
+            geo_length = len(geometries)
+            if crs is None:
+                crs = []
+                crs_length = 0
+            elif isinstance(crs, str):
+                crs = [crs]
+                crs_length = 1
+            elif isinstance(crs, list):
+                crs_length = len(crs)
+                if geo_length < crs_length:
+                    raise ValueError("The length of crs should less than geometries!")
+            else:
+                raise TypeError("The type of crs should be str or list!")
+            for i in range(0, geo_length - crs_length):
+                crs.append(None)
+            for (crs_element, geometry) in zip(crs, geometries):
+                self[geometry] = GeoSeries(self[geometry])
+                self[geometry].invalidate_sindex()
+            for (crs_element, geometry) in zip(crs, geometries):
+                if crs_element is not None:
+                    self[geometry].set_crs(crs_element)
 
-        self._invalidate_sindex()
+            self._geometry_column_name = geometries
+            self._crs = crs
 
-    def set_geometries(self, cols, inplace=False, crs=None):
+    def set_geometry(self, col, inplace=False, crs=None):
         if inplace:
             frame = self
         else:
             frame = self.copy()
 
-        geos_crs = {}
-        crs_length = len(crs)
-        geo_length = len(cols)
-        if crs_length < geo_length:
-            for i in range(0, geo_length - crs_length):
-                crs.append("None")
-        for col, geo_crs in zip(cols, crs):
-            geos_crs[col] = geo_crs
-        for col in frame._geometry_column_name:
-            geos_crs[col] = frame[col].crs
-
         geometry_cols = frame._geometry_column_name
-        for col in cols:
-            if col not in geometry_cols and not isinstance(frame[col], GeoSeries):
-                frame[col] = GeoSeries(frame[col])
+        geometry_crs = frame._crs
+        if not isinstance(frame[col], GeoSeries):
+            frame[col] = GeoSeries(frame[col])
+            geometry_cols.append(col)
+            if crs is None:
+                geometry_crs.append(None)
+            else:
+                geometry_crs.append(crs)
+        if col in geometry_cols:
+            index = geometry_cols.index(col)
+            if crs is not None:
+                geometry_crs[index] = crs
 
-        frame._geometry_column_name = frame._geometry_column_name + cols
-
-        for col in frame._geometry_column_name:
-            if frame[col].crs is None:
-                frame[col].set_crs(geos_crs[col])
+        for (crs, col) in zip(geometry_crs, geometry_cols):
+            if crs is not None:
+                frame[col].set_crs(crs)
 
         if not inplace:
             return frame
@@ -171,25 +176,6 @@ class GeoDataFrame(DataFrame):
                 result._geometry_column_name.append(col)
         return result
 
-    @classmethod
-    def _from_features(cls, features, crs=None, columns=None):
-        rows = []
-        for feature in features:
-            if hasattr(feature, "__geo_interface__"):
-                feature = feature.__geo_interface__
-            row = {
-                "geometry": GeoSeries.geom_from_geojson(json.dumps(feature["geometry"]))[0] if feature[
-                    "geometry"] else None
-            }
-            # load properties
-            row.update(feature["properties"])
-            rows.append(row)
-        return GeoDataFrame(rows, columns=columns, geometries=["geometry"], crs=[crs])
-
-    def _invalidate_sindex(self):
-        self._sindex = None
-        self._sindex_generated = False
-
     def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         data = self.drop(labels=col, axis=1)
         aggregated_data = data.groupby(by=by).agg(aggfunc)
@@ -233,7 +219,6 @@ class GeoDataFrame(DataFrame):
                 if col in result_cols:
                     result[col].set_crs(geos_crs[col])
                     result._geometry_column_name.append(col)
-            result._invalidate_sindex()
         elif isinstance(result, DataFrame) and flag:
             result.__class__ = DataFrame
         return result
@@ -249,5 +234,5 @@ class GeoDataFrame(DataFrame):
     def _constructor(self):
         return GeoDataFrame
 
-    def _constructor_expanddim():
+    def _constructor_expanddim(self):
         pass

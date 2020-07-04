@@ -117,20 +117,24 @@ class GeoSeries(Series):
     """
 
     _sindex = None
-    _sindex_generated = None
+    _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
 
-        if hasattr(data, "crs") and crs:
-            if not data.crs:
-                data = data.copy()
-            elif not crs:
-                crs = data.crs
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+        if hasattr(data, "crs"):
+            if crs:
+                if not data.crs:
+                    data = data.copy()
+                elif not data.crs == crs:
+                    raise ValueError(
+                        "csr of the passed geometry data is different from crs."
+                    )
+            else:
+                if not data.crs:
+                    data = data.copy()
+                else:
+                    crs = data.crs
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
@@ -171,6 +175,10 @@ class GeoSeries(Series):
             self._sindex = _sindex
             self._sindex_generated = True
         return self._sindex
+
+    def invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
 
     def set_crs(self, crs):
         """
@@ -421,6 +429,28 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
+
+    def _invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
+    def _wrapped_pandas_method(self, mtd, *args, **kwargs):
+        """Wrap a generic pandas method to ensure it returns a GeoSeries"""
+        val = getattr(super(GeoSeries, self), mtd)(*args, **kwargs)
+        if type(val) == Series:
+            val.__class__ = GeoSeries
+            val.crs = self.crs
+            val._invalidate_sindex()
+        return val
+
+    def append(self, *args, **kwargs):
+        return self._wrapped_pandas_method("append", *args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        return self._wrapped_pandas_method("update", *args, **kwargs)
+
+    def drop(self, *args, **kwargs):
+        return self._wrapped_pandas_method("drop", *args, **kwargs)
 
     # -------------------------------------------------------------------------
     # Geometry related property

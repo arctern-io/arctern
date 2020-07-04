@@ -68,6 +68,10 @@ __all__ = [
     "fishnet_map_layer",
     "projection",
     "transform_and_projection",
+    "within_which",
+    "nearest_location_on_road",
+    "nearest_road",
+    "near_road",
     "get_sindex_tree",
     "version"
 ]
@@ -1722,6 +1726,119 @@ def fishnet_map_layer(vega, points, weights, transform=True):
     vega_string = vega.build().encode('utf-8')
     rs = arctern_core_.fishnet_map(vega_string, geos_rs, weights_rs)
     return base64.b64encode(rs.to_pandas()[0])
+
+def within_which(left, right):
+    """
+    For each geometry in ``left``, search for a geometry in ``right`` that contains it.
+    Parameters
+    ----------
+    left : GeoSeries
+        Sequence of geometries.
+    right : GeoSeries
+        Sequence of geometries.
+    Returns
+    -------
+    Series
+        The indexes of geometries in ``right``.
+        For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
+        * When there are multiple candidates, return one of them.
+        * When there is no candidate, return NA.
+    Examples
+    -------
+    >>> from arctern import *
+    >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
+    >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
+    >>> res = within_which(data1, data2)
+    >>> print(res)
+        0    1
+        1    <NA>
+        2    0
+        dtype: object
+    """
+    index_tree = right.sindex
+    return index_tree.within_which(left)
+
+def nearest_location_on_road(roads, points):
+    """
+    Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+    Parameters
+    ----------
+    roads : Series
+        LINGSTRING objects in WKB format.
+    points : Series
+        POINT objects in WKB format.
+    Returns
+    -------
+    Series
+        A POINT object in WKB format.
+    Examples
+    -------
+    >>> import arctern
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+    >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
+    >>> rst
+        0    POINT (1.0 2.5)
+        dtype: object
+    """
+    index_tree = roads.sindex
+    return index_tree.nearest_location_on_road(points)
+
+def nearest_road(roads, points,):
+    """
+    Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+    Parameters
+    ----------
+    roads : Series
+        LINGSTRING objects in WKB format.
+    points : Series
+        POINT objects in WKB format.
+    Returns
+    -------
+    Series
+        A LINGSTRING object in WKB format.
+    Examples
+    -------
+    >>> import arctern
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
+    >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
+    >>> rst
+        0    LINESTRING (1 2,1 3)
+        dtype: object
+    """
+    index_tree = roads.sindex
+    return index_tree.nearest_road(points)
+
+def near_road(roads, points, distance=100):
+    """
+    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
+    Parameters
+    ----------
+    roads : Series
+        LINGSTRING objects in WKB format.
+    points : Series
+        POINT objects in WKB format.
+    distance : double, optional
+        Searching distance around the points, by default 100.
+    Returns
+    -------
+    Series
+        A Series that contains only one boolean value that indicates whether there is a road within the given ``distance`` of all ``points``.
+        * *True*: The road exists.
+        * *False*: The road does not exist.
+    Examples
+    -------
+    >>> import arctern
+      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+      >>> rst = arctern.near_road(data1, data2)
+      >>> rst
+          0    True
+          dtype: object
+    """
+    index_tree = roads.sindex
+    return index_tree.near_road(points, distance)
 
 def get_sindex_tree():
     indextree = arctern_core_.SpatialIndex()
