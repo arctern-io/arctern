@@ -1,3 +1,5 @@
+from itertools import zip_longest
+
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
 from databricks.koalas import DataFrame, Series
@@ -20,29 +22,26 @@ class GeoDataFrame(DataFrame):
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
         # TODO: do we need it?
-        self._geometry_column_names = set()
         if geometries is None:
             if "geometry" in self.columns:
                 geometries = ["geometry"]
             else:
                 geometries = []
-
+        self._geometry_column_names = set()
         self._set_geometries(geometries, crs=crs)
 
     # only for internal use
     def _set_geometries(self, cols, crs=None):
-        assert isinstance(cols, list)
+        assert isinstance(cols, list), "cols must be list"
         if len(cols) == 0:
             return
-
         if crs is None or isinstance(crs, _crs_dtype):
             crs = [crs] * len(cols)
-        else:
-            assert isinstance(crs, list)
-        # align crs and cols, simply fill None to crs
-        crs.extend([None] * (len(cols) - len(crs)))
+        assert isinstance(crs, list), "crs must be list or scalar value"
+        assert len(cols) >= len(crs), "The length of crs should less than geometries!"
 
-        for col, crs in zip(cols, crs):
+        # align crs and cols, simply fill None to crs
+        for col, crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
                 self[col] = GeoSeries(self[col], crs=crs)
                 self._crs_for_cols[col] = crs
