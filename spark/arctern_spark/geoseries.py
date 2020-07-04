@@ -16,6 +16,7 @@
 
 
 import pandas as pd
+import numpy as np
 from pandas.io.formats.printing import pprint_thing
 from pandas.api.types import is_list_like
 import databricks.koalas as ks
@@ -647,6 +648,166 @@ class GeoSeries(Series):
         r.set_crs(self.crs)
         return r
 
+    @classmethod
+    def _calculate_bbox_from_wkb(cls, geom_wkb):
+        """
+        Calculate bounding box for the geom_wkb geometry.
+        """
+        from osgeo import ogr
+        geometry = ogr.CreateGeometryFromWkb(geom_wkb)
+        env = geometry.GetEnvelope()
+        return [env[0], env[2], env[1], env[3]]
+
+    @property
+    def bbox(self):
+        """
+        Calculate bounding box for the union of all geometries in the GeoSeries.
+
+        :rtype: a (minx, miny, maxx, maxy) list
+        :return: A list of Arctern.GeoSeries's bound box.
+        """
+        geom_wkb = self.envelope_aggr().to_wkb()[0]
+        return GeoSeries._calculate_bbox_from_wkb(geom_wkb)
+
+    def iterfeatures(self, na="null", show_bbox=False):
+        """
+        Returns an iterator that yields feature dictionaries that comply with
+        Arctern.GeoSeries.
+
+        Parameters
+        ----------
+        na: str {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame
+            * null: ouput the missing entries as JSON null
+            * drop: remove the property from the feature. This applies to
+                    each feature individually so that features may have
+                    different properties
+            * keep: output the missing entries as NaN
+
+        show_bbox: bool
+            whether to include bbox (bounds box) in the geojson. default False
+        """
+        import json
+        if na not in ["null", "drop", "keep"]:
+            raise ValueError("Unknown na method {0}".format(na))
+
+        ids = np.array(self.index, copy=False)
+
+        for fid, geom in zip(ids, self):
+            feature = {
+                "id": str(fid),
+                "type": "Feature",
+                "properties": {},
+                "geometry": json.loads(GeoSeries(geom).as_geojson()[0]) if geom else None,
+            }
+            if show_bbox:
+                feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
+            yield feature
+
+
+    @classmethod
+    def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
+        """
+        Read a file or OGR dataset to GeoSeries.
+
+        Supported file format is listed in
+        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        Parameters
+        ----------
+        fp: URI (str or pathlib.Path), or file-like object
+            A dataset resource identifier or file object.
+
+        bbox: a (minx, miny, maxx, maxy) tuple
+            Filter for geometries which spatial intersects with by the provided bounding box.
+
+        mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
+            Filter for geometries which spatial intersects with by the provided geometry.
+
+        item: int or slice
+            Load special items by skipping over items or stopping at a specific item.
+
+        **kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+
+        Returns
+        ----------
+            A GeoSeries read from file.
+        """
+        import fiona
+        import json
+        with fiona.Env():
+            with fiona.open(fp, "r", **kwargs) as features:
+                if features.crs is not None:
+                    crs = features.crs.get("init", None)
+                else:
+                    crs = features.crs_wkt
+
+                if mask is not None:
+                    if isinstance(mask, (str, bytes)):
+                        mask = GeoSeries(mask)
+                    if not isinstance(mask, GeoSeries):
+                        raise TypeError(f"unsupported mask type {type(mask)}")
+                    mask = mask.unary_union().as_geojson()
+                if isinstance(item, (int, type(None))):
+                    item = (item,)
+                elif isinstance(item, slice):
+                    item = (item.start, item.stop, item.step)
+                else:
+                    raise TypeError(f"unsupported item type {type(item)}")
+                features = features.filter(*item, bbox=bbox, mask=mask)
+
+                geoms = []
+                for feature in features:
+                    geometry = feature["geometry"]
+                    geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
+                return GeoSeries.geom_from_geojson(geoms, crs=crs, name="geometry")
+
+
+    def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
+        """
+        Store GeoSeries to a file or OGR dataset.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type mode: str, default "w"
+        :param mode: 'a' to append, or 'w' to write. Not all driver support
+                      append, see "Supported driver list" below for more info.
+
+        :type driver: str, default "ESRI Shapefile"
+        :param driver: The OGR format driver. It's  represents a
+                       translator for a specific format. Supported driver is listed in
+                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
+                       write data to multi-layer dataset.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+        """
+        geo_type_map = dict([
+            ("ST_POINT", "Point"),
+            ("ST_LINESTRING", "LineString"),
+            ("ST_POLYGON", "Polygon"),
+            ("ST_MULTIPOINT", "MultiPoint"),
+            ("ST_MULTILINESTRING", "MultiLineString"),
+            ("ST_MULTIPOLYGON", "MultiPolygon"),
+            ("ST_GEOMETRYCOLLECTION", "GeometryCollection")
+        ])
+
+        geo_types = self.geom_type.map(geo_type_map)
+        if len(geo_types) == 0:
+            geo_types = "Unknown"
+        else:
+            geo_types = set(geo_types.dropna().unique())
+        schema = {"properties": {}, "geometry": geo_types}
+        # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
+        crs = self.crs
+        import fiona
+        with fiona.Env():
+            with fiona.open(fp, mode, driver, crs=crs, schema=schema, **kwargs) as sink:
+                sink.writerecords(self.iterfeatures())
 
 def first_series(df):
     """
