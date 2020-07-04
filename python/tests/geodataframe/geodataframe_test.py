@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from arctern import GeoDataFrame, GeoSeries
-import numpy as np
 import arctern
+import numpy as np
 import pandas
+from arctern import GeoDataFrame, GeoSeries
 
 
 def test_from_geopandas():
@@ -26,7 +26,7 @@ def test_from_geopandas():
         "B": np.arange(5.0),
         "other_geom": range(5),
         "geometry": [Point(x, y) for x, y in zip(range(5), range(5))],
-        "copy_geo": [Point(x+1, y+1) for x, y in zip(range(5), range(5))],
+        "copy_geo": [Point(x + 1, y + 1) for x, y in zip(range(5), range(5))],
     }
     pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
     assert isinstance(pdf["geometry"], geopandas.GeoSeries)
@@ -39,8 +39,8 @@ def test_from_geopandas():
 def test_from_geoseries():
     data = GeoSeries(["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"], crs="epsg:4326")
     gdf = GeoDataFrame(data)
-    print(gdf[0].crs)
-    assert isinstance(gdf[0], GeoSeries) == True
+    assert isinstance(gdf[0], GeoSeries) is True
+    assert gdf[0].crs == "EPSG:4326"
 
 
 def test_to_geopandas():
@@ -109,6 +109,7 @@ def test_merge():
     result = gdf1.merge(gdf2, left_on="A", right_on="A")
     assert isinstance(result, arctern.GeoDataFrame) == True
     assert isinstance(result["geometry"], arctern.GeoSeries) == True
+    assert  result.location.crs == "EPSG:4326"
 
 
 def test_to_json():

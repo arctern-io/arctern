@@ -18,9 +18,11 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series, DataFrame
-import numpy as np
+
 import arctern
+import numpy as np
+from pandas import Series, DataFrame
+
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
 
@@ -79,12 +81,6 @@ def _binary_geo(op, this, other):
     # type: (function, GeoSeries, GeoSeries/bytes) -> GeoSeries
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
-
-def _validate_crs(crs):
-    if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
-    return crs
 
 
 class GeoSeries(Series):
@@ -164,12 +160,11 @@ class GeoSeries(Series):
                     s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values)
-
+            data = GeoArray(s.values, crs=crs)
         super().__init__(data, index=index, name=name, **kwargs)
 
-        self._crs = None
-        self.set_crs(crs)
+        if not self.array.crs:
+            self.array.crs = crs
 
     @property
     def sindex(self):
@@ -207,8 +202,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.array.crs = crs
 
     @property
     def crs(self):
@@ -227,7 +221,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        return self._crs
+        return self.array.crs
 
     @crs.setter
     def crs(self, crs):
@@ -1750,7 +1744,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1788,7 +1781,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1820,7 +1812,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod

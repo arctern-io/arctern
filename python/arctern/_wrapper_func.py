@@ -59,7 +59,6 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "within_which",
     "point_map_layer",
     "weighted_point_map_layer",
     "heat_map_layer",
@@ -1390,50 +1389,6 @@ def ST_Affine(geos, a, b, d, e, offset_x, offset_y):
     result = arctern_core_.ST_Affine(chunked_array_geo, a, b, d, e, offset_x, offset_y)
     return result.to_pandas()
 
-def within_which(left, right):
-    """
-    For each geometry in ``left``, search for a geometry in ``right`` that contains it.
-
-    Parameters
-    ----------
-    left : GeoSeries
-        Sequence of geometries.
-    right : GeoSeries
-        Sequence of geometries.
-
-    Returns
-    -------
-    Series
-        The indexes of geometries in ``right``.
-        For example, the value *j* with index *i* in the returned Series indicates that the geometry ``left[i]`` is within the geometry ``right[j]``.
-
-        * When there are multiple candidates, return one of them.
-        * When there is no candidate, return NA.
-
-    Examples
-    -------
-    >>> from arctern import *
-    >>> data1 = GeoSeries(["Point(0 0)", "Point(1000 1000)", "Point(10 10)"])
-    >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
-    >>> res = within_which(data1, data2)
-    >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
-    """
-    import pyarrow as pa
-    import pandas
-    pa_left = pa.array(left, type='binary')
-    pa_right = pa.array(right, type='binary')
-    vec_arr_left = _to_arrow_array_list(pa_left)
-    vec_arr_right = _to_arrow_array_list(pa_right)
-    res = arctern_core_.ST_IndexedWithin(vec_arr_left, vec_arr_right)
-    res = _to_pandas_series(res)
-    res = res.apply(lambda x: right.index[x] if x >= 0 else pandas.NA)
-    res = res.set_axis(left.index)
-    return res
-
 
 def projection(geos, bottom_right, top_left, height, width):
     import pyarrow as pa
@@ -1783,6 +1738,7 @@ def nearest_location_on_road(roads, points):
     """
     index_tree = roads.sindex
     return index_tree.nearest_location_on_road(points)
+
 
 def nearest_road(roads, points,):
     """

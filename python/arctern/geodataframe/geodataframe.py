@@ -15,10 +15,11 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 import json
-from pandas import DataFrame, Series
-from arctern import GeoSeries
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from arctern import GeoSeries
+from pandas import DataFrame, Series
 
 
 class GeoDataFrame(DataFrame):
@@ -54,9 +55,7 @@ class GeoDataFrame(DataFrame):
             for (crs_element, geometry) in zip(crs, geometries):
                 self[geometry] = GeoSeries(self[geometry])
                 self[geometry].invalidate_sindex()
-            for (crs_element, geometry) in zip(crs, geometries):
-                if crs_element is not None:
-                    self[geometry].set_crs(crs_element)
+                self[geometry].set_crs(crs_element)
 
             self._geometry_column_name = geometries
             self._crs = crs
@@ -71,6 +70,7 @@ class GeoDataFrame(DataFrame):
         geometry_crs = frame._crs
         if not isinstance(frame[col], GeoSeries):
             frame[col] = GeoSeries(frame[col])
+            frame[col].set_crs(crs)
             geometry_cols.append(col)
             if crs is None:
                 geometry_crs.append(None)
@@ -80,10 +80,11 @@ class GeoDataFrame(DataFrame):
             index = geometry_cols.index(col)
             if crs is not None:
                 geometry_crs[index] = crs
-
-        for (crs, col) in zip(geometry_crs, geometry_cols):
-            if crs is not None:
                 frame[col].set_crs(crs)
+
+        # for (crs, col) in zip(geometry_crs, geometry_cols):
+        #     if crs is not None:
+        #         frame[col].set_crs(crs)
 
         if not inplace:
             return frame
@@ -159,7 +160,7 @@ class GeoDataFrame(DataFrame):
         if self._geometry_column_name is not None:
             for col in copy_df._geometry_column_name:
                 copy_df[col] = Series(copy_df[col].to_geopandas())
-        return geopandas.GeoDataFrame(copy_df.values , columns=copy_df.columns.values.tolist())
+        return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
     @classmethod
     def from_geopandas(cls, pdf):
@@ -198,30 +199,58 @@ class GeoDataFrame(DataFrame):
 
         return aggregated
 
-    def merge(self, *args, **kwargs):
-        result = DataFrame.merge(self, *args, **kwargs)
-        geo_cols = self._geometry_column_name
-        geos_crs = {}
-        for col in geo_cols:
-            geos_crs[col] = self[col].crs
-        result_cols = result.columns.values.tolist()
-        flag = True
-        for col in geo_cols:
-            if col in result_cols:
-                flag = False
+    @property
+    def geometries_name(self):
+        return self._geometry_column_name
 
-        if isinstance(result, DataFrame) and not flag:
-            result.__class__ = GeoDataFrame
-            for col in geo_cols:
-                if col in result_cols:
-                    result[col] = GeoSeries(result[col])
-            for col in geo_cols:
-                if col in result_cols:
-                    result[col].set_crs(geos_crs[col])
-                    result._geometry_column_name.append(col)
-            result._invalidate_sindex()
-        elif isinstance(result, DataFrame) and flag:
-            result.__class__ = DataFrame
+    @property
+    def crs(self):
+        return self._crs
+
+    def merge(
+            self,
+            right,
+            how="inner",
+            on=None,
+            left_on=None,
+            right_on=None,
+            left_index=False,
+            right_index=False,
+            sort=False,
+            suffixes=("_x", "_y"),
+            copy=True,
+            indicator=False,
+            validate=None,
+    ):
+        result = DataFrame.merge(self, right, how, on, left_on, right_on,
+                                 left_index, right_index, sort, suffixes,
+                                 copy, indicator, validate)
+        if not isinstance(result, GeoDataFrame):
+            return result
+        left_geometries = self.geometries_name
+        left_crs = self.crs
+        right_geometries = right.geometries_name
+        right_crs = right.crs
+        result_cols = result.columns.values.tolist()
+        result_geometries_name = result.geometries_name
+        result_crs = result.crs
+        strip_result = []
+        for col in result_cols:
+            col = col.replace('_x', '')
+            col = col.replace('_y', '')
+            strip_result.append(col)
+        for i in range(0, len(strip_result)):
+            if isinstance(result[result_cols[i]], GeoSeries):
+                if strip_result[i] in left_geometries:
+                    index = left_geometries.index(strip_result[i])
+                    result[result_cols[i]].set_crs(left_crs[index])
+                    result_crs.append(left_crs[index])
+                    continue
+                if strip_result[i] in right_geometries:
+                    index = right_geometries.index(strip_result[i])
+                    result[result_cols[i]].set_crs(right_crs[index])
+                    result_crs.append(right_crs[index])
+                    continue
         return result
 
     @property
