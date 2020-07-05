@@ -1613,7 +1613,7 @@ class GeoSeries(Series):
     def union(self, other):
         """
         This function returns a geometry being a union of two input geometries.
-        
+
         Parameters
         ----------
         other : GeoSeries
