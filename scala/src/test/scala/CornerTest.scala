@@ -20,7 +20,7 @@ import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
-case class Info(text: String)
+//case class Info(text: String)
 
 class CornerTest extends AdapterTest {
   test("geom_as_source") {
