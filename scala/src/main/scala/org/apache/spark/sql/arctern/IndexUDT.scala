@@ -15,9 +15,8 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
+import org.apache.spark.sql.catalyst.util.GenericArrayData
 import org.apache.spark.sql.types.{ArrayType, ByteType, DataType, UserDefinedType}
-import org.locationtech.jts.index.SpatialIndex
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.esotericsoftware.kryo.Kryo
