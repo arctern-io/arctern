@@ -25,6 +25,10 @@ object functions {
     ST_GeomFromText(Seq(wkt.expr))
   }
 
+  def st_envelopinternal(wkt: Column): Column = Column {
+    GeometryEnvelope(wkt.expr)
+  }
+
   def st_geomfromwkb(wkt: Column): Column = Column {
     ST_GeomFromWKB(Seq(wkt.expr))
   }

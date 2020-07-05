@@ -41,3 +41,4 @@ class RTreeIndex extends SpatialIndex with Serializable {
     index.remove(itemEnv, item)
   }
 }
+
