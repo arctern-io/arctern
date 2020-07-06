@@ -234,4 +234,6 @@ object functions {
   def near_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearRoad(points, roads)
 
   def nearest_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestRoad(points, roads)
+
+  def nearest_location_on_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestLocationOnRoad(points, roads)
 }

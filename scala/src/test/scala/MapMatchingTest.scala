@@ -71,4 +71,30 @@ class MapMatchingTest extends AdapterTest {
     val rst = nearest_road(pointsDF, roadsDF)
     rst.show(false)
   }
+
+  test("NearestLocationOnRoad") {
+    val points = Seq(
+      Row(new WKTReader().read("POINT(-100 -40)")),
+      Row(new WKTReader().read("POINT(100 -40)")),
+      Row(new WKTReader().read("POINT(-100 40)")),
+      Row(new WKTReader().read("POINT(100 40)")),
+      Row(new WKTReader().read("POINT(100 0)")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("POLYGON((-180 -90, 0 -90, 0 0, -180 0, -180 -90))")),
+      Row(new WKTReader().read("POLYGON((0 -90, 180 -90, 180 0, 0 0, 0 -90))")),
+      Row(new WKTReader().read("POLYGON((-180 0, 0 0, 0 90, -180 90, -180 0))")),
+      Row(new WKTReader().read("POLYGON((0 0, 180 0, 180 90, 0 90, 0 0))")),
+    )
+
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = nearest_location_on_road(pointsDF, roadsDF)
+    rst.show(false)
+  }
 }
