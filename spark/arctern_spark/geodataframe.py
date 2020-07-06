@@ -13,9 +13,10 @@
 # limitations under the License.
 
 from itertools import zip_longest
-from databricks.koalas import DataFrame, Series
+
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
+from databricks.koalas import DataFrame, Series
 
 _crs_dtype = str
 
@@ -36,7 +37,6 @@ class GeoDataFrame(DataFrame):
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
-        # TODO: do we need it?
         if geometries is None:
             if "geometry" in self.columns:
                 geometries = ["geometry"]
@@ -58,6 +58,8 @@ class GeoDataFrame(DataFrame):
         # align crs and cols, simply fill None to crs
         for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
+                # This set_item operation will lead some BUG in koalas(v1.0.0),
+                # see https://github.com/databricks/koalas/issues/1633
                 self[col] = GeoSeries(self[col], crs=_crs)
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
@@ -130,5 +132,27 @@ class GeoDataFrame(DataFrame):
             right_index=False,
             suffixes=("_x", "_y")
     ):
-        # TODO: implement this
-        pass
+        result = super().merge(right, how, on, left_on, right_on,
+                               left_index, right_index, suffixes)
+        result = GeoDataFrame(result)
+
+        for col in result.columns:
+            kser = result[col]
+            if isinstance(kser, GeoSeries):
+                pick = self
+                if col.endswith(suffixes[0]):
+                    col = col[:-len(suffixes[0])]
+                elif col.endswith(suffixes[1]):
+                    col = col[:-len(suffixes[1])]
+                    pick = right
+                elif col in right.columns:
+                    pick = right
+
+                kser.set_crs(pick._crs_for_cols.get(col, None))
+
+        for col in self._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[0])
+        for col in right._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[1])
+
+        return result
