@@ -19,9 +19,19 @@ import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.types.{BooleanType, StructField, StructType}
-import org.locationtech.jts.geom.{Coordinate, Geometry, GeometryFactory}
+import org.locationtech.jts.geom.{Coordinate, Envelope, Geometry, GeometryFactory}
 
 object MapMatching {
+  private def RAD2DEG(x: Double) = x * 180.0 / scala.math.Pi
+
+  private def expandEnvelope(env: Envelope, expandValue: Double): Envelope = {
+    val deg_distance = RAD2DEG(expandValue / 6371251.46)
+    new Envelope(env.getMinX - deg_distance,
+      env.getMaxX + deg_distance,
+      env.getMinY - deg_distance,
+      env.getMaxY + deg_distance)
+  }
+
   private def projection(x: Double, y: Double, x1: Double, y1: Double, x2: Double, y2: Double): (Double, Double, Double) = {
     val L2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)
     if (L2 == 0.0) return (Double.MaxValue, -999999999, -999999999)
@@ -51,19 +61,19 @@ object MapMatching {
         y = tmp._3
       }
     }
-    (distance, x , y)
+    (distance, x, y)
   }
 
-  private def computeNearRoad(geo: Geometry, index: Broadcast[RTreeIndex]): Boolean = {
-    val env = geo.getEnvelopeInternal
+  private def computeNearRoad(point: Geometry, index: Broadcast[RTreeIndex], expandValue: Double): Boolean = {
+    val env = expandEnvelope(point.getEnvelopeInternal, expandValue)
     val results = index.value.query(env)
     results.size() > 0
   }
 
-  private def computeNearestRoad(point: Geometry, index: Broadcast[RTreeIndex]): Geometry = {
-    val env = point.getEnvelopeInternal
+  private def computeNearestRoad(point: Geometry, index: Broadcast[RTreeIndex], expandValue: Double): Geometry = {
+    val env = expandEnvelope(point.getEnvelopeInternal, expandValue)
     val results = index.value.query(env)
-    if (results.size() <= 0) return null
+    if (results.size() <= 0) return new GeometryFactory().createLineString()
     var minDistance = Double.MaxValue
     var roadId: Int = -1
     for (i <- 0 until results.size()) {
@@ -77,10 +87,10 @@ object MapMatching {
     results.get(roadId).asInstanceOf[Geometry]
   }
 
-  private def computeNearestLocationOnRoad(point: Geometry, index: Broadcast[RTreeIndex]): Geometry = {
-    val env = point.getEnvelopeInternal
+  private def computeNearestLocationOnRoad(point: Geometry, index: Broadcast[RTreeIndex], expandValue: Double): Geometry = {
+    val env = expandEnvelope(point.getEnvelopeInternal, expandValue)
     val results = index.value.query(env)
-    if (results.size() <= 0) return null
+    if (results.size() <= 0) return new GeometryFactory().createGeometryCollection()
     var minDistance = Double.MaxValue
     var x: Double = -999999999
     var y: Double = -999999999
@@ -93,7 +103,7 @@ object MapMatching {
         y = rstProjection._3
       }
     }
-    new GeometryFactory().createPoint(new Coordinate(x , y))
+    new GeometryFactory().createPoint(new Coordinate(x, y))
   }
 }
 
@@ -118,36 +128,36 @@ class MapMatching {
     }
   }
 
-  def nearRoad(points: DataFrame, roads: DataFrame): DataFrame = {
+  def nearRoad(points: DataFrame, roads: DataFrame, expandValue: Double = 100.0): DataFrame = {
     setPoints(points)
     setRoads(roads)
     buildIndex()
     val pointsRdd = points.rdd
     val broadcast = spark.sparkContext.broadcast(index)
-    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearRoad(point.getAs[Geometry](0), broadcast)))
+    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearRoad(point.getAs[Geometry](0), broadcast, expandValue)))
     val rstSchema = StructType(Array(StructField("near_road", BooleanType, nullable = false)))
     spark.createDataFrame(rstRDD, rstSchema)
   }
 
-  def nearestRoad(points: DataFrame, roads: DataFrame): DataFrame = {
+  def nearestRoad(points: DataFrame, roads: DataFrame, expandValue: Double = 100.0): DataFrame = {
     setPoints(points)
     setRoads(roads)
     buildIndex()
     val pointsRdd = points.rdd
     val broadcast = spark.sparkContext.broadcast(index)
-    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearestRoad(point.getAs[Geometry](0), broadcast)))
-    val rstSchema = StructType(Array(StructField("near_road", new GeometryUDT, nullable = false)))
+    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearestRoad(point.getAs[Geometry](0), broadcast, expandValue)))
+    val rstSchema = StructType(Array(StructField("nearest_road", new GeometryUDT, nullable = false)))
     spark.createDataFrame(rstRDD, rstSchema)
   }
 
-  def nearestLocationOnRoad(points: DataFrame, roads: DataFrame): DataFrame = {
+  def nearestLocationOnRoad(points: DataFrame, roads: DataFrame, expandValue: Double = 100.0): DataFrame = {
     setPoints(points)
     setRoads(roads)
     buildIndex()
     val pointsRdd = points.rdd
     val broadcast = spark.sparkContext.broadcast(index)
-    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearestLocationOnRoad(point.getAs[Geometry](0), broadcast)))
-    val rstSchema = StructType(Array(StructField("near_road", new GeometryUDT, nullable = false)))
+    val rstRDD = pointsRdd.map(point => Row(MapMatching.computeNearestLocationOnRoad(point.getAs[Geometry](0), broadcast, expandValue)))
+    val rstSchema = StructType(Array(StructField("nearest_location_on_road", new GeometryUDT, nullable = false)))
     spark.createDataFrame(rstRDD, rstSchema)
   }
 }

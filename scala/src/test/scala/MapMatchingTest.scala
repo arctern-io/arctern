@@ -20,48 +20,44 @@ import org.apache.spark.sql.arctern.functions._
 import org.locationtech.jts.io.WKTReader
 
 class MapMatchingTest extends AdapterTest {
+  val points = Seq(
+    Row(new WKTReader().read("POINT (-73.961003 40.760594)")),
+    Row(new WKTReader().read("POINT (-73.959908 40.776353)")),
+    Row(new WKTReader().read("POINT (-73.955183 40.773459)")),
+    Row(new WKTReader().read("POINT (-73.985233 40.744682)")),
+    Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+    Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+    Row(new WKTReader().read("POINT (-73.988240 40.748960)")),
+    Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+    Row(new WKTReader().read("POINT (-73.989726 40.767795)")),
+    Row(new WKTReader().read("POINT (-73.992669 40.768327)")),
+  )
+
+  val roads = Seq(
+    Row(new WKTReader().read("LINESTRING (-73.9975944 40.7140611, -73.9974922 40.7139962)")),
+    Row(new WKTReader().read("LINESTRING (-73.9980065 40.7138119, -73.9980743 40.7137811)")),
+    Row(new WKTReader().read("LINESTRING (-73.9975554 40.7141073, -73.9975944 40.7140611)")),
+    Row(new WKTReader().read("LINESTRING (-73.9978864 40.7143170, -73.9976740 40.7140968)")),
+    Row(new WKTReader().read("LINESTRING (-73.9979810 40.7136728, -73.9980743 40.7137811)")),
+    Row(new WKTReader().read("LINESTRING (-73.9980743 40.7137811, -73.9984728 40.7136003)")),
+    Row(new WKTReader().read("LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)")),
+    Row(new WKTReader().read("LINESTRING (-73.9594166 40.7593773, -73.9593736 40.7593593)")),
+    Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+    Row(new WKTReader().read("LINESTRING (-73.9615569 40.7601753, -73.9615014 40.7602517)")),
+  )
+
   test("NearRoad") {
-    val points = Seq(
-      Row(new WKTReader().read("POINT(-100 -40)")),
-      Row(new WKTReader().read("POINT(100 -40)")),
-      Row(new WKTReader().read("POINT(-100 40)")),
-      Row(new WKTReader().read("POINT(100 40)")),
-      Row(new WKTReader().read("POINT(100 0)")),
-    )
-
-    val roads = Seq(
-      Row(new WKTReader().read("POLYGON((-180 -90, 0 -90, 0 0, -180 0, -180 -90))")),
-      Row(new WKTReader().read("POLYGON((0 -90, 180 -90, 180 0, 0 0, 0 -90))")),
-      Row(new WKTReader().read("POLYGON((-180 0, 0 0, 0 90, -180 90, -180 0))")),
-      Row(new WKTReader().read("POLYGON((0 0, 180 0, 180 90, 0 90, 0 0))")),
-    )
-
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
 
     val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
     val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
 
-    val rst = near_road(pointsDF, roadsDF)
+    val rst = near_road(pointsDF, roadsDF, 1000)
     rst.show(false)
   }
 
   test("NearestRoad") {
-    val points = Seq(
-      Row(new WKTReader().read("POINT(-100 -40)")),
-      Row(new WKTReader().read("POINT(100 -40)")),
-      Row(new WKTReader().read("POINT(-100 40)")),
-      Row(new WKTReader().read("POINT(100 40)")),
-      Row(new WKTReader().read("POINT(100 0)")),
-    )
-
-    val roads = Seq(
-      Row(new WKTReader().read("POLYGON((-180 -90, 0 -90, 0 0, -180 0, -180 -90))")),
-      Row(new WKTReader().read("POLYGON((0 -90, 180 -90, 180 0, 0 0, 0 -90))")),
-      Row(new WKTReader().read("POLYGON((-180 0, 0 0, 0 90, -180 90, -180 0))")),
-      Row(new WKTReader().read("POLYGON((0 0, 180 0, 180 90, 0 90, 0 0))")),
-    )
-
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
 
@@ -73,21 +69,6 @@ class MapMatchingTest extends AdapterTest {
   }
 
   test("NearestLocationOnRoad") {
-    val points = Seq(
-      Row(new WKTReader().read("POINT(-100 -40)")),
-      Row(new WKTReader().read("POINT(100 -40)")),
-      Row(new WKTReader().read("POINT(-100 40)")),
-      Row(new WKTReader().read("POINT(100 40)")),
-      Row(new WKTReader().read("POINT(100 0)")),
-    )
-
-    val roads = Seq(
-      Row(new WKTReader().read("POLYGON((-180 -90, 0 -90, 0 0, -180 0, -180 -90))")),
-      Row(new WKTReader().read("POLYGON((0 -90, 180 -90, 180 0, 0 0, 0 -90))")),
-      Row(new WKTReader().read("POLYGON((-180 0, 0 0, 0 90, -180 90, -180 0))")),
-      Row(new WKTReader().read("POLYGON((0 0, 180 0, 180 90, 0 90, 0 0))")),
-    )
-
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
 
