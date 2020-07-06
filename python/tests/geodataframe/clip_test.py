@@ -12,8 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
-from .file import *
-from .sjoin import sjoin
-from .clip import clip
+import arctern
+import numpy as np
+import pandas
+from arctern import GeoDataFrame, GeoSeries
+
+
+def test_clip():
+    import arctern
+    from arctern import GeoDataFrame, GeoSeries
+    s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))",
+                    "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))",
+                    "POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"])
+    d1 = GeoDataFrame({"geo":s3})
+    rst = arctern.clip(d1, "POLYGON ((1 1,1 2,2 2,2 1,1 1))", col="geo")
+    assert len(rst) == 2
+    assert isinstance(rst, GeoDataFrame)

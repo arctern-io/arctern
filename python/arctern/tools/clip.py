@@ -4,12 +4,13 @@ import numpy as np
 
 
 def _clip_points(gdf, poly, col=None):
-    return gdf.iloc[gdf[col].sindex.query(poly, predicate="intersects")]
+    from arctern import GeoSeries
+    return gdf.iloc[gdf[col].sindex.query(GeoSeries(poly))]
 
 
 def _clip_line_poly(gdf, poly, col=None):
-    from arctern import GeoDataFrame
-    gdf_sub = gdf.iloc[gdf[col].sindex.query(poly, predicate="intersects")]
+    from arctern import GeoDataFrame, GeoSeries
+    gdf_sub = gdf.iloc[gdf[col].sindex.query(GeoSeries(poly))]
 
     if isinstance(gdf_sub, GeoDataFrame):
         clipped = gdf_sub.copy()
@@ -53,22 +54,22 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     point_idx = np.asarray((geom_types == "POINT") | (geom_types == "MULTIPOINT"))
     geomcoll_idx = np.asarray((geom_types == "GEOMETRYCOLLECTION"))
     if point_idx.any():
-        point_gdf = _clip_points(gdf[point_idx], box_mask, col)
+        point_gdf = _clip_points(gdf[point_idx], box_mask[0], col)
     else:
         point_gdf = None
 
     if poly_idx.any():
-        poly_gdf = _clip_line_poly(gdf[poly_idx], box_mask, col)
+        poly_gdf = _clip_line_poly(gdf[poly_idx], box_mask[0], col)
     else:
         poly_gdf = None
 
     if line_idx.any():
-        line_gdf = _clip_line_poly(gdf[line_idx], box_mask, col)
+        line_gdf = _clip_line_poly(gdf[line_idx], box_mask[0], col)
     else:
-        line_idx = None
+        line_gdf = None
 
     if geomcoll_idx.any():
-        geomcoll_gdf = _clip_line_poly(gdf[geomcoll_idx], box_mask, col)
+        geomcoll_gdf = _clip_line_poly(gdf[geomcoll_idx], box_mask[0], col)
     else:
         geomcoll_gdf = None
 

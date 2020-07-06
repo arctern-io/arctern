@@ -507,3 +507,14 @@ cdef class SpatialIndex:
         res = res.apply(lambda x: self.data.index[x] if x >= 0 else pandas.NA)
         res = res.set_axis(left.index)
         return res
+
+    def query(self, inputs):
+        import pyarrow as pa
+        arr_geos = pa.array(inputs, type='binary')
+        list_geos = _to_arrow_array_list(arr_geos)
+        cdef vector[shared_ptr[CArray]] geos_to_match
+        for geo in list_geos:
+            geos_to_match.push_back(pyarrow_unwrap_array(geo))
+        result = self.thisptr.query(geos_to_match)
+        pyarrow_res = [pyarrow_wrap_array(ptr) for ptr in result]
+        return _to_pandas_series(pyarrow_res)

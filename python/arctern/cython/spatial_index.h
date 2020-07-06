@@ -27,6 +27,9 @@ public:
 
   std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
           const std::vector<std::shared_ptr<arrow::Array>>& points);
+
+  std::vector<std::shared_ptr<arrow::Array>> query(
+          const std::vector<std::shared_ptr<arrow::Array>>& inputs);
 };
 
 }
