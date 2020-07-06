@@ -15,7 +15,7 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.Column
+import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.arctern.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
 
@@ -229,4 +229,9 @@ object functions {
   def st_envelope_aggr(geo: Column): Column = withAggregateFunction {
     EnvelopeAggr(geo.expr)
   }
+
+  // map matching
+  def near_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearRoad(points, roads)
+
+  def nearest_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestRoad(points, roads)
 }
