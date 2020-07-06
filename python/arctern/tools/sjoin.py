@@ -113,7 +113,7 @@ def sjoin(
 
     # get rtree spatial index
     if tree_idx_right:
-        idxmatch = left_df[lcol].apply(lambda x: x.envelope).apply(
+        idxmatch = left_df[lcol].apply(lambda x: x.bbox).apply(
             lambda x: list(tree_idx.intersection(x)) if not x == () else []
         )
         idxmatch = idxmatch[idxmatch.apply(len) > 0]

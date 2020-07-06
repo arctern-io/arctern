@@ -41,7 +41,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     if not box_mask.intersects(box_gdf)[0]:
         return gdf.iloc[:0]
     geom_types = gdf[col].geom_type
-    for i, geom_type in zip(range(0, len(geom_types)), geom_types):
+    for i, geom_type in enumerate(geom_types):
         geom_types[i] = geom_type[3:]
 
     poly_idx = np.asarray((geom_types == "POLYGON") | (geom_types == "MULTIPOLYGON"))
