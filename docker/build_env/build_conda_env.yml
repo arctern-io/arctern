@@ -12,3 +12,4 @@ dependencies:
 - conda-forge::descartes=1.1.0
 - conda-forge::pyproj=2.6.1.post1
 - conda-forge::contextily=1.0.0
+- conda-forge::koalas=1.0.0

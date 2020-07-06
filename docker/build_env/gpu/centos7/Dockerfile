@@ -24,6 +24,7 @@ RUN echo "source scl_source enable llvm-toolset-7.0" >> /etc/profile.d/llvm-tool
 
 ENV CLANG_TOOLS_PATH /opt/rh/llvm-toolset-7.0/root/usr/bin
 
+# build_conda_env.yml's changed
 COPY docker/build_env/build_conda_env.yml /tmp/build_conda_env.yml
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \

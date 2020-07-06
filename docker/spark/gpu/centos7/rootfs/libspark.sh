@@ -134,6 +134,13 @@ spark_generate_conf_file() {
     mv "${SPARK_CONFDIR}/spark-defaults.conf.template" "${SPARK_CONFDIR}/spark-defaults.conf"
 }
 
+spark_config_extra_class() {
+    info "Configuring Spark extra class path ..."
+
+    spark_conf_set spark.driver.extraClassPath "/build/arctern/arctern_scala-assembly-0.1.jar"
+    spark_conf_set spark.executor.extraClassPath "/build/arctern/arctern_scala-assembly-0.1.jar"
+}
+
 ########################
 # Configure Spark RPC Authentication (https://spark.apache.org/docs/latest/security.html#authentication)
 # Globals:
@@ -251,6 +258,8 @@ spark_initialize() {
     if [[ ! -f "$SPARK_CONF_FILE" ]]; then
         # Generate default config file
         spark_generate_conf_file
+        # Configuring Spark class path
+        spark_config_extra_class
         # Enable RPC authentication and encryption
         if is_boolean_yes "$SPARK_RPC_AUTHENTICATION_ENABLED"; then
             spark_enable_rpc_authentication

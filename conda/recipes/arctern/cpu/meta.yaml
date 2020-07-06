@@ -31,6 +31,7 @@ requirements:
     - python ===3.7.6
     - Cython ==0.29.15
     - setuptools
+    - koalas ==1.0.0
 
   run:
     - python ===3.7.6
@@ -38,6 +39,7 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ===0.17.1
     - rapidjson ==1.1.0
+    - koalas ==1.0.0
 
 test:
   commands:
@@ -54,6 +56,7 @@ test:
 
     # python
     - python -c "import arctern"
+    - python -c "import arctern_spark"
     - python -c "import arctern_pyspark"
 
     # conda tools
