@@ -2,12 +2,10 @@ import os
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
 from osgeo.ogr import *
-from yaml import full_load
 from shapely import wkt
-
+from yaml import full_load
 
 EPOCH = 1e-6
-
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
 GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
