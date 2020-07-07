@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# pylint: disable=protected-access
+
 from itertools import zip_longest
 
+from databricks.koalas import DataFrame, Series
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
-from databricks.koalas import DataFrame, Series
 
 _crs_dtype = str
 

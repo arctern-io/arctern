@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyspark.sql.functions as F
+# pylint: disable=protected-access
+
 from databricks.koalas import DataFrame, Series
 from arctern_spark import GeoSeries
 from arctern_spark import scala_wrapper
