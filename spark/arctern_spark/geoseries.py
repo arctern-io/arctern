@@ -1694,7 +1694,7 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
-        if not isinstance(json, cls) and is_list_like(json) and not json:
+        if not isinstance(json, (pd.Series, ks.Series)) and is_list_like(json) and not json:
             return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
