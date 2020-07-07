@@ -82,7 +82,7 @@ class GeoDataFrame(DataFrame):
 
             for col in self._crs_for_cols:
                 if col in result.columns:
-                    crs[col] = self._crs_for_cols.get(result.name, None)
+                    crs[col] = self._crs_for_cols.get(col, None)
 
             for col in self._geometry_column_names:
                 if col in result.columns:
