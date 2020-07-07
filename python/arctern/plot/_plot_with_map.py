@@ -70,6 +70,8 @@ def pointmap(ax, points, bounding_box,
     .. plot::
        :context: close-figs
 
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
@@ -150,7 +152,8 @@ def weighted_pointmap(ax, points, color_weights=None,
 
     .. plot::
        :context: close-figs
-
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
@@ -235,7 +238,8 @@ def heatmap(ax, points, weights, bounding_box,
 
     .. plot::
        :context: close-figs
-
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
@@ -309,6 +313,8 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     .. plot::
        :context: close-figs
 
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
@@ -369,7 +375,8 @@ def iconviz(ax, points, bounding_box, icon_path,
 
     .. plot::
        :context: close-figs
-
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import os
@@ -447,7 +454,8 @@ def fishnetmap(ax, points, weights, bounding_box,
 
     .. plot::
        :context: close-figs
-
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
