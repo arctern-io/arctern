@@ -57,7 +57,7 @@ else ()
 endif ()
 message(STATUS "Building commit ${LAST_COMMIT_ID}")
 
-set(LIB_VERSION "0.2.0")
+set(LIB_VERSION "0.3.0")
 
 set(CMAKE_CXX_STANDARD 14)
 if (BUILD_WITH_GPU)
