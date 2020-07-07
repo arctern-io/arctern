@@ -1691,7 +1691,7 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
-        if not json:
+        if not isinstance(json, cls) and is_list_like(json) and not json:
             return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
@@ -1953,7 +1953,7 @@ class GeoSeries(Series):
         """
 
         geo_types = "Unknown"
-        if len(self.geom_type):
+        if len(self.geom_type) != 0:
             geo_types = set(self.geom_type.dropna().unique().to_pandas())
 
         schema = {"properties": {}, "geometry": geo_types}
