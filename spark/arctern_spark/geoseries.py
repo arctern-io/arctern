@@ -932,10 +932,10 @@ class GeoSeries(Series):
         >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
         >>> s
         0    POINT (1 2)
-        dtype: GeoDtype
+        Name: 0, dtype: object
         >>> s.to_crs(crs="EPSG:3857")
-        0    POINT (111319.490793274 222684.208505545)
-        dtype: GeoDtype
+        0    POINT (111319.49079327357 222684.20850554455)
+        Name: 0, dtype: object
         """
         if crs is None:
             raise ValueError("Can not transform with invalid crs")

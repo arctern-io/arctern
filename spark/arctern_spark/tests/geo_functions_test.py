@@ -15,7 +15,7 @@
 import pandas as pd
 from osgeo import ogr
 from databricks.koalas import Series
-from arctern_spark.geoseries import GeoSeries
+from arctern_spark import GeoSeries
 
 
 p1 = ["POINT (1 1)", "POINT (0 0)"]
@@ -408,78 +408,38 @@ def test_ST_AsGeoJSON():
 
 
 def test_ST_Contains():
-    p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
-    p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
-    p13 = "POINT(2 2)"
-    p14 = "POINT(200 2)"
-    data1 = GeoSeries([p11, p12, p13, p14])
+    rst = data1.contains(data2)
+    assert not rst[0]
+    assert rst[1]
+    assert rst.any()
 
-    p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    data2 = GeoSeries([p21, p22, p23, p24])
-    rst = data2.contains(data1)
-    assert len(rst) == 4
-    assert rst[0] == 1
-    assert rst[1] == 0
-    assert rst[2] == 1
-    assert rst[3] == 0
-
-    rst = data2.contains(data2[0])
-    assert len(rst) == 4
-    assert rst[0] == 1
-    assert rst[1] == 1
-    assert rst[2] == 1
-    assert rst[3] == 1
+    rst = data1.contains(data2[0])
+    assert not rst[0]
+    assert rst[1]
+    assert rst.any()
 
 
 def test_ST_Intersects():
-    p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
-    p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
-    p13 = "LINESTRING(2 2,10 2)"
-    p14 = "LINESTRING(9 2,10 2)"
-    data1 = GeoSeries([p11, p12, p13, p14])
-
-    p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    data2 = GeoSeries([p21, p22, p23, p24])
-
-    rst = data2.intersects(data1)
-    assert rst[0] == 1
-    assert rst[1] == 1
-    assert rst[2] == 1
-    assert rst[3] == 0
+    rst = data1.intersects(data2)
+    assert rst[0]
+    assert rst[1]
+    assert rst[2]
+    assert not rst.all()
 
     rst = data1.intersects(data2[0])
-    assert len(rst) == 4
-    assert rst[0] == 1
-    assert rst[1] == 1
-    assert rst[2] == 1
-    assert rst[3] == 0
+    assert rst[0]
+    assert rst[1]
+    assert rst[2]
+    assert not rst.all()
 
 
 def test_ST_Within():
-    p11 = "POLYGON((0 0,1 0,1 1,0 1,0 0))"
-    p12 = "POLYGON((8 0,9 0,9 1,8 1,8 0))"
-    p13 = "LINESTRING(2 2,3 2)"
-    p14 = "POINT(10 2)"
-    data1 = GeoSeries([p11, p12, p13, p14])
-
-    p21 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p22 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p23 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    p24 = "POLYGON((0 0,0 8,8 8,8 0,0 0))"
-    data2 = GeoSeries([p21, p22, p23, p24])
-
     rst = data2.within(data1)
     assert len(rst) == 4
-    assert rst[0] == 0
-    assert rst[1] == 0
-    assert rst[2] == 0
-    assert rst[3] == 0
+    assert rst[0]
+    assert rst[1]
+    assert rst[2]
+    assert not rst.all()
 
     rst = data1.within(data2[0])
     assert len(rst) == 4
