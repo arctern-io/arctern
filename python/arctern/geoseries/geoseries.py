@@ -1994,7 +1994,7 @@ class GeoSeries(Series):
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
         item: int or slice
-            * If ``item`` is an integer, this function loads the geometry with an index of ``item``.
+            * If ``item`` is an integer, this function loads the geometry with an index of the integer.
             * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
                 * *start:* The position to start the slicing, by default 0.
                 * *end:* The position to end the slicing.
