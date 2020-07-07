@@ -174,7 +174,7 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy(),self.crs)
+        return GeoArray(self.data.copy(), self.crs)
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)

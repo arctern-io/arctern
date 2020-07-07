@@ -109,7 +109,7 @@ def test_merge():
     result = gdf1.merge(gdf2, left_on="A", right_on="A")
     assert isinstance(result, arctern.GeoDataFrame) == True
     assert isinstance(result["geometry"], arctern.GeoSeries) == True
-    assert result.location.crs == "EPSG:4326"
+    assert result.geometry.crs == "EPSG:4326"
 
 
 def test_to_json():

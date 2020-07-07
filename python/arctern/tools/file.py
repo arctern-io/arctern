@@ -117,8 +117,8 @@ def get_geom_types(geoseries):
             geom_types.append(geom_type)
     if len(geom_types) == 1:
         return geom_types[0]
-    else:
-        return geom_types
+
+    return geom_types
 
 
 def infer_schema(df, geo_col):
@@ -167,7 +167,7 @@ def _to_file(
 ):
     copy_df = df.copy()
     copy_df[col].set_crs(df[col].crs)
-    for col_name in copy_df._geometry_column_name:
+    for col_name in copy_df.geometries_name:
         if col_name is not col:
             copy_df[col_name] = pd.Series(copy_df[col_name].to_wkt())
 

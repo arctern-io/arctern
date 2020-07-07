@@ -52,6 +52,19 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     GeoDataFrame or GeoSeries
          Vector data (points, lines, polygons) from `gdf` clipped to
          polygon boundary from mask.
+
+    Examples
+    --------
+    >>> import arctern
+    >>> from arctern import GeoDataFrame, GeoSeries
+    >>> s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))",
+    ...                "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))",
+    ...                "POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"])
+    >>> d1 = GeoDataFrame({"geo":s3})
+    >>> arctern.clip(d1, "POLYGON ((1 1,1 2,2 2,2 1,1 1))", col="geo")
+                                               geo
+    0                         LINESTRING (2 2,2 1)
+    1  POLYGON ((1.5 1.0,1 1,1 2,1.5 2.0,1.5 1.0))
     """
     from arctern import GeoDataFrame, GeoSeries
     if not isinstance(gdf, (GeoDataFrame, GeoSeries)):
@@ -84,6 +97,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     )
     point_idx = np.asarray((geom_types == "POINT") | (geom_types == "MULTIPOINT"))
     geomcoll_idx = np.asarray((geom_types == "GEOMETRYCOLLECTION"))
+
     if point_idx.any():
         point_gdf = _clip_points(gdf[point_idx], box_mask[0], col)
     else:
@@ -158,7 +172,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     if isinstance(concat, GeoDataFrame):
         concat["_order"] = order
         return concat.sort_values(by="_order").drop(columns="_order")
-    else:
-        concat = GeoDataFrame(concat, geometries=[concat.name])
-        concat["_order"] = order
-        return concat.sort_values(by="_order")[col]
+
+    concat = GeoDataFrame(concat, geometries=[concat.name])
+    concat["_order"] = order
+    return concat.sort_values(by="_order")[col]
