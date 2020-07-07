@@ -145,3 +145,4 @@ cdef extern from "spatial_index.h" namespace "arctern::geo_indexing":
         vector[shared_ptr[CArray]] nearest_location_on_road(const vector[shared_ptr[CArray]]& gps_points)
         vector[shared_ptr[CArray]] nearest_road(const vector[shared_ptr[CArray]]& gps_points)
         vector[shared_ptr[CArray]] ST_IndexedWithin(const vector[shared_ptr[CArray]]& gps_points)
+        vector[shared_ptr[CArray]] query(const vector[shared_ptr[CArray]]& inputs)

@@ -459,66 +459,95 @@ class GeoDataFrame(DataFrame):
         result = DataFrame.merge(self, right, how, on, left_on, right_on,
                                  left_index, right_index, sort, suffixes,
                                  copy, indicator, validate)
-        if not isinstance(result, GeoDataFrame):
-            return result
-        left_geometries = self.geometries_name
-        left_crs = self.crs
-        right_geometries = right.geometries_name
-        right_crs = right.crs
-        result_cols = result.columns.values.tolist()
-        result_geometries_name = result.geometries_name
-        result_crs = result.crs
-        strip_result = []
-        for col in result_cols:
-            col = col.replace(suffixes[0], '')
-            col = col.replace(suffixes[1], '')
-            strip_result.append(col)
-        for i in range(0, len(strip_result)):
-            if isinstance(result[result_cols[i]], GeoSeries):
-                if strip_result[i] in left_geometries:
-                    index = left_geometries.index(strip_result[i])
-                    result[result_cols[i]].set_crs(left_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(left_crs[index])
-                    continue
-                if strip_result[i] in right_geometries:
-                    index = right_geometries.index(strip_result[i])
-                    result[result_cols[i]].set_crs(right_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(right_crs[index])
-                    continue
+        # if not isinstance(result, GeoDataFrame):
+        #     return result
+        # left_geometries = self.geometries_name
+        # left_crs = self.crs
+        # right_geometries = right.geometries_name
+        # right_crs = right.crs
+        # result_cols = result.columns.values.tolist()
+        # result_geometries_name = result.geometries_name
+        # result_crs = result.crs
+        # strip_result = []
+        # for col in result_cols:
+        #     col = col.replace(suffixes[0], '')
+        #     col = col.replace(suffixes[1], '')
+        #     strip_result.append(col)
+        # for i in range(0, len(strip_result)):
+        #     if isinstance(result[result_cols[i]], GeoSeries):
+        #         if strip_result[i] in left_geometries:
+        #             index = left_geometries.index(strip_result[i])
+        #             result[result_cols[i]].set_crs(left_crs[index])
+        #             result_geometries_name.append(result_cols[i])
+        #             result_crs.append(left_crs[index])
+        #             continue
+        #         if strip_result[i] in right_geometries:
+        #             index = right_geometries.index(strip_result[i])
+        #             result[result_cols[i]].set_crs(right_crs[index])
+        #             result_geometries_name.append(result_cols[i])
+        #             result_crs.append(right_crs[index])
+        #             continue
         return result
 
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Alternate constructor to create a ``GeoDataFrame`` from a file.
+        Alternate constructor to create a ``GeoDataFrame`` from a file or url.
 
         Parameters
         -----------
         filename : str
             File path or file handle to read from.
+        bbox : tuple or arctern.GeoSeries, default None
+            Filter features by given bounding box, GeoSeries. Cannot be used
+            with mask.
+        mask : dict | arctern.GeoSeries | dicr, default None
+            Filter for features that intersect with the given dict-like geojson
+            geometry, GeoSeries. Cannot be used with bbox.
+        rows : int or slice, default None
+            Load in specific rows by passing an integer (first `n` rows) or a
+            slice() object.
+        **kwargs :
+        Keyword args to be passed to the `open` or `BytesCollection` method
+        in the fiona library when opening the file. For more information on
+        possible keywords, type:
+        ``import fiona; help(fiona.open)``
+
+        Returns
+        --------
+        GeoDataFrame
+            An arctern.GeoDataFrame object.
         """
         return arctern.tools.file._read_file(filename, **kwargs)
 
-    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, **kwargs):
+    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None **kwargs):
         """
         Write the ``GeoDataFrame`` to a file.
 
         Parameters
         ----------
-        filename : string
+        df : GeoDataFrame to be written
+        filename : str
             File path or file handle to write to.
-        driver : string, default: 'ESRI Shapefile'
+        driver : string, default 'ESRI Shapefile'
             The OGR format driver used to write the vector file.
-        schema : dict, default: None
+        schema : dict, default None
             If specified, the schema dictionary is passed to Fiona to
-            better control how the file is written.
+            better control how the file is written. If None, GeoPandas
+            will determine the schema based on each column's dtype.
         index : bool, default None
             If True, write index into one or more columns (for MultiIndex).
             Default None writes the index into one or more columns only if
             the index is named, is a MultiIndex, or has a non-integer data
             type. If False, no index is written.
+        mode : str, default 'w'
+            The write mode, 'w' to overwrite the existing file and 'a' to append.
+        crs : str, default None
+            If specified, the CRS is passed to Fiona to
+            better control how the file is written. If None, GeoPandas
+            will determine the crs based on crs df attribute.
+        col : str, default None
+            Specify geometry column.
 
         Notes
         -----

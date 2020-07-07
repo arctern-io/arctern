@@ -52,5 +52,12 @@ std::vector<std::shared_ptr<arrow::Array>> GeosIndex::ST_IndexedWithin(
   return arctern::gis::spatial_join::ST_IndexedWithin(*index_, points);
 }
 
+std::vector<std::shared_ptr<arrow::Array>> GeosIndex::query(
+        const std::vector<std::shared_ptr<arrow::Array>>& inputs) {
+  auto gps_points_geo = arctern::render::GeometryExtraction(inputs);
+  assert(gps_points_geo.size() == 1);
+  return (*index_).query(gps_points_geo[0].get());
+}
+
 }  // namespace geo_indexing
 }  // namespace arctern
