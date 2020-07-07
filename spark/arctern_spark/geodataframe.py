@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from databricks.koalas import DataFrame, Series
+from itertools import zip_longest
+
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
+from databricks.koalas import DataFrame, Series
 
 _crs_dtype = str
 
@@ -25,39 +27,39 @@ class GeoDataFrame(DataFrame):
         self._crs_for_cols = {}
         if isinstance(data, GeoSeries):
             self._crs_for_cols[data.name] = data.crs
-        elif isinstance(data, GeoDataFrame):
+        elif isinstance(data, DataFrame):
             for col in data.columns:
+                if isinstance(data[col].spark.data_type, GeometryUDT):
+                    self._crs_for_cols[col] = None
                 if isinstance(data[col], GeoSeries):
                     self._crs_for_cols[col] = data[col].crs
             data = data._internal_frame
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
-        # TODO: do we need it?
-        self._geometry_column_names = set()
         if geometries is None:
             if "geometry" in self.columns:
                 geometries = ["geometry"]
             else:
                 geometries = []
-
+        self._geometry_column_names = set()
         self._set_geometries(geometries, crs=crs)
 
     # only for internal use
     def _set_geometries(self, cols, crs=None):
-        assert isinstance(cols, list)
+        assert isinstance(cols, list), "cols must be list"
         if len(cols) == 0:
             return
-
         if crs is None or isinstance(crs, _crs_dtype):
             crs = [crs] * len(cols)
-        else:
-            assert isinstance(crs, list)
-        # align crs and cols, simply fill None to crs
-        crs.extend([None] * (len(cols) - len(crs)))
+        assert isinstance(crs, list), "crs must be list or scalar value"
+        assert len(cols) >= len(crs), "The length of crs should less than geometries!"
 
-        for col, _crs in zip(cols, crs):
+        # align crs and cols, simply fill None to crs
+        for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
+                # This set_item operation will lead some BUG in koalas(v1.0.0),
+                # see https://github.com/databricks/koalas/issues/1633
                 self[col] = GeoSeries(self[col], crs=_crs)
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
@@ -69,7 +71,8 @@ class GeoDataFrame(DataFrame):
         result = super().__getitem__(item)
         if isinstance(result, Series) and isinstance(result.spark.data_type, GeometryUDT):
             result.__class__ = GeoSeries
-            result.set_crs(self._crs_for_cols[result.name])
+            result._gdf = self
+            result.set_crs(self._crs_for_cols.get(result.name, None))
         if isinstance(result, DataFrame):
             crs = {}
             geometry_column_names = []
@@ -77,7 +80,7 @@ class GeoDataFrame(DataFrame):
 
             for col in self._crs_for_cols:
                 if col in result.columns:
-                    crs[col] = self._crs_for_cols[col]
+                    crs[col] = self._crs_for_cols.get(result.name, None)
 
             for col in self._geometry_column_names:
                 if col in result.columns:
@@ -98,4 +101,58 @@ class GeoDataFrame(DataFrame):
             self._crs_for_cols[key] = value.crs
         elif isinstance(value, GeoDataFrame):
             for col in value._crs_for_cols.keys():
-                self._crs_for_cols[col] = value[col].crs
+                v = value[col]
+                if hasattr(v, "crs"):
+                    self._crs_for_cols[col] = v.crs
+        else:
+            if isinstance(key, list):
+                pass
+            else:
+                key = [key]
+            for col in key:
+                self._crs_for_cols.pop(col)
+
+    def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
+        if col not in self._geometry_column_names:
+            raise ValueError("`col` must be a column in geometries columns which set by `set_geometry`")
+        agg_dict = {aggfunc_col: aggfunc for aggfunc_col in self.columns.tolist() if aggfunc_col not in [col, by]}
+        agg_dict[col] = "ST_Union_Aggr"
+        aggregated = self.groupby(by=by, as_index=as_index).aggregate(agg_dict)
+        gdf = GeoDataFrame(aggregated, geometries=[col], crs=[self._crs_for_cols[col]])
+        return gdf
+
+    def merge(
+            self,
+            right,
+            how="inner",
+            on=None,
+            left_on=None,
+            right_on=None,
+            left_index=False,
+            right_index=False,
+            suffixes=("_x", "_y")
+    ):
+        result = super().merge(right, how, on, left_on, right_on,
+                               left_index, right_index, suffixes)
+        result = GeoDataFrame(result)
+
+        for col in result.columns:
+            kser = result[col]
+            if isinstance(kser, GeoSeries):
+                pick = self
+                if col.endswith(suffixes[0]):
+                    col = col[:-len(suffixes[0])]
+                elif col.endswith(suffixes[1]):
+                    col = col[:-len(suffixes[1])]
+                    pick = right
+                elif col in right.columns:
+                    pick = right
+
+                kser.set_crs(pick._crs_for_cols.get(col, None))
+
+        for col in self._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[0])
+        for col in right._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[1])
+
+        return result
