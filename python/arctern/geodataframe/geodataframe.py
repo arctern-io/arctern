@@ -100,8 +100,8 @@ class GeoDataFrame(DataFrame):
         else:
             frame = self.copy()
 
-        geometry_cols = frame._geometry_column_name
-        geometry_crs = frame._crs
+        geometry_cols = frame.geometries_name
+        geometry_crs = frame.crs
         if not isinstance(frame[col], GeoSeries):
             frame[col] = GeoSeries(frame[col])
             frame[col].set_crs(crs)
@@ -260,7 +260,7 @@ class GeoDataFrame(DataFrame):
         import geopandas
         copy_df = self.copy()
         if self._geometry_column_name is not None:
-            for col in copy_df._geometry_column_name:
+            for col in copy_df.geometries_name:
                 copy_df[col] = Series(copy_df[col].to_geopandas())
         return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
@@ -355,7 +355,7 @@ class GeoDataFrame(DataFrame):
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
         >>> gdf.disolve(by="other_geom", col="geo1")
                                         geo1  A    B
-        other_geom                                  
+        other_geom
         1           MULTIPOINT (0 0,1 1,2 2)  0  0.0
         2               MULTIPOINT (3 3,4 4)  3  3.0
         """

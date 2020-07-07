@@ -20,7 +20,7 @@ from arctern import GeoDataFrame, GeoSeries
 
 def test_from_geopandas():
     import geopandas
-    from shapely.geometry import Point,LineString
+    from shapely.geometry import Point
     data = {
         "A": range(5),
         "B": np.arange(5.0),
@@ -31,9 +31,9 @@ def test_from_geopandas():
     pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
     assert isinstance(pdf["geometry"], geopandas.GeoSeries)
     gdf = GeoDataFrame.from_geopandas(pdf)
-    assert gdf._geometry_column_name == ["geometry", "copy_geo"]
-    assert isinstance(gdf['geometry'], arctern.geoseries.GeoSeries) == True
-    assert isinstance(gdf['copy_geo'], arctern.geoseries.GeoSeries) == True
+    assert gdf.geometries_name == ["geometry", "copy_geo"]
+    assert isinstance(gdf['geometry'], arctern.geoseries.GeoSeries) is True
+    assert isinstance(gdf['copy_geo'], arctern.geoseries.GeoSeries) is True
 
 
 def test_from_geoseries():
@@ -56,7 +56,7 @@ def test_to_geopandas():
     pdf = gdf.to_geopandas()
     pdf.set_geometry("geo1", inplace=True)
     assert pdf.geometry.name == "geo1"
-    assert isinstance(pdf["geo1"], geopandas.GeoSeries)
+    assert isinstance(pdf["geo1"], geopandas.GeoSeries) is True
 
 
 def test_dissolve():
@@ -107,8 +107,8 @@ def test_merge():
     }
     gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
     result = gdf1.merge(gdf2, left_on="A", right_on="A")
-    assert isinstance(result, arctern.GeoDataFrame) == True
-    assert isinstance(result["geometry"], arctern.GeoSeries) == True
+    assert isinstance(result, arctern.GeoDataFrame) is True
+    assert isinstance(result["geometry"], arctern.GeoSeries) is True
     assert result.geometry.crs == "EPSG:4326"
 
 
@@ -224,7 +224,7 @@ def test_read_and_save_file_6():
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
     gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
     bbox = GeoSeries(["POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
-    read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
+    read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=bbox)
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
