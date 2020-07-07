@@ -520,7 +520,7 @@ class GeoDataFrame(DataFrame):
         """
         return arctern.tools.file._read_file(filename, **kwargs)
 
-    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None **kwargs):
+    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None, **kwargs):
         """
         Write the ``GeoDataFrame`` to a file.
 

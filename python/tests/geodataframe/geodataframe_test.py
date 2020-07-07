@@ -174,7 +174,7 @@ def test_read_and_save_file_3():
     gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
     read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
-    assert read_gdf["geometry"].crs == "EPSG:3857"
+    assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"]
 
 
@@ -191,7 +191,7 @@ def test_read_and_save_file_4():
     gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
     read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
-    assert read_gdf["geometry"].crs == "EPSG:3857"
+    assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
 
@@ -208,7 +208,7 @@ def test_read_and_save_file_5():
     gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
     read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
-    assert read_gdf["geometry"].crs == "EPSG:3857"
+    assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
 
@@ -226,5 +226,5 @@ def test_read_and_save_file_6():
     bbox = GeoSeries(["POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
-    assert read_gdf["geometry"].crs == "EPSG:3857"
+    assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
