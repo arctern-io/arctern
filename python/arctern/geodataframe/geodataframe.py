@@ -51,7 +51,7 @@ class GeoDataFrame(DataFrame):
                     raise ValueError("The length of crs should less than geometries!")
             else:
                 raise TypeError("The type of crs should be str or list!")
-            for i in range(0, geo_length - crs_length):
+            for _i in range(0, geo_length - crs_length):
                 crs.append(None)
             for (crs_element, geometry) in zip(crs, geometries):
                 self[geometry] = GeoSeries(self[geometry])
@@ -585,11 +585,13 @@ class GeoDataFrame(DataFrame):
         3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
         4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
         """
-        arctern.tools.file._to_file(self, filename=filename, driver=driver, schema=schema, index=index, col=col, **kwargs)
+        arctern.tools.file._to_file(self, filename=filename, driver=driver,
+                                    schema=schema, index=index, col=col, **kwargs)
 
     @property
     def _constructor(self):
         return GeoDataFrame
 
+    @property
     def _constructor_expanddim(self):
         pass
