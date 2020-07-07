@@ -137,8 +137,12 @@ spark_generate_conf_file() {
 spark_config_extra_class() {
     info "Configuring Spark extra class path ..."
 
-    spark_conf_set spark.driver.extraClassPath "/build/arctern/arctern_scala-assembly-0.1.jar"
-    spark_conf_set spark.executor.extraClassPath "/build/arctern/arctern_scala-assembly-0.1.jar"
+    conda activate arctern
+    ARCTERN_SPARK_VERSION=`python -c "import arctern_spark;print(arctern_spark.version())"`
+    ARCTERN_ENV_PREFIX=${CONDA_PREFIX}
+    conda deactivate
+    spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
+    spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
 }
 
 ########################

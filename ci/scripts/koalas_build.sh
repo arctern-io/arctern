@@ -10,7 +10,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPTS_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-KOALAS_SRC_DIR="${SCRIPTS_DIR}/../../spark"
+ARCTERN_SPARK_SRC_DIR="${SCRIPTS_DIR}/../../spark"
 
 HELP="
 Usage:
@@ -59,15 +59,22 @@ if [[ -n ${CONDA_ENV} ]]; then
     conda activate ${CONDA_ENV}
 fi
 
-pushd ${KOALAS_SRC_DIR}
+ARCTERN_SCALA_SRC_DIR="${SCRIPTS_DIR}/../../scala"
+pushd ${ARCTERN_SCALA_SRC_DIR}
+sbt clean assembly
+mkdir -p ${CONDA_PREFIX}/jars
+mv target/scala-2.12/*.jar ${CONDA_PREFIX}/jars/
+popd
+
+pushd ${ARCTERN_SPARK_SRC_DIR}
 
 for arg do
 if [[ $arg == "clean" ]];then
-    if [[ -d ${KOALAS_SRC_DIR}/build ]]; then
-        rm -rf ${KOALAS_SRC_DIR}/build
+    if [[ -d ${ARCTERN_SPARK_SRC_DIR}/build ]]; then
+        rm -rf ${ARCTERN_SPARK_SRC_DIR}/build
     fi
-    if [[ -d ${KOALAS_SRC_DIR}/dist ]]; then
-        rm -rf ${KOALAS_SRC_DIR}/dist
+    if [[ -d ${ARCTERN_SPARK_SRC_DIR}/dist ]]; then
+        rm -rf ${ARCTERN_SPARK_SRC_DIR}/dist
     fi
     rm -rf *.egg*
     exit 0
@@ -75,11 +82,11 @@ fi
 done
 
 if [[ ${CLEANUP} == "ON" ]];then
-    if [[ -d ${KOALAS_SRC_DIR}/build ]]; then
-        rm -rf ${KOALAS_SRC_DIR}/build
+    if [[ -d ${ARCTERN_SPARK_SRC_DIR}/build ]]; then
+        rm -rf ${ARCTERN_SPARK_SRC_DIR}/build
     fi
-    if [[ -d ${KOALAS_SRC_DIR}/dist ]]; then
-        rm -rf ${KOALAS_SRC_DIR}/dist
+    if [[ -d ${ARCTERN_SPARK_SRC_DIR}/dist ]]; then
+        rm -rf ${ARCTERN_SPARK_SRC_DIR}/dist
     fi
     rm -rf *.egg*
     exit 0

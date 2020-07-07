@@ -37,14 +37,6 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 
 COPY arctern /tmp/arctern
 
-# install sbt & compile scala code
-RUN curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo && \
-    yum install sbt && \
-    cd /tmp/arctern/scala && \
-    sbt clean assembly && \
-    mkdir -p /build/arctern && \
-    mv /tmp/arctern/scala/target/scala-2.12/arctern_scala-assembly-0.1.jar /build/arctern/
-
 ENV PATH=/opt/conda/bin:$PATH
 RUN /tmp/arctern/install_arctern_conda.sh && rm -rf /tmp/arctern && \
     conda clean --all -y
