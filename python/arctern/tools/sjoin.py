@@ -48,7 +48,7 @@ def sjoin(
             '`op` was "%s" but is expected to be in %s' % (op, allowed_ops)
         )
 
-    if left_df.crs != right_df.crs:
+    if left_df[lcol].crs != right_df[rcol].crs:
         warn(
             (
                 "CRS of frames being joined does not match!"
