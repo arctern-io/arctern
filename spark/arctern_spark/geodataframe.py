@@ -72,7 +72,7 @@ class GeoDataFrame(DataFrame):
         if isinstance(result, Series) and isinstance(result.spark.data_type, GeometryUDT):
             result.__class__ = GeoSeries
             result._gdf = self
-            result.set_crs(self._crs_for_cols[result.name])
+            result.set_crs(self._crs_for_cols.get(result.name, None))
         if isinstance(result, DataFrame):
             crs = {}
             geometry_column_names = []
@@ -80,7 +80,7 @@ class GeoDataFrame(DataFrame):
 
             for col in self._crs_for_cols:
                 if col in result.columns:
-                    crs[col] = self._crs_for_cols[col]
+                    crs[col] = self._crs_for_cols.get(result.name, None)
 
             for col in self._geometry_column_names:
                 if col in result.columns:
