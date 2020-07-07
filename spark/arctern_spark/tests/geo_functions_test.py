@@ -434,19 +434,16 @@ def test_ST_Intersects():
 
 
 def test_ST_Within():
-    rst = data2.within(data1)
-    assert len(rst) == 4
+    rst = data1.within(data2)
     assert rst[0]
     assert rst[1]
     assert rst[2]
-    assert not rst.all()
+    assert not rst[[3, 4, 5, 6, 7]].any()
 
     rst = data1.within(data2[0])
-    assert len(rst) == 4
-    assert rst[0] == 1
-    assert rst[1] == 0
-    assert rst[2] == 1
-    assert rst[3] == 0
+    assert not rst[0]
+    assert rst[1]
+    assert not rst.all()
 
 
 def test_ST_Distance():
