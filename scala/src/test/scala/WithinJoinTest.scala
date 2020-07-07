@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 case class Info(text: String)
 
-class IndexedWithinTest extends AdapterTest {
+class WithinJoinTest extends AdapterTest {
   test("naive") {
     val ss = spark
     import ss.implicits._
@@ -34,10 +34,21 @@ class IndexedWithinTest extends AdapterTest {
 
     val polygons = polygons_text.select('id, st_geomfromtext('text).as("polygons"))
 
-    // here feed dog
-
     val fin = WithinJoin(spark, points, 'attr, 'points, polygons, 'id, 'polygons)()
     fin.show()
-    // both are unusable
+
+    val rst = fin.as[(Long, Long)].collect().toSeq.sorted
+    assert(rst.length == 8)
+    val ref = Seq(
+      (0, 0),
+      (1, 0),
+      (2, 0),
+      (3, 0),
+      (4, 0),
+      (4, 1),
+      (5, 1),
+      (6, 2),
+    )
+    assert(rst == ref)
   }
 }

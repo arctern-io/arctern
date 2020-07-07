@@ -19,6 +19,7 @@ case class WithinJoin(spark: SparkSession,
     val index_data = polygons.select(rightIndex.as("id"),
       st_envelopinternal('polygons).as("envs"))
     val tree = new RTreeIndex
+
     index_data.collect().foreach {
       row => {
         val id = row.getAs[Long](0)
