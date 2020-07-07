@@ -19,26 +19,27 @@ limitations under the License.
 import logging
 import getopt
 import sys
-from pathlib import Path
-import json
 
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from arctern_server.app import service as app_service
-from arctern_server.app import scope as app_scope
+from arctern_server.app import interpreter as app_interpreter
+from arctern_server.app import notebook as app_notebook
+from arctern_server.app import function as app_function
 from arctern_server.app.common import log
+from arctern_server.app import default
 
 APP = Flask(__name__)
 
-APP.register_blueprint(app_service.API)
-APP.register_blueprint(app_scope.API)
+APP.register_blueprint(app_interpreter.API)
+APP.register_blueprint(app_notebook.API)
+APP.register_blueprint(app_function.API)
 
 CORS(APP, resources=r'/*')
 
 @APP.errorhandler(Exception)
 def exception_handler(e):
-    log.INSTANCE.error('exception: {}'.format(str(e)))
+    log.INSTANCE.exception(e)
     return jsonify(status='error', code=-1, message=str(e))
 
 def usage():
@@ -51,30 +52,21 @@ def usage():
     print('-r: production mode')
     print('-i: ip address')
     print('-p: http port')
-    print('-c: json config to be loaded')
     print('--logfile=: path/to/logfile, default: ./log.txt')
     print('--loglevel=: log level [debug/info/warn/error/fatal], default: info')
 
 
 # pylint: disable=too-many-branches
 # pylint: disable=redefined-outer-name
-def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, JSON_CONFIG=None, LOG_FILE="/tmp/arctern_server_log.txt", LOG_LEVEL=logging.INFO):
+def main(IS_DEBUG=True, IP="0.0.0.0", PORT=8080, LOG_FILE="/tmp/arctern_server_log.txt", LOG_LEVEL=logging.INFO):
     log.set_file(LOG_FILE, LOG_LEVEL)
 
-    if JSON_CONFIG:
-        json_file = Path(JSON_CONFIG)
-        if not json_file.is_file():
-            print("error: config %s doesn't exist!" % (JSON_CONFIG))
-            sys.exit(0)
-        else:
-            with open(JSON_CONFIG, 'r') as f:
-                content = json.load(f)
-                _, code, message = app_service.load_data(content)
-                print(message)
-                if code != 200:
-                    sys.exit(0)
+    # create default parameter
+    default.create_default_interpreter()
+    default.create_default_notebook()
+    default.create_default_paragraph()
 
-    if not IS_DEBUG:
+    if not IS_DEBUG: # release mode
         from waitress import serve
         serve(APP, host=IP, port=PORT)
     else:
@@ -85,7 +77,6 @@ if __name__ == '__main__':
     IS_DEBUG = True
     IP = "0.0.0.0"
     PORT = 8080
-    JSON_CONFIG = None
     LOG_FILE = "log.txt"
     LOG_LEVEL = logging.INFO
 
@@ -98,7 +89,7 @@ if __name__ == '__main__':
     }
 
     try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
+        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:', ['logfile=', 'loglevel='])
     except getopt.GetoptError as _e:
         print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
         usage()
@@ -114,11 +105,9 @@ if __name__ == '__main__':
             IP = arg
         elif opt == "-p":
             PORT = arg
-        elif opt == '-c':
-            JSON_CONFIG = arg
         elif opt == '--logfile':
             LOG_FILE = arg
         elif opt == '--loglevel':
             LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
 
-    main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
+    main(IS_DEBUG, IP, PORT, LOG_FILE, LOG_LEVEL)
