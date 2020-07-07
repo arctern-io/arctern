@@ -31,13 +31,13 @@ from databricks.koalas.utils import (
     validate_bool_kwarg,
 )
 from pyspark.sql import functions as F, Column
-from pyspark.sql.window import Window
 from pyspark.sql.types import (
     IntegerType,
     LongType,
     StringType,
     BinaryType,
 )
+from pyspark.sql.window import Window
 
 from . import scala_wrapper
 
@@ -210,6 +210,9 @@ class GeoSeries(Series):
         """
         crs = _validate_crs(crs)
         self._crs = crs
+
+        if hasattr(self, "_gdf") and self._gdf is not None:
+            self._gdf._crs_for_cols[self.name] = self._crs
 
     @property
     def crs(self):
