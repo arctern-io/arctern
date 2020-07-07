@@ -224,34 +224,34 @@ class GeoDataFrame(DataFrame):
         result = DataFrame.merge(self, right, how, on, left_on, right_on,
                                  left_index, right_index, sort, suffixes,
                                  copy, indicator, validate)
-        if not isinstance(result, GeoDataFrame):
-            return result
-        left_geometries = self.geometries_name
-        left_crs = self.crs
-        right_geometries = right.geometries_name
-        right_crs = right.crs
-        result_cols = result.columns.values.tolist()
-        result_geometries_name = result.geometries_name
-        result_crs = result.crs
-        strip_result = []
-        for col in result_cols:
-            col = col.replace(suffixes[0], '')
-            col = col.replace(suffixes[1], '')
-            strip_result.append(col)
-        for i in range(0, len(strip_result)):
-            if isinstance(result[result_cols[i]], GeoSeries):
-                if strip_result[i] in left_geometries:
-                    index = left_geometries.index(strip_result[i])
-                    result[result_cols[i]].set_crs(left_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(left_crs[index])
-                    continue
-                if strip_result[i] in right_geometries:
-                    index = right_geometries.index(strip_result[i])
-                    result[result_cols[i]].set_crs(right_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(right_crs[index])
-                    continue
+        # if not isinstance(result, GeoDataFrame):
+        #     return result
+        # left_geometries = self.geometries_name
+        # left_crs = self.crs
+        # right_geometries = right.geometries_name
+        # right_crs = right.crs
+        # result_cols = result.columns.values.tolist()
+        # result_geometries_name = result.geometries_name
+        # result_crs = result.crs
+        # strip_result = []
+        # for col in result_cols:
+        #     col = col.replace(suffixes[0], '')
+        #     col = col.replace(suffixes[1], '')
+        #     strip_result.append(col)
+        # for i in range(0, len(strip_result)):
+        #     if isinstance(result[result_cols[i]], GeoSeries):
+        #         if strip_result[i] in left_geometries:
+        #             index = left_geometries.index(strip_result[i])
+        #             result[result_cols[i]].set_crs(left_crs[index])
+        #             result_geometries_name.append(result_cols[i])
+        #             result_crs.append(left_crs[index])
+        #             continue
+        #         if strip_result[i] in right_geometries:
+        #             index = right_geometries.index(strip_result[i])
+        #             result[result_cols[i]].set_crs(right_crs[index])
+        #             result_geometries_name.append(result_cols[i])
+        #             result_crs.append(right_crs[index])
+        #             continue
         return result
 
     @classmethod
