@@ -118,13 +118,12 @@ const std::vector<OGRGeometry*> IndexTree::map_match_query(const OGRGeometry* gp
   return results;
 }
 
-const std::vector<std::shared_ptr<arrow::Array>> IndexTree::query(const OGRGeometry *input) const {
+const std::vector<std::shared_ptr<arrow::Array>> IndexTree::query(
+        const OGRGeometry *input) const {
   std::vector<std::shared_ptr<arrow::Array>> results_arrow(1);
   std::vector<void*> matches;
-//  std::vector<OGRGeometry*> results_geo;
   OGREnvelope ogr_env;
   input->getEnvelope(&ogr_env);
-//  results_geo.clear();
   matches.clear();
   geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX,
                            ogr_env.MinY, ogr_env.MaxY);
@@ -135,30 +134,11 @@ const std::vector<std::shared_ptr<arrow::Array>> IndexTree::query(const OGRGeome
   for (auto match : matches) {
     // match(void*) contains index as binary representation.
     auto index = reinterpret_cast<size_t>(match);
-//    auto geo = get_geometry(index);
-//    results_geo.emplace_back(geo);
     auto final_index = static_cast<int>(index);
     CHECK_ARROW(builder.Append(final_index));
   }
   CHECK_ARROW(builder.Finish(&(results_arrow[0])));
 
-//  arrow::BinaryBuilder builder;
-//  for (int i = 0; i < results_geo.size(); ++i) {
-//    if (results_geo[i] == nullptr) {
-//      CHECK_ARROW(builder.AppendNull());
-//      continue;
-//    }
-//    auto sz = results_geo[i]->WkbSize();
-//    std::vector<char> str(sz);
-//    auto err_code = results_geo[i]->exportToWkb(OGRwkbByteOrder::wkbNDR, (uint8_t*)str.data());
-//    if (err_code != OGRERR_NONE) {
-//      std::string err_msg =
-//              "failed to export to wkt, error code = " + std::to_string(err_code);
-//      throw std::runtime_error(err_msg);
-//    }
-//    CHECK_ARROW(builder.Append(str.data(), str.size()));
-//  }
-//  CHECK_ARROW(builder.Finish(&(results_arrow[0])));
   return results_arrow;
 }
 
