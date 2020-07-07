@@ -2022,7 +2022,8 @@ class GeoSeries(Series):
                         mask = GeoSeries(mask)
                     if not isinstance(mask, GeoSeries):
                         raise TypeError(f"unsupported mask type {type(mask)}")
-                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                    mask = mask.unary_union().as_geojson()
+                    mask = json.loads(mask[0])
                 if isinstance(item, (int, type(None))):
                     item = (item,)
                 elif isinstance(item, slice):
