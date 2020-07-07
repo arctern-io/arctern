@@ -36,10 +36,13 @@ object MapMatching {
       env.getMaxY + deg_distance)
   }
 
+  private def envelopeCheck(env: Envelope): Boolean = env.getMinX > -90 && env.getMaxX < 90 && env.getMinY > -180 && env.getMaxY < 180
+
   private def mapMatchingQuery(point: Geometry, index: RTreeIndex): util.List[_] = {
     var ev = defaultExpandValue
     do {
       val env = expandEnvelope(point.getEnvelopeInternal, ev)
+      if (!envelopeCheck(env)) return index.query(env)
       val rst = index.query(env)
       if (rst.size() > 0) return rst else ev *= 2
     } while (true)
