@@ -1769,3 +1769,64 @@ TEST(CHOROPLETHMAP_TEST, STD) {
   std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
   arctern::render::choropleth_map(polygon_vec, color_vec, vega);
 }
+
+TEST(CHOROPLETHMAP_TEST, MULTIPOLYGON) {
+  // param1: wkt string
+  std::string wkt_string1 = "POLYGON ((600 600, 800 600, 800 800, 600 800, 600 600))";
+  std::string wkt_string2 = "MULTIPOLYGON (((300 200, 450 400, 100 400, 300 200)),"
+                            "((150 50, 400 100, 100 200, 50 100, 150 50)))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+  status = string_builder.Append(wkt_string2);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: color
+  std::shared_ptr<arrow::Array> color_array;
+  arrow::DoubleBuilder color_builder;
+  status = color_builder.Append(5);
+  status = color_builder.Append(2.5);
+  status = color_builder.Finish(&color_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"choropleth_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"data\",\n"
+      "      \"url\": \"data/data.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"building\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"data\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": {\"value\": "
+      "[-73.984092,40.753893,-73.977588,40.756342]},\n"
+      "          \"color_gradient\": {\"value\": [\"#0000FF\", \"#FF0000\"]},\n"
+      "          \"color_bound\": {\"value\": [2.5, 5]},\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"aggregation_type\": {\"value\": \"max\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
+  std::vector<std::shared_ptr<arrow::Array>> polygon_vec{wkb};
+
+  std::vector<std::shared_ptr<arrow::Array>> color_vec{color_array};
+  arctern::render::choropleth_map(polygon_vec, color_vec, vega);
+}
