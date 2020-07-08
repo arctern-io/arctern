@@ -79,11 +79,21 @@ def generate_save_code(table, session_name="spark"):
     return save_code
 
 def generate_run_sql_code(sql, session_name='spark'):
-    code = '{}.sql("{}")'.format(session_name, sql)
+    code = 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap\n'
+    code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap\n'
+    code += 'from arctern_pyspark import register_funcs\n'
+    code += 'register_funcs({})\n'.format(session_name)
+    code += '{}.sql("{}")'.format(session_name, sql)
     return code
 
-def generate_run_for_json_code(sql, session_name='spark'):
-    code = '{}.sql("{}")'.format(session_name, sql)
+def generate_run_for_json_code(sql, session_name='spark', arctern_prefix=False):
+    code = ""
+    if arctern_prefix:
+        code += 'from arctern.util.vega import vega_choroplethmap, vega_heatmap, vega_pointmap, vega_weighted_pointmap, vega_icon, vega_fishnetmap\n'
+        code += 'from arctern_pyspark import choroplethmap, heatmap, pointmap, weighted_pointmap, icon_viz, fishnetmap\n'
+        code += 'from arctern_pyspark import register_funcs\n'
+        code += 'register_funcs({})\n'.format(session_name)
+    code += '{}.sql("{}")'.format(session_name, sql)
     code += '.coalesce(1).toJSON().collect()'
     return code
 

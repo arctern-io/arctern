@@ -12,20 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import find_packages, setup
+import arctern
+from arctern import GeoDataFrame, GeoSeries
 
-with open("arctern_server/requirements.txt", "r") as f:
-    dependencies = f.read().splitlines()
 
-setup(
-    name="arctern_server",
-    version="0.0.5",
-    author="Zilliz",
-    author_email="support@zilliz.com",
-    description="arctern demo server",
-    packages=find_packages(),
-    scripts=['arctern_server/arctern-server'],
-    python_requires='>=3.6',
-    include_package_data=True,
-    install_requires=dependencies,
-)
+def test_clip():
+    s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))",
+                    "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))",
+                    "POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"])
+    d1 = GeoDataFrame({"geo":s3})
+    rst = arctern.clip(d1, "POLYGON ((1 1,1 2,2 2,2 1,1 1))", col="geo")
+    assert len(rst) == 2
+    assert isinstance(rst, GeoDataFrame)
