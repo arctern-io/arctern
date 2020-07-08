@@ -42,7 +42,7 @@ def pointmap(ax, points, bounding_box,
                   point_size=3, point_color='#115f9a', opacity=1.0,
                   coordinate_system='EPSG:3857',
                   **extra_contextily_params):
-    """
+    r"""
     Plots a point map in Matplotlib.
 
     Parameters
@@ -447,7 +447,8 @@ def fishnetmap(ax, points, weights, bounding_box,
 
     .. plot::
        :context: close-figs
-
+    .. doctest::
+        :skipif: 1
        >>> import pandas as pd
        >>> import numpy as np
        >>> import arctern
