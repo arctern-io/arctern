@@ -167,6 +167,16 @@ class GeoSeries(Series):
             self.array.crs = crs
         self._invalidate_sindex()
 
+    def __setitem__(self, key, value):
+        old_crs = self.crs
+        super().__setitem__(key, value)
+        if not isinstance(self.array, GeoArray):
+            new_array = GeoArray(self.array.to_numpy(), crs=old_crs)
+            self._data = self.__class__(
+                new_array, index=self.index, name=self.name
+            )._data
+            self._maybe_update_cacher(clear=True)
+
     @property
     def sindex(self):
         if not self._sindex_generated:
