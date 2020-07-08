@@ -95,7 +95,7 @@ def test_set_geometry():
 
 def test_merge1():
     data1 = {
-        "B": range(5),
+        "A": range(5),
         "B": np.arange(5.0),
         "other_geom": range(5),
         "geometry": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
