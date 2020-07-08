@@ -20,7 +20,7 @@ def _clip_line_poly(gdf, poly, col=None):
 
     return clipped
 
-
+# pylint: disable=too-many-branches,too-many-statements
 def clip(gdf, mask, keep_geom_type=False, col=None):
     """
     Clip points, lines, or polygon geometries to the mask extent.

@@ -20,6 +20,7 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 
+# pylint: disable=too-many-branches,too-many-statements
 def sjoin(
         left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"
 ):
@@ -93,7 +94,7 @@ def sjoin(
             '`op` was "%s" but is expected to be in %s' % (op, allowed_ops)
         )
 
-    if left_df.crs != right_df.crs:
+    if left_df[lcol].crs != right_df[rcol].crs:
         warn(
             (
                 "CRS of frames being joined does not match!"

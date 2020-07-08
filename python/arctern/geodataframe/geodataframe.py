@@ -120,8 +120,8 @@ class GeoDataFrame(DataFrame):
         #     if crs is not None:
         #         frame[col].set_crs(crs)
 
-        if not inplace:
-            return frame
+
+        return frame
 
     # pylint: disable=arguments-differ
     def to_json(self, na="null", show_bbox=False, col='geometry', **kwargs):
@@ -204,9 +204,12 @@ class GeoDataFrame(DataFrame):
                         k: v for k, v in zip(propertries_cols, row) if not pd.isnull(v)
                     }
                 else:
-                    propertries_items = {
-                        k: v for k, v in zip(propertries_cols, row)
-                    }
+                    propertries_items = {}
+                    for k, v in zip(propertries_cols, row):
+                        propertries_items[k] = v
+                    # propertries_items = {
+                    #     k: v for k, v in zip(propertries_cols, row)
+                    # }
 
                 feature = {
                     "id": str(ids[i]),
@@ -413,6 +416,7 @@ class GeoDataFrame(DataFrame):
         """
         return self._crs
 
+    # pylint: disable=too-many-arguments
     def merge(
             self,
             right,
@@ -469,8 +473,12 @@ class GeoDataFrame(DataFrame):
             return result
         left_geometries = self.geometries_name
         left_crs = self.crs
-        right_geometries = right.geometries_name
-        right_crs = right.crs
+        if isinstance(right, GeoDataFrame):
+            right_geometries = right.geometries_name
+            right_crs = right.crs
+        else:
+            right_geometries = []
+            right_crs = []
         result_cols = result.columns.values.tolist()
         result_geometries_name = result.geometries_name
         result_crs = result.crs
@@ -479,17 +487,16 @@ class GeoDataFrame(DataFrame):
             col = col.replace(suffixes[0], '')
             col = col.replace(suffixes[1], '')
             strip_result.append(col)
-        result_length = len(strip_result)
-        for i in range(0, result_length):
+        for i, element in enumerate(strip_result):
             if isinstance(result[result_cols[i]], GeoSeries):
-                if strip_result[i] in left_geometries:
-                    index = left_geometries.index(strip_result[i])
+                if element in left_geometries:
+                    index = left_geometries.index(element)
                     result[result_cols[i]].set_crs(left_crs[index])
                     result_geometries_name.append(result_cols[i])
                     result_crs.append(left_crs[index])
                     continue
-                if strip_result[i] in right_geometries:
-                    index = right_geometries.index(strip_result[i])
+                if element in right_geometries:
+                    index = right_geometries.index(element)
                     result[result_cols[i]].set_crs(right_crs[index])
                     result_geometries_name.append(result_cols[i])
                     result_crs.append(right_crs[index])
