@@ -367,12 +367,3 @@ def test_read_and_save_file_10():
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"]
-
-
-def test_sjoin():
-    s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))", "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))"])
-    d1 = GeoDataFrame({"A": [1, 2], "geo": s3})
-    d2 = GeoDataFrame({"A": [3, 4], "geo1": s3})
-    rst = arctern.sjoin(d1, d2, "geo", "geo1")
-    assert isinstance(rst, GeoDataFrame)
-    print(rst)
