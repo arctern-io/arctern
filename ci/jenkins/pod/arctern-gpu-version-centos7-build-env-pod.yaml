@@ -8,13 +8,11 @@ metadata:
 spec:
   containers:
   - name: arctern-gpu-build-env
-    # TODO: rebuild image, pr for test
-    image: registry.zilliz.com/arctern/arctern-build-env:v0.3.0-centos7-gpu
+    image: dragondriver/arctern-build-env:v0.3.1-centos7-gpu
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      # TODO: rebuild image, pr for test
       value: "920c2bcf05c74f94d0d812ac0444f1422d2ed231a120b2daaf1fae71e0c5a6a2"
     command:
     - cat
