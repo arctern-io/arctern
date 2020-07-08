@@ -64,7 +64,6 @@ def pointmap(ax, points, bounding_box,
         Only supports SRID as a WKT representation of CRS by now.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
-
     Examples
     ---------
 
