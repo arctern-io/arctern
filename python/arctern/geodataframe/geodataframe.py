@@ -124,7 +124,7 @@ class GeoDataFrame(DataFrame):
         return frame
 
     # pylint: disable=arguments-differ
-    def to_json(self, na="null", show_bbox=False, col='geometry', **kwargs):
+    def to_json(self, na="null", show_bbox=False, col=None, **kwargs):
         """
         Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
 
@@ -167,16 +167,16 @@ class GeoDataFrame(DataFrame):
         >>> print(gdf.to_json(col="geometry"))
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
-        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox), **kwargs)
+        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, col=col), **kwargs)
 
-    def _to_geo(self, **kwargs):
+    def _to_geo(self, na="null", show_bbox=False, col=None, **kwargs):
         geo = {
             "type": "FeatureCollection",
             "features": list(self.iterfeatures(**kwargs))
         }
 
-        if kwargs.get("show_bbox", False):
-            geo["bbox"] = self[kwargs.get("col")].envelope_aggr()
+        if show_bbox is True:
+            geo["bbox"] = self[col].envelope_aggr().to_wkt()[0]
 
         return geo
 
@@ -503,6 +503,7 @@ class GeoDataFrame(DataFrame):
                     continue
         return result
 
+    # pylint: disable=protected-access
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
@@ -534,6 +535,7 @@ class GeoDataFrame(DataFrame):
         """
         return arctern.tools.file._read_file(filename, **kwargs)
 
+    # pylint: disable=protected-access
     def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None, **kwargs):
         """
         Write the ``GeoDataFrame`` to a file.
@@ -597,7 +599,7 @@ class GeoDataFrame(DataFrame):
         4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
         """
         arctern.tools.file._to_file(self, filename=filename, driver=driver,
-                                    schema=schema, index=index, col=col, **kwargs)
+                                    schema=schema, index=index, col=col, crs=crs, **kwargs)
 
     @property
     def _constructor(self):
