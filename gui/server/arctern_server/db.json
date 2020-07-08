@@ -11,6 +11,7 @@
         "envs": {
         }
     },
+
     "tables": [
         {
             "name": "old_nyc_taxi",
