@@ -90,7 +90,7 @@ def test_set_geometry():
     assert gdf["geo1"].crs == "EPSG:3857"
     assert gdf["geo2"].crs == "EPSG:5626"
     assert gdf["geo3"].crs is None
-    assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
+    assert gdf.geometries_name == ["geo1", "geo2", "geo3"]
 
 
 def test_merge():
@@ -228,6 +228,26 @@ def test_read_and_save_file_6():
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
     assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+
+def test_read_and_save_file_7():
+    data = {
+        "A": range(5),
+        "B": np.arange(5.0),
+        "other_geom": range(5),
+        "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        "geo2": ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"],
+        "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
+    }
+    gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+    gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", rows=3)
+    assert isinstance(read_gdf["geometry"], GeoSeries) is True
+    assert read_gdf["geometry"].crs == "EPSG:4326"
+    assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]
+    assert read_gdf["geometry"].values.tolist() == ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)"]
+
+def test_read_and_save_file_8():
+    pass
 
 
 def test_sjoin():
