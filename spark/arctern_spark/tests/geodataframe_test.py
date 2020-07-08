@@ -53,6 +53,7 @@ class TestCRS:
         crs = "EPSG:4326"
         gs = GeoSeries("point (1 2)", name='a', crs=crs)
         gdf = GeoDataFrame(gs)
+        assert gdf._geometry_column_names == {'a'}
         assert gdf['a'].crs == crs
 
     def test_implicitly_set_geometries(self):
@@ -60,13 +61,16 @@ class TestCRS:
         psb = pd.Series("point (99 99)", name='b')
         psa = pd.Series("point (1 2)", name='a')
         gdf = GeoDataFrame({"a": psa, "b": psb}, geometries=['a'], crs=crs)
+        assert gdf._geometry_column_names == {'a'}
         assert gdf['a'].crs == crs
 
     def test_explicitly_set_geometries(self):
         psb = pd.Series("point (99 99)", name='b')
         psa = pd.Series("point (1 2)", name='a')
         gdf = GeoDataFrame({"a": psa, "b": psb}, geometries=['a'], crs="EPSG:4326")
+        assert gdf._geometry_column_names == {'a'}
         gdf.set_geometry('b', "EPSG:3857")
+        assert gdf._geometry_column_names == {'a', 'b'}
         assert gdf['a'].crs == "EPSG:4326"
         assert gdf['b'].crs == "EPSG:3857"
 
@@ -75,18 +79,21 @@ class TestCRS:
         gdf = GeoDataFrame([1], columns=['seq'])
         gdf['a'] = GeoSeries("point (1 2)", crs="EPSG:4326")
         gdf['b'] = GeoSeries("point (99 99)")
+        assert gdf._geometry_column_names == {'a', 'b'}
         assert gdf['a'].crs == "EPSG:4326"
         assert gdf['b'].crs is None
 
         # set or get item with slice key
         gdf1 = GeoDataFrame([1], columns=['seq'])
         gdf1[['a', 'b']] = gdf[['a', 'b']]
+        assert gdf1._geometry_column_names == {'a', 'b'}
         r = gdf1[:]
         assert r['a'].crs == "EPSG:4326"
         assert r['b'].crs is None
 
     def test_geoseries_modify_crs(self):
         gdf = GeoDataFrame(GeoSeries("point (1 2)", name='a', crs=None))
+        assert gdf._geometry_column_names == {'a'}
         assert gdf['a'].crs is None
 
         # modify geoseries crs
@@ -111,6 +118,7 @@ class TestOp:
         result = gdf1.merge(gdf2, left_on="A", right_on="A")
         assert isinstance(result, GeoDataFrame)
         assert isinstance(result["geometry"], GeoSeries)
+        assert result._geometry_column_names == {'geometry', 'location'}
         assert result.location.crs == "EPSG:4326"
 
     def test_merge_same_column_name(self):
@@ -129,6 +137,8 @@ class TestOp:
         result = gdf1.merge(gdf2, left_on="A", right_on="A")
         assert isinstance(result, GeoDataFrame)
         assert isinstance(result["location_x"], GeoSeries)
+        assert isinstance(result["location_y"], GeoSeries)
+        assert result._geometry_column_names == {'location_x', 'location_y'}
         assert result.location_x.crs == "EPSG:4326"
         assert result.location_y.crs == "EPSG:3857"
 
@@ -148,6 +158,7 @@ class TestOp:
         result = gdf1.merge(gdf2, left_on="A", right_on="A")
         assert isinstance(result, GeoDataFrame)
         assert isinstance(result["location_x"], GeoSeries)
+        assert result._geometry_column_names == {'location_x', 'location_y'}
         assert result.location_x.crs == "EPSG:4326"
         assert result.location_y.crs == "EPSG:3857"
 
