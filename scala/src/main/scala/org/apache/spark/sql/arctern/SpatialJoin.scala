@@ -2,24 +2,41 @@ package org.apache.spark.sql.arctern
 
 import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.arctern.index.RTreeIndex
+import org.apache.spark.sql.catalyst.plans.{Inner, JoinType}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.locationtech.jts.geom.{Envelope, Geometry}
 
 import scala.collection.mutable
 
+sealed abstract class SpatialJoinOperator {
+  val name: String
+}
+
+object WithinOp extends SpatialJoinOperator {
+  override final val name: String = "ST_Within"
+}
+
+object ContainsOp extends SpatialJoinOperator {
+  override final val name: String = "ST_Contains"
+}
+
 
 object SpatialJoin {
-
   def apply(spark: SparkSession,
             left: DataFrame,
             right: DataFrame,
             leftGeomName: String,
             rightGeomName: String,
+            joinType: JoinType = Inner,
+            operator: SpatialJoinOperator = WithinOp,
             leftSuffix: String = "_left",
             rightSuffix: String = "_right"
            ): DataFrame = {
-
+    // TODO: implement LeftOuter, RightOuter, FullOuter
+    assert(joinType == Inner)
+    // TODO: implement ContainsOp
+    assert(operator == WithinOp)
 
     assert(left.columns.contains(leftGeomName))
     assert(right.columns.contains(rightGeomName))
