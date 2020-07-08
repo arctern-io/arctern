@@ -8,13 +8,11 @@ metadata:
 spec:
   containers:
   - name: arctern-cpu-build-env
-    # TODO: rebuild image, pr for test
-    image: registry.zilliz.com/arctern/arctern-build-env:v0.3.0-ubuntu18.04
+    iamge: dragondriver/arctern-build-env:v0.3.1-ubuntu18.04
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      # TODO: rebuild image, pr for test
       value: "736b78afd1f71684291bd273b33e41fc3cf5e626f9ec0e58d69abd62a457b185"
     command:
     - cat
