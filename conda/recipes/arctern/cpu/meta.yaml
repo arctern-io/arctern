@@ -32,6 +32,7 @@ requirements:
     - Cython ==0.29.15
     - setuptools
     - koalas ==1.0.0
+    - fiona
 
   run:
     - python ===3.7.6
@@ -40,6 +41,7 @@ requirements:
     - pyarrow ===0.17.1
     - rapidjson ==1.1.0
     - koalas ==1.0.0
+    - fiona
 
 test:
   commands:

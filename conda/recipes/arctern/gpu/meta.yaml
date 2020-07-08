@@ -33,6 +33,7 @@ requirements:
     - Cython ==0.29.15
     - setuptools
     - koalas ==1.0.0
+    - fiona
 
   host:
     - cudatoolkit {{ cuda_version }}.*
@@ -44,6 +45,7 @@ requirements:
     - pyarrow ===0.17.1
     - rapidjson ==1.1.0
     - koalas ==1.0.0
+    - fiona
 
 test:
   commands:
