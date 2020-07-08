@@ -34,13 +34,3 @@ def test_nearest_road():
     rst = arctern.ST_AsText(arctern.nearest_road(roads, gps_points))
     assert len(rst) == 1
     assert rst[0] == "LINESTRING (0 0,2 0)"
-
-
-def query():
-    roads = arctern.GeoSeries(["LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)",
-                               "LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)"])
-    gps_points = arctern.GeoSeries("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)")
-    index_tree = roads.sindex
-    rst = arctern.ST_AsText(index_tree.query(gps_points))
-    assert len(rst) == 1
-    assert rst[0] == "LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)"

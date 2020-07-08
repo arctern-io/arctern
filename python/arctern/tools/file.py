@@ -17,9 +17,9 @@
 import json
 import warnings
 import fiona
+import pandas as pd
 import numpy as np
 from arctern import GeoSeries
-import pandas as pd
 
 
 def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
