@@ -35,7 +35,7 @@ class GeoDataFrame(DataFrame):
 
         if geometries is None and crs is not None:
             raise ValueError("No geometry column specified!")
-        elif geometries is None:
+        if geometries is None:
             self._geometry_column_name = []
         else:
             geo_length = len(geometries)
@@ -123,6 +123,7 @@ class GeoDataFrame(DataFrame):
         if not inplace:
             return frame
 
+    # pylint: disable=arguments-differ
     def to_json(self, na="null", show_bbox=False, col='geometry', **kwargs):
         """
         Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
@@ -203,7 +204,9 @@ class GeoDataFrame(DataFrame):
                         k: v for k, v in zip(propertries_cols, row) if not pd.isnull(v)
                     }
                 else:
-                    propertries_items = {k: v for k, v in zip(propertries_cols, row)}
+                    propertries_items = {
+                        k: v for k, v in zip(propertries_cols, row)
+                    }
 
                 feature = {
                     "id": str(ids[i]),
@@ -476,7 +479,8 @@ class GeoDataFrame(DataFrame):
             col = col.replace(suffixes[0], '')
             col = col.replace(suffixes[1], '')
             strip_result.append(col)
-        for i in range(0, len(strip_result)):
+        result_length = len(strip_result)
+        for i in range(0, result_length):
             if isinstance(result[result_cols[i]], GeoSeries):
                 if strip_result[i] in left_geometries:
                     index = left_geometries.index(strip_result[i])
