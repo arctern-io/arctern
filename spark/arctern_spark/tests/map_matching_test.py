@@ -50,14 +50,37 @@ def test_near_road():
 
 
 def test_nearest_road():
+    expect = [
+    "LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)",
+    "LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)",
+    "LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)",
+    "LINESTRING (-73.9615569 40.7601753, -73.9615014 40.7602517)",
+    "LINESTRING (-73.9980743 40.7137811, -73.9984728 40.7136003)",
+    "LINESTRING (-73.961609 40.7602969, -73.9615014 40.7602517)",
+    "LINESTRING (-73.961609 40.7602969, -73.9615014 40.7602517)",
+    "LINESTRING (-73.9978864 40.714317, -73.997674 40.7140968)",
+    "LINESTRING (-73.961609 40.7602969, -73.9615014 40.7602517)",
+    "LINESTRING (-73.961609 40.7602969, -73.9615014 40.7602517)",
+    ]
     r = arctern_spark.nearest_road(roads, points).to_wkt()
-    assert r[0] == "LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)"
-    for i in range(1, 10):
-        assert r[i] == "LINESTRING EMPTY"
+    for i in range(0, 10):
+        assert r[i] == expect[i]
 
 
 def test_nearest_location_on_road():
+    expect = [
+    "POINT (-73.9611014 40.7608112)",
+    "POINT (-73.9610636 40.7608639)",
+    "POINT (-73.9610636 40.7608639)",
+    "POINT (-73.9615569 40.7601753)",
+    "POINT (-73.9984728 40.7136003)",
+    "POINT (-73.961609 40.7602969)",
+    "POINT (-73.961609 40.7602969)",
+    "POINT (-73.9978864 40.714317)",
+    "POINT (-73.961609 40.7602969)",
+    "POINT (-73.961609 40.7602969)",
+    ]
+
     r = arctern_spark.nearest_location_on_road(roads, points).to_wkt()
-    assert r[0] == "POINT (-73.9611014 40.7608112)"
-    for i in range(1, 10):
-        assert r[i] == "GEOMETRYCOLLECTION EMPTY"
+    for i in range(0, 10):
+        assert r[i] == expect[i]
