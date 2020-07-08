@@ -1522,7 +1522,7 @@ class GeoSeries(Series):
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
 
-            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
+            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" by default.
             * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
@@ -1950,10 +1950,15 @@ class GeoSeries(Series):
         """
         Returns a GeoJSON string representation of the GeoSeries.
 
-        :type show_bbox: bool
-        :param show_bbox: include bbox (bounds box) in the geojson. default False
+        Parameters
+        ----------
+        show_bbox: bool
+            Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
+            * *True:* Includes bounding box in the GeoJSON string.
+            * *False:* Do not include bounding box in the GeoJSON string.
 
-        :param kwargs: that will be passed to json.dumps().
+        **kwargs:
+            Parameters to pass to `jump.dumps`.
         """
         import json
         geo = {
@@ -1969,29 +1974,39 @@ class GeoSeries(Series):
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
         """
-        Read a file or OGR dataset to GeoSeries.
+        Reads a file or OGR dataset to a GeoSeries.
 
-        Supported file format is listed in
-        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+        Supported file formats are listed `here. <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_
 
-        :type fp: URI (str or pathlib.Path), or file-like object
-        :param fp: A dataset resource identifier or file object.
+        Parameters
+        ----------
+        fp: str, pathlib.Path, or file-like object
+            A dataset resource identifier or file object.
 
-        :type bbox: a (minx, miny, maxx, maxy) tuple
-        :param bbox: Filter for geometries which spatial intersects with by the provided bounding box.
+        bbox: tuple
+            Filters for geometries that spatially intersect with the provided bounding box. The bounding box is denoted with ``(min_x, min_y, max_x, max_y)``.
+            * min_x: The minimum x coordinate of the bounding box.
+            * min_y: The minimum y coordinate of the bounding box.
+            * max_x: The maximum x coordinate of the bounding box.
+            * max_y: The maximum y coordinate of the bounding box.
 
-        :type mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
-        :param mask: Filter for geometries which spatial intersects with by the provided geometry.
+        mask: GeoSeries
+            Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
-        :param item: int or slice
-        :param item: Load special items by skipping over items or stopping at a specific item.
+        item: int or slice
+            * If ``item`` is an integer, this function loads the geometry with an index of the integer.
+            * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
+                * *start:* The position to start the slicing, by default 0.
+                * *end:* The position to end the slicing.
+                * *step:* The step of the slicing, by default 1.
 
-        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+            Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries read from file.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries read from file.
         """
         import fiona
         import json
@@ -2007,7 +2022,8 @@ class GeoSeries(Series):
                         mask = GeoSeries(mask)
                     if not isinstance(mask, GeoSeries):
                         raise TypeError(f"unsupported mask type {type(mask)}")
-                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                    mask = mask.unary_union().as_geojson()
+                    mask = json.loads(mask[0])
                 if isinstance(item, (int, type(None))):
                     item = (item,)
                 elif isinstance(item, slice):
@@ -2026,24 +2042,23 @@ class GeoSeries(Series):
 
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
         """
-        Store GeoSeries to a file or OGR dataset.
+        Saves a GeoSeries to a file or OGR dataset.
 
-        :type fp: URI (str or pathlib.Path), or file-like object
-        :param fp: A dataset resource identifier or file object.
+        Parameters
+        ----------
+        fp: str, pathlib.Path, or file-like object
+            A dataset resource identifier or file object.
 
-        :type mode: str, default "w"
-        :param mode: 'a' to append, or 'w' to write. Not all driver support
-                      append, see "Supported driver list" below for more info.
+        mode: str
+            * 'a': Append
+            * 'w': Write (default)
+            Not all driver support append, see the "supported drivers" below for more infomation.
 
-        :type driver: str, default "ESRI Shapefile"
-        :param driver: The OGR format driver. It's  represents a
-                       translator for a specific format. Supported driver is listed in
-                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+        driver: str
+            The OGR format driver, by default "ESRI Shapefile". It represents a translator for a specific format. See `supported drivers <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_ for more information.
 
-        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
-                       write data to multi-layer dataset.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+        Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
         """
         geo_type_map = dict([
             ("ST_POINT", "Point"),
