@@ -51,7 +51,7 @@ class GeoDataFrame(DataFrame):
                     raise ValueError("The length of crs should less than geometries!")
             else:
                 raise TypeError("The type of crs should be str or list!")
-            for i in range(0, geo_length - crs_length):
+            for _i in range(0, geo_length - crs_length):
                 crs.append(None)
             for (crs_element, geometry) in zip(crs, geometries):
                 self[geometry] = GeoSeries(self[geometry])
@@ -62,13 +62,46 @@ class GeoDataFrame(DataFrame):
             self._crs = crs
 
     def set_geometry(self, col, inplace=False, crs=None):
+        """
+        Add GeoDataFrame geometry columns using either existing column.
+
+        Parameters
+        ----------
+        col : list
+            The name of column to be setten as geometry column.
+        inplace : bool, default false
+            Modify the GeoDataFrame in place (do not create a new object)
+        crs : str
+            Coordinate system to use
+
+        Returns
+        -------
+        GeoDataFrame
+            An arctern.GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...    "A": range(5),
+        ...    "B": np.arange(5.0),
+        ...    "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...    "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        >>> print(gdf.geometries_name)
+        ['geo1']
+        >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True)
+        ['geo1','geo2']
+        """
         if inplace:
             frame = self
         else:
             frame = self.copy()
 
-        geometry_cols = frame._geometry_column_name
-        geometry_crs = frame._crs
+        geometry_cols = frame.geometries_name
+        geometry_crs = frame.crs
         if not isinstance(frame[col], GeoSeries):
             frame[col] = GeoSeries(frame[col])
             frame[col].set_crs(crs)
@@ -91,6 +124,48 @@ class GeoDataFrame(DataFrame):
             return frame
 
     def to_json(self, na="null", show_bbox=False, col='geometry', **kwargs):
+        """
+        Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
+
+        Parameters
+        ----------
+
+        na : {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame.
+            See below.
+        show_bbow : bool, optional, default: False
+            Include bbox (bounds) in the geojson
+
+        Returns
+        -------
+        Series
+            Sequence of geometries in GeoJSON format.
+
+        Note
+        ----
+        The remaining *kwargs* are passed to json.dumps().
+
+        Missing (NaN) values in the GeoDataFrame can be represented as follows:
+
+        - ``null``: output the missing entries as JSON null.
+        - ``drop``: remove the property from the feature. This applies to each
+          feature individually so that features may have different properties.
+        - ``keep``: output the missing entries as NaN.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(1),
+        ...     "B": np.arange(1.0),
+        ...     "other_geom": range(1),
+        ...     "geometry": ["POINT (0 0)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        >>> print(gdf.to_json(col="geometry"))
+        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
+        """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox), **kwargs)
 
     def _to_geo(self, **kwargs):
@@ -154,15 +229,78 @@ class GeoDataFrame(DataFrame):
                 yield feature
 
     def to_geopandas(self):
+        """
+        Transforms an arctern.GeoDataFrame object to a geopandas.GeoDataFrame object.
+
+        Returns
+        --------
+        geopandas.GeoDataFrame
+            A geopandas.GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> import geopandas
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": range(5),
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...     "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+        >>> pdf = gdf.to_geopandas()
+        >>> pdf.set_geometry("geo1", inplace=True)
+        >>> print(pdf.geometry.name)
+        "geo1"
+        >>> type(pdf["geo1"])
+        <class 'geopandas.geoseries.GeoSeries'>
+        """
         import geopandas
         copy_df = self.copy()
         if self._geometry_column_name is not None:
-            for col in copy_df._geometry_column_name:
+            for col in copy_df.geometries_name:
                 copy_df[col] = Series(copy_df[col].to_geopandas())
         return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
     @classmethod
     def from_geopandas(cls, pdf):
+        """
+        Constructs an arctern.GeoSeries object from a geopandas.GeoSeries object.
+
+        Parameters
+        ----------
+        pdf : geopandas.GeoDataFrame
+            A geopandas.GeoDataFrame object.
+
+        Returns
+        -------
+        GeoDataFrame
+            An arctern.GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import geopandas
+        >>> from shapely.geometry import Point,LineString
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": range(5),
+        ...     "geometry": [Point(x, y) for x, y in zip(range(5), range(5))],
+        ...     "copy_geo": [Point(x + 1, y + 1) for x, y in zip(range(5), range(5))],
+        ... }
+        >>> pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
+        >>> gdf = GeoDataFrame.from_geopandas(pdf)
+        >>> gdf.geometries_name
+        ["geometry", "copy_geo"]
+        >>> type(gdf["geometry"])
+        <class 'arctern.geoseries.geoseries.GeoSeries'>
+        >>> gdf["geometry"].crs
+        'EPSG:4326'
+        """
         import geopandas
         import shapely
         if not isinstance(pdf, geopandas.GeoDataFrame):
@@ -174,9 +312,53 @@ class GeoDataFrame(DataFrame):
                 geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
                 result[col] = geo_col
                 result._geometry_column_name.append(col)
+                if isinstance(pdf[col], geopandas.GeoSeries):
+                    result._crs.append(pdf[col].crs)
+                else:
+                    result._crs.append(None)
         return result
 
     def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
+        """
+        Dissolve geometries within `groupby` into single observation.
+        This is accomplished by applying the `unary_union` method
+        to all geometries within a groupself.
+
+        Observations associated with each `groupby` group will be aggregated
+        using the `aggfunc`.
+
+        Parameters
+        ----------
+        by : str, default None
+            Column whose values define groups to be dissolved
+        aggfunc : function or str, default "first"
+            Aggregation function for manipulation of data associated
+            with each group. Passed to pandas `groupby.agg` method.
+        as_index : bool, default True
+            If true, groupby columns become index of result.
+
+        Returns
+        -------
+        arctern.GeoDataFrame
+            An arctern.GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": [1, 1, 1, 2, 2],
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        >>> gdf.disolve(by="other_geom", col="geo1")
+                                        geo1  A    B
+        other_geom
+        1           MULTIPOINT (0 0,1 1,2 2)  0  0.0
+        2               MULTIPOINT (3 3,4 4)  3  3.0
+        """
         data = self.drop(labels=col, axis=1)
         aggregated_data = data.groupby(by=by).agg(aggfunc)
 
@@ -204,6 +386,28 @@ class GeoDataFrame(DataFrame):
 
     @property
     def crs(self):
+        """
+        The Coordinate Reference System (CRS) of arctern.GeoDataFrame.
+
+        Returns
+        --------
+        crs : list
+            The Coordinate Reference System (CRS).
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...    "A": range(5),
+        ...    "B": np.arange(5.0),
+        ...    "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...    "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+        >>> gdf.crs
+        ["epsg:4326", "epsg:3857"]
+        """
         return self._crs
 
     def merge(
@@ -221,15 +425,49 @@ class GeoDataFrame(DataFrame):
             indicator=False,
             validate=None,
     ):
+        """
+        Merge two ``GeoDataFrame`` objects with a database-style join.
+
+        Returns a ``GeoDataFrame`` if a geometry column is present; otherwise,
+        returns a pandas ``DataFrame``.
+
+        Returns
+        -------
+            GeoDataFrame or pandas.DataFrame
+
+        Examples
+        -------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data1 = {
+        ...      "A": range(5),
+        ...      "B": np.arange(5.0),
+        ...      "other_geom": range(5),
+        ...      "geometry": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf1 = GeoDataFrame(data1, geometries=["geometry"], crs=["epsg:4326"])
+        >>> data2 = {
+        ...      "A": range(5),
+        ...      "location": ["POINT (3 0)", "POINT (1 6)", "POINT (2 4)", "POINT (3 4)", "POINT (4 2)"],
+        ... }
+        >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
+        >>> gdf1.merge(gdf2, left_on="A", right_on="A")
+        A    B  other_geom     geometry     location
+        0  0  0.0           0  POINT (0 0)  POINT (3 0)
+        1  1  1.0           1  POINT (1 1)  POINT (1 6)
+        2  2  2.0           2  POINT (2 2)  POINT (2 4)
+        3  3  3.0           3  POINT (3 3)  POINT (3 4)
+        4  4  4.0           4  POINT (4 4)  POINT (4 2)
+        """
         result = DataFrame.merge(self, right, how, on, left_on, right_on,
                                  left_index, right_index, sort, suffixes,
                                  copy, indicator, validate)
         if not isinstance(result, GeoDataFrame):
             return result
-        left_geometries = self.geometries_name
+        left_geometries = self.geometries_name.copy()
         left_crs = self.crs
         if isinstance(right, GeoDataFrame):
-            right_geometries = right.geometries_name
+            right_geometries = right.geometries_name.copy()
             right_crs = right.crs
         else:
             right_geometries = []
@@ -260,14 +498,104 @@ class GeoDataFrame(DataFrame):
 
     @classmethod
     def from_file(cls, filename, **kwargs):
+        """
+        Alternate constructor to create a ``GeoDataFrame`` from a file or url.
+
+        Parameters
+        -----------
+        filename : str
+            File path or file handle to read from.
+        bbox : tuple or arctern.GeoSeries, default None
+            Filter features by given bounding box, GeoSeries. Cannot be used
+            with mask.
+        mask : dict | arctern.GeoSeries | dicr, default None
+            Filter for features that intersect with the given dict-like geojson
+            geometry, GeoSeries. Cannot be used with bbox.
+        rows : int or slice, default None
+            Load in specific rows by passing an integer (first `n` rows) or a
+            slice() object.
+        **kwargs :
+        Keyword args to be passed to the `open` or `BytesCollection` method
+        in the fiona library when opening the file. For more information on
+        possible keywords, type:
+        ``import fiona; help(fiona.open)``
+
+        Returns
+        --------
+        GeoDataFrame
+            An arctern.GeoDataFrame object.
+        """
         return arctern.tools.file._read_file(filename, **kwargs)
 
-    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, **kwargs):
-        arctern.tools.file._to_file(self, filename=filename, driver=driver, schema=schema, index=index, col=col, **kwargs)
+    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None, **kwargs):
+        """
+        Write the ``GeoDataFrame`` to a file.
+
+        Parameters
+        ----------
+        df : GeoDataFrame to be written
+        filename : str
+            File path or file handle to write to.
+        driver : string, default 'ESRI Shapefile'
+            The OGR format driver used to write the vector file.
+        schema : dict, default None
+            If specified, the schema dictionary is passed to Fiona to
+            better control how the file is written. If None, GeoPandas
+            will determine the schema based on each column's dtype.
+        index : bool, default None
+            If True, write index into one or more columns (for MultiIndex).
+            Default None writes the index into one or more columns only if
+            the index is named, is a MultiIndex, or has a non-integer data
+            type. If False, no index is written.
+        mode : str, default 'w'
+            The write mode, 'w' to overwrite the existing file and 'a' to append.
+        crs : str, default None
+            If specified, the CRS is passed to Fiona to
+            better control how the file is written. If None, GeoPandas
+            will determine the crs based on crs df attribute.
+        col : str, default None
+            Specify geometry column.
+
+        Notes
+        -----
+        The extra keyword arguments ``**kwargs`` are passed to fiona.open and
+        can be used to write to multi-layer data, store data within archives
+        (zip files), etc.
+
+        The format drivers will attempt to detect the encoding of your data, but
+        may fail. In this case, the proper encoding can be specified explicitly
+        by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
+
+        Examples
+        --------
+        >>> from arctern import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": range(5),
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...     "geo2": ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"],
+        ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
+        >>> read_gdf
+        A    B  other_geom         geo2         geo3     geometry
+        0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
+        1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
+        2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
+        3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
+        4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
+        """
+        arctern.tools.file._to_file(self, filename=filename, driver=driver,
+                                    schema=schema, index=index, col=col, **kwargs)
 
     @property
     def _constructor(self):
         return GeoDataFrame
 
+    @property
     def _constructor_expanddim(self):
         pass

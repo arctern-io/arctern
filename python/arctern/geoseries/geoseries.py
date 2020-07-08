@@ -116,8 +116,8 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
-    _sindex = None
-    _sindex_generated = False
+    # _sindex = None
+    # _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -165,6 +165,7 @@ class GeoSeries(Series):
 
         if not self.array.crs:
             self.array.crs = crs
+        self._invalidate_sindex()
 
     @property
     def sindex(self):
@@ -1267,20 +1268,20 @@ class GeoSeries(Series):
 
     def disjoint(self, other):
         """
-        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they do not intersect each other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry disjoints to the other.
 
         Parameters
         ----------
         other : geometry or GeoSeries
-            The geometry or GeoSeries to test whether it is not intersected with the geometries in the first GeoSeries.
-            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
-            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
+            The geometry or GeoSeries to test whether it disjoints to the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the disjoint relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the disjoint relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         Series
-            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
-            * *True*: The two geometries do not intersect each other.
+            Mask of boolean values for each element in the GeoSeries that indicates whether it disjoints to the geometries in ``other``.
+            * *True*: The two geometries disjoint to each other.
             * *False*: The two geometries intersect each other.
 
         Examples
@@ -1638,7 +1639,8 @@ class GeoSeries(Series):
 
     def union(self, other):
         """
-        This function returns a geometry being a union of two input geometries
+        This function returns a geometry being a union of two input geometries.
+
         Parameters
         ----------
         other : GeoSeries
@@ -2029,7 +2031,8 @@ class GeoSeries(Series):
                         mask = GeoSeries(mask)
                     if not isinstance(mask, GeoSeries):
                         raise TypeError(f"unsupported mask type {type(mask)}")
-                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                    mask = mask.unary_union().as_geojson()
+                    mask = json.loads(mask[0])
                 if isinstance(item, (int, type(None))):
                     item = (item,)
                 elif isinstance(item, slice):

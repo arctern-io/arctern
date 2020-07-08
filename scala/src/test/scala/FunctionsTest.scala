@@ -204,7 +204,8 @@ class FunctionsTest extends AdapterTest {
     val data = Seq(
       Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0, 0 0))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
-      Row(GeometryUDT.FromWkt("POINT (0 0)"))
+      Row(GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
@@ -221,6 +222,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).getBoolean(0) == true)
     assert(collect(1).getBoolean(0) == true)
     assert(collect(2).getBoolean(0) == true)
+    assert(collect(3).isNullAt(0))
 
     val rst2 = df.select(st_isvalid(col("geo")))
     rst2.show(false)
@@ -230,13 +232,15 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).getBoolean(0) == true)
     assert(collect2(1).getBoolean(0) == true)
     assert(collect2(2).getBoolean(0) == true)
+    assert(collect2(3).isNullAt(0))
   }
 
   test("ST_IsValid-Null") {
     val data = Seq(
       Row("error geo"),
       Row("LINESTRING (0 0, 10 10, 20 20)"),
-      Row(null)
+      Row(null),
+      Row(GeometryUDT.FromWkt("Polygon((0 0, 0 1, 1 1, 1 0))")),
     )
 
     val schema = StructType(Array(StructField("geo", StringType, nullable = true)))
@@ -253,6 +257,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).getBoolean(0) == true)
     assert(collect(2).isNullAt(0))
+    assert(collect(3).isNullAt(0))
 
     val rst2 = df.select(st_isvalid(st_geomfromtext(col("geo"))))
     rst2.show(false)
@@ -262,6 +267,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).getBoolean(0) == true)
     assert(collect2(2).isNullAt(0))
+    assert(collect2(3).isNullAt(0))
   }
 
   test("ST_GeometryType") {

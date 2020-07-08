@@ -20,11 +20,56 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 
-from shapely import prepared
-
 def sjoin(
         left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"
 ):
+    """
+    Spatial join of two GeoDataFrames.
+
+    Parameters
+    ----------
+    left_df, right_df : GeoDataFrames
+    rcol, lcol : str
+        Specify geometry columns of left_df, right_df to be joined.
+    how : string, default 'inner'
+        The type of join:
+
+        * 'left': use keys from left_df; retain only left_df geometry column
+        * 'right': use keys from right_df; retain only right_df geometry column
+        * 'inner': use intersection of keys from both dfs; retain only
+          left_df geometry column
+    op : string, default 'intersects'
+        Binary predicate, one of {'intersects', 'contains', 'within'}.
+    lsuffix : string, default 'left'
+        Suffix to apply to overlapping column names (left GeoDataFrame).
+    rsuffix : string, default 'right'
+        Suffix to apply to overlapping column names (right GeoDataFrame).
+
+    Returns
+    -------
+    GeoDataFrame
+        An arctern.GeoDataFrame object.
+
+    Examples
+    ---------
+    >>> import arctern
+    >>> from arctern import GeoDataFrame
+    >>> import numpy as np
+    >>> data1 = {
+    >>>      "A": range(5),
+    >>>      "B": np.arange(5.0),
+    >>>      "geometry": ["LINESTRING (0 0, 2 2)", "LINESTRING (1 0,1 3)", "LINESTRING (9 3, 3 5)", "LINESTRING (4 5, 6 7)",
+    >>>                   "LINESTRING (7 7, 9 9)", ],
+    >>> }
+    >>> gdf1 = GeoDataFrame(data1, geometries=["geometry"], crs=["epsg:4326"])
+    >>> data2 = {
+    >>>       "C": range(5),
+    >>>       "location": ["LINESTRING (1 0, 3 4)", "LINESTRING (0 0, 6 7)", "LINESTRING (5 3, 8 7)", "LINESTRING (9 8, 4 7)",
+    >>>                    "LINESTRING (3 3, 6 9)", ]
+    >>> }
+    >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
+    >>> arctern.sjoin(left_df=gdf1, right_df=gdf2, lcol="geometry", rcol="location")
+    """
     from arctern import GeoDataFrame, GeoSeries
     if not isinstance(left_df, GeoDataFrame):
         raise ValueError(

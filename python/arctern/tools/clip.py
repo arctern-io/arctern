@@ -22,6 +22,50 @@ def _clip_line_poly(gdf, poly, col=None):
 
 
 def clip(gdf, mask, keep_geom_type=False, col=None):
+    """
+    Clip points, lines, or polygon geometries to the mask extent.
+
+    Both layers must be in the same Coordinate Reference System (CRS).
+    The `gdf` will be clipped to the full extent of the clip object.
+
+    If there are multiple polygons in mask, data from `gdf` will be
+    clipped to the total boundary of all polygons in mask.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame or GeoSeries
+        Vector layer (point, line, polygon) to be clipped to mask.
+    mask : GeoSeries or str
+        Polygon vector layer used to clip `gdf`.
+        The mask's geometry is dissolved into one geometric feature
+        and intersected with `gdf`.
+    keep_geom_type : boolean, default False
+        If True, return only geometries of original type in case of intersection
+        resulting in multiple geometry types or GeometryCollections.
+        If False, return all resulting geometries (potentially mixed-types).
+    col : str
+        Specify geometry column.
+
+
+    Returns
+    -------
+    GeoDataFrame or GeoSeries
+         Vector data (points, lines, polygons) from `gdf` clipped to
+         polygon boundary from mask.
+
+    Examples
+    --------
+    >>> import arctern
+    >>> from arctern import GeoDataFrame, GeoSeries
+    >>> s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))",
+    ...                "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))",
+    ...                "POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"])
+    >>> d1 = GeoDataFrame({"geo":s3})
+    >>> arctern.clip(d1, "POLYGON ((1 1,1 2,2 2,2 1,1 1))", col="geo")
+                                               geo
+    0                         LINESTRING (2 2,2 1)
+    1  POLYGON ((1.5 1.0,1 1,1 2,1.5 2.0,1.5 1.0))
+    """
     from arctern import GeoDataFrame, GeoSeries
     if not isinstance(gdf, (GeoDataFrame, GeoSeries)):
         raise TypeError(
@@ -42,7 +86,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     if not box_mask.intersects(box_gdf)[0]:
         return gdf.iloc[:0]
     geom_types = gdf[col].geom_type
-    for i, geom_type in zip(range(0, len(geom_types)), geom_types):
+    for i, geom_type in enumerate(geom_types):
         geom_types[i] = geom_type[3:]
 
     poly_idx = np.asarray((geom_types == "POLYGON") | (geom_types == "MULTIPOLYGON"))
@@ -53,6 +97,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     )
     point_idx = np.asarray((geom_types == "POINT") | (geom_types == "MULTIPOINT"))
     geomcoll_idx = np.asarray((geom_types == "GEOMETRYCOLLECTION"))
+
     if point_idx.any():
         point_gdf = _clip_points(gdf[point_idx], box_mask[0], col)
     else:
@@ -127,7 +172,7 @@ def clip(gdf, mask, keep_geom_type=False, col=None):
     if isinstance(concat, GeoDataFrame):
         concat["_order"] = order
         return concat.sort_values(by="_order").drop(columns="_order")
-    else:
-        concat = GeoDataFrame(concat, geometries=[concat.name])
-        concat["_order"] = order
-        return concat.sort_values(by="_order")[col]
+
+    concat = GeoDataFrame(concat, geometries=[concat.name])
+    concat["_order"] = order
+    return concat.sort_values(by="_order")[col]

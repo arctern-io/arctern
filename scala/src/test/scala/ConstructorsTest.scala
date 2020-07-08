@@ -534,6 +534,149 @@ class ConstructorsTest extends AdapterTest {
     assert(collect2(5).isNullAt(0))
   }
 
+  test("ST_AsWKB-Null") {
+    val data = Seq(
+      Row("POINT (10 20)"),
+      Row(null),
+      Row("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
+      Row(null),
+      Row("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsWKB")
+
+    val rst1 = spark.sql("select ST_AsWKB(ST_GeomFromText(wkt)) as wkb from table_ST_AsWKB")
+    rst1.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst1.createOrReplaceTempView("table_ST_GeomFromWKB")
+
+    val rst2 = spark.sql("select ST_GeomFromWKB(wkb) from table_ST_GeomFromWKB")
+    rst2.show(false)
+
+    val collect = rst2.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect(3).isNullAt(0))
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+
+    val rst3 = df.select(st_aswkb(st_geomfromtext(col("wkt"))).as("wkb"))
+    rst3.show(false)
+
+    val rst4 = rst3.select(st_geomfromwkb(col("wkb")))
+    rst4.show(false)
+
+    val collect2 = rst4.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect2(3).isNullAt(0))
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+  }
+
+  test("ST_AsWKB-FromArcternExpr") {
+    val data = Seq(
+      Row("POINT (10 20)"),
+      Row("LINESTRING (0 0, 10 10, 20 20)"),
+      Row("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"),
+      Row("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))"),
+      Row("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"),
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("wkt", StringType, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsWKB")
+
+    val rst1 = spark.sql("select ST_AsWKB(ST_GeomFromText(wkt)) as wkb from table_ST_AsWKB")
+    rst1.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+    rst1.createOrReplaceTempView("table_ST_GeomFromWKB")
+
+    val rst2 = spark.sql("select ST_GeomFromWKB(wkb) from table_ST_GeomFromWKB")
+    rst2.show()
+
+    val collect = rst2.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10, 20 20)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+
+    val rst3 = df.select(st_aswkb(st_geomfromtext(col("wkt"))).as("wkb"))
+    rst3.show(false)
+
+    val rst4 = rst3.select(st_geomfromwkb(col("wkb")))
+    rst4.show(false)
+
+    val collect2 = rst4.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10, 20 20)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+  }
+
+  test("ST_AsWKB-FromNormalExpr") {
+    val data = Seq(
+      Row(GeometryUDT.FromWkt("POINT (10 20)")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")),
+      Row(null)
+    )
+
+    val rdd_d = spark.sparkContext.parallelize(data)
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val df = spark.createDataFrame(rdd_d, schema)
+    df.createOrReplaceTempView("table_ST_AsWKB")
+
+    val rst1 = spark.sql("select ST_AsWKB(geo) as wkb from table_ST_AsWKB")
+    rst1.show(false)
+
+    //    rst.queryExecution.debug.codegen()
+
+    rst1.createOrReplaceTempView("table_ST_GeomFromWKB")
+
+    val rst2 = spark.sql("select ST_GeomFromWKB(wkb) from table_ST_GeomFromWKB")
+    rst2.show(false)
+
+    val collect = rst2.collect()
+
+    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10, 20 20)")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect(3).getAs[GeometryUDT](0).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
+    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+    assert(collect(5).isNullAt(0))
+
+    val rst3 = df.select(st_aswkb(col("geo")).as("wkb"))
+    rst3.show(false)
+
+    val rst4 = rst3.select(st_geomfromwkb(col("wkb")))
+    rst4.show(false)
+
+    val collect2 = rst4.collect()
+
+    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (10 20)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 10 10, 20 20)")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))")
+    assert(collect2(5).isNullAt(0))
+  }
+
   test("ST_AsGeoJSON-Null") {
     val data = Seq(
       Row("POINT (10 20)"),

@@ -32,9 +32,12 @@ def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
             )
             if mask is not None:
                 if isinstance(mask, (str, bytes)):
-                    mask = GeoSeries(mask).unary_union()
+                    mask = GeoSeries(mask)
+                if isinstance(mask, dict):
+                    mask = GeoSeries.geom_from_geojson(mask)
                 if not isinstance(mask, GeoSeries):
                     raise TypeError(f"unsupported mask type {type(mask)}")
+                mask = mask.unary_union
                 mask = mask.as_geojson()[0]
             if bbox is not None:
                 if isinstance(bbox, GeoSeries):
@@ -76,6 +79,33 @@ def _from_features(features, crs=None, columns=None):
 
 
 def read_file(*args, **kwargs):
+    """
+    Returns a GeoDataFrame from a file or URL.
+
+    Parameters
+        -----------
+        filename : str
+            File path or file handle to read from.
+        bbox : tuple or arctern.GeoSeries, default None
+            Filter features by given bounding box, GeoSeries. Cannot be used
+            with mask.
+        mask : dict | arctern.GeoSeries | dicr, default None
+            Filter for features that intersect with the given dict-like geojson
+            geometry, GeoSeries. Cannot be used with bbox.
+        rows : int or slice, default None
+            Load in specific rows by passing an integer (first `n` rows) or a
+            slice() object.
+        **kwargs :
+        Keyword args to be passed to the `open` or `BytesCollection` method
+        in the fiona library when opening the file. For more information on
+        possible keywords, type:
+        ``import fiona; help(fiona.open)``
+
+    Returns
+    --------
+    GeoDataFrame
+        An arctern.GeoDataFrame object.
+    """
     return _read_file(*args, **kwargs)
 
 
@@ -87,8 +117,8 @@ def get_geom_types(geoseries):
             geom_types.append(geom_type)
     if len(geom_types) == 1:
         return geom_types[0]
-    else:
-        return geom_types
+
+    return geom_types
 
 
 def infer_schema(df, geo_col):
@@ -137,7 +167,7 @@ def _to_file(
 ):
     copy_df = df.copy()
     copy_df[col].set_crs(df[col].crs)
-    for col_name in copy_df._geometry_column_name:
+    for col_name in copy_df.geometries_name:
         if col_name is not col:
             copy_df[col_name] = pd.Series(copy_df[col_name].to_wkt())
 
@@ -168,4 +198,55 @@ def _to_file(
 
 
 def to_file(*args, **kwargs):
+    """
+    Write this GeoDataFrame to an OGR data source
+
+    Parameters
+    ----------
+    df : GeoDataFrame to be written
+    filename : str
+        File path or file handle to write to.
+    driver : string, default 'ESRI Shapefile'
+        The OGR format driver used to write the vector file.
+    schema : dict, default None
+        If specified, the schema dictionary is passed to Fiona to
+        better control how the file is written. If None, GeoPandas
+        will determine the schema based on each column's dtype.
+    index : bool, default None
+        If True, write index into one or more columns (for MultiIndex).
+        Default None writes the index into one or more columns only if
+        the index is named, is a MultiIndex, or has a non-integer data
+        type. If False, no index is written.
+    mode : str, default 'w'
+        The write mode, 'w' to overwrite the existing file and 'a' to append.
+    crs : str, default None
+        If specified, the CRS is passed to Fiona to
+        better control how the file is written. If None, GeoPandas
+        will determine the crs based on crs df attribute.
+    col : str, default None
+        Specify geometry column.
+
+    Examples
+    ---------
+    >>> from arctern import GeoDataFrame
+    >>> import numpy as np
+    >>> data = {
+    ...     "A": range(5),
+    ...     "B": np.arange(5.0),
+    ...     "other_geom": range(5),
+    ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+    ...     "geo2": ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"],
+    ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
+    ... }
+    >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+    >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
+    >>> read_gdf
+    A    B  other_geom         geo2         geo3     geometry
+    0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
+    1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
+    2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
+    3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
+    4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
+    """
     return _to_file(*args, **kwargs)

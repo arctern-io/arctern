@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-def check_json(node, key):
-    """
-    check whether the node contains key
-    """
-    return node and key in node
+# pylint: disable=redefined-outer-name
+
+def test_hello_world():
+    print("TODO: add test case for zeppelin interface!")

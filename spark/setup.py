@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import arctern
-from arctern import GeoDataFrame, GeoSeries
+from setuptools import setup
 
-
-def test_clip():
-    s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))",
-                    "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))",
-                    "POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))"])
-    d1 = GeoDataFrame({"geo":s3})
-    rst = arctern.clip(d1, "POLYGON ((1 1,1 2,2 2,2 1,1 1))", col="geo")
-    assert len(rst) == 2
-    assert isinstance(rst, GeoDataFrame)
+setup(
+    name="arctern_spark",
+    packages=[
+        "arctern_spark",
+        "arctern_spark.tests"
+    ],
+)
