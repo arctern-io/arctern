@@ -15,12 +15,14 @@
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors, protected-access
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs
 
 from warnings import warn
-from pandas import Series, DataFrame
-import numpy as np
+
 import arctern
+import numpy as np
+from pandas import Series, DataFrame
+
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
 
@@ -80,12 +82,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-def _validate_crs(crs):
-    if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
-    return crs
-
 
 class GeoSeries(Series):
     """
@@ -121,18 +117,24 @@ class GeoSeries(Series):
     """
 
     _sindex = None
-    _sindex_generated = None
+    _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
 
-        if hasattr(data, "crs") and crs:
-            if not data.crs:
-                data = data.copy()
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+        if hasattr(data, "crs"):
+            if crs:
+                if not data.crs:
+                    data = data.copy()
+                elif not data.crs == crs:
+                    raise ValueError(
+                        "csr of the passed geometry data is different from crs."
+                    )
+            else:
+                if not data.crs:
+                    data = data.copy()
+                else:
+                    crs = data.crs
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
@@ -158,12 +160,11 @@ class GeoSeries(Series):
                     s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values)
-
+            data = GeoArray(s.values, crs=crs)
         super().__init__(data, index=index, name=name, **kwargs)
 
-        self._crs = None
-        self.set_crs(crs)
+        if not self.array.crs:
+            self.array.crs = crs
 
     @property
     def sindex(self):
@@ -174,6 +175,10 @@ class GeoSeries(Series):
             self._sindex = _sindex
             self._sindex_generated = True
         return self._sindex
+
+    def invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
 
     def set_crs(self, crs):
         """
@@ -197,8 +202,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.array.crs = crs
 
     @property
     def crs(self):
@@ -217,7 +221,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        return self._crs
+        return self.array.crs
 
     @crs.setter
     def crs(self, crs):
@@ -421,6 +425,28 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
+
+    def _invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
+    def _wrapped_pandas_method(self, mtd, *args, **kwargs):
+        """Wrap a generic pandas method to ensure it returns a GeoSeries"""
+        val = getattr(super(GeoSeries, self), mtd)(*args, **kwargs)
+        if type(val) == Series:
+            val.__class__ = GeoSeries
+            val.crs = self.crs
+            val._invalidate_sindex()
+        return val
+
+    def append(self, *args, **kwargs):
+        return self._wrapped_pandas_method("append", *args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        return self._wrapped_pandas_method("update", *args, **kwargs)
+
+    def drop(self, *args, **kwargs):
+        return self._wrapped_pandas_method("drop", *args, **kwargs)
 
     # -------------------------------------------------------------------------
     # Geometry related property
@@ -1241,20 +1267,20 @@ class GeoSeries(Series):
 
     def disjoint(self, other):
         """
-        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether they do not intersect each other.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, tests whether the first geometry disjoints to the other.
 
         Parameters
         ----------
         other : geometry or GeoSeries
-            The geometry or GeoSeries to test whether it is not intersected with the geometries in the first GeoSeries.
-            * If ``other`` is a geometry, this function tests the intersection relation between each geometry in the GeoSeries and ``other``.
-            * If ``other`` is a GeoSeries, this function tests the intersection relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
+            The geometry or GeoSeries to test whether it disjoints to the geometries in the first GeoSeries.
+            * If ``other`` is a geometry, this function tests the disjoint relation between each geometry in the GeoSeries and ``other``.
+            * If ``other`` is a GeoSeries, this function tests the disjoint relation between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
         -------
         Series
-            Mask of boolean values for each element in the GeoSeries that indicates whether it intersects the geometries in ``other``.
-            * *True*: The two geometries do not intersect each other.
+            Mask of boolean values for each element in the GeoSeries that indicates whether it disjoints to the geometries in ``other``.
+            * *True*: The two geometries disjoint to each other.
             * *False*: The two geometries intersect each other.
 
         Examples
@@ -1522,7 +1548,7 @@ class GeoSeries(Series):
         other : geometry or GeoSeries
             The geometry or GeoSeries to calculate the spherical distance between it and the geometries in the first GeoSeries.
 
-            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" bu default.
+            * If ``other`` is a geometry, this function calculates the spherical distance between each geometry in the GeoSeries and ``other``. The ``crs`` of ``other`` is "EPSG:4326" by default.
             * If ``other`` is a GeoSeries, this function calculates the spherical distance between each geometry in the GeoSeries and the geometry with the same index in ``other``.
 
         Returns
@@ -1612,7 +1638,8 @@ class GeoSeries(Series):
 
     def union(self, other):
         """
-        This function returns a geometry being a union of two input geometries
+        This function returns a geometry being a union of two input geometries.
+
         Parameters
         ----------
         other : GeoSeries
@@ -1770,7 +1797,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1808,7 +1834,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1840,7 +1865,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod
@@ -1949,10 +1973,15 @@ class GeoSeries(Series):
         """
         Returns a GeoJSON string representation of the GeoSeries.
 
-        :type show_bbox: bool
-        :param show_bbox: include bbox (bounds box) in the geojson. default False
+        Parameters
+        ----------
+        show_bbox: bool
+            Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
+            * *True:* Includes bounding box in the GeoJSON string.
+            * *False:* Do not include bounding box in the GeoJSON string.
 
-        :param kwargs: that will be passed to json.dumps().
+        **kwargs:
+            Parameters to pass to `jump.dumps`.
         """
         import json
         geo = {
@@ -1968,29 +1997,39 @@ class GeoSeries(Series):
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
         """
-        Read a file or OGR dataset to GeoSeries.
+        Reads a file or OGR dataset to a GeoSeries.
 
-        Supported file format is listed in
-        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+        Supported file formats are listed `here. <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_
 
-        :type fp: URI (str or pathlib.Path), or file-like object
-        :param fp: A dataset resource identifier or file object.
+        Parameters
+        ----------
+        fp: str, pathlib.Path, or file-like object
+            A dataset resource identifier or file object.
 
-        :type bbox: a (minx, miny, maxx, maxy) tuple
-        :param bbox: Filter for geometries which spatial intersects with by the provided bounding box.
+        bbox: tuple
+            Filters for geometries that spatially intersect with the provided bounding box. The bounding box is denoted with ``(min_x, min_y, max_x, max_y)``.
+            * min_x: The minimum x coordinate of the bounding box.
+            * min_y: The minimum y coordinate of the bounding box.
+            * max_x: The maximum x coordinate of the bounding box.
+            * max_y: The maximum y coordinate of the bounding box.
 
-        :type mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
-        :param mask: Filter for geometries which spatial intersects with by the provided geometry.
+        mask: GeoSeries
+            Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
-        :param item: int or slice
-        :param item: Load special items by skipping over items or stopping at a specific item.
+        item: int or slice
+            * If ``item`` is an integer, this function loads the geometry with an index of the integer.
+            * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
+                * *start:* The position to start the slicing, by default 0.
+                * *end:* The position to end the slicing.
+                * *step:* The step of the slicing, by default 1.
 
-        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+            Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
 
-        :rtype: GeoSeries
-        :return: A GeoSeries read from file.
+        Returns
+        -------
+        GeoSeries
+            A GeoSeries read from file.
         """
         import fiona
         import json
@@ -2006,7 +2045,8 @@ class GeoSeries(Series):
                         mask = GeoSeries(mask)
                     if not isinstance(mask, GeoSeries):
                         raise TypeError(f"unsupported mask type {type(mask)}")
-                    mask = arctern.ST_AsGeoJSON(mask.unary_union())
+                    mask = mask.unary_union().as_geojson()
+                    mask = json.loads(mask[0])
                 if isinstance(item, (int, type(None))):
                     item = (item,)
                 elif isinstance(item, slice):
@@ -2025,24 +2065,23 @@ class GeoSeries(Series):
 
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
         """
-        Store GeoSeries to a file or OGR dataset.
+        Saves a GeoSeries to a file or OGR dataset.
 
-        :type fp: URI (str or pathlib.Path), or file-like object
-        :param fp: A dataset resource identifier or file object.
+        Parameters
+        ----------
+        fp: str, pathlib.Path, or file-like object
+            A dataset resource identifier or file object.
 
-        :type mode: str, default "w"
-        :param mode: 'a' to append, or 'w' to write. Not all driver support
-                      append, see "Supported driver list" below for more info.
+        mode: str
+            * 'a': Append
+            * 'w': Write (default)
+            Not all driver support append, see the "supported drivers" below for more infomation.
 
-        :type driver: str, default "ESRI Shapefile"
-        :param driver: The OGR format driver. It's  represents a
-                       translator for a specific format. Supported driver is listed in
-                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+        driver: str
+            The OGR format driver, by default "ESRI Shapefile". It represents a translator for a specific format. See `supported drivers <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_ for more information.
 
-        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
-                       write data to multi-layer dataset.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+        Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
         """
         geo_type_map = dict([
             ("ST_POINT", "Point"),

@@ -1694,6 +1694,8 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
+        if not isinstance(json, (pd.Series, ks.Series)) and is_list_like(json) and not json:
+            return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
     def as_geojson(self):
@@ -1858,9 +1860,8 @@ class GeoSeries(Series):
         if na not in ["null", "drop", "keep"]:
             raise ValueError("Unknown na method {0}".format(na))
 
-        ids = np.array(self.index, copy=False)
-
-        for fid, geom in zip(ids, self):
+        ids = self.to_pandas()
+        for fid, geom in zip(ids, self.to_pandas()):
             feature = {
                 "id": str(fid),
                 "type": "Feature",
@@ -1953,21 +1954,11 @@ class GeoSeries(Series):
                        see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
                        more info.
         """
-        geo_type_map = dict([
-            ("ST_POINT", "Point"),
-            ("ST_LINESTRING", "LineString"),
-            ("ST_POLYGON", "Polygon"),
-            ("ST_MULTIPOINT", "MultiPoint"),
-            ("ST_MULTILINESTRING", "MultiLineString"),
-            ("ST_MULTIPOLYGON", "MultiPolygon"),
-            ("ST_GEOMETRYCOLLECTION", "GeometryCollection")
-        ])
 
-        geo_types = self.geom_type.map(geo_type_map)
-        if len(geo_types) == 0:
-            geo_types = "Unknown"
-        else:
-            geo_types = set(geo_types.dropna().unique())
+        geo_types = "Unknown"
+        if len(self.geom_type) != 0:
+            geo_types = set(self.geom_type.dropna().unique().to_pandas())
+
         schema = {"properties": {}, "geometry": geo_types}
         # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
         crs = self.crs

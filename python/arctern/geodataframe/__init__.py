@@ -12,20 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import find_packages, setup
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 
-with open("arctern_server/requirements.txt", "r") as f:
-    dependencies = f.read().splitlines()
-
-setup(
-    name="arctern_server",
-    version="0.0.5",
-    author="Zilliz",
-    author_email="support@zilliz.com",
-    description="arctern demo server",
-    packages=find_packages(),
-    scripts=['arctern_server/arctern-server'],
-    python_requires='>=3.6',
-    include_package_data=True,
-    install_requires=dependencies,
-)
+from .geodataframe import GeoDataFrame

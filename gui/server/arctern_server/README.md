@@ -1,6 +1,6 @@
 # arctern-gui-server
 
-一个简易的RESTFUL接口的web服务器，采用python语言编写，主要是为了使用spark服务。
+一个简易的 RESTFUL 接口的web服务器，采用python语言编写，主要是为了使用spark服务。
 
 ## 代码结构
 

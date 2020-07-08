@@ -1,5 +1,5 @@
-import geojson
 import shapely.wkt
+import geojson
 # from shapely.geometry import
 
 # pylint: disable=redefined-outer-name
