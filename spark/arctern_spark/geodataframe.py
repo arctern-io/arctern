@@ -140,9 +140,9 @@ class GeoDataFrame(DataFrame):
             kser = result[col]
             if isinstance(kser, GeoSeries):
                 pick = self
-                if col.endswith(suffixes[0]):
+                if col.endswith(suffixes[0]) and col not in self.columns:
                     col = col[:-len(suffixes[0])]
-                elif col.endswith(suffixes[1]):
+                elif col.endswith(suffixes[1]) and col not in right.columns:
                     col = col[:-len(suffixes[1])]
                     pick = right
                 elif col in right.columns:

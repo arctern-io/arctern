@@ -99,6 +99,44 @@ class TestOp:
         assert isinstance(result["geometry"], GeoSeries)
         assert result.location.crs == "EPSG:4326"
 
+    def test_merge_same_column_name(self):
+        data1 = {
+            "A": range(5),
+            "B": np.arange(5.0),
+            "other_geom": range(5),
+            "location": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        }
+        gdf1 = GeoDataFrame(data1, geometries=["location"], crs=["epsg:4326"])
+        data2 = {
+            "A": range(5),
+            "location": ["POINT (3 0)", "POINT (1 6)", "POINT (2 4)", "POINT (3 4)", "POINT (4 2)"],
+        }
+        gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:3857"])
+        result = gdf1.merge(gdf2, left_on="A", right_on="A")
+        assert isinstance(result, GeoDataFrame)
+        assert isinstance(result["location_x"], GeoSeries)
+        assert result.location_x.crs == "EPSG:4326"
+        assert result.location_y.crs == "EPSG:3857"
+
+    def test_merge_suffixed_column_name(self):
+        data1 = {
+            "A": range(5),
+            "B": np.arange(5.0),
+            "other_geom": range(5),
+            "location_x": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        }
+        gdf1 = GeoDataFrame(data1, geometries=["location_x"], crs=["epsg:4326"])
+        data2 = {
+            "A": range(5),
+            "location_y": ["POINT (3 0)", "POINT (1 6)", "POINT (2 4)", "POINT (3 4)", "POINT (4 2)"],
+        }
+        gdf2 = GeoDataFrame(data2, geometries=["location_y"], crs=["epsg:3857"])
+        result = gdf1.merge(gdf2, left_on="A", right_on="A")
+        assert isinstance(result, GeoDataFrame)
+        assert isinstance(result["location_x"], GeoSeries)
+        assert result.location_x.crs == "EPSG:4326"
+        assert result.location_y.crs == "EPSG:3857"
+
     # open this test when thread https://github.com/databricks/koalas/issues/1633 solved
     # def test_dissolve(self):
     #     data = {
