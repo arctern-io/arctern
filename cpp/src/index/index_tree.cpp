@@ -121,21 +121,22 @@ const std::vector<OGRGeometry*> IndexTree::map_match_query(const OGRGeometry* gp
 const std::vector<std::shared_ptr<arrow::Array>> IndexTree::query(
         const OGRGeometry *input) const {
   std::vector<std::shared_ptr<arrow::Array>> results_arrow(1);
-  std::vector<void*> matches;
-  OGREnvelope ogr_env;
-  input->getEnvelope(&ogr_env);
-  matches.clear();
-  geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX,
-                           ogr_env.MinY, ogr_env.MaxY);
-  get_tree()->query(&env, matches);
-
   arrow::Int32Builder builder;
+  if (input) {
+    std::vector<void *> matches;
+    OGREnvelope ogr_env;
+    input->getEnvelope(&ogr_env);
+    matches.clear();
+    geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX,
+                             ogr_env.MinY, ogr_env.MaxY);
+    get_tree()->query(&env, matches);
 
-  for (auto match : matches) {
-    // match(void*) contains index as binary representation.
-    auto index = reinterpret_cast<size_t>(match);
-    auto final_index = static_cast<int>(index);
-    CHECK_ARROW(builder.Append(final_index));
+    for (auto match : matches) {
+      // match(void*) contains index as binary representation.
+      auto index = reinterpret_cast<size_t>(match);
+      auto final_index = static_cast<int>(index);
+      CHECK_ARROW(builder.Append(final_index));
+    }
   }
   CHECK_ARROW(builder.Finish(&(results_arrow[0])));
 

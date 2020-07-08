@@ -340,15 +340,5 @@ TEST(MAP_MATCH_TEST, query) {
   auto result = index.query(gps_points_binary_vec);
 
   auto result_1 = std::static_pointer_cast<arrow::Int32Array>(result[0]);
-
-  for (int32_t i = 0; i < result_1->length(); i++) {
-//    OGRGeometry* road = nullptr;
-//    OGRGeometryFactory::createFromWkb(result_1->GetString(i).c_str(), nullptr,
-//                                      &road);
-//    char* str;
-//    OGR_G_ExportToWkt(road, &str);
-//    std::cout << str << std::endl;
-//    OGRGeometryFactory::destroyGeometry(road);
-//    CPLFree(str);
-  }
+  assert(result_1->length() == 2);
 }

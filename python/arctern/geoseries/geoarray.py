@@ -19,12 +19,12 @@ import numbers
 from collections.abc import Iterable
 from distutils.version import LooseVersion
 
-import arctern
 import numpy as np
 import pandas as pd
 import pyarrow
 from pandas.api.extensions import ExtensionDtype, ExtensionArray
 from pandas.api.extensions import register_extension_dtype
+import arctern
 
 
 @register_extension_dtype
@@ -136,8 +136,7 @@ class GeoArray(ExtensionArray):
         if hasattr(data, "crs"):
             if data.crs != crs:
                 raise ValueError("csr of the passed geometry data is different from crs.")
-            else:
-                crs = data.crs or crs
+            crs = data.crs or crs
         self.crs = crs
         self.data = np.asarray(data)
 
