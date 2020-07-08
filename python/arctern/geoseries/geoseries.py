@@ -19,9 +19,9 @@
 
 from warnings import warn
 
-import arctern
 import numpy as np
 from pandas import Series, DataFrame
+import arctern
 
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
