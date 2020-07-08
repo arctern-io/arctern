@@ -116,8 +116,8 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
-    _sindex = None
-    _sindex_generated = False
+    # _sindex = None
+    # _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -165,6 +165,7 @@ class GeoSeries(Series):
 
         if not self.array.crs:
             self.array.crs = crs
+        self._invalidate_sindex()
 
     @property
     def sindex(self):

@@ -94,9 +94,9 @@ def test_set_geometry():
     assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
 
 
-def test_merge():
+def test_merge1():
     data1 = {
-        "A": range(5),
+        "B": range(5),
         "B": np.arange(5.0),
         "other_geom": range(5),
         "geometry": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
@@ -111,6 +111,25 @@ def test_merge():
     assert isinstance(result, arctern.GeoDataFrame) is True
     assert isinstance(result["geometry"], arctern.GeoSeries) is True
     assert result.geometry.crs == "EPSG:4326"
+
+
+def test_merge2():
+    data1 = {
+        "A": range(5),
+        "B": np.arange(5.0),
+        "other_geom": range(5),
+        "location": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+    }
+    gdf1 = GeoDataFrame(data1, geometries=["location"], crs=["epsg:4326"])
+    data2 = {
+        "A": range(5),
+        "location": ["POINT (3 0)", "POINT (1 6)", "POINT (2 4)", "POINT (3 4)", "POINT (4 2)"],
+    }
+    gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:3857"])
+    result = gdf1.merge(gdf2, left_on="A", right_on="A")
+    assert isinstance(result, arctern.GeoDataFrame) is True
+    assert isinstance(result["location_x"], arctern.GeoSeries) is True
+    assert result.location_x.crs == "EPSG:4326"
 
 
 def test_to_json():
