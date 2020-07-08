@@ -79,7 +79,7 @@ def _creat_df_function(name):
             if isinstance(arg, DataFrame):
                 sql_ctx = arg.sql_ctx
                 break
-        args = [ arg._jdf if isinstance(arg, DataFrame) else arg for arg in args]
+        args = [arg._jdf if isinstance(arg, DataFrame) else arg for arg in args]
         jdf = getattr(
             sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
         return DataFrame(jdf, sql_ctx)
