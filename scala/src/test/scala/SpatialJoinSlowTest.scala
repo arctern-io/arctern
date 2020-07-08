@@ -1,15 +1,11 @@
-import org.apache.spark.sql.arctern.WithinJoin
+import org.apache.spark.sql.arctern.SpatialJoin
 import org.apache.spark.sql.arctern.functions._
-import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.functions._
-import org.locationtech.jts.geom.{Envelope, Geometry}
-
-import scala.collection.mutable
 
 
 case class Info(text: String)
 
-class WithinJoinTest extends AdapterTest {
+class SpatialJoinSlowTest extends AdapterTest {
   test("naive") {
     val ss = spark
     import ss.implicits._
@@ -34,7 +30,8 @@ class WithinJoinTest extends AdapterTest {
 
     val polygons = polygons_text.select('id, st_geomfromtext('text).as("polygons"))
 
-    val fin = WithinJoin(spark, points, 'attr, 'points, polygons, 'id, 'polygons)()
+    val fin = SpatialJoin(spark, points, polygons, 'points, 'polygons)()
+    1
     fin.show()
 
     val rst = fin.as[(Long, Long)].collect().toSeq.sorted
