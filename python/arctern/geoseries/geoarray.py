@@ -15,15 +15,16 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 
+import numbers
 from collections.abc import Iterable
 from distutils.version import LooseVersion
-import numbers
+
+import arctern
+import numpy as np
+import pandas as pd
 import pyarrow
 from pandas.api.extensions import ExtensionDtype, ExtensionArray
 from pandas.api.extensions import register_extension_dtype
-import numpy as np
-import pandas as pd
-import arctern
 
 
 @register_extension_dtype
@@ -115,17 +116,39 @@ def is_scalar_geometry(data):
     return isinstance(data, bytes)
 
 
+def _validate_crs(crs):
+    if crs is not None and not isinstance(crs, str):
+        raise TypeError("`crs` should be spatial reference identifier string")
+    crs = crs.upper() if crs is not None else crs
+    return crs
+
+
 class GeoArray(ExtensionArray):
     _dtype = GeoDtype()
 
-    def __init__(self, data):
+    def __init__(self, data, crs=None):
         if not isinstance(data, (np.ndarray, GeoArray)):
             raise TypeError(
                 "'data' should be array of wkb formed bytes. Use from_wkt to construct a GeoArray.")
         if not data.ndim == 1:
             raise ValueError("'data' should be 1-dim array of wkb formed bytes.")
 
+        if hasattr(data, "crs"):
+            if data.crs != crs:
+                raise ValueError("csr of the passed geometry data is different from crs.")
+            else:
+                crs = data.crs or crs
+        self.crs = crs
         self.data = np.asarray(data)
+
+    @property
+    def crs(self):
+        return self._crs
+
+    @crs.setter
+    def crs(self, crs):
+        crs = _validate_crs(crs)
+        self._crs = crs
 
     @property
     def dtype(self):
@@ -151,7 +174,7 @@ class GeoArray(ExtensionArray):
         return self.data.nbytes
 
     def copy(self):
-        return GeoArray(self.data.copy())
+        return GeoArray(self.data.copy(), self.crs)
 
     def isna(self):
         return np.array([g is None or g is np.nan for g in self.data], dtype=bool)

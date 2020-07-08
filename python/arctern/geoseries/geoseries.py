@@ -18,9 +18,11 @@
 # pylint: disable=too-many-ancestors, protected-access
 
 from warnings import warn
-from pandas import Series, DataFrame
-import numpy as np
+
 import arctern
+import numpy as np
+from pandas import Series, DataFrame
+
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
 
@@ -80,12 +82,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-def _validate_crs(crs):
-    if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
-    return crs
-
 
 class GeoSeries(Series):
     """
@@ -121,18 +117,24 @@ class GeoSeries(Series):
     """
 
     _sindex = None
-    _sindex_generated = None
+    _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
 
-        if hasattr(data, "crs") and crs:
-            if not data.crs:
-                data = data.copy()
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+        if hasattr(data, "crs"):
+            if crs:
+                if not data.crs:
+                    data = data.copy()
+                elif not data.crs == crs:
+                    raise ValueError(
+                        "csr of the passed geometry data is different from crs."
+                    )
+            else:
+                if not data.crs:
+                    data = data.copy()
+                else:
+                    crs = data.crs
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
@@ -158,12 +160,11 @@ class GeoSeries(Series):
                     s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values)
-
+            data = GeoArray(s.values, crs=crs)
         super().__init__(data, index=index, name=name, **kwargs)
 
-        self._crs = None
-        self.set_crs(crs)
+        if not self.array.crs:
+            self.array.crs = crs
 
     @property
     def sindex(self):
@@ -174,6 +175,10 @@ class GeoSeries(Series):
             self._sindex = _sindex
             self._sindex_generated = True
         return self._sindex
+
+    def invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
 
     def set_crs(self, crs):
         """
@@ -197,8 +202,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.array.crs = crs
 
     @property
     def crs(self):
@@ -217,7 +221,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        return self._crs
+        return self.array.crs
 
     @crs.setter
     def crs(self, crs):
@@ -421,6 +425,28 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
+
+    def _invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
+    def _wrapped_pandas_method(self, mtd, *args, **kwargs):
+        """Wrap a generic pandas method to ensure it returns a GeoSeries"""
+        val = getattr(super(GeoSeries, self), mtd)(*args, **kwargs)
+        if type(val) == Series:
+            val.__class__ = GeoSeries
+            val.crs = self.crs
+            val._invalidate_sindex()
+        return val
+
+    def append(self, *args, **kwargs):
+        return self._wrapped_pandas_method("append", *args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        return self._wrapped_pandas_method("update", *args, **kwargs)
+
+    def drop(self, *args, **kwargs):
+        return self._wrapped_pandas_method("drop", *args, **kwargs)
 
     # -------------------------------------------------------------------------
     # Geometry related property
@@ -1771,7 +1797,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1809,7 +1834,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1841,7 +1865,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod
