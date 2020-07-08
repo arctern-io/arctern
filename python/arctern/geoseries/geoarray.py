@@ -136,8 +136,7 @@ class GeoArray(ExtensionArray):
         if hasattr(data, "crs"):
             if data.crs != crs:
                 raise ValueError("csr of the passed geometry data is different from crs.")
-            else:
-                crs = data.crs or crs
+            crs = data.crs or crs
         self.crs = crs
         self.data = np.asarray(data)
 

@@ -15,7 +15,7 @@
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors, protected-access
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs
 
 from warnings import warn
 
