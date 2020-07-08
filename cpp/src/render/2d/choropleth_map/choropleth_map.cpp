@@ -50,8 +50,8 @@ template class ChoroplethMap<float>;
 template class ChoroplethMap<double>;
 
 template <typename T>
-ChoroplethMap<T>::ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, std::vector<T> count,
-                                int64_t num_buildings)
+ChoroplethMap<T>::ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb,
+                                std::vector<T> count, int64_t num_buildings)
     : choropleth_wkb_(std::move(choropleth_wkb)),
       count_(count),
       num_buildings_(num_buildings) {}

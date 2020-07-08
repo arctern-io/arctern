@@ -1773,8 +1773,9 @@ TEST(CHOROPLETHMAP_TEST, STD) {
 TEST(CHOROPLETHMAP_TEST, MULTIPOLYGON) {
   // param1: wkt string
   std::string wkt_string1 = "POLYGON ((600 600, 800 600, 800 800, 600 800, 600 600))";
-  std::string wkt_string2 = "MULTIPOLYGON (((300 200, 450 400, 100 400, 300 200)),"
-                            "((150 50, 400 100, 100 200, 50 100, 150 50)))";
+  std::string wkt_string2 =
+      "MULTIPOLYGON (((300 200, 450 400, 100 400, 300 200)),"
+      "((150 50, 400 100, 100 200, 50 100, 150 50)))";
   arrow::StringBuilder string_builder;
   auto status = string_builder.Append(wkt_string1);
   status = string_builder.Append(wkt_string2);

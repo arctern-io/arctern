@@ -213,8 +213,9 @@ std::vector<uint8_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
 }
 
 template <typename T>
-std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt, std::vector<T> arr_c,
-                                   int64_t num_buildings, const std::string& conf) {
+std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
+                                   std::vector<T> arr_c, int64_t num_buildings,
+                                   const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
     return std::vector<uint8_t>();
