@@ -45,6 +45,10 @@ object functions {
     ST_AsText(Seq(geo.expr))
   }
 
+  def st_aswkb(geo: Column): Column = Column {
+    ST_AsWKB(Seq(geo.expr))
+  }
+
   def st_asgeojson(geo: Column): Column = Column {
     ST_AsGeoJSON(Seq(geo.expr))
   }
