@@ -19,17 +19,356 @@ limitations under the License.
 import logging
 import getopt
 import sys
+import os
+import argparse
 
-from arctern_server import manage
+import configparser
 
-if __name__ == '__main__':
-    IS_DEBUG = True
-    IP = "0.0.0.0"
-    PORT = 8080
-    JSON_CONFIG = None
-    LOG_FILE = "/tmp/arctern_server_log.txt"
-    LOG_LEVEL = logging.INFO
+import signal
 
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
+    print("start to kill zeppelin!")
+    stop_zeppelin()
+    sys.exit(0)
+
+
+class MetaConf(configparser.ConfigParser):# pylint: disable=too-many-ancestors
+    #preserve case for letters
+    def optionxform(self, optionstr):
+        return optionstr
+
+def to_number(v, default=None):
+    result = default
+    try:
+        result = eval(v)
+    except:
+        pass
+    return result
+
+def get_config_file_path():
+    prefix = get_write_prefix()
+    file_name ="config.ini"
+    return os.path.join(prefix, file_name)
+
+def _check_config_sections(config):
+    all_secs = {'meta', "zeppelin", "interpreter"}
+    sections = set(config.sections())
+    need = all_secs - sections
+    for sec in need:
+        config.add_section(sec)
+    if need:
+        file_path = get_config_file_path()
+        with open(file_path, "w") as f:
+            config.write(f)
+
+def get_config():
+    file_path = get_config_file_path()
+    if not os.path.exists(file_path):
+       with open(file_path, "w") as f:
+           content="[meta]\n[zeppelin]\n[interpreter]"
+           f.write(content)
+
+    config = MetaConf()
+    config.read(file_path)
+    _check_config_sections(config)
+    return config
+
+def _get_config_value(key1, key2, default=None):
+    config = get_config()
+    return config.get(key1, key2, fallback=default)
+
+def get_meta_value(key, default=None):
+    return _get_config_value("meta", key, default=default)
+
+def get_interpreter_value(key, default=None):
+    return _get_config_value("interpreter", key, default=default)
+
+def get_zeppelin_value(key, default=None):
+    return _get_config_value("zeppelin", key, default=default)
+
+def _write_config_value(key1, key2, value, save=True):
+    file_path = get_config_file_path()
+    save_v = _get_config_value(key1, key2, default=None)
+
+    if value is None: return
+
+    # if save_v is not None and value is None: return
+
+    config = get_config()
+    config[key1][key2] = value
+    if save:
+        with open(file_path, "w") as f:
+            config.write(f)
+
+
+def write_meta_value(key, value):
+    return _write_config_value("meta", key, value)
+
+def write_interpreter_value(key, value):
+    return _write_config_value("interpreter", key, value)
+
+def write_zeppelin_value(key, value):
+    return _write_config_value("zeppelin", key, value)
+
+def get_write_prefix():
+    import arctern_server
+    return arctern_server.__path__[0]
+
+def _write_config(args, file_name, get_func):
+    prefix = get_write_prefix()
+    path = os.path.join(prefix, file_name)
+    content = get_func(args)
+    with open(path, "w") as f:
+        f.write(content)
+
+def write_python_config(args):
+    write_interpreter_value("type", args.interpreter_type)
+    write_interpreter_value("name", args.interpreter_name)
+    write_interpreter_value("python-path", args.interpreter_python_path)
+
+def write_pyspark_config(args):
+    write_interpreter_value("type", args.interpreter_type)
+    write_interpreter_value("name", args.interpreter_name)
+    write_interpreter_value("spark-home", args.interpreter_spark_home)
+    write_interpreter_value("master", args.interpreter_master)
+    write_interpreter_value("pyspark-python", args.interpreter_pyspark_python)
+    write_interpreter_value("pyspark-driver-python", args.interpreter_pyspark_driver_python)
+
+def write_meta_config(args):
+    write_meta_value("logfile", args.logfile)
+    write_meta_value("loglevel", args.loglevel)
+    write_meta_value("arctern-server-host", args.arctern_server_host)
+    write_meta_value("arctern-server-port", args.arctern_server_port)
+
+def write_zeppelin_config(args):
+    write_zeppelin_value("zeppelin-host", args.zeppelin_host)
+    write_zeppelin_value("zeppelin-port", args.zeppelin_port)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    bootstrap_parser = subparsers.add_parser('bootstrap')
+    bootstrap_parser.add_argument('-w', '--workspace', dest="workspace")
+    bootstrap_parser.set_defaults(which='bootstrap')
+
+    config_parser = subparsers.add_parser('config')
+    config_parser.add_argument("--arctern_server_host", dest="arctern_server_host")
+    config_parser.add_argument("--arctern_server_port", dest="arctern_server_port")
+    config_parser.add_argument("--zeppelin_host", dest="zeppelin_host")
+    config_parser.add_argument("--zeppeline_port", dest="zeppelin_port")
+    config_parser.add_argument("--interpreter_type", dest="interpreter_type")
+    config_parser.add_argument("--interpreter_name", dest="interpreter_name")
+    config_parser.add_argument("--interpreter_python_path", dest="interpreter_python_path")
+
+    config_parser.add_argument("--interpreter_spark_home", dest="interpreter_spark_home")
+    config_parser.add_argument("--interpreter_master", dest="interpreter_master")
+    config_parser.add_argument("--interpreter_pyspark_python", dest="interpreter_pyspark_python")
+    config_parser.add_argument("--interpreter_pyspark_driver_python", dest="interpreter_pyspark_driver_python")
+    config_parser.add_argument("--logfile", dest="logfile")
+    config_parser.add_argument("--loglevel", default="debug", dest="loglevel")
+    config_parser.set_defaults(which='config')
+
+    run_parser = subparsers.add_parser('start')
+    run_parser.add_argument("--mode", default="release", dest="mode")
+    run_parser.set_defaults(which='start')
+
+    return parser.parse_args()
+
+def _modify_xml(inf, ouf, key_values):
+    # types (str, dict)
+    import xml.etree.ElementTree as ET
+    try:
+        tree = ET.parse(inf)
+        for node in tree.findall('property'):
+            name = node.find('name')
+            if name.text in key_values.keys():
+                new_value = key_values.pop(name.text)
+                value = node.find('value')
+                value.text = new_value
+
+        tree.write(ouf)
+    except Exception as e:
+        print(e)
+
+def modify_zeppelin_xml():
+    info = {
+       'zeppelin.server.addr': get_zeppelin_value("zeppelin-host"),
+       'zeppelin.server.port': get_zeppelin_value("zeppelin-port"),
+    }
+
+    workspace = get_meta_value("workspace", default="")
+    dir_path = os.path.join(workspace, "zeppelin", "conf")
+    if not os.path.exists(dir_path):
+        print("zeppelin path not exist, please bootsrap!")
+        sys.exit(0)
+    old_file_path = os.path.join(dir_path, "zeppelin-site.xml.template")
+    new_file_path = os.path.join(dir_path, "zeppelin-site.xml")
+    _modify_xml(old_file_path, new_file_path, info)
+
+def download_zeppelin():
+    workspace = get_meta_value("workspace", "")
+    if not workspace:
+        print("failed to find workspace!")
+        sys.exit(0)
+    target_path = os.path.join(workspace, "zeppelin")
+    tgz_target_path = os.path.join(workspace, "zeppelin.tgz")
+    zeppelin_bin_path = os.path.join(target_path, "bin")
+
+    skip_download, skip_uncompress = False, False
+    tgz_exist = os.path.exists(tgz_target_path)
+    zeppelin_bin_exist = os.path.exists(zeppelin_bin_path)
+    skip_download = zeppelin_bin_exist or tgz_exist
+    skip_uncompress = zeppelin_bin_exist
+
+    if zeppelin_bin_exist:
+        print("find zeppelin binary.")
+
+    if skip_download:
+        print("skip downloading zeppelin file")
+
+    if skip_uncompress:
+        print("skip uncompress zeppelin")
+
+    if not skip_download:
+        cmd = 'wget -O %s https://mirror.bit.edu.cn/apache/zeppelin/zeppelin-0.9.0-preview1/zeppelin-0.9.0-preview1-bin-all.tgz ' %str(tgz_target_path)
+        print( "execute %s"%cmd)
+        status = os.system(cmd)
+        if status != 0:
+            print("failed to %s"%cmd)
+            sys.exit(0)
+
+    if not skip_uncompress:
+        cmd = f"mkdir -p {target_path} && tar -zxf {tgz_target_path} -C {target_path} --strip-components 1"
+        print(cmd)
+        if os.system(cmd)!=0 :
+            print("failed to uncompress zeppelin.tgz.")
+            sys.exit(0)
+
+def stop_zeppelin():
+    workspace = get_meta_value("workspace", "")
+    file_path = os.path.join(workspace, "zeppelin", "bin", "zeppelin-daemon.sh")
+    if not os.path.exists(file_path):
+        print("failed to find zeppelin-damemon.sh")
+        sys.exit(0)
+
+    cmd = "%s stop"%file_path
+    print(cmd)
+    os.system(cmd)
+
+def start_zeppelin():
+    stop_zeppelin()
+    workspace = get_meta_value("workspace", "")
+    file_path = os.path.join(workspace, "zeppelin", "bin", "zeppelin-daemon.sh")
+    if not os.path.exists(file_path):
+        print("failed to find zeppelin-damemon.sh")
+        sys.exit(0)
+
+    cmd = "%s start"%file_path
+    status = os.system(cmd)
+    print(cmd)
+    return status
+
+def config_bootstrap(args):
+    if not args.workspace:
+        args.workspace = "./"
+        print("config args.workspace to default ./ ")
+    abs_path = os.path.abspath(args.workspace)
+    write_meta_value("workspace", abs_path)
+    download_zeppelin()
+    print("done.")
+
+def config_confgs(args):
+    interpreter_type = args.interpreter_type
+    write_meta_config(args)
+    write_zeppelin_config(args)
+    if interpreter_type == "python":
+        write_python_config(args)
+    elif interpreter_type == "pyspark":
+        write_pyspark_config(args)
+    print("done.")
+
+def check_interpreter_keys():
+
+    interpreter_type = get_interpreter_value("type")
+    if interpreter_type is None:
+        return ["interpreter_type"]
+
+    need = []
+    keys = ['name']
+    extend_keys = []
+    if interpreter_type == "python":
+        extend_keys = ["python-path"]
+    elif interpreter_type == "pyspark":
+        extend_keys = ["spark-home", "pyspark-python", "pyspark-driver-python"]
+    keys.extend(extend_keys)
+
+    for k in keys:
+        v = get_interpreter_value(k, None)
+        if v is None:
+            k_ = "interpreter_" + k.replace('-', '_')
+            need.append(k_)
+    return need
+
+def check_before_start():
+    interpreter_type = get_interpreter_value("type")
+    if interpreter_type is None:
+        print("please config interpreter_type")
+        sys.exit(0)
+
+    workspace = get_meta_value("workspace")
+    if workspace is None:
+        print("please bootstrap with a directory ")
+        sys.exit(0)
+
+    need = check_interpreter_keys()
+    if need:
+        print("please config following ", need)
+        sys.exit(0)
+
+    meta_defaults = {
+        "arctern-server-host": "127.0.0.1",
+        "arctern-server-port": "8080",
+    }
+    for k, v in meta_defaults.items():
+        arg_v = get_meta_value(k, default=None)
+        if arg_v is None:
+            write_meta_value(k, v)
+
+    # zeppelin_host = get_zeppelin_value("zeppelin-host", default=None)
+    # if zeppelin_host is None:
+    arctern_host = get_meta_value("arctern-server-host", default="127.0.0.1")
+    write_zeppelin_value("zeppelin-host", arctern_host)
+
+    # zeppelin_port = get_zeppelin_value("zeppelin-port", default=None)
+    # if zeppelin_port is None:
+    arctern_server_port = get_meta_value("arctern-server-port", default="8080")
+    num_port = to_number(arctern_server_port, -1) + 1
+    if num_port > 0:
+        write_zeppelin_value("zeppelin-port", str(num_port))
+
+    interpreter_type = get_interpreter_value("type")
+    if interpreter_type == "pyspark":
+        master = get_interpreter_value("master")
+        if master is None:
+            write_interpreter_value("master", "local[*]")
+
+def start_server(args):
+    signal.signal(signal.SIGINT, signal_handler)
+    # manage.main(IS_DEBUG, IP, PORT, LOG_FILE, LOG_LEVEL)
+    check_before_start()
+    modify_zeppelin_xml()
+    status = start_zeppelin()
+    if status != 0:
+        print("failed to start zeppelin!")
+        sys.exit(0)
+
+    from arctern_server import manage
+    IS_DEBUG = args.mode == "debug"
+    IP = get_meta_value("arctern-server-host")
+    PORT = get_meta_value("arctern-server-port")
+    LOG_FILE = get_meta_value("logfile", "/tmp/arctern_server_log.txt")
     _LEVEL_DICT_ = {
         'debug': logging.DEBUG,
         'info': logging.INFO,
@@ -37,29 +376,23 @@ if __name__ == '__main__':
         'error': logging.ERROR,
         'fatal': logging.FATAL
     }
+    loglevel = get_meta_value("loglevel", "debug")
+    LOG_LEVEL = _LEVEL_DICT_.get(loglevel, logging.DEBUG)
+    print("loglevel:", LOG_LEVEL)
+    print("logfile:", LOG_FILE)
+    print("IS_DUBUG:", IS_DEBUG)
+    print("IP:", IP)
+    print("PORT", PORT)
+    manage.main(IS_DEBUG, IP, PORT, LOG_FILE, LOG_LEVEL)
+    print("done.")
 
-    try:
-        OPTS, ARGS = getopt.getopt(sys.argv[1:], 'hri:p:c:', ['logfile=', 'loglevel='])
-    except getopt.GetoptError as _e:
-        print("Error '{}' occured. Arguments {}.".format(str(_e), _e.args))
-        manage.usage()
-        sys.exit(2)
 
-    for opt, arg in OPTS:
-        if opt == '-h':
-            manage.usage()
-            sys.exit()
-        elif opt == '-r':
-            IS_DEBUG = False
-        elif opt == '-i':
-            IP = arg
-        elif opt == "-p":
-            PORT = arg
-        elif opt == '-c':
-            JSON_CONFIG = arg
-        elif opt == '--logfile':
-            LOG_FILE = arg
-        elif opt == '--loglevel':
-            LOG_LEVEL = _LEVEL_DICT_.get(arg, logging.DEBUG)
 
-    manage.main(IS_DEBUG, IP, PORT, JSON_CONFIG, LOG_FILE, LOG_LEVEL)
+if __name__ == '__main__':
+    args = parse_args()
+    if args.which == "bootstrap":
+       config_bootstrap(args)
+    elif args.which == "config":
+        config_confgs(args)
+    elif args.which == "start":
+        start_server(args)

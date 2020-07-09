@@ -64,23 +64,30 @@ def pointmap(ax, points, bounding_box,
         Only supports SRID as a WKT representation of CRS by now.
     **extra_contextily_params: dict
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
-
     Examples
-    .. doctest:
-        :skipif: True
-    -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>> # plot pointmap
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.pointmap(ax, points, [-74.01398981737215,40.71353244267465,-73.96979949831308,40.74480271529791], point_size=10, point_color='#115f9a',coordinate_system="EPSG:4326")
-    >>> plt.show()
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>> import requests
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot pointmap
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.pointmap(ax, points, [-74.01398981737215,40.71353244267465,-73.96979949831308,40.74480271529791], point_size=10, point_color='#115f9a',coordinate_system="EPSG:4326")
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -88,7 +95,7 @@ def pointmap(ax, points, bounding_box,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size,
                          point_color=point_color, opacity=opacity, coordinate_system=coordinate_system)
-    hexstr = arctern.point_map_layer(vega, points)
+    hexstr = arctern.pointmap_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -142,32 +149,38 @@ def weighted_pointmap(ax, points, color_weights=None,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    .. doctest:
-        :skipif: True
     -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>>
-    >>> # plot weighted pointmap with variable color and fixed size
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.weighted_pointmap(ax, points, color_weights=df['color_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[16], opacity=1.0, coordinate_system="EPSG:4326")
-    >>> plt.show()
-    >>>
-    >>> # plot weighted pointmap with fixed color and variable size
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.weighted_pointmap(ax, points, size_weights=df['size_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#37A2DA"], size_bound=[15, 50], opacity=1.0, coordinate_system="EPSG:4326")
-    >>> plt.show()
-    >>>
-    >>> # plot weighted pointmap with variable color and size
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.weighted_pointmap(ax, points, color_weights=df['color_weights'], size_weights=df['size_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[15, 50], opacity=1.0, coordinate_system="EPSG:4326")
-    >>> plt.show()
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>>
+       >>> # Read from test.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot weighted pointmap with variable color and fixed size
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.weighted_pointmap(ax, points, color_weights=df['color_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[16], opacity=1.0, coordinate_system="EPSG:4326")
+       >>> plt.show()
+       >>>
+       >>> # Plot weighted pointmap with fixed color and variable size
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.weighted_pointmap(ax, points, size_weights=df['size_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#37A2DA"], size_bound=[15, 50], opacity=1.0, coordinate_system="EPSG:4326")
+       >>> plt.show()
+       >>>
+       >>> # Plot weighted pointmap with variable color and size
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.weighted_pointmap(ax, points, color_weights=df['color_weights'], size_weights=df['size_weights'], bounding_box=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495], color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[15, 50], opacity=1.0, coordinate_system="EPSG:4326")
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -176,7 +189,7 @@ def weighted_pointmap(ax, points, color_weights=None,
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                                   color_bound=color_bound, size_bound=size_bound, opacity=opacity,
                                   coordinate_system=coordinate_system)
-    hexstr = arctern.weighted_point_map_layer(
+    hexstr = arctern.weighted_pointmap_layer(
         vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -224,22 +237,27 @@ def heatmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    .. doctest:
-        :skipif: True
     -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test_data.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>>
-    >>> # plot heatmap
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.heatmap(ax, points, df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], coordinate_system='EPSG:4326')
-    >>> plt.show()
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot heatmap
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.heatmap(ax, points, df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], coordinate_system='EPSG:4326')
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -249,7 +267,7 @@ def heatmap(ax, points, weights, bounding_box,
         map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level,
                         aggregation_type=aggregation_type, coordinate_system=coordinate_system)
-    hexstr = arctern.heat_map_layer(vega, points, weights)
+    hexstr = arctern.heatmap_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -294,22 +312,29 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    .. doctest:
-        :skipif: True
     -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test_data.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-    >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
-    >>> polygon = arctern.GeoSeries(input['region_boundaries'])
-    >>> # plot choroplethmap
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.choroplethmap(ax, polygon, input['color_weights'], bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean")
-    >>> plt.show()
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
+       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>>
+       >>> # Plot choroplethmap
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.choroplethmap(ax, polygon, input['color_weights'], bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean")
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -317,7 +342,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound,
                               opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
-    hexstr = arctern.choropleth_map_layer(vega, region_boundaries, weights)
+    hexstr = arctern.choroplethmap_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -352,22 +377,31 @@ def iconviz(ax, points, bounding_box, icon_path,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    .. doctest:
-        :skipif: True
     -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test_data.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}, nrows=10)
-    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>> # plot icon visualization
-    >>> # Download icon-viz.png :  https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.iconviz(ax, points, bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], icon_path='/path/to/icon-viz.png', coordinate_system='EPSG:4326')
-    >>> plt.show()
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot icon visualization
+       >>> # Download icon-viz.png :  https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png
+       >>> # Uncomment the line below to download the icon image
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png"')
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.iconviz(ax, points, bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], icon_path='icon-viz.png', coordinate_system='EPSG:4326')
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -375,7 +409,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, icon_size=icon_size,
                      coordinate_system=coordinate_system)
-    hexstr = arctern.icon_viz_layer(vega, points)
+    hexstr = arctern.iconviz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -425,21 +459,28 @@ def fishnetmap(ax, points, weights, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
 
     Examples
-    .. doctest:
-        :skipif: True
     -------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import arctern
-    >>> import matplotlib.pyplot as plt
-    >>> # read from test_data.csv
-    >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
-    >>> df = pd.read_csv("/path/to/test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-    >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
-    >>> # render fishnet
-    >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-    >>> arctern.plot.fishnetmap(ax, points=points, weights=df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], cell_size=8, cell_spacing=2, opacity=1.0, coordinate_system="EPSG:4326")
-    >>> plt.show()
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # render fishnet
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> arctern.plot.fishnetmap(ax, points=points, weights=df['color_weights'], bounding_box=[-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304], cell_size=8, cell_spacing=2, opacity=1.0, coordinate_system="EPSG:4326")
+       >>> plt.show()
     """
     from matplotlib import pyplot as plt
     import contextily as cx
@@ -448,7 +489,7 @@ def fishnetmap(ax, points, weights, bounding_box,
     vega = vega_fishnetmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                            cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
                            coordinate_system=coordinate_system, aggregation_type=aggregation_type)
-    hexstr = arctern.fishnet_map_layer(vega, points, weights)
+    hexstr = arctern.fishnetmap_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)

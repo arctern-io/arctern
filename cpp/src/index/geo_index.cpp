@@ -15,6 +15,7 @@
  */
 
 #include "index/geo_index.h"
+
 #include "gis/map_match/map_match.h"
 #include "gis/spatial_join/st_indexed_within.h"
 
@@ -50,6 +51,13 @@ std::vector<std::shared_ptr<arrow::Array>> GeosIndex::nearest_road(
 std::vector<std::shared_ptr<arrow::Array>> GeosIndex::ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points) {
   return arctern::gis::spatial_join::ST_IndexedWithin(*index_, points);
+}
+
+std::vector<std::shared_ptr<arrow::Array>> GeosIndex::query(
+    const std::vector<std::shared_ptr<arrow::Array>>& inputs) {
+  auto gps_points_geo = arctern::render::GeometryExtraction(inputs);
+  assert(gps_points_geo.size() == 1);
+  return (*index_).query(gps_points_geo[0].get());
 }
 
 }  // namespace geo_indexing

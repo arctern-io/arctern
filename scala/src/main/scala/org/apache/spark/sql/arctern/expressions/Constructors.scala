@@ -255,6 +255,17 @@ case class ST_AsText(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
+case class ST_AsWKB(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+
+  override def expr: Expression = inputsExpr.head
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"${GeometryUDT.getClass.getName.dropRight(1)}.ToWkb($geo)")
+
+  override def dataType: DataType = BinaryType
+
+  override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
+}
+
 case class ST_AsGeoJSON(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head

@@ -168,6 +168,8 @@ scala/bin/
 scala/project/target
 scala/project/target/*
 scala/project/build.properties
+scala/src/project
+scala/src/project/*
 scala/target/
 scala/build/
 scala/*.log

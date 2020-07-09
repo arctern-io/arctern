@@ -23,8 +23,8 @@ def _agg_func_template(df, col_name, st_agg_func):
     from pyspark.sql.types import (StructType, StructField, BinaryType)
 
     agg_schema = StructType([StructField('geos', BinaryType(), True)])
-    @pandas_udf(agg_schema, PandasUDFType.MAP_ITER)
-    def agg_step1(batch_iter, col_name=col_name):
+    from typing import Iterator
+    def agg_step1(batch_iter: Iterator[pd.DataFrame], col_name=col_name) -> Iterator[pd.DataFrame]:
         for pdf in batch_iter:
             ret = st_agg_func(pdf[col_name])
             df = pd.DataFrame({"geos": [ret[0]]})
@@ -34,7 +34,7 @@ def _agg_func_template(df, col_name, st_agg_func):
     def agg_step2(geos):
         return st_agg_func(geos)[0]
 
-    agg_df = df.mapInPandas(agg_step1)
+    agg_df = df.mapInPandas(agg_step1, schema=agg_schema)
     ret = agg_df.agg(agg_step2(agg_df['geos'])).collect()[0][0]
     return ret
 
