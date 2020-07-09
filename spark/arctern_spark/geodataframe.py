@@ -19,7 +19,8 @@ from itertools import zip_longest
 
 import numpy as np
 import pandas as pd
-from databricks.koalas import DataFrame, Series
+from databricks.koalas import DataFrame, Series, get_option
+from databricks.koalas.frame import REPR_PATTERN
 
 import arctern_spark
 from arctern_spark.geoseries import GeoSeries
@@ -124,6 +125,37 @@ class GeoDataFrame(DataFrame):
                 key = [key]
             for col in key:
                 self._crs_for_cols.pop(col)
+
+    def _get_or_create_repr_pandas_cache(self, n):
+        if not hasattr(self, "_repr_pandas_cache") or n not in self._repr_pandas_cache:
+            pdf = self.head(n + 1)._to_internal_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            self._repr_pandas_cache = {n: pdf}
+        return self._repr_pandas_cache[n]
+
+    def __repr__(self):
+        max_display_count = get_option("display.max_rows")
+        if max_display_count is None:
+            pdf = self.to_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            return pdf.to_string()
+
+        pdf = self._get_or_create_repr_pandas_cache(max_display_count)
+        pdf_length = len(pdf)
+        pdf = pdf.iloc[:max_display_count]
+        if pdf_length > max_display_count:
+            repr_string = pdf.to_string(show_dimensions=True)
+            match = REPR_PATTERN.search(repr_string)
+            if match is not None:
+                nrows = match.group("rows")
+                ncols = match.group("columns")
+                footer = "\n\n[Showing only the first {nrows} rows x {ncols} columns]".format(
+                    nrows=nrows, ncols=ncols
+                )
+                return REPR_PATTERN.sub(footer, repr_string)
+        return pdf.to_string()
 
     def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
@@ -313,11 +345,11 @@ class GeoDataFrame(DataFrame):
         >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
-        A    B  other_geom         geo2         geo3     geometry
+           A    B  other_geom         geo2         geo3     geometry
         0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
         1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
-        2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
-        3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
+        3  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (3 3)
+        2  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (2 2)
         4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
         """
         arctern_spark.file.to_file(self, filename=filename, driver=driver, schema=schema,
@@ -345,8 +377,10 @@ class GeoDataFrame(DataFrame):
         na : {'null', 'drop', 'keep'}, default 'null'
             Indicates how to output missing (NaN) values in the GeoDataFrame.
             See below.
-        show_bbow : bool, optional, default: False
+        show_bbox : bool, optional, default: False
             Include bbox (bounds) in the geojson
+        geometry : str, optional, default 'geometry'
+            Specify geometry column.
 
         Returns
         -------
