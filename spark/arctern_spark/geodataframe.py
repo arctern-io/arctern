@@ -14,9 +14,14 @@
 
 # pylint: disable=protected-access
 
+import json
 from itertools import zip_longest
 
+import numpy as np
+import pandas as pd
 from databricks.koalas import DataFrame, Series
+
+import arctern_spark
 from arctern_spark.geoseries import GeoSeries
 from arctern_spark.scala_wrapper import GeometryUDT
 
@@ -96,8 +101,8 @@ class GeoDataFrame(DataFrame):
             if crs or geometry_column_names:
                 result.__class__ = GeoDataFrame
                 result._crs_for_cols = crs
-                result._geometry_column_names = set()
-                result._set_geometries(geometry_column_names, geometry_crs)
+                result._geometry_column_names = geometry_column_names
+                # result._set_geometries(geometry_column_names, geometry_crs)
 
         return result
 
@@ -160,3 +165,159 @@ class GeoDataFrame(DataFrame):
                 kser.set_crs(pick._crs_for_cols.get(col, None))
 
         return result
+
+    def iterfeatures(self, na="null", show_bbox=False, geometry='geometry'):
+        if na not in ["null", "drop", "keep"]:
+            raise ValueError("Unknown na method {0}".format(na))
+        if geometry not in self._geometry_column_names:
+            raise ValueError("{} is not a geometry column".format(geometry))
+        ids = self.index.to_pandas()
+        geometries = self[geometry].as_geojson().to_pandas()
+        geometries_bbox = self[geometry].bbox
+        properties_cols = self.columns.difference([geometry]).tolist()
+
+        if len(properties_cols) > 0:
+            properties = self[properties_cols].to_pandas()
+            property_geo_cols = self._geometry_column_names.difference([geometry])
+
+            # since it could be more than one geometry columns in GeoDataFrame,
+            # we transform those geometry columns as wkt formed string except column `col`.
+            for property_geo_col in property_geo_cols:
+                properties[property_geo_col] = self[property_geo_col].to_wkt().to_pandas()
+            if na == "null":
+                properties[pd.isnull(properties).values] = np.nan
+
+            properties = properties.values
+            for i, row in enumerate(properties):
+                geom = geometries[i]
+                if na == "drop":
+                    properties_items = {
+                        k: v for k, v in zip(properties_cols, row) if not pd.isnull(v)
+                    }
+                else:
+                    properties_items = {k: v for k, v in zip(properties_cols, row)}
+
+                feature = {
+                    "id": str(ids[i]),
+                    "type": "Feature",
+                    "properties": properties_items,
+                    "geometry": json.loads(geom) if geom else None,
+                }
+
+                if show_bbox:
+                    feature["bbox"] = geometries_bbox[i]
+                yield feature
+
+        else:
+            for fid, geom, bbox in zip(ids, geometries, geometries_bbox):
+                feature = {
+                    "id": str(fid),
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": geom,
+                }
+                if show_bbox:
+                    feature["bbox"] = bbox if geom else None
+                yield feature
+
+    def reset_index(self, level=None, drop=False, inplace=False, col_level=0, col_fill=""):
+        df = super(GeoDataFrame, self).reset_index(level, drop, inplace, col_level, col_fill)
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+
+    @classmethod
+    def from_file(cls, filename, **kwargs):
+        """
+        Alternate constructor to create a ``GeoDataFrame`` from a file or url.
+
+        Parameters
+        -----------
+        filename : str
+            File path or file handle to read from.
+        bbox : tuple(minx, miny, maxx, maxy) or arctern.GeoSeries, default None
+            Filter features by given bounding box, GeoSeries. Cannot be used
+            with mask.
+        mask : dict | arctern.GeoSeries | wkt str | wkb bytes, default None
+            Filter for features that intersect with the given dict-like geojson
+            geometry, GeoSeries. Cannot be used with bbox.
+        rows : int or slice, default None
+            Load in specific rows by passing an integer (first `n` rows) or a
+            slice() object.
+        **kwargs :
+        Keyword args to be passed to the `open` or `BytesCollection` method
+        in the fiona library when opening the file. For more information on
+        possible keywords, type:
+        ``import fiona; help(fiona.open)``
+
+        Returns
+        --------
+        GeoDataFrame
+            An GeoDataFrame object.
+        """
+        return arctern_spark.file.read_file(filename, **kwargs)
+
+    def to_file(self, filename, driver="ESRI Shapefile", geometry=None, schema=None, index=None, crs=None, **kwargs):
+        """
+        Write the ``GeoDataFrame`` to a file.
+
+        Parameters
+        ----------
+        filename : str
+            File path or file handle to write to.
+        driver : string, default 'ESRI Shapefile'
+            The OGR format driver used to write the vector file.
+        schema : dict, default None
+            If specified, the schema dictionary is passed to Fiona to
+            better control how the file is written. If None, GeoPandas
+            will determine the schema based on each column's dtype.
+        index : bool, default None
+            If True, write index into one or more columns (for MultiIndex).
+            Default None writes the index into one or more columns only if
+            the index is named, is a MultiIndex, or has a non-integer data
+            type. If False, no index is written.
+        mode : str, default 'w'
+            The write mode, 'w' to overwrite the existing file and 'a' to append.
+        crs : str, default None
+            If specified, the CRS is passed to Fiona to
+            better control how the file is written. If None, GeoPandas
+            will determine the crs based on crs df attribute.
+        geometry : str, default None
+            Specify geometry column.
+
+        Notes
+        -----
+        The extra keyword arguments ``**kwargs`` are passed to fiona.open and
+        can be used to write to multi-layer data, store data within archives
+        (zip files), etc.
+
+        The format drivers will attempt to detect the encoding of your data, but
+        may fail. In this case, the proper encoding can be specified explicitly
+        by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": range(5),
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...     "geo2": ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"],
+        ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
+        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
+        >>> read_gdf
+        A    B  other_geom         geo2         geo3     geometry
+        0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
+        1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
+        2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
+        3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
+        4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
+        """
+        arctern_spark.file.to_file(self, filename=filename, driver=driver, schema=schema,
+                                   index=index, crs=crs, geometry=geometry, **kwargs)
