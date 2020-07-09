@@ -1817,7 +1817,8 @@ class GeoSeries(Series):
         r.set_crs(self.crs)
         return r
 
-    def _calculate_bbox_from_wkb(geom_wkb):
+    @classmethod
+    def _calculate_bbox_from_wkb(cls, geom_wkb):
         """
         Calculate bounding box for the geom_wkb geometry.
         """

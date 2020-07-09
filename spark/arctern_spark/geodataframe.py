@@ -195,7 +195,7 @@ class GeoDataFrame(DataFrame):
                         k: v for k, v in zip(properties_cols, row) if not pd.isnull(v)
                     }
                 else:
-                    properties_items = {k: v for k, v in zip(properties_cols, row)}
+                    properties_items = dict(zip(properties_cols, row))
 
                 feature = {
                     "id": str(ids[i]),
@@ -226,6 +226,7 @@ class GeoDataFrame(DataFrame):
             gdf = GeoDataFrame(df)
             gdf._crs_for_cols = self._crs_for_cols
             return gdf
+        return None
 
     @classmethod
     def from_file(cls, filename, **kwargs):
