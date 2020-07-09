@@ -317,7 +317,7 @@ class GeoDataFrame(DataFrame):
             if isinstance(pdf[col][0], shapely.geometry.base.BaseGeometry):
                 geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
                 result[col] = geo_col
-                result._geometry_column_name.append(col)
+                result.geometries_name.append(col)
                 if isinstance(pdf[col], geopandas.GeoSeries):
                     result._crs.append(pdf[col].crs)
                 else:
