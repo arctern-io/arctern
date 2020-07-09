@@ -14,14 +14,14 @@
 
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs
+# pylint: disable=too-many-public-methods,arguments-differ
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init
 
 from warnings import warn
 
-import arctern
 import numpy as np
 from pandas import Series, DataFrame
+import arctern
 
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
@@ -116,8 +116,8 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
-    _sindex = None
-    _sindex_generated = False
+    # _sindex = None
+    # _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
@@ -165,6 +165,17 @@ class GeoSeries(Series):
 
         if not self.array.crs:
             self.array.crs = crs
+        self._invalidate_sindex()
+
+    def __setitem__(self, key, value):
+        old_crs = self.crs
+        super().__setitem__(key, value)
+        if not isinstance(self.array, GeoArray):
+            new_array = GeoArray(self.array.to_numpy(), crs=old_crs)
+            self._data = self.__class__(
+                new_array, index=self.index, name=self.name
+            )._data
+            self._maybe_update_cacher(clear=True)
 
     @property
     def sindex(self):
@@ -439,12 +450,15 @@ class GeoSeries(Series):
             val._invalidate_sindex()
         return val
 
+    # pylint: disable=arguments-differ
     def append(self, *args, **kwargs):
         return self._wrapped_pandas_method("append", *args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def update(self, *args, **kwargs):
         return self._wrapped_pandas_method("update", *args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def drop(self, *args, **kwargs):
         return self._wrapped_pandas_method("drop", *args, **kwargs)
 

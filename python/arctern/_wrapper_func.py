@@ -59,12 +59,12 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "point_map_layer",
-    "weighted_point_map_layer",
-    "heat_map_layer",
-    "choropleth_map_layer",
-    "icon_viz_layer",
-    "fishnet_map_layer",
+    "pointmap_layer",
+    "weighted_pointmap_layer",
+    "heatmap_layer",
+    "choroplethmap_layer",
+    "iconviz_layer",
+    "fishnetmap_layer",
     "projection",
     "transform_and_projection",
     "within_which",
@@ -1419,7 +1419,53 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
         geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
     return _to_pandas_series(geos)
 
-def point_map_layer(vega, points, transform=True):
+def pointmap_layer(vega, points, transform=True):
+    """
+    Plots a point map.
+
+    Parameters
+    ----------
+    vega : VegaPointMap
+        Describe rendering style
+    points : GeoSeries
+        Sequence of points
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_pointmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot pointmap_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_pointmap(1024, 896, bounding_box=bbox, point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
+       >>> pointmap_layer=arctern.pointmap_layer(vega, points)
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(pointmap_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1455,7 +1501,53 @@ def point_map_layer(vega, points, transform=True):
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
-def weighted_point_map_layer(vega, points, transform=True, **kwargs):
+def weighted_pointmap_layer(vega, points, transform=True, **kwargs):
+    """
+    Plots a weighted point map.
+
+    Parameters
+    ----------
+    vega : VegaWeightedPointMap
+        Describe rendering style
+    points : GeoSeries
+        Sequence of points
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_weighted_pointmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot weighted_pointmap_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_weighted_pointmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
+       >>> weighted_pointmap_layer=arctern.weighted_pointmap_layer(vega, points, color_weights=df["color_weights"], size_weights=df["size_weights"])
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(weighted_pointmap_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     color_weights = kwargs.get('color_weights', None)
     size_weights = kwargs.get('size_weights', None)
@@ -1521,7 +1613,55 @@ def weighted_point_map_layer(vega, points, transform=True, **kwargs):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def heat_map_layer(vega, points, weights, transform=True):
+def heatmap_layer(vega, points, weights, transform=True):
+    """
+    Plots a heatmap.
+
+    Parameters
+    ----------
+    vega : VegaHeatMap
+        Describe rendering style
+    points : GeoSeries
+        Sequence of points
+    weights: Series
+        Representing the heat of data
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_heatmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot heatmap_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_heatmap(1024, 896, bounding_box=bbox, map_zoom_level=13.0, coordinate_system='EPSG:4326')
+       >>> heatmap_layer = arctern.heatmap_layer(vega, points, df['color_weights'])
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(heatmap_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1563,7 +1703,56 @@ def heat_map_layer(vega, points, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
+def choroplethmap_layer(vega, region_boundaries, weights, transform=True):
+    """
+    Plots a choroplethmap.
+
+    Parameters
+    ----------
+    vega : VegaChoroplethMap
+        Describe rendering style
+    region_boundaries : GeoSeries
+        Sequence of polygons or multiplygons
+    weights: Series
+        Used to control the color of each polygon or multipolygon
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_choroplethmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
+       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>>
+       >>> # Plot choroplethmap_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_choroplethmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
+       >>> choroplethmap_layer = arctern.choroplethmap_layer(vega, polygon, input['color_weights'])
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(choroplethmap_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     geos = pa.array(region_boundaries, type='binary')
 
@@ -1606,7 +1795,53 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def icon_viz_layer(vega, points, transform=True):
+def iconviz_layer(vega, points, transform=True):
+    """
+    Plots a icon_viz.
+
+    Parameters
+    ----------
+    vega : VegaIcon
+        Describe rendering style
+    points : GeoSeries
+        Sequence of points
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_icon
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot icon_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_icon(1024, 896, bounding_box=bbox, icon_path='icon-viz.png', coordinate_system="EPSG:4326")
+       >>> icon_layer = arctern.iconviz_layer(vega, points)
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(icon_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1641,7 +1876,55 @@ def icon_viz_layer(vega, points, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def fishnet_map_layer(vega, points, weights, transform=True):
+def fishnetmap_layer(vega, points, weights, transform=True):
+    """
+    Plots a fishnetmap.
+
+    Parameters
+    ----------
+    vega : VegaFishNetMap
+        Describe rendering style
+    points : GeoSeries
+        Sequence of points
+    weights: Series
+        Used to control the color of fishnet
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_fishnetmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>>
+       >>> # Plot fishnet_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+       >>> vega = vega_fishnetmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+       >>> fishnet_layer = arctern.fishnetmap_layer(vega, points, df['color_weights'])
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
+       >>> f = io.BytesIO(base64.b64decode(fishnet_layer))
+       >>> img = plt.imread(f)
+       >>> ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+       >>> ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+       >>> ax.axis('off')
+       >>> plt.show()
+    """
     import pyarrow as pa
     geos = pa.array(points, type='binary')
 
@@ -1705,10 +1988,10 @@ def within_which(left, right):
     >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
     >>> res = within_which(data1, data2)
     >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
+    0       1
+    1    <NA>
+    2       0
+    dtype: object
     """
     index_tree = right.sindex
     return index_tree.within_which(left)
@@ -1733,8 +2016,8 @@ def nearest_location_on_road(roads, points):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
     >>> rst
-        0    POINT (1.0 2.5)
-        dtype: object
+    0    POINT (1.0 2.5)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_location_on_road(points)
@@ -1760,8 +2043,8 @@ def nearest_road(roads, points,):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
     >>> rst
-        0    LINESTRING (1 2,1 3)
-        dtype: object
+    0    LINESTRING (1 2,1 3)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_road(points)
@@ -1786,12 +2069,12 @@ def near_road(roads, points, distance=100):
     Examples
     -------
     >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
-      >>> rst = arctern.near_road(data1, data2)
-      >>> rst
-          0    True
-          dtype: object
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+    >>> rst = arctern.near_road(data1, data2)
+    >>> rst
+    0    True
+    dtype: bool
     """
     index_tree = roads.sindex
     return index_tree.near_road(points, distance)

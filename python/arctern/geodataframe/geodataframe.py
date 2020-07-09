@@ -18,8 +18,8 @@ import json
 
 import numpy as np
 import pandas as pd
-from arctern import GeoSeries
 from pandas import DataFrame, Series
+from arctern import GeoSeries
 import arctern.tools
 
 
@@ -471,10 +471,10 @@ class GeoDataFrame(DataFrame):
                                  copy, indicator, validate)
         if not isinstance(result, GeoDataFrame):
             return result
-        left_geometries = self.geometries_name
+        left_geometries = self.geometries_name.copy()
         left_crs = self.crs
         if isinstance(right, GeoDataFrame):
-            right_geometries = right.geometries_name
+            right_geometries = right.geometries_name.copy()
             right_crs = right.crs
         else:
             right_geometries = []

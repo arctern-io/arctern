@@ -141,7 +141,10 @@ class FunctionsTest extends AdapterTest {
     val data = Seq(
       Row(1, "Polygon(0 0, 0 1, 1 1, 1 0, 0 0)"),
       Row(2, "LINESTRING (0 0, 10 10, 20 20)"),
-      Row(3, "error geo")
+      Row(3, "error geo"),
+      Row(4, "POLYGON EMPTY"),
+      Row(5, "LINESTRING EMPTY"),
+      Row(6, "POINT EMPTY"),
     )
 
     val schema = StructType(Array(StructField("idx", IntegerType, false), StructField("geo", StringType, false)))
@@ -158,6 +161,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(1))
     assert(collect(1).getAs[GeometryUDT](1).toString == "POINT (10 10)")
     assert(collect(2).isNullAt(1))
+    assert(collect(3).getAs[GeometryUDT](1).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(4).getAs[GeometryUDT](1).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(5).getAs[GeometryUDT](1).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_centroid(st_geomfromtext(col("geo"))))
     rst2.show(false)
@@ -167,6 +173,9 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).getAs[GeometryUDT](0).toString == "POINT (10 10)")
     assert(collect2(2).isNullAt(0))
+    assert(collect2(3).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect2(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_Within-Nest") {
