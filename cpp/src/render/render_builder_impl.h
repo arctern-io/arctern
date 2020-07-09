@@ -76,8 +76,8 @@ void Projection(const std::vector<OGRGeometryUniquePtr>& geos,
           for (int j = 0; j < ring_size; j++) {
             output_x =
                 (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
-            output_y =
-                (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
+            output_y = (uint32_t)(((ring->getY(j) - bottom_right_y) * height) /
+                                  coordinate_height);
             ring->setPoint(j, output_x, output_y);
           }
         }
