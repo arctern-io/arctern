@@ -60,7 +60,6 @@ if [[ -n ${CONDA_ENV} ]]; then
 fi
 
 ARCTERN_SCALA_SRC_DIR="${SCRIPTS_DIR}/../../scala"
-
 pushd ${ARCTERN_SCALA_SRC_DIR}
 sbt clean assembly
 mkdir -p ${CONDA_PREFIX}/jars
