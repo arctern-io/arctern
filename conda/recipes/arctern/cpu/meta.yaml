@@ -58,7 +58,7 @@ test:
 
     # python
     - python -c "import arctern"
-    - python -c "import arctern_spark"
+    # - python -c "import arctern_spark" # pyspark is required
     - python -c "import arctern_pyspark"
 
     # conda tools

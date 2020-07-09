@@ -27,7 +27,10 @@ COPY arctern /tmp/arctern
 
 ENV PATH=/opt/conda/bin:$PATH
 RUN /tmp/arctern/install_arctern_conda.sh && rm -rf /tmp/arctern && \
-    conda clean --all -y
+    conda clean --all -y && \
+    conda activate arctern && \
+    cd /opt/spark/python && python setup.py install && \
+    conda deactivate
 
 COPY prebuildfs /
 COPY rootfs /
