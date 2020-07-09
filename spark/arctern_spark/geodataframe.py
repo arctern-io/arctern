@@ -27,19 +27,14 @@ class GeoDataFrame(DataFrame):
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
         # (col_name, crs) dict to store crs data of those columns are GeoSeries
         self._crs_for_cols = {}
-        self._geometry_column_names = set()
-
         if isinstance(data, GeoSeries):
             self._crs_for_cols[data.name] = data.crs
-            self._geometry_column_names.add(data.name)
         elif isinstance(data, DataFrame):
             for col in data.columns:
                 if isinstance(data[col].spark.data_type, GeometryUDT):
                     self._crs_for_cols[col] = None
-                    self._geometry_column_names.add(col)
                 if isinstance(data[col], GeoSeries):
                     self._crs_for_cols[col] = data[col].crs
-                    self._geometry_column_names.add(col)
             data = data._internal_frame
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
@@ -49,6 +44,7 @@ class GeoDataFrame(DataFrame):
                 geometries = ["geometry"]
             else:
                 geometries = []
+        self._geometry_column_names = set()
         self._set_geometries(geometries, crs=crs)
 
     # only for internal use
@@ -105,13 +101,11 @@ class GeoDataFrame(DataFrame):
         super(GeoDataFrame, self).__setitem__(key, value)
         if isinstance(value, GeoSeries):
             self._crs_for_cols[key] = value.crs
-            self._geometry_column_names.add(key)
         elif isinstance(value, GeoDataFrame):
             for col in value._crs_for_cols.keys():
                 v = value[col]
                 if hasattr(v, "crs"):
                     self._crs_for_cols[col] = v.crs
-                    self._geometry_column_names.add(col)
         else:
             if isinstance(key, list):
                 pass
@@ -122,8 +116,7 @@ class GeoDataFrame(DataFrame):
 
     def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
-            raise ValueError(f"`col` {col} must be a geometry column whose data type is GeometryUDT,"
-                             f"use `set_geometry` to set this column as geometry column.")
+            raise ValueError("`col` must be a column in geometries columns which set by `set_geometry`")
         agg_dict = {aggfunc_col: aggfunc for aggfunc_col in self.columns.tolist() if aggfunc_col not in [col, by]}
         agg_dict[col] = "ST_Union_Aggr"
         aggregated = self.groupby(by=by, as_index=as_index).aggregate(agg_dict)
@@ -141,22 +134,27 @@ class GeoDataFrame(DataFrame):
             right_index=False,
             suffixes=("_x", "_y")
     ):
-        result = super().merge(right, how, on, left_on, right_on, left_index, right_index, suffixes)
+        result = super().merge(right, how, on, left_on, right_on,
+                               left_index, right_index, suffixes)
         result = GeoDataFrame(result)
 
-        lsuffix, rsuffix = suffixes
         for col in result.columns:
             kser = result[col]
             if isinstance(kser, GeoSeries):
                 pick = self
-                if col.endswith(lsuffix) and col not in self.columns:
-                    col = col[:-len(lsuffix)]
-                elif col.endswith(rsuffix) and col not in right.columns:
-                    col = col[:-len(rsuffix)]
+                if col.endswith(suffixes[0]):
+                    col = col[:-len(suffixes[0])]
+                elif col.endswith(suffixes[1]):
+                    col = col[:-len(suffixes[1])]
                     pick = right
                 elif col in right.columns:
                     pick = right
 
                 kser.set_crs(pick._crs_for_cols.get(col, None))
+
+        for col in self._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[0])
+        for col in right._geometry_column_names:
+            result._geometry_column_names.add(col + suffixes[1])
 
         return result
