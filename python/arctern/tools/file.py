@@ -37,8 +37,8 @@ def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
                     mask = GeoSeries.geom_from_geojson(mask)
                 if not isinstance(mask, GeoSeries):
                     raise TypeError(f"unsupported mask type {type(mask)}")
-                mask = mask.unary_union
-                mask = mask.as_geojson()[0]
+                mask = mask.unary_union().as_geojson()
+                mask = json.loads(mask[0])
             if bbox is not None:
                 if isinstance(bbox, GeoSeries):
                     bbox = bbox.bbox

@@ -34,4 +34,3 @@ def test_nearest_road():
     rst = arctern.ST_AsText(arctern.nearest_road(roads, gps_points))
     assert len(rst) == 1
     assert rst[0] == "LINESTRING (0 0,2 0)"
-
