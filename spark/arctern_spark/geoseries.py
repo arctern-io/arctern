@@ -931,7 +931,7 @@ class GeoSeries(Series):
 
         Examples
         -------
-        >>> from arctern_pyspark import GeoSeries
+        >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
         >>> s
         0    POINT (1 2)
