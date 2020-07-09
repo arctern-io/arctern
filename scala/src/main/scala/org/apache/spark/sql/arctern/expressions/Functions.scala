@@ -358,7 +358,7 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr(0)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid().isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 
