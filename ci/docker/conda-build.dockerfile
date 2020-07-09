@@ -31,6 +31,10 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
+RUN yum install -y java-1.8.0-openjdk && \
+    curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo && \
+    yum install -y sbt
+
 # use login shell to activate environment un the RUN commands
 SHELL [ "/bin/bash", "-c", "-l" ]
 
