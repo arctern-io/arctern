@@ -82,6 +82,7 @@ object MapMatching {
   }
 
   private def computeNearRoad(point: Geometry, index: Broadcast[RTreeIndex], expandValue: Double): Boolean = {
+    if (point == null) return false
     val env = expandEnvelope(point.getEnvelopeInternal, expandValue)
     val results = index.value.query(env)
     results.size() > 0
@@ -139,7 +140,7 @@ class MapMatching {
     val roadArray = roads.coalesce(numPartitions = 1).collect()
     for (road <- roadArray) {
       val roadGeometry = road.getAs[Geometry](0)
-      index.insert(roadGeometry.getEnvelopeInternal, roadGeometry)
+      if (roadGeometry != null) index.insert(roadGeometry.getEnvelopeInternal, roadGeometry)
     }
   }
 

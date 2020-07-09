@@ -70,6 +70,111 @@ class MapMatchingTest extends AdapterTest {
     assert(collect(9).getAs[Boolean](0) == false)
   }
 
+  test("NearRoad-Null") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(null),
+      Row(null),
+      Row(null),
+    )
+
+    val roads = Seq(
+      Row(null),
+      Row(null),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = near_road(pointsDF, roadsDF, 1000)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Boolean](0) == false)
+    assert(collect(1).getAs[Boolean](0) == false)
+    assert(collect(2).getAs[Boolean](0) == false)
+
+    val points2 = Seq(
+      Row(null),
+      Row(null),
+      Row(null),
+    )
+
+    val roads2 = Seq(
+      Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+      Row(new WKTReader().read("LINESTRING (-73.9615569 40.7601753, -73.9615014 40.7602517)")),
+    )
+
+    val pointsDF2 = spark.createDataFrame(spark.sparkContext.parallelize(points2), pointSchema)
+    val roadsDF2 = spark.createDataFrame(spark.sparkContext.parallelize(roads2), roadSchema)
+
+    val rst2 = near_road(pointsDF2, roadsDF2, 1000)
+    rst2.show(false)
+
+    val collect2 = rst2.collect()
+    assert(collect2(0).getAs[Boolean](0) == false)
+    assert(collect2(1).getAs[Boolean](0) == false)
+    assert(collect2(2).getAs[Boolean](0) == false)
+
+    val points3 = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+      Row(new WKTReader().read("POINT (-73.988240 40.748960)")),
+      Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+    )
+
+    val roads3 = Seq(
+      Row(null),
+      Row(null),
+    )
+
+    val pointsDF3 = spark.createDataFrame(spark.sparkContext.parallelize(points3), pointSchema)
+    val roadsDF3 = spark.createDataFrame(spark.sparkContext.parallelize(roads3), roadSchema)
+
+    val rst3 = near_road(pointsDF3, roadsDF3, 1000)
+    rst3.show(false)
+
+    val collect3 = rst3.collect()
+    assert(collect3(0).getAs[Boolean](0) == false)
+    assert(collect3(1).getAs[Boolean](0) == false)
+    assert(collect3(2).getAs[Boolean](0) == false)
+    assert(collect3(3).getAs[Boolean](0) == false)
+
+    val points4 = Seq(
+      Row(null),
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+      Row(null),
+      Row(new WKTReader().read("POINT (-73.988240 40.748960)")),
+      Row(null),
+      Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+    )
+
+    val roads4 = Seq(
+      Row(null),
+      Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+      Row(new WKTReader().read("LINESTRING (-73.9615569 40.7601753, -73.9615014 40.7602517)")),
+      Row(null),
+    )
+
+    val pointsDF4 = spark.createDataFrame(spark.sparkContext.parallelize(points4), pointSchema)
+    val roadsDF4 = spark.createDataFrame(spark.sparkContext.parallelize(roads4), roadSchema)
+
+    val rst4 = near_road(pointsDF4, roadsDF4, 1000)
+    rst4.show(false)
+
+    val collect4 = rst4.collect()
+    assert(collect4(0).getAs[Boolean](0) == false)
+    assert(collect4(1).getAs[Boolean](0) == false)
+    assert(collect4(2).getAs[Boolean](0) == false)
+    assert(collect4(3).getAs[Boolean](0) == false)
+    assert(collect4(4).getAs[Boolean](0) == false)
+    assert(collect4(5).getAs[Boolean](0) == false)
+    assert(collect4(6).getAs[Boolean](0) == false)
+  }
+
   test("NearestRoad") {
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
