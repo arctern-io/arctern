@@ -19,7 +19,6 @@ import shapely
 import geopandas as gpd
 import arctern
 from arctern import GeoSeries
-import geopandas as gpd
 
 
 if sys.version_info[0] < 3:
