@@ -270,6 +270,7 @@ class GeoDataFrame(DataFrame):
                 copy_df[col] = Series(copy_df[col].to_geopandas())
         return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
+    # pylint: disable=protected-access
     @classmethod
     def from_geopandas(cls, pdf):
         """

@@ -16,9 +16,9 @@
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 import json
 import warnings
-import fiona
 import numpy as np
 import pandas as pd
+import fiona
 from arctern import GeoSeries
 
 
@@ -154,6 +154,7 @@ def infer_schema(df, geo_col):
     return schema
 
 
+# pylint: disable=unidiomatic-typecheck
 def _to_file(
         df,
         filename,
