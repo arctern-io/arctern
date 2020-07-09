@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines,unidiomatic-typecheck
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
 import json
 import warnings
+import pandas as pd
 import fiona
 import numpy as np
 from arctern import GeoSeries
-import pandas as pd
 
 
 def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):

@@ -95,7 +95,7 @@ def pointmap(ax, points, bounding_box,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size,
                          point_color=point_color, opacity=opacity, coordinate_system=coordinate_system)
-    hexstr = arctern.point_map_layer(vega, points)
+    hexstr = arctern.pointmap_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -189,7 +189,7 @@ def weighted_pointmap(ax, points, color_weights=None,
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                                   color_bound=color_bound, size_bound=size_bound, opacity=opacity,
                                   coordinate_system=coordinate_system)
-    hexstr = arctern.weighted_point_map_layer(
+    hexstr = arctern.weighted_pointmap_layer(
         vega, points, color_weights=color_weights, size_weights=size_weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
@@ -267,7 +267,7 @@ def heatmap(ax, points, weights, bounding_box,
         map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
     vega = vega_heatmap(w, h, bounding_box=bounding_box, map_zoom_level=map_zoom_level,
                         aggregation_type=aggregation_type, coordinate_system=coordinate_system)
-    hexstr = arctern.heat_map_layer(vega, points, weights)
+    hexstr = arctern.heatmap_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -342,7 +342,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound,
                               opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
-    hexstr = arctern.choropleth_map_layer(vega, region_boundaries, weights)
+    hexstr = arctern.choroplethmap_layer(vega, region_boundaries, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -409,7 +409,7 @@ def iconviz(ax, points, bounding_box, icon_path,
     w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, icon_size=icon_size,
                      coordinate_system=coordinate_system)
-    hexstr = arctern.icon_viz_layer(vega, points)
+    hexstr = arctern.iconviz_layer(vega, points)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)
@@ -489,7 +489,7 @@ def fishnetmap(ax, points, weights, bounding_box,
     vega = vega_fishnetmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                            cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
                            coordinate_system=coordinate_system, aggregation_type=aggregation_type)
-    hexstr = arctern.fishnet_map_layer(vega, points, weights)
+    hexstr = arctern.fishnetmap_layer(vega, points, weights)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)

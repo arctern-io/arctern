@@ -59,12 +59,12 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "point_map_layer",
-    "weighted_point_map_layer",
-    "heat_map_layer",
-    "choropleth_map_layer",
-    "icon_viz_layer",
-    "fishnet_map_layer",
+    "pointmap_layer",
+    "weighted_pointmap_layer",
+    "heatmap_layer",
+    "choroplethmap_layer",
+    "iconviz_layer",
+    "fishnetmap_layer",
     "projection",
     "transform_and_projection",
     "within_which",
@@ -1457,7 +1457,7 @@ def pointmap_layer(vega, points, transform=True):
        >>> # Plot pointmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_pointmap(1024, 896, bounding_box=bbox, point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
-       >>> pointmap_layer=arctern.point_map_layer(vega, points)
+       >>> pointmap_layer=arctern.pointmap_layer(vega, points)
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(pointmap_layer))
        >>> img = plt.imread(f)
@@ -1539,7 +1539,7 @@ def weighted_pointmap_layer(vega, points, transform=True, **kwargs):
        >>> # Plot weighted_pointmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_weighted_pointmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
-       >>> weighted_pointmap_layer=arctern.weighted_point_map_layer(vega, points, color_weights=df["color_weights"], size_weights=df["size_weights"])
+       >>> weighted_pointmap_layer=arctern.weighted_pointmap_layer(vega, points, color_weights=df["color_weights"], size_weights=df["size_weights"])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(weighted_pointmap_layer))
        >>> img = plt.imread(f)
@@ -1653,7 +1653,7 @@ def heatmap_layer(vega, points, weights, transform=True):
        >>> # Plot heatmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_heatmap(1024, 896, bounding_box=bbox, map_zoom_level=13.0, coordinate_system='EPSG:4326')
-       >>> heatmap_layer = arctern.heat_map_layer(vega, points, df['color_weights'])
+       >>> heatmap_layer = arctern.heatmap_layer(vega, points, df['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(heatmap_layer))
        >>> img = plt.imread(f)
@@ -1744,7 +1744,7 @@ def choroplethmap_layer(vega, region_boundaries, weights, transform=True):
        >>> # Plot choroplethmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_choroplethmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
-       >>> choroplethmap_layer = arctern.choropleth_map_layer(vega, polygon, input['color_weights'])
+       >>> choroplethmap_layer = arctern.choroplethmap_layer(vega, polygon, input['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(choroplethmap_layer))
        >>> img = plt.imread(f)
@@ -1833,7 +1833,7 @@ def iconviz_layer(vega, points, transform=True):
        >>> # Plot icon_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_icon(1024, 896, bounding_box=bbox, icon_path='icon-viz.png', coordinate_system="EPSG:4326")
-       >>> icon_layer = arctern.icon_viz_layer(vega, points)
+       >>> icon_layer = arctern.iconviz_layer(vega, points)
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(icon_layer))
        >>> img = plt.imread(f)
@@ -1916,7 +1916,7 @@ def fishnetmap_layer(vega, points, weights, transform=True):
        >>> # Plot fishnet_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_fishnetmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
-       >>> fishnet_layer = arctern.fishnet_map_layer(vega, points, df['color_weights'])
+       >>> fishnet_layer = arctern.fishnetmap_layer(vega, points, df['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(fishnet_layer))
        >>> img = plt.imread(f)

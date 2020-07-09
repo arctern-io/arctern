@@ -15,13 +15,13 @@
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init,arguments-differ
 
 from warnings import warn
 
-import arctern
 import numpy as np
 from pandas import Series, DataFrame
+import arctern
 
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 

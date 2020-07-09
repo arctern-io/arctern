@@ -57,7 +57,7 @@ def test_point_map():
     points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
-    curve_z1 = arctern.point_map_layer(vega, points)
+    curve_z1 = arctern.pointmap_layer(vega, points)
     save_png(curve_z1, "/tmp/test_curve_z1.png")
 
 
@@ -94,19 +94,19 @@ def test_weighted_point_map():
     arr_s = pandas.Series(s_data)
 
     vega1 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
-    res1 = arctern.weighted_point_map_layer(vega1, points)
+    res1 = arctern.weighted_pointmap_layer(vega1, points)
     save_png(res1, "/tmp/test_weighted_0_0.png")
 
     vega2 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
-    res2 = arctern.weighted_point_map_layer(vega2, points, color_weights=arr_c)
+    res2 = arctern.weighted_pointmap_layer(vega2, points, color_weights=arr_c)
     save_png(res2, "/tmp/test_weighted_1_0.png")
 
     vega3 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
-    res3 = arctern.weighted_point_map_layer(vega3, points, size_weights=arr_s)
+    res3 = arctern.weighted_pointmap_layer(vega3, points, size_weights=arr_s)
     save_png(res3, "/tmp/test_weighted_0_1.png")
 
     vega4 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
-    res4 = arctern.weighted_point_map_layer(vega4, points, color_weights=arr_c, size_weights=arr_s)
+    res4 = arctern.weighted_pointmap_layer(vega4, points, color_weights=arr_c, size_weights=arr_s)
     save_png(res4, "/tmp/test_weighted_1_1.png")
 
 def test_heat_map():
@@ -135,7 +135,7 @@ def test_heat_map():
     points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_heatmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], map_zoom_level=13.0, coordinate_system='EPSG:4326')
-    heat_map1 = arctern.heat_map_layer(vega, points, arr_c)
+    heat_map1 = arctern.heatmap_layer(vega, points, arr_c)
 
     save_png(heat_map1, "/tmp/test_heat_map1.png")
 
@@ -156,7 +156,7 @@ def test_choropleth_map():
     arr_count = pandas.Series(count_data)
 
     vega = vega_choroplethmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
-    choropleth_map1 = arctern.choropleth_map_layer(vega, arr_wkb, arr_count)
+    choropleth_map1 = arctern.choroplethmap_layer(vega, arr_wkb, arr_count)
     save_png(choropleth_map1, "/tmp/test_choropleth_map1.png")
 
 
@@ -184,12 +184,12 @@ def test_icon_viz():
 
     vega = vega_icon(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], icon_path=png_path, coordinate_system="EPSG:4326")
 
-    icon_buf = arctern.icon_viz_layer(vega, points)
+    icon_buf = arctern.iconviz_layer(vega, points)
     save_png(icon_buf, "/tmp/test_icon_viz.png")
 
     vega = vega_icon(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], icon_path=png_path, icon_size=[65, 65], coordinate_system="EPSG:4326")
 
-    icon_buf = arctern.icon_viz_layer(vega, points)
+    icon_buf = arctern.iconviz_layer(vega, points)
     save_png(icon_buf, "/tmp/test_icon_viz_zoom_out.png")
 
 def test_fishnet_map():
@@ -218,6 +218,6 @@ def test_fishnet_map():
     points = arctern.ST_Point(arr_x, arr_y)
 
     vega = vega_fishnetmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
-    heat_map1 = arctern.fishnet_map_layer(vega, points, arr_c)
+    heat_map1 = arctern.fishnetmap_layer(vega, points, arr_c)
 
     save_png(heat_map1, "/tmp/test_fishnetmap.png")

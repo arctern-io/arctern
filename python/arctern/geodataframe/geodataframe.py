@@ -18,8 +18,8 @@ import json
 
 import numpy as np
 import pandas as pd
-from arctern import GeoSeries
 from pandas import DataFrame, Series
+from arctern import GeoSeries
 import arctern.tools
 
 
