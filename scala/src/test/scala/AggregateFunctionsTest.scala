@@ -120,6 +120,21 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect3 = rst3.collect()
 
     assert(GeometryUDT.FromWkt(collect3(0).getAs[GeometryUDT](0).toString).getArea==1.0)
+
+    val data4 = Seq(
+      Row(GeometryUDT.FromWkt("POINT (-5 -5)")),
+      Row(GeometryUDT.FromWkt("POINT (-1 -1)")),
+    )
+
+    val df4 = spark.createDataFrame(spark.sparkContext.parallelize(data4), schema)
+    df4.createOrReplaceTempView("ST_Union_Aggr_data4")
+
+    val rst4 = spark.sql("select ST_Union_Aggr(geo) from ST_Union_Aggr_data4")
+    rst4.show(false)
+
+    val collect4 = rst4.collect()
+
+    assert(GeometryUDT.FromWkt(collect4(0).getAs[GeometryUDT](0).toString).getArea==0.0)
   }
 
   test("ST_Union_Aggr-Null") {
