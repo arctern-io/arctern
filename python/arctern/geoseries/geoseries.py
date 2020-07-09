@@ -14,8 +14,8 @@
 
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init,arguments-differ
+# pylint: disable=too-many-public-methods,arguments-differ
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init
 
 from warnings import warn
 
@@ -450,12 +450,15 @@ class GeoSeries(Series):
             val._invalidate_sindex()
         return val
 
+    # pylint: disable=arguments-differ
     def append(self, *args, **kwargs):
         return self._wrapped_pandas_method("append", *args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def update(self, *args, **kwargs):
         return self._wrapped_pandas_method("update", *args, **kwargs)
 
+    # pylint: disable=arguments-differ
     def drop(self, *args, **kwargs):
         return self._wrapped_pandas_method("drop", *args, **kwargs)
 
