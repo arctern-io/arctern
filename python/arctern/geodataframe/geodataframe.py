@@ -16,8 +16,8 @@
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin,protected-access
 import json
 
-import numpy as np
 import pandas as pd
+import numpy as np
 from pandas import DataFrame, Series
 from arctern import GeoSeries
 import arctern.tools
