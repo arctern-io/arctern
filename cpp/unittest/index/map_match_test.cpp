@@ -314,3 +314,31 @@ TEST(MAP_MATCH_TEST, NEAR_ROAD) {
     }
   }
 }
+
+TEST(MAP_MATCH_TEST, query) {
+  std::vector<std::string> roads;
+  roads.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
+  roads.push_back("LINESTRING (-73.9980065 40.7138119,-73.9980743 40.7137811)");
+  roads.push_back("LINESTRING (-73.9975554 40.7141073,-73.9975944 40.7140611)");
+  roads.push_back("LINESTRING (-73.9978864 40.714317,-73.997674 40.7140968)");
+  roads.push_back("LINESTRING (-73.997981 40.7136728,-73.9980743 40.7137811)");
+  roads.push_back("LINESTRING (-73.9980743 40.7137811,-73.9984728 40.7136003)");
+  roads.push_back("LINESTRING (-73.9611014 40.7608112,-73.9610636 40.7608639)");
+  roads.push_back("LINESTRING (-73.9594166 40.7593773,-73.9593736 40.7593593)");
+  roads.push_back("LINESTRING (-73.961609 40.7602969,-73.9615014 40.7602517)");
+  roads.push_back("LINESTRING (-73.9615569 40.7601753,-73.9615014 40.7602517)");
+
+  std::vector<std::string> gps_points;
+  gps_points.push_back("LINESTRING (-73.9975944 40.7140611,-73.9974922 40.7139962)");
+
+  auto gps_points_binary_vec = wkb(gps_points);
+
+  auto roads_binary_vec = wkb(roads);
+
+  GeosIndex index;
+  index.append(roads_binary_vec);
+  auto result = index.query(gps_points_binary_vec);
+
+  auto result_1 = std::static_pointer_cast<arrow::Int32Array>(result[0]);
+  assert(result_1->length() == 2);
+}

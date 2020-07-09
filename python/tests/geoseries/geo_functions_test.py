@@ -444,7 +444,7 @@ def test_ST_Envelope():
     p5 = "polygon ((0 0, 10 0, 10 10, 0 10, 0 0))"
     p6 = "multipoint (0 0, 10 0, 5 5)"
     p7 = "multilinestring ((0 0, 5 5), (6 6, 6 7, 10 10))"
-    p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))"
+    p8 = "multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0)), ((11 11, 20 11, 20 20, 20 11, 11 11)))"
     data = [p1, p2, p3, p4, p5, p6, p7, p8]
     data = GeoSeries(data)
     rst = data.envelope.to_wkt()
