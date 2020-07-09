@@ -1,5 +1,6 @@
 import org.apache.spark.sql.arctern.SpatialJoin
 import org.apache.spark.sql.arctern.functions._
+import org.apache.spark.sql.catalyst.plans.FullOuter
 import org.apache.spark.sql.functions._
 
 
@@ -27,6 +28,7 @@ class SpatialJoinSlowTest extends AdapterTest {
       Info("Polygon((0 0, 3 0, 3.1 3.1, 0 3, 0 0))"),
       Info("Polygon((6 6, 3 6, 2.9 2.9, 6 3, 6 6))"),
       Info("Polygon((6 6, 9 6, 9 9, 6 9, 6 6))"),
+      Info("Polygon((100 100, 100 101, 101 101, 101 100, 100 100))"),
     ).toDF
       .withColumn("id", monotonically_increasing_id())
       .withColumn("dup", lit(10) * monotonically_increasing_id())
@@ -39,7 +41,7 @@ class SpatialJoinSlowTest extends AdapterTest {
     points.show()
     polygons.show()
 
-    val fin = SpatialJoin(spark, points, polygons, "points", "polygons")
+    val fin = SpatialJoin(spark, points, polygons, "points", "polygons", joinType = FullOuter)
 
     fin.show()
 
