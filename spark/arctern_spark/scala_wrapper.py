@@ -14,8 +14,8 @@
 # pylint: disable=protected-access
 
 import sys
-from py4j.java_gateway import java_import
 import databricks.koalas as ks
+from py4j.java_gateway import java_import
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType

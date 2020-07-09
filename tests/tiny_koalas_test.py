@@ -1,6 +1,3 @@
-import pandas as pd
-from osgeo import ogr
-from databricks.koalas import Series
 from arctern_spark.geoseries import GeoSeries
 
 def test_ST_IsValid():
@@ -10,11 +7,5 @@ def test_ST_IsValid():
     assert rst[1]
 
 if __name__ == "__main__":
-    spark_session = SparkSession \
-        .builder \
-        .appName("Python koalas test") \
-        .getOrCreate()
-    
     test_ST_IsValid()
 
-    spark_session.stop()

@@ -48,6 +48,7 @@ def _column_op(f, *args):
 
 
 # for unary or binary operation, which return GeoSeries.
+# pylint: disable=no-value-for-parameter
 def _column_geo(f, *args, **kwargs):
     kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss, **kwargs)
