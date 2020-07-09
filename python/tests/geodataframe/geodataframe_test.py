@@ -13,8 +13,8 @@
 # limitations under the License.
 
 # pylint: disable=protected-access
-import numpy as np
 import pandas
+import numpy as np
 import arctern
 from arctern import GeoDataFrame, GeoSeries
 
