@@ -17,8 +17,8 @@
 import json
 import warnings
 import pandas as pd
-import fiona
 import numpy as np
+import fiona
 from arctern import GeoSeries
 
 
