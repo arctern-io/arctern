@@ -18,8 +18,8 @@ import json
 
 import numpy as np
 import pandas as pd
-from arctern import GeoSeries
 from pandas import DataFrame, Series
+from arctern import GeoSeries
 import arctern.tools
 
 
@@ -124,7 +124,7 @@ class GeoDataFrame(DataFrame):
         return frame
 
     # pylint: disable=arguments-differ
-    def to_json(self, na="null", show_bbox=False, col=None, **kwargs):
+    def to_json(self, na="null", show_bbox=False, geometry=None, **kwargs):
         """
         Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
 
@@ -167,29 +167,29 @@ class GeoDataFrame(DataFrame):
         >>> print(gdf.to_json(col="geometry"))
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
-        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, col=col), **kwargs)
+        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
 
-    def _to_geo(self, na="null", show_bbox=False, col=None, **kwargs):
+    def _to_geo(self, na="null", show_bbox=False, geometry=None, **kwargs):
         geo = {
             "type": "FeatureCollection",
-            "features": list(self.iterfeatures(**kwargs))
+            "features": list(self.iterfeatures(na=na, show_bbox=show_bbox, geometry=geometry, **kwargs))
         }
 
         if show_bbox is True:
-            geo["bbox"] = self[col].envelope_aggr().to_wkt()[0]
+            geo["bbox"] = self[geometry].envelope_aggr().bbox[0]
 
         return geo
 
-    def iterfeatures(self, na="null", show_bbox=False, col='geometry'):
+    def iterfeatures(self, na="null", show_bbox=False, geometry=None):
         if na not in ["null", "drop", "keep"]:
             raise ValueError("Unknown na method {0}".format(na))
-        if col not in self._geometry_column_name:
-            raise ValueError("{} is not a geometry column".format(col))
+        if geometry not in self._geometry_column_name:
+            raise ValueError("{} is not a geometry column".format(geometry))
         ids = np.array(self.index, copy=False)
-        geometries = self[col].as_geojson()
-        geometries_bbox = self[col].envelope
+        geometries = self[geometry].as_geojson()
+        geometries_bbox = self[geometry].bbox
 
-        propertries_cols = self.columns.difference([col])
+        propertries_cols = self.columns.difference([geometry])
 
         if len(propertries_cols) > 0:
             properties = self[propertries_cols].astype(object).values
@@ -536,7 +536,7 @@ class GeoDataFrame(DataFrame):
         return arctern.tools.file._read_file(filename, **kwargs)
 
     # pylint: disable=protected-access
-    def to_file(self, filename, driver="ESRI Shapefile", col=None, schema=None, index=None, crs=None, **kwargs):
+    def to_file(self, filename, driver="ESRI Shapefile", geometry=None, schema=None, index=None, crs=None, **kwargs):
         """
         Write the ``GeoDataFrame`` to a file.
 
@@ -599,7 +599,7 @@ class GeoDataFrame(DataFrame):
         4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
         """
         arctern.tools.file._to_file(self, filename=filename, driver=driver,
-                                    schema=schema, index=index, col=col, crs=crs, **kwargs)
+                                    schema=schema, index=index, geometry=geometry, crs=crs, **kwargs)
 
     @property
     def _constructor(self):

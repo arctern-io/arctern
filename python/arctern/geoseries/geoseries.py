@@ -1932,7 +1932,7 @@ class GeoSeries(Series):
         from osgeo import ogr
         geometry = ogr.CreateGeometryFromWkb(geom_wkb)
         env = geometry.GetEnvelope()
-        return [env[0], env[2], env[1], env[3]]
+        return ([env[0], env[2], env[1], env[3]])
 
     @property
     def bbox(self):
@@ -1942,8 +1942,8 @@ class GeoSeries(Series):
         :rtype: a (minx, miny, maxx, maxy) list
         :return: A list of Arctern.GeoSeries's bound box.
         """
-        geom_wkb = self.envelope_aggr().to_wkb()[0]
-        return GeoSeries._calculate_bbox_from_wkb(geom_wkb)
+        envelope = self.envelope
+        return envelope.apply(self._calculate_bbox_from_wkb)
 
     def iterfeatures(self, na="null", show_bbox=False):
         """
@@ -2001,7 +2001,7 @@ class GeoSeries(Series):
         }
 
         if show_bbox:
-            geo["bbox"] = self.bbox
+            geo["bbox"] = self.envelope_aggr().bbox[0]
 
         return json.dumps(geo, **kwargs)
 

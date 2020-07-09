@@ -18,8 +18,8 @@ import json
 import warnings
 import fiona
 import numpy as np
-from arctern import GeoSeries
 import pandas as pd
+from arctern import GeoSeries
 
 
 def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
@@ -41,7 +41,7 @@ def _read_file(filename, bbox=None, mask=None, rows=None, **kwargs):
                 mask = json.loads(mask[0])
             if bbox is not None:
                 if isinstance(bbox, GeoSeries):
-                    bbox = bbox.bbox
+                    bbox = bbox.envelope_aggr().bbox[0]
             if rows is not None:
                 if isinstance(rows, int):
                     rows = slice(rows)
@@ -162,13 +162,13 @@ def _to_file(
         index=None,
         mode="w",
         crs=None,
-        col=None,
+        geometry=None,
         **kwargs
 ):
     copy_df = df.copy()
-    copy_df[col].set_crs(df[col].crs)
+    copy_df[geometry].set_crs(df[geometry].crs)
     for col_name in copy_df.geometries_name:
-        if col_name is not col:
+        if col_name is not geometry:
             copy_df[col_name] = pd.Series(copy_df[col_name].to_wkt())
 
     if index is None:
@@ -179,9 +179,9 @@ def _to_file(
     if index:
         copy_df = copy_df.reset_index(drop=False)
     if schema is None:
-        schema = infer_schema(copy_df, col)
+        schema = infer_schema(copy_df, geometry)
     if not crs:
-        crs = copy_df[col].crs
+        crs = copy_df[geometry].crs
 
     if driver == "ESRI Shapefile" and any([len(c) > 10 for c in copy_df.columns.tolist()]):
         warnings.warn(
@@ -194,7 +194,7 @@ def _to_file(
         with fiona.open(
                 filename, mode=mode, driver=driver, crs_wkt=crs, schema=schema, **kwargs
         ) as colxn:
-            colxn.writerecords(copy_df.iterfeatures(col=col))
+            colxn.writerecords(copy_df.iterfeatures(geometry=geometry))
 
 
 def to_file(*args, **kwargs):
