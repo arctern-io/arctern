@@ -1810,188 +1810,57 @@ class GeoSeries(Series):
         r.set_crs(self.crs)
         return r
 
-    # def replace(self, to_replace=None, value=None, regex=False):
-    #     """
-    #     Replace values given in to_replace with value.
-    #     Values of the Series are replaced with other values dynamically.
-    #
-    #     Parameters
-    #     ----------
-    #     to_replace : str, list, dict, Series, int, float, or None
-    #         How to find the values that will be replaced.
-    #         * numeric, str:
-    #
-    #             - numeric: numeric values equal to to_replace will be replaced with value
-    #             - str: string exactly matching to_replace will be replaced with value
-    #
-    #         * list of str or numeric:
-    #
-    #             - if to_replace and value are both lists, they must be the same length.
-    #             - str and numeric rules apply as above.
-    #
-    #         * dict:
-    #
-    #             - Dicts can be used to specify different replacement values for different
-    #               existing values.
-    #               For example, {'a': 'b', 'y': 'z'} replaces the value ‘a’ with ‘b’ and ‘y’
-    #               with ‘z’. To use a dict in this way the value parameter should be None.
-    #             - For a DataFrame a dict can specify that different values should be replaced
-    #               in different columns. For example, {'a': 1, 'b': 'z'} looks for the value 1
-    #               in column ‘a’ and the value ‘z’ in column ‘b’ and replaces these values with
-    #               whatever is specified in value.
-    #               The value parameter should not be None in this case.
-    #               You can treat this as a special case of passing two lists except that you are
-    #               specifying the column to search in.
-    #
-    #         See the examples section for examples of each of these.
-    #
-    #     value : scalar, dict, list, str default None
-    #         Value to replace any values matching to_replace with.
-    #         For a DataFrame a dict of values can be used to specify which value to use
-    #         for each column (columns not in the dict will not be filled).
-    #         Regular expressions, strings and lists or dicts of such objects are also allowed.
-    #
-    #     Returns
-    #     -------
-    #     Series
-    #         Object after replacement.
-    #
-    #     Examples
-    #     --------
-    #
-    #     Scalar `to_replace` and `value`
-    #
-    #     >>> s = ks.Series([0, 1, 2, 3, 4])
-    #     >>> s
-    #     0    0
-    #     1    1
-    #     2    2
-    #     3    3
-    #     4    4
-    #     Name: 0, dtype: int64
-    #
-    #     >>> s.replace(0, 5)
-    #     0    5
-    #     1    1
-    #     2    2
-    #     3    3
-    #     4    4
-    #     Name: 0, dtype: int64
-    #
-    #     List-like `to_replace`
-    #
-    #     >>> s.replace([0, 4], 5000)
-    #     0    5000
-    #     1       1
-    #     2       2
-    #     3       3
-    #     4    5000
-    #     Name: 0, dtype: int64
-    #
-    #     >>> s.replace([1, 2, 3], [10, 20, 30])
-    #     0     0
-    #     1    10
-    #     2    20
-    #     3    30
-    #     4     4
-    #     Name: 0, dtype: int64
-    #
-    #     Dict-like `to_replace`
-    #
-    #     >>> s.replace({1: 1000, 2: 2000, 3: 3000, 4: 4000})
-    #     0       0
-    #     1    1000
-    #     2    2000
-    #     3    3000
-    #     4    4000
-    #     Name: 0, dtype: int64
-    #
-    #     Also support for MultiIndex
-    #
-    #     >>> midx = pd.MultiIndex([['lama', 'cow', 'falcon'],
-    #     ...                       ['speed', 'weight', 'length']],
-    #     ...                      [[0, 0, 0, 1, 1, 1, 2, 2, 2],
-    #     ...                       [0, 1, 2, 0, 1, 2, 0, 1, 2]])
-    #     >>> s = ks.Series([45, 200, 1.2, 30, 250, 1.5, 320, 1, 0.3],
-    #     ...               index=midx)
-    #     >>> s
-    #     lama    speed      45.0
-    #             weight    200.0
-    #             length      1.2
-    #     cow     speed      30.0
-    #             weight    250.0
-    #             length      1.5
-    #     falcon  speed     320.0
-    #             weight      1.0
-    #             length      0.3
-    #     Name: 0, dtype: float64
-    #
-    #     >>> s.replace(45, 450)
-    #     lama    speed     450.0
-    #             weight    200.0
-    #             length      1.2
-    #     cow     speed      30.0
-    #             weight    250.0
-    #             length      1.5
-    #     falcon  speed     320.0
-    #             weight      1.0
-    #             length      0.3
-    #     Name: 0, dtype: float64
-    #
-    #     >>> s.replace([45, 30, 320], 500)
-    #     lama    speed     500.0
-    #             weight    200.0
-    #             length      1.2
-    #     cow     speed     500.0
-    #             weight    250.0
-    #             length      1.5
-    #     falcon  speed     500.0
-    #             weight      1.0
-    #             length      0.3
-    #     Name: 0, dtype: float64
-    #
-    #     >>> s.replace({45: 450, 30: 300})
-    #     lama    speed     450.0
-    #             weight    200.0
-    #             length      1.2
-    #     cow     speed     300.0
-    #             weight    250.0
-    #             length      1.5
-    #     falcon  speed     320.0
-    #             weight      1.0
-    #             length      0.3
-    #     Name: 0, dtype: float64
-    #     """
-    #     if to_replace is None:
-    #         return self
-    #     if not isinstance(to_replace, (str, bytes, bytearray)):
-    #         raise ValueError("'to_replace' should be one of str, bytes, bytearray")
-    #     if regex:
-    #         raise NotImplementedError("replace currently not support for regex")
-    #     if isinstance(to_replace, list) and isinstance(value, list):
-    #         if not len(to_replace) == len(value):
-    #             raise ValueError(
-    #                 "Replacement lists must match in length. Expecting {} got {}".format(
-    #                     len(to_replace), len(value)
-    #                 )
-    #             )
-    #         to_replace = {k: v for k, v in zip(to_replace, value)}
-    #     if isinstance(to_replace, dict):
-    #         is_start = True
-    #         if len(to_replace) == 0:
-    #             current = self.spark.column
-    #         else:
-    #             for to_replace_, value in to_replace.items():
-    #                 if is_start:
-    #                     current = F.when(self.spark.column == F.lit(to_replace_), value)
-    #                     is_start = False
-    #                 else:
-    #                     current = current.when(self.spark.column == F.lit(to_replace_), value)
-    #             current = current.otherwise(self.spark.column)
-    #     else:
-    #         current = F.when(self.spark.column.isin(to_replace), value).otherwise(self.spark.column)
-    #
-    #     return self._with_new_scol(current)
+    def isin(self, values):
+        """
+        Check whether `values` are contained in Series.
+
+        Return a boolean Series showing whether each element in the Series
+        matches an element in the passed sequence of `values` exactly.
+
+        Parameters
+        ----------
+        values : list or set
+            The sequence of values to test.
+
+        Returns
+        -------
+        isin : Series (bool dtype)
+
+        Examples
+        --------
+        >>> s = ks.Series(['lama', 'cow', 'lama', 'beetle', 'lama',
+        ...                'hippo'], name='animal')
+        >>> s.isin(['cow', 'lama'])
+        0     True
+        1     True
+        2     True
+        3    False
+        4     True
+        5    False
+        Name: animal, dtype: bool
+
+        Passing a single string as ``s.isin('lama')`` will raise an error. Use
+        a list of one element instead:
+
+        >>> s.isin(['lama'])
+        0     True
+        1    False
+        2     True
+        3    False
+        4     True
+        5    False
+        Name: animal, dtype: bool
+
+        >>> s.rename("a").to_frame().set_index("a").index.isin(['lama'])
+        Index([True, False, True, False, True, False], dtype='object', name='a')
+        """
+        if not is_list_like(values):
+            raise TypeError(
+                "only list-like objects are allowed to be passed"
+                " to isin(), you passed a [{values_type}]".format(values_type=type(values).__name__)
+            )
+
+        return self._with_new_scol(self.spark.column.isin([scala_wrapper.st_geomfromwkb(F.lit(value)) for value in values])).rename(self.name)
 
 
 def first_series(df):

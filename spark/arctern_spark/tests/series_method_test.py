@@ -125,7 +125,7 @@ def test_idmin():
 
 def test_isin(geo_s, pd_s):
     ret = geo_s.isin(list(pd_s[::]))
-    assert all(ret)
+    assert ret.all()
 
 
 @pytest.mark.skip("databricks.koalas.exceptions.PandasNotImplementedError: The method `pd.Series.reindex()` is not implemented yet.")
