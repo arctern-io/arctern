@@ -170,9 +170,9 @@ object SpatialJoin {
       .withColumnRenamed("_2", leftIndex.toString())
       .withColumnRenamed("_3", leftGeomName)
 
-    def withNullFilter(condition: Column): Column = joinType match {
-      case FullOuter | LeftOuter => leftIndex.isNull || condition
-      case Inner | RightOuter => leftIndex.isNotNull && condition
+    def withLeftNullFilter(condition: Column): Column = joinType match {
+      case FullOuter | RightOuter => leftIndex.isNull || condition
+      case Inner | LeftOuter => leftIndex.isNotNull && condition
       case _ => throw new UnimplementedException
     }
 
@@ -184,7 +184,7 @@ object SpatialJoin {
 
     val joinResult = cross
       .join(polygons, Seq(rightIndex.toString()), rightJoinType.toString)
-      .filter(withNullFilter(st_within(col(leftGeomName), col(rightGeomName))))
+      .filter(withLeftNullFilter(st_within(col(leftGeomName), col(rightGeomName))))
       .drop(leftGeomName).drop(rightIndex)
 
     val joinResult2 = points
