@@ -100,7 +100,7 @@ class GeoSeries(Series):
         The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
         Only supports SRID as a WKT representation of CRS by now, for example, "EPSG:4326".
     **kwargs :
-        Parameters to pass to the GeoSeries constructor, for example, ``copy``.
+        Parameters to be passed to the GeoSeries constructor, for example, ``copy``.
         ``copy`` is a boolean value, by default False.
 
         * *True:* Copys input data.
@@ -956,9 +956,9 @@ class GeoSeries(Series):
 
         Parameters
         ----------
-        offset_x: float
+        offset_x : float
             The offset along the X dimension.
-        offset_y: float
+        offset_y : float
             The offset along the Y dimension.
 
         Returns
@@ -983,16 +983,16 @@ class GeoSeries(Series):
 
         Parameters
         ----------
-        angle: float
+        angle : float
             The angle of rotation. It can be specified in either degrees (default) or radians by setting ``use_radians=True``.
             * Positive angle: Counter-clockwise rotation.
             * Negative angle: Clockwise rotation.
-        origin: string or tuple
+        origin : string or tuple
             The rotatation origin.
             * 'center': The center of 2D bounding box (default).
             * 'centroid': The geometry's 2D centroid.
             * tuple: A coordinate tuple (x, y).
-        use_radians: boolean
+        use_radians : boolean
             Whether to interpret the angle of rotation as degrees or radians.
             * *True:* Use angle in radians.
             * *False:* Use angle in degrees.
@@ -1993,9 +1993,14 @@ class GeoSeries(Series):
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
             * *False:* Do not include bounding box in the GeoJSON string.
-
         **kwargs:
-            Parameters to pass to `jump.dumps`.
+            Parameters to be passed to `jump.dumps`.
+
+        Returns
+        -------
+        Series
+            Sequence of geometries in GeoJSON format.
+
         """
         import json
         geo = {
@@ -2011,7 +2016,7 @@ class GeoSeries(Series):
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
         """
-        Reads a file or OGR dataset to a GeoSeries.
+        Constructs a GeoSeries from a file or OGR dataset.
 
         Supported file formats are listed `here. <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_
 
@@ -2020,17 +2025,17 @@ class GeoSeries(Series):
         fp: str, pathlib.Path, or file-like object
             A dataset resource identifier or file object.
 
-        bbox: tuple
+        bbox : tuple
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box is denoted with ``(min_x, min_y, max_x, max_y)``.
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
             * max_y: The maximum y coordinate of the bounding box.
 
-        mask: GeoSeries
+        mask : GeoSeries
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
-        item: int or slice
+        item : int or slice
             * If ``item`` is an integer, this function loads the geometry with an index of the integer.
             * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
                 * *start:* The position to start the slicing, by default 0.
@@ -2038,7 +2043,11 @@ class GeoSeries(Series):
                 * *step:* The step of the slicing, by default 1.
 
         **kwargs:
-            Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+            Parameters to be passed to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+
+        Notes
+        -------
+        ``bbox`` and ``mask`` cannot be used together.
 
         Returns
         -------
@@ -2079,23 +2088,21 @@ class GeoSeries(Series):
 
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
         """
-        Saves a GeoSeries to a file or OGR dataset.
+        Writes a GeoSeries to a file or OGR dataset.
 
         Parameters
         ----------
         fp: str, pathlib.Path, or file-like object
             A dataset resource identifier or file object.
-
-        mode: str
+        mode : str
             * 'a': Append
-            * 'w': Write (default)
+            * 'w' (default): Write
             Not all driver support append, see the "supported drivers" below for more infomation.
-
-        driver: str
+        driver : str
             The OGR format driver, by default "ESRI Shapefile". It represents a translator for a specific format. See `supported drivers <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_ for more information.
 
-        **kwargs:
-        Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+        **kwargs :
+        Parameters to be passed to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
         """
         geo_type_map = dict([
             ("ST_POINT", "Point"),

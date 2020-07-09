@@ -25,26 +25,29 @@ def sjoin(
         left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"
 ):
     """
-    Spatial join of two GeoDataFrames.
+    Spatially joins two GeoDataFrames.
 
     Parameters
     ----------
-    left_df, right_df : GeoDataFrames
-    rcol, lcol : str
-        Specify geometry columns of left_df, right_df to be joined.
-    how : string, default 'inner'
-        The type of join:
-
-        * 'left': use keys from left_df; retain only left_df geometry column
-        * 'right': use keys from right_df; retain only right_df geometry column
-        * 'inner': use intersection of keys from both dfs; retain only
-          left_df geometry column
-    op : string, default 'intersects'
-        Binary predicate, one of {'intersects', 'contains', 'within'}.
-    lsuffix : string, default 'left'
-        Suffix to apply to overlapping column names (left GeoDataFrame).
-    rsuffix : string, default 'right'
-        Suffix to apply to overlapping column names (right GeoDataFrame).
+    left_df : GeoDataFrame
+        A GeoDataFrame object.
+    right_df : GeoDataFrame
+        A GeoDataFrame object.
+    lcol : str
+        Specifies geometry columns of ``left_df`` to be joined.
+    rcol : str
+        Specifies geometry columns of ``right_df`` to be joined.
+    how : string
+        The type of join, by default 'inner'.
+        * 'left': Uses keys from ``left_df``; only retains geometry columns of ``left_df``.
+        * 'right': Uses keys from ``right_df``; only retains geometry columns of ``right_df``.
+        * 'inner': Uses intersection of keys from both GeoDataFrames; only retains geometry columns of ``left_df``.
+    op : string
+        A binary predicate in {'intersects', 'contains', 'within'}, by default 'intersects'.
+    lsuffix : string
+        Suffix to apply to overlapping column names of ``left_df``, by default 'left'.
+    rsuffix : string
+        Suffix to apply to overlapping column names of ``right_df``, by default 'right'.
 
     Returns
     -------
