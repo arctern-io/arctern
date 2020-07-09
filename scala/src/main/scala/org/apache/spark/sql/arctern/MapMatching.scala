@@ -102,6 +102,7 @@ object MapMatching {
         roadId = i
       }
     }
+    if (minDistance == Double.MaxValue) return new GeometryFactory().createLineString()
     results.get(roadId).asInstanceOf[Geometry]
   }
 

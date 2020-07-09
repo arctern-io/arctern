@@ -175,6 +175,72 @@ class MapMatchingTest extends AdapterTest {
     assert(collect4(6).getAs[Boolean](0) == false)
   }
 
+  test("NearRoad-Illegal-CRS") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("POINT (200 300)")),
+      Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+      Row(new WKTReader().read("POINT (876759574 83674745)")),
+      Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+      Row(new WKTReader().read("POINT (-0.00878457123 4868)")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("LINESTRING (-73.9979810 40.7136728, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("LINESTRING (200 300, 500 900)")),
+      Row(new WKTReader().read("LINESTRING (-73.9980743 40.7137811, -73.9984728 40.7136003)")),
+      Row(new WKTReader().read("LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)")),
+      Row(new WKTReader().read("LINESTRING (4547686 54657567, -85747389 -7846479)")),
+      Row(new WKTReader().read("LINESTRING (-0.00004545 4868, 5677 4444)")),
+      Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = near_road(pointsDF, roadsDF, 1000)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Boolean](0) == true)
+    assert(collect(1).getAs[Boolean](0) == true)
+    assert(collect(2).getAs[Boolean](0) == true)
+    assert(collect(3).getAs[Boolean](0) == false)
+    assert(collect(4).getAs[Boolean](0) == true)
+    assert(collect(5).getAs[Boolean](0) == true)
+  }
+
+  test("NearRoad-Illegal-Geometry") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = near_road(pointsDF, roadsDF, 1000)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Boolean](0) == true)
+    assert(collect(1).getAs[Boolean](0) == true)
+    assert(collect(2).getAs[Boolean](0) == true)
+  }
+
   test("NearestRoad") {
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
@@ -303,6 +369,72 @@ class MapMatchingTest extends AdapterTest {
     assert(collect4(6).getAs[Geometry](0).toText == "LINESTRING (-73.9615569 40.7601753, -73.9615014 40.7602517)")
   }
 
+  test("NearestRoad-Illegal-CRS") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("POINT (200 300)")),
+      Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+      Row(new WKTReader().read("POINT (876759574 83674745)")),
+      Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+      Row(new WKTReader().read("POINT (-0.00878457123 4868)")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("LINESTRING (-73.9979810 40.7136728, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("LINESTRING (200 300, 500 900)")),
+      Row(new WKTReader().read("LINESTRING (-73.9980743 40.7137811, -73.9984728 40.7136003)")),
+      Row(new WKTReader().read("LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)")),
+      Row(new WKTReader().read("LINESTRING (4547686 54657567, -85747389 -7846479)")),
+      Row(new WKTReader().read("LINESTRING (-0.00004545 4868, 5677 4444)")),
+      Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = nearest_road(pointsDF, roadsDF)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Geometry](0).toText == "LINESTRING (4547686 54657567, -85747389 -7846479)")
+    assert(collect(1).getAs[Geometry](0).toText == "LINESTRING (200 300, 500 900)")
+    assert(collect(2).getAs[Geometry](0).toText == "LINESTRING (4547686 54657567, -85747389 -7846479)")
+    assert(collect(3).getAs[Geometry](0).toText == "LINESTRING EMPTY")
+    assert(collect(4).getAs[Geometry](0).toText == "LINESTRING (4547686 54657567, -85747389 -7846479)")
+    assert(collect(5).getAs[Geometry](0).toText == "LINESTRING (4547686 54657567, -85747389 -7846479)")
+  }
+
+  test("NearestRoad-Illegal-Geometry") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = nearest_road(pointsDF, roadsDF)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Geometry](0).toText == "LINESTRING EMPTY")
+    assert(collect(1).getAs[Geometry](0).toText == "LINESTRING EMPTY")
+    assert(collect(2).getAs[Geometry](0).toText == "LINESTRING EMPTY")
+  }
+
   test("NearestLocationOnRoad") {
     val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = false)))
     val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = false)))
@@ -429,5 +561,71 @@ class MapMatchingTest extends AdapterTest {
     assert(collect4(4).getAs[Geometry](0).toText == "POINT (-73.961609 40.7602969)")
     assert(collect4(5).getAs[Geometry](0).toText == "GEOMETRYCOLLECTION EMPTY")
     assert(collect4(6).getAs[Geometry](0).toText == "POINT (-73.9615569 40.7601753)")
+  }
+
+  test("NearestLocationOnRoad-Illegal-CRS") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("POINT (200 300)")),
+      Row(new WKTReader().read("POINT (-73.996458 40.758197)")),
+      Row(new WKTReader().read("POINT (876759574 83674745)")),
+      Row(new WKTReader().read("POINT (-73.985185 40.735828)")),
+      Row(new WKTReader().read("POINT (-0.00878457123 4868)")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("LINESTRING (-73.9979810 40.7136728, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("LINESTRING (200 300, 500 900)")),
+      Row(new WKTReader().read("LINESTRING (-73.9980743 40.7137811, -73.9984728 40.7136003)")),
+      Row(new WKTReader().read("LINESTRING (-73.9611014 40.7608112, -73.9610636 40.7608639)")),
+      Row(new WKTReader().read("LINESTRING (4547686 54657567, -85747389 -7846479)")),
+      Row(new WKTReader().read("LINESTRING (-0.00004545 4868, 5677 4444)")),
+      Row(new WKTReader().read("LINESTRING (-73.9616090 40.7602969, -73.9615014 40.7602517)")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = nearest_location_on_road(pointsDF, roadsDF)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Geometry](0).toText == "POINT (-24105432.46213577 34823308.77051425)")
+    assert(collect(1).getAs[Geometry](0).toText == "POINT (200 300)")
+    assert(collect(2).getAs[Geometry](0).toText == "POINT (-24105432.425837517 34823308.79564062)")
+    assert(collect(3).getAs[Geometry](0).toText == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(4).getAs[Geometry](0).toText == "POINT (-24105432.42868457 34823308.793669835)")
+    assert(collect(5).getAs[Geometry](0).toText == "POINT (-24103123.3577811 34824907.17845403)")
+  }
+
+  test("NearestLocationOnRoad-Illegal-Geometry") {
+    val pointSchema = StructType(Array(StructField("points", new GeometryUDT, nullable = true)))
+    val roadSchema = StructType(Array(StructField("roads", new GeometryUDT, nullable = true)))
+
+    val points = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val roads = Seq(
+      Row(new WKTReader().read("POINT (-73.997969 40.682816)")),
+      Row(new WKTReader().read("LINESTRING (-73.996458 40.758197, -73.9980743 40.7137811)")),
+      Row(new WKTReader().read("POLYGON ((-73.996458 40.758197, -73.896458 40.758197, -73.896458 40.858197, -73.996458 40.858197, -73.996458 40.758197))")),
+    )
+
+    val pointsDF = spark.createDataFrame(spark.sparkContext.parallelize(points), pointSchema)
+    val roadsDF = spark.createDataFrame(spark.sparkContext.parallelize(roads), roadSchema)
+
+    val rst = nearest_location_on_road(pointsDF, roadsDF)
+    rst.show(false)
+
+    val collect = rst.collect()
+    assert(collect(0).getAs[Geometry](0).toText == "POINT (-999999999 -999999999)")
+    assert(collect(1).getAs[Geometry](0).toText == "POINT (-999999999 -999999999)")
+    assert(collect(2).getAs[Geometry](0).toText == "POINT (-999999999 -999999999)")
   }
 }
