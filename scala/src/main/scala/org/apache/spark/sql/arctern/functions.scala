@@ -15,9 +15,9 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.arctern.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
+import org.apache.spark.sql.{Column, DataFrame}
 
 object functions {
   // Constructor UDF API

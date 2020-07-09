@@ -15,9 +15,8 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.arctern.{GeometryType, GeometryUDT}
 import org.apache.spark.sql.arctern.functions._
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.arctern.{GeometryType, GeometryUDT}
 import org.apache.spark.sql.types._
 
 //case class Info(text: String)

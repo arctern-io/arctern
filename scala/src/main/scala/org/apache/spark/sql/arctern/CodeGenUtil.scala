@@ -15,11 +15,9 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.codegen.ExprCode
 import org.apache.spark.sql.catalyst.expressions.{ExpectsInputTypes, Expression}
 import org.apache.spark.sql.types.DataType
-import org.apache.zookeeper.KeeperException.UnimplementedException
 
 abstract class ArcternExpr extends Expression with ExpectsInputTypes {
   def isArcternExpr = true
