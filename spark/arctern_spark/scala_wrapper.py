@@ -79,7 +79,7 @@ def _creat_df_function(name):
             if isinstance(arg, DataFrame):
                 sql_ctx = arg.sql_ctx
                 break
-        args = [arg._jdf for arg in args if isinstance(arg, DataFrame)]
+        args = [arg._jdf if isinstance(arg, DataFrame) else arg for arg in args]
         jdf = getattr(
             sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
         return DataFrame(jdf, sql_ctx)
@@ -139,8 +139,8 @@ _functions = [
 ]
 
 _df_functions = [
-    "nearest_road",
     "near_road",
+    "nearest_road",
     "nearest_location_on_road",
 ]
 
