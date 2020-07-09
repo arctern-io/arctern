@@ -286,4 +286,11 @@ class SpatialJoinTest extends AdapterTest {
     ).sorted
     assert(rst.map(tp => (tp._1, tp._4)) == ref)
   }
+  test("geom-rename") {
+    val polygons = get_polygons_text().select('id, 'dup, st_geomfromtext('text).as("geom"))
+    val points = get_points_text().select('attr, 'dup, st_geomfromtext('text).as("geom"))
+    val fin = SpatialJoin(spark, polygons, points, "geom", "geom", RightOuter, ContainsOp)
+    val ref_columns = Seq("id", "dup_left", "geom_left", "attr", "dup_right", "geom_right")
+    assert(fin.columns.toSeq == ref_columns)
+  }
 }
