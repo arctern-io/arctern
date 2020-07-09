@@ -24,7 +24,6 @@ import org.apache.spark.sql.catalyst.util.GenericArrayData
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
 import org.apache.zookeeper.KeeperException.UnimplementedException
-import org.locationtech.jts.geom.Geometry
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
@@ -108,6 +107,7 @@ case class ST_GeomFromWKB(inputExpr: Seq[Expression]) extends ArcternExpr {
 case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   override def nullable: Boolean = true
+
   override def eval(input: InternalRow): GenericArrayData = {
     throw new UnimplementedException
   }

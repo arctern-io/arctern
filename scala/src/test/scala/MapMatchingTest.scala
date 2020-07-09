@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
-import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.arctern.functions._
+import org.apache.spark.sql.types.{StructField, StructType}
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 

@@ -25,7 +25,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
+import org.locationtech.jts.geom._
 
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {

@@ -18,9 +18,9 @@ package org.apache.spark.sql.arctern
 import java.util
 
 import org.apache.spark.broadcast.Broadcast
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.types.{BooleanType, StructField, StructType}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.locationtech.jts.geom.{Coordinate, Envelope, Geometry, GeometryFactory}
 
 object MapMatching {
