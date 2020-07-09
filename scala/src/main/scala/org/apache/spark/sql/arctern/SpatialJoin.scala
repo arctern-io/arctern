@@ -33,11 +33,11 @@ object SpatialJoinOperator {
 }
 
 object WithinOp extends SpatialJoinOperator {
-  override final val name: String = "ST_Within"
+  override final val name: String = "Within"
 }
 
 object ContainsOp extends SpatialJoinOperator {
-  override final val name: String = "ST_Contains"
+  override final val name: String = "Contains"
 }
 
 
