@@ -265,3 +265,18 @@ class TestFile:
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
         assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+
+
+def test_to_json():
+    data = {
+        "A": range(1),
+        "B": np.arange(1.0),
+        "other_geom": range(1),
+        "geometry": ["POINT (0 0)"],
+    }
+    gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+    json = gdf.to_json(geometry="geometry")
+    assert json == '{"type": "FeatureCollection", ' \
+                   '"features": [{"id": "0", "type": "Feature", ' \
+                   '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
+                   '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'

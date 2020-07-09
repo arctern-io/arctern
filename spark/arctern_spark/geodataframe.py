@@ -310,7 +310,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
         A    B  other_geom         geo2         geo3     geometry
@@ -322,3 +322,60 @@ class GeoDataFrame(DataFrame):
         """
         arctern_spark.file.to_file(self, filename=filename, driver=driver, schema=schema,
                                    index=index, crs=crs, geometry=geometry, **kwargs)
+
+    def _to_geo(self, **kwargs):
+        geo = {
+            "type": "FeatureCollection",
+            "features": list(self.iterfeatures(**kwargs))
+        }
+
+        if kwargs.get("show_bbox", False):
+            geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
+
+        return geo
+
+    # pylint: disable=arguments-differ
+    def to_json(self, na="null", show_bbox=False, geometry='geometry', **kwargs):
+        """
+        Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
+
+        Parameters
+        ----------
+
+        na : {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame.
+            See below.
+        show_bbow : bool, optional, default: False
+            Include bbox (bounds) in the geojson
+
+        Returns
+        -------
+        Series
+            Sequence of geometries in GeoJSON format.
+
+        Note
+        ----
+        The remaining *kwargs* are passed to json.dumps().
+
+        Missing (NaN) values in the GeoDataFrame can be represented as follows:
+
+        - ``null``: output the missing entries as JSON null.
+        - ``drop``: remove the property from the feature. This applies to each
+          feature individually so that features may have different properties.
+        - ``keep``: output the missing entries as NaN.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(1),
+        ...     "B": np.arange(1.0),
+        ...     "other_geom": range(1),
+        ...     "geometry": ["POINT (0 0)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        >>> print(gdf.to_json(geometry="geometry"))
+        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
+        """
+        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox), **kwargs)
