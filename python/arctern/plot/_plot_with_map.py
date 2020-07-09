@@ -66,7 +66,7 @@ def pointmap(ax, points, bounding_box,
         Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
     Examples
     ---------
-    
+
     .. plot::
        :context: close-figs
 
