@@ -1,5 +1,7 @@
 package org.apache.spark.sql.arctern
 
+import java.util.Locale
+
 import org.apache.spark.sql.arctern.functions._
 import org.apache.spark.sql.arctern.index.RTreeIndex
 import org.apache.spark.sql.catalyst.plans._
@@ -10,8 +12,24 @@ import org.locationtech.jts.geom.{Envelope, Geometry}
 
 import scala.collection.mutable
 
+
 sealed abstract class SpatialJoinOperator {
   val name: String
+}
+
+object SpatialJoinOperator {
+  def apply(name: String): SpatialJoinOperator = {
+    name.toLowerCase(Locale.ROOT) match {
+      case "within" => WithinOp
+      case "contains" => ContainsOp
+      case _ =>
+        val supported = Seq(
+          "within", "contains")
+        throw new IllegalArgumentException(s"Unsupported operator '$name'. " +
+          "Supported operators include: " + supported.mkString("'", "', '", "'") + ".")
+
+    }
+  }
 }
 
 object WithinOp extends SpatialJoinOperator {
