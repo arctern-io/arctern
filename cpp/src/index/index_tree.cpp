@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "index/index_tree.h"
+
 #include <geos/indexBintree.h>
 #include <geos/indexChain.h>
 #include <geos/indexQuadtree.h>
@@ -30,7 +32,6 @@
 
 #include "arrow/api.h"
 #include "arrow/array.h"
-#include "index/index_tree.h"
 #include "render/utils/render_utils.h"
 
 namespace arctern {
@@ -116,6 +117,30 @@ const std::vector<OGRGeometry*> IndexTree::map_match_query(const OGRGeometry* gp
   }
 
   return results;
+}
+
+const std::vector<std::shared_ptr<arrow::Array>> IndexTree::query(
+    const OGRGeometry* input) const {
+  std::vector<std::shared_ptr<arrow::Array>> results_arrow(1);
+  arrow::Int32Builder builder;
+  if (input) {
+    std::vector<void*> matches;
+    OGREnvelope ogr_env;
+    input->getEnvelope(&ogr_env);
+    matches.clear();
+    geos::geom::Envelope env(ogr_env.MinX, ogr_env.MaxX, ogr_env.MinY, ogr_env.MaxY);
+    get_tree()->query(&env, matches);
+
+    for (auto match : matches) {
+      // match(void*) contains index as binary representation.
+      auto index = reinterpret_cast<size_t>(match);
+      auto final_index = static_cast<int>(index);
+      CHECK_ARROW(builder.Append(final_index));
+    }
+  }
+  CHECK_ARROW(builder.Finish(&(results_arrow[0])));
+
+  return results_arrow;
 }
 
 }  // namespace geo_indexing

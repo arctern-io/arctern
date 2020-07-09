@@ -27,6 +27,7 @@ object UdfRegistrator {
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_PolygonFromEnvelope", ST_PolygonFromEnvelope)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_GeomFromGeoJSON", ST_GeomFromGeoJSON)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_AsText", ST_AsText)
+    spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_AsWKB", ST_AsWKB)
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_AsGeoJSON", ST_AsGeoJSON)
     // Register function UDFs
     spark.sessionState.functionRegistry.createOrReplaceTempFunction("ST_Within", ST_Within)

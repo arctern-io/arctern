@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ._wrapper_func import *
-from .geoseries import *
-from . import plot
-from .geodataframe import *
-from .tools import *
+from setuptools import setup
+
+setup(
+    name="arctern_spark",
+    packages=[
+        "arctern_spark",
+        "arctern_spark.tests"
+    ],
+)
