@@ -14,6 +14,7 @@
 
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin, unidiomatic-typecheck
+# pylint: disable=wrong-import-order
 import json
 import warnings
 
