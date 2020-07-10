@@ -82,12 +82,14 @@ object MapMatching {
   }
 
   private def computeNearRoad(point: Geometry, index: Broadcast[RTreeIndex], expandValue: Double): Boolean = {
+    if (point == null) return false
     val env = expandEnvelope(point.getEnvelopeInternal, expandValue)
     val results = index.value.query(env)
     results.size() > 0
   }
 
   private def computeNearestRoad(point: Geometry, index: Broadcast[RTreeIndex]): Geometry = {
+    if (point == null) return new GeometryFactory().createLineString()
     val results = mapMatchingQuery(point, index.value)
     if (results.size() <= 0) return new GeometryFactory().createLineString()
     var minDistance = Double.MaxValue
@@ -100,10 +102,14 @@ object MapMatching {
         roadId = i
       }
     }
+    if (minDistance == Double.MaxValue) return new GeometryFactory().createLineString()
     results.get(roadId).asInstanceOf[Geometry]
   }
 
   private def computeNearestLocationOnRoad(point: Geometry, index: Broadcast[RTreeIndex]): Geometry = {
+    // Empty Points cannot be represented in WKB.
+    // So here we use Empty GeometryCollection.
+    if (point == null) return new GeometryFactory().createGeometryCollection()
     val results = mapMatchingQuery(point, index.value)
     if (results.size() <= 0) return new GeometryFactory().createGeometryCollection()
     var minDistance = Double.MaxValue
@@ -139,7 +145,7 @@ class MapMatching {
     val roadArray = roads.coalesce(numPartitions = 1).collect()
     for (road <- roadArray) {
       val roadGeometry = road.getAs[Geometry](0)
-      index.insert(roadGeometry.getEnvelopeInternal, roadGeometry)
+      if (roadGeometry != null) index.insert(roadGeometry.getEnvelopeInternal, roadGeometry)
     }
   }
 
