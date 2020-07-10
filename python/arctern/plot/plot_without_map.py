@@ -24,10 +24,10 @@ def pointmap_layer(w, h, points, bounding_box=None,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     points : GeoSeries
         Sequence of points.
     bounding_box : list
@@ -45,7 +45,7 @@ def pointmap_layer(w, h, points, bounding_box=None,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     ---------
@@ -98,10 +98,10 @@ def weighted_pointmap_layer(w, h, points, color_weights=None,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     points : GeoSeries
         Sequence of points.
     color_weights : Series, optional
@@ -127,7 +127,7 @@ def weighted_pointmap_layer(w, h, points, color_weights=None,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     -------
@@ -196,10 +196,10 @@ def heatmap_layer(w, h, points, weights, bounding_box,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     points : GeoSeries
         Sequence of points.
     weights : Series
@@ -207,7 +207,7 @@ def heatmap_layer(w, h, points, weights, bounding_box,
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
     map_zoom_level : [type], optional
-        Zoom level of the map by default 'auto'.
+        Zoom level of the map, by default 'auto'.
     coordinate_system : str, optional
         The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
         Only supports SRID as a WKT representation of CRS by now.
@@ -217,7 +217,7 @@ def heatmap_layer(w, h, points, weights, bounding_box,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     -------
@@ -266,10 +266,10 @@ def choroplethmap_layer(w, h, region_boundaries, weights, bounding_box,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     region_boundaries : GeoSeries
         Sequence of polygons, as region boundaries to plot.
     weights : Series
@@ -293,7 +293,7 @@ def choroplethmap_layer(w, h, region_boundaries, weights, bounding_box,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     -------
@@ -339,10 +339,10 @@ def iconviz_layer(w, h, points, bounding_box, icon_path,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     points : GeoSeries
         Sequence of points.
     bounding_box : list
@@ -358,7 +358,7 @@ def iconviz_layer(w, h, points, bounding_box, icon_path,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     -------
@@ -411,10 +411,10 @@ def fishnetmap_layer(w, h, points, weights, bounding_box,
 
     Parameters
     ----------
-    w : Int
-        The widtd of output PNG
-    h : Int
-        The height of output PNG
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
     points : GeoSeries
         Sequence of points.
     weights : Series
@@ -439,7 +439,7 @@ def fishnetmap_layer(w, h, points, weights, bounding_box,
     Returns
     -------
     bytes
-        Base64 encoded png
+        A base64 encoded PNG image.
 
     Examples
     -------
