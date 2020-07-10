@@ -64,14 +64,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea==2.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea == 2.0)
 
     val rst2 = df.agg(st_union_aggr(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea == 2.0)
   }
 
   test("ST_Union_Aggr-SimpleTest") {
@@ -89,7 +89,7 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea==1.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea == 1.0)
 
     val data2 = Seq(
       Row(GeometryUDT.FromWkt("POINT (-5 -5)")),
@@ -104,7 +104,7 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==0.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea == 0.0)
 
     val data3 = Seq(
       Row(GeometryUDT.FromWkt("POLYGON ((1 1,2 1,2 2,1 2,1 1))")),
@@ -120,6 +120,21 @@ class AggregateFunctionsTest extends AdapterTest {
     val collect3 = rst3.collect()
 
     assert(GeometryUDT.FromWkt(collect3(0).getAs[GeometryUDT](0).toString).getArea==1.0)
+
+    val data4 = Seq(
+      Row(GeometryUDT.FromWkt("POINT (-5 -5)")),
+      Row(GeometryUDT.FromWkt("POINT (-1 -1)")),
+    )
+
+    val df4 = spark.createDataFrame(spark.sparkContext.parallelize(data4), schema)
+    df4.createOrReplaceTempView("ST_Union_Aggr_data4")
+
+    val rst4 = spark.sql("select ST_Union_Aggr(geo) from ST_Union_Aggr_data4")
+    rst4.show(false)
+
+    val collect4 = rst4.collect()
+
+    assert(GeometryUDT.FromWkt(collect4(0).getAs[GeometryUDT](0).toString).getArea==0.0)
   }
 
   test("ST_Union_Aggr-Null") {
@@ -143,14 +158,14 @@ class AggregateFunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea==2.0)
+    assert(GeometryUDT.FromWkt(collect(0).getAs[GeometryUDT](0).toString).getArea == 2.0)
 
     val rst2 = df.agg(st_union_aggr(st_geomfromtext(col("geo"))))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea==2.0)
+    assert(GeometryUDT.FromWkt(collect2(0).getAs[GeometryUDT](0).toString).getArea == 2.0)
   }
 
   test("ST_Union_Aggr-Perf") {
@@ -159,17 +174,17 @@ class AggregateFunctionsTest extends AdapterTest {
     val randomRange = 50
 
     var data = List[Row]()
-    for( a <- 0 to dataNum){
+    for (a <- 0 to dataNum) {
       data = data :+ Row(GeometryUDT.FromWkt(s"""POINT (${r.nextInt(randomRange)} ${r.nextInt(randomRange)})"""))
     }
 
-    for( a <- 0 to dataNum){
+    for (a <- 0 to dataNum) {
       val minX = r.nextInt(randomRange)
       val minY = r.nextInt(randomRange)
       data = data :+ Row(GeometryUDT.FromWkt(s"""LINESTRING (${minX} ${minY}, ${minX + 10} ${minY + 10}, ${minX + 20} ${minY + 20})"""))
     }
 
-    for( a <- 0 to dataNum){
+    for (a <- 0 to dataNum) {
       val minX = r.nextInt(randomRange)
       val minY = r.nextInt(randomRange)
       val maxX = minX + 2
@@ -192,7 +207,7 @@ class AggregateFunctionsTest extends AdapterTest {
     val t2 = System.currentTimeMillis
 
     rst.show(false)
-    println((t2 - t1)/1000.0 + " secs")
+    println((t2 - t1) / 1000.0 + " secs")
   }
 
   test("ST_Envelope_Aggr") {

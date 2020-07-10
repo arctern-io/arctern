@@ -16,10 +16,12 @@
 package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.arctern.GeometryType
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.DeclarativeAggregate
 import org.apache.spark.sql.catalyst.expressions.codegen.{CodegenContext, ExprCode}
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.types._
 
 
@@ -28,6 +30,11 @@ case class GeometryEnvelope(expression: Expression) extends ST_UnaryOp {
   override def expr: Expression = expression
 
   override def nullable: Boolean = false
+
+  override def eval(input: InternalRow): ArrayData = {
+    val geom = GeometryType.deserialize(expression.eval(input))
+    utils.envelopeAsList(geom)
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.envelopeAsList($geo)")
 

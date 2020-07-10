@@ -59,12 +59,12 @@ __all__ = [
     "ST_GeomFromText",
     "ST_AsText",
     "ST_AsGeoJSON",
-    "pointmap_layer",
-    "weighted_pointmap_layer",
-    "heatmap_layer",
-    "choroplethmap_layer",
-    "iconviz_layer",
-    "fishnetmap_layer",
+    "point_map_layer",
+    "weighted_point_map_layer",
+    "heat_map_layer",
+    "choropleth_map_layer",
+    "icon_viz_layer",
+    "fishnet_map_layer",
     "projection",
     "transform_and_projection",
     "within_which",
@@ -1419,9 +1419,10 @@ def transform_and_projection(geos, src_rs, dst_rs, bottom_right, top_left, heigh
         geos_rs, src, dst, bounding_box_max, bounding_box_min, height, width)
     return _to_pandas_series(geos)
 
-def pointmap_layer(vega, points, transform=True):
+
+def point_map_layer(vega, points, transform=True):
     """
-    Plots a point map.
+    Plots a point map layer.
 
     Parameters
     ----------
@@ -1457,7 +1458,7 @@ def pointmap_layer(vega, points, transform=True):
        >>> # Plot pointmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_pointmap(1024, 896, bounding_box=bbox, point_size=10, point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
-       >>> pointmap_layer=arctern.pointmap_layer(vega, points)
+       >>> pointmap_layer=arctern.point_map_layer(vega, points)
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(pointmap_layer))
        >>> img = plt.imread(f)
@@ -1501,9 +1502,9 @@ def pointmap_layer(vega, points, transform=True):
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
-def weighted_pointmap_layer(vega, points, transform=True, **kwargs):
+def weighted_point_map_layer(vega, points, transform=True, **kwargs):
     """
-    Plots a weighted point map.
+    Plots a weighted point map layer.
 
     Parameters
     ----------
@@ -1539,7 +1540,7 @@ def weighted_pointmap_layer(vega, points, transform=True, **kwargs):
        >>> # Plot weighted_pointmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_weighted_pointmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
-       >>> weighted_pointmap_layer=arctern.weighted_pointmap_layer(vega, points, color_weights=df["color_weights"], size_weights=df["size_weights"])
+       >>> weighted_pointmap_layer=arctern.weighted_point_map_layer(vega, points, color_weights=df["color_weights"], size_weights=df["size_weights"])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(weighted_pointmap_layer))
        >>> img = plt.imread(f)
@@ -1613,9 +1614,9 @@ def weighted_pointmap_layer(vega, points, transform=True, **kwargs):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def heatmap_layer(vega, points, weights, transform=True):
+def heat_map_layer(vega, points, weights, transform=True):
     """
-    Plots a heatmap.
+    Plots a heatmap layer.
 
     Parameters
     ----------
@@ -1653,7 +1654,7 @@ def heatmap_layer(vega, points, weights, transform=True):
        >>> # Plot heatmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_heatmap(1024, 896, bounding_box=bbox, map_zoom_level=13.0, coordinate_system='EPSG:4326')
-       >>> heatmap_layer = arctern.heatmap_layer(vega, points, df['color_weights'])
+       >>> heatmap_layer = arctern.heat_map_layer(vega, points, df['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(heatmap_layer))
        >>> img = plt.imread(f)
@@ -1703,9 +1704,9 @@ def heatmap_layer(vega, points, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def choroplethmap_layer(vega, region_boundaries, weights, transform=True):
+def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     """
-    Plots a choroplethmap.
+    Plots a choroplethmap layer.
 
     Parameters
     ----------
@@ -1744,7 +1745,7 @@ def choroplethmap_layer(vega, region_boundaries, weights, transform=True):
        >>> # Plot choroplethmap_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_choroplethmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
-       >>> choroplethmap_layer = arctern.choroplethmap_layer(vega, polygon, input['color_weights'])
+       >>> choroplethmap_layer = arctern.choropleth_map_layer(vega, polygon, input['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(choroplethmap_layer))
        >>> img = plt.imread(f)
@@ -1795,9 +1796,9 @@ def choroplethmap_layer(vega, region_boundaries, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def iconviz_layer(vega, points, transform=True):
+def icon_viz_layer(vega, points, transform=True):
     """
-    Plots a icon_viz.
+    Plots a icon_viz layer.
 
     Parameters
     ----------
@@ -1833,7 +1834,7 @@ def iconviz_layer(vega, points, transform=True):
        >>> # Plot icon_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_icon(1024, 896, bounding_box=bbox, icon_path='icon-viz.png', coordinate_system="EPSG:4326")
-       >>> icon_layer = arctern.iconviz_layer(vega, points)
+       >>> icon_layer = arctern.icon_viz_layer(vega, points)
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(icon_layer))
        >>> img = plt.imread(f)
@@ -1876,9 +1877,9 @@ def iconviz_layer(vega, points, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def fishnetmap_layer(vega, points, weights, transform=True):
+def fishnet_map_layer(vega, points, weights, transform=True):
     """
-    Plots a fishnetmap.
+    Plots a fishnetmap layer.
 
     Parameters
     ----------
@@ -1916,7 +1917,7 @@ def fishnetmap_layer(vega, points, weights, transform=True):
        >>> # Plot fishnet_layer
        >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
        >>> vega = vega_fishnetmap(1024, 896, bounding_box=bbox, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
-       >>> fishnet_layer = arctern.fishnetmap_layer(vega, points, df['color_weights'])
+       >>> fishnet_layer = arctern.fishnet_map_layer(vega, points, df['color_weights'])
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
        >>> f = io.BytesIO(base64.b64decode(fishnet_layer))
        >>> img = plt.imread(f)
@@ -1988,10 +1989,10 @@ def within_which(left, right):
     >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
     >>> res = within_which(data1, data2)
     >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
+    0       1
+    1    <NA>
+    2       0
+    dtype: object
     """
     index_tree = right.sindex
     return index_tree.within_which(left)
@@ -2016,8 +2017,8 @@ def nearest_location_on_road(roads, points):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
     >>> rst
-        0    POINT (1.0 2.5)
-        dtype: object
+    0    POINT (1.0 2.5)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_location_on_road(points)
@@ -2043,8 +2044,8 @@ def nearest_road(roads, points,):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
     >>> rst
-        0    LINESTRING (1 2,1 3)
-        dtype: object
+    0    LINESTRING (1 2,1 3)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_road(points)
@@ -2069,12 +2070,12 @@ def near_road(roads, points, distance=100):
     Examples
     -------
     >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
-      >>> rst = arctern.near_road(data1, data2)
-      >>> rst
-          0    True
-          dtype: object
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+    >>> rst = arctern.near_road(data1, data2)
+    >>> rst
+    0    True
+    dtype: bool
     """
     index_tree = roads.sindex
     return index_tree.near_road(points, distance)
