@@ -111,17 +111,17 @@ binary_func_dict = {
 def collect_diff_file_list():
     result_file_list = []
     expected_file_list = []
-    for key in binary_func_dict.keys():
-        result_file_list.append(binary_func_dict[key][1])
-        expected_file_list.append(binary_func_dict[key][2])
+    # for key in binary_func_dict.keys():
+    #     result_file_list.append(binary_func_dict[key][1])
+    #     expected_file_list.append(binary_func_dict[key][2])
 
-    # for key in unary_func_dict.keys():
-    #     result_file_list.append(unary_func_dict[key][1])
-    #     expected_file_list.append(unary_func_dict[key][2])
+    for key in unary_func_dict.keys():
+        result_file_list.append(unary_func_dict[key][1])
+        expected_file_list.append(unary_func_dict[key][2])
 
-    for key in unary_func_property_dict.keys():
-        result_file_list.append(unary_func_property_dict[key][1])
-        expected_file_list.append(unary_func_property_dict[key][2])
+    # for key in unary_func_property_dict.keys():
+    #     result_file_list.append(unary_func_property_dict[key][1])
+    #     expected_file_list.append(unary_func_property_dict[key][2])
 
     return result_file_list, expected_file_list
 
@@ -759,7 +759,7 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
     output_csv_path = output_csv_base_dir + output_csv
     col1,col2 = read_csv2arr(input_csv_path)
     assert len(col2) == 0
-    geo_s1 = GeoSeries(col1, crs="EPSG:3857")
+    geo_s1 = GeoSeries(col1)
     comma_flag = False
     param_code = ''
     params = unary_func_dict[func_name][3]
@@ -780,14 +780,14 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
 
 if __name__ == "__main__":
     # # test binary_func
-    for func_name in binary_func_dict.keys():
-        test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
-    # test unary_func_property
-    for func_name in unary_func_property_dict.keys():
-        test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
+    # for func_name in binary_func_dict.keys():
+    #     test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
+    # # test unary_func_property
+    # for func_name in unary_func_property_dict.keys():
+    #     test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
     # test unary_func
-    # for func_name in unary_func_dict.keys():
-    #     test_unary_func(func_name,unary_func_dict[func_name][0],unary_func_dict[func_name][1])
-    # update_result()
+    for func_name in unary_func_dict.keys():
+        test_unary_func(func_name,unary_func_dict[func_name][0],unary_func_dict[func_name][1])
+    update_result()
     test_status = compare_all()
     # print(test_status)
