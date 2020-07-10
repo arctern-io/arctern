@@ -13,7 +13,7 @@ spec:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      value: "736b78afd1f71684291bd273b33e41fc3cf5e626f9ec0e58d69abd62a457b185"
+      value: "127d784931114aa5e2a9a1c56aeb76398fe4042b8f856b0e5ae0fc83983fe7ca"
     command:
     - cat
     tty: true

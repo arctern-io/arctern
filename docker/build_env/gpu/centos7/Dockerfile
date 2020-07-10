@@ -37,7 +37,8 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 
 RUN yum --disablerepo=cuda install -y java-1.8.0-openjdk && \
     curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo && \
-    yum --disablerepo=cuda install -y sbt
+    yum --disablerepo=cuda install -y sbt && \
+    rm -rf /var/cache/yum/*
 
 WORKDIR /root
 
