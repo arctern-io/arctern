@@ -286,7 +286,7 @@ class TestFile:
         assert (dest == source).all()
         source = source.to_crs("EPSG:3857")
         dest = dest.to_crs("EPSG:3857")
-#        assert (dest == source).all()
+        assert (dest == source).all()
 
     @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
     def test_complex_geometry(self, driver, extension, tmpdir):
@@ -301,7 +301,7 @@ class TestFile:
             assert (dest == source).all()
             source = source.to_crs("EPSG:3857")
             dest = dest.to_crs("EPSG:3857")
-#            assert (dest == source).all()
+            assert (dest == source).all()
 
     @pytest.mark.parametrize("driver, extension", [("ESRI Shapefile", "shp"), ("GeoJSON", "geojson")])
     def test_empty_series(self, driver, extension, tmpdir):

@@ -22,7 +22,7 @@ import pandas as pd
 
 # pylint: disable=too-many-branches,too-many-statements
 def sjoin(
-        left_df, right_df, lcol, rcol, how="inner", op="intersects", lsuffix="left", rsuffix="right"
+        left_df, right_df, left_col, right_col, how="inner", op="intersects", left_suffix="left", right_suffix="right"
 ):
     """
     Spatially joins two GeoDataFrames.
@@ -97,7 +97,7 @@ def sjoin(
             '`op` was "%s" but is expected to be in %s' % (op, allowed_ops)
         )
 
-    if left_df[lcol].crs != right_df[rcol].crs:
+    if left_df[left_col].crs != right_df[right_col].crs:
         warn(
             (
                 "CRS of frames being joined does not match!"
@@ -105,8 +105,8 @@ def sjoin(
             )
         )
 
-    index_left = "index_%s" % lsuffix
-    index_right = "index_%s" % rsuffix
+    index_left = "index_%s" % left_suffix
+    index_right = "index_%s" % right_suffix
 
     if any(left_df.columns.isin([index_left, index_right])) or any(
         right_df.columns.isin([index_left, index_right])
@@ -116,26 +116,22 @@ def sjoin(
             " joined".format(index_left, index_right)
         )
 
-    if right_df[rcol]._sindex_generated or (
-            not left_df[lcol]._sindex_generated and right_df.shape[0] > left_df.shape[0]
+    if right_df[right_col]._sindex_generated or (
+            not left_df[left_col]._sindex_generated and right_df.shape[0] > left_df.shape[0]
     ):
-        tree_idx = right_df[rcol].sindex
+        tree_idx = right_df[right_col].sindex
         tree_idx_right = True
     else:
-        tree_idx = left_df[lcol].sindex
+        tree_idx = left_df[left_col].sindex
         tree_idx_right = False
 
-    # the rtree spatial index only allows limited (numeric) index types, but an
-    # index in geopandas may be any arbitrary dtype. so reset both indices now
-    # and store references to the original indices, to be reaffixed later.
-    # GH 352
     left_df = left_df.copy(deep=True)
     try:
         left_index_name = left_df.index.name
         left_df.index = left_df.index.rename(index_left)
     except TypeError:
         index_left = [
-            "index_%s" % lsuffix + str(l) for l, ix in enumerate(left_df.index.names)
+            "index_%s" % left_suffix + str(l) for l, ix in enumerate(left_df.index.names)
         ]
         left_index_name = left_df.index.names
         left_df.index = left_df.index.rename(index_left)
@@ -147,7 +143,7 @@ def sjoin(
         right_df.index = right_df.index.rename(index_right)
     except TypeError:
         index_right = [
-            "index_%s" % rsuffix + str(l) for l, ix in enumerate(right_df.index.names)
+            "index_%s" % right_suffix + str(l) for l, ix in enumerate(right_df.index.names)
         ]
         right_index_name = right_df.index.names
         right_df.index = right_df.index.rename(index_right)
@@ -160,29 +156,24 @@ def sjoin(
     r_idx = np.empty((0, 0))
     l_idx = np.empty((0, 0))
 
-    # get rtree spatial index
     if tree_idx_right:
-        idxmatch = left_df[lcol].apply(
+        idxmatch = left_df[left_col].apply(
             lambda x: list(tree_idx.query(GeoSeries(x))) if not x == () else []
         )
         idxmatch = idxmatch[idxmatch.apply(len) > 0]
-        # indexes of overlapping boundaries
         if idxmatch.shape[0] > 0:
             r_idx = np.concatenate(idxmatch.values)
             l_idx = np.concatenate([[i] * len(v) for i, v in idxmatch.iteritems()])
     else:
-        # tree_idx_df == 'left'
-        idxmatch = right_df[rcol].apply(
+        idxmatch = right_df[right_col].apply(
             lambda x: list(tree_idx.query(GeoSeries(x))) if not x == () else []
         )
         idxmatch = idxmatch[idxmatch.apply(len) > 0]
         if idxmatch.shape[0] > 0:
-            # indexes of overlapping boundaries
             l_idx = np.concatenate(idxmatch.values)
             r_idx = np.concatenate([[i] * len(v) for i, v in idxmatch.iteritems()])
 
     if len(r_idx) > 0 and len(l_idx) > 0:
-        # Vectorize predicate operations
         def find_intersects(a1, a2):
             return GeoSeries(a1).intersects(GeoSeries(a2))[0]
 
@@ -206,8 +197,8 @@ def sjoin(
                     l_idx,
                     r_idx,
                     check_predicates(
-                        left_df[lcol][l_idx],
-                        right_df[rcol][r_idx],
+                        left_df[left_col][l_idx],
+                        right_df[right_col][r_idx],
                     ),
                 ]
             )
@@ -219,7 +210,6 @@ def sjoin(
         )
 
     else:
-        # when output from the join has no overlapping geometries
         result = pd.DataFrame(columns=["_key_left", "_key_right"], dtype=float)
 
     if how == "inner":
@@ -227,10 +217,10 @@ def sjoin(
         joined = (
             left_df.merge(result, left_index=True, right_index=True)
             .merge(
-                right_df.drop(rcol, axis=1),
+                right_df.drop(right_col, axis=1),
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % lsuffix, "_%s" % rsuffix),
+                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)
@@ -245,11 +235,11 @@ def sjoin(
         joined = (
             left_df.merge(result, left_index=True, right_index=True, how="left")
             .merge(
-                right_df.drop(rcol, axis=1),
+                right_df.drop(right_col, axis=1),
                 how="left",
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % lsuffix, "_%s" % rsuffix),
+                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)
@@ -259,9 +249,9 @@ def sjoin(
         else:
             joined.index.name = left_index_name
 
-    else:  # how == 'right':
+    else:
         joined = (
-            left_df.drop(lcol, axis=1)
+            left_df.drop(left_col, axis=1)
             .merge(
                 result.merge(
                     right_df, left_on="_key_right", right_index=True, how="right"
