@@ -13,3 +13,4 @@
 # limitations under the License.
 from ._plot import *
 from ._plot_with_map import *
+from .plot_without_map import *
