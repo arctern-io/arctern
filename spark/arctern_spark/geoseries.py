@@ -792,7 +792,7 @@ class GeoSeries(Series):
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
         >>> s.unary_union()
-        0    GEOMETRYCOLLECTION EMPTY
+        0    MULTIPOINT ((1 1), (1 2))
         Name: st_union_aggr(0), dtype: object
         """
         return _agg("st_union_aggr", self)
@@ -931,14 +931,14 @@ class GeoSeries(Series):
 
         Examples
         -------
-        >>> from arctern_pyspark import GeoSeries
+        >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 2)"], crs="EPSG:4326")
         >>> s
         0    POINT (1 2)
-        dtype: GeoDtype
+        Name: 0, dtype: object
         >>> s.to_crs(crs="EPSG:3857")
-        0    POINT (111319.490793274 222684.208505545)
-        dtype: GeoDtype
+        0    POINT (111319.49079327357 222684.20850554455)
+        Name: 0, dtype: object
         """
         if crs is None:
             raise ValueError("Can not transform with invalid crs")

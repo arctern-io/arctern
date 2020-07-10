@@ -25,7 +25,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
+import org.locationtech.jts.geom._
 
 object utils {
   def envelopeAsList(geom: Geometry): ArrayData = {
@@ -358,7 +358,7 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr(0)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid().isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 

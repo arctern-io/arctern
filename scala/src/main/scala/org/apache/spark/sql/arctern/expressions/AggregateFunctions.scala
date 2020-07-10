@@ -17,7 +17,7 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
-import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoints, collectionUnionPoint}
+import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoint, collectionUnionPoints}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
 import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory}
@@ -54,7 +54,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
           val geometry = geometryCollection.getGeometryN(i)
           val geoType = geometry.getGeometryType
           geoType match {
-            case "Point" | "MultiPoint"  => buffer(0) = pointAccumulateUnion.union(geometry)
+            case "Point" | "MultiPoint" => buffer(0) = pointAccumulateUnion.union(geometry)
             case "LineString" | "MultiLineString" => buffer(1) = lineStringAccumulateUnion.union(geometry)
             case "Polygon" | "MultiPolygon" => buffer(2) = polygonAccumulateUnion.union(geometry)
             case _ => throw new Exception("Unsupported geometry type " + newGeoType)
@@ -83,6 +83,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
     val lineStrings = buffer.getAs[Geometry](1)
     val polygons = buffer.getAs[Geometry](2)
     var firstUnion = lineStrings.union(polygons)
+    if (firstUnion.isEmpty) return points
     if (firstUnion.getGeometryType != "GeometryCollection") firstUnion = new GeometryFactory().createGeometryCollection(Array(firstUnion))
     if (points.getGeometryType == "Point") collectionUnionPoint(firstUnion, points)
     else if (points.getGeometryType == "MultiPoint") collectionUnionPoints(firstUnion, points)
