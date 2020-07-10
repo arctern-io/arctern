@@ -221,7 +221,7 @@ class TestFile:
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
         assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                    "POINT (5 5)"]
+                                                         "POINT (5 5)"]
 
     def test_read_and_save_file_2(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -230,7 +230,7 @@ class TestFile:
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
         assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                    "POINT (5 5)"]
+                                                         "POINT (5 5)"]
 
     def test_read_and_save_file_3(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -267,16 +267,49 @@ class TestFile:
         assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
 
-def test_to_json():
-    data = {
-        "A": range(1),
-        "B": np.arange(1.0),
-        "other_geom": range(1),
-        "geometry": ["POINT (0 0)"],
-    }
-    gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-    json = gdf.to_json(geometry="geometry")
-    assert json == '{"type": "FeatureCollection", ' \
-                   '"features": [{"id": "0", "type": "Feature", ' \
-                   '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
-                   '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+class TestJson:
+    def test_to_json(self):
+        data = {
+            "A": range(1),
+            "B": np.arange(1.0),
+            "other_geom": range(1),
+            "geometry": ["POINT (0 0)"],
+        }
+
+        gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        json = gdf.to_json(geometry="geometry")
+        assert json == '{"type": "FeatureCollection", ' \
+                       '"features": [{"id": "0", "type": "Feature", ' \
+                       '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
+                       '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+
+    def test_to_json_with_missing_value(self):
+        data = {
+            "A": np.nan,
+            "B": np.arange(1.0),
+            "other_geom": range(1),
+            "geometry": ["POINT (0 0)"],
+        }
+        gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        json = gdf.to_json(geometry="geometry", na="drop")
+        assert json == '{"type": "FeatureCollection", ' \
+                       '"features": [{"id": "0", "type": "Feature", ' \
+                       '"properties": {"B": 0.0, "other_geom": 0.0}, ' \
+                       '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+
+    @pytest.mark.skip("show bbox is not implemented yet")
+    def test_to_json_show_bbox(self):
+        data = {
+            "A": range(1),
+            "B": np.arange(1.0),
+            "other_geom": range(1),
+            "geometry": ["LINESTRING (1 2,4 5,7 8)", ],
+        }
+        gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        json = gdf.to_json(geometry="geometry", na="drop", show_bbox=True)
+        assert json == '{"type": "FeatureCollection", ' \
+                       '"features": [{"id": "0", "type": "Feature", ' \
+                       '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
+                       '"geometry": {"type": "LineString", "coordinates": ' \
+                       '[[1.0, 2.0], [4.0, 5.0], [7.0, 8.0]]}, ' \
+                       '"bbox": [1.0, 2.0, 7.0, 8.0]}], "bbox": [1.0, 2.0, 7.0, 8.0]}'

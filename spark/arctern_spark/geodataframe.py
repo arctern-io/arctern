@@ -362,7 +362,10 @@ class GeoDataFrame(DataFrame):
         }
 
         if kwargs.get("show_bbox", False):
-            geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
+            # calculate bbox of GeoSeries got from GeoDataFrame will failed,
+            # see https://github.com/databricks/koalas/issues/1633
+            raise NotImplementedError("show bbox is not implemented yet.")
+            # geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
 
         return geo
 
@@ -412,4 +415,4 @@ class GeoDataFrame(DataFrame):
         >>> print(gdf.to_json(geometry="geometry"))
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
-        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox), **kwargs)
+        return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
