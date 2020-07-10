@@ -66,6 +66,21 @@ void Projection(const std::vector<OGRGeometryUniquePtr>& geos,
               (uint32_t)(((ring->getY(j) - bottom_right_y) * height) / coordinate_height);
           ring->setPoint(j, output_x, output_y);
         }
+      } else if (type == wkbMultiPolygon) {
+        auto polygons = geo->toGeometryCollection();
+        auto polygon_size = polygons->getNumGeometries();
+        for (int i = 0; i < polygon_size; i++) {
+          auto polygon = polygons->getGeometryRef(i)->toPolygon();
+          auto ring = polygon->getExteriorRing();
+          auto ring_size = ring->getNumPoints();
+          for (int j = 0; j < ring_size; j++) {
+            output_x =
+                (uint32_t)(((ring->getX(j) - top_left_x) * width) / coordinate_width);
+            output_y = (uint32_t)(((ring->getY(j) - bottom_right_y) * height) /
+                                  coordinate_height);
+            ring->setPoint(j, output_x, output_y);
+          }
+        }
       } else {
         std::string err_msg = "unsupported geometry type, type = " + std::to_string(type);
         throw std::runtime_error(err_msg);
@@ -126,6 +141,21 @@ void TransformAndProjection(const std::vector<OGRGeometryUniquePtr>& geos,
           output_x = (int32_t)(((x - min_x) * width) / coor_width);
           output_y = (int32_t)(((y - min_y) * height) / coor_height);
           ring->setPoint(j, output_x, output_y);
+        }
+      } else if (type == wkbMultiPolygon) {
+        auto polygons = geo->toGeometryCollection();
+        auto polygon_size = polygons->getNumGeometries();
+        for (int i = 0; i < polygon_size; i++) {
+          auto polygon = polygons->getGeometryRef(i)->toPolygon();
+          auto ring = polygon->getExteriorRing();
+          auto ring_size = ring->getNumPoints();
+          for (int j = 0; j < ring_size; j++) {
+            auto x = ring->getX(j);
+            auto y = ring->getY(j);
+            output_x = (int32_t)(((x - min_x) * width) / coor_width);
+            output_y = (int32_t)(((y - min_y) * height) / coor_height);
+            ring->setPoint(j, output_x, output_y);
+          }
         }
       } else {
         std::string err_msg = "unsupported geometry type, type = " + std::to_string(type);
@@ -213,8 +243,9 @@ std::vector<uint8_t> heatmap(uint32_t* arr_x, uint32_t* arr_y, T* arr_c,
 }
 
 template <typename T>
-std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt, T* arr_c,
-                                   int64_t num_buildings, const std::string& conf) {
+std::vector<uint8_t> choroplethmap(const std::vector<OGRGeometry*>& arr_wkt,
+                                   std::vector<T> arr_c, int64_t num_buildings,
+                                   const std::string& conf) {
   VegaChoroplethMap vega_choropleth_map(conf);
   if (!vega_choropleth_map.is_valid()) {
     return std::vector<uint8_t>();

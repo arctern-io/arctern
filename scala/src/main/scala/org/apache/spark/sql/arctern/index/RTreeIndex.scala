@@ -22,6 +22,7 @@ import org.locationtech.jts.index.strtree.STRtree
 import org.locationtech.jts.index.{ItemVisitor, SpatialIndex}
 
 class RTreeIndex extends SpatialIndex with Serializable {
+
   private var index = new STRtree
 
   override def insert(itemEnv: Envelope, item: Any): Unit = {
@@ -40,3 +41,4 @@ class RTreeIndex extends SpatialIndex with Serializable {
     index.remove(itemEnv, item)
   }
 }
+

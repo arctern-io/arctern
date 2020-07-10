@@ -1,13 +1,32 @@
+/*
+ * Copyright (C) 2019-2020 Zilliz. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.Column
 import org.apache.spark.sql.arctern.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
+import org.apache.spark.sql.{Column, DataFrame}
 
 object functions {
   // Constructor UDF API
   def st_geomfromtext(wkt: Column): Column = Column {
     ST_GeomFromText(Seq(wkt.expr))
+  }
+
+  def st_envelopinternal(wkt: Column): Column = Column {
+    GeometryEnvelope(wkt.expr)
   }
 
   def st_geomfromwkb(wkt: Column): Column = Column {
@@ -28,6 +47,10 @@ object functions {
 
   def st_astext(geo: Column): Column = Column {
     ST_AsText(Seq(geo.expr))
+  }
+
+  def st_aswkb(geo: Column): Column = Column {
+    ST_AsWKB(Seq(geo.expr))
   }
 
   def st_asgeojson(geo: Column): Column = Column {
@@ -214,4 +237,11 @@ object functions {
   def st_envelope_aggr(geo: Column): Column = withAggregateFunction {
     EnvelopeAggr(geo.expr)
   }
+
+  // map matching
+  def near_road(points: DataFrame, roads: DataFrame, expandValue: Double = MapMatching.defaultExpandValue): DataFrame = new MapMatching().nearRoad(points, roads, expandValue)
+
+  def nearest_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestRoad(points, roads)
+
+  def nearest_location_on_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestLocationOnRoad(points, roads)
 }

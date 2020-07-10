@@ -62,6 +62,8 @@ class IndexTree {
                                                   const bool greedy_search = false,
                                                   const double distance = 100.0) const;
 
+  const std::vector<std::shared_ptr<arrow::Array>> query(const OGRGeometry* inputs) const;
+
   //  const geos::geom::Envelope& get_envelop(size_t index) const {
   //    return envelopes_[index];
   //  }
