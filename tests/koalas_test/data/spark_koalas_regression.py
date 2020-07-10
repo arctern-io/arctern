@@ -1,0 +1,760 @@
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# pylint: disable=too-many-lines
+# pylint: disable=redefined-outer-name
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+
+# import from compare.py ,These codes need to be refactored later.
+#
+
+import os
+import sys
+
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from osgeo.ogr import *
+from yaml import full_load
+from shapely import wkt
+from ogr import Geometry
+from ogr import CreateGeometryFromWkt
+from shapely import wkt
+
+GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
+GEO_COLLECTION_TYPES = [
+    'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
+]
+CURVE_TYPES = ['CIRCULARSTRING', 'MULTICURVE', 'COMPOUNDCURVE']
+SURFACE_TYPES = ['CURVEPOLYGON', 'MULTISURFACE', 'SURFACE']
+GEO_LENGTH_TYPES = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
+GEO_AREA_TYPES = ['POLYGON', 'MULTIPOLYGON']
+ALIST = [
+    'run_test_st_area_curve', 'run_test_st_distance_curve',
+    'run_test_st_hausdorffdistance_curve'
+]
+BLIST = [
+    'run_test_st_curvetoline', 'run_test_st_transform',
+    'run_test_st_transform1', 'run_test_union_aggr_curve',
+    'run_test_st_buffer1', 'run_test_st_buffer_curve',
+    'run_test_st_buffer_curve1', 'run_test_st_intersection_curve',
+    'run_test_st_simplifypreservetopology_curve'
+]
+
+
+GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
+GEO_COLLECTION_TYPES = [
+    'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
+]
+
+
+unary_func_property_dict = {
+# unary_func_property
+'envelope ':['envelope.csv','envelope.out'],  # empty error!
+# 'exterior':['exterior.csv','exterior.out'], # empty error!
+'area':['area.csv','area.out'],
+'length':['length.csv', 'length.out'],
+'npoints':['npoints.csv', 'npoints.out'],
+'is_valid':['is_valid.csv','is_valid.out'],
+'centroid':['centroid.csv', 'centroid.out'], # empty error!
+# 'boundary':['boundary.csv','boundary.out'], # e
+# 'is_empty':['is_empty.csv','is_empty.out'], # e
+# 'is_simple':['is_simple.csv','is_simple.out'], # e
+}
+
+unary_func_dict = {
+# 'envelope ':['envelope_aggr.csv','envelope_aggr.out'],
+# envelope_aggr 0
+# affine    6
+# symmetric_difference 0
+# as_geojson 0
+# simplify 1
+# scale 2
+# rotate 1
+# buffer 1
+# precision_reduce 1
+# convex_hull 1
+# transform 1
+# translate 2
+# curve_to_line 0
+# unary_union 0
+}
+
+
+binary_func_dict = {
+'within':['within.csv','within.out','st_within.out'],
+'equals':['equals.csv','equals.out','st_equals.out'],
+'distance':['distance.csv','distance.out','st_distance.out'],
+'contains':['contains.csv','contains.out','st_contains.out'],
+'crosses':['crosses.csv','crosses.out','st_crosses.out'],
+'intersects':['intersects.csv','intersects.out','st_intersects.out'],
+'intersection':['intersection.csv','intersection.out','st_intersection.out'],
+'hausdorff_distance':['hausdorff_distance.csv','hausdorff_distance.out','st_hausdorff_distance.out'],
+'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'], # e
+# 'overlaps':['overlaps.csv','overlaps.out'],  # error
+# 'touches':['touches.csv','touches.out'],  # error
+# 'union':['union.csv','union.out'],  # error
+# 'difference':['difference.csv','difference.out'],
+# 'disjoint':['disjoint.csv','disjoint.out'],
+}
+
+def collect_diff_file_list():
+    result_file_list = []
+    expected_file_list = []
+    for key in binary_func_dict.keys():
+        result_file_list.append(binary_func_dict[key][1])
+        expected_file_list.append(binary_func_dict[key][2])
+
+
+
+def is_empty(geo):
+    geo = geo.strip().upper()
+    return geo.endswith('EMPTY')
+
+
+def is_point(geo):
+    geo = geo.strip().upper()
+    return geo.startswith('POINT')
+
+
+def is_linestring(geo):
+    geo = geo.strip().upper()
+    return geo.startswith('LINESTRING')
+
+
+def is_polygon(geo):
+    geo = geo.strip().upper()
+    return geo.startswith('POLYGON')
+
+
+def is_geometry(geo):
+    geo = geo.strip().upper()
+    for x in GEO_TYPES:
+
+        if geo.startswith(x) and len(geo) != len(x):
+            return True
+
+        continue
+
+    return False
+
+
+def is_geometrycollection(geo):
+    geo = geo.strip().upper()
+    for x in GEO_COLLECTION_TYPES:
+        if geo.startswith(x):
+            return True
+        continue
+
+    return False
+
+
+def line_to_points(geom):
+    if geom.strip().upper().startswith('LINESTRING'):
+        points = geom.split('(')[1].split(')')[0]
+        arr = points.split(',')
+        xs = ['POINT (%s)' % x.strip() for x in arr]
+        return xs
+    return None
+
+
+def polygon_to_points(geom):
+    if geom.strip().upper().startswith('POLYGON'):
+        points = geom.split('((')[1].split('))')[0]
+        arr = points.split(',')
+        xs = ['POINT (%s)' % x.strip().replace(
+            '(', '').replace(')', '') for x in arr]
+        return xs
+    return None
+
+
+def geometrycollection_tolist(geom):
+    if is_geometrycollection(geom):
+        gc = wkt.loads(geom)
+        return [x.to_wkt() for x in list(gc)]
+    return None
+
+
+def point_distance(geox, geoy):
+    if is_geometry(geoy) and geox.strip().upper().startswith('POINT'):
+        p = wkt.loads(geox)
+        g = wkt.loads(geoy)
+        return p.distance(g)
+    return None
+
+
+def linestring_distance(geox, geoy):
+    if is_geometry(geoy) and geox.strip().upper().startswith('LINESTRING'):
+        xs = line_to_points(geox)
+        distance_arr = [point_distance(x, geoy) for x in xs]
+
+        return max(distance_arr)
+    return None
+
+
+def polygon_distance(geox, geoy):
+    if is_geometry(geoy) and geox.strip().upper().startswith('POLYGON'):
+        xs = polygon_to_points(geox)
+        distance_arr = [point_distance(x, geoy) for x in xs]
+
+        return max(distance_arr)
+    return None
+
+
+def geometry_distance(geox, geoy):
+    if is_point(geox):
+        d = point_distance(geox, geoy)
+
+    if is_linestring(geox):
+        d = linestring_distance(geox, geoy)
+
+    if is_polygon(geox):
+        d = polygon_distance(geox, geoy)
+
+    return d
+
+
+def arc_distance(geox, geoy):
+    if is_empty(geox) or is_empty(geoy):
+        return 0.0
+
+    if is_geometrycollection(geox) and is_geometrycollection(geoy):
+        gcx = geometrycollection_tolist(geox)
+        gcy = geometrycollection_tolist(geoy)
+
+        arr = []
+        for gx in gcx:
+            distance_arr = [geometry_distance(gx, gy) for gy in gcy]
+            arr.append(min(distance_arr))
+
+        return max(arr)
+
+    if is_geometry(geox) and is_geometrycollection(geoy):
+        gc = geometrycollection_tolist(geoy)
+        distance_arr = [geometry_distance(geox, x) for x in gc]
+
+        return max(distance_arr)
+
+    if is_geometry(geoy) and is_geometrycollection(geox):
+        return arc_distance(geoy, geox) # pylint: disable=arguments-out-of-order
+
+    if is_geometry(geox) and is_geometry(geoy):
+        return geometry_distance(geox, geoy)
+
+    return None
+
+
+def is_length_types(geo):
+    """Determine whether a geometry is point/linestring/multipoint/multilinestring."""
+    geo = geo.strip().upper()
+
+    for a_geo_type_in_geo_length_types_list in GEO_LENGTH_TYPES:
+        if geo.startswith(a_geo_type_in_geo_length_types_list) and \
+                len(geo) != len(a_geo_type_in_geo_length_types_list):
+            return True
+
+        continue
+
+    return False
+
+
+def is_area_types(geo):
+    """Determine whether a geometry is polygon/multipolygon."""
+    geo = geo.strip().upper()
+
+    for a_geo_type_in_geo_area_types_list in GEO_AREA_TYPES:
+        if geo.startswith(a_geo_type_in_geo_area_types_list) and \
+                len(geo) != len(a_geo_type_in_geo_area_types_list):
+            return True
+
+        continue
+
+    return False
+
+
+def is_geometrytype(geo):
+    """Determine whether a given string is to describe a geometry type, like 'point' for example."""
+    geo = geo.strip().upper()
+
+    arr = []
+    arr.extend(GEO_TYPES)
+    arr.extend(GEO_COLLECTION_TYPES)
+    arr.extend(CURVE_TYPES)
+    arr.extend(SURFACE_TYPES)
+
+    for a_geo_type_in_all_geo_types_list in arr:
+        if a_geo_type_in_all_geo_types_list in geo:
+            return True
+
+        continue
+
+    return False
+
+
+def is_curve(geo):
+    """Determine whether a geometry is curve types, like circularstring/MULTICURVE/COMPOUNDCURVE."""
+    geo = geo.strip().upper()
+
+    for a_geo_type_in_curve_geo_types_list in CURVE_TYPES:
+        if geo.startswith(a_geo_type_in_curve_geo_types_list):
+            return True
+
+        continue
+
+    return False
+
+
+def is_surface(geo):
+    """Determine whether a geometry is curve types, like CURVEPOLYGON/MULTISURFACE/SURFACE."""
+    geo = geo.strip().upper()
+
+    for a_geo_type_in_surface_geo_types_list in SURFACE_TYPES:
+        if geo.startswith(a_geo_type_in_surface_geo_types_list):
+            return True
+        # else:
+        continue
+
+    return False
+
+
+UNIT = 1e-4
+EPOCH = 1e-8
+EPOCH_CURVE = 1e-2
+EPOCH_SURFACE = 1e-2
+EPOCH_CURVE_RELATIVE = 1e-2
+EPOCH_SURFACE_RELATIVE = 1e-2
+
+
+def compare_length(geometry_x, geometry_y):
+    """Compare length of 2 geometry types."""
+    arct = CreateGeometryFromWkt(geometry_x)
+    pgis = CreateGeometryFromWkt(geometry_y)
+
+    intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
+    arct_length = Geometry.Length(arct)
+    pgis_length = Geometry.Length(pgis)
+
+    # print('arctern length: %s, postgis length: %s, intersection length: %s' %
+    #       (str(arct_length), str(pgis_length), str(intersection_length)))
+    # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
+    result = compare3float_relative(pgis_length, arct_length,
+                                    intersection_length, EPOCH_CURVE_RELATIVE)
+    return result
+
+
+def compare_area(geometry_x, geometry_y):
+    """Compare area of 2 geometry types."""
+    arct = CreateGeometryFromWkt(geometry_x)
+    pgis = CreateGeometryFromWkt(geometry_y)
+
+    intersection_area = Geometry.Area(Geometry.Intersection(arct, pgis))
+    arct_area = Geometry.Area(arct)
+    pgis_area = Geometry.Area(pgis)
+
+    # print('arctern area: %s, postgis area: %s, intersection area: %s' %
+    #       (str(arct_area), str(pgis_area), str(intersection_area)))
+    # result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    result = compare3float_relative(pgis_area, arct_area, intersection_area,
+                                    EPOCH_SURFACE_RELATIVE)
+    return result
+
+
+def compare_geometry(config, geometry_x, geometry_y):
+    """Compare whether 2 geometries is 'equal'."""
+    if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith(
+            'EMPTY'):
+        return True
+
+    if config in BLIST:
+        return arc_distance(geometry_x, geometry_y) < EPOCH_CURVE_RELATIVE
+        #     return True
+        # else:
+        #     print('arc distance: %s' %
+        #           str(arc_distance(geometry_x, geometry_y)))
+        #     return False
+
+    if not config in BLIST:
+        arct = wkt.loads(geometry_x)
+        pgis = wkt.loads(geometry_y)
+        result = arct.equals_exact(pgis, EPOCH)
+        return result
+
+    return False
+
+
+def compare_geometrycollection(config, geometry_x, geometry_y):
+    """Compare whether 2 geometrycollections is 'equal'."""
+    if config in BLIST:
+        # print('arc distance: %s' % str(arc_distance(x, y)))
+        return arc_distance(geometry_x, geometry_y) < EPOCH_CURVE_RELATIVE
+        #     return True
+        # else:
+        #     print('arc distance: %s' % str(arc_distance(x, y)))
+        #     return False
+    # else:
+
+    if not config in BLIST:
+        arct = wkt.loads(geometry_x)
+        pgis = wkt.loads(geometry_y)
+        result = arct.equals(pgis)
+        return result
+
+    return False
+
+
+def compare_floats(config, geometry_x, geometry_y):
+    """Compare whether 2 float values is 'equal'."""
+    value_x = float(geometry_x)
+    value_y = float(geometry_y)
+    if value_x == 0:
+        return value_y == 0
+
+    if config in ALIST:
+        precision_error = EPOCH_CURVE_RELATIVE
+    else:
+        precision_error = EPOCH
+
+    return abs((value_x - value_y)) <= precision_error
+
+
+def compare_float(geometry_x, geometry_y, geometry_z, precision_error):
+    """Compare whether 2 geometries and their intersection is 'equal'."""
+
+    value_x = float(geometry_x)
+    value_y = float(geometry_y)
+    value_z = float(geometry_z)
+    return abs((value_x - value_y)) <= precision_error and \
+        abs((value_x - value_z)) <= precision_error and \
+        abs((value_y - value_z)) <= precision_error
+
+
+def compare2float_relative(x_base, y_check, relative_error):
+    """Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
+    value_x = float(x_base)
+    value_y = float(y_check)
+    return ((abs(value_x - value_y)) / (abs(value_x))) <= relative_error
+
+
+def compare3float_relative(x_base, y_check, z_intersection, relative_error):
+    """Compare whether 2 geometries and their intersection is 'equal', measure with relative."""
+    return compare2float_relative(x_base, y_check, relative_error) and \
+        compare2float_relative(x_base, z_intersection, relative_error) and \
+        compare2float_relative(y_check, z_intersection, relative_error)
+
+
+def compare_curve(geometry_x, geometry_y):
+    """Compare whether 2 curve geometries is 'equal'."""
+    arct = CreateGeometryFromWkt(geometry_x)
+    pgis = CreateGeometryFromWkt(geometry_y)
+
+    intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
+    arct_length = Geometry.Length(arct)
+    pgis_length = Geometry.Length(pgis)
+    # result = compare_float(intersection_length, arct_length, pgis_length,EPOCH_CURVE)
+    result = compare3float_relative(pgis_length, arct_length,
+                                    intersection_length, EPOCH_CURVE_RELATIVE)
+    return result
+
+
+def compare_surface(geometry_x, geometry_y):
+    """Compare whether 2 surface geometries is 'equal'."""
+    arct = CreateGeometryFromWkt(geometry_x)
+    pgis = CreateGeometryFromWkt(geometry_y)
+
+    intersection_area = Geometry.Area(Geometry.Intersection(arct, pgis))
+    arct_area = Geometry.Area(arct)
+    pgis_area = Geometry.Area(pgis)
+
+    result = compare3float_relative(pgis_area, arct_area, intersection_area,
+                                    EPOCH_SURFACE_RELATIVE)
+    # result = compare_float(intersection_area, arct_area, pgis_area, EPOCH_SURFACE)
+    return result
+
+
+def convert_str(strr):
+    """Convert a string to float, if it's not a float value, return string to represent itself."""
+    if strr.lower() == 'true' or strr.lower() == 't':
+        return True
+    if strr.lower() == 'false' or strr.lower() == 'f':
+        return False
+
+    try:
+        float_value = float(strr)
+        return float_value
+    except ValueError as ex:
+        print(repr(ex))
+
+    return strr
+
+
+# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
+def compare_one(config, result, expect):
+    """Compare 1 line of arctern result and expected."""
+    value_x = result[1]
+    value_y = expect[1]
+
+    newvalue_x = convert_str(value_x)
+    newvalue_y = convert_str(value_y)
+
+    try:
+        if isinstance(newvalue_x, bool):
+            one_result_flag = (newvalue_x == newvalue_y)
+            if not one_result_flag:
+                print(result[0], newvalue_x, expect[0], newvalue_y)
+            return one_result_flag
+
+        if isinstance(newvalue_x, str):
+            newvalue_x = newvalue_x.strip().upper()
+            newvalue_y = newvalue_y.strip().upper()
+
+            # check order : empty -> GEO_TYPES -> geocollection_types -> curve -> surface
+            if (is_empty(newvalue_x) and is_empty(newvalue_y)):
+                return True
+
+            if is_geometry(newvalue_x) and is_geometry(newvalue_y):
+                one_result_flag = compare_geometry(config, newvalue_x,
+                                                   newvalue_y)
+                if not one_result_flag:
+                    print(result[0], newvalue_x, expect[0], newvalue_y)
+                return one_result_flag
+
+            if is_geometrycollection(newvalue_x) and is_geometrycollection(
+                    newvalue_y):
+                one_result_flag = compare_geometrycollection(
+                    config, newvalue_x, newvalue_y)
+                if not one_result_flag:
+                    print(result[0], newvalue_x, expect[0], newvalue_y)
+                return one_result_flag
+
+            if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
+                one_result_flag = (newvalue_x == newvalue_y)
+                if not one_result_flag:
+                    print(result[0], newvalue_x, expect[0], newvalue_y)
+                return one_result_flag
+
+            return False
+
+        if isinstance(newvalue_x, (int, float)):
+            return compare_floats(config, newvalue_x, newvalue_y)
+            # if not one_result_flag:
+            #     print(result[0], newvalue_x, expect[0], newvalue_y)
+            # return one_result_flag
+    except ValueError as ex:
+        print(repr(ex))
+        one_result_flag = False
+    return one_result_flag
+
+
+def compare_results(config, arctern_results, postgis_results):
+    """Compare the result of arctern function and expected."""
+    with open(arctern_results, 'r') as arctern_result_file:
+        arct_arr = []
+        for (num, value) in enumerate(arctern_result_file, 1):
+            if value.strip() != '':
+                arct_arr.append((num, value.strip()))
+
+    with open(postgis_results, 'r') as postgis_result_file:
+        pgis_arr = []
+        for (num, value) in enumerate(postgis_result_file, 1):
+            if value.strip() != '':
+                pgis_arr.append((num, value.strip()))
+
+    case_result_flag = True
+
+    if len(arct_arr) != len(pgis_arr):
+        return False
+
+    for arctern_res_item, postgis_res_item in zip(
+            arct_arr, pgis_arr):
+        res = compare_one(config, arctern_res_item,
+                          postgis_res_item)
+        case_result_flag = case_result_flag and res
+
+    return case_result_flag
+
+
+def compare_all():
+    ARCTERN_RESULT_DIR = './output/'
+    EXPECTED_RESULT_DIR = './expected/'
+    results, expects = collect_diff_file_list()
+    flag = True
+
+    for name, expect in zip(results, expects):
+
+        arct_result = os.path.join(ARCTERN_RESULT_DIR, name)
+        pgis_result = os.path.join(EXPECTED_RESULT_DIR, expect)
+        print(
+            'Arctern test: %s, result compare started, test result: %s, expected result: %s'
+            % (name[:-4], arct_result, pgis_result))
+
+        if not os.path.isfile(arct_result):
+            print('Arctern test: %s, result: FAILED, reason: %s' %
+                  (name[:-4], 'test result not found [%s]' % arct_result))
+            continue
+
+        if not os.path.isfile(pgis_result):
+            print('Arctern test: %s, result: FAILED, reason: %s' %
+                  (name[:-4], 'expected result not found [%s]' % pgis_result))
+            continue
+
+        res = compare_results(name[:-4], arct_result, pgis_result)
+        if res:
+            print('Arctern test: %s, result: PASSED' % name[:-4])
+        else:
+            print('Arctern test: %s, result: FAILED' % name[:-4])
+
+        flag = flag and res
+    return flag
+
+
+def update_quote(file_path):
+    """Update quotes of the original spark results."""
+    with open(file_path, 'r') as the_result_file_from_spark:
+        content = the_result_file_from_spark.read()
+        update = content.replace(r'"', '')
+    with open(file_path, 'w') as the_result_file_from_spark:
+        the_result_file_from_spark.write(update)
+
+
+def update_bool(file_path):
+    """Update bool values of the original spark results file."""
+    with open(
+            file_path, 'r'
+    ) as the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint:
+        content = the_result_file_from_spark_for_read_and_abbr_not_allowed_by_pylint.read(
+        )
+        update = content.replace('true', 'True').replace('false', 'False')
+    with open(
+            file_path,
+            'w') as the_result_file_from_spark_for_write_and_abbr_not_allowed:
+        the_result_file_from_spark_for_write_and_abbr_not_allowed.write(update)
+
+
+def update_result():
+    """Update the original spark results."""
+    results, expects = collect_diff_file_list()
+    ARCTERN_RESULT_DIR = './output/'
+    EXPECTED_RESULT_DIR = './expected/'
+    for f in results:
+        arctern_file = os.path.join(ARCTERN_RESULT_DIR, f)
+
+        update_quote(arctern_file)
+        update_bool(arctern_file)
+
+#
+# import from compare.py ,These codes need to be refactored later.
+import pandas as pd
+from osgeo import ogr
+from arctern_spark.geoseries import GeoSeries
+from databricks.koalas import Series
+
+input_csv_base_dir = './data/'
+output_csv_base_dir = './output/'
+def read_csv2arr(input_csv_path):
+    import re
+    arr = []
+    col1 = []
+    col2 = []
+    with open(input_csv_path) as f:
+        rows = [line for line in f][1:] # csv header should be filtered
+    for row in rows:
+        arr.append(re.split('[|]',row.strip()))
+    if len(arr[0]) == 2:
+        for items in arr:
+            assert len(items) == 2
+            col1.append(items[0])
+            col2.append(items[1])
+    elif len(arr[0]) == 1:
+        for items in arr:
+            assert len(items) == 1
+            col1.append(items[0])
+    else :
+        raise Exception('Csv file columns length must be 1 or 2.')
+    return col1,col2
+
+def write_arr2csv(output_csv_path,output_arr):
+    import csv
+    with open(output_csv_path,'w') as f:
+        csv_writer = csv.writer(f, delimiter='|', lineterminator='\n')
+        for x in output_arr : csv_writer.writerow ([x])
+
+
+def test_binary_func(func_name,input_csv,output_csv):
+    input_csv_path = input_csv_base_dir + input_csv
+    output_csv_path = output_csv_base_dir + output_csv
+    col1,col2 = read_csv2arr(input_csv_path)
+    assert len(col1) == len(col2)
+    geo_s1 = GeoSeries(col1)
+    geo_s2 = GeoSeries(col2)
+    test_codes = 'geo_s1.'+func_name+'(geo_s2)'
+    res = eval(test_codes)
+    write_arr2csv(output_csv_path,res.tolist())
+
+def test_binary_func1(func_name,input_csv,output_csv):
+    input_csv_path = input_csv_base_dir + input_csv
+    output_csv_path = output_csv_base_dir + output_csv
+    col1,col2 = read_csv2arr(input_csv_path)
+    assert len(col1) == len(col2)
+    for i in range(0,len(col1)):
+        geo_s1 = GeoSeries(col1[i])
+        geo_s2 = GeoSeries(col2[i])
+        test_codes = 'geo_s1.'+func_name+'(geo_s2)'
+        res = eval(test_codes)
+        print(res)
+        print(i)
+        print('----\n')
+        # write_arr2csv(output_csv_path,res.tolist())
+
+
+def test_unary_property_func(func_name,input_csv,output_csv):
+    input_csv_path = input_csv_base_dir + input_csv
+    output_csv_path = output_csv_base_dir + output_csv
+    col1,col2 = read_csv2arr(input_csv_path)
+    assert len(col2) == 0
+    geo_s1 = GeoSeries(col1)
+    test_codes = 'geo_s1.'+func_name
+    res = eval(test_codes)
+    write_arr2csv(output_csv_path,res.tolist())
+
+
+def test_unary_func(func_name,input_csv,output_csv,params=None):
+    input_csv_path = input_csv_base_dir + input_csv
+    output_csv_path = output_csv_base_dir + output_csv
+    col1,col2 = read_csv2arr(input_csv_path)
+    assert len(col2) == 0
+    geo_s1 = GeoSeries(col1)
+    if params == None :
+        test_codes = 'geo_s1.'+func_name+'()'
+    else :
+        test_codes = 'geo_s1.'+func_name+'('+params+').to_wkt()'
+    res = eval(test_codes)
+    write_arr2csv(output_csv_path,res.tolist())
+
+
+
+if __name__ == "__main__":
+    # test binary_func
+    for func_name in binary_func_dict.keys():
+        test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
+    # test unary_func_property
+    for func_name in unary_func_property_dict.keys():
+        test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
+    # # test binary_func
+    # for func_name in binary_func_dict.keys():
+    #     test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
+    update_result()
+    FLAG = compare_all()
+    if not FLAG:
+        sys.exit(1)
