@@ -122,10 +122,6 @@ def sjoin(
         tree_idx = left_df[lcol].sindex
         tree_idx_right = False
 
-    # the rtree spatial index only allows limited (numeric) index types, but an
-    # index in geopandas may be any arbitrary dtype. so reset both indices now
-    # and store references to the original indices, to be reaffixed later.
-    # GH 352
     left_df = left_df.copy(deep=True)
     try:
         left_index_name = left_df.index.name
@@ -157,29 +153,24 @@ def sjoin(
     r_idx = np.empty((0, 0))
     l_idx = np.empty((0, 0))
 
-    # get rtree spatial index
     if tree_idx_right:
         idxmatch = left_df[lcol].apply(
             lambda x: list(tree_idx.query(GeoSeries(x))) if not x == () else []
         )
         idxmatch = idxmatch[idxmatch.apply(len) > 0]
-        # indexes of overlapping boundaries
         if idxmatch.shape[0] > 0:
             r_idx = np.concatenate(idxmatch.values)
             l_idx = np.concatenate([[i] * len(v) for i, v in idxmatch.iteritems()])
     else:
-        # tree_idx_df == 'left'
         idxmatch = right_df[rcol].apply(
             lambda x: list(tree_idx.query(GeoSeries(x))) if not x == () else []
         )
         idxmatch = idxmatch[idxmatch.apply(len) > 0]
         if idxmatch.shape[0] > 0:
-            # indexes of overlapping boundaries
             l_idx = np.concatenate(idxmatch.values)
             r_idx = np.concatenate([[i] * len(v) for i, v in idxmatch.iteritems()])
 
     if len(r_idx) > 0 and len(l_idx) > 0:
-        # Vectorize predicate operations
         def find_intersects(a1, a2):
             return GeoSeries(a1).intersects(GeoSeries(a2))[0]
 
@@ -216,7 +207,6 @@ def sjoin(
         )
 
     else:
-        # when output from the join has no overlapping geometries
         result = pd.DataFrame(columns=["_key_left", "_key_right"], dtype=float)
 
     if how == "inner":
@@ -256,7 +246,7 @@ def sjoin(
         else:
             joined.index.name = left_index_name
 
-    else:  # how == 'right':
+    else:
         joined = (
             left_df.drop(lcol, axis=1)
             .merge(
