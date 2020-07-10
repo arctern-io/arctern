@@ -25,6 +25,14 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
+RUN apt-get update && apt-get install -y gnupg2 openjdk-8-jdk && \
+    echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list && \
+    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
+    apt-get update && \
+    apt-get install -y sbt && \
+    apt-get remove --purge -y && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /root
 
 # use login shell to activate environment un the RUN commands
