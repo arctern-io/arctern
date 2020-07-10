@@ -17,7 +17,7 @@ package org.apache.spark.sql.arctern.expressions
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.arctern.GeometryUDT
-import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoints, collectionUnionPoint}
+import org.apache.spark.sql.arctern.expressions.utils.{collectionUnionPoint, collectionUnionPoints}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
 import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory}
@@ -54,7 +54,7 @@ class ST_Union_Aggr extends UserDefinedAggregateFunction {
           val geometry = geometryCollection.getGeometryN(i)
           val geoType = geometry.getGeometryType
           geoType match {
-            case "Point" | "MultiPoint"  => buffer(0) = pointAccumulateUnion.union(geometry)
+            case "Point" | "MultiPoint" => buffer(0) = pointAccumulateUnion.union(geometry)
             case "LineString" | "MultiLineString" => buffer(1) = lineStringAccumulateUnion.union(geometry)
             case "Polygon" | "MultiPolygon" => buffer(2) = polygonAccumulateUnion.union(geometry)
             case _ => throw new Exception("Unsupported geometry type " + newGeoType)

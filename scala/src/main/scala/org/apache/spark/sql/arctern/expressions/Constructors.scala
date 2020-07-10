@@ -15,18 +15,25 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
-import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
+import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryType, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.apache.spark.sql.catalyst.expressions.codegen._
+import org.apache.spark.sql.catalyst.util.GenericArrayData
 import org.apache.spark.sql.types._
+import org.apache.spark.unsafe.types.UTF8String
+import org.apache.zookeeper.KeeperException.UnimplementedException
 
 case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   override def nullable: Boolean = true
 
-  override def eval(input: InternalRow): Any = {}
+  override def eval(input: InternalRow): GenericArrayData = {
+    val text = inputExpr(0).eval(input).asInstanceOf[UTF8String].toString
+    val geom = GeometryUDT.FromWkt(text)
+    GeometryType.serialize(geom)
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
 
@@ -56,13 +63,16 @@ case class ST_GeomFromText(inputExpr: Seq[Expression]) extends ArcternExpr {
   override def children: Seq[Expression] = inputExpr
 
   override def inputTypes: Seq[AbstractDataType] = Seq(StringType)
+
 }
 
 case class ST_GeomFromWKB(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   override def nullable: Boolean = true
 
-  override def eval(input: InternalRow): Any = {}
+  override def eval(input: InternalRow): GenericArrayData = {
+    throw new UnimplementedException
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
 
@@ -98,7 +108,9 @@ case class ST_Point(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   override def nullable: Boolean = true
 
-  override def eval(input: InternalRow): Any = {}
+  override def eval(input: InternalRow): GenericArrayData = {
+    throw new UnimplementedException
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
 
@@ -138,7 +150,9 @@ case class ST_PolygonFromEnvelope(inputExpr: Seq[Expression]) extends ArcternExp
 
   override def nullable: Boolean = true
 
-  override def eval(input: InternalRow): Any = {}
+  override def eval(input: InternalRow): GenericArrayData = {
+    throw new UnimplementedException
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
 
@@ -196,7 +210,9 @@ case class ST_GeomFromGeoJSON(inputExpr: Seq[Expression]) extends ArcternExpr {
 
   override def nullable: Boolean = true
 
-  override def eval(input: InternalRow): Any = {}
+  override def eval(input: InternalRow): GenericArrayData = {
+    throw new UnimplementedException
+  }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
 
