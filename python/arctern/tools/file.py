@@ -208,7 +208,7 @@ def to_file(*args, **kwargs):
     ----------
     df: GeoDataFrame
         GeoDataFrame to be written.
-    driver: string
+    driver: str
         The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
     schema: dict
         * If specified, the schema dictionary is passed to Fiona to better control how the file is written.

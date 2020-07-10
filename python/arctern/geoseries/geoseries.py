@@ -872,7 +872,7 @@ class GeoSeries(Series):
             Scaling factor for x dimension.
         factor_y : float
             Scaling factor for y dimension.
-        origin : string or tuple
+        origin : str or tuple
             The scale origin.
             * 'center': The center of 2D bounding box (default).
             * 'centroid': The geometry's 2D centroid.
@@ -987,7 +987,7 @@ class GeoSeries(Series):
             The angle of rotation. It can be specified in either degrees (default) or radians by setting ``use_radians=True``.
             * Positive angle: Counter-clockwise rotation.
             * Negative angle: Clockwise rotation.
-        origin : string or tuple
+        origin : str or tuple
             The rotatation origin.
             * 'center': The center of 2D bounding box (default).
             * 'centroid': The geometry's 2D centroid.
