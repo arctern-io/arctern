@@ -61,7 +61,8 @@ fi
 
 ARCTERN_SCALA_SRC_DIR="${SCRIPTS_DIR}/../../scala"
 pushd ${ARCTERN_SCALA_SRC_DIR}
-sbt clean assembly
+# sbt clean assembly
+sbt "set test in assembly := {}" clean assembly # skip test
 mkdir -p ${CONDA_PREFIX}/jars
 mv target/scala-2.12/*.jar ${CONDA_PREFIX}/jars/
 popd

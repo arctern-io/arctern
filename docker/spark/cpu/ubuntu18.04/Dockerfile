@@ -31,7 +31,7 @@ RUN /tmp/arctern/install_arctern_conda.sh && rm -rf /tmp/arctern && \
 # login to enable conda environment
 SHELL [ "/bin/bash", "--login", "-c" ]
 # which python for test, will be removed later
-RUN which python &&
+RUN which python && \
     cd /opt/spark/python && python setup.py install
 
 COPY prebuildfs /
