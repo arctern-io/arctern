@@ -15,12 +15,11 @@
  */
 
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.arctern.{GeometryType, GeometryUDT}
 import org.apache.spark.sql.arctern.functions._
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.arctern.{GeometryType, GeometryUDT}
 import org.apache.spark.sql.types._
 
-case class Info(text: String)
+//case class Info(text: String)
 
 class CornerTest extends AdapterTest {
   test("geom_as_source") {
@@ -39,6 +38,7 @@ class CornerTest extends AdapterTest {
     val df2 = df1.select(st_equals('text1, 'text1).as("c"))
     df2.show()
   }
+
   test("text_as_source_and_reuse_text") {
     val ss = spark
     import ss.implicits._
