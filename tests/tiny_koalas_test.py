@@ -8,4 +8,3 @@ def test_ST_IsValid():
 
 if __name__ == "__main__":
     test_ST_IsValid()
-
