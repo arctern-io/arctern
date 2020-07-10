@@ -1100,8 +1100,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).getDouble(0) == 28.284271247461902)
     assert(collect(2).isNullAt(0))
-    assert(collect(3).getDouble(0) == 11.313708498984761)
-    assert(collect(4).getDouble(0) == 3.414213562373095)
+    assert(collect(3).getDouble(0) == 0.0)
+    assert(collect(4).getDouble(0) == 0.0)
 
     val rst2 = df.select(st_length(st_geomfromtext(col("geo"))))
     rst2.show(false)
@@ -1111,8 +1111,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).getDouble(0) == 28.284271247461902)
     assert(collect2(2).isNullAt(0))
-    assert(collect2(3).getDouble(0) == 11.313708498984761)
-    assert(collect2(4).getDouble(0) == 3.414213562373095)
+    assert(collect2(3).getDouble(0) == 0.0)
+    assert(collect2(4).getDouble(0) == 0.0)
   }
 
   test("ST_HausdorffDistance") {
