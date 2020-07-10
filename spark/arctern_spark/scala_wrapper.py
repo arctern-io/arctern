@@ -139,8 +139,8 @@ _functions = [
 ]
 
 _df_functions = [
-    "near_road",
     "nearest_road",
+    "near_road",
     "nearest_location_on_road",
 ]
 
