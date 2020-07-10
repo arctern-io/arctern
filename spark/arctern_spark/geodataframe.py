@@ -114,7 +114,7 @@ class GeoDataFrame(DataFrame):
             for col in key:
                 self._crs_for_cols.pop(col)
 
-    def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
+    def dissolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
             raise ValueError("`col` must be a column in geometries columns which set by `set_geometry`")
         agg_dict = {aggfunc_col: aggfunc for aggfunc_col in self.columns.tolist() if aggfunc_col not in [col, by]}

@@ -63,21 +63,23 @@ class GeoDataFrame(DataFrame):
 
     def set_geometry(self, col, inplace=False, crs=None):
         """
-        Adds GeoDataFrame geometry columns using either existing column.
+        Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
 
         Parameters
         ----------
         col: list
-            The name of column to be setten as geometry column.
+            The name of column to be setten as a geometry column.
         inplace: bool, default false
-            Whether to modify the GeoDataFrame in place (do not create a new object).
+            Whether to modify the GeoDataFrame in place.
+            * *True:* Modifies the GeoDataFrame in place (does not create a new object).
+            * *False:* Does not modifies the GeoDataFrame in place.
         crs: str
             The coordinate reference system to use.
 
         Returns
         -------
         GeoDataFrame
-            An arctern.GeoDataFrame object.
+            A GeoDataFrame object.
 
         Examples
         --------
@@ -319,28 +321,29 @@ class GeoDataFrame(DataFrame):
                     result._crs.append(None)
         return result
 
-    def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
+    def dissolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         """
-        Dissolves geometries within `groupby` into single observation.
-        
-        This is accomplished by applying the `unary_union` method to all geometries within a groupself.
+        Dissolves geometries within `by` into a single observation.
 
-        Observations associated with each `groupby` group will be aggregated using the `aggfunc`.
+        This is accomplished by applying the `unary_union` method to all geometries within a group.
+
+        Observations associated with each `by` group will be aggregated using the `aggfunc`.
 
         Parameters
         ----------
-        by: str, default None
-            Column whose values define groups to be dissolved
-        aggfunc: function or str, default "first"
-            Aggregation function for manipulation of data associated
-            with each group. Passed to pandas `groupby.agg` method.
-        as_index: bool, default True
-            If true, groupby columns become index of result.
+        by: str
+            Column whose values define groups to be dissolved, by default None.
+        aggfunc: function or str
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+        as_index: bool
+            Whether to use the ``by`` column as the index of result, by default True.
+            * *True:* The ``by`` column becomes the index of result.
+            * *False:* The result uses the default ascending index that starts from 0.
 
         Returns
         -------
-        arctern.GeoDataFrame
-            An arctern.GeoDataFrame object.
+        GeoDataFrame
+            A GeoDataFrame object.
 
         Examples
         --------
@@ -353,7 +356,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> gdf.disolve(by="other_geom", col="geo1")
+        >>> gdf.dissolve(by="other_geom", col="geo1")
                                         geo1  A    B
         other_geom
         1           MULTIPOINT (0 0,1 1,2 2)  0  0.0

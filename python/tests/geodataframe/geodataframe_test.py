@@ -68,7 +68,7 @@ def test_dissolve_1():
         "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-    dissolve_gdf = gdf.disolve(by="other_geom", col="geo1")
+    dissolve_gdf = gdf.dissolve(by="other_geom", col="geo1")
     assert dissolve_gdf["geo1"].to_wkt()[1] == "MULTIPOINT (0 0,1 1,2 2)"
     assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT (3 3,4 4)"
 
@@ -81,7 +81,7 @@ def test_dissolve_2():
         "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-    dissolve_gdf = gdf.disolve(by="other_geom", col="geo1", aggfunc=np.mean)
+    dissolve_gdf = gdf.dissolve(by="other_geom", col="geo1", aggfunc=np.mean)
     assert dissolve_gdf["geo1"].to_wkt()[1] == "MULTIPOINT (0 0,1 1,2 2)"
     assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT (3 3,4 4)"
     assert dissolve_gdf["A"][1] == 1
