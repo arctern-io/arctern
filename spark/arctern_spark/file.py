@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods, unused-argument, redefined-builtin
+# pylint: disable=too-many-public-methods, unused-argument, redefined-builtin, unidiomatic-typecheck
 import json
 import warnings
 
-import fiona
 import numpy as np
 import pandas as pd
+import fiona
 from databricks.koalas import DataFrame
 
 from arctern_spark.geodataframe import GeoDataFrame
