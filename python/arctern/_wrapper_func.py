@@ -1989,10 +1989,10 @@ def within_which(left, right):
     >>> data2 = GeoSeries(["Polygon((9 10, 11 12, 11 8, 9 10))", "Polygon((-1 0, 1 2, 1 -2, -1 0))"])
     >>> res = within_which(data1, data2)
     >>> print(res)
-        0    1
-        1    <NA>
-        2    0
-        dtype: object
+    0       1
+    1    <NA>
+    2       0
+    dtype: object
     """
     index_tree = right.sindex
     return index_tree.within_which(left)
@@ -2017,8 +2017,8 @@ def nearest_location_on_road(roads, points):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_location_on_road(data1, data2)).to_wkt()
     >>> rst
-        0    POINT (1.0 2.5)
-        dtype: object
+    0    POINT (1.0 2.5)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_location_on_road(points)
@@ -2044,8 +2044,8 @@ def nearest_road(roads, points,):
     >>> data2 = arctern.GeoSeries(["POINT (1.001 2.5)"])
     >>> rst = arctern.GeoSeries(arctern.nearest_road(data1, data2)).to_wkt()
     >>> rst
-        0    LINESTRING (1 2,1 3)
-        dtype: object
+    0    LINESTRING (1 2,1 3)
+    dtype: object
     """
     index_tree = roads.sindex
     return index_tree.nearest_road(points)
@@ -2070,12 +2070,12 @@ def near_road(roads, points, distance=100):
     Examples
     -------
     >>> import arctern
-      >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
-      >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
-      >>> rst = arctern.near_road(data1, data2)
-      >>> rst
-          0    True
-          dtype: object
+    >>> data1 = arctern.GeoSeries(["LINESTRING (1 2,1 3)"])
+    >>> data2 = arctern.GeoSeries(["POINT (1.0001 2.5)"])
+    >>> rst = arctern.near_road(data1, data2)
+    >>> rst
+    0    True
+    dtype: bool
     """
     index_tree = roads.sindex
     return index_tree.near_road(points, distance)

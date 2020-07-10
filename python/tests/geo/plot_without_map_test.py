@@ -37,8 +37,8 @@ def test_pointmap_layer():
     arr_x = pandas.Series(x_data)
     arr_y = pandas.Series(y_data)
     points = arctern.ST_Point(arr_x, arr_y)
-    map_layer = arctern.plot.pointmap_layer(1024, 896, points, bounding_box=bounding_box, point_size=10,
-                     point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
+    arctern.plot.pointmap_layer(1024, 896, points, bounding_box=bounding_box, point_size=10,
+                                point_color="#0000FF", opacity=1.0, coordinate_system="EPSG:4326")
 
 
 def test_weighted_pointmap_layer():
@@ -73,17 +73,17 @@ def test_weighted_pointmap_layer():
     arr_c = pandas.Series(c_data)
     arr_s = pandas.Series(s_data)
 
-    map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, bounding_box=bounding_box, color_gradient=[
-                              "#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
+    arctern.plot.weighted_pointmap_layer(1024, 896, points, bounding_box=bounding_box,
+                                         color_gradient=["#0000FF"], opacity=1.0, coordinate_system="EPSG:4326")
 
-    map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=arr_c, bounding_box=bounding_box, color_gradient=[
-                              "#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
+    arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=arr_c, bounding_box=bounding_box,
+                                         color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], opacity=1.0, coordinate_system="EPSG:4326")
 
-    map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
-                              "#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
+    arctern.plot.weighted_pointmap_layer(1024, 896, points, size_weights=arr_s, bounding_box=bounding_box,
+                                         color_gradient=["#0000FF"], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
 
-    map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box, color_gradient=[
-                              "#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
+    arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=arr_c, size_weights=arr_s, bounding_box=bounding_box,
+                                         color_gradient=["#0000FF", "#FF0000"], color_bound=[1, 5], size_bound=[1, 10], opacity=1.0, coordinate_system="EPSG:4326")
 
 
 def test_heatmap_layer():
@@ -111,7 +111,8 @@ def test_heatmap_layer():
     arr_c = pandas.Series(c_data)
     points = arctern.ST_Point(arr_x, arr_y)
 
-    map_layer = arctern.plot.heatmap_layer(1024, 896, points, arr_c, bounding_box=bounding_box, map_zoom_level=13, coordinate_system='EPSG:4326')
+    arctern.plot.heatmap_layer(1024, 896, points, arr_c, bounding_box=bounding_box,
+                               map_zoom_level=13, coordinate_system='EPSG:4326')
 
 
 def test_choroplethmap_layer():
@@ -130,8 +131,8 @@ def test_choroplethmap_layer():
     arr_wkb = arctern.ST_GeomFromText(arr_wkt)
     arr_count = pandas.Series(count_data)
 
-    map_layer = arctern.plot.choroplethmap_layer(1024, 896, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=[
-                          "#0000FF", "#FF0000"], color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
+    arctern.plot.choroplethmap_layer(1024, 896, arr_wkb, arr_count, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"],
+                                     color_bound=[2.5, 5], opacity=1.0, coordinate_system='EPSG:4326')
 
 
 def test_iconviz_layer():
@@ -156,11 +157,12 @@ def test_iconviz_layer():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     png_path = dir_path + "/../images/taxi.png"
 
-    map_layer = arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bounding_box,
-                    icon_path=png_path, coordinate_system="EPSG:4326")
+    arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bounding_box,
+                               icon_path=png_path, coordinate_system="EPSG:4326")
 
-    map_layer = arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bounding_box,
-                icon_path=png_path, icon_size=[65, 65], coordinate_system="EPSG:4326")
+    arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bounding_box,
+                               icon_path=png_path, icon_size=[65, 65], coordinate_system="EPSG:4326")
+
 
 def test_fishnet_map_layer():
     x_data = []
@@ -187,4 +189,5 @@ def test_fishnet_map_layer():
     arr_c = pandas.Series(c_data)
     points = arctern.ST_Point(arr_x, arr_y)
 
-    map_layer = arctern.plot.fishnetmap_layer(1024, 896, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
+    arctern.plot.fishnetmap_layer(1024, 896, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"],
+                                  cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')

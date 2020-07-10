@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import io
-import base64
+
 from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
 import arctern
 
@@ -84,6 +83,7 @@ def pointmap_layer(w, h, points, bounding_box=None,
     return hexstr
 
 
+# pylint: disable=too-many-arguments
 # pylint: disable=dangerous-default-value
 def weighted_pointmap_layer(w, h, points, color_weights=None,
                            size_weights=None,

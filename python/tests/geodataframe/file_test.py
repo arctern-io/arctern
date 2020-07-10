@@ -29,7 +29,7 @@ def test_read_and_save_file_1():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["EPSG:4326", "EPSG:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1")
     read_gdf = arctern.read_file(filename="/tmp/test.shp")
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
@@ -46,7 +46,7 @@ def test_read_and_save_file_2():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1")
     read_gdf = arctern.read_file(filename="/tmp/test.shp")
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
@@ -63,7 +63,7 @@ def test_read_and_save_file_3():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     read_gdf = arctern.read_file(filename="/tmp/test.shp")
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:3857"
@@ -80,7 +80,7 @@ def test_read_and_save_file_4():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     read_gdf = arctern.read_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:3857"
@@ -97,7 +97,7 @@ def test_read_and_save_file_5():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     read_gdf = arctern.read_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:3857"
@@ -114,7 +114,7 @@ def test_read_and_save_file_6():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     bbox = GeoSeries(["POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     read_gdf = arctern.read_file(filename="/tmp/test.shp", bbox=bbox)
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
@@ -132,7 +132,7 @@ def test_read_and_save_file_7():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     read_gdf = arctern.read_file(filename="/tmp/test.shp", rows=3)
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:3857"
@@ -150,7 +150,7 @@ def test_read_and_save_file_8():
     }
     mask = GeoSeries(["POINT (3 3)", "POINT (4 4)"])
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     read_gdf = arctern.read_file(filename="/tmp/test.shp", mask=mask, rows=1)
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:3857"
@@ -167,7 +167,7 @@ def test_read_and_save_file_9():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["EPSG:4326", "EPSG:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", index=True)
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1", index=True)
     read_gdf = arctern.read_file(filename="/tmp/test.shp")
     assert len(read_gdf.columns.values) == 7
 
@@ -183,8 +183,12 @@ def test_read_and_save_file_10():
         "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     }
     gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["EPSG:4326", "EPSG:3857"])
-    arctern.to_file(gdf, filename="/tmp/test.shp", col="geo1", schema={'geometry': 'Point', 'properties': OrderedDict([('A', 'int'), ('B', 'float'), ('other_geom', 'int'), ('geo2', 'str'), ('geo3', 'str')])})
+    arctern.to_file(gdf, filename="/tmp/test.shp", geometry="geo1",
+                    schema={'geometry': 'Point', 'properties':
+                    OrderedDict([('A', 'int'), ('B', 'float'),
+                    ('other_geom', 'int'), ('geo2', 'str'), ('geo3', 'str')])})
     read_gdf = arctern.read_file(filename="/tmp/test.shp")
     assert isinstance(read_gdf["geometry"], GeoSeries) is True
     assert read_gdf["geometry"].crs == "EPSG:4326"
-    assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"]
+    assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)",
+                                                "POINT (3 3)", "POINT (4 4)", "POINT (5 5)"]
