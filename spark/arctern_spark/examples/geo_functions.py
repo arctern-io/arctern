@@ -338,7 +338,7 @@ def test_geom_from_geojson():
     assert str_ptr[2] == "POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))"
 
 
-def test_geom_from_geojson():
+def test_as_geojson():
     j0 = "{\"type\":\"Point\",\"coordinates\":[1,2]}"
     j1 = "{\"type\":\"LineString\",\"coordinates\":[[1,2],[4,5],[7,8]]}"
     j2 = "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
@@ -629,10 +629,7 @@ def test_envelope_aggr():
 
 def run_geo_functions_test():
     funcs = [v for k, v in globals().items() if k.startswith("test") and callable(v)]
-    try:
-        for v in funcs:
-            v()
-    except e:
-        raise e
-    else:
-        print("\033[1;32;40mAll tests have passed!\033[0m")
+    for f in funcs:
+        f()
+        print("%s done."%f.__name__)
+    print("\033[1;32;40mAll tests have passed!\033[0m")
