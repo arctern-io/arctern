@@ -35,7 +35,7 @@ requirements:
     - fiona
 
   run:
-    - python =={{ CONDA_PYTHON }}
+    - python {{ CONDA_PYTHON }}.*
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.17.1
