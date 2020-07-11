@@ -46,11 +46,11 @@ unary_func_dict = {
     'unary_union': ['unary_union.csv', 'unary_union.out', 'st_unary_union.out', None],
     'as_geojson': ['as_geojson.csv', 'as_geojson.out', 'st_as_geojson.out', None],
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
+    'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
     # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
-    # 'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
     # 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
 }
 
@@ -681,7 +681,7 @@ def test_unary_property_func(func_name, input_csv, output_csv):
         'envelope',
         'centroid',
         'boundary',
-        'convex_hull'
+        'convex_hull',
         'exterior'
     ]
     input_csv_path = input_csv_base_dir + input_csv
