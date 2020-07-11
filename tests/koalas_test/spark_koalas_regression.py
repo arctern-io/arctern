@@ -74,18 +74,18 @@ unary_func_property_dict = {
 }
 
 unary_func_dict = {
-# 'envelope_aggr':['envelope_aggr.csv','envelope_aggr.out','st_envelope_aggr.out',None],
-# 'simplify':['simplify.csv','simplify.out','st_simplify.out',[1]],
-# 'buffer':['buffer.csv','buffer.out','st_buffer.out',[1]],
-# 'precision_reduce':['precision_reduce.csv','precision_reduce.out','st_precision_reduce.out',[1]],
-# 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
-'unary_union':['unary_union.csv','unary_union.out','st_unary_union.out',None]
+# 'envelope_aggr':['envelope_aggr.csv','envelope_aggr.out','st_envelope_aggr.out',None], # ok
+# 'simplify':['simplify.csv','simplify.out','st_simplify.out',[1]], # ok
+# 'buffer':['buffer.csv','buffer.out','st_buffer.out',[1]], # ok
+# 'unary_union':['unary_union.csv','unary_union.out','st_unary_union.out',None] # ok
 # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
-# 'as_geojson':['as_geojson.csv','as_geojson.out','st_as_geojson.out',None], # need to test?
 # 'scale':['scale.csv','scale.out','st_scale.out',[1,2]],
 # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[1]],
 # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
 # 'translate':['translate.csv','translate.out','st_translate.out',[1,2]],
+'as_geojson':['as_geojson.csv','as_geojson.out','st_as_geojson.out',None],
+# 'precision_reduce':['precision_reduce.csv','precision_reduce.out','st_precision_reduce.out',[1]],
+# 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
 }
 
 
@@ -764,7 +764,9 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
     param_code = ''
     params = unary_func_dict[func_name][3]
     if params == None :
-        test_codes = 'geo_s1.'+func_name+'().to_wkt()'
+        test_codes = 'geo_s1.'+func_name+'()'
+        if not func_name == 'as_geojson':
+            test_codes += '.to_wkt()'
     else :
         for param in params:
             if not comma_flag:
