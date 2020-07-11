@@ -1,8 +1,5 @@
 liupeng:
 ```
-exterior
-boundary
-is_empty
 is_simple
 affine
 rotate

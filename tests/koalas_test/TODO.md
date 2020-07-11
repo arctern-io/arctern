@@ -10,7 +10,7 @@
 is_simple
 *boundary
 length
-exterior
+*exterior
 ```
 ---
 # unary_func
