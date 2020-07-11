@@ -74,16 +74,16 @@ unary_func_property_dict = {
 }
 
 unary_func_dict = {
-# 'envelope_aggr':['envelope_aggr.csv','envelope_aggr.out','st_envelope_aggr.out',None], # ok
-# 'simplify':['simplify.csv','simplify.out','st_simplify.out',[1]], # ok
-# 'buffer':['buffer.csv','buffer.out','st_buffer.out',[1]], # ok
-# 'unary_union':['unary_union.csv','unary_union.out','st_unary_union.out',None] # ok
+'envelope_aggr':['envelope_aggr.csv','envelope_aggr.out','st_envelope_aggr.out',None],
+'simplify':['simplify.csv','simplify.out','st_simplify.out',[1]],
+'buffer':['buffer.csv','buffer.out','st_buffer.out',[1]],
+'unary_union':['unary_union.csv','unary_union.out','st_unary_union.out',None],
+'as_geojson':['as_geojson.csv','as_geojson.out','st_as_geojson.out',None],
 # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
 # 'scale':['scale.csv','scale.out','st_scale.out',[1,2]],
 # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[1]],
 # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
 # 'translate':['translate.csv','translate.out','st_translate.out',[1,2]],
-'as_geojson':['as_geojson.csv','as_geojson.out','st_as_geojson.out',None],
 # 'precision_reduce':['precision_reduce.csv','precision_reduce.out','st_precision_reduce.out',[1]],
 # 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
 }
@@ -111,17 +111,17 @@ binary_func_dict = {
 def collect_diff_file_list():
     result_file_list = []
     expected_file_list = []
-    # for key in binary_func_dict.keys():
-    #     result_file_list.append(binary_func_dict[key][1])
-    #     expected_file_list.append(binary_func_dict[key][2])
+    for key in binary_func_dict.keys():
+        result_file_list.append(binary_func_dict[key][1])
+        expected_file_list.append(binary_func_dict[key][2])
 
     for key in unary_func_dict.keys():
         result_file_list.append(unary_func_dict[key][1])
         expected_file_list.append(unary_func_dict[key][2])
 
-    # for key in unary_func_property_dict.keys():
-    #     result_file_list.append(unary_func_property_dict[key][1])
-    #     expected_file_list.append(unary_func_property_dict[key][2])
+    for key in unary_func_property_dict.keys():
+        result_file_list.append(unary_func_property_dict[key][1])
+        expected_file_list.append(unary_func_property_dict[key][2])
 
     return result_file_list, expected_file_list
 
@@ -781,15 +781,15 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
 
 
 if __name__ == "__main__":
-    # # test binary_func
-    # for func_name in binary_func_dict.keys():
-    #     test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
-    # # test unary_func_property
-    # for func_name in unary_func_property_dict.keys():
-    #     test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
+    # test binary_func
+    for func_name in binary_func_dict.keys():
+        test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
+    # test unary_func_property
+    for func_name in unary_func_property_dict.keys():
+        test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
     # test unary_func
     for func_name in unary_func_dict.keys():
         test_unary_func(func_name,unary_func_dict[func_name][0],unary_func_dict[func_name][1])
-    update_result()
+    # update_result()
     test_status = compare_all()
     # print(test_status)
