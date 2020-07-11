@@ -78,6 +78,6 @@ def test_inner_within(left_df, right_df):
 
 def test_inner_contains(left_df, right_df):
     r = arctern_spark.sjoin(right_df, left_df, "polygons", "points", how="inner", op="contains")
-    r.sort_values(by="A_left", inplace=True)
-    assert r["points"].to_wkt().to_list() == ['POINT (3 3)', 'POINT (1 1)', 'POINT (1 2)', 'POINT (2 2)', 'POINT (2 1)',
+    r.sort_values(by="A_right", inplace=True)
+    assert r["points"].to_wkt().to_list() == ['POINT (1 1)', 'POINT (1 2)', 'POINT (2 1)', 'POINT (2 2)', 'POINT (3 3)',
                                               'POINT (3 3)', 'POINT (4 5)', 'POINT (8 8)']
