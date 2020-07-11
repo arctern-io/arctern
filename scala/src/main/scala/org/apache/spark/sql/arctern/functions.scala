@@ -15,14 +15,18 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.arctern.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
+import org.apache.spark.sql.{Column, DataFrame}
 
 object functions {
   // Constructor UDF API
   def st_geomfromtext(wkt: Column): Column = Column {
     ST_GeomFromText(Seq(wkt.expr))
+  }
+
+  def st_envelopinternal(wkt: Column): Column = Column {
+    GeometryEnvelope(wkt.expr)
   }
 
   def st_geomfromwkb(wkt: Column): Column = Column {

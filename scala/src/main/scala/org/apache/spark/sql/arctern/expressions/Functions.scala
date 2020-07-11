@@ -25,9 +25,25 @@ import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
-import org.locationtech.jts.geom.{Geometry, GeometryCollection, GeometryFactory, MultiPoint, MultiPolygon, Polygon}
+import org.locationtech.jts.geom._
 
 object utils {
+  def length(geom: Geometry): Double = {
+    val geoType = geom.getGeometryType
+    if (geoType == "Polygon" || geoType == "MultiPolygon") return 0
+    if (geoType == "GeometryCollection") {
+      var lenSum: Double = 0
+      val geometries = geom.asInstanceOf[GeometryCollection]
+      for (i <- 0 until geometries.getNumGeometries) {
+        val g = geometries.getGeometryN(i)
+        val gType = g.getGeometryType
+        if (gType != "Polygon" && gType != "MultiPolygon") lenSum += g.getLength
+      }
+      return lenSum
+    }
+    geom.getLength
+  }
+
   def envelopeAsList(geom: Geometry): ArrayData = {
     if (geom == null || geom.isEmpty) {
       val negInf = scala.Double.NegativeInfinity
@@ -358,7 +374,7 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr(0)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid().isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -504,7 +520,7 @@ case class ST_Length(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr.head
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getLength()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"org.apache.spark.sql.arctern.expressions.utils.length($geo)")
 
   override def dataType: DataType = DoubleType
 

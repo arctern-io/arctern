@@ -14,13 +14,13 @@
 # pylint: disable=protected-access
 
 import sys
+import databricks.koalas as ks
 from py4j.java_gateway import java_import
 from pyspark import SparkContext
 from pyspark.sql.column import Column, _to_java_column
 from pyspark.sql.types import UserDefinedType, StructField, BinaryType
-from pyspark.sql import Row
+from pyspark.sql import Row, DataFrame
 
-import databricks.koalas as ks
 ks.set_option('compute.ops_on_diff_frames', True)
 
 if sys.version >= '3':
@@ -56,6 +56,7 @@ def import_arctern_functions():
     jvm = sc._jvm
     java_import(jvm, "org.apache.spark.sql.arctern")
     jvm.org.apache.spark.sql.arctern.UdtRegistratorWrapper.registerUDT()
+    jvm.org.apache.spark.sql.arctern.UdfRegistrator.register(sc._jvm.SparkSession.getActiveSession().get())
 
 
 def _create_function(name):
@@ -65,6 +66,23 @@ def _create_function(name):
         jc = getattr(
             sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
         return Column(jc)
+
+    _.__name__ = name
+    return _
+
+
+def _creat_df_function(name):
+    def _(*args):
+        sc = SparkContext._active_spark_context
+        sql_ctx = None
+        for arg in args:
+            if isinstance(arg, DataFrame):
+                sql_ctx = arg.sql_ctx
+                break
+        args = [arg._jdf if isinstance(arg, DataFrame) else arg for arg in args]
+        jdf = getattr(
+            sc._jvm.org.apache.spark.sql.arctern.functions, name)(*args)
+        return DataFrame(jdf, sql_ctx)
 
     _.__name__ = name
     return _
@@ -120,11 +138,19 @@ _functions = [
     "st_disjoint",
 ]
 
+_df_functions = [
+    "nearest_road",
+    "near_road",
+    "nearest_location_on_road",
+]
+
 import_arctern_functions()
 
 for _name in _functions:
     globals()[_name] = _create_function(_name)
+for _name in _df_functions:
+    globals()[_name] = _creat_df_function(_name)
 
-__all__ = [k for k, v in globals().items() if k in _functions and callable(v)]
+__all__ = [k for k, v in globals().items() if k in _functions + _df_functions and callable(v)]
 
 __all__.sort()

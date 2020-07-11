@@ -14,13 +14,15 @@
 
 # pylint: disable=useless-super-delegation
 # pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods
-# pylint: disable=too-many-ancestors, protected-access
+# pylint: disable=too-many-public-methods,arguments-differ
+# pylint: disable=too-many-ancestors,protected-access,too-many-branches,unidiomatic-typecheck,signature-differs,attribute-defined-outside-init,arguments-differ
 
 from warnings import warn
-from pandas import Series, DataFrame
+
 import numpy as np
+from pandas import Series, DataFrame
 import arctern
+
 from .geoarray import GeoArray, is_geometry_array, GeoDtype
 
 
@@ -80,12 +82,6 @@ def _binary_geo(op, this, other):
     data, index = _delegate_binary_op(op, this, other)
     return GeoSeries(data, index=index, crs=this.crs)
 
-def _validate_crs(crs):
-    if crs is not None and not isinstance(crs, str):
-        raise TypeError("`crs` should be spatial reference identifier string")
-    crs = crs.upper() if crs is not None else crs
-    return crs
-
 
 class GeoSeries(Series):
     """
@@ -104,7 +100,7 @@ class GeoSeries(Series):
         The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
         Only supports SRID as a WKT representation of CRS by now, for example, "EPSG:4326".
     **kwargs :
-        Parameters to pass to the GeoSeries constructor, for example, ``copy``.
+        Parameters to be passed to the GeoSeries constructor, for example, ``copy``.
         ``copy`` is a boolean value, by default False.
 
         * *True:* Copys input data.
@@ -120,19 +116,25 @@ class GeoSeries(Series):
     dtype: GeoDtype
     """
 
-    _sindex = None
-    _sindex_generated = None
+    # _sindex = None
+    # _sindex_generated = False
     _metadata = ["name"]
 
     def __init__(self, data=None, index=None, name=None, crs=None, **kwargs):
 
-        if hasattr(data, "crs") and crs:
-            if not data.crs:
-                data = data.copy()
-            elif not data.crs == crs:
-                raise ValueError(
-                    "csr of the passed geometry data is different from crs."
-                )
+        if hasattr(data, "crs"):
+            if crs:
+                if not data.crs:
+                    data = data.copy()
+                elif not data.crs == crs:
+                    raise ValueError(
+                        "csr of the passed geometry data is different from crs."
+                    )
+            else:
+                if not data.crs:
+                    data = data.copy()
+                else:
+                    crs = data.crs
         # scalar wkb or wkt
         if isinstance(data, (bytes, str)):
             n = len(index) if index is not None else 1
@@ -158,12 +160,22 @@ class GeoSeries(Series):
                     s = arctern.ST_GeomFromText(s)
                 else:
                     raise TypeError("Can not use no bytes or string data to construct GeoSeries.")
-            data = GeoArray(s.values)
-
+            data = GeoArray(s.values, crs=crs)
         super().__init__(data, index=index, name=name, **kwargs)
 
-        self._crs = None
-        self.set_crs(crs)
+        if not self.array.crs:
+            self.array.crs = crs
+        self._invalidate_sindex()
+
+    def __setitem__(self, key, value):
+        old_crs = self.crs
+        super().__setitem__(key, value)
+        if not isinstance(self.array, GeoArray):
+            new_array = GeoArray(self.array.to_numpy(), crs=old_crs)
+            self._data = self.__class__(
+                new_array, index=self.index, name=self.name
+            )._data
+            self._maybe_update_cacher(clear=True)
 
     @property
     def sindex(self):
@@ -174,6 +186,10 @@ class GeoSeries(Series):
             self._sindex = _sindex
             self._sindex_generated = True
         return self._sindex
+
+    def invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
 
     def set_crs(self, crs):
         """
@@ -197,8 +213,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        crs = _validate_crs(crs)
-        self._crs = crs
+        self.array.crs = crs
 
     @property
     def crs(self):
@@ -217,7 +232,7 @@ class GeoSeries(Series):
         >>> s.crs
         'EPSG:4326'
         """
-        return self._crs
+        return self.array.crs
 
     @crs.setter
     def crs(self, crs):
@@ -421,6 +436,31 @@ class GeoSeries(Series):
         dtype: bool
         """
         return super().notna()
+
+    def _invalidate_sindex(self):
+        self._sindex = None
+        self._sindex_generated = False
+
+    def _wrapped_pandas_method(self, mtd, *args, **kwargs):
+        """Wrap a generic pandas method to ensure it returns a GeoSeries"""
+        val = getattr(super(GeoSeries, self), mtd)(*args, **kwargs)
+        if type(val) == Series:
+            val.__class__ = GeoSeries
+            val.crs = self.crs
+            val._invalidate_sindex()
+        return val
+
+    # pylint: disable=arguments-differ
+    def append(self, *args, **kwargs):
+        return self._wrapped_pandas_method("append", *args, **kwargs)
+
+    # pylint: disable=arguments-differ
+    def update(self, *args, **kwargs):
+        return self._wrapped_pandas_method("update", *args, **kwargs)
+
+    # pylint: disable=arguments-differ
+    def drop(self, *args, **kwargs):
+        return self._wrapped_pandas_method("drop", *args, **kwargs)
 
     # -------------------------------------------------------------------------
     # Geometry related property
@@ -832,7 +872,7 @@ class GeoSeries(Series):
             Scaling factor for x dimension.
         factor_y : float
             Scaling factor for y dimension.
-        origin : string or tuple
+        origin : str or tuple
             The scale origin.
             * 'center': The center of 2D bounding box (default).
             * 'centroid': The geometry's 2D centroid.
@@ -916,9 +956,9 @@ class GeoSeries(Series):
 
         Parameters
         ----------
-        offset_x: float
+        offset_x : float
             The offset along the X dimension.
-        offset_y: float
+        offset_y : float
             The offset along the Y dimension.
 
         Returns
@@ -943,16 +983,16 @@ class GeoSeries(Series):
 
         Parameters
         ----------
-        angle: float
+        angle : float
             The angle of rotation. It can be specified in either degrees (default) or radians by setting ``use_radians=True``.
             * Positive angle: Counter-clockwise rotation.
             * Negative angle: Clockwise rotation.
-        origin: string or tuple
+        origin : str or tuple
             The rotatation origin.
             * 'center': The center of 2D bounding box (default).
             * 'centroid': The geometry's 2D centroid.
             * tuple: A coordinate tuple (x, y).
-        use_radians: boolean
+        use_radians : boolean
             Whether to interpret the angle of rotation as degrees or radians.
             * *True:* Use angle in radians.
             * *False:* Use angle in degrees.
@@ -1771,7 +1811,6 @@ class GeoSeries(Series):
         1    POLYGON ((1 1,1.0 1.5,1.5 1.5,1.5 1.0,1 1))
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y), crs=crs)
 
     @classmethod
@@ -1809,7 +1848,6 @@ class GeoSeries(Series):
         1    POINT (2.5 2.5)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_Point(x, y), crs=crs)
 
     @classmethod
@@ -1841,7 +1879,6 @@ class GeoSeries(Series):
         0    LINESTRING (1 2,4 5,7 8)
         dtype: GeoDtype
         """
-        crs = _validate_crs(crs)
         return cls(arctern.ST_GeomFromGeoJSON(json), crs=crs)
 
     @classmethod
@@ -1898,7 +1935,7 @@ class GeoSeries(Series):
         from osgeo import ogr
         geometry = ogr.CreateGeometryFromWkb(geom_wkb)
         env = geometry.GetEnvelope()
-        return [env[0], env[2], env[1], env[3]]
+        return ([env[0], env[2], env[1], env[3]])
 
     @property
     def bbox(self):
@@ -1908,8 +1945,8 @@ class GeoSeries(Series):
         :rtype: a (minx, miny, maxx, maxy) list
         :return: A list of Arctern.GeoSeries's bound box.
         """
-        geom_wkb = self.envelope_aggr().to_wkb()[0]
-        return GeoSeries._calculate_bbox_from_wkb(geom_wkb)
+        envelope = self.envelope
+        return envelope.apply(self._calculate_bbox_from_wkb)
 
     def iterfeatures(self, na="null", show_bbox=False):
         """
@@ -1956,9 +1993,14 @@ class GeoSeries(Series):
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
             * *False:* Do not include bounding box in the GeoJSON string.
-
         **kwargs:
-            Parameters to pass to `jump.dumps`.
+            Parameters to be passed to `jump.dumps`.
+
+        Returns
+        -------
+        Series
+            Sequence of geometries in GeoJSON format.
+
         """
         import json
         geo = {
@@ -1967,14 +2009,14 @@ class GeoSeries(Series):
         }
 
         if show_bbox:
-            geo["bbox"] = self.bbox
+            geo["bbox"] = self.envelope_aggr().bbox[0]
 
         return json.dumps(geo, **kwargs)
 
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
         """
-        Reads a file or OGR dataset to a GeoSeries.
+        Constructs a GeoSeries from a file or OGR dataset.
 
         Supported file formats are listed `here. <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_
 
@@ -1983,17 +2025,17 @@ class GeoSeries(Series):
         fp: str, pathlib.Path, or file-like object
             A dataset resource identifier or file object.
 
-        bbox: tuple
+        bbox : tuple
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box is denoted with ``(min_x, min_y, max_x, max_y)``.
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
             * max_y: The maximum y coordinate of the bounding box.
 
-        mask: GeoSeries
+        mask : GeoSeries
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
-        item: int or slice
+        item : int or slice
             * If ``item`` is an integer, this function loads the geometry with an index of the integer.
             * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
                 * *start:* The position to start the slicing, by default 0.
@@ -2001,7 +2043,11 @@ class GeoSeries(Series):
                 * *step:* The step of the slicing, by default 1.
 
         **kwargs:
-            Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+            Parameters to be passed to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+
+        Notes
+        -------
+        ``bbox`` and ``mask`` cannot be used together.
 
         Returns
         -------
@@ -2042,23 +2088,21 @@ class GeoSeries(Series):
 
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
         """
-        Saves a GeoSeries to a file or OGR dataset.
+        Writes a GeoSeries to a file or OGR dataset.
 
         Parameters
         ----------
         fp: str, pathlib.Path, or file-like object
             A dataset resource identifier or file object.
-
-        mode: str
+        mode : str
             * 'a': Append
-            * 'w': Write (default)
+            * 'w' (default): Write
             Not all driver support append, see the "supported drivers" below for more infomation.
-
-        driver: str
+        driver : str
             The OGR format driver, by default "ESRI Shapefile". It represents a translator for a specific format. See `supported drivers <https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py>`_ for more information.
 
-        **kwargs:
-        Parameters to pass to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
+        **kwargs :
+        Parameters to be passed to ``fiona.open``. For example, ``layer`` or ``enabled_drivers``. See `fiona.open <https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open>`_ for more information.
         """
         geo_type_map = dict([
             ("ST_POINT", "Point"),

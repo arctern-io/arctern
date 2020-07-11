@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=protected-access,too-many-public-methods,too-many-branches,unidiomatic-typecheck,unbalanced-tuple-unpacking
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches
+# pylint: disable=super-init-not-called,unidiomatic-typecheck,unbalanced-tuple-unpacking
+# pylint: disable=too-many-lines,non-parent-init-called
 
-
+import numpy as np
 import pandas as pd
-from pandas.io.formats.printing import pprint_thing
 from pandas.api.types import is_list_like
+from pandas.io.formats.printing import pprint_thing
 import databricks.koalas as ks
-from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas import DataFrame, Series, get_option
+from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.exceptions import SparkPandasIndexingError
 from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
 from databricks.koalas.series import REPR_PATTERN
@@ -29,13 +31,13 @@ from databricks.koalas.utils import (
     validate_bool_kwarg,
 )
 from pyspark.sql import functions as F, Column
-from pyspark.sql.window import Window
 from pyspark.sql.types import (
     IntegerType,
     LongType,
     StringType,
     BinaryType,
 )
+from pyspark.sql.window import Window
 
 from . import scala_wrapper
 
@@ -46,6 +48,7 @@ def _column_op(f, *args):
 
 
 # for unary or binary operation, which return GeoSeries.
+# pylint: disable=no-value-for-parameter
 def _column_geo(f, *args, **kwargs):
     kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss, **kwargs)
@@ -130,14 +133,13 @@ class GeoSeries(Series):
                 if hasattr(data, "crs"):
                     if crs and data.crs and not data.crs == crs:
                         raise ValueError("crs of the passed geometry data is different from crs.")
-                    else:
-                        crs = data.crs or crs
+                    crs = data.crs or crs
                 s = data
             else:
                 s = pd.Series(
                     data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
                 )
-                import numpy as np
+
                 # The default dtype for empty Series is 'float64' in pandas, but it will be object in future.
                 # see https://github.com/pandas-dev/pandas/pull/29405
                 if s.empty and (s.dtype == np.dtype("float64") or s.dtype == np.dtype("object")):
@@ -210,6 +212,9 @@ class GeoSeries(Series):
         """
         crs = _validate_crs(crs)
         self._crs = crs
+
+        if hasattr(self, "_gdf") and self._gdf is not None:
+            self._gdf._crs_for_cols[self.name] = self._crs
 
     @property
     def crs(self):
@@ -291,6 +296,23 @@ class GeoSeries(Series):
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
 
+    def _with_new_scol(self, scol):
+        """
+        Copy Koalas Series with the new Spark Column.
+
+        Parameters
+        ----------
+        scol: the new Spark Column
+
+        Returns
+        -------
+        GeoSeries
+            The copied GeoSeries
+        """
+        internal = self._kdf._internal.copy(
+            column_labels=[self._column_label], data_spark_columns=[scol]
+        )
+        return first_series(DataFrame(internal))
 
     def fillna(self, value=None, method=None, axis=None, inplace=False, limit=None):
         """Fill NA/NaN values.
@@ -514,7 +536,7 @@ class GeoSeries(Series):
         2    True
         Name: 0, dtype: bool
         """
-        return _column_op("st_issimple", self).astype(bool)
+        return _column_op("st_issimple", self)
 
     @property
     def geom_type(self):
@@ -678,7 +700,7 @@ class GeoSeries(Series):
         1    False
         Name: 0, dtype: bool
         """
-        return _column_op("st_isempty", self).astype(bool)
+        return _column_op("st_isempty", self)
 
     @property
     def boundary(self):
@@ -772,7 +794,11 @@ class GeoSeries(Series):
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
         >>> s.unary_union()
+<<<<<<< HEAD
         0    GEOMETRYCOLLECTION EMPTY
+=======
+        0    MULTIPOINT ((1 1), (1 2))
+>>>>>>> 784cfa929e31ad67302394e1aa7c8e14d9f95e7e
         Name: st_union_aggr(0), dtype: object
         """
         return _agg("st_union_aggr", self)
@@ -1391,7 +1417,7 @@ class GeoSeries(Series):
         1     True
         Name: 0, dtype: bool
         """
-        return _column_op("st_disjoint", self, _validate_arg(other)).astype(bool)
+        return _column_op("st_disjoint", self, _validate_arg(other))
 
     # -------------------------------------------------------------------------
     # Geometry related binary methods, which return GeoSeries
@@ -1538,19 +1564,19 @@ class GeoSeries(Series):
         Name: 0, dtype: object
         """
         import math
+        result = None
         if not use_radians:
             rotation_angle = rotation_angle * math.pi / 180.0
 
         if origin is None:
-            return _column_geo("st_rotate", self, F.lit(rotation_angle))
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle))
         elif isinstance(origin, str):
-            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin))
         elif isinstance(origin, tuple):
             origin_x = origin[0]
             origin_y = origin[1]
-            return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
-        else:
-            raise ValueError("origin must be tuple or str")
+            result = _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
+        return result
 
     # -------------------------------------------------------------------------
     # utils
@@ -1674,6 +1700,8 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
+        if not isinstance(json, (pd.Series, ks.Series)) and is_list_like(json) and not json:
+            return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
     def as_geojson(self):
@@ -1941,6 +1969,154 @@ class GeoSeries(Series):
 
     def between(self, left, right, inclusive=True):
         return super().between(_validate_arg(left), _validate_arg(right), inclusive=inclusive)
+
+    @classmethod
+    def _calculate_bbox_from_wkb(cls, geom_wkb):
+        """
+        Calculate bounding box for the geom_wkb geometry.
+        """
+        from osgeo import ogr
+        geometry = ogr.CreateGeometryFromWkb(geom_wkb)
+        env = geometry.GetEnvelope()
+        return [env[0], env[2], env[1], env[3]]
+
+    @property
+    def bbox(self):
+        """
+        Calculate bounding box for the each geometry in the GeoSeries.
+
+        :rtype: a Pandas Series with each item is a (minx, miny, maxx, maxy) list
+        :return: Bounding box of each geometry.
+        """
+        envelope = self.envelope.to_pandas().apply(GeoSeries._calculate_bbox_from_wkb)
+        return envelope
+
+    def iterfeatures(self, na="null", show_bbox=False):
+        """
+        Returns an iterator that yields feature dictionaries that comply with
+        Arctern.GeoSeries.
+
+        Parameters
+        ----------
+        na: str {'null', 'drop', 'keep'}, default 'null'
+            Indicates how to output missing (NaN) values in the GeoDataFrame
+            * null: ouput the missing entries as JSON null
+            * drop: remove the property from the feature. This applies to
+                    each feature individually so that features may have
+                    different properties
+            * keep: output the missing entries as NaN
+
+        show_bbox: bool
+            whether to include bbox (bounds box) in the geojson. default False
+        """
+        import json
+        if na not in ["null", "drop", "keep"]:
+            raise ValueError("Unknown na method {0}".format(na))
+
+        ids = self.to_pandas()
+        for fid, geom in zip(ids, self.to_pandas()):
+            feature = {
+                "id": str(fid),
+                "type": "Feature",
+                "properties": {},
+                "geometry": json.loads(GeoSeries(geom).as_geojson()[0]) if geom else None,
+            }
+            if show_bbox:
+                feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
+            yield feature
+
+    @classmethod
+    def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
+        """
+        Read a file or OGR dataset to GeoSeries.
+
+        Supported file format is listed in
+        https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        Parameters
+        ----------
+        fp: URI (str or pathlib.Path), or file-like object
+            A dataset resource identifier or file object.
+
+        bbox: a (minx, miny, maxx, maxy) tuple
+            Filter for geometries which spatial intersects with by the provided bounding box.
+
+        mask: a GeoSeries(should have same crs), wkb formed bytes or wkt formed string
+            Filter for geometries which spatial intersects with by the provided geometry.
+
+        item: int or slice
+            Load special items by skipping over items or stopping at a specific item.
+
+        **kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+
+        Returns
+        ----------
+            A GeoSeries read from file.
+        """
+        import fiona
+        import json
+        with fiona.Env():
+            with fiona.open(fp, "r", **kwargs) as features:
+                if features.crs is not None:
+                    crs = features.crs.get("init", None)
+                else:
+                    crs = features.crs_wkt
+
+                if mask is not None:
+                    if isinstance(mask, (str, bytes)):
+                        mask = GeoSeries(mask)
+                    if not isinstance(mask, GeoSeries):
+                        raise TypeError(f"unsupported mask type {type(mask)}")
+                    mask = mask.unary_union().as_geojson()
+                if isinstance(item, (int, type(None))):
+                    item = (item,)
+                elif isinstance(item, slice):
+                    item = (item.start, item.stop, item.step)
+                else:
+                    raise TypeError(f"unsupported item type {type(item)}")
+                features = features.filter(*item, bbox=bbox, mask=mask)
+
+                geoms = []
+                for feature in features:
+                    geometry = feature["geometry"]
+                    geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
+                return GeoSeries.geom_from_geojson(geoms, crs=crs)
+
+    def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
+        """
+        Store GeoSeries to a file or OGR dataset.
+
+        :type fp: URI (str or pathlib.Path), or file-like object
+        :param fp: A dataset resource identifier or file object.
+
+        :type mode: str, default "w"
+        :param mode: 'a' to append, or 'w' to write. Not all driver support
+                      append, see "Supported driver list" below for more info.
+
+        :type driver: str, default "ESRI Shapefile"
+        :param driver: The OGR format driver. It's  represents a
+                       translator for a specific format. Supported driver is listed in
+                       https://github.com/Toblerity/Fiona/blob/master/fiona/drvsupport.py.
+
+        :param kwargs: Keyword arguments to `fiona.open()`. e.g. `layer` used to
+                       write data to multi-layer dataset.
+                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
+                       more info.
+        """
+
+        geo_types = "Unknown"
+        if len(self.geom_type) != 0:
+            geo_types = set(self.geom_type.dropna().unique().to_pandas())
+
+        schema = {"properties": {}, "geometry": geo_types}
+        # TODO: fiona expected crs like Proj4 style mappings, "EPSG:4326" or WKT representations
+        crs = self.crs
+        import fiona
+        with fiona.Env():
+            with fiona.open(fp, mode, driver, crs=crs, schema=schema, **kwargs) as sink:
+                sink.writerecords(self.iterfeatures())
 
 
 def first_series(df):

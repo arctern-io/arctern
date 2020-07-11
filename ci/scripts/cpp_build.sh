@@ -91,7 +91,7 @@ USE_GPU=${USE_GPU:="OFF"}
 RUN_LINT=${RUN_LINT:="OFF"}
 PRIVILEGES=${PRIVILEGES:="OFF"}
 CLEANUP=${CLEANUP:="OFF"}
-PARALLEL_LEVEL=${PARALLEL_LEVEL:=""}
+PARALLEL_LEVEL=${PARALLEL_LEVEL:="4"}
 
 if [[ -n ${CONDA_ENV} ]]; then
     eval "$(conda shell.bash hook)"

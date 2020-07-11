@@ -394,7 +394,7 @@ std::vector<uint8_t> render_choroplethmap(const std::vector<std::string>& arr_wk
     }
   }
 
-  return choroplethmap<T>(data.first, &input_c[0], num_geo, conf);
+  return choroplethmap<T>(data.first, input_c, num_geo, conf);
 }
 
 template <typename T>
