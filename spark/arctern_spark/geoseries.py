@@ -291,23 +291,6 @@ class GeoSeries(Series):
                 return rest + footer
         return pser.to_string(name=self.name, dtype=self.dtype)
 
-    def _with_new_scol(self, scol):
-        """
-        Copy Koalas Series with the new Spark Column.
-
-        Parameters
-        ----------
-        scol: the new Spark Column
-
-        Returns
-        -------
-        GeoSeries
-            The copied GeoSeries
-        """
-        internal = self._kdf._internal.copy(
-            column_labels=[self._column_label], data_spark_columns=[scol]
-        )
-        return first_series(DataFrame(internal))
 
     def fillna(self, value=None, method=None, axis=None, inplace=False, limit=None):
         """Fill NA/NaN values.
@@ -1566,6 +1549,8 @@ class GeoSeries(Series):
             origin_x = origin[0]
             origin_y = origin[1]
             return _column_geo("st_rotate", self, F.lit(rotation_angle), F.lit(origin_x), F.lit(origin_y))
+        else:
+            raise ValueError("origin must be tuple or str")
 
     # -------------------------------------------------------------------------
     # utils
@@ -1828,31 +1813,7 @@ class GeoSeries(Series):
 
         Examples
         --------
-        >>> s = ks.Series(['lama', 'cow', 'lama', 'beetle', 'lama',
-        ...                'hippo'], name='animal')
-        >>> s.isin(['cow', 'lama'])
-        0     True
-        1     True
-        2     True
-        3    False
-        4     True
-        5    False
-        Name: animal, dtype: bool
 
-        Passing a single string as ``s.isin('lama')`` will raise an error. Use
-        a list of one element instead:
-
-        >>> s.isin(['lama'])
-        0     True
-        1    False
-        2     True
-        3    False
-        4     True
-        5    False
-        Name: animal, dtype: bool
-
-        >>> s.rename("a").to_frame().set_index("a").index.isin(['lama'])
-        Index([True, False, True, False, True, False], dtype='object', name='a')
         """
         if not is_list_like(values):
             raise TypeError(
@@ -1861,6 +1822,125 @@ class GeoSeries(Series):
             )
 
         return self._with_new_scol(self.spark.column.isin([scala_wrapper.st_geomfromwkb(F.lit(value)) for value in values])).rename(self.name)
+
+    def where(self, cond, other=None):
+        """
+        Replace values where the condition is False.
+
+        Parameters
+        ----------
+        cond : boolean Series
+            Where cond is True, keep the original value. Where False,
+            replace with corresponding value from other.
+        other : scalar, Series
+            Entries where cond is False are replaced with corresponding value from other.
+
+        Returns
+        -------
+        Series
+
+        Examples
+        --------
+
+        """
+        if isinstance(other, Series):
+            other = scala_wrapper.st_geomfromwkb(other)
+        elif other is None:
+            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+        return super().where(cond=cond, other=other)
+
+    def mask(self, cond, other=None):
+        """
+        Replace values where the condition is True.
+
+        Parameters
+        ----------
+        cond : boolean Series
+            Where cond is False, keep the original value. Where True,
+            replace with corresponding value from other.
+        other : scalar, Series
+            Entries where cond is True are replaced with corresponding value from other.
+
+        Returns
+        -------
+        Series
+        """
+        if isinstance(other, Series):
+            other = scala_wrapper.st_geomfromwkb(other)
+        elif other is None:
+            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+        return super().mask(cond=cond, other=other)
+
+    def replace(self, to_replace=None, value=None, regex=False):
+        """
+        Replace values given in to_replace with value.
+        Values of the Series are replaced with other values dynamically.
+
+        Parameters
+        ----------
+        to_replace : str, list, dict, Series, int, float, or None
+            How to find the values that will be replaced.
+            * numeric, str:
+
+                - numeric: numeric values equal to to_replace will be replaced with value
+                - str: string exactly matching to_replace will be replaced with value
+
+            * list of str or numeric:
+
+                - if to_replace and value are both lists, they must be the same length.
+                - str and numeric rules apply as above.
+
+            * dict:
+
+                - Dicts can be used to specify different replacement values for different
+                  existing values.
+                  For example, {'a': 'b', 'y': 'z'} replaces the value ‘a’ with ‘b’ and ‘y’
+                  with ‘z’. To use a dict in this way the value parameter should be None.
+                - For a DataFrame a dict can specify that different values should be replaced
+                  in different columns. For example, {'a': 1, 'b': 'z'} looks for the value 1
+                  in column ‘a’ and the value ‘z’ in column ‘b’ and replaces these values with
+                  whatever is specified in value.
+                  The value parameter should not be None in this case.
+                  You can treat this as a special case of passing two lists except that you are
+                  specifying the column to search in.
+
+            See the examples section for examples of each of these.
+
+        value : scalar, dict, list, str default None
+            Value to replace any values matching to_replace with.
+            For a DataFrame a dict of values can be used to specify which value to use
+            for each column (columns not in the dict will not be filled).
+            Regular expressions, strings and lists or dicts of such objects are also allowed.
+
+        Returns
+        -------
+        Series
+            Object after replacement.
+
+        Examples
+        --------
+        """
+        if to_replace is None:
+            return self
+        if not isinstance(to_replace, (str, bytearray, bytes)):
+            raise ValueError("'to_replace' should be one of str, bytearray, bytes")
+        if regex:
+            raise NotImplementedError("replace currently not support for regex")
+        if isinstance(to_replace, list) and isinstance(value, list):
+            if not len(to_replace) == len(value):
+                raise ValueError(
+                    "Replacement lists must match in length. Expecting {} got {}".format(
+                        len(to_replace), len(value)
+                    )
+                )
+            to_replace = {k: v for k, v in zip(to_replace, value)}
+
+        current = F.when(self.spark.column.isin(scala_wrapper.st_geomfromwkb(F.lit(to_replace))), scala_wrapper.st_geomfromwkb(F.lit(value))).otherwise(self.spark.column)
+
+        return self._with_new_scol(current)
+
+    def between(self, left, right, inclusive=True):
+        return super().between(_validate_arg(left), _validate_arg(right), inclusive=inclusive)
 
 
 def first_series(df):
