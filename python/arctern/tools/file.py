@@ -86,25 +86,27 @@ def read_file(*args, **kwargs):
         -----------
         filename : str
             File path or file handle to read from.
-        bbox : tuple or arctern.GeoSeries, default None
-            Filter features by given bounding box, GeoSeries. Cannot be used
-            with mask.
-        mask : dict | arctern.GeoSeries | dicr, default None
-            Filter for features that intersect with the given dict-like geojson
-            geometry, GeoSeries. Cannot be used with bbox.
-        rows : int or slice, default None
-            Load in specific rows by passing an integer (first `n` rows) or a
-            slice() object.
+        bbox : tuple or GeoSeries
+            Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+            * min_x: The minimum x coordinate of the bounding box.
+            * min_y: The minimum y coordinate of the bounding box.
+            * max_x: The maximum x coordinate of the bounding box.
+            * max_y: The maximum y coordinate of the bounding box.
+        mask : dict, GeoSeries
+            Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
+        rows : int or slice
+            * If ``rows`` is an integer *n*, this function loads the first *n* rows.
+            * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+                * *start:* The position to start the slicing, by default 0.
+                * *end:* The position to end the slicing.
+                * *step:* The step of the slicing, by default 1.
         **kwargs :
-        Keyword args to be passed to the `open` or `BytesCollection` method
-        in the fiona library when opening the file. For more information on
-        possible keywords, type:
-        ``import fiona; help(fiona.open)``
+        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
 
     Returns
     --------
     GeoDataFrame
-        An arctern.GeoDataFrame object.
+        An GeoDataFrame read from file.
     """
     return _read_file(*args, **kwargs)
 
@@ -200,32 +202,29 @@ def _to_file(
 
 def to_file(*args, **kwargs):
     """
-    Write this GeoDataFrame to an OGR data source
+    Writes a GeoDataFrame to an OGR dataset.
 
     Parameters
     ----------
-    df : GeoDataFrame to be written
-    filename : str
-        File path or file handle to write to.
-    driver : string, default 'ESRI Shapefile'
-        The OGR format driver used to write the vector file.
-    schema : dict, default None
-        If specified, the schema dictionary is passed to Fiona to
-        better control how the file is written. If None, GeoPandas
-        will determine the schema based on each column's dtype.
-    index : bool, default None
-        If True, write index into one or more columns (for MultiIndex).
-        Default None writes the index into one or more columns only if
-        the index is named, is a MultiIndex, or has a non-integer data
-        type. If False, no index is written.
-    mode : str, default 'w'
-        The write mode, 'w' to overwrite the existing file and 'a' to append.
-    crs : str, default None
-        If specified, the CRS is passed to Fiona to
-        better control how the file is written. If None, GeoPandas
-        will determine the crs based on crs df attribute.
-    col : str, default None
-        Specify geometry column.
+    df: GeoDataFrame
+        GeoDataFrame to be written.
+    driver: str
+        The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
+    schema: dict
+        * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
+        * If None (default), this function determines the schema based on each column's dtype.
+    index: bool
+        * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
+        * If True, writes index into one or more columns (for MultiIndex).
+        * If False, no index is written.
+    mode: str
+        * 'a': Append
+        * 'w' (default): Write
+    crs: str
+        * If specified, the CRS is passed to Fiona to better control how the file is written.
+        * If None (default), this function determines the crs based on crs df attribute.
+    col: str
+        Specifys geometry column, by default None.
 
     Examples
     ---------

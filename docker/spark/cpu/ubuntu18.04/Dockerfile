@@ -28,6 +28,11 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN /tmp/arctern/install_arctern_conda.sh && rm -rf /tmp/arctern && \
     conda clean --all -y
 
+# login to enable conda environment
+SHELL [ "/bin/bash", "--login", "-c" ]
+RUN python -c "import sys;print(sys.prefix)" && \
+    cd /opt/spark/python && python setup.py install
+
 COPY prebuildfs /
 COPY rootfs /
 RUN /postunpack.sh
