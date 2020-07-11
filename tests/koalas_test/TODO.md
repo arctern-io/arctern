@@ -24,10 +24,10 @@ scale
 affine
 symmetric_difference
 rotate
-precision_reduce
-transform
+*precision_reduce
+to_crs
 translate
-curve_to_line
+*curve_to_line
 ```
 
 ---
