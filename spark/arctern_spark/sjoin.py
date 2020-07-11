@@ -53,7 +53,7 @@ def sjoin(
     >>> import arctern_spark
     >>> from arctern_spark import GeoDataFrame
     >>> points = [
-    ...    "Point(1 1)",
+    ...     "Point(1 1)",
     ...     "Point(1 2)",
     ...     "Point(2 1)",
     ...     "Point(2 2)",
