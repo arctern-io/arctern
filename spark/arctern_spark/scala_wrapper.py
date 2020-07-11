@@ -142,6 +142,7 @@ _df_functions = [
     "nearest_road",
     "near_road",
     "nearest_location_on_road",
+    "spatial_join",
 ]
 
 import_arctern_functions()
