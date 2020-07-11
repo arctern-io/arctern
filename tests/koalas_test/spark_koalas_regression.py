@@ -754,7 +754,7 @@ def test_unary_property_func(func_name,input_csv,output_csv):
     write_arr2csv(output_csv_path,res.tolist())
 
 
-def test_unary_func(func_name,input_csv,output_csv,params=None):
+def test_unary_func(func_name,input_csv,output_csv,params):
     input_csv_path = input_csv_base_dir + input_csv
     output_csv_path = output_csv_base_dir + output_csv
     col1,col2 = read_csv2arr(input_csv_path)
@@ -762,7 +762,6 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
     geo_s1 = GeoSeries(col1)
     comma_flag = False
     param_code = ''
-    params = unary_func_dict[func_name][3]
     if params == None :
         test_codes = 'geo_s1.'+func_name+'()'
         if not func_name == 'as_geojson':
@@ -782,14 +781,14 @@ def test_unary_func(func_name,input_csv,output_csv,params=None):
 
 if __name__ == "__main__":
     # test binary_func
-    for func_name in binary_func_dict.keys():
-        test_binary_func(func_name,binary_func_dict[func_name][0],binary_func_dict[func_name][1])
+    for key,values in binary_func_dict.items():
+        test_binary_func(key,values[0],values[1])
     # test unary_func_property
-    for func_name in unary_func_property_dict.keys():
-        test_unary_property_func(func_name,unary_func_property_dict[func_name][0],unary_func_property_dict[func_name][1])
+    for key,values in unary_func_property_dict.items():
+        test_unary_property_func(key,values[0],values[1])
     # test unary_func
-    for func_name in unary_func_dict.keys():
-        test_unary_func(func_name,unary_func_dict[func_name][0],unary_func_dict[func_name][1])
+    for key,values in unary_func_dict.items():
+        test_unary_func(key,values[0],values[1],values[3])
     # update_result()
     test_status = compare_all()
     # print(test_status)
