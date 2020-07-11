@@ -1,31 +1,20 @@
 liupeng:
 ```
-exterior
-boundary
-is_empty
-is_simple
+difference
 affine
-rotate
-translate
 ```
-
 
 
 guilin :
 ```
 hausdorff_distance
 distance_sphere
-union
-difference
-to_crs
 ```
 
 jiquan :
 ```
-scale
-overlaps
-touches
-disjoint
-symmetric_difference
+*symmetric_difference
+to_crs
+union
 
 ```

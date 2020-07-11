@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
-from ogr import Geometry
-from ogr import CreateGeometryFromWkt
 from shapely import wkt
 
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
@@ -36,7 +35,7 @@ unary_func_property_dict = {
     'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],  # empty error!
     'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],  # e
     'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],  # e
-    # 'is_simple':['is_simple.csv','is_simple.out'], # e
+    'is_simple':['is_simple.csv','is_simple.out','st_is_simple.out'], # e
 }
 
 unary_func_dict = {
@@ -46,11 +45,11 @@ unary_func_dict = {
     'unary_union': ['unary_union.csv', 'unary_union.out', 'st_unary_union.out', None],
     'as_geojson': ['as_geojson.csv', 'as_geojson.out', 'st_as_geojson.out', None],
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
+    'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
     # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
-    # 'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
     # 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
 }
 
@@ -97,21 +96,6 @@ def is_empty(geo):
     return geo.endswith('EMPTY')
 
 
-def is_point(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('POINT')
-
-
-def is_linestring(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('LINESTRING')
-
-
-def is_polygon(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('POLYGON')
-
-
 def is_geometry(geo):
     geo = geo.strip().upper()
     for x in GEO_TYPES:
@@ -127,130 +111,6 @@ def is_geometrycollection(geo):
         if geo.startswith(x):
             return True
         continue
-
-    return False
-
-
-def line_to_points(geom):
-    if geom.strip().upper().startswith('LINESTRING'):
-        points = geom.split('(')[1].split(')')[0]
-        arr = points.split(',')
-        xs = ['POINT (%s)' % x.strip() for x in arr]
-        return xs
-    return None
-
-
-def polygon_to_points(geom):
-    if geom.strip().upper().startswith('POLYGON'):
-        points = geom.split('((')[1].split('))')[0]
-        arr = points.split(',')
-        xs = ['POINT (%s)' % x.strip().replace(
-            '(', '').replace(')', '') for x in arr]
-        return xs
-    return None
-
-
-def geometrycollection_tolist(geom):
-    if is_geometrycollection(geom):
-        gc = wkt.loads(geom)
-        return [x.to_wkt() for x in list(gc)]
-    return None
-
-
-def point_distance(geox, geoy):
-    if is_geometry(geoy) and geox.strip().upper().startswith('POINT'):
-        p = wkt.loads(geox)
-        g = wkt.loads(geoy)
-        return p.distance(g)
-    return None
-
-
-def linestring_distance(geox, geoy):
-    if is_geometry(geoy) and geox.strip().upper().startswith('LINESTRING'):
-        xs = line_to_points(geox)
-        distance_arr = [point_distance(x, geoy) for x in xs]
-
-        return max(distance_arr)
-    return None
-
-
-def polygon_distance(geox, geoy):
-    if is_geometry(geoy) and geox.strip().upper().startswith('POLYGON'):
-        xs = polygon_to_points(geox)
-        distance_arr = [point_distance(x, geoy) for x in xs]
-
-        return max(distance_arr)
-    return None
-
-
-def geometry_distance(geox, geoy):
-    if is_point(geox):
-        d = point_distance(geox, geoy)
-
-    if is_linestring(geox):
-        d = linestring_distance(geox, geoy)
-
-    if is_polygon(geox):
-        d = polygon_distance(geox, geoy)
-
-    return d
-
-
-def arc_distance(geox, geoy):
-    if is_empty(geox) or is_empty(geoy):
-        return 0.0
-
-    if is_geometrycollection(geox) and is_geometrycollection(geoy):
-        gcx = geometrycollection_tolist(geox)
-        gcy = geometrycollection_tolist(geoy)
-
-        arr = []
-        for gx in gcx:
-            distance_arr = [geometry_distance(gx, gy) for gy in gcy]
-            arr.append(min(distance_arr))
-
-        return max(arr)
-
-    if is_geometry(geox) and is_geometrycollection(geoy):
-        gc = geometrycollection_tolist(geoy)
-        distance_arr = [geometry_distance(geox, x) for x in gc]
-
-        return max(distance_arr)
-
-    if is_geometry(geoy) and is_geometrycollection(geox):
-        return arc_distance(geoy, geox)  # pylint: disable=arguments-out-of-order
-
-    if is_geometry(geox) and is_geometry(geoy):
-        return geometry_distance(geox, geoy)
-
-    return None
-
-
-def is_length_types(geo):
-    """Determine whether a geometry is point/linestring/multipoint/multilinestring."""
-    geo = geo.strip().upper()
-
-    for a_geo_type_in_geo_length_types_list in GEO_LENGTH_TYPES:
-        if geo.startswith(a_geo_type_in_geo_length_types_list) and \
-                len(geo) != len(a_geo_type_in_geo_length_types_list):
-            return True
-
-        continue
-
-    return False
-
-
-def is_area_types(geo):
-    """Determine whether a geometry is polygon/multipolygon."""
-    geo = geo.strip().upper()
-
-    for a_geo_type_in_geo_area_types_list in GEO_AREA_TYPES:
-        if geo.startswith(a_geo_type_in_geo_area_types_list) and \
-                len(geo) != len(a_geo_type_in_geo_area_types_list):
-            return True
-
-        continue
-
     return False
 
 
@@ -307,21 +167,21 @@ EPOCH_CURVE_RELATIVE = 1e-2
 EPOCH_SURFACE_RELATIVE = 1e-2
 
 
-def compare_length(geometry_x, geometry_y):
-    """Compare length of 2 geometry types."""
-    arct = CreateGeometryFromWkt(geometry_x)
-    pgis = CreateGeometryFromWkt(geometry_y)
-
-    intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
-    arct_length = Geometry.Length(arct)
-    pgis_length = Geometry.Length(pgis)
-
-    # print('arctern length: %s, postgis length: %s, intersection length: %s' %
-    #       (str(arct_length), str(pgis_length), str(intersection_length)))
-    # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
-    result = compare3float_relative(pgis_length, arct_length,
-                                    intersection_length, EPOCH_CURVE_RELATIVE)
-    return result
+# def compare_length(geometry_x, geometry_y):
+#     """Compare length of 2 geometry types."""
+#     arct = CreateGeometryFromWkt(geometry_x)
+#     pgis = CreateGeometryFromWkt(geometry_y)
+#
+#     intersection_length = Geometry.Length(Geometry.Intersection(arct, pgis))
+#     arct_length = Geometry.Length(arct)
+#     pgis_length = Geometry.Length(pgis)
+#
+#     # print('arctern length: %s, postgis length: %s, intersection length: %s' %
+#     #       (str(arct_length), str(pgis_length), str(intersection_length)))
+#     # result = compare_float(intersection_length, arct_length, pgis_length, EPOCH_CURVE)
+#     result = compare3float_relative(pgis_length, arct_length,
+#                                     intersection_length, EPOCH_CURVE_RELATIVE)
+#     return result
 
 
 def compare_area(geometry_x, geometry_y):
@@ -605,7 +465,7 @@ def update_result():
 #
 # import from compare.py ,These codes need to be refactored later.
 import pandas as pd
-from osgeo import ogr
+# from osgeo import ogr
 from arctern_spark.geoseries import GeoSeries
 from databricks.koalas import Series
 
@@ -681,7 +541,7 @@ def test_unary_property_func(func_name, input_csv, output_csv):
         'envelope',
         'centroid',
         'boundary',
-        'convex_hull'
+        'convex_hull',
         'exterior'
     ]
     input_csv_path = input_csv_base_dir + input_csv
