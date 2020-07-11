@@ -4,7 +4,6 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v').replace('-', '.') + environ.get('VERSION_SUFFIX', '') %}
 # {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
-{% set git_commit_id=environ.get('GIT_COMMIT_ID', '') %}
 {% set py_version=environ.get('CONDA_PY', 36) %}
 
 package:
@@ -17,7 +16,7 @@ source:
 # ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
 build:
   number: {{ git_revision_count }}
-  string: py{{ py_version }}_{{ git_commit_id }}_{{ git_revision_count }}
+  string: py{{ py_version }}_{{ GIT_DESCRIBE_HASH }}_{{ git_revision_count }}
   script_env:
     - CC
     - CXX
