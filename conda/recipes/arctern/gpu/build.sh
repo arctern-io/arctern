@@ -10,12 +10,15 @@ git clean -xdf
 
 # Build pyarctern
 ./ci/scripts/python_build.sh clean
-./ci/scripts/python_build.sh --install_prefix=$PREFIX --library_dirs=$PREFIX/lib
+# ./ci/scripts/python_build.sh --install_prefix=$PREFIX --library_dirs=$PREFIX/lib
+./ci/scripts/python_build.sh
 
 # Build Koalas (arctern_spark)
 ./ci/scripts/koalas_build.sh clean
-./ci/scripts/koalas_build.sh --install_prefix=$PREFIX
+# ./ci/scripts/koalas_build.sh --install_prefix=$PREFIX
+./ci/scripts/koalas_build.sh
 
 # Build arctern_pyspark
 ./ci/scripts/pyspark_build.sh clean
-./ci/scripts/pyspark_build.sh --install_prefix=$PREFIX
+# ./ci/scripts/pyspark_build.sh --install_prefix=$PREFIX
+./ci/scripts/pyspark_build.sh
