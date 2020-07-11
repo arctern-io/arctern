@@ -35,7 +35,7 @@ unary_func_property_dict = {
     'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],  # empty error!
     'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],  # e
     'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],  # e
-    # 'is_simple':['is_simple.csv','is_simple.out'], # e
+    'is_simple':['is_simple.csv','is_simple.out','st_is_simple.out'], # e
 }
 
 unary_func_dict = {
@@ -94,21 +94,6 @@ def collect_diff_file_list():
 def is_empty(geo):
     geo = geo.strip().upper()
     return geo.endswith('EMPTY')
-
-
-def is_point(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('POINT')
-
-
-def is_linestring(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('LINESTRING')
-
-
-def is_polygon(geo):
-    geo = geo.strip().upper()
-    return geo.startswith('POLYGON')
 
 
 def is_geometry(geo):
