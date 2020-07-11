@@ -162,7 +162,6 @@ def test_rename(geo_s, pd_s):
 
 @pytest.mark.skip("databricks.koalas.exceptions.PandasNotImplementedError: The method `pd.Series.rename_axis()` is not implemented yet.")
 def test_rename_axis(geo_s, pd_s):
-    pass
     geo_s.rename_axis("test_1", inplace=True)
     pd_s.rename_axis("test_1", inplace=True)
     assert (geo_s == GeoSeries(pd_s)).all()
@@ -503,7 +502,7 @@ def test_tz_localize(geo_s, pd_s):
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.at_time.html
 @pytest.mark.skip("databricks.koalas.exceptions.PandasNotImplementedError: The method `pd.Series.at_time()` is not implemented yet.")
-def test_at_time(geo_s, pd_s):
+def test_at_time(geo_s):
     count = geo_s.count()
     index = pd.date_range('2018-10-28', periods=count, freq='H')
     geo_s = GeoSeries(geo_dropoff.to_list(), index=index)
@@ -512,7 +511,7 @@ def test_at_time(geo_s, pd_s):
 
     geo_at_time_s = geo_s.at_time('2018-10-28')
     pd_at_time_s = pd_s.at_time('2018-10-28')
-    assert (geo_at_time_s == GeoSeries(pd_at_time_s))
+    assert geo_at_time_s == GeoSeries(pd_at_time_s)
 
 
 # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.between_time.html
@@ -1036,6 +1035,7 @@ def test_name(geo_s, pd_s):
 def test_astype(geo_s, pd_s):
     geo_res = geo_s.astype('str')
     pd_res = pd_s.astype('str')
+    assert geo_res == pd_res
 
 
 

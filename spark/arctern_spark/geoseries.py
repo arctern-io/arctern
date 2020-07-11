@@ -1988,7 +1988,7 @@ class GeoSeries(Series):
                         len(to_replace), len(value)
                     )
                 )
-            to_replace = {k: v for k, v in zip(to_replace, value)}
+            to_replace = dict(zip(to_replace, value))
 
         current = F.when(self.spark.column.isin(scala_wrapper.st_geomfromwkb(F.lit(to_replace))), scala_wrapper.st_geomfromwkb(F.lit(value))).otherwise(self.spark.column)
 
