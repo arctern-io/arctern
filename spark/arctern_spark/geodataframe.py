@@ -51,13 +51,11 @@ class GeoDataFrame(DataFrame):
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
-
         if geometries is None:
             if "geometry" in self.columns:
                 geometries = ["geometry"]
             else:
                 geometries = []
-
         self._set_geometries(geometries, crs=crs)
 
     # only for internal use

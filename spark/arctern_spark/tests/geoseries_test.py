@@ -260,6 +260,7 @@ class TestGeoMethods:
         s1 = s.to_wkb()
         assert isinstance(s1, ks.Series)
 
+
 geometry_list = ["POINT (1 1)",
                  "MULTIPOINT (1 1,3 4)",
                  "POLYGON ((1 1,1 2,2 2,2 1,1 1))",

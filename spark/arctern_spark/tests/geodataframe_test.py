@@ -65,7 +65,6 @@ class TestCRS:
         gs = GeoSeries("point (1 2)", name='a', crs=crs)
         gdf = GeoDataFrame(gs)
         assert gdf._geometry_column_names == {'a'}
-
         assert gdf['a'].crs == crs
 
     def test_implicitly_set_geometries(self):
@@ -80,7 +79,6 @@ class TestCRS:
         psb = pd.Series("point (99 99)", name='b')
         psa = pd.Series("point (1 2)", name='a')
         gdf = GeoDataFrame({"a": psa, "b": psb}, geometries=['a'], crs="EPSG:4326")
-        gdf.set_geometry('b', "EPSG:3857")
         assert gdf._geometry_column_names == {'a'}
         gdf.set_geometry('b', "EPSG:3857")
         assert gdf._geometry_column_names == {'a', 'b'}
@@ -97,12 +95,6 @@ class TestCRS:
         assert gdf['b'].crs is None
 
         # set or get item with slice key
-
-        gdf1 = GeoDataFrame([1], columns=['seq'])
-        gdf1[['a', 'b']] = gdf[['a', 'b']]
-        r = gdf1[:]
-        assert r['a'].crs == "EPSG:4326"
-        assert r['b'].crs is None
         gdf1 = GeoDataFrame([1], columns=['seq'])
         gdf1[['a', 'b']] = gdf[['a', 'b']]
         assert gdf1._geometry_column_names == {'a', 'b'}

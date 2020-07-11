@@ -139,7 +139,6 @@ class GeoSeries(Series):
                 s = pd.Series(
                     data=data, index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath
                 )
-
                 # The default dtype for empty Series is 'float64' in pandas, but it will be object in future.
                 # see https://github.com/pandas-dev/pandas/pull/29405
                 if s.empty and (s.dtype == np.dtype("float64") or s.dtype == np.dtype("object")):
@@ -794,11 +793,7 @@ class GeoSeries(Series):
         >>> p2 = "POINT(1 1)"
         >>> s = GeoSeries([p1, p2])
         >>> s.unary_union()
-<<<<<<< HEAD
-        0    GEOMETRYCOLLECTION EMPTY
-=======
         0    MULTIPOINT ((1 1), (1 2))
->>>>>>> 784cfa929e31ad67302394e1aa7c8e14d9f95e7e
         Name: st_union_aggr(0), dtype: object
         """
         return _agg("st_union_aggr", self)
