@@ -34,8 +34,8 @@ jobs:
         name:
           - conda-python3.6
           - conda-python3.7
-          - conda-python3.6-cuda
-          - conda-python3.7-cuda
+          - conda-python3.6-cuda10.0
+          - conda-python3.7-cuda10.0
         include:
           - name: conda-python3.6
             condapy: 36
@@ -47,19 +47,22 @@ jobs:
             centos: 7
             service: conda-build
             title: AMD64 CentOS 7 Conda Python 3.7
-          - name: conda-python3.6-cuda
+          - name: conda-python3.6-cuda10.0
             condapy: 36
             centos: 7
+            cuda: 10.0
             service: conda-cudagl-build
-            title: AMD64 CentOS 7 Conda Python 3.6 CUDA
-          - name: conda-python3.7-cuda
+            title: AMD64 CentOS 7 Conda Python 3.6 CUDA 10.0
+          - name: conda-python3.7-cuda10.0
             condapy: 37
             centos: 7
+            cuda: 10.0
             service: conda-cudagl-build
-            title: AMD64 CentOS 7 Conda Python 3.7 CUDA
+            title: AMD64 CentOS 7 Conda Python 3.7 CUDA 10.0
     env:
       CENTOS: ${{ matrix.centos || 7 }}
       CONDA_PY: ${{ matrix.condapy || 37 }}
+      CUDA: ${{ matrix.cuda || 10.0 }}
     steps:
       # This step checks out a copy of your repository.
       - name: Checkout Arctern
