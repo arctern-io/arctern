@@ -2647,6 +2647,7 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))")),
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")),
       Row(GeometryUDT.FromWkt("POINT (9 11)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = false)))
@@ -2664,6 +2665,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(1).isNullAt(0))
     assert(collect(2).isNullAt(0))
     assert(collect(3).isNullAt(0))
+    assert(collect(4).getAs[GeometryUDT](0).toString == "LINESTRING (35 10, 45 45, 15 40, 10 20, 35 10)")
 
     val rst2 = df.select(st_exteriorring(col("geo")))
     rst2.show(false)
@@ -2674,6 +2676,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(1).isNullAt(0))
     assert(collect2(2).isNullAt(0))
     assert(collect2(3).isNullAt(0))
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "LINESTRING (35 10, 45 45, 15 40, 10 20, 35 10)")
   }
 
   test("ST_ExteriorRing-Null") {

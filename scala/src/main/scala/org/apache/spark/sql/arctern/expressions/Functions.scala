@@ -784,7 +784,8 @@ case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ArcternExpr {
            |if ($exprGeo.getGeometryType().equals("Polygon")) {
            |  ${ev.isNull} = false; // resultCode could change nullability.
            |  ${mutableGeometryInitCode(geoName)}
-           |  $geoName =  new org.locationtech.jts.geom.GeometryFactory().createPolygon($exprGeo.getCoordinates()).getExteriorRing();
+           |  org.locationtech.jts.geom.Polygon ${exprGeo}_polygon = (org.locationtech.jts.geom.Polygon)$exprGeo;
+           |  $geoName =  ${exprGeo}_polygon.getExteriorRing();
            |  ${ev.value} = ${serialGeometryCode(geoName)}
            |}
            |""".stripMargin
