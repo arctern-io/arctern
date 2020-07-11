@@ -16,18 +16,14 @@ from ogr import Geometry
 from ogr import CreateGeometryFromWkt
 from shapely import wkt
 
-GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
+GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
-    'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
+    'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION', 'MULTILINEARRING'
 ]
 CURVE_TYPES = ['CIRCULARSTRING', 'MULTICURVE', 'COMPOUNDCURVE']
 SURFACE_TYPES = ['CURVEPOLYGON', 'MULTISURFACE', 'SURFACE']
 GEO_LENGTH_TYPES = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 GEO_AREA_TYPES = ['POLYGON', 'MULTIPOLYGON']
-GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
-GEO_COLLECTION_TYPES = [
-    'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
-]
 
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
@@ -36,10 +32,10 @@ unary_func_property_dict = {
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
     'is_valid': ['is_valid.csv', 'is_valid.out', 'st_is_valid.out'],
     'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],  # empty error!
-    'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out']
-    # 'exterior':['exterior.csv','exterior.out','st_exterior.out'], # empty error!
-    # 'boundary':['boundary.csv','boundary.out'], # e
-    # 'is_empty':['is_empty.csv','is_empty.out'], # e
+    'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out'],
+    'exterior':['exterior.csv','exterior.out','st_exterior.out'], # empty error!
+    'boundary':['boundary.csv','boundary.out','st_boundary.out'], # e
+    'is_empty':['is_empty.csv','is_empty.out','st_is_empty.out'], # e
     # 'is_simple':['is_simple.csv','is_simple.out'], # e
 }
 
@@ -54,7 +50,7 @@ unary_func_dict = {
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
-    # 'translate':['translate.csv','translate.out','st_translate.out',[1,2]],
+    # 'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
     # 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
 }
 
@@ -66,7 +62,7 @@ binary_func_dict = {
     'crosses': ['crosses.csv', 'crosses.out', 'st_crosses.out'],
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
-    # 'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out']
+    # 'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
     # 'hausdorff_distance':['hausdorff_distance.csv','hausdorff_distance.out','st_hausdorff_distance.out'],
     # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'] # e
     #
@@ -118,12 +114,9 @@ def is_polygon(geo):
 def is_geometry(geo):
     geo = geo.strip().upper()
     for x in GEO_TYPES:
-
         if geo.startswith(x) and len(geo) != len(x):
             return True
-
         continue
-
     return False
 
 
@@ -527,6 +520,7 @@ def compare_results(config, arctern_results, postgis_results):
     case_result_flag = True
 
     if len(arct_arr) != len(pgis_arr):
+        print('arctern koalas results count is not consist with expected data.')
         return False
 
     for arctern_res_item, postgis_res_item in zip(
@@ -687,6 +681,7 @@ def test_unary_property_func(func_name, input_csv, output_csv):
         'centroid',
         'boundary',
         'convex_hull'
+        'exterior'
     ]
     input_csv_path = input_csv_base_dir + input_csv
     output_csv_path = output_csv_base_dir + output_csv
