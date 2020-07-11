@@ -28,14 +28,14 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.17.1
     - rapidjson ==1.1.0
-    - python
+    - python =={{ CONDA_PYTHON }}
     - Cython ==0.29.15
     - setuptools
     - koalas ==1.0.0
     - fiona
 
   run:
-    - python
+    - python =={{ CONDA_PYTHON }}
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.17.1
