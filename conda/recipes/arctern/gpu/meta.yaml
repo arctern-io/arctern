@@ -29,7 +29,7 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.17.1
     - rapidjson ==1.1.0
-    - python >=3.6,<3.8
+    - python
     - Cython ==0.29.15
     - setuptools
     - koalas ==1.0.0
@@ -39,7 +39,7 @@ requirements:
     - cudatoolkit {{ cuda_version }}.*
 
   run:
-    - python >=3.6,<3.8
+    - python
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.17.1
