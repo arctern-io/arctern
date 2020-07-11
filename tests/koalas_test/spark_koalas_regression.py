@@ -33,9 +33,9 @@ unary_func_property_dict = {
     'is_valid': ['is_valid.csv', 'is_valid.out', 'st_is_valid.out'],
     'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],  # empty error!
     'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out'],
-    'exterior':['exterior.csv','exterior.out','st_exterior.out'], # empty error!
-    'boundary':['boundary.csv','boundary.out','st_boundary.out'], # e
-    'is_empty':['is_empty.csv','is_empty.out','st_is_empty.out'], # e
+    'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],  # empty error!
+    'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],  # e
+    'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],  # e
     # 'is_simple':['is_simple.csv','is_simple.out'], # e
 }
 
@@ -72,6 +72,7 @@ binary_func_dict = {
     # 'difference':['difference.csv','difference.out'],
     # 'disjoint':['disjoint.csv','disjoint.out'],
 }
+
 
 def collect_diff_file_list():
     result_file_list = []
