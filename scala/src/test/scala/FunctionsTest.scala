@@ -2159,6 +2159,7 @@ class FunctionsTest extends AdapterTest {
   test("ST_SymDifference") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)"), GeometryUDT.FromWkt("LINESTRING (4 0,6 0)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)"), GeometryUDT.FromWkt("POINT (0 0)")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -2173,6 +2174,7 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 4 0), (5 0, 6 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_symdifference(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -2180,6 +2182,7 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 4 0), (5 0, 6 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_SymDifference-Null") {
