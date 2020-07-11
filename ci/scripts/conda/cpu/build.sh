@@ -18,6 +18,7 @@ function logger() {
 
 # Set path and build parallel level
 export PATH=/conda/bin:$PATH
+export CONDA_PYTHON=${CONDA_PYTHON:="3.6"}
 export PARALLEL_LEVEL=4
 
 # Set versions of packages needed to be grabbed
@@ -47,7 +48,8 @@ env
 
 logger "Activate conda env..."
 eval "$(conda shell.bash hook)"
-conda activate arctern
+conda create -n arctern_env python=${CONDA_PYTHON}
+conda activate arctern_env
 
 if [ -n "${CONDA_CUSTOM_CHANNEL}" ]; then
     conda config --add channels ${CONDA_CUSTOM_CHANNEL}
