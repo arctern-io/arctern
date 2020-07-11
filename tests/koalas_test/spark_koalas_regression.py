@@ -24,18 +24,6 @@ CURVE_TYPES = ['CIRCULARSTRING', 'MULTICURVE', 'COMPOUNDCURVE']
 SURFACE_TYPES = ['CURVEPOLYGON', 'MULTISURFACE', 'SURFACE']
 GEO_LENGTH_TYPES = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
 GEO_AREA_TYPES = ['POLYGON', 'MULTIPOLYGON']
-# ALIST = [
-#     'run_test_st_area_curve', 'run_test_st_distance_curve',
-#     'run_test_st_hausdorffdistance_curve'
-# ]
-# BLIST = [
-#     'run_test_st_curvetoline', 'run_test_st_transform',
-#     'run_test_st_transform1', 'run_test_union_aggr_curve',
-#     'run_test_st_buffer1', 'run_test_st_buffer_curve',
-#     'run_test_st_buffer_curve1', 'run_test_st_intersection_curve',
-#     'run_test_st_simplifypreservetopology_curve'
-# ]
-
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING']
 GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'
@@ -88,7 +76,6 @@ binary_func_dict = {
     # 'difference':['difference.csv','difference.out'],
     # 'disjoint':['disjoint.csv','disjoint.out'],
 }
-
 
 def collect_diff_file_list():
     result_file_list = []
