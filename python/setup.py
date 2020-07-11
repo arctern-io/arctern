@@ -74,7 +74,12 @@ class BuildExt(build_ext):
             self.compiler.compiler_so.append('-Wno-unused-variable')
         super(BuildExt, self).build_extensions()
 
+version = {}
+with open("arctern/_version.py") as fp:
+    exec(fp.read(), version)
+
 setup(
     cmdclass={'build_ext': BuildExt},
     packages=find_packages(),
+    version=version["__version__"]
 )

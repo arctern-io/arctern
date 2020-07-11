@@ -11,18 +11,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from setuptools import setup
-
-version = {}
-with open("arctern_spark/version.py") as fp:
-    exec(fp.read(), version)
-
-setup(
-    name="arctern_spark",
-    packages=[
-        "arctern_spark",
-        "arctern_spark.tests"
-    ],
-    version=version["__version__"]
-)
+__version__ = "0.3.0"
