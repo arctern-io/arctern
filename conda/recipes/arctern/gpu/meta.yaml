@@ -61,7 +61,7 @@ test:
     - test ! -f $PREFIX/lib/libarctern.a        # [unix]
 
     # python
-    - export PYTHONUSERBASE=$PREFIX:$PYTHONUSERBASE
+    - export PYTHONUSERBASE=$PREFIX
     - python -c "import arctern"
     # - python -c "import arctern_spark" # pyspark is required
     - python -c "import arctern_pyspark"
