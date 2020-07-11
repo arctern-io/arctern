@@ -63,21 +63,23 @@ class GeoDataFrame(DataFrame):
 
     def set_geometry(self, col, inplace=False, crs=None):
         """
-        Add GeoDataFrame geometry columns using either existing column.
+        Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
 
         Parameters
         ----------
-        col : list
-            The name of column to be setten as geometry column.
-        inplace : bool, default false
-            Modify the GeoDataFrame in place (do not create a new object)
-        crs : str
-            Coordinate system to use
+        col: list
+            The name of column to be setten as a geometry column.
+        inplace: bool, default false
+            Whether to modify the GeoDataFrame in place.
+            * *True:* Modifies the GeoDataFrame in place (does not create a new object).
+            * *False:* Does not modifies the GeoDataFrame in place.
+        crs: str
+            The coordinate reference system to use.
 
         Returns
         -------
         GeoDataFrame
-            An arctern.GeoDataFrame object.
+            A GeoDataFrame object.
 
         Examples
         --------
@@ -126,32 +128,27 @@ class GeoDataFrame(DataFrame):
     # pylint: disable=arguments-differ
     def to_json(self, na="null", show_bbox=False, geometry=None, **kwargs):
         """
-        Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
+        Returns a GeoJSON string representation of the GeoDataFrame.
 
         Parameters
         ----------
+        na: {'null', 'drop', 'keep'}
+            Indicates how to output missing (NaN) values in the GeoDataFrame, by default 'null'.
+            * 'null': Outputs the missing entries as JSON null.
+            * 'drop': Removes the property from the feature. This applies to each feature individually so that features may have different properties.
+            * 'keep': Outputs the missing entries as NaN.
+        show_bbow: bool, optional
+            Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
+            * *True:* Includes bounding box in the GeoJSON string.
+            * *False:* Do not include bounding box in the GeoJSON string.
 
-        na : {'null', 'drop', 'keep'}, default 'null'
-            Indicates how to output missing (NaN) values in the GeoDataFrame.
-            See below.
-        show_bbow : bool, optional, default: False
-            Include bbox (bounds) in the geojson
+        **kwargs:
+            Parameters to pass to `jump.dumps`.
 
         Returns
         -------
         Series
             Sequence of geometries in GeoJSON format.
-
-        Note
-        ----
-        The remaining *kwargs* are passed to json.dumps().
-
-        Missing (NaN) values in the GeoDataFrame can be represented as follows:
-
-        - ``null``: output the missing entries as JSON null.
-        - ``drop``: remove the property from the feature. This applies to each
-          feature individually so that features may have different properties.
-        - ``keep``: output the missing entries as NaN.
 
         Examples
         --------
@@ -277,7 +274,7 @@ class GeoDataFrame(DataFrame):
 
         Parameters
         ----------
-        pdf : geopandas.GeoDataFrame
+        pdf: geopandas.GeoDataFrame
             A geopandas.GeoDataFrame object.
 
         Returns
@@ -324,29 +321,29 @@ class GeoDataFrame(DataFrame):
                     result._crs.append(None)
         return result
 
-    def disolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
+    def dissolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         """
-        Dissolve geometries within `groupby` into single observation.
-        This is accomplished by applying the `unary_union` method
-        to all geometries within a groupself.
+        Dissolves geometries within `by` into a single observation.
 
-        Observations associated with each `groupby` group will be aggregated
-        using the `aggfunc`.
+        This is accomplished by applying the `unary_union` method to all geometries within a group.
+
+        Observations associated with each `by` group will be aggregated using the `aggfunc`.
 
         Parameters
         ----------
-        by : str, default None
-            Column whose values define groups to be dissolved
-        aggfunc : function or str, default "first"
-            Aggregation function for manipulation of data associated
-            with each group. Passed to pandas `groupby.agg` method.
-        as_index : bool, default True
-            If true, groupby columns become index of result.
+        by: str
+            Column whose values define groups to be dissolved, by default None.
+        aggfunc: function or str
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+        as_index: bool
+            Whether to use the ``by`` column as the index of result, by default True.
+            * *True:* The ``by`` column becomes the index of result.
+            * *False:* The result uses the default ascending index that starts from 0.
 
         Returns
         -------
-        arctern.GeoDataFrame
-            An arctern.GeoDataFrame object.
+        GeoDataFrame
+            A GeoDataFrame object.
 
         Examples
         --------
@@ -359,7 +356,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> gdf.disolve(by="other_geom", col="geo1")
+        >>> gdf.dissolve(by="other_geom", col="geo1")
                                         geo1  A    B
         other_geom
         1           MULTIPOINT (0 0,1 1,2 2)  0  0.0
@@ -397,7 +394,7 @@ class GeoDataFrame(DataFrame):
 
         Returns
         --------
-        crs : list
+        crs: list
             The Coordinate Reference System (CRS).
 
         Examples
@@ -433,14 +430,12 @@ class GeoDataFrame(DataFrame):
             validate=None,
     ):
         """
-        Merge two ``GeoDataFrame`` objects with a database-style join.
-
-        Returns a ``GeoDataFrame`` if a geometry column is present; otherwise,
-        returns a pandas ``DataFrame``.
+        Merges two GeoDataFrame objects with a database-style join.
 
         Returns
         -------
             GeoDataFrame or pandas.DataFrame
+            Returns a GeoDataFrame if a geometry column is present; otherwise, returns a pandas DataFrame.
 
         Examples
         -------
@@ -507,73 +502,76 @@ class GeoDataFrame(DataFrame):
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Alternate constructor to create a ``GeoDataFrame`` from a file or url.
+        Constructs a GeoDataFrame from a file or url.
 
         Parameters
         -----------
-        filename : str
+        filename: str
             File path or file handle to read from.
-        bbox : tuple or arctern.GeoSeries, default None
-            Filter features by given bounding box, GeoSeries. Cannot be used
-            with mask.
-        mask : dict | arctern.GeoSeries | dicr, default None
-            Filter for features that intersect with the given dict-like geojson
-            geometry, GeoSeries. Cannot be used with bbox.
-        rows : int or slice, default None
-            Load in specific rows by passing an integer (first `n` rows) or a
-            slice() object.
-        **kwargs :
-        Keyword args to be passed to the `open` or `BytesCollection` method
-        in the fiona library when opening the file. For more information on
-        possible keywords, type:
-        ``import fiona; help(fiona.open)``
+        bbox: tuple or GeoSeries
+            Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+            * min_x: The minimum x coordinate of the bounding box.
+            * min_y: The minimum y coordinate of the bounding box.
+            * max_x: The maximum x coordinate of the bounding box.
+            * max_y: The maximum y coordinate of the bounding box.
+        mask: dict, GeoSeries
+            Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
+        rows: int or slice
+            * If ``rows`` is an integer *n*, this function loads the first *n* rows.
+            * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+                * *start:* The position to start the slicing, by default 0.
+                * *end:* The position to end the slicing.
+                * *step:* The step of the slicing, by default 1.
+
+        **kwargs:
+        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+
+        Notes
+        -------
+        ``bbox`` and ``mask`` cannot be used together.
 
         Returns
         --------
         GeoDataFrame
-            An arctern.GeoDataFrame object.
+            A GeoDataFrame read from file.
         """
         return arctern.tools.file._read_file(filename, **kwargs)
 
     # pylint: disable=protected-access
     def to_file(self, filename, driver="ESRI Shapefile", geometry=None, schema=None, index=None, crs=None, **kwargs):
         """
-        Write the ``GeoDataFrame`` to a file.
+        Writes a GeoDataFrame to a file.
 
         Parameters
         ----------
-        df : GeoDataFrame to be written
-        filename : str
+        df: GeoDataFrame
+            GeoDataFrame to be written.
+        filename: str
             File path or file handle to write to.
-        driver : string, default 'ESRI Shapefile'
-            The OGR format driver used to write the vector file.
-        schema : dict, default None
-            If specified, the schema dictionary is passed to Fiona to
-            better control how the file is written. If None, GeoPandas
-            will determine the schema based on each column's dtype.
-        index : bool, default None
-            If True, write index into one or more columns (for MultiIndex).
-            Default None writes the index into one or more columns only if
-            the index is named, is a MultiIndex, or has a non-integer data
-            type. If False, no index is written.
-        mode : str, default 'w'
-            The write mode, 'w' to overwrite the existing file and 'a' to append.
-        crs : str, default None
-            If specified, the CRS is passed to Fiona to
-            better control how the file is written. If None, GeoPandas
-            will determine the crs based on crs df attribute.
-        col : str, default None
-            Specify geometry column.
+        driver: str
+            The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
+        schema: dict
+            * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
+            * If None (default), this function determines the schema based on each column's dtype.
+        index: bool
+            * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
+            * If True, writes index into one or more columns (for MultiIndex).
+            * If False, no index is written.
+        mode: str
+            * 'a': Append
+            * 'w' (default): Write
+        crs: str
+            * If specified, the CRS is passed to Fiona to better control how the file is written.
+            * If None (default), this function determines the crs based on crs df attribute.
+        col: str
+            Specifys geometry column, by default None.
+
+        **kwargs:
+        Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
 
         Notes
         -----
-        The extra keyword arguments ``**kwargs`` are passed to fiona.open and
-        can be used to write to multi-layer data, store data within archives
-        (zip files), etc.
-
-        The format drivers will attempt to detect the encoding of your data, but
-        may fail. In this case, the proper encoding can be specified explicitly
-        by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
+        The format drivers will attempt to detect the encoding of your data, but may fail. In this case, the proper encoding can be specified explicitly by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
 
         Examples
         --------

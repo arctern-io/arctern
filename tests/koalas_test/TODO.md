@@ -6,9 +6,9 @@
 *centroid
 *is_valid
 *convex_hull
-is_empty
+*is_empty
 is_simple
-boundary
+*boundary
 length
 exterior
 ```
@@ -24,10 +24,10 @@ scale
 affine
 symmetric_difference
 rotate
-precision_reduce
-transform
-translate
-curve_to_line
+*precision_reduce
+to_crs
+*translate
+*curve_to_line
 ```
 
 ---
