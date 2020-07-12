@@ -2,7 +2,7 @@
 
 set -e
 
-CONDA_PYTHON=${CONDA_PYTHON:="3.6"}
+CONDA_PYTHON=${CONDA_PYTHON:="3.7"}
 
 if [ "$BUILD_ARCTERN" == '1' ]; then
   echo "Building arctern..."

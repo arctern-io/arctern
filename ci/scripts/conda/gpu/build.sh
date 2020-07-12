@@ -18,7 +18,7 @@ function logger() {
 
 # Set path and build parallel level
 export PATH=/conda/bin:$PATH
-export CONDA_PYTHON=${CONDA_PYTHON:="3.6"}
+export CONDA_PYTHON=${CONDA_PYTHON:="3.7"}
 export PARALLEL_LEVEL=4
 
 # Set versions of packages needed to be grabbed
