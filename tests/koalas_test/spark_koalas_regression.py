@@ -14,7 +14,6 @@
 
 import os
 from shapely import wkt
-
 from arctern_spark.geoseries import GeoSeries
 
 ARCTERN_INPUT_DIR = './data/'
@@ -146,14 +145,14 @@ def compare_geometry(config, geometry_x, geometry_y):
         return True
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
-    return arct.equals_exact(pgis, EPOCH)
+    return arct.equals_exact(pgis, EPOCH) or arct.equals(pgis)
 
 
 def compare_geometrycollection(config, geometry_x, geometry_y):
     """Compare whether 2 geometrycollections is 'equal'."""
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
-    return arct.equals_exact(pgis, 1e-10)
+    return arct.equals_exact(pgis, 1e-10) or arct.equals(pgis)
 
 
 def compare_floats(config, geometry_x, geometry_y):
@@ -312,6 +311,9 @@ def test_binary_func(func_name, input_csv, output_csv):
     assert len(col1) == len(col2)
     geo_s1 = GeoSeries(col1)
     geo_s2 = GeoSeries(col2)
+    if func_name == 'distance_sphere':
+        geo_s1.set_crs('EPSG:4326')
+        geo_s2.set_crs('EPSG:4326')
     test_codes = 'geo_s1.' + func_name + '(geo_s2)'
     if func_name in ['intersection','symmetric_difference']:
         test_codes = test_codes + '.to_wkt()'
