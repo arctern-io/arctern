@@ -16,13 +16,13 @@
 # pylint: disable=super-init-not-called,unidiomatic-typecheck,unbalanced-tuple-unpacking
 # pylint: disable=too-many-lines,non-parent-init-called
 
-import pandas as pd
 import numpy as np
-from pandas.io.formats.printing import pprint_thing
+import pandas as pd
 from pandas.api.types import is_list_like
+from pandas.io.formats.printing import pprint_thing
 import databricks.koalas as ks
-from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas import DataFrame, Series, get_option
+from databricks.koalas.base import IndexOpsMixin
 from databricks.koalas.exceptions import SparkPandasIndexingError
 from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
 from databricks.koalas.series import REPR_PATTERN
@@ -48,6 +48,7 @@ def _column_op(f, *args):
 
 
 # for unary or binary operation, which return GeoSeries.
+# pylint: disable=no-value-for-parameter
 def _column_geo(f, *args, **kwargs):
     kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss, **kwargs)
@@ -1830,13 +1831,13 @@ class GeoSeries(Series):
     @property
     def bbox(self):
         """
-        Calculate bounding box for the union of all geometries in the GeoSeries.
+        Calculate bounding box for the each geometry in the GeoSeries.
 
-        :rtype: a (minx, miny, maxx, maxy) list
-        :return: A list of Arctern.GeoSeries's bound box.
+        :rtype: a Pandas Series with each item is a (minx, miny, maxx, maxy) list
+        :return: Bounding box of each geometry.
         """
-        geom_wkb = self.envelope_aggr().to_wkb()[0]
-        return GeoSeries._calculate_bbox_from_wkb(geom_wkb)
+        envelope = self.envelope.to_pandas().apply(GeoSeries._calculate_bbox_from_wkb)
+        return envelope
 
     def iterfeatures(self, na="null", show_bbox=False):
         """
@@ -1871,7 +1872,6 @@ class GeoSeries(Series):
             if show_bbox:
                 feature["bbox"] = GeoSeries._calculate_bbox_from_wkb(geom) if geom else None
             yield feature
-
 
     @classmethod
     def from_file(cls, fp, bbox=None, mask=None, item=None, **kwargs):
@@ -1932,7 +1932,6 @@ class GeoSeries(Series):
                     geoms.append(json.dumps(geometry) if geometry is not None else '{"type": "null"}')
                 return GeoSeries.geom_from_geojson(geoms, crs=crs)
 
-
     def to_file(self, fp, mode="w", driver="ESRI Shapefile", **kwargs):
         """
         Store GeoSeries to a file or OGR dataset.
@@ -1966,6 +1965,7 @@ class GeoSeries(Series):
         with fiona.Env():
             with fiona.open(fp, mode, driver, crs=crs, schema=schema, **kwargs) as sink:
                 sink.writerecords(self.iterfeatures())
+
 
 def first_series(df):
     """
