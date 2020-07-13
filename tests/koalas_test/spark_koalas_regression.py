@@ -29,16 +29,16 @@ EPOCH = 1e-8
 
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
-    'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],  # empty error!
+    'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
     'is_valid': ['is_valid.csv', 'is_valid.out', 'st_is_valid.out'],
-    'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],  # empty error!
+    'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],
     'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out'],
-    'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],  # empty error!
-    'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],  # e
-    'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],  # e
-    'is_simple': ['is_simple.csv', 'is_simple.out', 'st_is_simple.out'],  # e
+    'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],
+    'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],
+    'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],
+    'is_simple': ['is_simple.csv', 'is_simple.out', 'st_is_simple.out'],
 }
 
 unary_func_dict = {
@@ -125,15 +125,12 @@ def is_float(str):
 
 
 def convert_str(strr):
-    """Convert a string to float, if it's not a float value, return string to represent itself."""
     if strr.lower() == 'true' or strr.lower() == 't':
         return True
     if strr.lower() == 'false' or strr.lower() == 'f':
         return False
-
     if is_float(strr):
         return float(strr)
-
     return strr
 
 
