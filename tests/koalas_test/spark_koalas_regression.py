@@ -139,7 +139,6 @@ def convert_str(strr):
 
 
 def compare_geometry(config, geometry_x, geometry_y):
-    """Compare whether 2 geometries is 'equal'."""
     if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith(
             'EMPTY'):
         return True
@@ -149,26 +148,21 @@ def compare_geometry(config, geometry_x, geometry_y):
 
 
 def compare_geometrycollection(config, geometry_x, geometry_y):
-    """Compare whether 2 geometrycollections is 'equal'."""
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
     return arct.equals_exact(pgis, 1e-10) or arct.equals(pgis)
 
 
 def compare_floats(config, geometry_x, geometry_y):
-    """Compare whether 2 float values is 'equal'."""
     value_x = float(geometry_x)
     value_y = float(geometry_y)
     if value_x == 0:
         return value_y == 0
-
     precision_error = EPOCH
-
     return abs((value_x - value_y)) <= precision_error
 
 
 def compare_one(config, result, expect):
-    """Compare 1 line of arctern result and expected."""
     value_x = result[1]
     value_y = expect[1]
     newvalue_x = convert_str(value_x)
