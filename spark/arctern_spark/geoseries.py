@@ -147,7 +147,10 @@ class GeoSeries(Series):
                     # and cast it's type to StringType
                     s = Series([], dtype=int).astype(str)
 
-            anchor = DataFrame(s)
+            if isinstance(s, Series):
+                anchor = s._anchor
+            else:
+                anchor = DataFrame(s)
             column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
