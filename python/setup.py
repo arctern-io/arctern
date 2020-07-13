@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# pylint: disable=exec-used
 #from distutils.core import setup, Extension
 import os
 
@@ -74,7 +75,12 @@ class BuildExt(build_ext):
             self.compiler.compiler_so.append('-Wno-unused-variable')
         super(BuildExt, self).build_extensions()
 
+version = {}
+with open("arctern/_version.py") as fp:
+    exec(fp.read(), version)
+
 setup(
     cmdclass={'build_ext': BuildExt},
     packages=find_packages(),
+    version=version["__version__"]
 )
