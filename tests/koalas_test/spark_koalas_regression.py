@@ -26,6 +26,7 @@ GEO_COLLECTION_TYPES = [
 ]
 
 EPOCH = 1e-8
+EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
@@ -62,16 +63,16 @@ binary_func_dict = {
     'distance': ['distance.csv', 'distance.out', 'st_distance.out'],
     'contains': ['contains.csv', 'contains.out', 'st_contains.out'],
     'crosses': ['crosses.csv', 'crosses.out', 'st_crosses.out'],
+    'disjoint':['disjoint.csv','disjoint.out','st_disjoint.out'],
+    'overlaps':['overlaps.csv','overlaps.out','st_overlaps.out'],
     'touches': ['touches.csv', 'touches.out', 'st_touches.out'],
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
     'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
     'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
-    # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out']
-    'overlaps':['overlaps.csv','overlaps.out','st_overlaps.out'],
-    # 'union':['union.csv','union.out'],  # error
+    'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'],
+    # 'union':['union.csv','union.out','st_union.out'],  # error
     # 'difference':['difference.csv','difference.out','st_difference.out'],
-    'disjoint':['disjoint.csv','disjoint.out','st_disjoint.out']
 }
 
 
@@ -134,7 +135,7 @@ def convert_str(strr):
     return strr
 
 
-def compare_geometry(config, geometry_x, geometry_y):
+def compare_geometry(geometry_x, geometry_y):
     if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith(
             'EMPTY'):
         return True
@@ -143,19 +144,18 @@ def compare_geometry(config, geometry_x, geometry_y):
     return arct.equals_exact(pgis, EPOCH) or arct.equals(pgis)
 
 
-def compare_geometrycollection(config, geometry_x, geometry_y):
+def compare_geometrycollection(geometry_x, geometry_y):
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
     return arct.equals_exact(pgis, 1e-10) or arct.equals(pgis)
 
 
-def compare_floats(config, geometry_x, geometry_y):
+def compare_floats(geometry_x, geometry_y):
     value_x = float(geometry_x)
     value_y = float(geometry_y)
     if value_x == 0:
         return value_y == 0
-    precision_error = EPOCH
-    return abs((value_x - value_y)) <= precision_error
+    return abs(abs(value_x - value_y)/max(abs(value_x),abs(value_y))) <= EPOCH_FLOAT
 
 
 def compare_one(config, result, expect):
@@ -175,7 +175,7 @@ def compare_one(config, result, expect):
             return one_result_flag
 
         if isinstance(newvalue_x, (int, float)):
-            return compare_floats(config, newvalue_x, newvalue_y)
+            return compare_floats(newvalue_x, newvalue_y)
 
         if isinstance(newvalue_x, str):
             newvalue_x = newvalue_x.strip().upper()
@@ -185,7 +185,7 @@ def compare_one(config, result, expect):
                 return True
 
             if is_geometry(newvalue_x) and is_geometry(newvalue_y):
-                one_result_flag = compare_geometry(config, newvalue_x,
+                one_result_flag = compare_geometry(newvalue_x,
                                                    newvalue_y)
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
@@ -194,7 +194,7 @@ def compare_one(config, result, expect):
             if is_geometrycollection(newvalue_x) and is_geometrycollection(
                     newvalue_y):
                 one_result_flag = compare_geometrycollection(
-                    config, newvalue_x, newvalue_y)
+                    newvalue_x, newvalue_y)
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
