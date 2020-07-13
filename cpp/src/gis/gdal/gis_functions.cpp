@@ -1269,8 +1269,8 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
       double fromlon = p1->getY();
       double tolat = p2->getX();
       double tolon = p2->getY();
-      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
-          (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
+      if ((fromlat > 90) || (fromlat < -90) || (fromlon > 180) || (fromlon < -180) ||
+          (tolat > 90) || (tolat < -90) || (tolon > 180) || (tolon < -180)) {
         builder.array_builder.AppendNull();
       } else {
         array_ptr = AppendDouble(builder, distance(fromlat, fromlon, tolat, tolon));
