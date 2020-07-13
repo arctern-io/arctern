@@ -81,3 +81,24 @@ def test_inner_contains(left_df, right_df):
     r.sort_values(by="A_right", inplace=True)
     assert r["points"].to_wkt().to_list() == ['POINT (1 1)', 'POINT (1 2)', 'POINT (2 1)', 'POINT (2 2)', 'POINT (3 3)',
                                               'POINT (3 3)', 'POINT (4 5)', 'POINT (8 8)']
+
+
+def test_full_contains(left_df, right_df):
+    r = arctern_spark.sjoin(right_df, left_df, "polygons", "points", how="full", op="contains")
+    r.sort_values(by="A_right", inplace=True)
+    assert r["points"].to_wkt().to_list() == ['POINT (1 1)', 'POINT (1 2)', 'POINT (2 1)', 'POINT (2 2)', 'POINT (3 3)',
+                                              'POINT (3 3)', 'POINT (4 5)', 'POINT (8 8)', 'POINT (10 10)', None]
+
+
+def test_left_contains(left_df, right_df):
+    r = arctern_spark.sjoin(right_df, left_df, "polygons", "points", how="left", op="contains")
+    r.sort_values(by="A_right", inplace=True)
+    assert r["points"].to_wkt().to_list() == ['POINT (1 1)', 'POINT (1 2)', 'POINT (2 1)', 'POINT (2 2)', 'POINT (3 3)',
+                                              'POINT (3 3)', 'POINT (4 5)', 'POINT (8 8)', None]
+
+
+def test_right_contains(left_df, right_df):
+    r = arctern_spark.sjoin(right_df, left_df, "polygons", "points", how="right", op="contains")
+    r.sort_values(by="A_right", inplace=True)
+    assert r["points"].to_wkt().to_list() == ['POINT (1 1)', 'POINT (1 2)', 'POINT (2 1)', 'POINT (2 2)', 'POINT (3 3)',
+                                              'POINT (3 3)', 'POINT (4 5)', 'POINT (8 8)', 'POINT (10 10)']
