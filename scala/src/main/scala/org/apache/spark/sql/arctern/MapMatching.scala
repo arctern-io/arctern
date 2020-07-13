@@ -36,7 +36,7 @@ object MapMatching {
       env.getMaxY + deg_distance)
   }
 
-  private def envelopeCheck(env: Envelope): Boolean = env.getMinX > -90 && env.getMaxX < 90 && env.getMinY > -180 && env.getMaxY < 180
+  private def envelopeCheck(env: Envelope): Boolean = env.getMinX >= -180 && env.getMaxX <= 180 && env.getMinY >= -90 && env.getMaxY <= 90
 
   private def mapMatchingQuery(point: Geometry, index: RTreeIndex): util.List[_] = {
     var ev = defaultExpandValue
