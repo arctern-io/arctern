@@ -313,7 +313,7 @@ def test_binary_func(func_name, input_csv, output_csv):
     geo_s1 = GeoSeries(col1)
     geo_s2 = GeoSeries(col2)
     test_codes = 'geo_s1.' + func_name + '(geo_s2)'
-    if func_name == 'intersection':
+    if func_name in ['intersection','symmetric_difference']:
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
