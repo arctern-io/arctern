@@ -37,7 +37,6 @@ EPOCH_SURFACE = 1e-2
 EPOCH_CURVE_RELATIVE = 1e-2
 EPOCH_SURFACE_RELATIVE = 1e-2
 
-
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],  # empty error!
@@ -49,7 +48,7 @@ unary_func_property_dict = {
     'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],  # empty error!
     'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],  # e
     'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],  # e
-    'is_simple':['is_simple.csv','is_simple.out','st_is_simple.out'], # e
+    'is_simple': ['is_simple.csv', 'is_simple.out', 'st_is_simple.out'],  # e
 }
 
 unary_func_dict = {
@@ -59,7 +58,7 @@ unary_func_dict = {
     'unary_union': ['unary_union.csv', 'unary_union.out', 'st_unary_union.out', None],
     'as_geojson': ['as_geojson.csv', 'as_geojson.out', 'st_as_geojson.out', None],
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
-    'translate':['translate.csv','translate.out','st_translate.out',[2,2]],
+    'translate': ['translate.csv', 'translate.out', 'st_translate.out', [2, 2]],
     # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
@@ -154,6 +153,7 @@ def is_float(str):
     except:
         return False
 
+
 def convert_str(strr):
     """Convert a string to float, if it's not a float value, return string to represent itself."""
     if strr.lower() == 'true' or strr.lower() == 't':
@@ -165,6 +165,7 @@ def convert_str(strr):
         return float(strr)
 
     return strr
+
 
 def compare_geometry(config, geometry_x, geometry_y):
     """Compare whether 2 geometries is 'equal'."""
@@ -194,6 +195,7 @@ def compare_floats(config, geometry_x, geometry_y):
     precision_error = EPOCH
 
     return abs((value_x - value_y)) <= precision_error
+
 
 # pylint: disable=too-many-return-statements
 # pylint: disable=too-many-branches
@@ -316,6 +318,7 @@ def compare_all():
         flag = flag and res
     return flag
 
+
 def read_csv2arr(input_csv_path):
     import re
     arr = []
@@ -338,6 +341,7 @@ def read_csv2arr(input_csv_path):
         raise Exception('Csv file columns length must be 1 or 2.')
     return col1, col2
 
+
 def write_arr2csv(output_csv_path, output_arr):
     import csv
     with open(output_csv_path, 'w') as f:
@@ -359,6 +363,7 @@ def test_binary_func(func_name, input_csv, output_csv):
         test_codes = 'geo_s1.geom_equals(geo_s2)'
     res = eval(test_codes).sort_index()
     write_arr2csv(output_csv_path, res.tolist())
+
 
 # This is only for debug
 def test_binary_func1(func_name, input_csv, output_csv):
