@@ -1,5 +1,19 @@
-import warnings
+# Copyright (C) 2019-2020 Zilliz. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
+# pylint: disable=protected-access
+import warnings
 from arctern_spark.geodataframe import GeoDataFrame, GeoSeries
 
 
@@ -39,7 +53,7 @@ def sjoin(
     >>> import arctern_spark
     >>> from arctern_spark import GeoDataFrame
     >>> points = [
-    ...    "Point(1 1)",
+    ...     "Point(1 1)",
     ...     "Point(1 2)",
     ...     "Point(2 1)",
     ...     "Point(2 2)",
