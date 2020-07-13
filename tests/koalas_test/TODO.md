@@ -21,7 +21,7 @@ length
 *unary_union
 *buffer
 scale
-affine
+*affine
 symmetric_difference
 rotate
 *precision_reduce
