@@ -17,6 +17,7 @@ package org.apache.spark.sql.arctern
 
 import org.apache.spark.sql.arctern.expressions._
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateFunction
+import org.apache.spark.sql.catalyst.plans.JoinType
 import org.apache.spark.sql.{Column, DataFrame}
 
 object functions {
@@ -244,4 +245,11 @@ object functions {
   def nearest_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestRoad(points, roads)
 
   def nearest_location_on_road(points: DataFrame, roads: DataFrame): DataFrame = new MapMatching().nearestLocationOnRoad(points, roads)
+
+  def spatial_join(left: DataFrame, right: DataFrame,
+                   leftColName: String, rightColName: String,
+                   joinType: String, operator: String,
+                   leftSuffix: String, rightSuffix: String): DataFrame = {
+    SpatialJoin(left.sparkSession, left, right, leftColName, rightColName, JoinType(joinType), SpatialJoinOperator(operator), leftSuffix, rightSuffix)
+  }
 }
