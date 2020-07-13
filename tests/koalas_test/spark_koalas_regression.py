@@ -29,7 +29,7 @@ EPOCH = 1e-8
 EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
-    # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
+    'length':['length.csv', 'length.out','st_length.out'],  # issue 828
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
@@ -158,7 +158,7 @@ def compare_floats(geometry_x, geometry_y):
     return abs(abs(value_x - value_y)/max(abs(value_x),abs(value_y))) <= EPOCH_FLOAT
 
 
-def compare_one(config, result, expect):
+def compare_one(result, expect):
     value_x = result[1]
     value_y = expect[1]
     newvalue_x = convert_str(value_x)
@@ -205,7 +205,7 @@ def compare_one(config, result, expect):
         return False
 
 
-def compare_results(config, arctern_results, postgis_results):
+def compare_results(arctern_results, postgis_results):
     """Compare the result of arctern function and expected."""
     with open(arctern_results, 'r') as arctern_result_file:
         arct_arr = []
@@ -226,7 +226,7 @@ def compare_results(config, arctern_results, postgis_results):
 
     for arctern_res_item, postgis_res_item in zip(
             arct_arr, pgis_arr):
-        res = compare_one(config, arctern_res_item,
+        res = compare_one(arctern_res_item,
                           postgis_res_item)
         flag = flag and res
     return flag
@@ -254,7 +254,7 @@ def compare_all():
                   (name[:-4], 'expected result not found [%s]' % pgis_result))
             continue
 
-        res = compare_results(name[:-4], arct_result, pgis_result)
+        res = compare_results(arct_result, pgis_result)
         if res:
             print('Arctern test: %s, result: PASSED' % name[:-4])
         else:
