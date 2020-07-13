@@ -370,4 +370,4 @@ if __name__ == "__main__":
         test_unary_func(key, values[0], values[1], values[3])
 
     test_status = compare_all()
-    print(test_status)
+    assert test_status == True
