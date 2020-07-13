@@ -17,3 +17,4 @@ from .geoseries import *
 from . import plot
 from .geodataframe import *
 from .tools import *
+from ._version import __version__

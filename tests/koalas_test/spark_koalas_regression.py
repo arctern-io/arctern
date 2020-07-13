@@ -16,10 +16,10 @@ import os
 from shapely import wkt
 
 from arctern_spark.geoseries import GeoSeries
-from databricks.koalas import Series
 
-input_csv_base_dir = './data/'
-output_csv_base_dir = './output/'
+ARCTERN_INPUT_DIR = './data/'
+ARCTERN_RESULT_DIR = '/tmp/'
+EXPECTED_RESULT_DIR = './expected/'
 
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
@@ -54,7 +54,7 @@ unary_func_dict = {
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
-    # 'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None],
+    'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None]
 }
 
 binary_func_dict = {
@@ -72,7 +72,7 @@ binary_func_dict = {
     # 'overlaps':['overlaps.csv','overlaps.out'],  # error
     # 'touches':['touches.csv','touches.out'],  # error
     # 'union':['union.csv','union.out'],  # error
-    # 'difference':['difference.csv','difference.out'],
+    # 'difference':['difference.csv','difference.out','st_difference.out'],
     # 'disjoint':['disjoint.csv','disjoint.out'],
 }
 
@@ -151,7 +151,6 @@ def compare_geometry(config, geometry_x, geometry_y):
 
 def compare_geometrycollection(config, geometry_x, geometry_y):
     """Compare whether 2 geometrycollections is 'equal'."""
-
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
     return arct.equals_exact(pgis, 1e-10)
@@ -169,31 +168,30 @@ def compare_floats(config, geometry_x, geometry_y):
     return abs((value_x - value_y)) <= precision_error
 
 
-# pylint: disable=too-many-return-statements
-# pylint: disable=too-many-branches
 def compare_one(config, result, expect):
     """Compare 1 line of arctern result and expected."""
     value_x = result[1]
     value_y = expect[1]
-
     newvalue_x = convert_str(value_x)
     newvalue_y = convert_str(value_y)
 
-    if newvalue_x == newvalue_y:
-        return True
-
     try:
+        if newvalue_x == newvalue_y:
+            return True
+
         if isinstance(newvalue_x, bool):
             one_result_flag = (newvalue_x == newvalue_y)
             if not one_result_flag:
                 print(result[0], newvalue_x, expect[0], newvalue_y)
             return one_result_flag
 
+        if isinstance(newvalue_x, (int, float)):
+            return compare_floats(config, newvalue_x, newvalue_y)
+
         if isinstance(newvalue_x, str):
             newvalue_x = newvalue_x.strip().upper()
             newvalue_y = newvalue_y.strip().upper()
 
-            # check order : empty -> GEO_TYPES -> geocollection_types -> curve -> surface
             if (is_empty(newvalue_x) and is_empty(newvalue_y)):
                 return True
 
@@ -213,15 +211,9 @@ def compare_one(config, result, expect):
                 return one_result_flag
             return False
 
-        if isinstance(newvalue_x, (int, float)):
-            return compare_floats(config, newvalue_x, newvalue_y)
-            # if not one_result_flag:
-            #     print(result[0], newvalue_x, expect[0], newvalue_y)
-            # return one_result_flag
     except ValueError as ex:
         print(repr(ex))
-        one_result_flag = False
-    return one_result_flag
+        return False
 
 
 def compare_results(config, arctern_results, postgis_results):
@@ -238,8 +230,7 @@ def compare_results(config, arctern_results, postgis_results):
             if value.strip() != '':
                 pgis_arr.append((num, value.strip()))
 
-    case_result_flag = True
-
+    flag = True
     if len(arct_arr) != len(pgis_arr):
         print('arctern koalas results count is not consist with expected data.')
         return False
@@ -248,14 +239,11 @@ def compare_results(config, arctern_results, postgis_results):
             arct_arr, pgis_arr):
         res = compare_one(config, arctern_res_item,
                           postgis_res_item)
-        case_result_flag = case_result_flag and res
-
-    return case_result_flag
+        flag = flag and res
+    return flag
 
 
 def compare_all():
-    ARCTERN_RESULT_DIR = './output/'
-    EXPECTED_RESULT_DIR = './expected/'
     results, expects = collect_diff_file_list()
     flag = True
 
@@ -318,14 +306,14 @@ def write_arr2csv(output_csv_path, output_arr):
 
 
 def test_binary_func(func_name, input_csv, output_csv):
-    input_csv_path = input_csv_base_dir + input_csv
-    output_csv_path = output_csv_base_dir + output_csv
+    input_csv_path = ARCTERN_INPUT_DIR + input_csv
+    output_csv_path = ARCTERN_RESULT_DIR + output_csv
     col1, col2 = read_csv2arr(input_csv_path)
     assert len(col1) == len(col2)
     geo_s1 = GeoSeries(col1)
     geo_s2 = GeoSeries(col2)
     test_codes = 'geo_s1.' + func_name + '(geo_s2)'
-    if func_name == 'intersection':
+    if func_name in ['intersection','symmetric_difference']:
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
@@ -335,8 +323,8 @@ def test_binary_func(func_name, input_csv, output_csv):
 
 # This is only for debug
 def test_binary_func1(func_name, input_csv, output_csv):
-    input_csv_path = input_csv_base_dir + input_csv
-    output_csv_path = output_csv_base_dir + output_csv
+    input_csv_path = ARCTERN_INPUT_DIR + input_csv
+    output_csv_path = ARCTERN_RESULT_DIR + output_csv
     col1, col2 = read_csv2arr(input_csv_path)
     assert len(col1) == len(col2)
     for i in range(0, len(col1)):
@@ -358,8 +346,8 @@ def test_unary_property_func(func_name, input_csv, output_csv):
         'convex_hull',
         'exterior'
     ]
-    input_csv_path = input_csv_base_dir + input_csv
-    output_csv_path = output_csv_base_dir + output_csv
+    input_csv_path = ARCTERN_INPUT_DIR + input_csv
+    output_csv_path = ARCTERN_RESULT_DIR + output_csv
     col1, col2 = read_csv2arr(input_csv_path)
     assert len(col2) == 0
     geo_s1 = GeoSeries(col1)
@@ -371,8 +359,8 @@ def test_unary_property_func(func_name, input_csv, output_csv):
 
 
 def test_unary_func(func_name, input_csv, output_csv, params):
-    input_csv_path = input_csv_base_dir + input_csv
-    output_csv_path = output_csv_base_dir + output_csv
+    input_csv_path = ARCTERN_INPUT_DIR + input_csv
+    output_csv_path = ARCTERN_RESULT_DIR + output_csv
     col1, col2 = read_csv2arr(input_csv_path)
     assert len(col2) == 0
     geo_s1 = GeoSeries(col1)
