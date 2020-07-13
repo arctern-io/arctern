@@ -19,6 +19,7 @@ services:
     shm_size: &shm-size 2G
     environment:
       BUILD_TYPE: "Release"
+      CONDA_PYTHON: ${CONDA_PYTHON}
     volumes: &conda-volumes
       - .:/arctern:delegated
     command: &build-conda-command
@@ -41,6 +42,7 @@ services:
     shm_size: *shm-size
     environment:
       BUILD_TYPE: "Release"
+      CONDA_PYTHON: ${CONDA_PYTHON}
     volumes: &conda-cudagl-volumes
       - .:/arctern:delegated
     command: &build-conda-cudagl-command

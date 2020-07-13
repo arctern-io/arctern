@@ -25,17 +25,8 @@ GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION', 'MULTILINEARRING'
 ]
-CURVE_TYPES = ['CIRCULARSTRING', 'MULTICURVE', 'COMPOUNDCURVE']
-SURFACE_TYPES = ['CURVEPOLYGON', 'MULTISURFACE', 'SURFACE']
-GEO_LENGTH_TYPES = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
-GEO_AREA_TYPES = ['POLYGON', 'MULTIPOLYGON']
 
-UNIT = 1e-4
 EPOCH = 1e-8
-EPOCH_CURVE = 1e-2
-EPOCH_SURFACE = 1e-2
-EPOCH_CURVE_RELATIVE = 1e-2
-EPOCH_SURFACE_RELATIVE = 1e-2
 
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
@@ -59,7 +50,7 @@ unary_func_dict = {
     'as_geojson': ['as_geojson.csv', 'as_geojson.out', 'st_as_geojson.out', None],
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
     'translate': ['translate.csv', 'translate.out', 'st_translate.out', [2, 2]],
-    # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
+    'affine': ['affine.csv', 'affine.out', 'st_affine.out', [1, 1, 1, 1, 1, 1]],
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
@@ -127,25 +118,6 @@ def is_geometrycollection(geo):
     return False
 
 
-def is_geometrytype(geo):
-    """Determine whether a given string is to describe a geometry type, like 'point' for example."""
-    geo = geo.strip().upper()
-
-    arr = []
-    arr.extend(GEO_TYPES)
-    arr.extend(GEO_COLLECTION_TYPES)
-    arr.extend(CURVE_TYPES)
-    arr.extend(SURFACE_TYPES)
-
-    for a_geo_type_in_all_geo_types_list in arr:
-        if a_geo_type_in_all_geo_types_list in geo:
-            return True
-
-        continue
-
-    return False
-
-
 def is_float(str):
     try:
         num = float(str)
@@ -207,6 +179,9 @@ def compare_one(config, result, expect):
     newvalue_x = convert_str(value_x)
     newvalue_y = convert_str(value_y)
 
+    if newvalue_x == newvalue_y:
+        return True
+
     try:
         if isinstance(newvalue_x, bool):
             one_result_flag = (newvalue_x == newvalue_y)
@@ -236,13 +211,6 @@ def compare_one(config, result, expect):
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
-
-            if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
-                one_result_flag = (newvalue_x == newvalue_y)
-                if not one_result_flag:
-                    print(result[0], newvalue_x, expect[0], newvalue_y)
-                return one_result_flag
-
             return False
 
         if isinstance(newvalue_x, (int, float)):
@@ -438,6 +406,6 @@ if __name__ == "__main__":
     # test unary_func
     for key, values in unary_func_dict.items():
         test_unary_func(key, values[0], values[1], values[3])
-    # update_result()
+
     test_status = compare_all()
-    # print(test_status)
+    print(test_status)
