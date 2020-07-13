@@ -87,6 +87,7 @@ object CodeGenUtil {
         s"""
            |${mutableGeometryInitCode(geoName)}
            |${geoName} = $callFunc;
+           |${emptyGeometryCheck(geoName)}
            |$value = ${serialGeometryCode(geoName)}
            |""".stripMargin
       case _ => s"$value = $callFunc;"
@@ -110,4 +111,6 @@ object CodeGenUtil {
   }
 
   def utf8StringFromStringCode(string_name: String) = s"org.apache.spark.unsafe.types.UTF8String.fromString($string_name);"
+
+  def emptyGeometryCheck(geoName: String) = s"if ($geoName.isEmpty()) $geoName = new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection();"
 }
