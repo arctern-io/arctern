@@ -312,24 +312,6 @@ def test_binary_func(func_name, input_csv, output_csv):
     res = eval(test_codes).sort_index()
     write_arr2csv(output_csv_path, res.tolist())
 
-
-# This is only for debug
-def test_binary_func1(func_name, input_csv, output_csv):
-    input_csv_path = ARCTERN_INPUT_DIR + input_csv
-    output_csv_path = ARCTERN_RESULT_DIR + output_csv
-    col1, col2 = read_csv2arr(input_csv_path)
-    assert len(col1) == len(col2)
-    for i in range(0, len(col1)):
-        geo_s1 = GeoSeries(col1[i])
-        geo_s2 = GeoSeries(col2[i])
-        test_codes = 'geo_s1.' + func_name + '(geo_s2)'
-        res = eval(test_codes)
-        print(res)
-        print(i)
-        print('----\n')
-        # write_arr2csv(output_csv_path,res.tolist())
-
-
 def test_unary_property_func(func_name, input_csv, output_csv):
     need_to_wkt_list = [
         'envelope',
