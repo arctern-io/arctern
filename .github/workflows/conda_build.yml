@@ -26,14 +26,43 @@ on:
 
 jobs:
   centos:
-    name: AMD64 CentOS ${{ matrix.centos }}
+    name: ${{ matrix.title }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        centos: [7]
+        name:
+          - conda-python3.6
+          - conda-python3.7
+          - conda-python3.6-cuda10.0
+          - conda-python3.7-cuda10.0
+        include:
+          - name: conda-python3.6
+            condapy: '3.6'
+            centos: 7
+            service: conda-build
+            title: AMD64 CentOS 7 Conda Python 3.6
+          - name: conda-python3.7
+            condapy: '3.7'
+            centos: 7
+            service: conda-build
+            title: AMD64 CentOS 7 Conda Python 3.7
+          - name: conda-python3.6-cuda10.0
+            condapy: '3.6'
+            centos: 7
+            cuda: '10.0'
+            service: conda-cudagl-build
+            title: AMD64 CentOS 7 Conda Python 3.6 CUDA 10.0
+          - name: conda-python3.7-cuda10.0
+            condapy: '3.7'
+            centos: 7
+            cuda: '10.0'
+            service: conda-cudagl-build
+            title: AMD64 CentOS 7 Conda Python 3.7 CUDA 10.0
     env:
-      CENTOS: ${{ matrix.centos }}
+      CENTOS: ${{ matrix.centos || 7 }}
+      CONDA_PYTHON: ${{ matrix.condapy || '3.6' }}
+      CUDA: ${{ matrix.cuda || '10.0' }}
     steps:
       # This step checks out a copy of your repository.
       - name: Checkout Arctern
@@ -41,17 +70,17 @@ jobs:
       - name: Docker Pull
         shell: bash
         run: |
-          docker-compose pull --ignore-pull-failures conda-build
+          docker-compose pull --ignore-pull-failures ${{ matrix.service }}
       - name: Docker Build
         shell: bash
         run: |
-          docker-compose build conda-build
+          docker-compose build ${{ matrix.service }}
       - name: Docker Run
         run: |
           docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
                              -e CONDA_USERNAME=arctern-dev \
                              -e MY_UPLOAD_KEY=${{ secrets.DEV_ANACONDA_TOKEN }} \
-                             conda-build
+                             ${{ matrix.service }}
       - name: Docker Push
         if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
         continue-on-error: true
@@ -59,40 +88,4 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USER }} \
                        -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-compose push conda-build
-
-  centos-cuda:
-    name: AMD64 CentOS ${{ matrix.centos }} CUDA
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        centos: [7]
-    env:
-      CENTOS: ${{ matrix.centos }}
-    steps:
-      # This step checks out a copy of your repository.
-      - name: Checkout Arctern
-        uses: actions/checkout@v1
-      - name: Docker Pull
-        shell: bash
-        run: |
-          docker-compose pull --ignore-pull-failures conda-cudagl-build
-      - name: Docker Build
-        shell: bash
-        run: |
-          docker-compose build conda-cudagl-build
-      - name: Docker Run
-        run: |
-          docker-compose run -e GIT_BRANCH=${GITHUB_REF##*/} \
-                             -e CONDA_USERNAME=arctern-dev \
-                             -e MY_UPLOAD_KEY=${{ secrets.DEV_ANACONDA_TOKEN }} \
-                             conda-cudagl-build
-      - name: Docker Push
-        if: success() && github.event_name == 'push' && github.repository == 'zilliztech/arctern'
-        continue-on-error: true
-        shell: bash
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_USER }} \
-                       -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker-compose push conda-cudagl-build
+          docker-compose push ${{ matrix.service }}
