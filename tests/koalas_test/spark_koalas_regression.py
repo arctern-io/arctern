@@ -50,9 +50,9 @@ unary_func_dict = {
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
     'translate': ['translate.csv', 'translate.out', 'st_translate.out', [2, 2]],
     'affine': ['affine.csv', 'affine.out', 'st_affine.out', [1, 1, 1, 1, 1, 1]],
-    # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
-    # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
-    # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
+    'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0,0)]],
+    'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
+    'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
     'curve_to_line': ['curve_to_line.csv', 'curve_to_line.out', 'st_curve_to_line.out', None]
 }
 
@@ -65,14 +65,13 @@ binary_func_dict = {
     'touches': ['touches.csv', 'touches.out', 'st_touches.out'],
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
-    # 'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
+    'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
     'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
-    # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'] # e
-    #
-    # 'overlaps':['overlaps.csv','overlaps.out'],  # error
+    # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out']
+    'overlaps':['overlaps.csv','overlaps.out','st_overlaps.out'],
     # 'union':['union.csv','union.out'],  # error
     # 'difference':['difference.csv','difference.out','st_difference.out'],
-    # 'disjoint':['disjoint.csv','disjoint.out'],
+    'disjoint':['disjoint.csv','disjoint.out','st_disjoint.out']
 }
 
 
