@@ -2566,21 +2566,21 @@ TEST(geometry_test, test_ST_DistanceSphere) {
     return 6372797.560856 * (2.0 * asin(sqrt(latitudeH + tmp * lontitudeH)));
   };
   arrow::DoubleBuilder lat_buider, lon_builder;
-  lat_buider.Append(-73.981153), lon_builder.Append(40.741841);
+  lat_buider.Append(40.741841), lon_builder.Append(-73.981153);
   lat_buider.Append(10), lon_builder.Append(20);
-  lat_buider.Append(181), lon_builder.Append(20);
-  lat_buider.Append(-181), lon_builder.Append(20);
-  lat_buider.Append(10), lon_builder.Append(91);
-  lat_buider.Append(10), lon_builder.Append(-91);
+  lat_buider.Append(20), lon_builder.Append(181);
+  lat_buider.Append(20), lon_builder.Append(-181);
+  lat_buider.Append(92), lon_builder.Append(10);
+  lat_buider.Append(-91), lon_builder.Append(10);
 
   std::shared_ptr<arrow::Array> from_lat, from_lon;
   lat_buider.Finish(&from_lat), lon_builder.Finish(&from_lon);
   array_t from_lat_array{from_lat};
   array_t from_lon_array{from_lon};
-  auto from_point = arctern::gis::ST_Point(from_lat_array, from_lon_array);
+  auto from_point = arctern::gis::ST_Point(from_lon_array, from_lat_array);
 
-  lat_buider.Append(-73.99016751859183), lon_builder.Append(40.729884354626904);
-  lat_buider.Append(100), lon_builder.Append(70);
+  lat_buider.Append(40.729884354626904), lon_builder.Append(-73.99016751859183);
+  lat_buider.Append(70), lon_builder.Append(100);
   lat_buider.Append(100), lon_builder.Append(70);
   lat_buider.Append(100), lon_builder.Append(70);
   lat_buider.Append(100), lon_builder.Append(70);
@@ -2590,13 +2590,13 @@ TEST(geometry_test, test_ST_DistanceSphere) {
   lat_buider.Finish(&to_lat), lon_builder.Finish(&to_lon);
   array_t to_lat_array{to_lat};
   array_t to_lon_array{to_lon};
-  auto to_point = arctern::gis::ST_Point(to_lat_array, to_lon_array);
+  auto to_point = arctern::gis::ST_Point(to_lon_array, to_lat_array);
 
   auto res = arctern::gis::ST_DistanceSphere(from_point, to_point)[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
-
+auto test = res_double->Value(0);
   ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
-  EXPECT_DOUBLE_EQ(res_double->Value(1), distance(10, 20, 100, 70));
+  EXPECT_DOUBLE_EQ(res_double->Value(1), distance(20, 10, 100, 70));
   ASSERT_TRUE(res_double->IsNull(2));
   ASSERT_TRUE(res_double->IsNull(3));
   ASSERT_TRUE(res_double->IsNull(4));

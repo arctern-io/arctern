@@ -1265,15 +1265,15 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
     } else {
       auto p1 = reinterpret_cast<OGRPoint*>(g1);
       auto p2 = reinterpret_cast<OGRPoint*>(g2);
-      double fromlat = p1->getX();
-      double fromlon = p1->getY();
-      double tolat = p2->getX();
-      double tolon = p2->getY();
+      double fromlon = p1->getX();
+      double fromlat = p1->getY();
+      double tolon = p2->getX();
+      double tolat = p2->getY();
       if ((fromlat > 90) || (fromlat < -90) || (fromlon > 180) || (fromlon < -180) ||
           (tolat > 90) || (tolat < -90) || (tolon > 180) || (tolon < -180)) {
         builder.array_builder.AppendNull();
       } else {
-        array_ptr = AppendDouble(builder, distance(fromlat, fromlon, tolat, tolon));
+        array_ptr = AppendDouble(builder, distance(fromlon,fromlat, tolon, tolat));
       }
     }
     return array_ptr;
