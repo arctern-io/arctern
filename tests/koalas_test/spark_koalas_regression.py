@@ -65,7 +65,7 @@ binary_func_dict = {
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
     # 'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
-    # 'hausdorff_distance':['hausdorff_distance.csv','hausdorff_distance.out','st_hausdorff_distance.out'],
+    'hausdorff_distance':['hausdorff_distance.csv','hausdorff_distance.out','st_hausdorff_distance.out'],
     # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'] # e
     #
     # 'overlaps':['overlaps.csv','overlaps.out'],  # error
