@@ -29,7 +29,7 @@ EPOCH = 1e-8
 EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
-    'length':['length.csv', 'length.out','st_length.out'],  # issue 828
+    'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
@@ -51,9 +51,9 @@ unary_func_dict = {
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
     'translate': ['translate.csv', 'translate.out', 'st_translate.out', [2, 2]],
     'affine': ['affine.csv', 'affine.out', 'st_affine.out', [1, 1, 1, 1, 1, 1]],
-    'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0,0)]],
-    'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
-    'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
+    'scale': ['scale.csv', 'scale.out', 'st_scale.out', [1, 2, (0, 0)]],
+    'rotate': ['rotate.csv', 'rotate.out', 'st_rotate.out', [180, (0, 0)]],
+    'to_crs': ['to_crs.csv', 'to_crs.out', 'st_to_crs.out', ['\'EPSG:4326\'']],
     'curve_to_line': ['curve_to_line.csv', 'curve_to_line.out', 'st_curve_to_line.out', None]
 }
 
@@ -63,14 +63,14 @@ binary_func_dict = {
     'distance': ['distance.csv', 'distance.out', 'st_distance.out'],
     'contains': ['contains.csv', 'contains.out', 'st_contains.out'],
     'crosses': ['crosses.csv', 'crosses.out', 'st_crosses.out'],
-    'disjoint':['disjoint.csv','disjoint.out','st_disjoint.out'],
-    'overlaps':['overlaps.csv','overlaps.out','st_overlaps.out'],
+    'disjoint': ['disjoint.csv', 'disjoint.out', 'st_disjoint.out'],
+    'overlaps': ['overlaps.csv', 'overlaps.out', 'st_overlaps.out'],
     'touches': ['touches.csv', 'touches.out', 'st_touches.out'],
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
-    'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
+    'symmetric_difference': ['symmetric_difference.csv', 'symmetric_difference.out', 'st_symmetric_difference.out'],
     'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
-    'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'],
+    'distance_sphere': ['distance_sphere.csv', 'distance_sphere.out', 'st_distance_sphere.out'],
     # 'union':['union.csv','union.out','st_union.out'],  # error
     # 'difference':['difference.csv','difference.out','st_difference.out'],
 }
@@ -155,7 +155,7 @@ def compare_floats(geometry_x, geometry_y):
     value_y = float(geometry_y)
     if value_x == 0:
         return value_y == 0
-    return abs(abs(value_x - value_y)/max(abs(value_x),abs(value_y))) <= EPOCH_FLOAT
+    return abs(abs(value_x - value_y) / max(abs(value_x), abs(value_y))) <= EPOCH_FLOAT
 
 
 def compare_one(result, expect):
