@@ -409,7 +409,7 @@ def test_unary_func(func_name, input_csv, output_csv, params):
     assert len(col2) == 0
     geo_s1 = GeoSeries(col1)
     if func_name == 'to_crs':
-        geo_s1.set_crs('ESPG:3857')
+        geo_s1.set_crs('EPSG:3857')
     comma_flag = False
     param_code = ''
     if params == None:
