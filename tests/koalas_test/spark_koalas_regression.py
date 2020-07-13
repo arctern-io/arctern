@@ -72,7 +72,7 @@ binary_func_dict = {
     # 'overlaps':['overlaps.csv','overlaps.out'],  # error
     # 'touches':['touches.csv','touches.out'],  # error
     # 'union':['union.csv','union.out'],  # error
-    # 'difference':['difference.csv','difference.out'],
+    'difference':['difference.csv','difference.out','st_difference.out'],
     # 'disjoint':['disjoint.csv','disjoint.out'],
 }
 
