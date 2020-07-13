@@ -53,6 +53,7 @@ pushd ${TESTS_DIR}
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
 python collect_results.py
 python compare.py
-python test_vectory_impl.py 
+python test_vector_impl.py 
+cd koalas_test && python spark_koalas_regression.py
 
 popd
