@@ -746,7 +746,7 @@ case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.difference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
