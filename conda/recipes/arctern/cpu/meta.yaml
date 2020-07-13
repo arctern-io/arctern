@@ -4,7 +4,8 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v').replace('-', '.') + environ.get('VERSION_SUFFIX', '') %}
 # {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
-{% set git_commit_id=environ.get('GIT_COMMIT_ID', '') %}
+{% set git_revision_hash=environ.get('GIT_DESCRIBE_HASH', 'g1234567') %}
+{% set py_version=environ.get('CONDA_PY', 36) %}
 
 package:
   name: arctern
@@ -16,7 +17,7 @@ source:
 # ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
 build:
   number: {{ git_revision_count }}
-  string: {{ git_commit_id }}_{{ git_revision_count }}
+  string: py{{ py_version }}_{{ git_revision_hash }}_{{ git_revision_count }}
   script_env:
     - CC
     - CXX
@@ -28,14 +29,14 @@ requirements:
     - gdal ==3.0.4
     - pyarrow ==0.17.1
     - rapidjson ==1.1.0
-    - python ===3.7.6
+    - python
     - Cython ==0.29.15
     - setuptools
     - koalas ==1.0.0
     - fiona
 
   run:
-    - python ===3.7.6
+    - python {{ CONDA_PYTHON }}.*
     - libnetcdf ==4.7.3
     - gdal ==3.0.4
     - pyarrow ===0.17.1

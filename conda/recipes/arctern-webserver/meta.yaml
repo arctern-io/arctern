@@ -3,8 +3,9 @@
 
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v').replace('-', '.') + environ.get('VERSION_SUFFIX', '') %}
 # {% set minor_version =  version.split('.')[0] + '.' + version.split('.')[1] %}
+{% set git_revision_hash=environ.get('GIT_DESCRIBE_HASH', 'g1234567') %}
 {% set git_revision_count=environ.get('GIT_DESCRIBE_NUMBER', 0) %}
-{% set git_commit_id=environ.get('GIT_COMMIT_ID', '') %}
+
 package:
   name: arctern-webserver
   version: {{ version }}
@@ -15,7 +16,7 @@ source:
 # ref: https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#build-section
 build:
   number: {{ git_revision_count }}
-  string: {{ git_commit_id }}_{{ git_revision_count }}
+  string: {{ git_revision_hash }}_{{ git_revision_count }}
 
 requirements:
   build:
