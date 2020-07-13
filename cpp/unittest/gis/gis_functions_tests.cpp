@@ -2594,7 +2594,7 @@ TEST(geometry_test, test_ST_DistanceSphere) {
 
   auto res = arctern::gis::ST_DistanceSphere(from_point, to_point)[0];
   auto res_double = std::static_pointer_cast<arrow::DoubleArray>(res);
-auto test = res_double->Value(0);
+  auto test = res_double->Value(0);
   ASSERT_LT(std::abs(res_double->Value(0) - 1531), 1);
   EXPECT_DOUBLE_EQ(res_double->Value(1), distance(20, 10, 100, 70));
   ASSERT_TRUE(res_double->IsNull(2));

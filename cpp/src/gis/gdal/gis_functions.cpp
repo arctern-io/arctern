@@ -1273,7 +1273,7 @@ std::vector<std::shared_ptr<arrow::Array>> ST_DistanceSphere(
           (tolat > 90) || (tolat < -90) || (tolon > 180) || (tolon < -180)) {
         builder.array_builder.AppendNull();
       } else {
-        array_ptr = AppendDouble(builder, distance(fromlon,fromlat, tolon, tolat));
+        array_ptr = AppendDouble(builder, distance(fromlon, fromlat, tolon, tolat));
       }
     }
     return array_ptr;
