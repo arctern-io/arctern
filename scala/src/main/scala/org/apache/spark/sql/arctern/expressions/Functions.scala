@@ -68,8 +68,9 @@ object utils {
       val fromlat = from.getInteriorPoint.getY
       val tolon = to.getInteriorPoint.getX
       val tolat = to.getInteriorPoint.getY
-      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
-        (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
+      if ((fromlat > 90) || (fromlat < -90) || (fromlon > 180) || (fromlon < -180) ||
+        (tolat > 90) || (tolat < -90) || (tolon > 180) || (tolon < -180)) {
+        println("NOTICE: Coordinate values were coerced into range [-180 -90, 180 90] for GEOGRAPHY ")
         distance
       } else {
         // calculate distance

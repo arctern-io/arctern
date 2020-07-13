@@ -1689,6 +1689,7 @@ class FunctionsTest extends AdapterTest {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (-73.981153 40.741841)"), GeometryUDT.FromWkt("POINT (-73.990167 40.729884)")),
       Row(GeometryUDT.FromWkt("POINT (-74.123512 40.561438)"), GeometryUDT.FromWkt("POINT (-73.418598 41.681739)")),
+      Row(GeometryUDT.FromWkt("POINT(100 50)"), GeometryUDT.FromWkt("POINT(60 50)")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -1704,6 +1705,7 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect(0).getDouble(0) == 1531.6176273715332)
     assert(collect(1).getDouble(0) == 137894.9747266781)
+    assert(collect(2).getDouble(0) == 2825149.40543985)
 
     val rst2 = df.select(st_distancesphere(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -1712,6 +1714,7 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect2(0).getDouble(0) == 1531.6176273715332)
     assert(collect2(1).getDouble(0) == 137894.9747266781)
+    assert(collect2(2).getDouble(0) == 2825149.40543985)
   }
 
   test("ST_DistanceSphere-Null") {
