@@ -53,7 +53,7 @@ unary_func_dict = {
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
-    'curve_to_line':['curve_to_line.csv','curve_to_line.out','st_curve_to_line.out',None]
+    'curve_to_line': ['curve_to_line.csv', 'curve_to_line.out', 'st_curve_to_line.out', None]
 }
 
 binary_func_dict = {
@@ -62,14 +62,14 @@ binary_func_dict = {
     'distance': ['distance.csv', 'distance.out', 'st_distance.out'],
     'contains': ['contains.csv', 'contains.out', 'st_contains.out'],
     'crosses': ['crosses.csv', 'crosses.out', 'st_crosses.out'],
+    'touches': ['touches.csv', 'touches.out', 'st_touches.out'],
     'intersects': ['intersects.csv', 'intersects.out', 'st_intersects.out'],
     'intersection': ['intersection.csv', 'intersection.out', 'st_intersection.out'],
     # 'symmetric_difference':['symmetric_difference.csv','symmetric_difference.out','st_symmetric_difference.out'],
-    'hausdorff_distance':['hausdorff_distance.csv','hausdorff_distance.out','st_hausdorff_distance.out'],
+    'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
     # 'distance_sphere':['distance_sphere.csv','distance_sphere.out','st_distance_sphere.out'] # e
     #
     # 'overlaps':['overlaps.csv','overlaps.out'],  # error
-    # 'touches':['touches.csv','touches.out'],  # error
     # 'union':['union.csv','union.out'],  # error
     # 'difference':['difference.csv','difference.out','st_difference.out'],
     # 'disjoint':['disjoint.csv','disjoint.out'],
@@ -315,7 +315,7 @@ def test_binary_func(func_name, input_csv, output_csv):
         geo_s1.set_crs('EPSG:4326')
         geo_s2.set_crs('EPSG:4326')
     test_codes = 'geo_s1.' + func_name + '(geo_s2)'
-    if func_name in ['intersection','symmetric_difference']:
+    if func_name in ['intersection', 'symmetric_difference']:
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
