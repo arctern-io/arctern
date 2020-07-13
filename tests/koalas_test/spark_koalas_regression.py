@@ -25,17 +25,8 @@ GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION', 'MULTILINEARRING'
 ]
-CURVE_TYPES = ['CIRCULARSTRING', 'MULTICURVE', 'COMPOUNDCURVE']
-SURFACE_TYPES = ['CURVEPOLYGON', 'MULTISURFACE', 'SURFACE']
-GEO_LENGTH_TYPES = ['POINT', 'LINESTRING', 'MULTIPOINT', 'MULTILINESTRING']
-GEO_AREA_TYPES = ['POLYGON', 'MULTIPOLYGON']
 
-UNIT = 1e-4
 EPOCH = 1e-8
-EPOCH_CURVE = 1e-2
-EPOCH_SURFACE = 1e-2
-EPOCH_CURVE_RELATIVE = 1e-2
-EPOCH_SURFACE_RELATIVE = 1e-2
 
 unary_func_property_dict = {
     # 'length':['length.csv', 'length.out','st_length.out'],  # issue 828
@@ -59,7 +50,7 @@ unary_func_dict = {
     'as_geojson': ['as_geojson.csv', 'as_geojson.out', 'st_as_geojson.out', None],
     'precision_reduce': ['precision_reduce.csv', 'precision_reduce.out', 'st_precision_reduce.out', [1]],
     'translate': ['translate.csv', 'translate.out', 'st_translate.out', [2, 2]],
-    # 'affine':['affine.csv','affine.out','st_affine.out',[1,2,3,4,5,6]],
+    'affine':['affine.csv','affine.out','st_affine.out',[1,1,1,1,1,1]],
     # 'scale':['scale.csv','scale.out','st_scale.out',[1,2,(0 0)]],
     # 'rotate':['rotate.csv','rotate.out','st_rotate.out',[180,(0,0)]],
     # 'to_crs':['to_crs.csv','to_crs.out','st_to_crs.out',['\'EPSG:4326\'']],
@@ -85,7 +76,6 @@ binary_func_dict = {
     # 'disjoint':['disjoint.csv','disjoint.out'],
 }
 
-
 def collect_diff_file_list():
     result_file_list = []
     expected_file_list = []
@@ -103,11 +93,9 @@ def collect_diff_file_list():
 
     return result_file_list, expected_file_list
 
-
 def is_empty(geo):
     geo = geo.strip().upper()
     return geo.endswith('EMPTY')
-
 
 def is_geometry(geo):
     geo = geo.strip().upper()
@@ -117,7 +105,6 @@ def is_geometry(geo):
         continue
     return False
 
-
 def is_geometrycollection(geo):
     geo = geo.strip().upper()
     for x in GEO_COLLECTION_TYPES:
@@ -126,33 +113,12 @@ def is_geometrycollection(geo):
         continue
     return False
 
-
-def is_geometrytype(geo):
-    """Determine whether a given string is to describe a geometry type, like 'point' for example."""
-    geo = geo.strip().upper()
-
-    arr = []
-    arr.extend(GEO_TYPES)
-    arr.extend(GEO_COLLECTION_TYPES)
-    arr.extend(CURVE_TYPES)
-    arr.extend(SURFACE_TYPES)
-
-    for a_geo_type_in_all_geo_types_list in arr:
-        if a_geo_type_in_all_geo_types_list in geo:
-            return True
-
-        continue
-
-    return False
-
-
 def is_float(str):
     try:
         num = float(str)
         return isinstance(num, float)
     except:
         return False
-
 
 def convert_str(strr):
     """Convert a string to float, if it's not a float value, return string to represent itself."""
@@ -166,7 +132,6 @@ def convert_str(strr):
 
     return strr
 
-
 def compare_geometry(config, geometry_x, geometry_y):
     """Compare whether 2 geometries is 'equal'."""
     if geometry_x.upper().endswith('EMPTY') and geometry_y.upper().endswith(
@@ -176,14 +141,12 @@ def compare_geometry(config, geometry_x, geometry_y):
     pgis = wkt.loads(geometry_y)
     return arct.equals_exact(pgis, EPOCH)
 
-
 def compare_geometrycollection(config, geometry_x, geometry_y):
     """Compare whether 2 geometrycollections is 'equal'."""
 
     arct = wkt.loads(geometry_x)
     pgis = wkt.loads(geometry_y)
     return arct.equals_exact(pgis, 1e-10)
-
 
 def compare_floats(config, geometry_x, geometry_y):
     """Compare whether 2 float values is 'equal'."""
@@ -196,7 +159,6 @@ def compare_floats(config, geometry_x, geometry_y):
 
     return abs((value_x - value_y)) <= precision_error
 
-
 # pylint: disable=too-many-return-statements
 # pylint: disable=too-many-branches
 def compare_one(config, result, expect):
@@ -206,6 +168,9 @@ def compare_one(config, result, expect):
 
     newvalue_x = convert_str(value_x)
     newvalue_y = convert_str(value_y)
+
+    if newvalue_x == newvalue_y :
+        return True
 
     try:
         if isinstance(newvalue_x, bool):
@@ -236,13 +201,6 @@ def compare_one(config, result, expect):
                 if not one_result_flag:
                     print(result[0], newvalue_x, expect[0], newvalue_y)
                 return one_result_flag
-
-            if is_geometrytype(newvalue_x) and is_geometrytype(newvalue_y):
-                one_result_flag = (newvalue_x == newvalue_y)
-                if not one_result_flag:
-                    print(result[0], newvalue_x, expect[0], newvalue_y)
-                return one_result_flag
-
             return False
 
         if isinstance(newvalue_x, (int, float)):
@@ -254,7 +212,6 @@ def compare_one(config, result, expect):
         print(repr(ex))
         one_result_flag = False
     return one_result_flag
-
 
 def compare_results(config, arctern_results, postgis_results):
     """Compare the result of arctern function and expected."""
@@ -283,7 +240,6 @@ def compare_results(config, arctern_results, postgis_results):
         case_result_flag = case_result_flag and res
 
     return case_result_flag
-
 
 def compare_all():
     ARCTERN_RESULT_DIR = './output/'
@@ -318,7 +274,6 @@ def compare_all():
         flag = flag and res
     return flag
 
-
 def read_csv2arr(input_csv_path):
     import re
     arr = []
@@ -341,13 +296,11 @@ def read_csv2arr(input_csv_path):
         raise Exception('Csv file columns length must be 1 or 2.')
     return col1, col2
 
-
 def write_arr2csv(output_csv_path, output_arr):
     import csv
     with open(output_csv_path, 'w') as f:
         csv_writer = csv.writer(f, delimiter='|', lineterminator='\n')
         for x in output_arr: csv_writer.writerow([x])
-
 
 def test_binary_func(func_name, input_csv, output_csv):
     input_csv_path = input_csv_base_dir + input_csv
@@ -364,7 +317,6 @@ def test_binary_func(func_name, input_csv, output_csv):
     res = eval(test_codes).sort_index()
     write_arr2csv(output_csv_path, res.tolist())
 
-
 # This is only for debug
 def test_binary_func1(func_name, input_csv, output_csv):
     input_csv_path = input_csv_base_dir + input_csv
@@ -380,7 +332,6 @@ def test_binary_func1(func_name, input_csv, output_csv):
         print(i)
         print('----\n')
         # write_arr2csv(output_csv_path,res.tolist())
-
 
 def test_unary_property_func(func_name, input_csv, output_csv):
     need_to_wkt_list = [
@@ -400,7 +351,6 @@ def test_unary_property_func(func_name, input_csv, output_csv):
         test_codes += '.to_wkt()'
     res = eval(test_codes).sort_index()
     write_arr2csv(output_csv_path, res.tolist())
-
 
 def test_unary_func(func_name, input_csv, output_csv, params):
     input_csv_path = input_csv_base_dir + input_csv
@@ -427,7 +377,6 @@ def test_unary_func(func_name, input_csv, output_csv, params):
     res = eval(test_codes).sort_index()
     write_arr2csv(output_csv_path, res.tolist())
 
-
 if __name__ == "__main__":
     # test binary_func
     for key, values in binary_func_dict.items():
@@ -438,6 +387,6 @@ if __name__ == "__main__":
     # test unary_func
     for key, values in unary_func_dict.items():
         test_unary_func(key, values[0], values[1], values[3])
-    # update_result()
+
     test_status = compare_all()
-    # print(test_status)
+    print(test_status)
