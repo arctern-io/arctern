@@ -28,7 +28,7 @@ from databricks.koalas.internal import NATURAL_ORDER_COLUMN_NAME
 from databricks.koalas.series import REPR_PATTERN
 from databricks.koalas.utils import (
     validate_axis,
-    validate_bool_kwarg,
+    validate_bool_kwarg, name_like_string,
 )
 from pyspark.sql import functions as F, Column
 from pyspark.sql.types import (
@@ -55,7 +55,7 @@ def _column_geo(f, *args, **kwargs):
 
 
 def _agg(f, kss):
-    scol = getattr(scala_wrapper, f)(kss.spark.column)
+    scol = getattr(scala_wrapper, f)(kss.spark.column).alias(name_like_string(kss._internal.column_labels[0]))
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
     return GeoSeries(first_series(kdf), crs=kss._crs)
@@ -147,7 +147,10 @@ class GeoSeries(Series):
                     # and cast it's type to StringType
                     s = Series([], dtype=int).astype(str)
 
-            anchor = DataFrame(s)
+            if isinstance(s, Series):
+                anchor = s._anchor
+            else:
+                anchor = DataFrame(s)
             column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
@@ -308,8 +311,10 @@ class GeoSeries(Series):
         GeoSeries
             The copied GeoSeries
         """
+        # Series._with_new_col has a bug in koalas==1.0.0, override this for GeoSeries
+        # see GH1633 https://github.com/databricks/koalas/issues/1633
         internal = self._kdf._internal.copy(
-            column_labels=[self._column_label], data_spark_columns=[scol]
+            column_labels=[self._column_label], data_spark_columns=[scol.alias(name_like_string(self._column_label))]
         )
         return first_series(DataFrame(internal))
 
@@ -1981,3 +1986,6 @@ def first_series(df):
 
 
 ks.series.first_series = first_series
+# Series._with_new_col has a bug in koalas==1.0.0, monkey patch this for Series
+# see GH1633 https://github.com/databricks/koalas/issues/1633
+ks.Series._with_new_scol = GeoSeries._with_new_scol
