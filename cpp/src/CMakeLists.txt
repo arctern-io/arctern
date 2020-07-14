@@ -35,6 +35,7 @@ set(render_src
         render/utils/vega/vega.cpp
         render/utils/vega/vega_heatmap/vega_heatmap.cpp
         render/utils/vega/vega_iconviz/vega_iconviz.cpp
+        render/utils/vega/vega_unique_value_map/vega_unique_value_map.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
         render/utils/image/image_loader.cpp

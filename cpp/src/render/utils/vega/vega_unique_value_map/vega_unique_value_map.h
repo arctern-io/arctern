@@ -16,39 +16,29 @@
 #pragma once
 
 #include <string>
+#include <bits/unordered_map.h>
+
+#include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
 namespace arctern {
 namespace render {
 
-struct Color {
-  float r, g, b, a;
-  Color() {}
-  Color(float red, float green, float blue, float value)
-      : r(red), g(green), b(blue), a(value) {}
-  bool operator==(const Color& other) const {
-    return r == other.r && g == other.g && b == other.b && a == other.a;
-  }
-};
-
-class ColorParser {
+class VegaUniqueValueMap : public Vega {
  public:
-  explicit ColorParser(const std::string& css_color_string);
+  VegaUniqueValueMap() = default;
 
-  const Color& color() const { return color_; }
+  explicit VegaUniqueValueMap(const std::string& json);
 
-  const bool& is_css_hex_color() const { return is_css_hex_color_; }
-
-  const std::string& css_color_string() const { return css_color_string_; }
-
- private:
-  void ParseHEX();
-
-  // TODO: add ParseRGBA(), ParseHSL(), ParseHSV(), ParseHWB(), ParseCMYK()
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
  private:
-  Color color_;
-  bool is_css_hex_color_;
-  std::string css_color_string_;
+  // vega json to vega struct
+  void Parse(const std::string& json) final;
+
+ private:
+  double opacity_;
+  std::unordered_map<std::string, std::tuple<int, int, int>> unique_value_infos_;
 };
 
 }  // namespace render
