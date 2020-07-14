@@ -75,7 +75,7 @@ def _validate_arg(arg):
         arg = scala_wrapper.st_geomfromwkb(F.lit(arg))
     elif isinstance(arg, Series):
         pass
-    elif is_list_like(arg) or isinstance(arg, pd.Series):
+    elif is_list_like(arg):
         arg = Series(arg)
     else:
         raise TypeError("Unsupported type %s" % type(arg))
@@ -95,8 +95,6 @@ def _validate_args(*args, dtype=None):
                 args_list.append(Series([arg] * series_length))
             else:
                 args_list.append(F.lit(arg))
-        elif isinstance(arg, pd.Series):
-            args_list.append(Series(arg))
         elif isinstance(arg, Series):
             args_list.append(arg)
         elif is_list_like(arg):
@@ -107,6 +105,38 @@ def _validate_args(*args, dtype=None):
 
 
 class GeoSeries(Series):
+    """
+    One-dimensional Series to store an array of geometry objects.
+
+    Parameters
+    ----------
+    data : array-like, Iterable, dict, or scalar value(str or bytes)
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+    index : array-like or Index (1d)
+        Same to the index of koalas.Series, by default ``RangeIndex (0, 1, 2, …, n)``.
+        Index values must be hashable and have the same length as ``data``. Non-unique index values are allowed. If both a dict and index sequence are used, the index will override the keys found in the dict.
+    dtype :
+        The type of the data. Default: None.
+    name : str, optional
+        The name to give to the GeoSeries.
+    crs : str, optional
+        The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a WKT representation of CRS by now, for example, "EPSG:4326".
+    copy :
+        A boolean value, by default False.
+
+        * *True:* Copys input data.
+        * *False:* Points to input data.
+
+    Examples
+    -------
+    >>> from arctern_spark import GeoSeries
+    >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+    >>> s
+    0    POINT (1 1)
+    1    POINT (1 2)
+    Name: 0, dtype: object
+    """
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
     ):
@@ -508,9 +538,9 @@ class GeoSeries(Series):
         >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 1)", "LINESTRING (2 0, 2 2, 2 6)", "POLYGON ((3 3, 7 3, 7 7, 3 7, 3 3))"])
         >>> s.length
-        0     0.0
-        1     6.0
-        2    16.0
+        0    0.0
+        1    6.0
+        2    0.0
         Name: 0, dtype: float64
         """
         return _column_op("st_length", self)
@@ -1700,7 +1730,7 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
-        if not isinstance(json, (pd.Series, ks.Series)) and is_list_like(json) and not json:
+        if not isinstance(json, ks.Series) and is_list_like(json) and not json:
             return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
