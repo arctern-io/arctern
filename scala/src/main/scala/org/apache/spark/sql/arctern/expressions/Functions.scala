@@ -334,7 +334,7 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr(0)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid().isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $geo.getCentroid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -432,7 +432,7 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.intersection($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -693,7 +693,7 @@ case class ST_SymDifference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.symDifference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -706,7 +706,7 @@ case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.difference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
 
   override def dataType: DataType = new GeometryUDT
 

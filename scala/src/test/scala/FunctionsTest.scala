@@ -2290,6 +2290,7 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("MULTIPOINT (0 0, 1 0, 1 2, 1 2)"), GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )")),
       Row(GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"), GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )")),
       Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"), GeometryUDT.FromWkt("POINT (1 5)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT EMPTY"), GeometryUDT.FromWkt("MULTIPOINT EMPTY")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -2310,6 +2311,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
     assert(collect(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
     assert(collect(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(7).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_union(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -2323,6 +2325,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
     assert(collect2(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
     assert(collect2(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(7).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_Union-Null") {
