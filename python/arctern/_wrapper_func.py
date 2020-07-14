@@ -2091,11 +2091,17 @@ def version(verbose=False):
     :type verbose: bool
     :param verbose: whether to get other information besides version
 
-    :rtype: str
-    :return: Information of arctern version.
+    :rtype: str or dict
+    :return: Information of arctern version. If verbose is False, return a string, else a dict.
     """
-    full_version_info = arctern_core_.GIS_Version().decode("utf-8")
-    if verbose:
-        return full_version_info
-    only_versin_info = full_version_info.split("\n")[0]
-    return only_versin_info
+    if not verbose:
+        from . import _version
+        return _version.__version__
+
+    version_info = arctern_core_.GIS_Version().decode("utf-8")[:-1].split("\n")
+    result = {}
+    for info in version_info:
+        info = info.split(":")
+        result[info[0].strip()] = info[1].strip()
+
+    return result

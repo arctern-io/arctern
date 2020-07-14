@@ -50,12 +50,8 @@ class GeoDataFrame(DataFrame):
 
         super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
 
-        if geometries is None:
-            if "geometry" in self.columns:
-                geometries = ["geometry"]
-            else:
-                geometries = []
-        self._set_geometries(geometries, crs=crs)
+        if geometries is not None:
+            self._set_geometries(geometries, crs=crs)
 
     # only for internal use
     def _set_geometries(self, cols, crs=None):
@@ -70,8 +66,6 @@ class GeoDataFrame(DataFrame):
         # align crs and cols, simply fill None to crs
         for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
-                # This set_item operation will lead some BUG in koalas(v1.0.0),
-                # see https://github.com/databricks/koalas/issues/1633
                 self[col] = GeoSeries(self[col], crs=_crs)
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
@@ -172,13 +166,13 @@ class GeoDataFrame(DataFrame):
             raise ValueError("Unknown na method {0}".format(na))
         if geometry not in self._geometry_column_names:
             raise ValueError("{} is not a geometry column".format(geometry))
-        ids = self.index.to_pandas()
         geometries = self[geometry].as_geojson().to_pandas()
         geometries_bbox = self[geometry].bbox
         properties_cols = self.columns.difference([geometry]).tolist()
 
         if len(properties_cols) > 0:
-            properties = self[properties_cols].to_pandas()
+            properties = self[properties_cols].to_pandas().astype(object)
+            ids = properties.index
             property_geo_cols = self._geometry_column_names.difference([geometry])
 
             # since it could be more than one geometry columns in GeoDataFrame,
@@ -333,8 +327,8 @@ class GeoDataFrame(DataFrame):
         if kwargs.get("show_bbox", False):
             # calculate bbox of GeoSeries got from GeoDataFrame will failed,
             # see https://github.com/databricks/koalas/issues/1633
-            raise NotImplementedError("show bbox is not implemented yet.")
-            # geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
+            # raise NotImplementedError("show bbox is not implemented yet.")
+            geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr().bbox[0]
 
         return geo
 

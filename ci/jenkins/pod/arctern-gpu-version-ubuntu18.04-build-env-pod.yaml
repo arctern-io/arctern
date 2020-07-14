@@ -8,23 +8,23 @@ metadata:
 spec:
   containers:
   - name: arctern-gpu-build-env
-    image: registry.zilliz.com/arctern/arctern-build-env:v0.3.0-ubuntu18.04-gpu
+    image: registry.zilliz.com/arctern/arctern-build-env:v0.3.1-ubuntu18.04-gpu
     env:
     - name: OS_NAME
       value: "ubuntu18.04"
     - name: BUILD_ENV_IMAGE_ID
-      value: "735ac0aa121392697340ea416d74351d628e2d9f6b6e9264e4ba339eafbb0c46"
+      value: "a9242b8fd1a97f576f44536553bc294efdf1a42e0580b03be987c8071086d10a"
     command:
     - cat
     tty: true
     resources:
       limits:
         memory: "12Gi"
-        cpu: "6.0"
+        cpu: "4.0"
         # nvidia.com/gpu: 1
         aliyun.com/gpu-mem: 2 # GiB
       requests:
-        memory: "8Gi"
+        memory: "12Gi"
         cpu: "4.0"
   tolerations:
   - key: dedicated

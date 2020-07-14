@@ -1034,7 +1034,12 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("LINESTRING (0 0, 10 10, 20 20)")),
       Row(GeometryUDT.FromWkt("POINT (0 0)")),
       Row(GeometryUDT.FromWkt("POLYGON EMPTY")),
-      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )"))
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 0, 1 1,0 0)) )")),
+      Row(GeometryUDT.FromWkt("POLYGON ((1 1, 3 1, 3 3, 1 3, 1 1))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))")),
+      Row(GeometryUDT.FromWkt("GEOMETRYCOLLECTION(POINT(4 6), POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)), LINESTRING(2 2, 2 3))")),
+      // TODO: add curve support
+      // Row(GeometryUDT.FromWkt("CURVEPOLYGON(CIRCULARSTRING(0 0, 4 0, 4 4, 0 4, 0 0),(1 1, 3 3, 3 1, 1 1))")),
     )
 
     val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
@@ -1048,22 +1053,28 @@ class FunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getDouble(0) == 4.0)
+    assert(collect(0).getDouble(0) == 0.0)
     assert(collect(1).getDouble(0) == 28.284271247461902)
     assert(collect(2).getDouble(0) == 0.0)
     assert(collect(3).getDouble(0) == 0.0)
-    assert(collect(4).getDouble(0) == 3.414213562373095)
+    assert(collect(4).getDouble(0) == 0.0)
+    assert(collect(5).getDouble(0) == 0.0)
+    assert(collect(6).getDouble(0) == 0.0)
+    assert(collect(7).getDouble(0) == 1.0)
 
     val rst2 = df.select(st_length(col("geo")))
     rst2.show(false)
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getDouble(0) == 4.0)
+    assert(collect2(0).getDouble(0) == 0.0)
     assert(collect2(1).getDouble(0) == 28.284271247461902)
     assert(collect2(2).getDouble(0) == 0.0)
     assert(collect2(3).getDouble(0) == 0.0)
-    assert(collect2(4).getDouble(0) == 3.414213562373095)
+    assert(collect2(4).getDouble(0) == 0.0)
+    assert(collect2(5).getDouble(0) == 0.0)
+    assert(collect2(6).getDouble(0) == 0.0)
+    assert(collect2(7).getDouble(0) == 1.0)
   }
 
   test("ST_Length-Null") {
@@ -1089,8 +1100,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect(0).isNullAt(0))
     assert(collect(1).getDouble(0) == 28.284271247461902)
     assert(collect(2).isNullAt(0))
-    assert(collect(3).getDouble(0) == 11.313708498984761)
-    assert(collect(4).getDouble(0) == 3.414213562373095)
+    assert(collect(3).getDouble(0) == 0.0)
+    assert(collect(4).getDouble(0) == 0.0)
 
     val rst2 = df.select(st_length(st_geomfromtext(col("geo"))))
     rst2.show(false)
@@ -1100,8 +1111,8 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(0).isNullAt(0))
     assert(collect2(1).getDouble(0) == 28.284271247461902)
     assert(collect2(2).isNullAt(0))
-    assert(collect2(3).getDouble(0) == 11.313708498984761)
-    assert(collect2(4).getDouble(0) == 3.414213562373095)
+    assert(collect2(3).getDouble(0) == 0.0)
+    assert(collect2(4).getDouble(0) == 0.0)
   }
 
   test("ST_HausdorffDistance") {
@@ -1678,6 +1689,7 @@ class FunctionsTest extends AdapterTest {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POINT (-73.981153 40.741841)"), GeometryUDT.FromWkt("POINT (-73.990167 40.729884)")),
       Row(GeometryUDT.FromWkt("POINT (-74.123512 40.561438)"), GeometryUDT.FromWkt("POINT (-73.418598 41.681739)")),
+      Row(GeometryUDT.FromWkt("POINT(100 50)"), GeometryUDT.FromWkt("POINT(60 50)")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -1693,6 +1705,7 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect(0).getDouble(0) == 1531.6176273715332)
     assert(collect(1).getDouble(0) == 137894.9747266781)
+    assert(collect(2).getDouble(0) == 2825149.40543985)
 
     val rst2 = df.select(st_distancesphere(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -1701,6 +1714,7 @@ class FunctionsTest extends AdapterTest {
 
     assert(collect2(0).getDouble(0) == 1531.6176273715332)
     assert(collect2(1).getDouble(0) == 137894.9747266781)
+    assert(collect2(2).getDouble(0) == 2825149.40543985)
   }
 
   test("ST_DistanceSphere-Null") {
@@ -2148,6 +2162,7 @@ class FunctionsTest extends AdapterTest {
   test("ST_SymDifference") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)"), GeometryUDT.FromWkt("LINESTRING (4 0,6 0)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)"), GeometryUDT.FromWkt("POINT (0 0)")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -2162,6 +2177,7 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 4 0), (5 0, 6 0))")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_symdifference(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -2169,6 +2185,7 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 4 0), (5 0, 6 0))")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_SymDifference-Null") {
@@ -2206,6 +2223,8 @@ class FunctionsTest extends AdapterTest {
   test("ST_Difference") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("LINESTRING (0 0,5 0)"), GeometryUDT.FromWkt("LINESTRING (4 0,6 0)")),
+      Row(GeometryUDT.FromWkt("POINT (0 0)"), GeometryUDT.FromWkt("POINT (0 0)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT EMPTY"), GeometryUDT.FromWkt("POINT (5 5)")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -2220,6 +2239,8 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+    assert(collect(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_difference(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -2227,6 +2248,8 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 4 0)")
+    assert(collect2(1).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
+    assert(collect2(2).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_Difference-Null") {
@@ -2270,6 +2293,7 @@ class FunctionsTest extends AdapterTest {
       Row(GeometryUDT.FromWkt("MULTIPOINT (0 0, 1 0, 1 2, 1 2)"), GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )")),
       Row(GeometryUDT.FromWkt("MULTILINESTRING ( (0 0, 1 2), (0 0, 1 0, 1 1),(-1 2,3 4,1 -3,-2 1) )"), GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )")),
       Row(GeometryUDT.FromWkt("MULTIPOLYGON ( ((0 0, 1 4, 1 0,0 0)) )"), GeometryUDT.FromWkt("POINT (1 5)")),
+      Row(GeometryUDT.FromWkt("MULTIPOINT EMPTY"), GeometryUDT.FromWkt("MULTIPOINT EMPTY")),
     )
 
     val schema = StructType(Array(StructField("left_geo", new GeometryUDT, nullable = true), StructField("right_geo", new GeometryUDT, nullable = true)))
@@ -2290,6 +2314,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
     assert(collect(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
     assert(collect(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(7).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
 
     val rst2 = df.select(st_union(col("left_geo"), col("right_geo")))
     rst2.show(false)
@@ -2303,6 +2328,7 @@ class FunctionsTest extends AdapterTest {
     assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTILINESTRING ((0 0, 1 2), (0 0, 1 0, 1 1), (-1 2, 3 4, 1 -3, -2 1))")
     assert(collect2(5).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (LINESTRING (-1 2, 0.7142857142857143 2.857142857142857), LINESTRING (1 3, 3 4, 1 -3, -2 1), POLYGON ((1 0, 0 0, 0.7142857142857143 2.857142857142857, 1 4, 1 3, 1 2, 1 1, 1 0)))")
     assert(collect2(6).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION (POINT (1 5), POLYGON ((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(7).getAs[GeometryUDT](0).toString == "GEOMETRYCOLLECTION EMPTY")
   }
 
   test("ST_Union-Null") {
@@ -2633,9 +2659,13 @@ class FunctionsTest extends AdapterTest {
   test("ST_ExteriorRing") {
     val data = Seq(
       Row(GeometryUDT.FromWkt("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))")),
+      Row(GeometryUDT.FromWkt("MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))")),
+      Row(GeometryUDT.FromWkt("LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")),
+      Row(GeometryUDT.FromWkt("POINT (9 11)")),
+      Row(GeometryUDT.FromWkt("POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))")),
     )
 
-    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = true)))
+    val schema = StructType(Array(StructField("geo", new GeometryUDT, nullable = false)))
     val df = spark.createDataFrame(spark.sparkContext.parallelize(data), schema)
     df.createOrReplaceTempView("data")
 
@@ -2647,6 +2677,10 @@ class FunctionsTest extends AdapterTest {
     val collect = rst.collect()
 
     assert(collect(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect(1).isNullAt(0))
+    assert(collect(2).isNullAt(0))
+    assert(collect(3).isNullAt(0))
+    assert(collect(4).getAs[GeometryUDT](0).toString == "LINESTRING (35 10, 45 45, 15 40, 10 20, 35 10)")
 
     val rst2 = df.select(st_exteriorring(col("geo")))
     rst2.show(false)
@@ -2654,6 +2688,10 @@ class FunctionsTest extends AdapterTest {
     val collect2 = rst2.collect()
 
     assert(collect2(0).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
+    assert(collect2(1).isNullAt(0))
+    assert(collect2(2).isNullAt(0))
+    assert(collect2(3).isNullAt(0))
+    assert(collect2(4).getAs[GeometryUDT](0).toString == "LINESTRING (35 10, 45 45, 15 40, 10 20, 35 10)")
   }
 
   test("ST_ExteriorRing-Null") {
@@ -2678,11 +2716,11 @@ class FunctionsTest extends AdapterTest {
 
     val collect = rst.collect()
 
-    assert(collect(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
-    assert(collect(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect(0).isNullAt(0))
+    assert(collect(1).isNullAt(0))
     assert(collect(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
     assert(collect(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
-    assert(collect(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect(4).isNullAt(0))
     assert(collect(5).isNullAt(0))
     assert(collect(6).isNullAt(0))
 
@@ -2691,11 +2729,11 @@ class FunctionsTest extends AdapterTest {
 
     val collect2 = rst2.collect()
 
-    assert(collect2(0).getAs[GeometryUDT](0).toString == "POINT (0 1)")
-    assert(collect2(1).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 0 1, 1 1)")
+    assert(collect2(0).isNullAt(0))
+    assert(collect2(1).isNullAt(0))
     assert(collect2(2).getAs[GeometryUDT](0).toString == "LINESTRING (0 0, 1 0, 1 1, 0 1, 0 0)")
     assert(collect2(3).getAs[GeometryUDT](0).toString == "LINESTRING EMPTY")
-    assert(collect2(4).getAs[GeometryUDT](0).toString == "MULTIPOLYGON (((0 0, 1 4, 1 0, 0 0)))")
+    assert(collect2(4).isNullAt(0))
     assert(collect2(5).isNullAt(0))
     assert(collect2(6).isNullAt(0))
   }
