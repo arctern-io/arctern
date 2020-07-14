@@ -16,10 +16,6 @@ import os
 from shapely import wkt
 from arctern_spark.geoseries import GeoSeries
 
-ARCTERN_INPUT_DIR = './data/'
-ARCTERN_RESULT_DIR = '/tmp/'
-EXPECTED_RESULT_DIR = './expected/'
-
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
     'MULTIPOLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'GEOMETRYCOLLECTION', 'MULTILINEARRING'
@@ -348,6 +344,13 @@ def test_unary_func(func_name, input_csv, output_csv, params):
 
 
 if __name__ == "__main__":
+    import os
+    current_file_dir = os.path.dirname(os.path.abspath(__file__))
+
+    ARCTERN_INPUT_DIR = current_file_dir + '/data/'
+    ARCTERN_RESULT_DIR = '/tmp/'
+    EXPECTED_RESULT_DIR = current_file_dir + '/expected/'
+
     # test binary_func
     for key, values in binary_func_dict.items():
         test_binary_func(key, values[0], values[1])
