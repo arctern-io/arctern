@@ -29,14 +29,14 @@ EPOCH = 1e-8
 EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
-    # 'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
+    'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
     'is_valid': ['is_valid.csv', 'is_valid.out', 'st_is_valid.out'],
     'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],
     'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out'],
-    # 'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],
+    'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],
     'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],
     'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],
     'is_simple': ['is_simple.csv', 'is_simple.out', 'st_is_simple.out'],
