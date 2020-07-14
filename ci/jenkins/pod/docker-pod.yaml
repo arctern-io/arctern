@@ -15,10 +15,10 @@ spec:
     tty: true
     resources:
       limits:
-        memory: "8Gi"
+        memory: "6Gi"
         cpu: "2"
       requests:
-        memory: "8Gi"
+        memory: "6Gi"
         cpu: "2"
     volumeMounts:
     - name: docker-sock
