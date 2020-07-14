@@ -75,7 +75,7 @@ def _validate_arg(arg):
         arg = scala_wrapper.st_geomfromwkb(F.lit(arg))
     elif isinstance(arg, Series):
         pass
-    elif is_list_like(arg) or isinstance(pd.Series):
+    elif is_list_like(arg) or isinstance(arg, pd.Series):
         arg = Series(arg)
     else:
         raise TypeError("Unsupported type %s" % type(arg))
@@ -1822,6 +1822,221 @@ class GeoSeries(Series):
         r = super().take(indices)
         r.set_crs(self.crs)
         return r
+
+    def isin(self, values):
+        """
+        Check whether `values` are contained in GeoSeries.
+
+        Return a boolean Series showing whether each element in the Series
+        matches an element in the passed sequence of `values` exactly.
+
+        Parameters
+        ----------
+        values : list or set
+            The sequence of values to test.
+
+        Returns
+        -------
+        isin : Series (bool dtype)
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> p1 = ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]
+        >>> s = GeoSeries(["POINT (1 1)", "POINT (2 2)"])
+        >>> s.isin(p1)
+        0    True
+        1    True
+        Name: 0, dtype: bool
+        """
+        if not is_list_like(values):
+            raise TypeError(
+                "only list-like objects are allowed to be passed"
+                " to isin(), you passed a [{values_type}]".format(values_type=type(values).__name__)
+            )
+
+        return self._with_new_scol(self.spark.column.isin([_validate_arg(value) for value in values])).rename(self.name)
+
+    def where(self, cond, other=None):
+        """
+        Replace values where the condition is False.
+
+        Parameters
+        ----------
+        cond : boolean Series
+            Where cond is True, keep the original value. Where False,
+            replace with corresponding value from other.
+        other : scalar, Series
+            Entries where cond is False are replaced with corresponding value from other.
+
+        Returns
+        -------
+        GeoSeries
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> p1 = ["POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", "POINT (2 2)", "LINESTRING (0 0, 3 3, 7 6)"]
+        >>> s = GeoSeries(p1)
+        >>> s.where(s.npoints < 4)
+        0                          None
+        1                   POINT (2 2)
+        2    LINESTRING (0 0, 3 3, 7 6)
+        Name: 0, dtype: object
+        """
+        if isinstance(other, Series):
+            other = scala_wrapper.st_geomfromwkb(other)
+        elif other is None:
+            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+        return super().where(cond=cond, other=other)
+
+    def mask(self, cond, other=None):
+        """
+        Replace values where the condition is True.
+
+        Parameters
+        ----------
+        cond : boolean Series
+            Where cond is False, keep the original value. Where True,
+            replace with corresponding value from other.
+        other : scalar, Series
+            Entries where cond is True are replaced with corresponding value from other.
+
+        Returns
+        -------
+        GeoSeries
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> p1 = ["POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", "POINT (2 2)", "LINESTRING (0 0, 3 3, 7 6)"]
+        >>> s = GeoSeries(p1)
+        >>> s.mask(s.npoints < 4)
+        0    POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
+        1                                   None
+        2                                   None
+        Name: 0, dtype: object
+        """
+        if isinstance(other, Series):
+            other = scala_wrapper.st_geomfromwkb(other)
+        elif other is None:
+            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+        return super().mask(cond=cond, other=other)
+
+    def replace(self, to_replace=None, value=None, regex=False):
+        """
+        Replace values given in to_replace with value.
+        Values of the GeoSeries are replaced with other values dynamically.
+
+        Parameters
+        ----------
+        to_replace : str, list, dict, Series, int, float, or None
+            How to find the values that will be replaced.
+            * numeric, str:
+
+                - numeric: numeric values equal to to_replace will be replaced with value
+                - str: string exactly matching to_replace will be replaced with value
+
+            * list of str or numeric:
+
+                - if to_replace and value are both lists, they must be the same length.
+                - str and numeric rules apply as above.
+
+            * dict:
+
+                - Dicts can be used to specify different replacement values for different
+                  existing values.
+                  For example, {'a': 'b', 'y': 'z'} replaces the value ‘a’ with ‘b’ and ‘y’
+                  with ‘z’. To use a dict in this way the value parameter should be None.
+                - For a DataFrame a dict can specify that different values should be replaced
+                  in different columns. For example, {'a': 1, 'b': 'z'} looks for the value 1
+                  in column ‘a’ and the value ‘z’ in column ‘b’ and replaces these values with
+                  whatever is specified in value.
+                  The value parameter should not be None in this case.
+                  You can treat this as a special case of passing two lists except that you are
+                  specifying the column to search in.
+
+            See the examples section for examples of each of these.
+
+        value : scalar, dict, list, str default None
+            Value to replace any values matching to_replace with.
+            For a DataFrame a dict of values can be used to specify which value to use
+            for each column (columns not in the dict will not be filled).
+            Regular expressions, strings and lists or dicts of such objects are also allowed.
+
+        Returns
+        -------
+        GeoSeries
+            Object after replacement.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> p1 = ["POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", "POINT (2 2)", "LINESTRING (0 0, 3 3, 7 6)"]
+        >>> s = GeoSeries(p1)
+        >>> s.replace(s[0], s[1])
+        0                   POINT (2 2)
+        1                   POINT (2 2)
+        2    LINESTRING (0 0, 3 3, 7 6)
+        Name: 0, dtype: object
+        """
+        if to_replace is None:
+            return self
+        if not isinstance(to_replace, (str, bytearray, bytes)):
+            raise ValueError("'to_replace' should be one of str, bytearray, bytes")
+        if regex:
+            raise NotImplementedError("replace currently not support for regex")
+        if isinstance(to_replace, list) and isinstance(value, list):
+            if not len(to_replace) == len(value):
+                raise ValueError(
+                    "Replacement lists must match in length. Expecting {} got {}".format(
+                        len(to_replace), len(value)
+                    )
+                )
+            to_replace = dict(zip(to_replace, value))
+
+        current = F.when(self.spark.column.isin(scala_wrapper.st_geomfromwkb(F.lit(to_replace))), scala_wrapper.st_geomfromwkb(F.lit(value))).otherwise(self.spark.column)
+
+        return self._with_new_scol(current)
+
+    def between(self, left, right, inclusive=True):
+        """
+        Return boolean Series equivalent to left <= series <= right.
+        This function returns a boolean vector containing `True` wherever the
+        corresponding Series element is between the boundary values `left` and
+        `right`. NA values are treated as `False`.
+
+        Parameters
+        ----------
+        left : scalar or list-like
+            Left boundary.
+        right : scalar or list-like
+            Right boundary.
+        inclusive : bool, default True
+            Include boundaries.
+
+        Returns
+        -------
+        Series
+            Series representing whether each element is between left and
+            right (inclusive).
+
+        Notes
+        -----
+        This function is equivalent to ``(left <= ser) & (ser <= right)``
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoSeries
+        >>> p1 = ["POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", "POINT (2 2)", "LINESTRING (0 0, 3 3, 7 6)"]
+        >>> s = GeoSeries(p1)
+        >>> s.between(p1[0], p1[2])
+        0    False
+        1    False
+        2    False
+        Name: 0, dtype: bool
+        """
+        return super().between(_validate_arg(left), _validate_arg(right), inclusive=inclusive)
 
     @classmethod
     def _calculate_bbox_from_wkb(cls, geom_wkb):
