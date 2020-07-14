@@ -288,7 +288,7 @@ def test_binary_func(func_name, input_csv, output_csv):
         geo_s1.set_crs('EPSG:4326')
         geo_s2.set_crs('EPSG:4326')
     test_codes = 'geo_s1.' + func_name + '(geo_s2)'
-    if func_name in ['intersection', 'symmetric_difference']:
+    if func_name in ['intersection', 'symmetric_difference','union','difference']:
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
