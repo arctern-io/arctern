@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <string>
+#include <unordered_map>
+
 #include "render/utils/vega/vega_unique_value_map/vega_unique_value_map.h"
 
 namespace arctern {
 namespace render {
 
-VegaUniqueValueMap::color(const std::string& json) { Parse(json); }
+VegaUniqueValueMap::VegaUniqueValueMap(const std::string& json) { Parse(json); }
 
 void VegaUniqueValueMap::Parse(const std::string& json) {
   rapidjson::Document document;
@@ -72,7 +75,7 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
     }
 
     auto color = color_parser.color();
-    unique_value_infos_[label_value] = std::make_tuple(color.r, color.g, color.a);
+    unique_value_infos_[label_value] = color;
   }
 }
 

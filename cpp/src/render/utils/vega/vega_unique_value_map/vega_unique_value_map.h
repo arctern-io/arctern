@@ -16,7 +16,7 @@
 #pragma once
 
 #include <string>
-#include <bits/unordered_map.h>
+#include <unordered_map>
 
 #include "render/utils/vega/vega_scatter_plot/vega_scatter_plot.h"
 
@@ -32,13 +32,17 @@ class VegaUniqueValueMap : public Vega {
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
 
+  const double& opacity() const { return opacity_; }
+  
+  const std::unordered_map<std::string, Color>& unique_value_infos() const { return unique_value_infos_; }
+
  private:
   // vega json to vega struct
   void Parse(const std::string& json) final;
 
  private:
   double opacity_;
-  std::unordered_map<std::string, std::tuple<int, int, int>> unique_value_infos_;
+  std::unordered_map<std::string, Color> unique_value_infos_;
 };
 
 }  // namespace render
