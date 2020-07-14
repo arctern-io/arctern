@@ -24,6 +24,8 @@ if [ -d "/opt/conda/envs/arctern" ];then
     echo "export PYSPARK_PYTHON=/opt/conda/envs/arctern/bin/python" >> "$SPARK_CONFDIR/spark-env.sh"
 fi
 
+spark_config_extra_class
+
 if [[ "$*" = "/run.sh" ]]; then
     info "** Starting Spark setup **"
     /setup.sh
