@@ -29,14 +29,14 @@ EPOCH = 1e-8
 EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
-    'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
+    # 'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
     'is_valid': ['is_valid.csv', 'is_valid.out', 'st_is_valid.out'],
     'centroid': ['centroid.csv', 'centroid.out', 'st_centroid.out'],
     'convex_hull': ['convex_hull.csv', 'convex_hull.out', 'st_convex_hull.out'],
-    'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],
+    # 'exterior': ['exterior.csv', 'exterior.out', 'st_exterior.out'],
     'boundary': ['boundary.csv', 'boundary.out', 'st_boundary.out'],
     'is_empty': ['is_empty.csv', 'is_empty.out', 'st_is_empty.out'],
     'is_simple': ['is_simple.csv', 'is_simple.out', 'st_is_simple.out'],
@@ -79,17 +79,17 @@ binary_func_dict = {
 def collect_diff_file_list():
     result_file_list = []
     expected_file_list = []
-    for key in binary_func_dict.keys():
-        result_file_list.append(binary_func_dict[key][1])
-        expected_file_list.append(binary_func_dict[key][2])
+    for key1, _ in binary_func_dict.items():
+        result_file_list.append(binary_func_dict[key1][1])
+        expected_file_list.append(binary_func_dict[key1][2])
 
-    for key in unary_func_dict.keys():
-        result_file_list.append(unary_func_dict[key][1])
-        expected_file_list.append(unary_func_dict[key][2])
+    for key2, _ in unary_func_dict.items():
+        result_file_list.append(unary_func_dict[key2][1])
+        expected_file_list.append(unary_func_dict[key2][2])
 
-    for key in unary_func_property_dict.keys():
-        result_file_list.append(unary_func_property_dict[key][1])
-        expected_file_list.append(unary_func_property_dict[key][2])
+    for key3, _ in unary_func_property_dict.items():
+        result_file_list.append(unary_func_property_dict[key3][1])
+        expected_file_list.append(unary_func_property_dict[key3][2])
 
     return result_file_list, expected_file_list
 
@@ -117,11 +117,11 @@ def is_geometrycollection(geo):
     return False
 
 
-def is_float(str):
+def is_float(str_float):
     try:
-        num = float(str)
+        num = float(str_float)
         return isinstance(num, float)
-    except:
+    except ValueError:
         return False
 
 
@@ -159,50 +159,36 @@ def compare_floats(geometry_x, geometry_y):
 
 
 def compare_one(result, expect):
-    value_x = result[1]
-    value_y = expect[1]
-    newvalue_x = convert_str(value_x)
-    newvalue_y = convert_str(value_y)
+    value_arctern = convert_str(result[1])
+    value_postgis = convert_str(expect[1])
 
+    flag = False
     try:
-        if newvalue_x == newvalue_y:
-            return True
-
-        if isinstance(newvalue_x, bool):
-            one_result_flag = (newvalue_x == newvalue_y)
-            if not one_result_flag:
-                print(result[0], newvalue_x, expect[0], newvalue_y)
-            return one_result_flag
-
-        if isinstance(newvalue_x, (int, float)):
-            return compare_floats(newvalue_x, newvalue_y)
-
-        if isinstance(newvalue_x, str):
-            newvalue_x = newvalue_x.strip().upper()
-            newvalue_y = newvalue_y.strip().upper()
-
-            if (is_empty(newvalue_x) and is_empty(newvalue_y)):
-                return True
-
-            if is_geometry(newvalue_x) and is_geometry(newvalue_y):
-                one_result_flag = compare_geometry(newvalue_x,
-                                                   newvalue_y)
-                if not one_result_flag:
-                    print(result[0], newvalue_x, expect[0], newvalue_y)
-                return one_result_flag
-
-            if is_geometrycollection(newvalue_x) and is_geometrycollection(
-                    newvalue_y):
-                one_result_flag = compare_geometrycollection(
-                    newvalue_x, newvalue_y)
-                if not one_result_flag:
-                    print(result[0], newvalue_x, expect[0], newvalue_y)
-                return one_result_flag
-            return False
-
+        if value_arctern == value_postgis:
+            flag = True
+        elif isinstance(value_arctern, bool):
+            flag = (value_arctern == value_postgis)
+        elif isinstance(value_arctern, (int, float)):
+            flag = compare_floats(value_arctern, value_postgis)
+        elif isinstance(value_arctern, str):
+            value_arctern = value_arctern.strip().upper()
+            value_postgis = value_postgis.strip().upper()
+            if (is_empty(value_arctern) and is_empty(value_postgis)):
+                flag = True
+            elif is_geometry(value_arctern) and is_geometry(value_postgis):
+                flag = compare_geometry(value_arctern,
+                    value_postgis)
+            elif is_geometrycollection(value_arctern) and is_geometrycollection(
+                    value_postgis):
+                flag = compare_geometrycollection(
+                    value_arctern, value_postgis)
     except ValueError as ex:
         print(repr(ex))
-        return False
+        flag = False
+
+    if not flag:
+        print(result[0], value_arctern, expect[0], value_postgis)
+    return flag
 
 
 def compare_results(arctern_results, postgis_results):
@@ -227,7 +213,7 @@ def compare_results(arctern_results, postgis_results):
     for arctern_res_item, postgis_res_item in zip(
             arct_arr, pgis_arr):
         res = compare_one(arctern_res_item,
-                          postgis_res_item)
+            postgis_res_item)
         flag = flag and res
     return flag
 
@@ -270,7 +256,7 @@ def read_csv2arr(input_csv_path):
     col1 = []
     col2 = []
     with open(input_csv_path) as f:
-        rows = [line for line in f][1:]  # csv header should be filtered
+        rows = f.readlines()[1:]
     for row in rows:
         arr.append(re.split('[|]', row.strip()))
     if len(arr[0]) == 2:
@@ -291,7 +277,8 @@ def write_arr2csv(output_csv_path, output_arr):
     import csv
     with open(output_csv_path, 'w') as f:
         csv_writer = csv.writer(f, delimiter='|', lineterminator='\n')
-        for x in output_arr: csv_writer.writerow([x])
+        for x in output_arr:
+            csv_writer.writerow([x])
 
 
 def test_binary_func(func_name, input_csv, output_csv):
@@ -309,8 +296,9 @@ def test_binary_func(func_name, input_csv, output_csv):
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
-    res = eval(test_codes).sort_index()
+    res = eval(test_codes).sort_index() # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
+
 
 def test_unary_property_func(func_name, input_csv, output_csv):
     need_to_wkt_list = [
@@ -325,10 +313,11 @@ def test_unary_property_func(func_name, input_csv, output_csv):
     col1, col2 = read_csv2arr(input_csv_path)
     assert len(col2) == 0
     geo_s1 = GeoSeries(col1)
+    geo_s1.set_crs('EPSG:4326')
     test_codes = 'geo_s1.' + func_name
     if func_name in need_to_wkt_list:
         test_codes += '.to_wkt()'
-    res = eval(test_codes).sort_index()
+    res = eval(test_codes).sort_index() # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
 
 
@@ -342,7 +331,7 @@ def test_unary_func(func_name, input_csv, output_csv, params):
         geo_s1.set_crs('EPSG:3857')
     comma_flag = False
     param_code = ''
-    if params == None:
+    if params is None:
         test_codes = 'geo_s1.' + func_name + '()'
         if not func_name == 'as_geojson':
             test_codes += '.to_wkt()'
@@ -354,7 +343,7 @@ def test_unary_func(func_name, input_csv, output_csv, params):
             else:
                 param_code += ',' + str(param)
         test_codes = 'geo_s1.' + func_name + '(' + param_code + ').to_wkt()'
-    res = eval(test_codes).sort_index()
+    res = eval(test_codes).sort_index() # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
 
 
@@ -370,4 +359,4 @@ if __name__ == "__main__":
         test_unary_func(key, values[0], values[1], values[3])
 
     test_status = compare_all()
-    assert test_status == True
+    assert test_status
