@@ -219,8 +219,9 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
-        assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                         "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').to_list() == ["POINT (1 1)", "POINT (2 2)",
+                                                                               "POINT (3 3)", "POINT (4 4)",
+                                                                               "POINT (5 5)"]
 
     def test_read_and_save_file_2(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -228,8 +229,9 @@ class TestFile:
         read_gdf = arctern_spark.read_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
-        assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                         "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)",
+                                                                              "POINT (3 3)", "POINT (4 4)",
+                                                                              "POINT (5 5)"]
 
     def test_read_and_save_file_3(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -237,8 +239,9 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                    "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)",
+                                                                              "POINT (3 3)", "POINT (4 4)",
+                                                                              "POINT (5 5)"]
 
     def test_read_and_save_file_4(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -246,7 +249,7 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
     def test_read_and_save_file_5(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -254,7 +257,7 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
     def test_read_and_save_file_6(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -263,7 +266,7 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=bbox)
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
 
 class TestJson:
