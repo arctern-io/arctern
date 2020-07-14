@@ -20,9 +20,9 @@ spec:
     resources:
       limits:
         memory: "12Gi"
-        cpu: "6.0"
+        cpu: "4.0"
       requests:
-        memory: "8Gi"
+        memory: "12Gi"
         cpu: "4.0"
   tolerations:
   - key: dedicated
