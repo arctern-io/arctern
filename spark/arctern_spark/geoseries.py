@@ -112,6 +112,7 @@ class GeoSeries(Series):
     ----------
     data : array-like, Iterable, dict, or scalar value(str or bytes)
         Contains geometric data stored in GeoSeries. The geometric data can be in `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+        Note that if `data` is a pandas Series, other arguments should not be used.
     index : array-like or Index (1d)
         Same to the index of koalas.Series, by default ``RangeIndex (0, 1, 2, …, n)``.
         Index values must be hashable and have the same length as ``data``. Non-unique index values are allowed. If both a dict and index sequence are used, the index will override the keys found in the dict.
@@ -1730,7 +1731,7 @@ class GeoSeries(Series):
         0    LINESTRING (1 2, 4 5, 7 8)
         Name: 0, dtype: object
         """
-        if not isinstance(json, ks.Series) and is_list_like(json) and not json:
+        if not isinstance(json, (pd.Series, ks.Series)) and is_list_like(json) and not json:
             return GeoSeries([], crs=crs)
         return _column_geo("st_geomfromgeojson", _validate_arg(json), crs=crs)
 
