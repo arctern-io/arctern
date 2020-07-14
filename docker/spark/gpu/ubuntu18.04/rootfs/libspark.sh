@@ -140,9 +140,8 @@ spark_config_extra_class() {
     # conda activate arctern # already in arctern env, no need to activate
     ARCTERN_SPARK_VERSION=`python -c "import arctern_spark;print(arctern_spark.__version__)"`
     ARCTERN_ENV_PREFIX=${CONDA_PREFIX}
-    echo "ljq debug..........."
-    echo $ARCTERN_SPARK_VERSION
-    echo $ARCTERN_ENV_PREFIX
+    info $ARCTERN_SPARK_VERSION
+    info $ARCTERN_ENV_PREFIX
     # conda deactivate
     spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
     spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"

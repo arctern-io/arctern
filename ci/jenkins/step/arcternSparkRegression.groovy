@@ -22,6 +22,9 @@ try {
         // }
     }
 } catch(exc) {
+    dir ("docker/test_env") {
+        sh "docker-compose -p ${composeProject} logs regression"
+    }
     dir ("docker/test_env/spark/${BINARY_VERSION}") {
         sh "docker-compose -p ${composeProject} logs spark-master"
         sh "docker-compose -p ${composeProject} logs spark-worker"
