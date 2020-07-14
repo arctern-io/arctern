@@ -25,10 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include "render/2d/choropleth_map/choropleth_map.h"
-#include "render/2d/fishnet_map/fishnet_map.h"
+#include "render/2d/choroplethmap/choroplethmap.h"
+#include "render/2d/fishnetmap/fishnetmap.h"
 #include "render/2d/heatmap/heatmap.h"
-#include "render/2d/icon/icon_viz.h"
+#include "render/2d/iconviz/iconviz.h"
 #include "render/2d/scatter_plot/pointmap.h"
 #include "render/2d/scatter_plot/weighted_pointmap.h"
 

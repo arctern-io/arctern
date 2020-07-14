@@ -23,7 +23,7 @@
 #include <gdal_utils.h>
 #include <ogrsf_frmts.h>
 
-#include "render/2d/choropleth_map/choropleth_map.h"
+#include "render/2d/choroplethmap/choroplethmap.h"
 #include "render/utils/color/color_gradient.h"
 
 namespace arctern {

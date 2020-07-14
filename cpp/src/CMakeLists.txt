@@ -18,23 +18,23 @@ include_directories(${ARCTERN_THIRDPARTY_SRC})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(render_src
-        render/2d/fishnet_map/fishnet_map.cpp
+        render/2d/fishnetmap/fishnetmap.cpp
         render/2d/scatter_plot/pointmap.cpp
         render/2d/scatter_plot/weighted_pointmap.cpp
-        render/2d/choropleth_map/choropleth_map.cpp
+        render/2d/choroplethmap/choroplethmap.cpp
         render/2d/general_2d.cpp
         render/2d/heatmap/heatmap.cpp
         render/2d/heatmap/set_color.cpp
-        render/2d/icon/icon_viz.cpp
-        render/utils/vega/vega_fishnet_map/vega_fishnet_map.cpp
+        render/2d/iconviz/iconviz.cpp
+        render/utils/vega/vega_fishnetmap/vega_fishnetmap.cpp
         render/utils/render_utils.cpp
         render/utils/agg/agg_handler.cpp
         render/utils/vega/vega_scatter_plot/vega_pointmap.cpp
         render/utils/vega/vega_scatter_plot/vega_weighted_pointmap.cpp
-        render/utils/vega/vega_choropleth_map/vega_choropleth_map.cpp
+        render/utils/vega/vega_choroplethmap/vega_choroplethmap.cpp
         render/utils/vega/vega.cpp
         render/utils/vega/vega_heatmap/vega_heatmap.cpp
-        render/utils/vega/vega_icon/vega_icon.cpp
+        render/utils/vega/vega_iconviz/vega_iconviz.cpp
         render/utils/color/color.cpp
         render/utils/color/color_gradient.cpp
         render/utils/image/image_loader.cpp
