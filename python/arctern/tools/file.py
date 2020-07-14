@@ -156,6 +156,7 @@ def infer_schema(df, geo_col):
     return schema
 
 
+# pylint: disable=protected-access
 # pylint: disable=unidiomatic-typecheck
 def _to_file(
         df,

@@ -16,12 +16,12 @@
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin,protected-access
 import json
 
+from itertools import zip_longest
 import pandas as pd
 import numpy as np
 from pandas import DataFrame, Series
 from arctern import GeoSeries
 import arctern.tools
-from itertools import zip_longest
 
 
 class GeoDataFrame(DataFrame):
@@ -60,6 +60,7 @@ class GeoDataFrame(DataFrame):
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.append(col)
 
+    # pylint: disable=protected-access
     def set_geometry(self, col, inplace=False, crs=None):
         """
         Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
@@ -109,7 +110,6 @@ class GeoDataFrame(DataFrame):
             geometry_cols.append(col)
             self._crs_for_cols[col] = crs
         if col in geometry_cols:
-            index = geometry_cols.index(col)
             if crs is not None:
                 self._crs_for_cols[col] = crs
                 frame[col].set_crs(crs)
@@ -221,6 +221,7 @@ class GeoDataFrame(DataFrame):
                     feature["bbox"] = bbox if geom else None
                 yield feature
 
+    # pylint: disable=protected-access
     def reset_index(self, level=None, drop=False, inplace=False, col_level=0, col_fill=""):
         df = super(GeoDataFrame, self).reset_index(level, drop, inplace, col_level, col_fill)
         if not inplace:
