@@ -201,13 +201,13 @@ class GeoDataFrame(DataFrame):
             raise ValueError("Unknown na method {0}".format(na))
         if geometry not in self._geometry_column_names:
             raise ValueError("{} is not a geometry column".format(geometry))
-        ids = self.index.to_pandas()
         geometries = self[geometry].as_geojson().to_pandas()
         geometries_bbox = self[geometry].bbox
         properties_cols = self.columns.difference([geometry]).tolist()
 
         if len(properties_cols) > 0:
             properties = self[properties_cols].to_pandas().astype(object)
+            ids = properties.index
             property_geo_cols = self._geometry_column_names.difference([geometry])
 
             # since it could be more than one geometry columns in GeoDataFrame,

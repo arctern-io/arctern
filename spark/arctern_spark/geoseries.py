@@ -149,9 +149,10 @@ class GeoSeries(Series):
 
             if isinstance(s, Series):
                 anchor = s._anchor
+                column_label = s._column_label
             else:
                 anchor = DataFrame(s)
-            column_label = anchor._internal.column_labels[0]
+                column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
             spark_dtype = kss.spark.data_type
@@ -165,7 +166,10 @@ class GeoSeries(Series):
                 raise TypeError(
                     "Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
             anchor = kss._kdf
-            anchor._kseries = {column_label: kss}
+            if not hasattr(anchor, "_kseries"):
+                anchor._kseries = {column_label: kss}
+            else:
+                anchor._kseries[column_label] = kss
 
         IndexOpsMixin.__init__(self, anchor)
         self._column_label = column_label
