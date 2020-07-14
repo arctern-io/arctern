@@ -202,13 +202,20 @@
       "encode": {
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-          "unique_value_infos": {
-            "value": {
-                "VTS": "#00FF00",
-                "CMT": "#FF0000",
-                "DDS": "#0000FF"
-              }
-          },
+          "unique_value_infos": [
+            { 
+              "label": "VTS",
+              "color": "#00FF00"
+            }, 
+            {
+              "label": "CMT",
+              "color": "#FF0000"
+            }, 
+            {
+              "label": "DDS",
+              "color": "#0000FF"
+            }
+          ],
           "opacity": {"value": 1.0},
           "coordinate_system": {"value": "EPSG:3857"},
           "aggregation_type": {"value": "sum"}

@@ -54,19 +54,18 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
 
   if (!JsonLabelCheck(mark_enter, "unique_value_infos") ||
       !JsonLabelCheck(mark_enter, "opacity") ||
-      !JsonLabelCheck(mark_enter["unique_value_infos"], "value") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
-      !JsonTypeCheck(mark_enter["unique_value_infos"]["value"], rapidjson::Type::kObjectType) ||
+      !JsonTypeCheck(mark_enter["unique_value_infos"], rapidjson::Type::kArrayType) ||
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
 
   opacity_ = mark_enter["opacity"]["value"].GetDouble();
 
-  auto unique_value_infos_size = mark_enter["unique_value_infos"]["value"].Size();
+  auto unique_value_infos_size = mark_enter["unique_value_infos"].Size();
   for (int i = 0; i < unique_value_infos_size; i++) {
-    auto label_value = mark_enter["unique_value_infos"]["value"][i][0].GetString();
-    auto color_string = mark_enter["unique_value_infos"]["value"][i][1].GetString();
+    auto label_value = mark_enter["unique_value_infos"][i]["label"].GetString();
+    auto color_string = mark_enter["unique_value_infos"][i]["color"].GetString();
 
     auto color_parser = ColorParser(color_string);
     if (!color_parser.is_css_hex_color()) {

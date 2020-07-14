@@ -44,13 +44,20 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST) {
       "      \"encode\": {\n"
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"unique_value_infos\": {\n"
-      "            \"value\": {\n"
-      "                \"VTS\": \"#00FF00\",\n"
-      "                \"CMT\": \"#FF0000\",\n"
-      "                \"DDS\": \"#0000FF\"\n"
-      "              }\n"
-      "          },\n"
+      "          \"unique_value_infos\": [\n"
+      "            { \n"
+      "              \"label\": \"VTS\",\n"
+      "              \"color\": \"#00FF00\"\n"
+      "            }, \n"
+      "            {\n"
+      "              \"label\": \"CMT\",\n"
+      "              \"color\": \"#FF0000\"\n"
+      "            }, \n"
+      "            {\n"
+      "              \"label\": \"DDS\",\n"
+      "              \"color\": \"#0000FF\"\n"
+      "            }\n"
+      "          ],\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"},\n"
       "          \"aggregation_type\": {\"value\": \"sum\"}\n"
@@ -61,5 +68,23 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST) {
       "}";
 
   arctern::render::VegaUniqueValueMap vega_unique_value_map(vega);
-  auto unique_value_infos = vega_unique_value_map.unique_value_infos();
+
+  const auto& window_params = vega_unique_value_map.window_params();
+  const auto& unique_value_infos = vega_unique_value_map.unique_value_infos();
+  const auto& opacity = vega_unique_value_map.opacity();
+
+  assert(window_params.width() == 1900);
+  assert(window_params.height() == 1410);
+
+  assert(unique_value_infos.at("VTS").r == 0);
+  assert(unique_value_infos.at("VTS").g == 1);
+  assert(unique_value_infos.at("VTS").b == 0);
+  assert(unique_value_infos.at("CMT").r == 1);
+  assert(unique_value_infos.at("CMT").g == 0);
+  assert(unique_value_infos.at("CMT").b == 0);
+  assert(unique_value_infos.at("DDS").r == 0);
+  assert(unique_value_infos.at("DDS").g == 0);
+  assert(unique_value_infos.at("DDS").b == 1);
+
+  assert(opacity == 1.0);
 }
