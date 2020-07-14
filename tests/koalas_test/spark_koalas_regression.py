@@ -25,7 +25,7 @@ EPOCH = 1e-8
 EPOCH_FLOAT = 1e-3
 
 unary_func_property_dict = {
-    'length': ['length.csv', 'length.out', 'st_length.out'],  # issue 828
+    'length': ['length.csv', 'length.out', 'st_length.out'],
     'envelope': ['envelope.csv', 'envelope.out', 'st_envelope.out'],
     'area': ['area.csv', 'area.out', 'st_area.out'],
     'npoints': ['npoints.csv', 'npoints.out', 'st_npoints.out'],
@@ -67,8 +67,8 @@ binary_func_dict = {
     'symmetric_difference': ['symmetric_difference.csv', 'symmetric_difference.out', 'st_symmetric_difference.out'],
     'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
     'distance_sphere': ['distance_sphere.csv', 'distance_sphere.out', 'st_distance_sphere.out'],
-    # 'union':['union.csv','union.out','st_union.out'],  # error
-    # 'difference':['difference.csv','difference.out','st_difference.out'],
+    'union':['union.csv','union.out','st_union.out'],
+    'difference':['difference.csv','difference.out','st_difference.out'],
 }
 
 
@@ -344,7 +344,6 @@ def test_unary_func(func_name, input_csv, output_csv, params):
 
 
 if __name__ == "__main__":
-    import os
     current_file_dir = os.path.dirname(os.path.abspath(__file__))
 
     ARCTERN_INPUT_DIR = current_file_dir + '/data/'
