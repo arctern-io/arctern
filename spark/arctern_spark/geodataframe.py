@@ -19,9 +19,8 @@ from itertools import zip_longest
 
 import numpy as np
 import pandas as pd
-from databricks.koalas import DataFrame, Series
-#from databricks.koalas import DataFrame, Series, get_option
-#from databricks.koalas.frame import REPR_PATTERN
+from databricks.koalas import DataFrame, Series, get_option
+from databricks.koalas.frame import REPR_PATTERN
 
 import arctern_spark
 from arctern_spark.geoseries import GeoSeries
@@ -71,8 +70,6 @@ class GeoDataFrame(DataFrame):
         # align crs and cols, simply fill None to crs
         for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
-                # This set_item operation will lead some BUG in koalas(v1.0.0),
-                # see https://github.com/databricks/koalas/issues/1633
                 self[col] = GeoSeries(self[col], crs=_crs)
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
@@ -127,7 +124,38 @@ class GeoDataFrame(DataFrame):
             for col in key:
                 self._crs_for_cols.pop(col)
 
-    def dissolve(self, by, col="geometry", aggfunc="first", as_index=True):
+    def _get_or_create_repr_pandas_cache(self, n):
+        if not hasattr(self, "_repr_pandas_cache") or n not in self._repr_pandas_cache:
+            pdf = self.head(n + 1)._to_internal_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            self._repr_pandas_cache = {n: pdf}
+        return self._repr_pandas_cache[n]
+
+    def __repr__(self):
+        max_display_count = get_option("display.max_rows")
+        if max_display_count is None:
+            pdf = self.to_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            return pdf.to_string()
+
+        pdf = self._get_or_create_repr_pandas_cache(max_display_count)
+        pdf_length = len(pdf)
+        pdf = pdf.iloc[:max_display_count]
+        if pdf_length > max_display_count:
+            repr_string = pdf.to_string(show_dimensions=True)
+            match = REPR_PATTERN.search(repr_string)
+            if match is not None:
+                nrows = match.group("rows")
+                ncols = match.group("columns")
+                footer = "\n\n[Showing only the first {nrows} rows x {ncols} columns]".format(
+                    nrows=nrows, ncols=ncols
+                )
+                return REPR_PATTERN.sub(footer, repr_string)
+        return pdf.to_string()
+
+    def disolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
             raise ValueError(f"`col` {col} must be a geometry column whose data type is GeometryUDT,"
                              f"use `set_geometry` to set this column as geometry column.")
@@ -179,7 +207,7 @@ class GeoDataFrame(DataFrame):
         properties_cols = self.columns.difference([geometry]).tolist()
 
         if len(properties_cols) > 0:
-            properties = self[properties_cols].to_pandas()
+            properties = self[properties_cols].to_pandas().astype(object)
             property_geo_cols = self._geometry_column_names.difference([geometry])
 
             # since it could be more than one geometry columns in GeoDataFrame,
@@ -334,8 +362,8 @@ class GeoDataFrame(DataFrame):
         if kwargs.get("show_bbox", False):
             # calculate bbox of GeoSeries got from GeoDataFrame will failed,
             # see https://github.com/databricks/koalas/issues/1633
-            raise NotImplementedError("show bbox is not implemented yet.")
-            # geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
+            # raise NotImplementedError("show bbox is not implemented yet.")
+            geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr().bbox[0]
 
         return geo
 

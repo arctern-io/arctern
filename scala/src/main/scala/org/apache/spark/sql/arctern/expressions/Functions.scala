@@ -15,14 +15,16 @@
  */
 package org.apache.spark.sql.arctern.expressions
 
+import org.apache.spark.sql.arctern.CodeGenUtil.{mutableGeometryInitCode, serialGeometryCode}
 import org.apache.spark.sql.arctern.{ArcternExpr, CodeGenUtil, GeometryUDT}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.catalyst.expressions.codegen.Block._
 import org.apache.spark.sql.catalyst.expressions.codegen._
-import org.apache.spark.sql.catalyst.util.ArrayData
+import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
 import org.apache.spark.sql.catalyst.util.ArrayData._
 import org.apache.spark.sql.types._
+import org.apache.zookeeper.KeeperException.UnimplementedException
 import org.geotools.geometry.jts.JTS
 import org.geotools.referencing.CRS
 import org.locationtech.jts.geom._
@@ -222,39 +224,11 @@ abstract class ST_BinaryOp extends ArcternExpr {
     assert(CodeGenUtil.isGeometryExpr(leftExpr))
     assert(CodeGenUtil.isGeometryExpr(rightExpr))
 
-    var leftGeo: String = ""
-    var leftGeoDeclare: String = ""
-    var leftGeoCode: String = ""
-    var rightGeo: String = ""
-    var rightGeoDeclare: String = ""
-    var rightGeoCode: String = ""
-
     val leftCode = leftExpr.genCode(ctx)
     val rightCode = rightExpr.genCode(ctx)
 
-    if (CodeGenUtil.isArcternExpr(leftExpr)) {
-      val (geo, declare, code) = CodeGenUtil.geometryFromArcternExpr(leftCode.code.toString())
-      leftGeo = geo;
-      leftGeoDeclare = declare;
-      leftGeoCode = code
-    } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(leftCode, ctx.freshName(leftCode.value))
-      leftGeo = geo;
-      leftGeoDeclare = declare;
-      leftGeoCode = code
-    }
-
-    if (CodeGenUtil.isArcternExpr(rightExpr)) {
-      val (geo, declare, code) = CodeGenUtil.geometryFromArcternExpr(rightCode.code.toString())
-      rightGeo = geo;
-      rightGeoDeclare = declare;
-      rightGeoCode = code
-    } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(rightCode, ctx.freshName(rightCode.value))
-      rightGeo = geo;
-      rightGeoDeclare = declare;
-      rightGeoCode = code
-    }
+    val (leftGeo, leftGeoDeclare, leftGeoCode) = CodeGenUtil.geometryFromExpr(ctx, leftExpr, leftCode)
+    val (rightGeo, rightGeoDeclare, rightGeoCode) = CodeGenUtil.geometryFromExpr(ctx, rightExpr, rightCode)
 
     val assignment = CodeGenUtil.assignmentCode(f(leftGeo, rightGeo), ev.value, ctx.freshName(ev.value), dataType)
 
@@ -310,21 +284,7 @@ abstract class ST_UnaryOp extends ArcternExpr {
 
     val exprCode = expr.genCode(ctx)
 
-    var exprGeo: String = ""
-    var exprGeoDeclare: String = ""
-    var exprGeoCode: String = ""
-
-    if (CodeGenUtil.isArcternExpr(expr)) {
-      val (geo, declare, code) = CodeGenUtil.geometryFromArcternExpr(exprCode.code.toString())
-      exprGeo = geo;
-      exprGeoDeclare = declare;
-      exprGeoCode = code
-    } else {
-      val (geo, declare, code) = CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshName(exprCode.value))
-      exprGeo = geo;
-      exprGeoDeclare = declare;
-      exprGeoCode = code
-    }
+    val (exprGeo, exprGeoDeclare, exprGeoCode) = CodeGenUtil.geometryFromExpr(ctx, expr, exprCode)
 
     val assignment = CodeGenUtil.assignmentCode(f(exprGeo), ev.value, ctx.freshName(ev.value), dataType)
 
@@ -733,7 +693,7 @@ case class ST_SymDifference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.symDifference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -746,7 +706,7 @@ case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.difference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -801,13 +761,47 @@ case class ST_Boundary(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
 
-case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
+case class ST_ExteriorRing(inputsExpr: Seq[Expression]) extends ArcternExpr {
 
-  override def expr: Expression = inputsExpr.head
+  override def nullable: Boolean = true
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"""$geo.getGeometryType().equals("Polygon") ? new org.locationtech.jts.geom.GeometryFactory().createPolygon($geo.getCoordinates()).getExteriorRing() : $geo """)
+  override def eval(input: InternalRow): GenericArrayData = {
+    throw new UnimplementedException
+  }
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    val expr = inputsExpr.head
+    assert(CodeGenUtil.isGeometryExpr(expr))
+
+    val exprCode = expr.genCode(ctx)
+    val (exprGeo, exprGeoDeclare, exprGeoCode) = CodeGenUtil.geometryFromExpr(ctx, expr, exprCode)
+
+    val geoName = ctx.freshName(ev.value)
+
+    val nullSafeEval =
+      exprGeoCode + ctx.nullSafeExec(expr.nullable, exprCode.isNull) {
+        s"""
+           |if ($exprGeo.getGeometryType().equals("Polygon")) {
+           |  ${ev.isNull} = false; // resultCode could change nullability.
+           |  ${mutableGeometryInitCode(geoName)}
+           |  org.locationtech.jts.geom.Polygon ${exprGeo}_polygon = (org.locationtech.jts.geom.Polygon)$exprGeo;
+           |  $geoName =  ${exprGeo}_polygon.getExteriorRing();
+           |  ${ev.value} = ${serialGeometryCode(geoName)}
+           |}
+           |""".stripMargin
+      }
+    ev.copy(code =
+      code"""
+          boolean ${ev.isNull} = true;
+          $exprGeoDeclare
+          ${CodeGenerator.javaType(dataType)} ${ev.value} = ${CodeGenerator.defaultValue(dataType)};
+          $nullSafeEval
+          """)
+  }
 
   override def dataType: DataType = new GeometryUDT
+
+  override def children: Seq[Expression] = inputsExpr
 
   override def inputTypes: Seq[AbstractDataType] = Seq(new GeometryUDT)
 }
