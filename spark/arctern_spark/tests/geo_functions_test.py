@@ -115,7 +115,7 @@ def test_ST_ExteriorRing():
     data = GeoSeries(
         ["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior.to_wkt()
-    assert rst[0] == None
+    assert rst[0] is None
     assert rst[1] == "LINEARRING (0 0, 1 0, 1 1, 0 1, 0 0)"
 
 
