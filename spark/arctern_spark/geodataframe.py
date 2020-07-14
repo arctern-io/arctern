@@ -70,8 +70,6 @@ class GeoDataFrame(DataFrame):
         # align crs and cols, simply fill None to crs
         for col, _crs in zip_longest(cols, crs):
             if col not in self._geometry_column_names:
-                # This set_item operation will lead some BUG in koalas(v1.0.0),
-                # see https://github.com/databricks/koalas/issues/1633
                 self[col] = GeoSeries(self[col], crs=_crs)
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
@@ -209,7 +207,7 @@ class GeoDataFrame(DataFrame):
         properties_cols = self.columns.difference([geometry]).tolist()
 
         if len(properties_cols) > 0:
-            properties = self[properties_cols].to_pandas()
+            properties = self[properties_cols].to_pandas().astype(object)
             property_geo_cols = self._geometry_column_names.difference([geometry])
 
             # since it could be more than one geometry columns in GeoDataFrame,
@@ -364,8 +362,8 @@ class GeoDataFrame(DataFrame):
         if kwargs.get("show_bbox", False):
             # calculate bbox of GeoSeries got from GeoDataFrame will failed,
             # see https://github.com/databricks/koalas/issues/1633
-            raise NotImplementedError("show bbox is not implemented yet.")
-            # geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr()
+            # raise NotImplementedError("show bbox is not implemented yet.")
+            geo["bbox"] = self[kwargs.get("geometry")].envelope_aggr().bbox[0]
 
         return geo
 
