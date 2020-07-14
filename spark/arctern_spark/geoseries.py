@@ -707,8 +707,8 @@ class GeoSeries(Series):
         >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 1)", "LINESTRING (0 2, 2 2, 2 6)", "POLYGON ((3 3, 7 3, 7 7, 3 7, 3 3))"])
         >>> s.exterior
-        0                             POINT (1 1)
-        1              LINESTRING (0 2, 2 2, 2 6)
+        0                                    None
+        1                                    None
         2    LINESTRING (3 3, 7 3, 7 7, 3 7, 3 3)
         Name: 0, dtype: object
 
@@ -830,7 +830,7 @@ class GeoSeries(Series):
         >>> s = GeoSeries([p1, p2])
         >>> s.unary_union()
         0    MULTIPOINT ((1 1), (1 2))
-        Name: st_union_aggr(0), dtype: object
+        Name: 0, dtype: object
         """
         return _agg("st_union_aggr", self)
 
@@ -851,7 +851,7 @@ class GeoSeries(Series):
         >>> s = GeoSeries(["POLYGON ((0 0,4 0,4 4,0 4,0 0))", "POLYGON ((5 1,7 1,7 2,5 2,5 1))"])
         >>> s.envelope_aggr()
         0    POLYGON ((0 0, 0 4, 7 4, 7 0, 0 0))
-        Name: ST_Envelope_Aggr(0), dtype: object
+        Name: 0, dtype: object
         """
         return _agg("st_envelope_aggr", self)
 

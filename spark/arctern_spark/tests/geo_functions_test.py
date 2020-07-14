@@ -115,7 +115,7 @@ def test_ST_ExteriorRing():
     data = GeoSeries(
         ["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
     rst = data.exterior.to_wkt()
-    assert rst[0] == "LINESTRING (4 0, 6 0)"
+    assert rst[0] == None
     assert rst[1] == "LINEARRING (0 0, 1 0, 1 1, 0 1, 0 0)"
 
 
@@ -201,7 +201,7 @@ def test_ST_Disjoint():
     assert rst[4] == 1
     assert rst[5] == 1
     assert rst[6] == 1
-    assert rst[7] == 0
+    assert rst[7] is None
 
 
 def test_ST_Union():
@@ -394,11 +394,14 @@ def test_ST_IsSimple():
 
     s2 = GeoSeries(p2)
     r2 = s2.is_simple
-    assert not r2.all()
+    assert r2[0]
+    assert r2[1]
+    assert r2[2] is None
 
     s3 = GeoSeries(p3)
     r3 = s3.is_simple
-    assert not r3.all()
+    assert r3[0:3].all()
+    assert r3[3] is None
 
     s4 = GeoSeries(p4)
     r4 = s4.is_simple
@@ -406,11 +409,13 @@ def test_ST_IsSimple():
 
     s5 = GeoSeries(p5)
     r5 = s5.is_simple
-    assert not r5.all()
+    assert r5[0]
+    assert r5[1] is None
 
     s6 = GeoSeries(p6)
     r6 = s6.is_simple
-    assert not r6.any()
+    assert r6[0] is None
+    assert r6[1] is None
 
 
 def test_ST_GeometryType():
