@@ -2,7 +2,9 @@
 
 set -e
 
+CONDA_PYTHON=${CONDA_PYTHON:="3.7"}
+
 if [ "$BUILD_ARCTERN" == '1' ]; then
   echo "Building arctern..."
-  conda build conda/recipes/arctern/cpu -c defaults -c conda-forge
+  conda build --python "${CONDA_PYTHON}" conda/recipes/arctern/cpu -c defaults -c conda-forge
 fi

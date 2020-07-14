@@ -15,7 +15,7 @@
  */
 package org.apache.spark.sql.arctern
 
-import org.apache.spark.sql.catalyst.expressions.codegen.ExprCode
+import org.apache.spark.sql.catalyst.expressions.codegen.{CodegenContext, ExprCode}
 import org.apache.spark.sql.catalyst.expressions.{ExpectsInputTypes, Expression}
 import org.apache.spark.sql.types.DataType
 
@@ -24,7 +24,7 @@ abstract class ArcternExpr extends Expression with ExpectsInputTypes {
 }
 
 object CodeGenUtil {
-  def geometryFromArcternExpr(codeString: String) = {
+  private def geometryFromArcternExpr(codeString: String) = {
     val serialKeyWords = s"${GeometryUDT.getClass().getName().dropRight(1)}.GeomSerialize"
 
     val serialIdx = codeString.lastIndexOf(serialKeyWords)
@@ -66,7 +66,7 @@ object CodeGenUtil {
     (geoName, geoDeclare, newCodeString)
   }
 
-  def geometryFromNormalExpr(exrCode: ExprCode, geoName: String) = {
+  private def geometryFromNormalExpr(exrCode: ExprCode, geoName: String) = {
     val geoDeclare = mutableGeometryInitCode(geoName)
     val newCodeString =
       s"""
@@ -74,6 +74,11 @@ object CodeGenUtil {
          |$geoName = ${deserializeGeometryCode(exrCode.value)}
                          """.stripMargin
     (geoName, geoDeclare, newCodeString)
+  }
+
+  def geometryFromExpr(ctx: CodegenContext, expr: Expression, exprCode: ExprCode): (String, String, String) = {
+    if (CodeGenUtil.isArcternExpr(expr)) CodeGenUtil.geometryFromArcternExpr(exprCode.code.toString())
+    else CodeGenUtil.geometryFromNormalExpr(exprCode, ctx.freshName(exprCode.value))
   }
 
   def assignmentCode(callFunc: String, value: String, geoName: String, dt: DataType) = {
