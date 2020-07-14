@@ -173,7 +173,7 @@ class TestOp:
         assert result.location_x.crs == "EPSG:4326"
         assert result.location_y.crs == "EPSG:3857"
 
-    def test_disolve(self):
+    def test_dissolve(self):
         data = {
             "A": range(5),
             "B": np.arange(5.0),
