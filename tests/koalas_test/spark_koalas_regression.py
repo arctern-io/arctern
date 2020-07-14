@@ -67,8 +67,8 @@ binary_func_dict = {
     'symmetric_difference': ['symmetric_difference.csv', 'symmetric_difference.out', 'st_symmetric_difference.out'],
     'hausdorff_distance': ['hausdorff_distance.csv', 'hausdorff_distance.out', 'st_hausdorff_distance.out'],
     'distance_sphere': ['distance_sphere.csv', 'distance_sphere.out', 'st_distance_sphere.out'],
-    'union':['union.csv','union.out','st_union.out'],
-    'difference':['difference.csv','difference.out','st_difference.out'],
+    'union': ['union.csv', 'union.out', 'st_union.out'],
+    'difference': ['difference.csv', 'difference.out', 'st_difference.out'],
 }
 
 
@@ -292,7 +292,7 @@ def test_binary_func(func_name, input_csv, output_csv):
         test_codes = test_codes + '.to_wkt()'
     if func_name == 'equals':
         test_codes = 'geo_s1.geom_equals(geo_s2)'
-    res = eval(test_codes).sort_index() # pylint: disable=eval-used
+    res = eval(test_codes).sort_index()  # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
 
 
@@ -313,7 +313,7 @@ def test_unary_property_func(func_name, input_csv, output_csv):
     test_codes = 'geo_s1.' + func_name
     if func_name in need_to_wkt_list:
         test_codes += '.to_wkt()'
-    res = eval(test_codes).sort_index() # pylint: disable=eval-used
+    res = eval(test_codes).sort_index()  # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
 
 
@@ -339,7 +339,7 @@ def test_unary_func(func_name, input_csv, output_csv, params):
             else:
                 param_code += ',' + str(param)
         test_codes = 'geo_s1.' + func_name + '(' + param_code + ').to_wkt()'
-    res = eval(test_codes).sort_index() # pylint: disable=eval-used
+    res = eval(test_codes).sort_index()  # pylint: disable=eval-used
     write_arr2csv(output_csv_path, res.tolist())
 
 
