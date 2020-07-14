@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=protected-access,too-many-public-methods,too-many-branches
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches,too-many-statements
 # pylint: disable=super-init-not-called,unidiomatic-typecheck,unbalanced-tuple-unpacking
 # pylint: disable=too-many-lines,non-parent-init-called
 
