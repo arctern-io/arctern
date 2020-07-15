@@ -60,19 +60,30 @@ def sjoin(
     >>> from arctern import GeoDataFrame
     >>> import numpy as np
     >>> data1 = {
-    >>>      "A": range(5),
-    >>>      "B": np.arange(5.0),
-    >>>      "geometry": ["LINESTRING (0 0, 2 2)", "LINESTRING (1 0,1 3)", "LINESTRING (9 3, 3 5)", "LINESTRING (4 5, 6 7)",
-    >>>                   "LINESTRING (7 7, 9 9)", ],
-    >>> }
+    ...     "A": range(5),
+    ...     "B": np.arange(5.0),
+    ...     "geometry": ["LINESTRING (0 0, 2 2)", "LINESTRING (1 0,1 3)", "LINESTRING (9 3, 3 5)", "LINESTRING (4 5, 6 7)",
+    ...                  "LINESTRING (7 7, 9 9)", ],
+    ... }
     >>> gdf1 = GeoDataFrame(data1, geometries=["geometry"], crs=["epsg:4326"])
     >>> data2 = {
-    >>>       "C": range(5),
-    >>>       "location": ["LINESTRING (1 0, 3 4)", "LINESTRING (0 0, 6 7)", "LINESTRING (5 3, 8 7)", "LINESTRING (9 8, 4 7)",
-    >>>                    "LINESTRING (3 3, 6 9)", ]
-    >>> }
+    ...      "C": range(5),
+    ...      "location": ["LINESTRING (1 0, 3 4)", "LINESTRING (0 0, 6 7)", "LINESTRING (5 3, 8 7)", "LINESTRING (9 8, 4 7)",
+    ...                   "LINESTRING (3 3, 6 9)", ]
+    ... }
     >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
-    >>> arctern.sjoin(left_df=gdf1, right_df=gdf2, lcol="geometry", rcol="location")
+    >>> arctern.sjoin(left_df=gdf1, right_df=gdf2, left_col="geometry", right_col="location")
+       A    B              geometry  index_right  C
+    0  0  0.0  LINESTRING (0 0,2 2)            0  0
+    1  1  1.0  LINESTRING (1 0,1 3)            0  0
+    0  0  0.0  LINESTRING (0 0,2 2)            1  1
+    1  1  1.0  LINESTRING (1 0,1 3)            1  1
+    2  2  2.0  LINESTRING (9 3,3 5)            1  1
+    3  3  3.0  LINESTRING (4 5,6 7)            1  1
+    2  2  2.0  LINESTRING (9 3,3 5)            2  2
+    2  2  2.0  LINESTRING (9 3,3 5)            4  4
+    3  3  3.0  LINESTRING (4 5,6 7)            4  4
+    4  4  4.0  LINESTRING (7 7,9 9)            3  3
     """
     from arctern import GeoDataFrame, GeoSeries
     if not isinstance(left_df, GeoDataFrame):

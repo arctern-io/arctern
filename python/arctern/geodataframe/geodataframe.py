@@ -351,7 +351,7 @@ class GeoDataFrame(DataFrame):
         >>> pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
         >>> gdf = GeoDataFrame.from_geopandas(pdf)
         >>> gdf.geometries_name
-        ["geometry", "copy_geo"]
+        ['geometry', 'copy_geo']
         >>> type(gdf["geometry"])
         <class 'arctern.geoseries.geoseries.GeoSeries'>
         >>> gdf["geometry"].crs
