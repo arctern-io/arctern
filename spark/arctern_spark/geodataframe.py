@@ -24,7 +24,6 @@ from databricks.koalas.frame import REPR_PATTERN
 
 import arctern_spark
 from arctern_spark.geoseries import GeoSeries
-from arctern_spark.scala_wrapper import GeometryUDT
 
 _crs_dtype = str
 
@@ -40,6 +39,7 @@ class GeoDataFrame(DataFrame):
             self._geometry_column_names.add(data.name)
         elif isinstance(data, DataFrame):
             for col in data.columns:
+                from arctern_spark.scala_wrapper import GeometryUDT
                 if isinstance(data[col].spark.data_type, GeometryUDT):
                     self._crs_for_cols[col] = None
                     self._geometry_column_names.add(col)
@@ -75,6 +75,7 @@ class GeoDataFrame(DataFrame):
 
     def __getitem__(self, item):
         result = super().__getitem__(item)
+        from arctern_spark.scala_wrapper import GeometryUDT
         if isinstance(result, Series) and isinstance(result.spark.data_type, GeometryUDT):
             result.__class__ = GeoSeries
             result._gdf = self
