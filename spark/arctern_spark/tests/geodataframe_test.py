@@ -181,7 +181,7 @@ class TestOp:
             "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         }
         gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        dissolve_gdf = gdf.disolve(by="other_geom", col="geo1")
+        dissolve_gdf = gdf.dissolve(by="other_geom", col="geo1")
         assert dissolve_gdf["geo1"].to_wkt()[1] == "MULTIPOINT ((0 0), (1 1), (2 2))"
         assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT ((3 3), (4 4))"
 
@@ -272,18 +272,20 @@ class TestFile:
 class TestJson:
     def test_to_json(self):
         data = {
-            "A": range(1),
-            "B": np.arange(1.0),
-            "other_geom": range(1),
-            "geometry": ["POINT (0 0)"],
+            "A": range(100),
+            "B": [f"POINT ({x} {x})" for x in range(100)],
+            "geometry": [f"POINT ({x} {x})" for x in range(100)],
         }
 
         gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        json = gdf.to_json(geometry="geometry")
-        assert json == '{"type": "FeatureCollection", ' \
-                       '"features": [{"id": "0", "type": "Feature", ' \
-                       '"properties": {"A": 0, "B": 0.0, "other_geom": 0}, ' \
-                       '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+        json_str = gdf.to_json(geometry="geometry")
+        import json
+        json_dic = json.loads(json_str)
+        for feature in json_dic["features"]:
+            id = feature["id"]
+            for key, proper in feature["properties"].items():
+                assert proper == data[key][int(id)]
+            assert feature["geometry"]["coordinates"] == [float(id), float(id)]
 
     def test_to_json_with_missing_value(self):
         data = {
@@ -293,10 +295,22 @@ class TestJson:
             "geometry": ["POINT (0 0)"],
         }
         gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
+        json = gdf.to_json(geometry="geometry")
+        assert json == '{"type": "FeatureCollection", ' \
+                       '"features": [{"id": "0", "type": "Feature", ' \
+                       '"properties": {"A": null, "B": 0.0, "other_geom": 0}, ' \
+                       '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+
         json = gdf.to_json(geometry="geometry", na="drop")
         assert json == '{"type": "FeatureCollection", ' \
                        '"features": [{"id": "0", "type": "Feature", ' \
                        '"properties": {"B": 0.0, "other_geom": 0}, ' \
+                       '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
+
+        json = gdf.to_json(geometry="geometry", na='keep')
+        assert json == '{"type": "FeatureCollection", ' \
+                       '"features": [{"id": "0", "type": "Feature", ' \
+                       '"properties": {"A": NaN, "B": 0.0, "other_geom": 0}, ' \
                        '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
 
     def test_to_json_show_bbox(self):

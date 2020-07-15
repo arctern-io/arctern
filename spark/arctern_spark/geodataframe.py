@@ -120,6 +120,43 @@ class GeoDataFrame(DataFrame):
             for col in key:
                 self._crs_for_cols.pop(col)
 
+    def _get_or_create_repr_pandas_cache(self, n):
+        if not hasattr(self, "_repr_pandas_cache") or n not in self._repr_pandas_cache:
+            pdf = self.head(n + 1)._to_internal_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            self._repr_pandas_cache = {n: pdf}
+        return self._repr_pandas_cache[n]
+
+    def __repr__(self):
+        max_display_count = get_option("display.max_rows")
+        if max_display_count is None:
+            pdf = self.to_pandas()
+            for col in self._geometry_column_names:
+                pdf[col] = self[col].to_wkt()._to_internal_pandas()
+            return pdf.to_string()
+
+        pdf = self._get_or_create_repr_pandas_cache(max_display_count)
+        pdf_length = len(pdf)
+        pdf = pdf.iloc[:max_display_count]
+        if pdf_length > max_display_count:
+            repr_string = pdf.to_string(show_dimensions=True)
+            match = REPR_PATTERN.search(repr_string)
+            if match is not None:
+                nrows = match.group("rows")
+                ncols = match.group("columns")
+                footer = "\n\n[Showing only the first {nrows} rows x {ncols} columns]".format(
+                    nrows=nrows, ncols=ncols
+                )
+                return REPR_PATTERN.sub(footer, repr_string)
+        return pdf.to_string()
+
+    def copy(self, deep=None):
+        gdf = GeoDataFrame(self._internal)
+        gdf._crs_for_cols = self._crs_for_cols
+        gdf._geometry_column_names = self._geometry_column_names
+        return gdf
+
     def dissolve(self, by, col="geometry", aggfunc="first", as_index=True):
         if col not in self._geometry_column_names:
             raise ValueError(f"`col` {col} must be a geometry column whose data type is GeometryUDT,"
@@ -166,23 +203,29 @@ class GeoDataFrame(DataFrame):
             raise ValueError("Unknown na method {0}".format(na))
         if geometry not in self._geometry_column_names:
             raise ValueError("{} is not a geometry column".format(geometry))
-        geometries = self[geometry].as_geojson().to_pandas()
-        geometries_bbox = self[geometry].bbox
-        properties_cols = self.columns.difference([geometry]).tolist()
+
+        gdf = self.copy()
+        gdf['bbox'] = gdf[geometry].envelope
+        gdf[geometry] = gdf[geometry].as_geojson()
+        properties_cols = gdf.columns.difference([geometry, 'bbox']).tolist()
 
         if len(properties_cols) > 0:
-            properties = self[properties_cols].to_pandas().astype(object)
-            ids = properties.index
-            property_geo_cols = self._geometry_column_names.difference([geometry])
-
+            property_geo_cols = gdf._geometry_column_names.difference([geometry, 'bbox'])
             # since it could be more than one geometry columns in GeoDataFrame,
-            # we transform those geometry columns as wkt formed string except column `col`.
+            # we transform those geometry columns as wkt formed string except column `geometry`.
             for property_geo_col in property_geo_cols:
-                properties[property_geo_col] = self[property_geo_col].to_wkt().to_pandas()
-            if na == "null":
-                properties[pd.isnull(properties).values] = np.nan
+                gdf[property_geo_col] = gdf[property_geo_col].to_wkt()
 
+            gdf = gdf.to_pandas()
+            geometries = gdf[geometry].values
+            geometries_bbox = gdf['bbox'].apply(GeoSeries._calculate_bbox_from_wkb)
+            ids = gdf.index
+
+            properties = gdf[properties_cols].astype(object)
+            if na == "null":
+                properties[pd.isnull(properties).values] = None
             properties = properties.values
+
             for i, row in enumerate(properties):
                 geom = geometries[i]
                 if na == "drop":
@@ -204,12 +247,16 @@ class GeoDataFrame(DataFrame):
                 yield feature
 
         else:
+            gdf = gdf.to_pandas()
+            ids = gdf.index
+            geometries = gdf[geometry].values
+            geometries_bbox = gdf['bbox'].apply(GeoSeries._calculate_bbox_from_wkb)
             for fid, geom, bbox in zip(ids, geometries, geometries_bbox):
                 feature = {
                     "id": str(fid),
                     "type": "Feature",
                     "properties": {},
-                    "geometry": geom,
+                    "geometry": json.loads(geom) if geom else None,
                 }
                 if show_bbox:
                     feature["bbox"] = bbox if geom else None
@@ -307,12 +354,13 @@ class GeoDataFrame(DataFrame):
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
+        >>> read_gdf.sort_index(inplace=True)
         >>> read_gdf
            A    B  other_geom         geo2         geo3     geometry
         0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
         1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
-        3  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (3 3)
-        2  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (2 2)
+        2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
+        3  3  3.0           3  POINT (4 4)  POINT (5 5)  POINT (3 3)
         4  4  4.0           4  POINT (5 5)  POINT (6 6)  POINT (4 4)
         """
         arctern_spark.file.to_file(self, filename=filename, driver=driver, schema=schema,
