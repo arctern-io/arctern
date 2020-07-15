@@ -22,7 +22,7 @@ import pandas as pd
 
 # pylint: disable=too-many-branches,too-many-statements
 def sjoin(
-        left_df, right_df, left_col, right_col, how="inner", op="intersects", left_suffix="left", right_suffix="right"
+        left_df, right_df, left_col, right_col, how="inner", op="intersects", left_suffix="_left", right_suffix="_right"
 ):
     """
     Spatially joins two GeoDataFrames.
@@ -105,8 +105,8 @@ def sjoin(
             )
         )
 
-    index_left = "index_%s" % left_suffix
-    index_right = "index_%s" % right_suffix
+    index_left = "index%s" % left_suffix
+    index_right = "index%s" % right_suffix
 
     if any(left_df.columns.isin([index_left, index_right])) or any(
         right_df.columns.isin([index_left, index_right])
@@ -131,7 +131,7 @@ def sjoin(
         left_df.index = left_df.index.rename(index_left)
     except TypeError:
         index_left = [
-            "index_%s" % left_suffix + str(l) for l, ix in enumerate(left_df.index.names)
+            "index%s" % left_suffix + str(l) for l, ix in enumerate(left_df.index.names)
         ]
         left_index_name = left_df.index.names
         left_df.index = left_df.index.rename(index_left)
@@ -143,7 +143,7 @@ def sjoin(
         right_df.index = right_df.index.rename(index_right)
     except TypeError:
         index_right = [
-            "index_%s" % right_suffix + str(l) for l, ix in enumerate(right_df.index.names)
+            "index%s" % right_suffix + str(l) for l, ix in enumerate(right_df.index.names)
         ]
         right_index_name = right_df.index.names
         right_df.index = right_df.index.rename(index_right)
@@ -220,7 +220,7 @@ def sjoin(
                 right_df.drop(right_col, axis=1),
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
+                suffixes=("%s" % left_suffix, "%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)
@@ -239,7 +239,7 @@ def sjoin(
                 how="left",
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
+                suffixes=("%s" % left_suffix, "%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)

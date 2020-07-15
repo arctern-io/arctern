@@ -106,7 +106,7 @@ def test_set_geometry():
     assert gdf["geo1"].crs == "EPSG:3857"
     assert gdf["geo2"].crs == "EPSG:5626"
     assert gdf["geo3"].crs is None
-    assert gdf._geometry_column_name == ["geo1", "geo2", "geo3"]
+    assert gdf.geometries_name == ["geo1", "geo2", "geo3"]
 
 
 def test_merge1():
@@ -371,7 +371,8 @@ def test_read_and_save_file_10():
 
 def test_sjoin():
     s3 = GeoSeries(["POLYGON ((2 1,3 1,3 2,2 2,2 1))", "POLYGON ((-1 1, 1.5 1, 1.5 2, -1 2, -1 1))"])
-    d1 = GeoDataFrame({"A": [1, 2], "geo": s3})
-    d2 = GeoDataFrame({"A": [3, 4], "geo1": s3})
+    d1 = GeoDataFrame({"A": [1, 2], "geo": s3}, geometries=["geo"], crs=["EPSG:3857"])
+    d2 = GeoDataFrame({"A": [3, 4], "geo1": s3}, geometries=["geo1"], crs=["EPSG:3857"])
     rst = arctern.sjoin(d1, d2, "geo", "geo1")
     assert isinstance(rst, GeoDataFrame)
+    assert rst.geo.crs == "EPSG:3857"
