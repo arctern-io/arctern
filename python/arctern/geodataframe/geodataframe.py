@@ -204,7 +204,7 @@ class GeoDataFrame(DataFrame):
         ...     "geometry": ["POINT (0 0)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        >>> print(gdf.to_json(col="geometry"))
+        >>> gdf.to_json(geometry="geometry")
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
@@ -307,8 +307,8 @@ class GeoDataFrame(DataFrame):
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> pdf = gdf.to_geopandas()
         >>> pdf.set_geometry("geo1", inplace=True)
-        >>> print(pdf.geometry.name)
-        "geo1"
+        >>> pdf.geometry.name
+        geo1
         >>> type(pdf["geo1"])
         <class 'geopandas.geoseries.GeoSeries'>
         """
