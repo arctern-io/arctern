@@ -23,8 +23,8 @@ namespace render {
 struct Color {
   float r, g, b, a;
   Color() {}
-  Color(float red, float green, float blue, float value)
-      : r(red), g(green), b(blue), a(value) {}
+  Color(float red, float green, float blue, float alpha)
+      : r(red), g(green), b(blue), a(alpha) {}
   bool operator==(const Color& other) const {
     return r == other.r && g == other.g && b == other.b && a == other.a;
   }

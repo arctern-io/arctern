@@ -61,7 +61,7 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
     return;
   }
 
-  opacity_ = mark_enter["opacity"]["value"].GetDouble();
+  auto opacity = mark_enter["opacity"]["value"].GetDouble();
 
   auto unique_value_infos_size = mark_enter["unique_value_infos"].Size();
   std::vector<rapidjson::Type> unique_value_infos_key_types;
@@ -99,6 +99,8 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
     }
 
     auto color = color_parser.color();
+    color.a = opacity;
+
     const auto& type = unique_value_infos_key_types[i];
     if (type == rapidjson::Type::kStringType) {
       auto label_value = mark_enter["unique_value_infos"][i]["label"].GetString();

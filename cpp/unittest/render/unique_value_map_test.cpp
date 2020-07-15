@@ -69,7 +69,6 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_STRING_MAP) {
 
   const auto& window_params = vega_unique_value_map.window_params();
   const auto& unique_value_infos = vega_unique_value_map.unique_value_infos_string_map();
-  const auto& opacity = vega_unique_value_map.opacity();
 
   assert(window_params.width() == 1900);
   assert(window_params.height() == 1410);
@@ -77,14 +76,15 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_STRING_MAP) {
   assert(unique_value_infos.at("VTS").r == 0);
   assert(unique_value_infos.at("VTS").g == 1);
   assert(unique_value_infos.at("VTS").b == 0);
+  assert(unique_value_infos.at("VTS").a == 1);
   assert(unique_value_infos.at("CMT").r == 1);
   assert(unique_value_infos.at("CMT").g == 0);
   assert(unique_value_infos.at("CMT").b == 0);
+  assert(unique_value_infos.at("CMT").a == 1);
   assert(unique_value_infos.at("DDS").r == 0);
   assert(unique_value_infos.at("DDS").g == 0);
   assert(unique_value_infos.at("DDS").b == 1);
-
-  assert(opacity == 1.0);
+  assert(unique_value_infos.at("DDS").a == 1);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_NUMERIC_MAP) {
@@ -137,7 +137,6 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_NUMERIC_MAP) {
 
   const auto& window_params = vega_unique_value_map.window_params();
   const auto& unique_value_infos = vega_unique_value_map.unique_value_infos_numeric_map();
-  const auto& opacity = vega_unique_value_map.opacity();
 
   assert(window_params.width() == 1900);
   assert(window_params.height() == 1410);
@@ -145,14 +144,15 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_NUMERIC_MAP) {
   assert(unique_value_infos.at(1).r == 0);
   assert(unique_value_infos.at(1).g == 1);
   assert(unique_value_infos.at(1).b == 0);
+  assert(unique_value_infos.at(1).a == 1);
   assert(unique_value_infos.at(2).r == 1);
   assert(unique_value_infos.at(2).g == 0);
   assert(unique_value_infos.at(2).b == 0);
+  assert(unique_value_infos.at(2).a == 1);
   assert(unique_value_infos.at(3).r == 0);
   assert(unique_value_infos.at(3).g == 0);
   assert(unique_value_infos.at(3).b == 1);
-
-  assert(opacity == 1.0);
+  assert(unique_value_infos.at(3).a == 1);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_INT8) {
@@ -173,7 +173,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_INT8) {
   arrow::Int8Builder value_builder;
   status = value_builder.Append(1);
   status = value_builder.Append(2);
-  status = value_builder.Append(3);
+  status = value_builder.Append(4);
   status = value_builder.Finish(&value_array);
 
   // param3: conf

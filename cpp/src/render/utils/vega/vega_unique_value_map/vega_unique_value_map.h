@@ -32,7 +32,7 @@ class VegaUniqueValueMap : public Vega {
   // TODO: add Build() api to build a vega json string.
   // std::string Build() final;
 
-  const double& opacity() const { return opacity_; }
+  // const double& opacity() const { return opacity_; }
 
   const std::unordered_map<std::string, Color>& unique_value_infos_string_map() const {
     return unique_value_infos_string_map_;
@@ -47,7 +47,7 @@ class VegaUniqueValueMap : public Vega {
   void Parse(const std::string& json) final;
 
  private:
-  double opacity_;
+  // double opacity_;
   std::unordered_map<std::string, Color> unique_value_infos_string_map_;
   std::unordered_map<double, Color> unique_value_infos_numeric_map_;
 };

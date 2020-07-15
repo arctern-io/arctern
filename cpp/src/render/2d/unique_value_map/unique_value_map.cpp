@@ -72,10 +72,8 @@ void UniqueValueMap<T>::Draw() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
 
-  const auto& opacity = vega_unique_value_map_.opacity();
-
   for (int i = 0; i < geometries_.size(); i++) {
-    glColor4f(colors_[i].r, colors_[i].g, colors_[i].b, opacity);
+    glColor4f(colors_[i].r, colors_[i].g, colors_[i].b, colors_[i].a);
 
     auto& geometry = geometries_[i];
     auto type = geometry->getGeometryType();
@@ -130,8 +128,12 @@ void UniqueValueMap<T>::SetColor() {
   }
 
   for (auto i = 0; i < num_geometries_; i++) {
-    auto color = unique_value_infos_numeric_map.at(values_[i]);
-    colors_[i] = color;
+    if (unique_value_infos_numeric_map.find(values_[i]) != unique_value_infos_numeric_map.end()) {
+      auto color = unique_value_infos_numeric_map.at(values_[i]);
+      colors_[i] = color;
+    } else {
+      colors_[i] = Color{0, 0, 0, 0};
+    }
   }
 }
 
@@ -148,8 +150,12 @@ void UniqueValueMap<std::string>::SetColor() {
   }
 
   for (auto i = 0; i < num_geometries_; i++) {
-    auto color = unique_value_infos_string_map.at(values_[i]);
-    colors_[i] = color;
+    if (unique_value_infos_string_map.find(values_[i]) != unique_value_infos_string_map.end()) {
+      auto color = unique_value_infos_string_map.at(values_[i]);
+      colors_[i] = color;
+    } else {
+      colors_[i] = Color{0, 0, 0, 0};
+    }
   }
 }
 
