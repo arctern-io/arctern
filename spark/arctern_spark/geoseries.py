@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=protected-access,too-many-public-methods,too-many-branches
+# pylint: disable=protected-access,too-many-public-methods,too-many-branches,too-many-statements
 # pylint: disable=super-init-not-called,unidiomatic-typecheck,unbalanced-tuple-unpacking
 # pylint: disable=too-many-lines,non-parent-init-called
 
@@ -75,7 +75,7 @@ def _validate_arg(arg):
         arg = scala_wrapper.st_geomfromwkb(F.lit(arg))
     elif isinstance(arg, Series):
         pass
-    elif is_list_like(arg) or isinstance(arg, pd.Series):
+    elif is_list_like(arg):
         arg = Series(arg)
     else:
         raise TypeError("Unsupported type %s" % type(arg))
@@ -95,8 +95,6 @@ def _validate_args(*args, dtype=None):
                 args_list.append(Series([arg] * series_length))
             else:
                 args_list.append(F.lit(arg))
-        elif isinstance(arg, pd.Series):
-            args_list.append(Series(arg))
         elif isinstance(arg, Series):
             args_list.append(arg)
         elif is_list_like(arg):
@@ -107,6 +105,39 @@ def _validate_args(*args, dtype=None):
 
 
 class GeoSeries(Series):
+    """
+    One-dimensional Series to store an array of geometry objects.
+
+    Parameters
+    ----------
+    data : array-like, Iterable, dict, or scalar value(str or bytes)
+        Contains geometric data stored in GeoSeries. The geometric data can be in `WKT <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry>`_ or `WKB <https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary>`_ format.
+        Note that if `data` is a pandas Series, other arguments should not be used.
+    index : array-like or Index (1d)
+        Same to the index of koalas.Series, by default ``RangeIndex (0, 1, 2, …, n)``.
+        Index values must be hashable and have the same length as ``data``. Non-unique index values are allowed. If both a dict and index sequence are used, the index will override the keys found in the dict.
+    dtype :
+        The type of the data. Default: None.
+    name : str, optional
+        The name to give to the GeoSeries.
+    crs : str, optional
+        The Coordinate Reference System (CRS) set to all geometries in GeoSeries.
+        Only supports SRID as a WKT representation of CRS by now, for example, "EPSG:4326".
+    copy :
+        A boolean value, by default False.
+
+        * *True:* Copys input data.
+        * *False:* Points to input data.
+
+    Examples
+    -------
+    >>> from arctern_spark import GeoSeries
+    >>> s = GeoSeries(["POINT(1 1)", "POINT(1 2)"])
+    >>> s
+    0    POINT (1 1)
+    1    POINT (1 2)
+    Name: 0, dtype: object
+    """
     def __init__(
             self, data=None, index=None, dtype=None, name=None, copy=False, crs=None, fastpath=False
     ):
@@ -149,9 +180,10 @@ class GeoSeries(Series):
 
             if isinstance(s, Series):
                 anchor = s._anchor
+                column_label = s._column_label
             else:
                 anchor = DataFrame(s)
-            column_label = anchor._internal.column_labels[0]
+                column_label = anchor._internal.column_labels[0]
             kss = anchor._kser_for(column_label)
 
             spark_dtype = kss.spark.data_type
@@ -165,7 +197,10 @@ class GeoSeries(Series):
                 raise TypeError(
                     "Can not use no StringType or BinaryType or GeometryUDT data to construct GeoSeries.")
             anchor = kss._kdf
-            anchor._kseries = {column_label: kss}
+            if not hasattr(anchor, "_kseries"):
+                anchor._kseries = {column_label: kss}
+            else:
+                anchor._kseries[column_label] = kss
 
         IndexOpsMixin.__init__(self, anchor)
         self._column_label = column_label
@@ -508,9 +543,9 @@ class GeoSeries(Series):
         >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 1)", "LINESTRING (2 0, 2 2, 2 6)", "POLYGON ((3 3, 7 3, 7 7, 3 7, 3 3))"])
         >>> s.length
-        0     0.0
-        1     6.0
-        2    16.0
+        0    0.0
+        1    6.0
+        2    0.0
         Name: 0, dtype: float64
         """
         return _column_op("st_length", self)
@@ -676,8 +711,8 @@ class GeoSeries(Series):
         >>> from arctern_spark import GeoSeries
         >>> s = GeoSeries(["POINT (1 1)", "LINESTRING (0 2, 2 2, 2 6)", "POLYGON ((3 3, 7 3, 7 7, 3 7, 3 3))"])
         >>> s.exterior
-        0                             POINT (1 1)
-        1              LINESTRING (0 2, 2 2, 2 6)
+        0                                    None
+        1                                    None
         2    LINESTRING (3 3, 7 3, 7 7, 3 7, 3 3)
         Name: 0, dtype: object
 
@@ -799,7 +834,7 @@ class GeoSeries(Series):
         >>> s = GeoSeries([p1, p2])
         >>> s.unary_union()
         0    MULTIPOINT ((1 1), (1 2))
-        Name: st_union_aggr(0), dtype: object
+        Name: 0, dtype: object
         """
         return _agg("st_union_aggr", self)
 
@@ -820,7 +855,7 @@ class GeoSeries(Series):
         >>> s = GeoSeries(["POLYGON ((0 0,4 0,4 4,0 4,0 0))", "POLYGON ((5 1,7 1,7 2,5 2,5 1))"])
         >>> s.envelope_aggr()
         0    POLYGON ((0 0, 0 4, 7 4, 7 0, 0 0))
-        Name: ST_Envelope_Aggr(0), dtype: object
+        Name: 0, dtype: object
         """
         return _agg("st_envelope_aggr", self)
 
