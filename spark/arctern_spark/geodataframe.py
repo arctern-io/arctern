@@ -69,8 +69,52 @@ class GeoDataFrame(DataFrame):
                 self._crs_for_cols[col] = _crs
                 self._geometry_column_names.add(col)
 
-    def set_geometry(self, col, crs):
-        self._set_geometries([col], crs)
+    def set_geometry(self, col, inplace=False, crs=None):
+        """
+        Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
+
+        Parameters
+        ----------
+        col: str
+            The name of column to be setten as a geometry column.
+        inplace: bool, default false
+            Whether to modify the GeoDataFrame in place.
+            * *True:* Modifies the GeoDataFrame in place (does not create a new object).
+            * *False:* Does not modifies the GeoDataFrame in place.
+        crs: str
+            The coordinate reference system to use.
+
+        Returns
+        -------
+        GeoDataFrame
+            A GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...    "A": range(5),
+        ...    "B": np.arange(5.0),
+        ...    "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ...    "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        >>> gdf.geometries_name
+        {'geo1'}
+        >>> gdf.set_geometry(col="geo2", crs="epsg:4326", inplace=True)
+        >>> gdf.geometries_name # doctest: +SKIP
+        {'geo1','geo2'}
+        """
+        if inplace:
+            frame = self
+        else:
+            frame = self.copy()
+        frame._set_geometries([col], crs)
+
+    @property
+    def geometries_name(self):
+        return self._geometry_column_names
 
     def __getitem__(self, item):
         result = super().__getitem__(item)
@@ -157,6 +201,46 @@ class GeoDataFrame(DataFrame):
         return gdf
 
     def dissolve(self, by, col="geometry", aggfunc="first", as_index=True):
+        """
+        Dissolves geometries within `by` into a single observation.
+
+        This is accomplished by applying the `unary_union` method to all geometries within a group.
+
+        Observations associated with each `by` group will be aggregated using the `aggfunc`.
+
+        Parameters
+        ----------
+        by: str
+            Column whose values define groups to be dissolved, by default None.
+        aggfunc: function or str
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+        as_index: bool
+            Whether to use the ``by`` column as the index of result, by default True.
+            * *True:* The ``by`` column becomes the index of result.
+            * *False:* The result uses the default ascending index that starts from 0.
+        Returns
+        -------
+        GeoDataFrame
+            A GeoDataFrame object.
+
+        Examples
+        --------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": [1, 1, 1, 2, 2],
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        >>> gdf.dissolve(by="other_geom", col="geo1") # doctest: +NORMALIZE_WHITESPACE
+                    A    B                              geo1
+        other_geom
+        1           0  0.0  MULTIPOINT ((0 0), (1 1), (2 2))
+        2           3  3.0         MULTIPOINT ((3 3), (4 4))
+        """
+
         if col not in self._geometry_column_names:
             raise ValueError(f"`col` {col} must be a geometry column whose data type is GeometryUDT,"
                              f"use `set_geometry` to set this column as geometry column.")
@@ -177,6 +261,38 @@ class GeoDataFrame(DataFrame):
             right_index=False,
             suffixes=("_x", "_y")
     ):
+        """
+        Merges two GeoDataFrame objects with a database-style join.
+
+        Returns
+        -------
+            GeoDataFrame or pandas.DataFrame
+            Returns a GeoDataFrame if a geometry column is present; otherwise, returns a pandas DataFrame.
+
+        Examples
+        -------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data1 = {
+        ...      "A": range(5),
+        ...      "B": np.arange(5.0),
+        ...      "other_geom": range(5),
+        ...      "geometry": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf1 = GeoDataFrame(data1, geometries=["geometry"], crs=["epsg:4326"])
+        >>> data2 = {
+        ...      "A": range(5),
+        ...      "location": ["POINT (3 0)", "POINT (1 6)", "POINT (2 4)", "POINT (3 4)", "POINT (4 2)"],
+        ... }
+        >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
+        >>> gdf1.merge(gdf2, left_on="A", right_on="A") # doctest: +NORMALIZE_WHITESPACE
+           A    B  other_geom     geometry     location
+        0  0  0.0           0  POINT (0 0)  POINT (3 0)
+        1  1  1.0           1  POINT (1 1)  POINT (1 6)
+        2  3  3.0           3  POINT (3 3)  POINT (3 4)
+        3  2  2.0           2  POINT (2 2)  POINT (2 4)
+        4  4  4.0           4  POINT (4 4)  POINT (4 2)
+        """
         result = super().merge(right, how, on, left_on, right_on, left_index, right_index, suffixes)
         result = GeoDataFrame(result)
 
@@ -272,71 +388,75 @@ class GeoDataFrame(DataFrame):
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Alternate constructor to create a ``GeoDataFrame`` from a file or url.
+        Constructs a GeoDataFrame from a file or url.
 
         Parameters
         -----------
-        filename : str
+        filename: str
             File path or file handle to read from.
-        bbox : tuple(minx, miny, maxx, maxy) or arctern.GeoSeries, default None
-            Filter features by given bounding box, GeoSeries. Cannot be used
-            with mask.
-        mask : dict | arctern.GeoSeries | wkt str | wkb bytes, default None
-            Filter for features that intersect with the given dict-like geojson
-            geometry, GeoSeries. Cannot be used with bbox.
-        rows : int or slice, default None
-            Load in specific rows by passing an integer (first `n` rows) or a
-            slice() object.
-        **kwargs :
-        Keyword args to be passed to the `open` or `BytesCollection` method
-        in the fiona library when opening the file. For more information on
-        possible keywords, type:
-        ``import fiona; help(fiona.open)``
+        bbox: tuple or GeoSeries
+            Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+            * min_x: The minimum x coordinate of the bounding box.
+            * min_y: The minimum y coordinate of the bounding box.
+            * max_x: The maximum x coordinate of the bounding box.
+            * max_y: The maximum y coordinate of the bounding box.
+        mask: dict, GeoSeries
+            Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
+        rows: int or slice
+            * If ``rows`` is an integer *n*, this function loads the first *n* rows.
+            * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+                * *start:* The position to start the slicing, by default 0.
+                * *end:* The position to end the slicing.
+                * *step:* The step of the slicing, by default 1.
+
+        **kwargs:
+        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+
+        Notes
+        -------
+        ``bbox`` and ``mask`` cannot be used together.
 
         Returns
         --------
         GeoDataFrame
-            An GeoDataFrame object.
+            A GeoDataFrame read from file.
         """
         return arctern_spark.file.read_file(filename, **kwargs)
 
     def to_file(self, filename, driver="ESRI Shapefile", geometry=None, schema=None, index=None, crs=None, **kwargs):
         """
-        Write the ``GeoDataFrame`` to a file.
+        Writes a GeoDataFrame to a file.
 
         Parameters
         ----------
-        filename : str
+        df: GeoDataFrame
+            GeoDataFrame to be written.
+        filename: str
             File path or file handle to write to.
-        driver : string, default 'ESRI Shapefile'
-            The OGR format driver used to write the vector file.
-        schema : dict, default None
-            If specified, the schema dictionary is passed to Fiona to
-            better control how the file is written. If None, GeoPandas
-            will determine the schema based on each column's dtype.
-        index : bool, default None
-            If True, write index into one or more columns (for MultiIndex).
-            Default None writes the index into one or more columns only if
-            the index is named, is a MultiIndex, or has a non-integer data
-            type. If False, no index is written.
-        mode : str, default 'w'
-            The write mode, 'w' to overwrite the existing file and 'a' to append.
-        crs : str, default None
-            If specified, the CRS is passed to Fiona to
-            better control how the file is written. If None, GeoPandas
-            will determine the crs based on crs df attribute.
-        geometry : str, default None
-            Specify geometry column.
+        driver: str
+            The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
+        schema: dict
+            * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
+            * If None (default), this function determines the schema based on each column's dtype.
+        index: bool
+            * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
+            * If True, writes index into one or more columns (for MultiIndex).
+            * If False, no index is written.
+        mode: str
+            * 'a': Append
+            * 'w' (default): Write
+        crs: str
+            * If specified, the CRS is passed to Fiona to better control how the file is written.
+            * If None (default), this function determines the crs based on crs df attribute.
+        geometry: str
+            Specifys geometry column, by default None.
+
+        **kwargs:
+        Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
 
         Notes
         -----
-        The extra keyword arguments ``**kwargs`` are passed to fiona.open and
-        can be used to write to multi-layer data, store data within archives
-        (zip files), etc.
-
-        The format drivers will attempt to detect the encoding of your data, but
-        may fail. In this case, the proper encoding can be specified explicitly
-        by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
+        The format drivers will attempt to detect the encoding of your data, but may fail. In this case, the proper encoding can be specified explicitly by using the encoding keyword parameter, e.g. ``encoding='utf-8'``.
 
         Examples
         --------
@@ -386,30 +506,23 @@ class GeoDataFrame(DataFrame):
 
         Parameters
         ----------
-
-        na : {'null', 'drop', 'keep'}, default 'null'
-            Indicates how to output missing (NaN) values in the GeoDataFrame.
-            See below.
+        na : {'null', 'drop', 'keep'}
+            Indicates how to output missing (NaN) values in the GeoDataFrame, by default 'null'.
+            * 'null': Outputs the missing entries as JSON null.
+            * 'drop': Removes the property from the feature. This applies to each feature individually so that features may have different properties.
+            * 'keep': Outputs the missing entries as NaN.
         show_bbox : bool, optional, default: False
             Include bbox (bounds) in the geojson
         geometry : str, optional, default 'geometry'
             Specify geometry column.
 
+        **kwargs:
+            Parameters to pass to `jump.dumps`.
+
         Returns
         -------
         Series
             Sequence of geometries in GeoJSON format.
-
-        Note
-        ----
-        The remaining *kwargs* are passed to json.dumps().
-
-        Missing (NaN) values in the GeoDataFrame can be represented as follows:
-
-        - ``null``: output the missing entries as JSON null.
-        - ``drop``: remove the property from the feature. This applies to each
-          feature individually so that features may have different properties.
-        - ``keep``: output the missing entries as NaN.
 
         Examples
         --------
@@ -423,6 +536,6 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
         >>> print(gdf.to_json(geometry="geometry"))
-        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
+        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
