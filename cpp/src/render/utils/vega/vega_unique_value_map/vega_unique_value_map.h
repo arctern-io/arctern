@@ -33,8 +33,14 @@ class VegaUniqueValueMap : public Vega {
   // std::string Build() final;
 
   const double& opacity() const { return opacity_; }
-  
-  const std::unordered_map<std::string, Color>& unique_value_infos() const { return unique_value_infos_; }
+
+  const std::unordered_map<std::string, Color>& unique_value_infos_string_map() const {
+    return unique_value_infos_string_map_;
+  }
+
+  const std::unordered_map<double, Color>& unique_value_infos_numeric_map() const {
+    return unique_value_infos_numeric_map_;
+  }
 
  private:
   // vega json to vega struct
@@ -42,7 +48,8 @@ class VegaUniqueValueMap : public Vega {
 
  private:
   double opacity_;
-  std::unordered_map<std::string, Color> unique_value_infos_;
+  std::unordered_map<std::string, Color> unique_value_infos_string_map_;
+  std::unordered_map<double, Color> unique_value_infos_numeric_map_;
 };
 
 }  // namespace render

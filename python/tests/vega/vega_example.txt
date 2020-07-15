@@ -217,8 +217,7 @@
             }
           ],
           "opacity": {"value": 1.0},
-          "coordinate_system": {"value": "EPSG:3857"},
-          "aggregation_type": {"value": "sum"}
+          "coordinate_system": {"value": "EPSG:3857"}
         }
       }
     }

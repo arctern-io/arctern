@@ -26,6 +26,7 @@ set(render_src
         render/2d/heatmap/heatmap.cpp
         render/2d/heatmap/set_color.cpp
         render/2d/iconviz/iconviz.cpp
+        render/2d/unique_value_map/unique_value_map.cpp
         render/utils/vega/vega_fishnetmap/vega_fishnetmap.cpp
         render/utils/render_utils.cpp
         render/utils/agg/agg_handler.cpp
