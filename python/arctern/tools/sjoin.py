@@ -149,10 +149,6 @@ def sjoin(
         right_df.index = right_df.index.rename(index_right)
     right_df = right_df.reset_index()
 
-    if op == "within":
-        left_df, right_df = right_df, left_df
-        tree_idx_right = not tree_idx_right
-
     r_idx = np.empty((0, 0))
     l_idx = np.empty((0, 0))
 
@@ -211,6 +207,8 @@ def sjoin(
 
     else:
         result = pd.DataFrame(columns=["_key_left", "_key_right"], dtype=float)
+
+    result = GeoDataFrame(result)
 
     if how == "inner":
         result = result.set_index("_key_left")

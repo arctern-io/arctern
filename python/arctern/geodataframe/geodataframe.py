@@ -101,8 +101,6 @@ class GeoDataFrame(DataFrame):
             frame = self
         else:
             frame = self.copy()
-            frame._geometry_column_names = self.geometries_name
-            frame._crs_for_cols = self.crs
 
         geometry_cols = frame._geometry_column_names
         if not isinstance(frame[col], GeoSeries):
@@ -230,6 +228,34 @@ class GeoDataFrame(DataFrame):
             gdf._crs_for_cols = self._crs_for_cols
             return gdf
         return None
+
+    # pylint: disable=protected-access
+    def copy(self, deep=True):
+        df = super(GeoDataFrame, self).copy(deep)
+        gdf = GeoDataFrame(df)
+        gdf._geometry_column_names = self._geometry_column_names
+        gdf._crs_for_cols = self._crs_for_cols
+        return gdf
+
+    # pylint: disable=protected-access
+    def drop(self, labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors="raise",):
+        geometry_column_names = self._geometry_column_names.copy()
+        crs_for_cols = self._crs_for_cols.copy()
+        df = super(GeoDataFrame, self).drop(labels, axis, index, columns, level, inplace, errors)
+
+        column_names = self.columns.values.tolist()
+        for col in geometry_column_names:
+            if col in column_names:
+                self._crs_for_cols[col] = crs_for_cols[col]
+                self._geometry_column_names.append(col)
+
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._geometry_column_names = self._geometry_column_names
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+        return None
+
 
     def to_geopandas(self):
         """
@@ -480,7 +506,9 @@ class GeoDataFrame(DataFrame):
                 elif col in right.columns:
                     pick = right
 
-                kser.set_crs(pick._crs_for_cols.get(col, None))
+                picked_crs = pick._crs_for_cols.get(col, None)
+                kser.set_crs(picked_crs)
+                result._crs_for_cols[col] = picked_crs
 
         return result
 
