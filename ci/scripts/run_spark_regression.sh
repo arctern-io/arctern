@@ -52,6 +52,7 @@ pushd ${TESTS_DIR}
 
 # /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
 echo "ljq debug........."
+echo "trigger ci"
 echo $SPARK_HOME
 cat /opt/spark/conf/spark-defaults.conf
 python tiny_koalas_test.py
