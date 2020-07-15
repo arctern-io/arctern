@@ -181,7 +181,9 @@ class GeoDataFrame(DataFrame):
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
-            * *False:* Do not include bounding box in the GeoJSON string.
+            * *False:* Don't include bounding box in the GeoJSON string.
+        geometry: str
+            The name of geometry column.
 
         **kwargs:
             Parameters to pass to `jump.dumps`.
@@ -202,7 +204,7 @@ class GeoDataFrame(DataFrame):
         ...     "geometry": ["POINT (0 0)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        >>> print(gdf.to_json(col="geometry"))
+        >>> print(gdf.to_json(geometry="geometry"))
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
@@ -692,7 +694,7 @@ class GeoDataFrame(DataFrame):
         crs: str
             * If specified, the CRS is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the crs based on crs df attribute.
-        col: str
+        geometry: str
             Specifys geometry column, by default None.
 
         **kwargs:
@@ -715,7 +717,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
         A    B  other_geom         geo2         geo3     geometry
