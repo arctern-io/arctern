@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega.pointmap.vega_scatter_plot import VegaScatterPlot
-from arctern.util.vega.vega_node import (RootMarks, Root, Description, Data,
-                                            Width, Height, Scales)
+from arctern.util.vega.vega_node import (Width, Height, Description, Data,
+                                            Scales, RootMarks, Root)
 
 
 class Marks(RootMarks):
@@ -34,33 +33,35 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, shape: Value, point_size: Value,
-                     point_color: Value, opacity: Value, coordinate_system: Value):
+        def __init__(self, bounding_box: Value, color_gradient: Value,
+                     cell_size: Value, cell_spacing: Value, opacity: Value, coordinate_system: Value, aggregation_type: Value):
             if not (isinstance(bounding_box.v, list)
-                    and isinstance(shape.v, str)
-                    and isinstance(point_size.v, int)
-                    and isinstance(point_color.v, str)
+                    and isinstance(color_gradient.v, list)
+                    and isinstance(cell_size.v, int)
+                    and isinstance(cell_spacing.v, int)
                     and isinstance(opacity.v, float)
-                    and isinstance(coordinate_system.v, str)):
+                    and isinstance(coordinate_system.v, str)
+                    and isinstance(aggregation_type.v, str)):
                 # TODO error log here
-                print("illegal")
-                assert 0
+                assert 0, "illegal"
             self._bounding_box = bounding_box
-            self._shape = shape
-            self._point_size = point_size
-            self._point_color = point_color
+            self._color_gradient = color_gradient
+            self._cell_size = cell_size
+            self._cell_spacing = cell_spacing
             self._opacity = opacity
             self._coordinate_system = coordinate_system
+            self._aggregation_type = aggregation_type
 
         def to_dict(self):
             dic = {
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
-                    "shape": self._shape.to_dict(),
-                    "point_size": self._point_size.to_dict(),
-                    "point_color": self._point_color.to_dict(),
+                    "color_gradient": self._color_gradient.to_dict(),
+                    "cell_size": self._cell_size.to_dict(),
+                    "cell_spacing": self._cell_spacing.to_dict(),
                     "opacity": self._opacity.to_dict(),
-                    "coordinate_system": self._coordinate_system.to_dict()
+                    "coordinate_system": self._coordinate_system.to_dict(),
+                    "aggregation_type": self._aggregation_type.to_dict()
                 }
             }
             return dic
@@ -75,30 +76,34 @@ class Marks(RootMarks):
         return dic
 
 
-class VegaPointMap(VegaScatterPlot):
-    def __init__(self, width: int, height: int, bounding_box: list,
-                 point_size: int, point_color: str, opacity: float, coordinate_system: str):
-        VegaScatterPlot.__init__(self, width, height)
+class VegaFishNetMap:
+    def __init__(self, width: int, height: int, bounding_box: list, color_gradient: list,
+                 cell_size: int, cell_spacing: int, opacity: float, coordinate_system: str, aggregation_type: str):
+        self._width = width
+        self._height = height
         self._bounding_box = bounding_box
-        self._point_size = int(point_size)
-        self._point_color = point_color
-        self._opacity = float(opacity)
+        self._cell_size = cell_size
+        self._cell_spacing = cell_spacing
+        self._color_gradient = color_gradient
+        self._opacity = opacity
         self._coordinate_system = coordinate_system
+        self._aggregation_type = aggregation_type
 
     def build(self):
-        description = Description(desc="circle_2d")
+        description = Description(desc="fishnetmap")
         data = Data(name="data", url="/data/data.csv")
-        domain1 = Scales.Scale.Domain(data="data", field="c0")
-        domain2 = Scales.Scale.Domain(data="data", field="c1")
+        domain1 = Scales.Scale.Domain("data", "c0")
+        domain2 = Scales.Scale.Domain("data", "c1")
         scale1 = Scales.Scale("x", "linear", domain1)
         scale2 = Scales.Scale("y", "linear", domain2)
         scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
-                              shape=Marks.Encode.Value("circle"),
-                              point_color=Marks.Encode.Value(self._point_color),
-                              point_size=Marks.Encode.Value(self._point_size),
+                              color_gradient=Marks.Encode.Value(self._color_gradient),
+                              cell_size=Marks.Encode.Value(self._cell_size),
+                              cell_spacing=Marks.Encode.Value(self._cell_spacing),
                               opacity=Marks.Encode.Value(self._opacity),
-                              coordinate_system=Marks.Encode.Value(self._coordinate_system))
+                              coordinate_system=Marks.Encode.Value(self._coordinate_system),
+                              aggregation_type=Marks.Encode.Value(self._aggregation_type))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
                     data, scales, marks)
@@ -112,8 +117,17 @@ class VegaPointMap(VegaScatterPlot):
     def bounding_box(self):
         return self._bounding_box
 
+    def cell_size(self):
+        return self._cell_size
+
+    def cell_spacing(self):
+        return self._cell_spacing
+
     def height(self):
         return self._height
 
     def width(self):
         return self._width
+
+    def aggregation_type(self):
+        return self._aggregation_type

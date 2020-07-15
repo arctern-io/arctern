@@ -76,7 +76,7 @@ class VegaIcon:
         self._coordinate_system = coordinate_system
 
     def build(self):
-        description = Description(desc="icon_2d")
+        description = Description(desc="iconmap")
         data = Data(name="data", url="/data/data.csv")
         domain = Scales.Scale.Domain("data", "c0")
         scale = Scales.Scale("icon", "linear", domain)

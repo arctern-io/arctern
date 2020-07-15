@@ -63,6 +63,7 @@ __all__ = [
     "weighted_point_map_layer",
     "heat_map_layer",
     "choropleth_map_layer",
+    "unique_value_chorolethmap_layer",
     "icon_viz_layer",
     "fishnet_map_layer",
     "projection",
@@ -1793,6 +1794,91 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     weights_rs = _to_arrow_array_list(arr)
 
     rs = arctern_core_.choropleth_map(vega_string, geos_rs, weights_rs)
+    return base64.b64encode(rs.to_pandas()[0])
+
+
+def unique_value_chorolethmap_layer(vega, region_boundaries, labels, transform=True):
+    """
+    Plots a choroplethmap layer.
+
+    Parameters
+    ----------
+    vega : VegaUniqueValueChoroplethMap
+        Describe rendering style
+    region_boundaries : GeoSeries
+        Sequence of polygons or multiplygons
+    labels: Series
+        Used to control the color of each polygon or multipolygon
+    transform : bool
+        Whether to convert latitude and longitude coordinates to pixel coordinates
+
+    Examples
+    ---------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> from arctern.util.vega import  vega_choroplethmap
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
+       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>>
+       >>> # Plot choroplethmap_layer
+       >>> bbox=[-73.998427, 40.730309, -73.954348, 40.780816]
+    """
+    import pyarrow as pa
+    geos = pa.array(region_boundaries, type='binary')
+
+    # transform and projection handler
+    geos_rs = _to_arrow_array_list(geos)
+
+    if transform:
+        bounding_box = vega.bounding_box()
+        top_left = 'POINT (' + str(bounding_box[0]) + ' ' + str(bounding_box[3]) + ')'
+        bottom_right = 'POINT (' + str(bounding_box[2]) + ' ' + str(bounding_box[1]) + ')'
+
+        height = vega.height()
+        width = vega.width()
+        coor = vega.coor()
+
+        src = bytes(coor, encoding="utf8")
+        dst = bytes('EPSG:3857', encoding="utf8")
+        bounding_box_min = bytes(top_left, encoding="utf8")
+        bounding_box_max = bytes(bottom_right, encoding="utf8")
+
+        # transform and projection
+        if coor != 'EPSG:3857':
+            geos_rs = arctern_core_.transform_and_projection(geos_rs, src, dst, bounding_box_max, bounding_box_min,
+                                                             height, width)
+        else:
+            geos_rs = arctern_core_.projection(
+                geos_rs, bounding_box_max, bounding_box_min, height, width)
+
+    vega_string = vega.build().encode('utf-8')
+
+    # weights handler
+    if labels.dtypes == 'float64':
+        arr = pa.array(labels, type='double')
+    elif labels.dtypes == 'int64':
+        arr = pa.array(labels, type='int64')
+    else:
+        arr = pa.array(labels, type='string')
+
+    labels_rs = _to_arrow_array_list(arr)
+
+    rs = arctern_core_.unique_value_choropleth_map(vega_string, geos_rs, labels_rs)
     return base64.b64encode(rs.to_pandas()[0])
 
 

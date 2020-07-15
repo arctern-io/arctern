@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega.vega_node import (Width, Height, Description, Data,
-                                            Scales, RootMarks, Root)
+from arctern.util.vega.pointmap.vega_scatter_plot import VegaScatterPlot
+from arctern.util.vega.vega_node import (RootMarks, Root, Description, Data,
+                                         Width, Height, Scales)
 
 
 class Marks(RootMarks):
@@ -33,19 +34,25 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, color_gradient: Value,
-                     color_bound: Value, opacity: Value, coordinate_system: Value, aggregation_type: Value):
+        def __init__(self, bounding_box: Value, shape: Value, color_gradient: Value,
+                     color_bound: Value, size_bound: Value, opacity: Value,
+                     coordinate_system: Value, aggregation_type: Value):
             if not (isinstance(bounding_box.v, list)
+                    and isinstance(shape.v, str)
                     and isinstance(color_gradient.v, list)
                     and isinstance(color_bound.v, list)
+                    and isinstance(size_bound.v, list)
                     and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)
                     and isinstance(aggregation_type.v, str)):
                 # TODO error log here
-                assert 0, "illegal"
+                print("illegal")
+                assert 0
             self._bounding_box = bounding_box
+            self._shape = shape
             self._color_gradient = color_gradient
             self._color_bound = color_bound
+            self._size_bound = size_bound
             self._opacity = opacity
             self._coordinate_system = coordinate_system
             self._aggregation_type = aggregation_type
@@ -54,8 +61,10 @@ class Marks(RootMarks):
             dic = {
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
+                    "shape": self._shape.to_dict(),
                     "color_gradient": self._color_gradient.to_dict(),
                     "color_bound": self._color_bound.to_dict(),
+                    "size_bound": self._size_bound.to_dict(),
                     "opacity": self._opacity.to_dict(),
                     "coordinate_system": self._coordinate_system.to_dict(),
                     "aggregation_type": self._aggregation_type.to_dict()
@@ -73,27 +82,33 @@ class Marks(RootMarks):
         return dic
 
 
-class VegaChoroplethMap:
+class VegaWeightedPointMap(VegaScatterPlot):
     def __init__(self, width: int, height: int, bounding_box: list,
-                 color_gradient: list, color_bound: list, opacity: float, coordinate_system: str, aggregation_type: str):
-        self._width = width
-        self._height = height
+                 color_gradient: list, color_bound: list, size_bound: list, opacity: float,
+                 coordinate_system: str, aggregation_type: str):
+
+        VegaScatterPlot.__init__(self, width, height)
         self._bounding_box = bounding_box
         self._color_gradient = color_gradient
         self._color_bound = color_bound
-        self._opacity = float(opacity)
+        self._size_bound = size_bound
+        self._opacity = opacity
         self._coordinate_system = coordinate_system
         self._aggregation_type = aggregation_type
 
     def build(self):
-        description = Description(desc="building_weighted_2d")
+        description = Description(desc="weighted_pointmap")
         data = Data(name="data", url="/data/data.csv")
-        domain = Scales.Scale.Domain("data", "c0")
-        scale = Scales.Scale("building", "linear", domain)
-        scales = Scales([scale])
+        domain1 = Scales.Scale.Domain(data="data", field="c0")
+        domain2 = Scales.Scale.Domain(data="data", field="c1")
+        scale1 = Scales.Scale("x", "linear", domain1)
+        scale2 = Scales.Scale("y", "linear", domain2)
+        scales = Scales([scale1, scale2])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
+                              shape=Marks.Encode.Value("circle"),
                               color_gradient=Marks.Encode.Value(self._color_gradient),
                               color_bound=Marks.Encode.Value(self._color_bound),
+                              size_bound=Marks.Encode.Value(self._size_bound),
                               opacity=Marks.Encode.Value(self._opacity),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system),
                               aggregation_type=Marks.Encode.Value(self._aggregation_type))

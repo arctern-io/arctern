@@ -875,5 +875,13 @@ std::shared_ptr<arrow::BinaryArray> fishnet_map(
   }
 }
 
+std::shared_ptr<arrow::BinaryArray> unique_value_choropleth_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& labels_vector,
+    const std::string& conf) {
+  std::vector<uint8_t> rst(0);
+  return out_pic(rst);
+}
+
 }  // namespace render
 }  // namespace arctern

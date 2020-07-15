@@ -66,6 +66,11 @@ std::shared_ptr<arrow::StringArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
+std::shared_ptr<arrow::StringArray> unique_value_choropleth_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& labels_vector,
+    const std::string& conf);
+
 std::shared_ptr<arrow::StringArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
