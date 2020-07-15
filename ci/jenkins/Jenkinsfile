@@ -31,62 +31,62 @@ pipeline {
     }
 
     stages {
-        // stage ('Arctern Build and Test') {
-        //     matrix {
-        //         axes {
-        //             axis {
-        //                 name 'OS_NAME'
-        //                 values 'centos7'
-        //             }
-        //             axis {
-        //                 name 'CPU_ARCH'
-        //                 values 'amd64'
-        //             }
-        //             axis {
-        //                 name 'BINARY_VERSION'
-        //                 values 'gpu'
-        //             }
-        //         }
+        stage ('Arctern Build and Test') {
+            matrix {
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'centos7'
+                    }
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu'
+                    }
+                }
 
-        //         agent {
-        //             kubernetes {
-        //                 label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-        //                 defaultContainer 'jnlp'
-        //                 yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
-        //             }
-        //         }
+                agent {
+                    kubernetes {
+                        label "${OS_NAME}-${BINARY_VERSION}-build-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                        defaultContainer 'jnlp'
+                        yamlFile "ci/jenkins/pod/arctern-${BINARY_VERSION}-version-${OS_NAME}-build-env-pod.yaml"
+                    }
+                }
 
-        //         stages {
-        //             stage('Build') {
-        //                 steps {
-        //                     container("arctern-${BINARY_VERSION}-build-env") {
-        //                         script {
-        //                             load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             stage('Unit Test') {
-        //                 steps {
-        //                     container("arctern-${BINARY_VERSION}-build-env") {
-        //                         script {
-        //                             load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             stage('Code Coverage') {
-        //                 steps {
-        //                     container("arctern-${BINARY_VERSION}-build-env") {
-        //                         script {
-        //                             load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                stages {
+                    stage('Build') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/build.groovy"
+                                }
+                            }
+                        }
+                    }
+                    stage('Unit Test') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/unittest.groovy"
+                                }
+                            }
+                        }
+                    }
+                    stage('Code Coverage') {
+                        steps {
+                            container("arctern-${BINARY_VERSION}-build-env") {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/coverage.groovy"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         stage ('Packaged Arctern') {
             matrix {
@@ -131,23 +131,23 @@ pipeline {
             }
         }
 
-        // stage('Build Arctern Web Server Image') {
-        //     agent {
-        //         kubernetes {
-        //             label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-        //             defaultContainer 'jnlp'
-        //             yamlFile 'ci/jenkins/pod/docker-pod.yaml'
-        //         }
-        //     }
+        stage('Build Arctern Web Server Image') {
+            agent {
+                kubernetes {
+                    label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                    defaultContainer 'jnlp'
+                    yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                }
+            }
 
-        //     steps {
-        //         container('docker-env') {
-        //             script {
-        //                 load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
-        //             }
-        //         }
-        //     }
-        // }
+            steps {
+                container('docker-env') {
+                    script {
+                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
+                    }
+                }
+            }
+        }
 
         stage('Build Arctern Docker Images') {
             matrix {
@@ -155,8 +155,8 @@ pipeline {
                 axes {
                     axis {
                         name 'OS_NAME'
-                        // values 'ubuntu18.04', "centos7"
-                        values 'ubuntu18.04'
+                        values 'ubuntu18.04', "centos7"
+                        // values 'ubuntu18.04'
                     }
                     axis {
                         name 'CPU_ARCH'
@@ -164,8 +164,8 @@ pipeline {
                     }
                     axis {
                         name 'BINARY_VERSION'
-                        // values 'gpu', 'cpu'
-                        values 'cpu'
+                        values 'gpu', 'cpu'
+                        // values 'cpu'
                     }
                 }
 
@@ -207,8 +207,8 @@ pipeline {
                 axes {
                     axis {
                         name 'OS_NAME'
-                        // values 'ubuntu18.04', "centos7"
-                        values 'ubuntu18.04'
+                        values 'ubuntu18.04', "centos7"
+                        // values 'ubuntu18.04'
                     }
                     axis {
                         name 'CPU_ARCH'
@@ -216,8 +216,8 @@ pipeline {
                     }
                     axis {
                         name 'BINARY_VERSION'
-                        // values 'gpu', 'cpu'
-                        values 'cpu'
+                        values 'gpu', 'cpu'
+                        // values 'cpu'
                     }
                 }
 
