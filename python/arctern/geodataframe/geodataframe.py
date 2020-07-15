@@ -183,7 +183,7 @@ class GeoDataFrame(DataFrame):
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
-            * *False:* Do not include bounding box in the GeoJSON string.
+            * *False:* Don't include bounding box in the GeoJSON string.
         geometry: str
             The name of geometry column.
 
