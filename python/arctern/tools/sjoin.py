@@ -33,9 +33,9 @@ def sjoin(
         A GeoDataFrame object.
     right_df : GeoDataFrame
         A GeoDataFrame object.
-    lcol : str
+    left_col : str
         Specifies geometry columns of ``left_df`` to be joined.
-    rcol : str
+    right_col : str
         Specifies geometry columns of ``right_df`` to be joined.
     how : str
         The type of join, by default 'inner'.
@@ -44,9 +44,9 @@ def sjoin(
         * 'inner': Uses intersection of keys from both GeoDataFrames; only retains geometry columns of ``left_df``.
     op : str
         A binary predicate in {'intersects', 'contains', 'within'}, by default 'intersects'.
-    lsuffix : str
+    left_suffix : str
         Suffix to apply to overlapping column names of ``left_df``, by default 'left'.
-    rsuffix : str
+    right_suffix : str
         Suffix to apply to overlapping column names of ``right_df``, by default 'right'.
 
     Returns
