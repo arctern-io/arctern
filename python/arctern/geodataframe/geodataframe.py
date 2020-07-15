@@ -336,7 +336,7 @@ class GeoDataFrame(DataFrame):
         >>> pdf = gdf.to_geopandas()
         >>> pdf.set_geometry("geo1", inplace=True)
         >>> pdf.geometry.name
-        geo1
+        'geo1'
         >>> type(pdf["geo1"])
         <class 'geopandas.geoseries.GeoSeries'>
         """
