@@ -737,4 +737,3 @@ class GeoDataFrame(DataFrame):
     @property
     def _constructor_expanddim(self):
         pass
-
