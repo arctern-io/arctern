@@ -22,7 +22,7 @@ import pandas as pd
 
 # pylint: disable=too-many-branches,too-many-statements
 def sjoin(
-        left_df, right_df, left_col, right_col, how="inner", op="intersects", left_suffix="left", right_suffix="right"
+        left_df, right_df, left_col, right_col, how="inner", op="intersects", left_suffix="_left", right_suffix="_right"
 ):
     """
     Spatially joins two GeoDataFrames.
@@ -33,9 +33,9 @@ def sjoin(
         A GeoDataFrame object.
     right_df : GeoDataFrame
         A GeoDataFrame object.
-    lcol : str
+    left_col : str
         Specifies geometry columns of ``left_df`` to be joined.
-    rcol : str
+    right_col : str
         Specifies geometry columns of ``right_df`` to be joined.
     how : str
         The type of join, by default 'inner'.
@@ -44,9 +44,9 @@ def sjoin(
         * 'inner': Uses intersection of keys from both GeoDataFrames; only retains geometry columns of ``left_df``.
     op : str
         A binary predicate in {'intersects', 'contains', 'within'}, by default 'intersects'.
-    lsuffix : str
+    left_suffix : str
         Suffix to apply to overlapping column names of ``left_df``, by default 'left'.
-    rsuffix : str
+    right_suffix : str
         Suffix to apply to overlapping column names of ``right_df``, by default 'right'.
 
     Returns
@@ -105,8 +105,8 @@ def sjoin(
             )
         )
 
-    index_left = "index_%s" % left_suffix
-    index_right = "index_%s" % right_suffix
+    index_left = "index%s" % left_suffix
+    index_right = "index%s" % right_suffix
 
     if any(left_df.columns.isin([index_left, index_right])) or any(
         right_df.columns.isin([index_left, index_right])
@@ -131,7 +131,7 @@ def sjoin(
         left_df.index = left_df.index.rename(index_left)
     except TypeError:
         index_left = [
-            "index_%s" % left_suffix + str(l) for l, ix in enumerate(left_df.index.names)
+            "index%s" % left_suffix + str(l) for l, ix in enumerate(left_df.index.names)
         ]
         left_index_name = left_df.index.names
         left_df.index = left_df.index.rename(index_left)
@@ -143,15 +143,11 @@ def sjoin(
         right_df.index = right_df.index.rename(index_right)
     except TypeError:
         index_right = [
-            "index_%s" % right_suffix + str(l) for l, ix in enumerate(right_df.index.names)
+            "index%s" % right_suffix + str(l) for l, ix in enumerate(right_df.index.names)
         ]
         right_index_name = right_df.index.names
         right_df.index = right_df.index.rename(index_right)
     right_df = right_df.reset_index()
-
-    if op == "within":
-        left_df, right_df = right_df, left_df
-        tree_idx_right = not tree_idx_right
 
     r_idx = np.empty((0, 0))
     l_idx = np.empty((0, 0))
@@ -212,6 +208,8 @@ def sjoin(
     else:
         result = pd.DataFrame(columns=["_key_left", "_key_right"], dtype=float)
 
+    result = GeoDataFrame(result)
+
     if how == "inner":
         result = result.set_index("_key_left")
         joined = (
@@ -220,7 +218,7 @@ def sjoin(
                 right_df.drop(right_col, axis=1),
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
+                suffixes=("%s" % left_suffix, "%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)
@@ -239,7 +237,7 @@ def sjoin(
                 how="left",
                 left_on="_key_right",
                 right_index=True,
-                suffixes=("_%s" % left_suffix, "_%s" % right_suffix),
+                suffixes=("%s" % left_suffix, "%s" % right_suffix),
             )
             .set_index(index_left)
             .drop(["_key_right"], axis=1)
