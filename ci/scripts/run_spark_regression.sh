@@ -51,6 +51,7 @@ MASTER_URL=${MASTER_URL:="spark://127.0.0.1:7077"}
 pushd ${TESTS_DIR}
 
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
+python tiny_koalas_test.py
 python collect_results.py
 python compare.py
 python test_vectory_impl.py 
