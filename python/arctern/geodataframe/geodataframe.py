@@ -25,6 +25,58 @@ import arctern.tools
 
 
 class GeoDataFrame(DataFrame):
+    """
+    A GeoDataFrame object is a pandas.DataFrame that has columns
+    with geometry. In addition to the standard DataFrame constructor arguments,
+    GeoDataFrame also accepts the following keyword arguments:
+
+    Parameters
+    ----------
+    crs : value (optional)
+        Coordinate Reference System of the geometry objects.
+    geometries : list
+        The name of columns which are setten as geometry columns.
+    data : ndarray (structured or homogeneous), Iterable, dict, or DataFrame
+        Dict can contain Series, GeoSeries, arrays, constants, or list-like objects.
+
+        .. versionchanged:: 0.23.0
+           If data is a dict, column order follows insertion-order for
+           Python 3.6 and later.
+
+        .. versionchanged:: 0.25.0
+           If data is a list of dicts, column order follows insertion-order
+           for Python 3.6 and later.
+
+    index : Index or array-like
+        Index to use for resulting frame. Will default to RangeIndex if
+        no indexing information part of input data and no index provided.
+    columns : Index or array-like
+        Column labels to use for resulting frame. Will default to
+        RangeIndex (0, 1, 2, ..., n) if no column labels are provided.
+    dtype : dtype, default None
+        Data type to force. Only a single dtype is allowed. If None, infer.
+    copy : bool, default False
+        Copy data from inputs. Only affects DataFrame / 2d ndarray input.
+
+    Examples
+    ---------
+    >>> from arctern import GeoDataFrame
+    >>> import numpy as np
+    >>> data = {
+    ...     "A": range(5),
+    ...     "B": np.arange(5.0),
+    ...     "other_geom": [1, 1, 1, 2, 2],
+    ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+    ... }
+    >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+    >>> gdf
+    A    B  other_geom         geo1
+    0  0  0.0           1  POINT (0 0)
+    1  1  1.0           1  POINT (1 1)
+    2  2  2.0           1  POINT (2 2)
+    3  3  3.0           2  POINT (3 3)
+    4  4  4.0           2  POINT (4 4)
+    """
 
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
         geometry_column_names = []
@@ -458,6 +510,69 @@ class GeoDataFrame(DataFrame):
     ):
         """
         Merges two GeoDataFrame objects with a database-style join.
+
+        Parameters
+        ----------
+        right : DataFrame or named Series
+            Object to merge with.
+        how : {'left', 'right', 'outer', 'inner'}, default 'inner'
+            Type of merge to be performed.
+
+            * left: use only keys from left frame, similar to a SQL left outer join;
+              preserve key order.
+            * right: use only keys from right frame, similar to a SQL right outer join;
+              preserve key order.
+            * outer: use union of keys from both frames, similar to a SQL full outer
+              join; sort keys lexicographically.
+            * inner: use intersection of keys from both frames, similar to a SQL inner
+              join; preserve the order of the left keys.
+        on : label or list
+           Column or index level names to join on. These must be found in both
+           DataFrames. If `on` is None and not merging on indexes then this defaults
+           to the intersection of the columns in both DataFrames.
+        left_on : label or list, or array-like
+            Column or index level names to join on in the left DataFrame. Can also
+            be an array or list of arrays of the length of the left DataFrame.
+            These arrays are treated as if they are columns.
+        right_on : label or list, or array-like
+            Column or index level names to join on in the right DataFrame. Can also
+            be an array or list of arrays of the length of the right DataFrame.
+            These arrays are treated as if they are columns.
+        left_index : bool, default False
+            Use the index from the left DataFrame as the join key(s). If it is a
+            MultiIndex, the number of keys in the other DataFrame (either the index
+            or a number of columns) must match the number of levels.
+        right_index : bool, default False
+            Use the index from the right DataFrame as the join key. Same caveats as
+            left_index.
+        sort : bool, default False
+            Sort the join keys lexicographically in the result DataFrame. If False,
+            the order of the join keys depends on the join type (how keyword).
+        suffixes : tuple of (str, str), default ('_x', '_y')
+            Suffix to apply to overlapping column names in the left and right
+            side, respectively. To raise an exception on overlapping columns use
+            (False, False).
+        copy : bool, default True
+            If False, avoid copy if possible.
+        indicator : bool or str, default False
+            If True, adds a column to output DataFrame called "_merge" with
+            information on the source of each row.
+            If string, column with information on source of each row will be added to
+            output DataFrame, and column will be named value of string.
+            Information column is Categorical-type and takes on a value of "left_only"
+            for observations whose merge key only appears in 'left' DataFrame,
+            "right_only" for observations whose merge key only appears in 'right'
+            DataFrame, and "both" if the observation's merge key is found in both.
+        validate : str, optional
+            If specified, checks if merge is of specified type.
+
+            * "one_to_one" or "1:1": check if merge keys are unique in both
+              left and right datasets.
+            * "one_to_many" or "1:m": check if merge keys are unique in left
+              dataset.
+            * "many_to_one" or "m:1": check if merge keys are unique in right
+              dataset.
+            * "many_to_many" or "m:m": allowed, but does not result in checks.
 
         Returns
         -------
