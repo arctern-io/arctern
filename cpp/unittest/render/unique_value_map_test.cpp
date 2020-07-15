@@ -154,3 +154,77 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_NUMERIC_MAP) {
 
   assert(opacity == 1.0);
 }
+
+TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_INT8) {
+  // param1: wkt string
+  std::string wkt_string1 = "POLYGON ((200 200, 200 300, 300 300, 300 200, 200 200))";
+  std::string wkt_string2 = "POLYGON ((400 400, 500 400, 500 500, 400 500, 400 400))";
+  std::string wkt_string3 = "POLYGON ((600 600, 700 600, 700 700, 600 700, 600 600))";
+  arrow::StringBuilder string_builder;
+  auto status = string_builder.Append(wkt_string1);
+  status = string_builder.Append(wkt_string2);
+  status = string_builder.Append(wkt_string3);
+
+  std::shared_ptr<arrow::StringArray> string_array;
+  status = string_builder.Finish(&string_array);
+
+  // param2: value
+  std::shared_ptr<arrow::Array> value_array;
+  arrow::Int8Builder value_builder;
+  status = value_builder.Append(1);
+  status = value_builder.Append(2);
+  status = value_builder.Append(3);
+  status = value_builder.Finish(&value_array);
+
+  // param3: conf
+  const std::string vega =
+      "{\n"
+      "  \"width\": 1900,\n"
+      "  \"height\": 1410,\n"
+      "  \"description\": \"unique_value_map\",\n"
+      "  \"data\": [\n"
+      "    {\n"
+      "      \"name\": \"nyc_taxi\",\n"
+      "      \"url\": \"data/nyc_taxi_0_5m.csv\"\n"
+      "    }\n"
+      "  ],\n"
+      "  \"scales\": [\n"
+      "    {\n"
+      "      \"name\": \"geometry\",\n"
+      "      \"type\": \"linear\",\n"
+      "      \"domain\": {\"data\": \"nyc_taxi\", \"field\": \"c0\"}\n"
+      "    }\n"
+      "  ],\n"
+      "  \"marks\": [\n"
+      "    {\n"
+      "      \"encode\": {\n"
+      "        \"enter\": {\n"
+      "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
+      "          \"unique_value_infos\": [\n"
+      "            { \n"
+      "              \"label\": 1,\n"
+      "              \"color\": \"#00FF00\"\n"
+      "            }, \n"
+      "            {\n"
+      "              \"label\": 2,\n"
+      "              \"color\": \"#FF0000\"\n"
+      "            }, \n"
+      "            {\n"
+      "              \"label\": 3,\n"
+      "              \"color\": \"#0000FF\"\n"
+      "            }\n"
+      "          ],\n"
+      "          \"opacity\": {\"value\": 1.0},\n"
+      "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
+      "        }\n"
+      "      }\n"
+      "    }\n"
+      "  ]\n"
+      "}";
+
+  auto wkb = arctern::gis::gdal::WktToWkb(string_array);
+  std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
+
+  std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
+  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+}
