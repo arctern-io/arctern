@@ -32,7 +32,7 @@ class UniqueValueMap : public General2D {
  public:
   UniqueValueMap() = delete;
 
-  UniqueValueMap(std::vector<OGRGeometry*> geometries, std::vector<T> values,
+  UniqueValueMap(std::vector<OGRGeometryUniquePtr>&& geometries, std::vector<T> values,
                  int64_t num_geometries);
 
   std::vector<uint8_t> Render() final;
@@ -42,12 +42,10 @@ class UniqueValueMap : public General2D {
   VegaUniqueValueMap& mutable_vega_unique_value_map() { return vega_unique_value_map_; }
 
  private:
-  void Transform();
-
   void SetColor();
 
  private:
-  std::vector<OGRGeometry*> geometries_;
+  std::vector<OGRGeometryUniquePtr> geometries_;
   std::vector<T> values_;
   std::vector<Color> colors_;
   int64_t num_geometries_;

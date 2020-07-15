@@ -122,6 +122,18 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
   return arrays;
 }
 
+std::vector<std::string> StringArrayExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
+  std::vector<std::string> res;
+
+  for (const auto& arr : arrs) {
+    auto string_arr = std::static_pointer_cast<arrow::StringArray>(arr);
+    for (int i = 0; i < string_arr->length(); i++) {
+      res.emplace_back(string_arr->GetString(i));
+    }
+  }
+  return res;
+}
+
 void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
                                      void* poCT) {
   OGRGeometry* res_geo = nullptr;

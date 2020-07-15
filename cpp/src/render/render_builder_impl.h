@@ -27,6 +27,8 @@
 #include <vector>
 
 #include "render/utils/render_utils.h"
+#include "render/2d/unique_value_map/unique_value_map.h"
+#include "render/utils/vega/vega_unique_value_map/vega_unique_value_map.h"
 #include "utils/check_status.h"
 
 namespace arctern {
@@ -283,6 +285,21 @@ std::vector<uint8_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
   FishNetMap<T> fishnet_map(arr_x, arr_y, arr, num_vertices);
   fishnet_map.mutable_fishnet_vega() = vega_fishnet_map;
   const auto& render = fishnet_map.Render();
+  return render;
+}
+
+template <typename T>
+std::vector<uint8_t> unique_value_choroplethmap(
+    std::vector<OGRGeometryUniquePtr>&& geometries, std::vector<T> values,
+    int64_t num_geometries, const std::string& conf) {
+  VegaUniqueValueMap vega_unique_value_map(conf);
+  if (!vega_unique_value_map.is_valid()) {
+    return std::vector<uint8_t>();
+  }
+
+  UniqueValueMap<T> unique_value_choroplethmap(std::move(geometries), values, num_geometries);
+  unique_value_choroplethmap.mutable_vega_unique_value_map() = vega_unique_value_map;
+  const auto& render = unique_value_choroplethmap.Render();
   return render;
 }
 

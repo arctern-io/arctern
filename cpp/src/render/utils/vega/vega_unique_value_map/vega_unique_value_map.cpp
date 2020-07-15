@@ -72,12 +72,13 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
         !JsonLabelCheck(mark_enter["unique_value_infos"][i], "color")) {
       return;
     }
-    unique_value_infos_key_types[i] = mark_enter["unique_value_infos"][i]["label"].GetType();
+    unique_value_infos_key_types[i] =
+        mark_enter["unique_value_infos"][i]["label"].GetType();
   }
 
   for (int i = 0; i < unique_value_infos_key_types.size() - 1; i++) {
     if (unique_value_infos_key_types[i] != rapidjson::Type::kStringType &&
-    unique_value_infos_key_types[i] != rapidjson::Type::kNumberType) {
+        unique_value_infos_key_types[i] != rapidjson::Type::kNumberType) {
       std::string err_msg = "Invalid unique value infos label type";
       throw std::runtime_error(err_msg);
     }

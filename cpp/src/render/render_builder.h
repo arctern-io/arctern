@@ -79,6 +79,11 @@ template <typename T>
 std::vector<uint8_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                 int64_t num_vertices, const std::string& conf);
 
+template <typename T>
+std::vector<uint8_t> unique_value_choroplethmap(
+    std::vector<OGRGeometryUniquePtr>&& geometries, std::vector<T> values,
+    int64_t num_geometries, const std::string& conf);
+
 }  // namespace render
 }  // namespace arctern
 

@@ -75,5 +75,10 @@ std::shared_ptr<arrow::BinaryArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
+std::shared_ptr<arrow::BinaryArray> unique_value_choroplethmap(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& values,
+    const std::string& conf);
+
 }  // namespace render
 }  // namespace arctern

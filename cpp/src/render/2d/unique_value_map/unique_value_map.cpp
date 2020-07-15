@@ -1,5 +1,7 @@
 #include <utility>
 
+#include <utility>
+
 /*
  * Copyright (C) 2019-2020 Zilliz. All rights reserved.
  *
@@ -52,60 +54,75 @@ template class UniqueValueMap<double>;
 template class UniqueValueMap<std::string>;
 
 template <typename T>
-UniqueValueMap<T>::UniqueValueMap(std::vector<OGRGeometry*> geometries,
+UniqueValueMap<T>::UniqueValueMap(std::vector<OGRGeometryUniquePtr>&& geometries,
                                   std::vector<T> values, int64_t num_geometries)
     : geometries_(std::move(geometries)),
       values_(values),
       num_geometries_(num_geometries) {}
 
 template <typename T>
-void UniqueValueMap<T>::Draw() {}
+void UniqueValueMap<T>::Draw() {
+#ifndef USE_GPU
+  glOrtho(0, window()->window_params().width(), 0, window()->window_params().height(), -1,
+          1);
+#endif
 
-template <typename T>
-void UniqueValueMap<T>::Transform() {
-//  for (int i = 0; i < num_geometries_; i++) {
-//    OGRGeometry* geometry = geometries_[i];
-//    auto type = geometry->getGeometryType();
-//    if (type == OGRwkbGeometryType::wkbPolygon) {
-//      auto ring = geometry->toPolygon()->getExteriorRing();
-//      auto ring_size = ring->getNumPoints();
-//      buildings_x_.emplace_back(std::vector<int>());
-//      buildings_y_.emplace_back(std::vector<int>());
-//      for (int j = 0; j < ring_size; j++) {
-//        buildings_x_[buildings_x_.size() - 1].emplace_back(ring->getX(j));
-//        buildings_y_[buildings_y_.size() - 1].emplace_back(ring->getY(j));
-//      }
-//    } else if (type == OGRwkbGeometryType::wkbMultiPolygon) {
-//      auto polygons = geometry->toGeometryCollection();
-//      auto polygon_size = polygons->getNumGeometries();
-//      for (int expand_size = 0; expand_size < polygon_size - 1; expand_size++) {
-//        auto expand_value = count_[buildings_x_.size()];
-//        count_.insert(count_.begin() + buildings_x_.size() + expand_size, expand_value);
-//      }
-//      for (int j = 0; j < polygon_size; j++) {
-//        auto polygon = polygons->getGeometryRef(j)->toPolygon();
-//        auto ring = polygon->getExteriorRing();
-//        auto ring_size = ring->getNumPoints();
-//        buildings_x_.emplace_back(std::vector<int>());
-//        buildings_y_.emplace_back(std::vector<int>());
-//        for (int k = 0; k < ring_size; k++) {
-//          buildings_x_[buildings_x_.size() - 1].emplace_back(ring->getX(k));
-//          buildings_y_[buildings_y_.size() - 1].emplace_back(ring->getY(k));
-//        }
-//      }
-//    } else {
-//      std::string err_msg = "Unknown geometry type";
-//      throw std::runtime_error(err_msg);
-//    }
-//    OGRGeometryFactory::destroyGeometry(geometry);
-//  }
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+
+  const auto& opacity = vega_unique_value_map_.opacity();
+
+  for (int i = 0; i < geometries_.size(); i++) {
+    glColor4f(colors_[i].r, colors_[i].g, colors_[i].b, opacity);
+
+    auto& geometry = geometries_[i];
+    auto type = geometry->getGeometryType();
+
+    if (type == OGRwkbGeometryType::wkbPolygon) {
+      auto ring = geometry->toPolygon()->getExteriorRing();
+      auto ring_size = ring->getNumPoints();
+
+      glBegin(GL_POLYGON);
+
+      for (int j = 0; j < ring_size; j++) {
+        glVertex2d(ring->getX(j), ring->getY(j));
+      }
+
+      glEnd();
+    } else if (type == OGRwkbGeometryType::wkbMultiPolygon) {
+      auto polygons = geometry->toGeometryCollection();
+      auto polygon_size = polygons->getNumGeometries();
+
+      for (int j = 0; j < polygon_size; j++) {
+        auto polygon = polygons->getGeometryRef(j)->toPolygon();
+        auto ring = polygon->getExteriorRing();
+        auto ring_size = ring->getNumPoints();
+
+        glBegin(GL_POLYGON);
+
+        for (int k = 0; k < ring_size; k++) {
+          glVertex2d(ring->getX(k), ring->getY(k));
+        }
+
+        glEnd();
+      }
+    } else {
+      std::string err_msg = "Unknown geometry type";
+      throw std::runtime_error(err_msg);
+    }
+  }
+
+  glFinish();
 }
 
 // SetColor for unique_value_infos_numeric_map
-template<typename T>
+template <typename T>
 void UniqueValueMap<T>::SetColor() {
   colors_.resize(num_geometries_);
-  const auto& unique_value_infos_numeric_map = vega_unique_value_map_.unique_value_infos_numeric_map();
+  const auto& unique_value_infos_numeric_map =
+      vega_unique_value_map_.unique_value_infos_numeric_map();
 
   if (unique_value_infos_numeric_map.empty()) {
     std::string err_msg = "Unique value infos map is empty";
@@ -119,10 +136,11 @@ void UniqueValueMap<T>::SetColor() {
 }
 
 // SetColor for unique_value_infos_string_map
-template<>
+template <>
 void UniqueValueMap<std::string>::SetColor() {
   colors_.resize(num_geometries_);
-  const auto& unique_value_infos_string_map = vega_unique_value_map_.unique_value_infos_string_map();
+  const auto& unique_value_infos_string_map =
+      vega_unique_value_map_.unique_value_infos_string_map();
 
   if (unique_value_infos_string_map.empty()) {
     std::string err_msg = "Unique value infos map is empty";
@@ -138,7 +156,6 @@ void UniqueValueMap<std::string>::SetColor() {
 template <typename T>
 std::vector<uint8_t> UniqueValueMap<T>::Render() {
   WindowsInit(vega_unique_value_map_.window_params());
-  Transform();
   SetColor();
   Draw();
   Finalize();

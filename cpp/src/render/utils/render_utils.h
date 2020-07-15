@@ -62,6 +62,9 @@ std::vector<T> WeightExtraction(const std::vector<std::shared_ptr<arrow::Array>>
   return res;
 }
 
+
+std::vector<std::string> StringArrayExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs);
+
 void pointXY_from_wkt_with_transform(const std::string& wkt, double& x, double& y,
                                      void* poCT);
 
