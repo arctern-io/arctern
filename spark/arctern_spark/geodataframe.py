@@ -17,7 +17,6 @@
 import json
 from itertools import zip_longest
 
-import numpy as np
 import pandas as pd
 from databricks.koalas import DataFrame, Series, get_option
 from databricks.koalas.frame import REPR_PATTERN

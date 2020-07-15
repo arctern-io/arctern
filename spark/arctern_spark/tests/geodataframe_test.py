@@ -282,10 +282,10 @@ class TestJson:
         import json
         json_dic = json.loads(json_str)
         for feature in json_dic["features"]:
-            id = feature["id"]
+            fid = feature["id"]
             for key, proper in feature["properties"].items():
-                assert proper == data[key][int(id)]
-            assert feature["geometry"]["coordinates"] == [float(id), float(id)]
+                assert proper == data[key][int(fid)]
+            assert feature["geometry"]["coordinates"] == [float(fid), float(fid)]
 
     def test_to_json_with_missing_value(self):
         data = {
