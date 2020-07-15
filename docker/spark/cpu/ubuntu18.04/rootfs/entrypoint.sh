@@ -29,7 +29,7 @@ if [ -f "/opt/spark/conf/spark-defaults.conf" ];then
     echo "already configured!"
 else
     spark_generate_conf_file
-    spark_config_extra_class
+    # spark_config_extra_class
 fi
 
 if [[ "$*" = "/run.sh" ]]; then
