@@ -122,7 +122,8 @@ std::vector<std::shared_ptr<arrow::Array>> GeometryExport(
   return arrays;
 }
 
-std::vector<std::string> StringArrayExtraction(const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
+std::vector<std::string> StringArrayExtraction(
+    const std::vector<std::shared_ptr<arrow::Array>>& arrs) {
   std::vector<std::string> res;
 
   for (const auto& arr : arrs) {

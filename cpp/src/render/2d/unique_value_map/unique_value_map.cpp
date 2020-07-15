@@ -128,7 +128,8 @@ void UniqueValueMap<T>::SetColor() {
   }
 
   for (auto i = 0; i < num_geometries_; i++) {
-    if (unique_value_infos_numeric_map.find(values_[i]) != unique_value_infos_numeric_map.end()) {
+    if (unique_value_infos_numeric_map.find(values_[i]) !=
+        unique_value_infos_numeric_map.end()) {
       auto color = unique_value_infos_numeric_map.at(values_[i]);
       colors_[i] = color;
     } else {
@@ -150,7 +151,8 @@ void UniqueValueMap<std::string>::SetColor() {
   }
 
   for (auto i = 0; i < num_geometries_; i++) {
-    if (unique_value_infos_string_map.find(values_[i]) != unique_value_infos_string_map.end()) {
+    if (unique_value_infos_string_map.find(values_[i]) !=
+        unique_value_infos_string_map.end()) {
       auto color = unique_value_infos_string_map.at(values_[i]);
       colors_[i] = color;
     } else {

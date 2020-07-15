@@ -26,8 +26,8 @@
 #include <utility>
 #include <vector>
 
-#include "render/utils/render_utils.h"
 #include "render/2d/unique_value_map/unique_value_map.h"
+#include "render/utils/render_utils.h"
 #include "render/utils/vega/vega_unique_value_map/vega_unique_value_map.h"
 #include "utils/check_status.h"
 
@@ -297,7 +297,8 @@ std::vector<uint8_t> unique_value_choroplethmap(
     return std::vector<uint8_t>();
   }
 
-  UniqueValueMap<T> unique_value_choroplethmap(std::move(geometries), values, num_geometries);
+  UniqueValueMap<T> unique_value_choroplethmap(std::move(geometries), values,
+                                               num_geometries);
   unique_value_choroplethmap.mutable_vega_unique_value_map() = vega_unique_value_map;
   const auto& render = unique_value_choroplethmap.Render();
   return render;
