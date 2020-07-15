@@ -173,18 +173,17 @@ class TestOp:
         assert result.location_x.crs == "EPSG:4326"
         assert result.location_y.crs == "EPSG:3857"
 
-    # open this test when thread https://github.com/databricks/koalas/issues/1633 solved
-    # def test_dissolve(self):
-    #     data = {
-    #         "A": range(5),
-    #         "B": np.arange(5.0),
-    #         "other_geom": [1, 1, 1, 2, 2],
-    #         "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
-    #     }
-    #     gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-    #     dissolve_gdf = gdf.dissolve(by="other_geom", col="geo1")
-    #     assert dissolve_gdf["geo1"].to_wkt()[1] == "MULTIPOINT (0 0,1 1,2 2)"
-    #     assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT (3 3,4 4)"
+    def test_dissolve(self):
+        data = {
+            "A": range(5),
+            "B": np.arange(5.0),
+            "other_geom": [1, 1, 1, 2, 2],
+            "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        }
+        gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        dissolve_gdf = gdf.disolve(by="other_geom", col="geo1")
+        assert dissolve_gdf["geo1"].to_wkt()[1] == "MULTIPOINT ((0 0), (1 1), (2 2))"
+        assert dissolve_gdf["geo1"].to_wkt()[2] == "MULTIPOINT ((3 3), (4 4))"
 
 
 def test_reset_index():
@@ -220,8 +219,9 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
-        assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                         "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').to_list() == ["POINT (1 1)", "POINT (2 2)",
+                                                                               "POINT (3 3)", "POINT (4 4)",
+                                                                               "POINT (5 5)"]
 
     def test_read_and_save_file_2(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -229,8 +229,9 @@ class TestFile:
         read_gdf = arctern_spark.read_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:4326"
-        assert read_gdf["geo2"].to_pandas().tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                         "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)",
+                                                                              "POINT (3 3)", "POINT (4 4)",
+                                                                              "POINT (5 5)"]
 
     def test_read_and_save_file_3(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -238,8 +239,9 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)",
-                                                    "POINT (5 5)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)",
+                                                                              "POINT (3 3)", "POINT (4 4)",
+                                                                              "POINT (5 5)"]
 
     def test_read_and_save_file_4(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -247,7 +249,7 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
     def test_read_and_save_file_5(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
@@ -255,16 +257,16 @@ class TestFile:
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=(0, 0, 1, 1))
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
     def test_read_and_save_file_6(self):
         gdf = GeoDataFrame(self.data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
-        bbox = GeoSeries(["POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
+        bbox = GeoSeries(["POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))"])
         read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp", bbox=bbox)
         assert isinstance(read_gdf["geometry"], GeoSeries) is True
         assert read_gdf["geometry"].crs == "EPSG:3857"
-        assert read_gdf["geo2"].values.tolist() == ["POINT (1 1)", "POINT (2 2)"]
+        assert read_gdf["geo2"].to_pandas().sort_values('index').tolist() == ["POINT (1 1)", "POINT (2 2)"]
 
 
 class TestJson:
@@ -280,7 +282,7 @@ class TestJson:
         json = gdf.to_json(geometry="geometry")
         assert json == '{"type": "FeatureCollection", ' \
                        '"features": [{"id": "0", "type": "Feature", ' \
-                       '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
+                       '"properties": {"A": 0, "B": 0.0, "other_geom": 0}, ' \
                        '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
 
     def test_to_json_with_missing_value(self):
@@ -294,10 +296,9 @@ class TestJson:
         json = gdf.to_json(geometry="geometry", na="drop")
         assert json == '{"type": "FeatureCollection", ' \
                        '"features": [{"id": "0", "type": "Feature", ' \
-                       '"properties": {"B": 0.0, "other_geom": 0.0}, ' \
+                       '"properties": {"B": 0.0, "other_geom": 0}, ' \
                        '"geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
 
-    @pytest.mark.skip("show bbox is not implemented yet")
     def test_to_json_show_bbox(self):
         data = {
             "A": range(1),
@@ -309,7 +310,7 @@ class TestJson:
         json = gdf.to_json(geometry="geometry", na="drop", show_bbox=True)
         assert json == '{"type": "FeatureCollection", ' \
                        '"features": [{"id": "0", "type": "Feature", ' \
-                       '"properties": {"A": 0.0, "B": 0.0, "other_geom": 0.0}, ' \
+                       '"properties": {"A": 0, "B": 0.0, "other_geom": 0}, ' \
                        '"geometry": {"type": "LineString", "coordinates": ' \
                        '[[1.0, 2.0], [4.0, 5.0], [7.0, 8.0]]}, ' \
                        '"bbox": [1.0, 2.0, 7.0, 8.0]}], "bbox": [1.0, 2.0, 7.0, 8.0]}'

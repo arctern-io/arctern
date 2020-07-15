@@ -2052,7 +2052,7 @@ def nearest_road(roads, points,):
 
 def near_road(roads, points, distance=100):
     """
-    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
+    For each point in ``points``, tests whether there is a road within the given ``distance`` of the point. The points do not need to be part of a continuous path.
     Parameters
     ----------
     roads : Series

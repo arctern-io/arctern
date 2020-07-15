@@ -68,8 +68,9 @@ object utils {
       val fromlat = from.getInteriorPoint.getY
       val tolon = to.getInteriorPoint.getX
       val tolat = to.getInteriorPoint.getY
-      if ((fromlat > 180) || (fromlat < -180) || (fromlon > 90) || (fromlon < -90) ||
-        (tolat > 180) || (tolat < -180) || (tolon > 90) || (tolon < -90)) {
+      if ((fromlat > 90) || (fromlat < -90) || (fromlon > 180) || (fromlon < -180) ||
+        (tolat > 90) || (tolat < -90) || (tolon > 180) || (tolon < -180)) {
+        println("WARNING: Coordinate values must be in range [-180 -90, 180 90] ")
         distance
       } else {
         // calculate distance
@@ -334,7 +335,7 @@ case class ST_Centroid(inputsExpr: Seq[Expression]) extends ST_UnaryOp {
 
   override def expr: Expression = inputsExpr(0)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid().isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $geo.getCentroid()")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, geo => s"$geo.getCentroid()")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -432,7 +433,7 @@ case class ST_Intersection(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.intersection($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.intersection($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -693,7 +694,7 @@ case class ST_SymDifference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.symDifference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.symDifference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
@@ -706,7 +707,7 @@ case class ST_Difference(inputsExpr: Seq[Expression]) extends ST_BinaryOp {
 
   override def rightExpr: Expression = inputsExpr(1)
 
-  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right).isEmpty() ? new org.locationtech.jts.geom.GeometryFactory().createGeometryCollection() : $left.difference($right)")
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = codeGenJob(ctx, ev, (left, right) => s"$left.difference($right)")
 
   override def dataType: DataType = new GeometryUDT
 
