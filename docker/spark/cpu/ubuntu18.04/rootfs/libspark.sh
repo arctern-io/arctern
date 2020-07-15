@@ -131,7 +131,7 @@ spark_validate() {
 #########################
 spark_generate_conf_file() {
     info "Generating Spark configuration file..."
-    mv "${SPARK_CONFDIR}/spark-defaults.conf.template" "${SPARK_CONFDIR}/spark-defaults.conf"
+    cp "${SPARK_CONFDIR}/spark-defaults.conf.template" "${SPARK_CONFDIR}/spark-defaults.conf"
 }
 
 spark_config_extra_class() {

@@ -25,17 +25,17 @@ if [ -d "/opt/conda/envs/arctern" ];then
     echo "export PYSPARK_DRIVER_PYTHON=/opt/conda/envs/arctern/bin/python" >> "$SPARK_CONFDIR/spark-env.sh"
 fi
 
+if [[ "$*" = "/run.sh" ]]; then
+    info "** Starting Spark setup **"
+    /setup.sh
+    info "** Spark setup finished! **"
+fi
+
 if [ -f "/opt/spark/conf/spark-defaults.conf" ];then
     echo "already configured!"
 else
     spark_generate_conf_file
     spark_config_extra_class
-fi
-
-if [[ "$*" = "/run.sh" ]]; then
-    info "** Starting Spark setup **"
-    /setup.sh
-    info "** Spark setup finished! **"
 fi
 
 echo ""
