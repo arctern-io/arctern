@@ -118,7 +118,7 @@ def vega_unique_value_choroplethmap(width,
     return VegaUniqueValueChoroplethMap(width,
                                         height,
                                         bounding_box,
-                                        unique_value_infos,
+                                        unique_value,
                                         opacity,
                                         coordinate_system)
 

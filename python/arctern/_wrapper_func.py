@@ -63,7 +63,7 @@ __all__ = [
     "weighted_point_map_layer",
     "heat_map_layer",
     "choropleth_map_layer",
-    "unique_value_chorolethmap_layer",
+    "unique_value_choropleth_map_layer",
     "icon_viz_layer",
     "fishnet_map_layer",
     "projection",
@@ -1797,7 +1797,7 @@ def choropleth_map_layer(vega, region_boundaries, weights, transform=True):
     return base64.b64encode(rs.to_pandas()[0])
 
 
-def unique_value_chorolethmap_layer(vega, region_boundaries, labels, transform=True):
+def unique_value_choropleth_map_layer(vega, region_boundaries, labels, transform=True):
     """
     Plots a choroplethmap layer.
 
