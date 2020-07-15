@@ -2052,7 +2052,7 @@ def nearest_road(roads, points,):
 
 def near_road(roads, points, distance=100):
     """
-    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
+    For each point in ``points``, tests whether there is a road within the given ``distance`` of the point. The points do not need to be part of a continuous path.
     Parameters
     ----------
     roads : Series
@@ -2091,11 +2091,17 @@ def version(verbose=False):
     :type verbose: bool
     :param verbose: whether to get other information besides version
 
-    :rtype: str
-    :return: Information of arctern version.
+    :rtype: str or dict
+    :return: Information of arctern version. If verbose is False, return a string, else a dict.
     """
-    full_version_info = arctern_core_.GIS_Version().decode("utf-8")
-    if verbose:
-        return full_version_info
-    only_versin_info = full_version_info.split("\n")[0]
-    return only_versin_info
+    if not verbose:
+        from . import _version
+        return _version.__version__
+
+    version_info = arctern_core_.GIS_Version().decode("utf-8")[:-1].split("\n")
+    result = {}
+    for info in version_info:
+        info = info.split(":")
+        result[info[0].strip()] = info[1].strip()
+
+    return result

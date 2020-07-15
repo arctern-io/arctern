@@ -156,6 +156,7 @@ def infer_schema(df, geo_col):
     return schema
 
 
+# pylint: disable=protected-access
 # pylint: disable=unidiomatic-typecheck
 def _to_file(
         df,
@@ -169,6 +170,8 @@ def _to_file(
         **kwargs
 ):
     copy_df = df.copy()
+    copy_df._geometry_column_names = df.geometries_name
+    copy_df._crs_for_cols = df.crs
     copy_df[geometry].set_crs(df[geometry].crs)
     for col_name in copy_df.geometries_name:
         if col_name is not geometry:
