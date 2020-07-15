@@ -226,7 +226,7 @@ def to_file(*args, **kwargs):
     crs: str
         * If specified, the CRS is passed to Fiona to better control how the file is written.
         * If None (default), this function determines the crs based on crs df attribute.
-    col: str
+    geometry: str
         Specifys geometry column, by default None.
 
     Examples
@@ -242,7 +242,7 @@ def to_file(*args, **kwargs):
     ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
     ... }
     >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-    >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+    >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
     >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
     >>> read_gdf
     A    B  other_geom         geo2         geo3     geometry

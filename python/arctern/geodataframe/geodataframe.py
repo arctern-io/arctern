@@ -153,8 +153,6 @@ class GeoDataFrame(DataFrame):
             frame = self
         else:
             frame = self.copy()
-            frame._geometry_column_names = self.geometries_name
-            frame._crs_for_cols = self.crs
 
         geometry_cols = frame._geometry_column_names
         if not isinstance(frame[col], GeoSeries):
@@ -183,7 +181,9 @@ class GeoDataFrame(DataFrame):
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
-            * *False:* Do not include bounding box in the GeoJSON string.
+            * *False:* Don't include bounding box in the GeoJSON string.
+        geometry: str
+            The name of geometry column.
 
         **kwargs:
             Parameters to pass to `jump.dumps`.
@@ -282,6 +282,34 @@ class GeoDataFrame(DataFrame):
             gdf._crs_for_cols = self._crs_for_cols
             return gdf
         return None
+
+    # pylint: disable=protected-access
+    def copy(self, deep=True):
+        df = super(GeoDataFrame, self).copy(deep)
+        gdf = GeoDataFrame(df)
+        gdf._geometry_column_names = self._geometry_column_names
+        gdf._crs_for_cols = self._crs_for_cols
+        return gdf
+
+    # pylint: disable=protected-access
+    def drop(self, labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors="raise",):
+        geometry_column_names = self._geometry_column_names.copy()
+        crs_for_cols = self._crs_for_cols.copy()
+        df = super(GeoDataFrame, self).drop(labels, axis, index, columns, level, inplace, errors)
+
+        column_names = self.columns.values.tolist()
+        for col in geometry_column_names:
+            if col in column_names:
+                self._crs_for_cols[col] = crs_for_cols[col]
+                self._geometry_column_names.append(col)
+
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._geometry_column_names = self._geometry_column_names
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+        return None
+
 
     def to_geopandas(self):
         """
@@ -595,7 +623,9 @@ class GeoDataFrame(DataFrame):
                 elif col in right.columns:
                     pick = right
 
-                kser.set_crs(pick._crs_for_cols.get(col, None))
+                picked_crs = pick._crs_for_cols.get(col, None)
+                kser.set_crs(picked_crs)
+                result._crs_for_cols[col] = picked_crs
 
         return result
 
@@ -664,7 +694,7 @@ class GeoDataFrame(DataFrame):
         crs: str
             * If specified, the CRS is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the crs based on crs df attribute.
-        col: str
+        geometry: str
             Specifys geometry column, by default None.
 
         **kwargs:
@@ -687,7 +717,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
            A    B  other_geom         geo2         geo3     geometry
