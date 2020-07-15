@@ -50,8 +50,11 @@ MASTER_URL=${MASTER_URL:="spark://127.0.0.1:7077"}
 
 pushd ${TESTS_DIR}
 
+echo "ljq debug..."
+echo $SPARK_HOME
+cat /opt/spark/conf/spark-defaults.conf
 /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
-python tiny_koalas_test.py
+/opt/spark/bin/spark-submit --master ${MASTER_URL} tiny_koalas_test.py
 python collect_results.py
 python compare.py
 python test_vectory_impl.py 

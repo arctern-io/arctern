@@ -41,8 +41,8 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN /tmp/arctern/install_arctern_conda.sh && rm -rf /tmp/arctern && \
     conda clean --all -y
 
-RUN cd /opt/spark/python && \
-    /opt/conda/envs/arctern/bin/python setup.py install --prefix=/opt/conda/envs/arctern
+# RUN cd /opt/spark/python && \
+#     /opt/conda/envs/arctern/bin/python setup.py install --prefix=/opt/conda/envs/arctern
 
 COPY prebuildfs /
 COPY rootfs /
