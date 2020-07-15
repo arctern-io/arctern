@@ -148,6 +148,15 @@ spark_config_extra_class() {
     spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/${ARCTERN_SPARK_JAR}"
 }
 
+spark_config_env() {
+    info "Configuring environment ..."
+
+    spark_conf_set spark.executorEnv.PYSPARK_PYTHON "/opt/conda/envs/arctern/bin/python"
+    spark_conf_set spark.executorEnv.PYSPARK_DRIVER_PYTHON "/opt/conda/envs/arctern/bin/python"
+    spark_conf_set spark.executorEnv.PROJ_LIB "/opt/conda/envs/arctern/share/proj"
+    spark_conf_set spark.executorEnv.GDAL_DATA "/opt/conda/envs/arctern/share/gdal"
+}
+
 ########################
 # Configure Spark RPC Authentication (https://spark.apache.org/docs/latest/security.html#authentication)
 # Globals:
@@ -267,6 +276,8 @@ spark_initialize() {
         spark_generate_conf_file
         # Configuring Spark class path
         spark_config_extra_class
+        # Configuring env
+        # spark_config_env
         # Enable RPC authentication and encryption
         if is_boolean_yes "$SPARK_RPC_AUTHENTICATION_ENABLED"; then
             spark_enable_rpc_authentication
