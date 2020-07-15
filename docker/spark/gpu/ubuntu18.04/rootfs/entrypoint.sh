@@ -36,6 +36,7 @@ if [ -f "/opt/spark/conf/spark-defaults.conf" ];then
 else
     spark_generate_conf_file
     spark_config_extra_class
+    # spark_config_env
 fi
 
 echo ""
