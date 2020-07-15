@@ -138,7 +138,7 @@ spark_config_extra_class() {
     info "Configuring Spark extra class path ..."
 
     ARCTERN_SPARK_VERSION=`/opt/conda/envs/arctern/bin/python -c "import arctern_spark;print(arctern_spark.__version__)"`
-    ARCTERN_ENV_PREFIX=/opt/conda/envs/arctern
+    ARCTERN_ENV_PREFIX="/opt/conda/envs/arctern"
     info "arctern spark version: $ARCTERN_SPARK_VERSION"
     info "arctern env prefix: $ARCTERN_ENV_PREFIX"
     spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
