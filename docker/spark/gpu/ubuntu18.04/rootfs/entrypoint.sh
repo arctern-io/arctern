@@ -22,6 +22,14 @@ if [ -d "/opt/conda/envs/arctern" ];then
     echo "export GDAL_DATA=/opt/conda/envs/arctern/share/gdal" >> "$SPARK_CONFDIR/spark-env.sh"
     echo "export PROJ_LIB=/opt/conda/envs/arctern/share/proj" >> "$SPARK_CONFDIR/spark-env.sh"
     echo "export PYSPARK_PYTHON=/opt/conda/envs/arctern/bin/python" >> "$SPARK_CONFDIR/spark-env.sh"
+    echo "export PYSPARK_DRIVER_PYTHON=/opt/conda/envs/arctern/bin/python" >> "$SPARK_CONFDIR/spark-env.sh"
+fi
+
+if [ -f "/opt/spark/conf/spark-defaults.conf" ];then
+    echo "already configured!"
+else
+    spark_generate_conf_file
+    spark_config_extra_class
 fi
 
 if [[ "$*" = "/run.sh" ]]; then
