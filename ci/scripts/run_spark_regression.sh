@@ -62,6 +62,6 @@ done
 python collect_results.py
 python compare.py
 python test_vector_impl.py 
-cd koalas_test && python spark_koalas_regression.py
+# cd koalas_test && python spark_koalas_regression.py
 
 popd
