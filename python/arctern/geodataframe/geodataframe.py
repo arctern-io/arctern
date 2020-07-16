@@ -70,7 +70,7 @@ class GeoDataFrame(DataFrame):
     ... }
     >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
     >>> gdf
-    A    B  other_geom         geo1
+       A    B  other_geom         geo1
     0  0  0.0           1  POINT (0 0)
     1  1  1.0           1  POINT (1 1)
     2  2  2.0           1  POINT (2 2)
@@ -144,9 +144,9 @@ class GeoDataFrame(DataFrame):
         ...    "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> print(gdf.geometries_name)
+        >>> gdf.geometries_name
         ['geo1']
-        >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True)
+        >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True).geometries_name
         ['geo1','geo2']
         """
         if inplace:
@@ -204,7 +204,7 @@ class GeoDataFrame(DataFrame):
         ...     "geometry": ["POINT (0 0)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        >>> print(gdf.to_json(geometry="geometry"))
+        >>> gdf.to_json(geometry="geometry")
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
@@ -335,8 +335,8 @@ class GeoDataFrame(DataFrame):
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> pdf = gdf.to_geopandas()
         >>> pdf.set_geometry("geo1", inplace=True)
-        >>> print(pdf.geometry.name)
-        "geo1"
+        >>> pdf.geometry.name
+        'geo1'
         >>> type(pdf["geo1"])
         <class 'geopandas.geoseries.GeoSeries'>
         """
@@ -379,7 +379,7 @@ class GeoDataFrame(DataFrame):
         >>> pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
         >>> gdf = GeoDataFrame.from_geopandas(pdf)
         >>> gdf.geometries_name
-        ["geometry", "copy_geo"]
+        ['geometry', 'copy_geo']
         >>> type(gdf["geometry"])
         <class 'arctern.geoseries.geoseries.GeoSeries'>
         >>> gdf["geometry"].crs
@@ -490,7 +490,7 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> gdf.crs
-        ["epsg:4326", "epsg:3857"]
+        {'geo1': 'epsg:4326', 'geo2': 'epsg:3857'}
         """
         return self._crs_for_cols
 
@@ -598,7 +598,7 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
         >>> gdf1.merge(gdf2, left_on="A", right_on="A")
-        A    B  other_geom     geometry     location
+           A    B  other_geom     geometry     location
         0  0  0.0           0  POINT (0 0)  POINT (3 0)
         1  1  1.0           1  POINT (1 1)  POINT (1 6)
         2  2  2.0           2  POINT (2 2)  POINT (2 4)
@@ -720,7 +720,7 @@ class GeoDataFrame(DataFrame):
         >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
-        A    B  other_geom         geo2         geo3     geometry
+           A    B  other_geom         geo2         geo3     geometry
         0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
         1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
         2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)
