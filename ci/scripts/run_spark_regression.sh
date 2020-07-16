@@ -50,9 +50,18 @@ MASTER_URL=${MASTER_URL:="spark://127.0.0.1:7077"}
 
 pushd ${TESTS_DIR}
 
-/opt/spark/bin/spark-submit --master ${MASTER_URL} $@
+echo $SPARK_HOME
+cat /opt/spark/conf/spark-defaults.conf
+echo "master url: ${MASTER_URL}"
+# /opt/spark/bin/spark-submit --master ${MASTER_URL} $@
+for script_file in "$@"
+do
+        echo "script: ${script_file}"
+        /opt/spark/bin/spark-submit --master ${MASTER_URL} ${script_file}
+done
 python collect_results.py
 python compare.py
-python test_vectory_impl.py 
+python test_vector_impl.py 
+# cd koalas_test && python spark_koalas_regression.py
 
 popd
