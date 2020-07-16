@@ -1665,6 +1665,7 @@ class GeoSeries(Series):
         min_x, min_y, max_x, max_y = _validate_args(
             min_x, min_y, max_x, max_y, dtype=dtype)
         _kdf = ks.DataFrame(min_x)
+        ks.set_option('compute.ops_on_diff_frames', True)
         kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
         kdf["min_y"] = min_y
         kdf["max_x"] = max_x
@@ -1922,11 +1923,12 @@ class GeoSeries(Series):
         2    LINESTRING (0 0, 3 3, 7 6)
         Name: 0, dtype: object
         """
-        from arctern_spark import scala_wrapper
         if isinstance(other, Series):
-            other = scala_wrapper.st_geomfromwkb(other)
+            other = GeoSeries(other)
         elif other is None:
-            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+            pass
+        else:
+            other = _validate_arg(other)
         return super().where(cond=cond, other=other)
 
     def mask(self, cond, other=None):
@@ -1956,11 +1958,12 @@ class GeoSeries(Series):
         2                                   None
         Name: 0, dtype: object
         """
-        from arctern_spark import scala_wrapper
         if isinstance(other, Series):
-            other = scala_wrapper.st_geomfromwkb(other)
+            other = GeoSeries(other)
         elif other is None:
-            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+            pass
+        else:
+            other = _validate_arg(other)
         return super().mask(cond=cond, other=other)
 
     def replace(self, to_replace=None, value=None, regex=False):
@@ -2035,8 +2038,7 @@ class GeoSeries(Series):
                 )
             to_replace = dict(zip(to_replace, value))
 
-        from arctern_spark import scala_wrapper
-        current = F.when(self.spark.column.isin(scala_wrapper.st_geomfromwkb(F.lit(to_replace))), scala_wrapper.st_geomfromwkb(F.lit(value))).otherwise(self.spark.column)
+        current = F.when(self.spark.column.isin(_validate_arg(to_replace)), _validate_arg(value)).otherwise(self.spark.column)
 
         return self._with_new_scol(current)
 
