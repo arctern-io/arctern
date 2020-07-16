@@ -2158,9 +2158,8 @@ class GeoSeries(Series):
         item: int or slice
             Load special items by skipping over items or stopping at a specific item.
 
-        **kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+            Keyword arguments to ``fiona.open()``. e.g. ``layer``, ``enabled_drivers``. see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for more info.
 
         Returns
         ----------
