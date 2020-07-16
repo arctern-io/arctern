@@ -16,7 +16,7 @@
 #include <string>
 #include <utility>
 
-#include "render/utils/vega/vega_fishnet_map/vega_fishnet_map.h"
+#include "render/utils/vega/vega_fishnetmap/vega_fishnetmap.h"
 
 namespace arctern {
 namespace render {

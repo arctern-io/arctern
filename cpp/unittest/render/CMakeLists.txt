@@ -22,6 +22,7 @@ set(render_tests_src
 		iconviz_test.cpp
 		render_builder_api_test.cpp
 		fishnetmap_test.cpp
+		unique_value_map_test.cpp
 		)
 
 add_executable(render_tests ${render_tests_src})

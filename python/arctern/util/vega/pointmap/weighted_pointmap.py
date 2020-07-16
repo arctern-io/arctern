@@ -97,7 +97,7 @@ class VegaWeightedPointMap(VegaScatterPlot):
         self._aggregation_type = aggregation_type
 
     def build(self):
-        description = Description(desc="circle_2d")
+        description = Description(desc="weighted_pointmap")
         data = Data(name="data", url="/data/data.csv")
         domain1 = Scales.Scale.Domain(data="data", field="c0")
         domain2 = Scales.Scale.Domain(data="data", field="c1")
