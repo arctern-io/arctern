@@ -1922,7 +1922,6 @@ class GeoSeries(Series):
         2    LINESTRING (0 0, 3 3, 7 6)
         Name: 0, dtype: object
         """
-        from arctern_spark import scala_wrapper
         if isinstance(other, Series):
             other = GeoSeries(other)
         elif other is None:
@@ -1958,7 +1957,6 @@ class GeoSeries(Series):
         2                                   None
         Name: 0, dtype: object
         """
-        from arctern_spark import scala_wrapper
         if isinstance(other, Series):
             other = GeoSeries(other)
         elif other is None:
