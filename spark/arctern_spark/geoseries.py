@@ -1665,6 +1665,7 @@ class GeoSeries(Series):
         min_x, min_y, max_x, max_y = _validate_args(
             min_x, min_y, max_x, max_y, dtype=dtype)
         _kdf = ks.DataFrame(min_x)
+        ks.set_option('compute.ops_on_diff_frames', True)
         kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
         kdf["min_y"] = min_y
         kdf["max_x"] = max_x
