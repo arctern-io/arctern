@@ -1920,9 +1920,11 @@ class GeoSeries(Series):
         Name: 0, dtype: object
         """
         if isinstance(other, Series):
-            other = scala_wrapper.st_geomfromwkb(other)
+            other = GeoSeries(other)
         elif other is None:
-            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+            pass
+        else:
+            other = _validate_arg(other)
         return super().where(cond=cond, other=other)
 
     def mask(self, cond, other=None):
