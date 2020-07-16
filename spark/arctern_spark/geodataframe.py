@@ -202,18 +202,18 @@ class GeoDataFrame(DataFrame):
 
     def dissolve(self, by, col="geometry", aggfunc="first", as_index=True):
         """
-        Dissolves geometries within `by` into a single observation.
+        Dissolves geometries within ``by`` into a single observation.
 
-        This is accomplished by applying the `unary_union` method to all geometries within a group.
+        This is accomplished by applying the ``unary_union`` method to all geometries within a group.
 
-        Observations associated with each `by` group will be aggregated using the `aggfunc`.
+        Observations associated with each ``by`` group will be aggregated using the ``aggfunc``.
 
         Parameters
         ----------
         by: str
             Column whose values define groups to be dissolved, by default None.
         aggfunc: function or str
-            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas ``groupby.agg`` method.
         as_index: bool
             Whether to use the ``by`` column as the index of result, by default True.
             * *True:* The ``by`` column becomes the index of result.
