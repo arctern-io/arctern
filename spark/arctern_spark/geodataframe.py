@@ -213,7 +213,7 @@ class GeoDataFrame(DataFrame):
         by: str
             Column whose values define groups to be dissolved, by default None.
         aggfunc: function or str
-            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas ``groupby.agg`` method.
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to Koalas ``groupby.agg`` method.
         as_index: bool
             Whether to use the ``by`` column as the index of result, by default True.
             * *True:* The ``by`` column becomes the index of result.
