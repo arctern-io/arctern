@@ -147,7 +147,7 @@ class GeoDataFrame(DataFrame):
         >>> gdf.geometries_name
         ['geo1']
         >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True).geometries_name
-        ['geo1','geo2']
+        ['geo1', 'geo2']
         """
         if inplace:
             frame = self
@@ -205,7 +205,7 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
         >>> gdf.to_json(geometry="geometry")
-        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
+        '{"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
 
@@ -437,7 +437,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> gdf.dissolve(by="other_geom", col="geo1")
+        >>> gdf.dissolve(by="other_geom", col="geo1") # doctest: +NORMALIZE_WHITESPACE
                                         geo1  A    B
         other_geom
         1           MULTIPOINT (0 0,1 1,2 2)  0  0.0
