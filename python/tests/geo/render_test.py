@@ -16,7 +16,7 @@ import pandas
 import arctern
 
 from arctern.util import save_png
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap, vega_unique_value_choroplethmap
 
 
 def test_projection():
@@ -221,3 +221,28 @@ def test_fishnet_map():
     heat_map1 = arctern.fishnet_map_layer(vega, points, arr_c)
 
     save_png(heat_map1, "/tmp/test_fishnetmap.png")
+
+def test_unique_value_choroplethmap():
+    wkt_data = []
+    value_data = []
+
+    wkt_data.append("POLYGON (("
+      "-73.97324 40.73747, "
+      "-73.96524 40.74507, "
+      "-73.96118 40.75890, "
+      "-73.95556 40.77654, "
+      "-73.97324 40.73747))")
+    value_data.append(1.0)
+
+    arr_wkt = pandas.Series(wkt_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+    arr_value = pandas.Series(value_data)
+
+    unique_value_infos = {
+        1: "#FF0000",
+        2: "#00FF00",
+        3: "#0000FF"
+    }
+    vega = vega_unique_value_choroplethmap(1900, 1410, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], unique_value_infos=unique_value_infos, opacity=1.0, coordinate_system="EPSG:4326")
+    unique_value_choropleth_map1 = arctern.unique_value_choropleth_map_layer(vega, arr_wkb, arr_value)
+    save_png(unique_value_choropleth_map1, "/tmp/test_unique_value_choropleth_map1.png")

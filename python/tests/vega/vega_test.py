@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_unique_value_choroplethmap
 
 
 def test_vega_pointmap():
@@ -130,4 +130,43 @@ def test_vega_icon():
 
     vega = vega_icon(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], "icon_path").build()
     vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+
+def test_vega_unique_value_choroplethmap():
+    unique_value_infos = {
+        1: "#FF0000",
+        2: "#00FF00",
+        3: "#0000FF"
+    }
+    vega = vega_unique_value_choroplethmap(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], unique_value_infos=unique_value_infos, opacity=1.0, coordinate_system="EPSG:3857").build()
+    vega_dict = json.loads(vega)
+    print(vega_dict)
+    assert vega_dict["width"] == 1900
+    assert vega_dict["height"] == 1410
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][0] == -73.998427
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][1] == 40.730309
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][2] == -73.954348
+    assert vega_dict["marks"][0]["encode"]["enter"]["bounding_box"]["value"][3] == 40.780816
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][0]["label"] == 3
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][1]["label"] == 2
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][2]["label"] == 1
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][0]["color"] == "#0000FF"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][1]["color"] == "#00FF00"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][2]["color"] == "#FF0000"
+    assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"
+    assert vega_dict["marks"][0]["encode"]["enter"]["opacity"]["value"] == 1.0
+
+    unique_value_infos = {
+        "A": "#FF0000",
+        "B": "#00FF00",
+        "C": "#0000FF"
+    }
+    vega = vega_unique_value_choroplethmap(1900, 1410, [-73.998427, 40.730309, -73.954348, 40.780816], unique_value_infos=unique_value_infos, opacity=1.0, ).build()
+    vega_dict = json.loads(vega)
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][0]["label"] == "C"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][1]["label"] == "B"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][2]["label"] == "A"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][0]["color"] == "#0000FF"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][1]["color"] == "#00FF00"
+    assert vega_dict["marks"][0]["encode"]["enter"]["unique_value_infos"]["value"][2]["color"] == "#FF0000"
     assert vega_dict["marks"][0]["encode"]["enter"]["coordinate_system"]["value"] == "EPSG:3857"

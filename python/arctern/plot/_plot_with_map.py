@@ -13,7 +13,7 @@
 # limitations under the License.
 import io
 import base64
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap, vega_unique_value_choroplethmap
 import arctern
 
 
@@ -491,6 +491,82 @@ def fishnetmap(ax, points, weights, bounding_box,
                            cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
                            coordinate_system=coordinate_system, aggregation_type=aggregation_type)
     hexstr = arctern.fishnet_map_layer(vega, points, weights)
+    f = io.BytesIO(base64.b64decode(hexstr))
+
+    img = plt.imread(f)
+    ax.set(xlim=(bbox[0], bbox[2]), ylim=(bbox[1], bbox[3]))
+    cx.add_basemap(ax, **extra_contextily_params)
+    ax.imshow(img, alpha=img[:, :, 3], extent=(bbox[0], bbox[2], bbox[1], bbox[3]))
+    ax.axis('off')
+
+
+def unique_value_choroplethmap(ax, region_boundaries, labels, bounding_box,
+                       unique_value_infos={}, opacity=1.0,
+                       coordinate_system='EPSG:3857',
+                       **extra_contextily_params):
+    """
+    Plots a choropleth map in matplotlib.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes where geometries will be plotted.
+    region_boundaries : GeoSeries
+        Sequence of polygons, as region boundaries to plot.
+    labels : Series
+        Color label for polygons
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    unique_value_infos : dict
+        key-value pairs, key represents the label, and value represents the color corresponding to the label.
+    opacity : float, optional
+        Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+    **extra_contextily_params: dict
+        Extra parameters passed to `contextily.add_basemap. <https://contextily.readthedocs.io/en/latest/reference.html>`_
+
+    Examples
+    -------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import random
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>>
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index() # doctest: +SKIP
+       >>> polygon = arctern.GeoSeries(input['region_boundaries']) # doctest: +SKIP
+       >>>
+       >>> value_data = [] # doctest: +SKIP
+       >>> for i in range(len(polygon)): # doctest: +SKIP
+       >>>   value_data.append(random.randint(0, 6)) # doctest: +SKIP
+       >>>
+       >>> values = pd.Series(value_data) # doctest: +SKIP
+       >>>
+       >>> # Plot unique_value_choroplethmap # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> unique_value_infos = {1: "#FF0000", 2: "#00FF00", 3: "#0000FF", 4: "#00FFFF", 5: "#FF0000"} # doctest: +SKIP
+       >>> arctern.plot.unique_value_choroplethmap(ax, polygon, values, bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], unique_value_infos=unique_value_infos, opacity=1.0, coordinate_system='EPSG:4326') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
+    """
+    from matplotlib import pyplot as plt
+    import contextily as cx
+    bbox = _transform_bbox(bounding_box, coordinate_system, 'epsg:3857')
+    w, h = _get_recom_size(bbox[2]-bbox[0], bbox[3]-bbox[1])
+    vega = vega_unique_value_choroplethmap(w, h, bounding_box=bounding_box, unique_value_infos=unique_value_infos,
+                                           opacity=opacity, coordinate_system=coordinate_system)
+    hexstr = arctern.unique_value_choropleth_map_layer(vega, region_boundaries, labels)
     f = io.BytesIO(base64.b64decode(hexstr))
 
     img = plt.imread(f)

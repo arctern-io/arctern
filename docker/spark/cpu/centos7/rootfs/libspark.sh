@@ -131,18 +131,30 @@ spark_validate() {
 #########################
 spark_generate_conf_file() {
     info "Generating Spark configuration file..."
-    mv "${SPARK_CONFDIR}/spark-defaults.conf.template" "${SPARK_CONFDIR}/spark-defaults.conf"
+    cp "${SPARK_CONFDIR}/spark-defaults.conf.template" "${SPARK_CONFDIR}/spark-defaults.conf"
 }
 
 spark_config_extra_class() {
     info "Configuring Spark extra class path ..."
 
-    # conda activate arctern # already in arctern env, no need to activate
-    ARCTERN_SPARK_VERSION=`python -c "import arctern_spark;print(arctern_spark.__version__)"`
-    ARCTERN_ENV_PREFIX=${CONDA_PREFIX}
-    # conda deactivate
-    spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
-    spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
+    # ARCTERN_SPARK_VERSION=`/opt/conda/envs/arctern/bin/python -c "import arctern_spark;print(arctern_spark.__version__)"`
+    ARCTERN_ENV_PREFIX="/opt/conda/envs/arctern"
+    # info "arctern spark version: ${ARCTERN_SPARK_VERSION}"
+    info "arctern env prefix: ${ARCTERN_ENV_PREFIX}"
+    # spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
+    # spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/arctern_scala-assembly-${ARCTERN_SPARK_VERSION}.jar"
+    ARCTERN_SPARK_JAR=`ls ${ARCTERN_ENV_PREFIX}/jars/`
+    spark_conf_set spark.driver.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/${ARCTERN_SPARK_JAR}"
+    spark_conf_set spark.executor.extraClassPath "${ARCTERN_ENV_PREFIX}/jars/${ARCTERN_SPARK_JAR}"
+}
+
+spark_config_env() {
+    info "Configuring environment ..."
+
+    spark_conf_set spark.executorEnv.PYSPARK_PYTHON "/opt/conda/envs/arctern/bin/python"
+    spark_conf_set spark.executorEnv.PYSPARK_DRIVER_PYTHON "/opt/conda/envs/arctern/bin/python"
+    spark_conf_set spark.executorEnv.PROJ_LIB "/opt/conda/envs/arctern/share/proj"
+    spark_conf_set spark.executorEnv.GDAL_DATA "/opt/conda/envs/arctern/share/gdal"
 }
 
 ########################
@@ -264,6 +276,8 @@ spark_initialize() {
         spark_generate_conf_file
         # Configuring Spark class path
         spark_config_extra_class
+        # Configuring env
+        # spark_config_env
         # Enable RPC authentication and encryption
         if is_boolean_yes "$SPARK_RPC_AUTHENTICATION_ENABLED"; then
             spark_enable_rpc_authentication
