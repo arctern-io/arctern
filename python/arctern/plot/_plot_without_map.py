@@ -527,15 +527,15 @@ def unique_value_choroplethmap_layer(w, h, region_boundaries, labels, bounding_b
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
-       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index() # doctest: +SKIP
+       >>> polygon = arctern.GeoSeries(input['region_boundaries']) # doctest: +SKIP
        >>>
-       >>> value_data = []
-       >>> for i in range(len(polygon)):
-       >>>   value_data.append(random.randint(0, 6))
+       >>> value_data = [] # doctest: +SKIP
+       >>> for i in range(len(polygon)): # doctest: +SKIP
+       >>>   value_data.append(random.randint(0, 6)) # doctest: +SKIP
        >>>
-       >>> values = pd.Series(value_data)
+       >>> values = pd.Series(value_data) # doctest: +SKIP
        >>>
        >>> # Plot choroplethmap layer
        >>> bbox = [-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296] # doctest: +SKIP
