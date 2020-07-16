@@ -6,7 +6,7 @@ services:
     #   docker-compose run --rm regression
     image: ${ARCTERN_SPARK_TARGET_REPO}:${ARCTERN_SPARK_TARGET_TAG}
     volumes:
-      - ../..:/arctern:z
+      - ../..:/arctern
     command: &spark-test
       ["/arctern/ci/scripts/run_spark_regression.sh", "--master", "spark://spark-master:7077", "/arctern/tests/tiny_koalas_test.py", "/arctern/tests/spark_test.py", "/arctern/tests/koalas_test/spark_koalas_regression.py", "/arctern/tests/draw_map_test.py", "/arctern/tests/draw_plot_test.py"]
     deploy:
