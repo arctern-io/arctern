@@ -105,4 +105,3 @@ class VegaUniqueValueChoroplethMap:
 
     def width(self):
         return self._width
-

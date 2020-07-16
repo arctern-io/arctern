@@ -57,4 +57,3 @@ def test_unique_value_choroplethmap():
                                        unique_value_infos=unique_value_infos, opacity=1.0,
                                        coordinate_system='EPSG:4326')
     _finalize(ax, "test_unique_value_choropleth_map1")
-

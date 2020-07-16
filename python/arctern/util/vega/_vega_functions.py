@@ -103,6 +103,7 @@ def vega_choroplethmap(width,
                              aggregation_type)
 
 
+# pylint: disable=dangerous-default-value
 def vega_unique_value_choroplethmap(width,
                                     height,
                                     bounding_box,
@@ -110,7 +111,7 @@ def vega_unique_value_choroplethmap(width,
                                     opacity=1.0,
                                     coordinate_system="EPSG:3857"):
     unique_value = []
-    for i in range(0, len(unique_value_infos)):
+    while len(unique_value_infos) > 0:
         value = unique_value_infos.popitem()
         list_value = {"label": value[0], "value": value[1]}
         unique_value.append(list_value)
