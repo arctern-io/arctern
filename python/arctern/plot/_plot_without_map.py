@@ -64,18 +64,18 @@ def pointmap_layer(w, h, points, bounding_box=None,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude']) # doctest: +SKIP
        >>>
        >>> # Plot pointmap_layer
        >>> bbox=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495]
-       >>> map_layer=arctern.plot.pointmap_layer(1024, 896, points, bounding_box=bbox, point_size=10, point_color="#115f9a", opacity=1.0, coordinate_system="EPSG:4326")
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer=arctern.plot.pointmap_layer(1024, 896, points, bounding_box=bbox, point_size=10, point_color="#115f9a", opacity=1.0, coordinate_system="EPSG:4326") # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)  # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     vega = vega_pointmap(w, h, bounding_box=bounding_box, point_size=point_size,
                          point_color=point_color, opacity=opacity, coordinate_system=coordinate_system)
@@ -146,18 +146,18 @@ def weighted_pointmap_layer(w, h, points, color_weights=None,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude']) # doctest: +SKIP
        >>>
        >>> # Plot weighted_pointmap_layer
        >>> bbox=[-73.99668712186558,40.72972339069935,-73.99045479584949,40.7345193345495]
-       >>> map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=df['color_weights'], bounding_box=bbox, color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[16], opacity=1.0, coordinate_system="EPSG:4326")
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer = arctern.plot.weighted_pointmap_layer(1024, 896, points, color_weights=df['color_weights'], bounding_box=bbox, color_gradient=["#115f9a", "#d0f400"], color_bound=[2.5,15], size_bound=[16], opacity=1.0, coordinate_system="EPSG:4326") # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     vega = vega_weighted_pointmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                                   color_bound=color_bound, size_bound=size_bound, opacity=opacity,
@@ -236,18 +236,18 @@ def heatmap_layer(w, h, points, weights, bounding_box,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude']) # doctest: +SKIP
        >>>
        >>> # Plot heatmap_layer
        >>> bbox = [-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304]
-       >>> map_layer = arctern.plot.heatmap_layer(1024, 896, points, df['color_weights'], bounding_box=bbox, coordinate_system='EPSG:4326')
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer = arctern.plot.heatmap_layer(1024, 896, points, df['color_weights'], bounding_box=bbox, coordinate_system='EPSG:4326') # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     if map_zoom_level is None:
         map_zoom_level = _calc_zoom(bounding_box, coordinate_system)
@@ -312,19 +312,19 @@ def choroplethmap_layer(w, h, region_boundaries, weights, bounding_box,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
-       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index() # doctest: +SKIP
+       >>> polygon = arctern.GeoSeries(input['region_boundaries']) # doctest: +SKIP
        >>>
        >>> # Plot choroplethmap layer
        >>> bbox = [-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296]
-       >>> map_layer = arctern.plot.choroplethmap_layer(1024, 896, polygon, input['color_weights'], bounding_box=bbox, color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean")
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer = arctern.plot.choroplethmap_layer(1024, 896, polygon, input['color_weights'], bounding_box=bbox, color_gradient=["#115f9a","#d0f400"], color_bound=[5,18], opacity=1.0, coordinate_system='EPSG:4326', aggregation_type="mean") # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     vega = vega_choroplethmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient, color_bound=color_bound,
                               opacity=opacity, aggregation_type=aggregation_type, coordinate_system=coordinate_system)
@@ -377,21 +377,21 @@ def iconviz_layer(w, h, points, bounding_box, icon_path,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude']) # doctest: +SKIP
        >>>
        >>> # Plot icon visualization
        >>> # Download icon-viz.png :  https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png
        >>> # Uncomment the line below to download the icon image
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-docs/master/img/icon/icon-viz.png"')
        >>> bbox = [-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304]
-       >>> map_layer = arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bbox, icon_path='icon-viz.png', coordinate_system='EPSG:4326')
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer = arctern.plot.iconviz_layer(1024, 896, points, bounding_box=bbox, icon_path='icon-viz.png', coordinate_system='EPSG:4326') # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     vega = vega_icon(w, h, bounding_box=bounding_box, icon_path=icon_path, icon_size=icon_size,
                      coordinate_system=coordinate_system)
@@ -458,18 +458,18 @@ def fishnetmap_layer(w, h, points, weights, bounding_box,
        >>> # Uncomment the lines below to download the test data
        >>> # import os
        >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
-       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
-       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude'])
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object}) # doctest: +SKIP
+       >>> points = arctern.GeoSeries.point(df['longitude'], df['latitude']) # doctest: +SKIP
        >>>
        >>> # render fishnet layer
        >>> bbox = [-74.01424568752932, 40.72759334104623, -73.96056823889673, 40.76721122683304]
-       >>> map_layer = arctern.plot.fishnetmap_layer(1024, 896, points=points, weights=df['color_weights'], bounding_box=bbox, cell_size=8, cell_spacing=2, opacity=1.0, coordinate_system="EPSG:4326")
-       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
-       >>> f = io.BytesIO(base64.b64decode(map_layer))
-       >>> img = plt.imread(f)
-       >>> ax.imshow(img)
-       >>> ax.axis('off')
-       >>> plt.show()
+       >>> map_layer = arctern.plot.fishnetmap_layer(1024, 896, points=points, weights=df['color_weights'], bounding_box=bbox, cell_size=8, cell_spacing=2, opacity=1.0, coordinate_system="EPSG:4326") # doctest: +SKIP
+       >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
+       >>> f = io.BytesIO(base64.b64decode(map_layer)) # doctest: +SKIP
+       >>> img = plt.imread(f) # doctest: +SKIP
+       >>> ax.imshow(img) # doctest: +SKIP
+       >>> ax.axis('off') # doctest: +SKIP
+       >>> plt.show() # doctest: +SKIP
     """
     vega = vega_fishnetmap(w, h, bounding_box=bounding_box, color_gradient=color_gradient,
                            cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
