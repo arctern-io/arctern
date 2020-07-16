@@ -30,6 +30,55 @@ _crs_dtype = str
 
 class GeoDataFrame(DataFrame):
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
+        """
+        A GeoDataFrame object is a pandas.DataFrame that has columns with geometry.
+
+        Parameters
+        ----------
+        data : numpy ndarray (structured or homogeneous), dict, pandas DataFrame, Spark DataFrame \
+            Koalas Series, or GeoSeries
+            Dict can contain Series, GeoSeries, arrays, constants, or list-like objects
+            If data is a dict, argument order is maintained for Python 3.6
+            and later.
+            Note that if `data` is a pandas DataFrame, a Spark DataFrame, a Koalas Series, and a GeoSeries,
+            other arguments should not be used.
+        index : Index or array-like
+            Index to use for resulting frame. Will default to RangeIndex if
+            no indexing information part of input data and no index provided.
+        columns : Index or array-like
+            Column labels to use for resulting frame. Will default to
+            RangeIndex (0, 1, 2, ..., n) if no column labels are provided.
+        dtype : dtype, default None
+            Data type to force. Only a single dtype is allowed. If None, infer.
+        copy : bool, default False
+            Copy data from inputs. Only affects DataFrame / 2d ndarray input.
+        geometries : list
+            The name of columns which are setten as geometry columns.
+        crs : str or list, default None
+            Coordinate Reference System of the geometry objects.
+            if crs is a string, will set all ``geometries`` columns' crs to param ``crs``.
+            if crs is a list, will set ``geometries`` columns' crs with param ``crs`` elementwise.
+
+        Examples
+        ---------
+        >>> from arctern_spark import GeoDataFrame
+        >>> import numpy as np
+        >>> data = {
+        ...     "A": range(5),
+        ...     "B": np.arange(5.0),
+        ...     "other_geom": [1, 1, 1, 2, 2],
+        ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+        ... }
+        >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+        >>> gdf
+           A    B  other_geom         geo1
+        0  0  0.0           1  POINT (0 0)
+        1  1  1.0           1  POINT (1 1)
+        2  2  2.0           1  POINT (2 2)
+        3  3  3.0           2  POINT (3 3)
+        4  4  4.0           2  POINT (4 4)
+        """
+
         # (col_name, crs) dict to store crs data of those columns are GeoSeries
         self._crs_for_cols = {}
         self._geometry_column_names = set()
@@ -71,7 +120,10 @@ class GeoDataFrame(DataFrame):
 
     def set_geometry(self, col, inplace=False, crs=None):
         """
-        Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
+        Set an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
+
+        Setting an column to a geometry column will attemp to construct geometry for each row of this column,
+        so it should be WKT or WKB formed data.
 
         Parameters
         ----------
@@ -262,12 +314,51 @@ class GeoDataFrame(DataFrame):
             suffixes=("_x", "_y")
     ):
         """
-        Merges two GeoDataFrame objects with a database-style join.
+        Merge GeoDataFrame objects with a database-style join.
+
+        The index of the resulting GeoDataFrame will be one of the following:
+            - 0...n if no index is used for merging
+            - Index of the left GeoDataFrame if merged only on the index of the right GeoDataFrame
+            - Index of the right GeoDataFrame if merged only on the index of the left GeoDataFrame
+            - All involved indices if merged using the indices of both GeoDataFrames
+                e.g. if `left` with indices (a, x) and `right` with indices (b, x), the result will
+                be an index (x, a, b)
+
+        Parameters
+        ----------
+        right: Object to merge with.
+        how: Type of merge to be performed.
+            {'left', 'right', 'outer', 'inner'}, default 'inner'
+
+            * *left:* use only keys from left frame, similar to a SQL left outer join; preserve key
+                order.
+            * *right:* use only keys from right frame, similar to a SQL right outer join; preserve key
+                order.
+            * *outer:* use union of keys from both frames, similar to a SQL full outer join; sort keys
+                lexicographically.
+            * *inner:* use intersection of keys from both frames, similar to a SQL inner join;
+                preserve the order of the left keys.
+        on: Column or index level names to join on. These must be found in both GeoDataFrames. If on
+            is None and not merging on indexes then this defaults to the intersection of the
+            columns in both GeoDataFrames.
+        left_on: Column or index level names to join on in the left GeoDataFrame. Can also
+            be an array or list of arrays of the length of the left GeoDataFrame.
+            These arrays are treated as if they are columns.
+        right_on: Column or index level names to join on in the right GeoDataFrame. Can also
+            be an array or list of arrays of the length of the right GeoDataFrame.
+            These arrays are treated as if they are columns.
+        left_index: Use the index from the left GeoDataFrame as the join key(s). If it is a
+            MultiIndex, the number of keys in the other GeoDataFrame (either the index or a number of
+            columns) must match the number of levels.
+        right_index: Use the index from the right GeoDataFrame as the join key. Same caveats as
+            left_index.
+        suffixes: Suffix to apply to overlapping column names in the left and right side,
+            respectively.
 
         Returns
         -------
-            GeoDataFrame or pandas.DataFrame
-            Returns a GeoDataFrame if a geometry column is present; otherwise, returns a pandas DataFrame.
+            GeoDataFrame
+            Return a merged GeoDataFrame.
 
         Examples
         -------
@@ -388,7 +479,7 @@ class GeoDataFrame(DataFrame):
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Constructs a GeoDataFrame from a file or url.
+        Construct a GeoDataFrame from a file or url.
 
         Parameters
         -----------
@@ -425,12 +516,10 @@ class GeoDataFrame(DataFrame):
 
     def to_file(self, filename, driver="ESRI Shapefile", geometry=None, schema=None, index=None, crs=None, **kwargs):
         """
-        Writes a GeoDataFrame to a file.
+        Write a GeoDataFrame to a file.
 
         Parameters
         ----------
-        df: GeoDataFrame
-            GeoDataFrame to be written.
         filename: str
             File path or file handle to write to.
         driver: str
@@ -502,7 +591,7 @@ class GeoDataFrame(DataFrame):
     # pylint: disable=arguments-differ
     def to_json(self, na="null", show_bbox=False, geometry='geometry', **kwargs):
         """
-        Returns a GeoJSON representation of the ``GeoDataFrame`` as a string.
+        Return a GeoJSON representation of the ``GeoDataFrame`` as a string.
 
         Parameters
         ----------

@@ -30,12 +30,10 @@ def sjoin(
         Specify geometry columns of left_df, right_df to be joined.
     how : string, default 'inner'
         The type of join:
-
-        # TODO: fix doc
-        * 'left': use keys from left_df; retain only left_df geometry column
-        * 'right': use keys from right_df; retain only right_df geometry column
-        * 'inner':
-        * 'full':
+        * *left:* use keys from left_df
+        * *right:* use keys from right_df
+        * *inner:* use intersection from left_df keys with right_df keys
+        * *full:* use union from left_df keys with right_df keys
     op : string, default 'intersects'
         Binary predicate, one of {'contains', 'within'}.
     lsuffix : string, default 'left'
