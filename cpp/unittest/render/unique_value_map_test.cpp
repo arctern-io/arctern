@@ -111,20 +111,20 @@ TEST(UNIQUE_VALUE_MAP_TEST, VEGA_TEST_NUMERIC_MAP) {
       "      \"encode\": {\n"
       "        \"enter\": {\n"
       "          \"bounding_box\": [-73.998427, 40.730309, -73.954348, 40.780816],\n"
-      "          \"unique_value_infos\": [\n"
-      "            { \n"
+      "          \"unique_value_infos\": { \"value\": [\n"
+      "            {\n"
       "              \"label\": 1,\n"
       "              \"color\": \"#00FF00\"\n"
-      "            }, \n"
+      "            },\n"
       "            {\n"
       "              \"label\": 2,\n"
       "              \"color\": \"#FF0000\"\n"
-      "            }, \n"
+      "            },\n"
       "            {\n"
       "              \"label\": 3,\n"
       "              \"color\": \"#0000FF\"\n"
       "            }\n"
-      "          ],\n"
+      "          ]},\n"
       "          \"opacity\": {\"value\": 1.0},\n"
       "          \"coordinate_system\": {\"value\": \"EPSG:3857\"}\n"
       "        }\n"
@@ -226,7 +226,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_NUMERIC_MAP) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_STRING_MAP) {
@@ -300,7 +300,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_STRING_MAP) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT8) {
@@ -374,7 +374,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT8) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT16) {
@@ -448,7 +448,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT16) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT32) {
@@ -522,7 +522,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT32) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT64) {
@@ -596,7 +596,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_INT64) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT8) {
@@ -670,7 +670,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT8) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT16) {
@@ -744,7 +744,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT16) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT32) {
@@ -818,7 +818,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT32) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT64) {
@@ -892,7 +892,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_UINT64) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_FLOAT) {
@@ -966,7 +966,7 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_FLOAT) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }
 
 TEST(UNIQUE_VALUE_MAP_TEST, TEST_DOUBLE) {
@@ -1040,5 +1040,5 @@ TEST(UNIQUE_VALUE_MAP_TEST, TEST_DOUBLE) {
   std::vector<std::shared_ptr<arrow::Array>> geo_vec{wkb};
 
   std::vector<std::shared_ptr<arrow::Array>> value_vec{value_array};
-  arctern::render::unique_value_choroplethmap(geo_vec, value_vec, vega);
+  arctern::render::unique_value_choropleth_map(geo_vec, value_vec, vega);
 }

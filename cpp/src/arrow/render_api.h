@@ -66,11 +66,6 @@ std::shared_ptr<arrow::BinaryArray> choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::BinaryArray> unique_value_choropleth_map(
-    const std::vector<std::shared_ptr<arrow::Array>>& polygons_vector,
-    const std::vector<std::shared_ptr<arrow::Array>>& labels_vector,
-    const std::string& conf);
-
 std::shared_ptr<arrow::BinaryArray> icon_viz(
     const std::vector<std::shared_ptr<arrow::Array>>& points_vector,
     const std::string& conf);
@@ -80,7 +75,7 @@ std::shared_ptr<arrow::BinaryArray> fishnet_map(
     const std::vector<std::shared_ptr<arrow::Array>>& weights_vector,
     const std::string& conf);
 
-std::shared_ptr<arrow::BinaryArray> unique_value_choroplethmap(
+std::shared_ptr<arrow::BinaryArray> unique_value_choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& values, const std::string& conf);
 

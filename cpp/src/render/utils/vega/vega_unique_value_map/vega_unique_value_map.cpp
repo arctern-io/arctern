@@ -56,24 +56,25 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
   if (!JsonLabelCheck(mark_enter, "unique_value_infos") ||
       !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
-      !JsonTypeCheck(mark_enter["unique_value_infos"], rapidjson::Type::kArrayType) ||
+      !JsonLabelCheck(mark_enter["unique_value_infos"], "value") ||
+      !JsonTypeCheck(mark_enter["unique_value_infos"]["value"], rapidjson::Type::kArrayType) ||
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
 
   auto opacity = mark_enter["opacity"]["value"].GetDouble();
 
-  auto unique_value_infos_size = mark_enter["unique_value_infos"].Size();
+  auto unique_value_infos_size = mark_enter["unique_value_infos"]["value"].Size();
   std::vector<rapidjson::Type> unique_value_infos_key_types;
   unique_value_infos_key_types.resize(unique_value_infos_size);
 
   for (int i = 0; i < unique_value_infos_size; i++) {
-    if (!JsonLabelCheck(mark_enter["unique_value_infos"][i], "label") ||
-        !JsonLabelCheck(mark_enter["unique_value_infos"][i], "color")) {
+    if (!JsonLabelCheck(mark_enter["unique_value_infos"]["value"][i], "label") ||
+        !JsonLabelCheck(mark_enter["unique_value_infos"]["value"][i], "color")) {
       return;
     }
     unique_value_infos_key_types[i] =
-        mark_enter["unique_value_infos"][i]["label"].GetType();
+        mark_enter["unique_value_infos"]["value"][i]["label"].GetType();
   }
 
   for (int i = 0; i < unique_value_infos_key_types.size() - 1; i++) {
@@ -89,7 +90,7 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
   }
 
   for (int i = 0; i < unique_value_infos_size; i++) {
-    auto color_string = mark_enter["unique_value_infos"][i]["color"].GetString();
+    auto color_string = mark_enter["unique_value_infos"]["value"][i]["color"].GetString();
 
     auto color_parser = ColorParser(color_string);
     if (!color_parser.is_css_hex_color()) {
@@ -103,10 +104,10 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
 
     const auto& type = unique_value_infos_key_types[i];
     if (type == rapidjson::Type::kStringType) {
-      auto label_value = mark_enter["unique_value_infos"][i]["label"].GetString();
+      auto label_value = mark_enter["unique_value_infos"]["value"][i]["label"].GetString();
       unique_value_infos_string_map_[label_value] = color;
     } else {
-      auto label_value = mark_enter["unique_value_infos"][i]["label"].GetDouble();
+      auto label_value = mark_enter["unique_value_infos"]["value"][i]["label"].GetDouble();
       unique_value_infos_numeric_map_[label_value] = color;
     }
   }

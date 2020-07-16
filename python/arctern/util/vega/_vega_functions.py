@@ -113,7 +113,7 @@ def vega_unique_value_choroplethmap(width,
     unique_value = []
     while len(unique_value_infos) > 0:
         value = unique_value_infos.popitem()
-        list_value = {"label": value[0], "value": value[1]}
+        list_value = {"label": value[0], "color": value[1]}
         unique_value.append(list_value)
 
     return VegaUniqueValueChoroplethMap(width,

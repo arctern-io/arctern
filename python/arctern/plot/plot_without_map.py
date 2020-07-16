@@ -478,7 +478,7 @@ def fishnetmap_layer(w, h, points, weights, bounding_box,
     return hexstr
 
 
-def unique_value_choroplethmap_layer(w, h, region_boundaries, labels, bounding_box,
+def unique_value_choropleth_map_layer(w, h, region_boundaries, labels, bounding_box,
                                      unique_value_infos={}, opacity=1.0,
                                      coordinate_system='EPSG:3857'):
     """

@@ -114,7 +114,7 @@ def choropleth_map(vega,region_boundaries_list, weights_list):
         weights_vector.push_back(arr)
     return pyarrow_wrap_array(arctern_core_pxd.choropleth_map(region_boundaries_vector, weights_vector, vega))
 
-def unique_value_choropleth_map(vega,region_boundaries_list, labels_list):
+def unique_value_choroplethmap(vega,region_boundaries_list, labels_list):
     cdef vector[shared_ptr[CArray]] region_boundaries_vector
     cdef vector[shared_ptr[CArray]] labels_vector
     for region in region_boundaries_list:

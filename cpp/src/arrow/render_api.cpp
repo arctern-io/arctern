@@ -875,7 +875,7 @@ std::shared_ptr<arrow::BinaryArray> fishnet_map(
   }
 }
 
-std::shared_ptr<arrow::BinaryArray> unique_value_choroplethmap(
+std::shared_ptr<arrow::BinaryArray> unique_value_choropleth_map(
     const std::vector<std::shared_ptr<arrow::Array>>& geometries_vector,
     const std::vector<std::shared_ptr<arrow::Array>>& values, const std::string& conf) {
   auto geo_vec = GeometryExtraction(geometries_vector);

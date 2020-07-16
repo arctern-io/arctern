@@ -1868,7 +1868,7 @@ def unique_value_choropleth_map_layer(vega, region_boundaries, labels, transform
 
     vega_string = vega.build().encode('utf-8')
 
-    # weights handler
+    # labels handler
     if labels.dtypes == 'float64':
         arr = pa.array(labels, type='double')
     elif labels.dtypes == 'int64':
@@ -1878,7 +1878,7 @@ def unique_value_choropleth_map_layer(vega, region_boundaries, labels, transform
 
     labels_rs = _to_arrow_array_list(arr)
 
-    rs = arctern_core_.unique_value_choropleth_map(vega_string, geos_rs, labels_rs)
+    rs = arctern_core_.unique_value_choroplethmap(vega_string, geos_rs, labels_rs)
     return base64.b64encode(rs.to_pandas()[0])
 
 
