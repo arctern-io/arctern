@@ -554,7 +554,7 @@ def unique_value_choroplethmap(ax, region_boundaries, labels, bounding_box,
        >>>
        >>> values = pd.Series(value_data) # doctest: +SKIP
        >>>
-       >>> # Plot unique_value_choroplethmap # doctest: +SKIP
+       >>> # Plot unique_value_choroplethmap
        >>> fig, ax = plt.subplots(figsize=(10, 6), dpi=200) # doctest: +SKIP
        >>> unique_value_infos = {1: "#FF0000", 2: "#00FF00", 3: "#0000FF", 4: "#00FFFF", 5: "#FF0000"} # doctest: +SKIP
        >>> arctern.plot.unique_value_choroplethmap(ax, polygon, values, bounding_box=[-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296], unique_value_infos=unique_value_infos, opacity=1.0, coordinate_system='EPSG:4326') # doctest: +SKIP
