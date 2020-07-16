@@ -131,8 +131,10 @@ class GeoDataFrame(DataFrame):
             The name of column to be setten as a geometry column.
         inplace: bool, default false
             Whether to modify the GeoDataFrame in place.
+
             * *True:* Modifies the GeoDataFrame in place (does not create a new object).
             * *False:* Does not modifies the GeoDataFrame in place.
+
         crs: str
             The coordinate reference system to use.
 
@@ -269,6 +271,7 @@ class GeoDataFrame(DataFrame):
             Aggregation function for manipulation of data associated with each group, by default "first". Passed to Koalas ``groupby.agg`` method.
         as_index: bool
             Whether to use the ``by`` column as the index of result, by default True.
+
             * *True:* The ``by`` column becomes the index of result.
             * *False:* The result uses the default ascending index that starts from 0.
         Returns
@@ -488,21 +491,26 @@ class GeoDataFrame(DataFrame):
             File path or file handle to read from.
         bbox: tuple or GeoSeries
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
             * max_y: The maximum y coordinate of the bounding box.
+
         mask: dict, GeoSeries
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
         rows: int or slice
+            Rows to load.
+
             * If ``rows`` is an integer *n*, this function loads the first *n* rows.
             * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+
                 * *start:* The position to start the slicing, by default 0.
                 * *end:* The position to end the slicing.
                 * *step:* The step of the slicing, by default 1.
 
         **kwargs:
-        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+            Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
 
         Notes
         -------
@@ -526,6 +534,8 @@ class GeoDataFrame(DataFrame):
         driver: str
             The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
         schema: dict
+            Data schema.
+            
             * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the schema based on each column's dtype.
         index: bool
@@ -533,6 +543,7 @@ class GeoDataFrame(DataFrame):
             * If True, writes index into one or more columns (for MultiIndex).
             * If False, no index is written.
         mode: str
+            Mode of writing data to file.
             * 'a': Append
             * 'w' (default): Write
         crs: str
@@ -598,9 +609,11 @@ class GeoDataFrame(DataFrame):
         ----------
         na : {'null', 'drop', 'keep'}
             Indicates how to output missing (NaN) values in the GeoDataFrame, by default 'null'.
+
             * 'null': Outputs the missing entries as JSON null.
             * 'drop': Removes the property from the feature. This applies to each feature individually so that features may have different properties.
             * 'keep': Outputs the missing entries as NaN.
+
         show_bbox : bool, optional, default: False
             Include bbox (bounds) in the geojson
         geometry : str, optional, default 'geometry'

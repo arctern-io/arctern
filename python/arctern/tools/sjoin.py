@@ -39,9 +39,11 @@ def sjoin(
         Specifies geometry columns of ``right_df`` to be joined.
     how : str
         The type of join, by default 'inner'.
+
         * 'left': Uses keys from ``left_df``; only retains geometry columns of ``left_df``.
         * 'right': Uses keys from ``right_df``; only retains geometry columns of ``right_df``.
         * 'inner': Uses intersection of keys from both GeoDataFrames; only retains geometry columns of ``left_df``.
+
     op : str
         A binary predicate in {'intersects', 'contains', 'within'}, by default 'intersects'.
     left_suffix : str
