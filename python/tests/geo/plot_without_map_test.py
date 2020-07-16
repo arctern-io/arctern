@@ -192,7 +192,7 @@ def test_fishnet_map_layer():
     arctern.plot.fishnetmap_layer(1024, 896, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"],
                                   cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
 
-def test_unique_value_choropleth_map_layer():
+def test_unique_value_choroplethmap_layer():
     wkt_data = []
     value_data = []
 
@@ -208,7 +208,7 @@ def test_unique_value_choropleth_map_layer():
     arr_wkb = arctern.ST_GeomFromText(arr_wkt)
     arr_value = pandas.Series(value_data)
 
-    arctern.plot.unique_value_choropleth_map_layer(1024, 896, arr_wkb, arr_value, bounding_box=bounding_box, unique_value_infos={
+    arctern.plot.unique_value_choroplethmap_layer(1024, 896, arr_wkb, arr_value, bounding_box=bounding_box, unique_value_infos={
         1: "#FF0000",
         2: "#00FF00",
         3: "#0000FF"
