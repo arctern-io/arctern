@@ -31,16 +31,16 @@ _crs_dtype = str
 class GeoDataFrame(DataFrame):
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
         """
-        A GeoDataFrame object is a pandas.DataFrame that has columns with geometry.
+        A GeoDataFrame object is a Koalas.DataFrame that has columns with geometries.
 
         Parameters
         ----------
         data : numpy ndarray (structured or homogeneous), dict, pandas DataFrame, Spark DataFrame \
             Koalas Series, or GeoSeries
-            Dict can contain Series, GeoSeries, arrays, constants, or list-like objects
+            Dict can contain Series, GeoSeries, arrays, constants, or list-like objects.
             If data is a dict, argument order is maintained for Python 3.6
             and later.
-            Note that if `data` is a pandas DataFrame, a Spark DataFrame, a Koalas Series, and a GeoSeries,
+            Note that if ``data`` is a pandas DataFrame, a Spark DataFrame, a Koalas Series, and a GeoSeries,
             other arguments should not be used.
         index : Index or array-like
             Index to use for resulting frame. Will default to RangeIndex if
@@ -49,15 +49,15 @@ class GeoDataFrame(DataFrame):
             Column labels to use for resulting frame. Will default to
             RangeIndex (0, 1, 2, ..., n) if no column labels are provided.
         dtype : dtype, default None
-            Data type to force. Only a single dtype is allowed. If None, infer.
+            Data type to force. Only a single dtype is allowed. If None, infers the data type based on the data.
         copy : bool, default False
-            Copy data from inputs. Only affects DataFrame / 2d ndarray input.
+            Copy data from inputs. Only affects DataFrame or 2d ndarray input.
         geometries : list
             The name of columns which are setten as geometry columns.
         crs : str or list, default None
             Coordinate Reference System of the geometry objects.
-            if crs is a string, will set all ``geometries`` columns' crs to param ``crs``.
-            if crs is a list, will set ``geometries`` columns' crs with param ``crs`` elementwise.
+            If ``crs`` is a string, sets all ``geometries`` columns' crs to param ``crs``.
+            If ``crs`` is a list, sets ``geometries`` columns' crs with param ``crs`` elementwise.
 
         Examples
         ---------
@@ -120,7 +120,7 @@ class GeoDataFrame(DataFrame):
 
     def set_geometry(self, col, inplace=False, crs=None):
         """
-        Set an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
+        Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
 
         Setting an column to a geometry column will attemp to construct geometry for each row of this column,
         so it should be WKT or WKB formed data.
@@ -338,7 +338,7 @@ class GeoDataFrame(DataFrame):
                 lexicographically.
             * *inner:* use intersection of keys from both frames, similar to a SQL inner join;
                 preserve the order of the left keys.
-        on: Column or index level names to join on. These must be found in both GeoDataFrames. If on
+        on: Column or index level names to join on. These must be found in both GeoDataFrames. If ``on``
             is None and not merging on indexes then this defaults to the intersection of the
             columns in both GeoDataFrames.
         left_on: Column or index level names to join on in the left GeoDataFrame. Can also
@@ -347,10 +347,10 @@ class GeoDataFrame(DataFrame):
         right_on: Column or index level names to join on in the right GeoDataFrame. Can also
             be an array or list of arrays of the length of the right GeoDataFrame.
             These arrays are treated as if they are columns.
-        left_index: Use the index from the left GeoDataFrame as the join key(s). If it is a
+        left_index: Uses the index from the left GeoDataFrame as the join key(s). If it is a
             MultiIndex, the number of keys in the other GeoDataFrame (either the index or a number of
             columns) must match the number of levels.
-        right_index: Use the index from the right GeoDataFrame as the join key. Same caveats as
+        right_index: Uses the index from the right GeoDataFrame as the join key. Same caveats as
             left_index.
         suffixes: Suffix to apply to overlapping column names in the left and right side,
             respectively.
@@ -358,7 +358,7 @@ class GeoDataFrame(DataFrame):
         Returns
         -------
             GeoDataFrame
-            Return a merged GeoDataFrame.
+            Returns a merged GeoDataFrame.
 
         Examples
         -------
@@ -479,7 +479,7 @@ class GeoDataFrame(DataFrame):
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Construct a GeoDataFrame from a file or url.
+        Constructs a GeoDataFrame from a file or url.
 
         Parameters
         -----------
