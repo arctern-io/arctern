@@ -18,15 +18,15 @@ __all__ = [
     "vega_heatmap",
     "vega_choroplethmap",
     "vega_icon",
-    "vega_fishnetmap"
+    "vega_fishnetmap",
+    "vega_unique_value_choroplethmap"
 ]
 
-from arctern.util.vega.pointmap.vega_pointmap import VegaPointMap
-from arctern.util.vega.pointmap.vega_weighted_pointmap import VegaWeightedPointMap
-from arctern.util.vega.heatmap.vega_heatmap import VegaHeatMap
-from arctern.util.vega.choroplethmap.vega_choroplethmap import VegaChoroplethMap
-from arctern.util.vega.icon.vega_icon import VegaIcon
-from arctern.util.vega.fishnetmap.vega_fishnetmap import VegaFishNetMap
+from arctern.util.vega.pointmap import VegaPointMap, VegaWeightedPointMap
+from arctern.util.vega.heatmap import VegaHeatMap
+from arctern.util.vega.choroplethmap import VegaChoroplethMap, VegaUniqueValueChoroplethMap
+from arctern.util.vega.icon import VegaIcon
+from arctern.util.vega.fishnetmap import VegaFishNetMap
 
 
 def vega_pointmap(width,
@@ -103,6 +103,27 @@ def vega_choroplethmap(width,
                              aggregation_type)
 
 
+# pylint: disable=dangerous-default-value
+def vega_unique_value_choroplethmap(width,
+                                    height,
+                                    bounding_box,
+                                    unique_value_infos={},
+                                    opacity=1.0,
+                                    coordinate_system="EPSG:3857"):
+    unique_value = []
+    while len(unique_value_infos) > 0:
+        value = unique_value_infos.popitem()
+        list_value = {"label": value[0], "value": value[1]}
+        unique_value.append(list_value)
+
+    return VegaUniqueValueChoroplethMap(width,
+                                        height,
+                                        bounding_box,
+                                        unique_value,
+                                        opacity,
+                                        coordinate_system)
+
+
 def vega_icon(width, height,
               bounding_box, icon_path, icon_size=None,
               coordinate_system="EPSG:3857"):
@@ -113,6 +134,7 @@ def vega_icon(width, height,
                     icon_path,
                     icon_size,
                     coordinate_system)
+
 
 def vega_fishnetmap(width,
                    height,

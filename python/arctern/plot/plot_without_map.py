@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap
+from arctern.util.vega import vega_pointmap, vega_weighted_pointmap, vega_heatmap, vega_choroplethmap, vega_icon, vega_fishnetmap, vega_unique_value_choroplethmap
 import arctern
 
 
@@ -475,4 +475,65 @@ def fishnetmap_layer(w, h, points, weights, bounding_box,
                            cell_size=cell_size, cell_spacing=cell_spacing, opacity=opacity,
                            coordinate_system=coordinate_system, aggregation_type=aggregation_type)
     hexstr = arctern.fishnet_map_layer(vega, points, weights)
+    return hexstr
+
+
+def unique_value_choroplethmap_layer(w, h, region_boundaries, labels, bounding_box,
+                                     unique_value_infos={}, opacity=1.0,
+                                     coordinate_system='EPSG:3857'):
+    """
+    Plots a choropleth map layer.
+
+    Parameters
+    ----------
+    w : int
+        Width of the output PNG image.
+    h : int
+        Height of the output PNG image.
+    region_boundaries : GeoSeries
+        Sequence of polygons, as region boundaries to plot.
+    labels : Series
+        Color labels for polygons
+    bounding_box : list
+        Bounding box of the map. For example, [west, south, east, north].
+    unique_value_infos : dict
+        key-value pairs, key represents the label, and value represents the color corresponding to the label.
+    opacity : float, optional
+        Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
+    coordinate_system : str, optional
+        The Coordinate Reference System (CRS) set to all geometries, by default 'EPSG:3857'.
+        Only supports SRID as a WKT representation of CRS by now.
+
+    Returns
+    -------
+    bytes
+        A base64 encoded PNG image.
+
+    Examples
+    -------
+
+    .. plot::
+       :context: close-figs
+
+       >>> import pandas as pd
+       >>> import numpy as np
+       >>> import arctern
+       >>> import matplotlib.pyplot as plt
+       >>> import io
+       >>> import base64
+       >>> # Read from test_data.csv
+       >>> # Download link: https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv
+       >>> # Uncomment the lines below to download the test data
+       >>> # import os
+       >>> # os.system('wget "https://raw.githubusercontent.com/arctern-io/arctern-resources/benchmarks/benchmarks/dataset/layer_rendering_test_data/test_data.csv"')
+       >>> df = pd.read_csv(filepath_or_buffer="test_data.csv", dtype={'longitude':np.float64, 'latitude':np.float64, 'color_weights':np.float64, 'size_weights':np.float64, 'region_boundaries':np.object})
+       >>> input = df[pd.notna(df['region_boundaries'])].groupby(['region_boundaries']).mean().reset_index()
+       >>> polygon = arctern.GeoSeries(input['region_boundaries'])
+       >>>
+       >>> # Plot choroplethmap layer
+       >>> bbox = [-74.01124953254566,40.73413446570038,-73.96238859103838,40.766161712662296]
+    """
+    vega = vega_unique_value_choroplethmap(w, h, bounding_box=bounding_box, unique_value_infos=unique_value_infos,
+                              opacity=opacity, coordinate_system=coordinate_system)
+    hexstr = arctern.unique_value_choropleth_map_layer(vega, region_boundaries, labels)
     return hexstr

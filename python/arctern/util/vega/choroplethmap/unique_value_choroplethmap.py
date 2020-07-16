@@ -33,25 +33,26 @@ class Marks(RootMarks):
                 }
                 return dic
 
-        def __init__(self, bounding_box: Value, icon_path: Value, icon_size: Value, coordinate_system: Value):
+        def __init__(self, bounding_box: Value, unique_value_infos: Value,
+                     opacity: Value, coordinate_system: Value):
             if not (isinstance(bounding_box.v, list)
-                    and isinstance(icon_path.v, str)
-                    and isinstance(icon_size.v, list)
+                    and isinstance(unique_value_infos.v, list)
+                    and isinstance(opacity.v, float)
                     and isinstance(coordinate_system.v, str)):
                 # TODO error log here
                 assert 0, "illegal"
             self._bounding_box = bounding_box
-            self._icon_path = icon_path
-            self._icon_size = icon_size
+            self._unique_value_infos = unique_value_infos
+            self._opacity = opacity
             self._coordinate_system = coordinate_system
 
         def to_dict(self):
             dic = {
                 "enter": {
                     "bounding_box": self._bounding_box.to_dict(),
-                    "icon_path": self._icon_path.to_dict(),
-                    "icon_size": self._icon_size.to_dict(),
-                    "coordinate_system": self._coordinate_system.to_dict(),
+                    "unique_value_infos": self._unique_value_infos.to_dict(),
+                    "opacity": self._opacity.to_dict(),
+                    "coordinate_system": self._coordinate_system.to_dict()
                 }
             }
             return dic
@@ -65,25 +66,26 @@ class Marks(RootMarks):
         }]
         return dic
 
-class VegaIcon:
+
+class VegaUniqueValueChoroplethMap:
     def __init__(self, width: int, height: int, bounding_box: list,
-                 icon_path: str, icon_size: list, coordinate_system: str):
+                 unique_value_infos: list, opacity: float, coordinate_system: str):
         self._width = width
         self._height = height
         self._bounding_box = bounding_box
-        self._icon_path = icon_path
-        self._icon_size = icon_size
+        self._unique_value_infos = unique_value_infos
+        self._opacity = float(opacity)
         self._coordinate_system = coordinate_system
 
     def build(self):
-        description = Description(desc="icon_2d")
+        description = Description(desc="unique_value_choroplethmap")
         data = Data(name="data", url="/data/data.csv")
         domain = Scales.Scale.Domain("data", "c0")
-        scale = Scales.Scale("icon", "linear", domain)
+        scale = Scales.Scale("building", "linear", domain)
         scales = Scales([scale])
         encode = Marks.Encode(bounding_box=Marks.Encode.Value(self._bounding_box),
-                              icon_path=Marks.Encode.Value(self._icon_path),
-                              icon_size=Marks.Encode.Value(self._icon_size),
+                              unique_value_infos=Marks.Encode.Value(self._unique_value_infos),
+                              opacity=Marks.Encode.Value(self._opacity),
                               coordinate_system=Marks.Encode.Value(self._coordinate_system))
         marks = Marks(encode)
         root = Root(Width(self._width), Height(self._height), description,
