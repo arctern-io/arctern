@@ -27,5 +27,5 @@ else
 conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL}/label/cuda10.0 ${ARCTERN_FILE}
 fi
 
-conda install -y -q -n arctern -c conda-forge pyyaml shapely
+conda install -y -q -n arctern -c conda-forge pyyaml shapely opencv
 conda clean --all -y
