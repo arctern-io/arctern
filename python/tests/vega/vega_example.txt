@@ -202,20 +202,20 @@
       "encode": {
         "enter": {
           "bounding_box": [-73.998427, 40.730309, -73.954348, 40.780816],
-          "unique_value_infos": [
-            { 
-              "label": "VTS",
+          "unique_value_infos": { "value": [
+            {
+              "label": 1,
               "color": "#00FF00"
-            }, 
+            },
             {
-              "label": "CMT",
+              "label": 2,
               "color": "#FF0000"
-            }, 
+            },
             {
-              "label": "DDS",
+              "label": 3,
               "color": "#0000FF"
             }
-          ],
+          ]},
           "opacity": {"value": 1.0},
           "coordinate_system": {"value": "EPSG:3857"}
         }

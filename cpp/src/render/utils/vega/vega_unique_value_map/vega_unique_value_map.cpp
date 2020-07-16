@@ -57,7 +57,8 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
       !JsonLabelCheck(mark_enter, "opacity") ||
       !JsonLabelCheck(mark_enter["opacity"], "value") ||
       !JsonLabelCheck(mark_enter["unique_value_infos"], "value") ||
-      !JsonTypeCheck(mark_enter["unique_value_infos"]["value"], rapidjson::Type::kArrayType) ||
+      !JsonTypeCheck(mark_enter["unique_value_infos"]["value"],
+                     rapidjson::Type::kArrayType) ||
       !JsonTypeCheck(mark_enter["opacity"]["value"], rapidjson::Type::kNumberType)) {
     return;
   }
@@ -104,10 +105,12 @@ void VegaUniqueValueMap::Parse(const std::string& json) {
 
     const auto& type = unique_value_infos_key_types[i];
     if (type == rapidjson::Type::kStringType) {
-      auto label_value = mark_enter["unique_value_infos"]["value"][i]["label"].GetString();
+      auto label_value =
+          mark_enter["unique_value_infos"]["value"][i]["label"].GetString();
       unique_value_infos_string_map_[label_value] = color;
     } else {
-      auto label_value = mark_enter["unique_value_infos"]["value"][i]["label"].GetDouble();
+      auto label_value =
+          mark_enter["unique_value_infos"]["value"][i]["label"].GetDouble();
       unique_value_infos_numeric_map_[label_value] = color;
     }
   }
