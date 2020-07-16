@@ -22,7 +22,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-#include "render/2d/fishnet_map/fishnet_map.h"
+#include "render/2d/fishnetmap/fishnetmap.h"
 #include "render/utils/color/color_gradient.h"
 
 namespace arctern {

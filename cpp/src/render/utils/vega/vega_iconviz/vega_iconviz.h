@@ -17,38 +17,36 @@
 
 #include <string>
 
+#include "render/utils/color/color.h"
+#include "render/utils/vega/vega.h"
+
 namespace arctern {
 namespace render {
 
-struct Color {
-  float r, g, b, a;
-  Color() {}
-  Color(float red, float green, float blue, float alpha)
-      : r(red), g(green), b(blue), a(alpha) {}
-  bool operator==(const Color& other) const {
-    return r == other.r && g == other.g && b == other.b && a == other.a;
-  }
-};
-
-class ColorParser {
+class VegaIconViz : public Vega {
  public:
-  explicit ColorParser(const std::string& css_color_string);
+  VegaIconViz() = default;
 
-  const Color& color() const { return color_; }
+  explicit VegaIconViz(const std::string& json);
 
-  const bool& is_css_hex_color() const { return is_css_hex_color_; }
+  // TODO: add Build() api to build a vega json string.
+  // std::string Build() final;
 
-  const std::string& css_color_string() const { return css_color_string_; }
+ public:
+  const std::string& icon_path() const { return icon_path_; }
+
+  const int& icon_width() const { return icon_width_; }
+
+  const int& icon_height() const { return icon_height_; }
+
+ protected:
+  // vega json to vega struct
+  void Parse(const std::string& json) final;
 
  private:
-  void ParseHEX();
-
-  // TODO: add ParseRGBA(), ParseHSL(), ParseHSV(), ParseHWB(), ParseCMYK()
-
- private:
-  Color color_;
-  bool is_css_hex_color_;
-  std::string css_color_string_;
+  std::string icon_path_;
+  int icon_width_ = -1;
+  int icon_height_ = -1;
 };
 
 }  // namespace render

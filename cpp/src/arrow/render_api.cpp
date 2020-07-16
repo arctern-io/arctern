@@ -875,5 +875,76 @@ std::shared_ptr<arrow::BinaryArray> fishnet_map(
   }
 }
 
+std::shared_ptr<arrow::BinaryArray> unique_value_choropleth_map(
+    const std::vector<std::shared_ptr<arrow::Array>>& geometries_vector,
+    const std::vector<std::shared_ptr<arrow::Array>>& values, const std::string& conf) {
+  auto geo_vec = GeometryExtraction(geometries_vector);
+  auto values_data_type = values[0]->type_id();
+  auto num_geo = geo_vec.size();
+
+  switch (values_data_type) {
+    case arrow::Type::INT8: {
+      const auto& arr_values = WeightExtraction<int8_t>(values);
+      return out_pic(unique_value_choroplethmap<int8_t>(std::move(geo_vec), arr_values,
+                                                        num_geo, conf));
+    }
+    case arrow::Type::INT16: {
+      const auto& arr_values = WeightExtraction<int16_t>(values);
+      return out_pic(unique_value_choroplethmap<int16_t>(std::move(geo_vec), arr_values,
+                                                         num_geo, conf));
+    }
+    case arrow::Type::INT32: {
+      const auto& arr_values = WeightExtraction<int32_t>(values);
+      return out_pic(unique_value_choroplethmap<int32_t>(std::move(geo_vec), arr_values,
+                                                         num_geo, conf));
+    }
+    case arrow::Type::INT64: {
+      const auto& arr_values = WeightExtraction<int64_t>(values);
+      return out_pic(unique_value_choroplethmap<int64_t>(std::move(geo_vec), arr_values,
+                                                         num_geo, conf));
+    }
+    case arrow::Type::UINT8: {
+      const auto& arr_values = WeightExtraction<uint8_t>(values);
+      return out_pic(unique_value_choroplethmap<uint8_t>(std::move(geo_vec), arr_values,
+                                                         num_geo, conf));
+    }
+    case arrow::Type::UINT16: {
+      const auto& arr_values = WeightExtraction<uint16_t>(values);
+      return out_pic(unique_value_choroplethmap<uint16_t>(std::move(geo_vec), arr_values,
+                                                          num_geo, conf));
+    }
+    case arrow::Type::UINT32: {
+      const auto& arr_values = WeightExtraction<uint32_t>(values);
+      return out_pic(unique_value_choroplethmap<uint32_t>(std::move(geo_vec), arr_values,
+                                                          num_geo, conf));
+    }
+    case arrow::Type::UINT64: {
+      const auto& arr_values = WeightExtraction<uint64_t>(values);
+      return out_pic(unique_value_choroplethmap<uint64_t>(std::move(geo_vec), arr_values,
+                                                          num_geo, conf));
+    }
+    case arrow::Type::FLOAT: {
+      const auto& arr_values = WeightExtraction<float>(values);
+      return out_pic(unique_value_choroplethmap<float>(std::move(geo_vec), arr_values,
+                                                       num_geo, conf));
+    }
+    case arrow::Type::DOUBLE: {
+      const auto& arr_values = WeightExtraction<double>(values);
+      return out_pic(unique_value_choroplethmap<double>(std::move(geo_vec), arr_values,
+                                                        num_geo, conf));
+    }
+    case arrow::Type::STRING: {
+      const auto& arr_values = StringArrayExtraction(values);
+      return out_pic(unique_value_choroplethmap<std::string>(std::move(geo_vec),
+                                                             arr_values, num_geo, conf));
+    }
+    default:
+      std::string err_msg =
+          "type error of count while running unique_value_choroplethmap, type = " +
+          std::to_string(values_data_type);
+      throw std::runtime_error(err_msg);
+  }
+}
+
 }  // namespace render
 }  // namespace arctern

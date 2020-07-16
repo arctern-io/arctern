@@ -25,10 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include "render/2d/choropleth_map/choropleth_map.h"
-#include "render/2d/fishnet_map/fishnet_map.h"
+#include "render/2d/choroplethmap/choroplethmap.h"
+#include "render/2d/fishnetmap/fishnetmap.h"
 #include "render/2d/heatmap/heatmap.h"
-#include "render/2d/icon/icon_viz.h"
+#include "render/2d/iconviz/iconviz.h"
 #include "render/2d/scatter_plot/pointmap.h"
 #include "render/2d/scatter_plot/weighted_pointmap.h"
 
@@ -78,6 +78,11 @@ std::vector<uint8_t> iconviz(uint32_t* arr_x, uint32_t* arr_y, int64_t num_verti
 template <typename T>
 std::vector<uint8_t> fishnetmap(uint32_t* arr_x, uint32_t* arr_y, T* arr,
                                 int64_t num_vertices, const std::string& conf);
+
+template <typename T>
+std::vector<uint8_t> unique_value_choroplethmap(
+    std::vector<OGRGeometryUniquePtr>&& geometries, std::vector<T> values,
+    int64_t num_geometries, const std::string& conf);
 
 }  // namespace render
 }  // namespace arctern

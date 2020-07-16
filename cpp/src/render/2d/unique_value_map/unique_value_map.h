@@ -18,42 +18,38 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "render/2d/general_2d.h"
-#include "render/utils/vega/vega_choropleth_map/vega_choropleth_map.h"
+#include "render/utils/vega/vega_unique_value_map/vega_unique_value_map.h"
 
 namespace arctern {
 namespace render {
 
 template <typename T>
-class ChoroplethMap : public General2D {
+class UniqueValueMap : public General2D {
  public:
-  ChoroplethMap() = delete;
+  UniqueValueMap() = delete;
 
-  ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, std::vector<T> count,
-                int64_t num_vertices);
+  UniqueValueMap(std::vector<OGRGeometryUniquePtr>&& geometries, std::vector<T> values,
+                 int64_t num_geometries);
 
   std::vector<uint8_t> Render() final;
 
   void Draw() final;
 
-  VegaChoroplethMap& mutable_choroplethmap_vega() { return choropleth_vega_; }
+  VegaUniqueValueMap& mutable_vega_unique_value_map() { return vega_unique_value_map_; }
 
  private:
-  void Transform();
-
   void SetColor();
 
  private:
-  std::vector<OGRGeometry*> choropleth_wkb_;
-  std::vector<T> count_;
-  int64_t num_buildings_;
-  VegaChoroplethMap choropleth_vega_;
-
-  std::vector<std::vector<int>> buildings_x_;
-  std::vector<std::vector<int>> buildings_y_;
-  std::vector<float> colors_;
+  std::vector<OGRGeometryUniquePtr> geometries_;
+  std::vector<T> values_;
+  std::vector<Color> colors_;
+  int64_t num_geometries_;
+  VegaUniqueValueMap vega_unique_value_map_;
 };
 
 }  // namespace render

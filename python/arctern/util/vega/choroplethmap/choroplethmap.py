@@ -86,7 +86,7 @@ class VegaChoroplethMap:
         self._aggregation_type = aggregation_type
 
     def build(self):
-        description = Description(desc="building_weighted_2d")
+        description = Description(desc="choroplethmap")
         data = Data(name="data", url="/data/data.csv")
         domain = Scales.Scale.Domain("data", "c0")
         scale = Scales.Scale("building", "linear", domain)

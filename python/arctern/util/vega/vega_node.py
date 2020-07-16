@@ -61,11 +61,11 @@ class Description:
 
     """
         Top-Level Vega Specification Property: Description
-        oneOf(enum('icon_2d', 'circle_2d', 'multi_color_circles_2d', 'weighted_color_circles_2d',
-    '   building_weighted_2d', 'heatmap_2d', 'get_building_shape'))
+        oneOf(enum("iconmap", "pointmap", "weighted_pointmap", "choroplethmap",
+                   "heatmap", "fishnetmap", "unique_value_choroplethmap"))
     """
-    render_type = {"icon_2d", "circle_2d", "multi_color_circles_2d", "weighted_color_circles_2d",
-                   "building_weighted_2d", "heat_map_2d", "get_building_shape", "fishnet_map_2d"}
+    render_type = {"iconmap", "pointmap", "weighted_pointmap", "choroplethmap",
+                   "heatmap", "fishnetmap", "unique_value_choroplethmap"}
 
     def __init__(self, desc: str):
         if desc not in self.render_type:
