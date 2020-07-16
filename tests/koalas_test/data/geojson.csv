@@ -1,0 +1,18 @@
+geos
+{'TYPE':'POINT','COORDINATES':[125.6, 10.1]}
+{'TYPE':'LINESTRING','COORDINATES':[[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]}
+{'TYPE':'POLYGON','COORDINATES':[[ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],[100.0, 1.0], [100.0, 0.0]]]}
+{'COORDINATES': [1.0, 8.0], 'TYPE': 'POINT'}
+{'COORDINATES': [[1.0, 1.0], [3.0, 4.0]], 'TYPE': 'MULTIPOINT'}
+{'COORDINATES': [[3.0, 4.0]], 'TYPE': 'MULTIPOINT'}
+{'COORDINATES': [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]], 'TYPE': 'LINESTRING'}
+{'COORDINATES': [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0], [1.0, 1.0]], 'TYPE': 'LINESTRING'}
+{'COORDINATES': [[[1.0, 1.0], [1.0, 2.0]], [[2.0, 4.0], [1.0, 9.0], [1.0, 8.0]]], 'TYPE': 'MULTILINESTRING'}
+{'COORDINATES': [[[2.0, 4.0], [1.0, 9.0], [1.0, 8.0]]], 'TYPE': 'MULTILINESTRING'}
+{'COORDINATES': [[[1.0, 1.0], [3.0, 4.0], [1.0, 1.0]]], 'TYPE': 'MULTILINESTRING'}
+{'COORDINATES': [[[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0], [1.0, 1.0]]], 'TYPE': 'POLYGON'}
+{'COORDINATES': [[[0.0, 0.0], [0.0, 4.0], [2.0, 2.0], [4.0, 4.0], [4.0, 0.0], [0.0, 0.0]]], 'TYPE': 'POLYGON'}
+{'COORDINATES': [[[0.0, 0.0], [0.0, 4.0], [4.0, 4.0], [0.0, 0.0]]], 'TYPE': 'POLYGON'}
+{'COORDINATES': [[[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], 'TYPE': 'MULTIPOLYGON'}
+{'COORDINATES': [[[[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [2.0, 1.0], [1.0, 1.0]]], [[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], 'TYPE': 'MULTIPOLYGON'}
+{'GEOMETRIES': [{'COORDINATES': [[90.0, 190.0], [120.0, 190.0], [50.0, 60.0], [130.0, 10.0], [190.0, 50.0], [160.0, 90.0], [10.0, 150.0], [90.0, 190.0]], 'TYPE': 'LINESTRING'}, {'COORDINATES': [90.0, 190.0], 'TYPE': 'POINT'}], 'TYPE': 'GEOMETRYCOLLECTION'}
