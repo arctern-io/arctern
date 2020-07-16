@@ -16,6 +16,7 @@
 # pylint: disable=too-many-public-methods, unused-argument, redefined-builtin,protected-access
 import json
 
+from itertools import zip_longest
 import pandas as pd
 import numpy as np
 from pandas import DataFrame, Series
@@ -24,43 +25,94 @@ import arctern.tools
 
 
 class GeoDataFrame(DataFrame):
-    _metadata = ["_crs", "_geometry_column_name"]
-    _geometry_column_name = []
-    _crs = []
+    """
+    A GeoDataFrame object is a pandas.DataFrame that has columns
+    with geometry. In addition to the standard DataFrame constructor arguments,
+    GeoDataFrame also accepts the following keyword arguments:
 
-    def __init__(self, *args, **kwargs):
-        crs = kwargs.pop("crs", None)
-        geometries = kwargs.pop("geometries", None)
-        super(GeoDataFrame, self).__init__(*args, **kwargs)
+    Parameters
+    ----------
+    crs : value (optional)
+        Coordinate Reference System of the geometry objects.
+    geometries : list
+        The name of columns which are setten as geometry columns.
+    data : ndarray (structured or homogeneous), Iterable, dict, or DataFrame
+        Dict can contain Series, GeoSeries, arrays, constants, or list-like objects.
 
-        if geometries is None and crs is not None:
-            raise ValueError("No geometry column specified!")
+        .. versionchanged:: 0.23.0
+           If data is a dict, column order follows insertion-order for
+           Python 3.6 and later.
+
+        .. versionchanged:: 0.25.0
+           If data is a list of dicts, column order follows insertion-order
+           for Python 3.6 and later.
+
+    index : Index or array-like
+        Index to use for resulting frame. Will default to RangeIndex if
+        no indexing information part of input data and no index provided.
+    columns : Index or array-like
+        Column labels to use for resulting frame. Will default to
+        RangeIndex (0, 1, 2, ..., n) if no column labels are provided.
+    dtype : dtype, default None
+        Data type to force. Only a single dtype is allowed. If None, infer.
+    copy : bool, default False
+        Copy data from inputs. Only affects DataFrame / 2d ndarray input.
+
+    Examples
+    ---------
+    >>> from arctern import GeoDataFrame
+    >>> import numpy as np
+    >>> data = {
+    ...     "A": range(5),
+    ...     "B": np.arange(5.0),
+    ...     "other_geom": [1, 1, 1, 2, 2],
+    ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
+    ... }
+    >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
+    >>> gdf
+    A    B  other_geom         geo1
+    0  0  0.0           1  POINT (0 0)
+    1  1  1.0           1  POINT (1 1)
+    2  2  2.0           1  POINT (2 2)
+    3  3  3.0           2  POINT (3 3)
+    4  4  4.0           2  POINT (4 4)
+    """
+
+    def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False, geometries=None, crs=None):
+        geometry_column_names = []
+        crs_for_cols = {}
+        if isinstance(data, GeoSeries):
+            crs_for_cols[data.name] = data.crs
+            geometry_column_names.append(data.name)
+        elif isinstance(data, DataFrame):
+            for col in data.columns:
+                if isinstance(data[col], GeoSeries):
+                    crs_for_cols[col] = data[col].crs
+                    geometry_column_names.append(col)
+        super(GeoDataFrame, self).__init__(data, index, columns, dtype, copy)
+
+        self._geometry_column_names = None
+        self._crs_for_cols = None
+        self._geometry_column_names = geometry_column_names
+        self._crs_for_cols = crs_for_cols
         if geometries is None:
-            self._geometry_column_name = []
-        else:
-            geo_length = len(geometries)
-            if crs is None:
-                crs = []
-                crs_length = 0
-            elif isinstance(crs, str):
-                crs = [crs]
-                crs_length = 1
-            elif isinstance(crs, list):
-                crs_length = len(crs)
-                if geo_length < crs_length:
-                    raise ValueError("The length of crs should less than geometries!")
-            else:
-                raise TypeError("The type of crs should be str or list!")
-            for _i in range(0, geo_length - crs_length):
-                crs.append(None)
-            for (crs_element, geometry) in zip(crs, geometries):
-                self[geometry] = GeoSeries(self[geometry])
-                self[geometry].invalidate_sindex()
-                self[geometry].set_crs(crs_element)
+            geometries = []
+        if crs is None or isinstance(crs, str):
+            crs = [crs] * len(geometries)
+        if not isinstance(crs, list):
+            raise TypeError("The type of crs should be str or list!")
+        if len(geometries) < len(crs):
+            raise ValueError("The length of crs should less than geometries!")
 
-            self._geometry_column_name = geometries
-            self._crs = crs
+        # align crs and cols, simply fill None to crs
+        for col, _crs in zip_longest(geometries, crs):
+            if col not in self._geometry_column_names:
+                self[col] = GeoSeries(self[col], crs=_crs)
+                self[col].invalidate_sindex()
+                self._crs_for_cols[col] = _crs
+                self._geometry_column_names.append(col)
 
+    # pylint: disable=protected-access
     def set_geometry(self, col, inplace=False, crs=None):
         """
         Sets an existing column in the GeoDataFrame to a geometry column, which is used to perform geometric calculations later.
@@ -102,26 +154,15 @@ class GeoDataFrame(DataFrame):
         else:
             frame = self.copy()
 
-        geometry_cols = frame.geometries_name
-        geometry_crs = frame.crs
+        geometry_cols = frame._geometry_column_names
         if not isinstance(frame[col], GeoSeries):
-            frame[col] = GeoSeries(frame[col])
-            frame[col].set_crs(crs)
+            frame[col] = GeoSeries(frame[col], crs=crs)
             geometry_cols.append(col)
-            if crs is None:
-                geometry_crs.append(None)
-            else:
-                geometry_crs.append(crs)
+            self._crs_for_cols[col] = crs
         if col in geometry_cols:
-            index = geometry_cols.index(col)
             if crs is not None:
-                geometry_crs[index] = crs
+                self._crs_for_cols[col] = crs
                 frame[col].set_crs(crs)
-
-        # for (crs, col) in zip(geometry_crs, geometry_cols):
-        #     if crs is not None:
-        #         frame[col].set_crs(crs)
-
 
         return frame
 
@@ -140,7 +181,9 @@ class GeoDataFrame(DataFrame):
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
             * *True:* Includes bounding box in the GeoJSON string.
-            * *False:* Do not include bounding box in the GeoJSON string.
+            * *False:* Don't include bounding box in the GeoJSON string.
+        geometry: str
+            The name of geometry column.
 
         **kwargs:
             Parameters to pass to `jump.dumps`.
@@ -161,7 +204,7 @@ class GeoDataFrame(DataFrame):
         ...     "geometry": ["POINT (0 0)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        >>> print(gdf.to_json(col="geometry"))
+        >>> print(gdf.to_json(geometry="geometry"))
         {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
@@ -179,7 +222,7 @@ class GeoDataFrame(DataFrame):
     def iterfeatures(self, na="null", show_bbox=False, geometry=None):
         if na not in ["null", "drop", "keep"]:
             raise ValueError("Unknown na method {0}".format(na))
-        if geometry not in self._geometry_column_name:
+        if geometry not in self._geometry_column_names:
             raise ValueError("{} is not a geometry column".format(geometry))
         ids = np.array(self.index, copy=False)
         geometries = self[geometry].as_geojson()
@@ -230,6 +273,44 @@ class GeoDataFrame(DataFrame):
                     feature["bbox"] = bbox if geom else None
                 yield feature
 
+    # pylint: disable=protected-access
+    def reset_index(self, level=None, drop=False, inplace=False, col_level=0, col_fill=""):
+        df = super(GeoDataFrame, self).reset_index(level, drop, inplace, col_level, col_fill)
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._geometry_column_names = self._geometry_column_names
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+        return None
+
+    # pylint: disable=protected-access
+    def copy(self, deep=True):
+        df = super(GeoDataFrame, self).copy(deep)
+        gdf = GeoDataFrame(df)
+        gdf._geometry_column_names = self._geometry_column_names
+        gdf._crs_for_cols = self._crs_for_cols
+        return gdf
+
+    # pylint: disable=protected-access
+    def drop(self, labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors="raise",):
+        geometry_column_names = self._geometry_column_names.copy()
+        crs_for_cols = self._crs_for_cols.copy()
+        df = super(GeoDataFrame, self).drop(labels, axis, index, columns, level, inplace, errors)
+
+        column_names = self.columns.values.tolist()
+        for col in geometry_column_names:
+            if col in column_names:
+                self._crs_for_cols[col] = crs_for_cols[col]
+                self._geometry_column_names.append(col)
+
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._geometry_column_names = self._geometry_column_names
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+        return None
+
+
     def to_geopandas(self):
         """
         Transforms an arctern.GeoDataFrame object to a geopandas.GeoDataFrame object.
@@ -261,8 +342,8 @@ class GeoDataFrame(DataFrame):
         """
         import geopandas
         copy_df = self.copy()
-        if self._geometry_column_name is not None:
-            for col in copy_df.geometries_name:
+        if len(self._geometry_column_names) > 0:
+            for col in self._geometry_column_names:
                 copy_df[col] = Series(copy_df[col].to_geopandas())
         return geopandas.GeoDataFrame(copy_df.values, columns=copy_df.columns.values.tolist())
 
@@ -314,11 +395,11 @@ class GeoDataFrame(DataFrame):
             if isinstance(pdf[col][0], shapely.geometry.base.BaseGeometry):
                 geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
                 result[col] = geo_col
-                result.geometries_name.append(col)
+                result._geometry_column_names.append(col)
                 if isinstance(pdf[col], geopandas.GeoSeries):
-                    result._crs.append(pdf[col].crs)
+                    result._crs_for_cols[col] = pdf[col].crs
                 else:
-                    result._crs.append(None)
+                    result._crs_for_cols[col] = None
         return result
 
     def dissolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
@@ -385,7 +466,7 @@ class GeoDataFrame(DataFrame):
 
     @property
     def geometries_name(self):
-        return self._geometry_column_name
+        return self._geometry_column_names
 
     @property
     def crs(self):
@@ -411,7 +492,7 @@ class GeoDataFrame(DataFrame):
         >>> gdf.crs
         ["epsg:4326", "epsg:3857"]
         """
-        return self._crs
+        return self._crs_for_cols
 
     # pylint: disable=too-many-arguments
     def merge(
@@ -431,6 +512,69 @@ class GeoDataFrame(DataFrame):
     ):
         """
         Merges two GeoDataFrame objects with a database-style join.
+
+        Parameters
+        ----------
+        right : DataFrame or named Series
+            Object to merge with.
+        how : {'left', 'right', 'outer', 'inner'}, default 'inner'
+            Type of merge to be performed.
+
+            * left: use only keys from left frame, similar to a SQL left outer join;
+              preserve key order.
+            * right: use only keys from right frame, similar to a SQL right outer join;
+              preserve key order.
+            * outer: use union of keys from both frames, similar to a SQL full outer
+              join; sort keys lexicographically.
+            * inner: use intersection of keys from both frames, similar to a SQL inner
+              join; preserve the order of the left keys.
+        on : label or list
+           Column or index level names to join on. These must be found in both
+           DataFrames. If `on` is None and not merging on indexes then this defaults
+           to the intersection of the columns in both DataFrames.
+        left_on : label or list, or array-like
+            Column or index level names to join on in the left DataFrame. Can also
+            be an array or list of arrays of the length of the left DataFrame.
+            These arrays are treated as if they are columns.
+        right_on : label or list, or array-like
+            Column or index level names to join on in the right DataFrame. Can also
+            be an array or list of arrays of the length of the right DataFrame.
+            These arrays are treated as if they are columns.
+        left_index : bool, default False
+            Use the index from the left DataFrame as the join key(s). If it is a
+            MultiIndex, the number of keys in the other DataFrame (either the index
+            or a number of columns) must match the number of levels.
+        right_index : bool, default False
+            Use the index from the right DataFrame as the join key. Same caveats as
+            left_index.
+        sort : bool, default False
+            Sort the join keys lexicographically in the result DataFrame. If False,
+            the order of the join keys depends on the join type (how keyword).
+        suffixes : tuple of (str, str), default ('_x', '_y')
+            Suffix to apply to overlapping column names in the left and right
+            side, respectively. To raise an exception on overlapping columns use
+            (False, False).
+        copy : bool, default True
+            If False, avoid copy if possible.
+        indicator : bool or str, default False
+            If True, adds a column to output DataFrame called "_merge" with
+            information on the source of each row.
+            If string, column with information on source of each row will be added to
+            output DataFrame, and column will be named value of string.
+            Information column is Categorical-type and takes on a value of "left_only"
+            for observations whose merge key only appears in 'left' DataFrame,
+            "right_only" for observations whose merge key only appears in 'right'
+            DataFrame, and "both" if the observation's merge key is found in both.
+        validate : str, optional
+            If specified, checks if merge is of specified type.
+
+            * "one_to_one" or "1:1": check if merge keys are unique in both
+              left and right datasets.
+            * "one_to_many" or "1:m": check if merge keys are unique in left
+              dataset.
+            * "many_to_one" or "m:1": check if merge keys are unique in right
+              dataset.
+            * "many_to_many" or "m:m": allowed, but does not result in checks.
 
         Returns
         -------
@@ -464,38 +608,25 @@ class GeoDataFrame(DataFrame):
         result = DataFrame.merge(self, right, how, on, left_on, right_on,
                                  left_index, right_index, sort, suffixes,
                                  copy, indicator, validate)
-        if not isinstance(result, GeoDataFrame):
-            return result
-        left_geometries = self.geometries_name.copy()
-        left_crs = self.crs
-        if isinstance(right, GeoDataFrame):
-            right_geometries = right.geometries_name.copy()
-            right_crs = right.crs
-        else:
-            right_geometries = []
-            right_crs = []
-        result_cols = result.columns.values.tolist()
-        result_geometries_name = result.geometries_name
-        result_crs = result.crs
-        strip_result = []
-        for col in result_cols:
-            col = col.replace(suffixes[0], '')
-            col = col.replace(suffixes[1], '')
-            strip_result.append(col)
-        for i, element in enumerate(strip_result):
-            if isinstance(result[result_cols[i]], GeoSeries):
-                if element in left_geometries:
-                    index = left_geometries.index(element)
-                    result[result_cols[i]].set_crs(left_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(left_crs[index])
-                    continue
-                if element in right_geometries:
-                    index = right_geometries.index(element)
-                    result[result_cols[i]].set_crs(right_crs[index])
-                    result_geometries_name.append(result_cols[i])
-                    result_crs.append(right_crs[index])
-                    continue
+        result = GeoDataFrame(result)
+
+        lsuffix, rsuffix = suffixes
+        for col in result.columns:
+            kser = result[col]
+            if isinstance(kser, GeoSeries):
+                pick = self
+                if col.endswith(lsuffix) and col not in self.columns:
+                    col = col[:-len(lsuffix)]
+                elif col.endswith(rsuffix) and col not in right.columns:
+                    col = col[:-len(rsuffix)]
+                    pick = right
+                elif col in right.columns:
+                    pick = right
+
+                picked_crs = pick._crs_for_cols.get(col, None)
+                kser.set_crs(picked_crs)
+                result._crs_for_cols[col] = picked_crs
+
         return result
 
     # pylint: disable=protected-access
@@ -563,7 +694,7 @@ class GeoDataFrame(DataFrame):
         crs: str
             * If specified, the CRS is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the crs based on crs df attribute.
-        col: str
+        geometry: str
             Specifys geometry column, by default None.
 
         **kwargs:
@@ -586,7 +717,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo3": ["POINT (2 2)", "POINT (3 3)", "POINT (4 4)", "POINT (5 5)", "POINT (6 6)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
-        >>> gdf.to_file(filename="/tmp/test.shp", col="geo1", crs="epsg:3857")
+        >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
         A    B  other_geom         geo2         geo3     geometry

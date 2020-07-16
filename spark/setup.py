@@ -23,7 +23,8 @@ setup(
     name="arctern_spark",
     packages=[
         "arctern_spark",
-        "arctern_spark.tests"
+        "arctern_spark.tests",
+        "arctern_spark.examples"
     ],
     version=version["__version__"]
 )
