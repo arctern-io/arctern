@@ -37,9 +37,8 @@ def _invoke_scala_udf(func, points, roads, *args):
 
 
 def near_road(roads, points, distance=100.0):
-    # TODO: FIX the doc
     """
-    Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
+    For each point in ``points``, tests whether there is a road within the given ``distance`` of the point. The points do not need to be part of a continuous path.
 
     Parameters
     ----------
