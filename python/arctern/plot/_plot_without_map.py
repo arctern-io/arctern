@@ -262,7 +262,7 @@ def choroplethmap_layer(w, h, region_boundaries, weights, bounding_box,
                        coordinate_system='EPSG:3857',
                        aggregation_type='max'):
     """
-    Plots a choropleth map layer.
+    Plots a choropleth map layer with gradient colors.
 
     Parameters
     ----------
@@ -482,7 +482,7 @@ def unique_value_choroplethmap_layer(w, h, region_boundaries, labels, bounding_b
                                      unique_value_infos={}, opacity=1.0,
                                      coordinate_system='EPSG:3857'):
     """
-    Plots a choropleth map layer.
+    Plots a choropleth map layer with a set of unique colors.
 
     Parameters
     ----------
@@ -493,11 +493,11 @@ def unique_value_choroplethmap_layer(w, h, region_boundaries, labels, bounding_b
     region_boundaries : GeoSeries
         Sequence of polygons, as region boundaries to plot.
     labels : Series
-        Color labels for polygons
+        Color labels for polygons. Each label matches a unique color defined in ``unique_value_infos``.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
     unique_value_infos : dict
-        key-value pairs, key represents the label, and value represents the color corresponding to the label.
+        Key-value pairs that specify the unique colors to use. The key represents the label, and the value represents the color corresponding to the label.
     opacity : float, optional
         Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
     coordinate_system : str, optional
