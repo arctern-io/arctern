@@ -799,7 +799,7 @@ class GeoSeries(Series):
         --------
         >>> from arctern import GeoSeries
         >>> s = GeoSeries(["LINESTRING (4 0,6 0)", "POLYGON ((0 0,1 0,1 1,0 1,0 0))"])
-        >>> s.exterior()
+        >>> s.exterior
         0                                None
         1    LINESTRING (0 0,1 0,1 1,0 1,0 0)
         dtype: GeoDtype
@@ -943,7 +943,7 @@ class GeoSeries(Series):
         >>> from arctern import GeoSeries
         >>> s1 = GeoSeries(["LINESTRING (0 0,5 0)", "MULTIPOINT ((4 0),(6 0))"])
         >>> matrix = (2,2,2,2,2,2)
-        >>> s1.affine_transfrom(matrix)
+        >>> s1.affine_transform(matrix)
         0      LINESTRING (2 2,12 12)
         1    MULTIPOINT (10 10,14 14)
         dtype: GeoDtype
