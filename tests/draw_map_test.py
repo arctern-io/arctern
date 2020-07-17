@@ -91,7 +91,7 @@ def run_test_point_map(spark):
     point_map1_1 = pointmap(vega_1, res)
     point_map1_2 = pointmap(vega_1, res)
 
-    baseline_png1 = png_path + "point_map_nyc_1.png"
+    baseline_png1 = baseline_path + "point_map_nyc_1.png"
     save_png(point_map1_1, png_path + "test_point_map_nyc_1-1.png")
     save_png(point_map1_2, png_path + "test_point_map_nyc_1-2.png")
 
@@ -100,7 +100,7 @@ def run_test_point_map(spark):
     point_map2_1 = pointmap(vega_2, res)
     point_map2_2 = pointmap(vega_2, res)
 
-    baseline_png2 = png_path + "point_map_nyc_2.png"
+    baseline_png2 = baseline_path + "point_map_nyc_2.png"
     save_png(point_map2_1, png_path + "test_point_map_nyc_2-1.png")
     save_png(point_map2_2, png_path + "test_point_map_nyc_2-2.png")
 
@@ -109,7 +109,7 @@ def run_test_point_map(spark):
     point_map3_1 = pointmap(vega_3, res)
     point_map3_2 = pointmap(vega_3, res)
 
-    baseline_png3 = png_path + "point_map_nyc_3.png"
+    baseline_png3 = baseline_path + "point_map_nyc_3.png"
     save_png(point_map3_1, png_path + "test_point_map_nyc_3-1.png")
     save_png(point_map3_2, png_path + "test_point_map_nyc_3-2.png")
 
@@ -118,7 +118,7 @@ def run_test_point_map(spark):
     point_map4_1 = pointmap(vega_4, res)
     point_map4_2 = pointmap(vega_4, res)
 
-    baseline_png4 = png_path + "point_map_nyc_4.png"
+    baseline_png4 = baseline_path + "point_map_nyc_4.png"
     save_png(point_map4_1, png_path + "test_point_map_nyc_4-1.png")
     save_png(point_map4_2, png_path + "test_point_map_nyc_4-2.png")
 
@@ -127,7 +127,7 @@ def run_test_point_map(spark):
     point_map5_1 = pointmap(vega_5, res)
     point_map5_2 = pointmap(vega_5, res)
 
-    baseline_png5 = png_path + "point_map_nyc_5.png"
+    baseline_png5 = baseline_path + "point_map_nyc_5.png"
     save_png(point_map5_1, png_path + "test_point_map_nyc_5-1.png")
     save_png(point_map5_2, png_path + "test_point_map_nyc_5-2.png")
 
@@ -136,7 +136,7 @@ def run_test_point_map(spark):
     point_map6_1 = pointmap(vega_6, res)
     point_map6_2 = pointmap(vega_6, res)
 
-    baseline_png6 = png_path + "point_map_nyc_6.png"
+    baseline_png6 = baseline_path + "point_map_nyc_6.png"
     save_png(point_map6_1, png_path + "test_point_map_nyc_6-1.png")
     save_png(point_map6_2, png_path + "test_point_map_nyc_6-2.png")
 
@@ -175,7 +175,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map1_1_1 = weighted_pointmap(vega1_1, res1)
     weighted_point_map1_1_2 = weighted_pointmap(vega1_1, res1)
 
-    baseline_png1_1 = png_path + "weighted_point_map_nyc_1_1.png"
+    baseline_png1_1 = baseline_path + "weighted_point_map_nyc_1_1.png"
     save_png(weighted_point_map1_1_1, png_path + "test_weighted_point_map_nyc_1_1-1.png")
     save_png(weighted_point_map1_1_2, png_path + "test_weighted_point_map_nyc_1_1-2.png")
 
@@ -185,7 +185,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map1_2_1 = weighted_pointmap(vega1_2, res1)
     weighted_point_map1_2_2 = weighted_pointmap(vega1_2, res1)
 
-    baseline_png1_2 = png_path + "weighted_point_map_nyc_1_2.png"
+    baseline_png1_2 = baseline_path + "weighted_point_map_nyc_1_2.png"
     save_png(weighted_point_map1_2_1, png_path + "test_weighted_point_map_nyc_1_2-1.png")
     save_png(weighted_point_map1_2_2, png_path + "test_weighted_point_map_nyc_1_2-2.png")
 
@@ -195,7 +195,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map1_3_1 = weighted_pointmap(vega1_3, res1)
     weighted_point_map1_3_2 = weighted_pointmap(vega1_3, res1)
 
-    baseline_png1_3 = png_path + "weighted_point_map_nyc_1_3.png"
+    baseline_png1_3 = baseline_path + "weighted_point_map_nyc_1_3.png"
     save_png(weighted_point_map1_3_1, png_path + "test_weighted_point_map_nyc_1_3-1.png")
     save_png(weighted_point_map1_3_2, png_path + "test_weighted_point_map_nyc_1_3-2.png")
 
@@ -205,7 +205,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map1_4_1 = weighted_pointmap(vega1_4, res1)
     weighted_point_map1_4_2 = weighted_pointmap(vega1_4, res1)
 
-    baseline_png1_4 = png_path + "weighted_point_map_nyc_1_4.png"
+    baseline_png1_4 = baseline_path + "weighted_point_map_nyc_1_4.png"
     save_png(weighted_point_map1_4_1, png_path + "test_weighted_point_map_nyc_1_4-1.png")
     save_png(weighted_point_map1_4_2, png_path + "test_weighted_point_map_nyc_1_4-2.png")
 
@@ -215,7 +215,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map1_5_1 = weighted_pointmap(vega1_5, res1)
     weighted_point_map1_5_2 = weighted_pointmap(vega1_5, res1)
 
-    baseline_png1_5 = png_path + "weighted_point_map_nyc_1_5.png"
+    baseline_png1_5 = baseline_path + "weighted_point_map_nyc_1_5.png"
     save_png(weighted_point_map1_5_1, png_path + "test_weighted_point_map_nyc_1_5-1.png")
     save_png(weighted_point_map1_5_2, png_path + "test_weighted_point_map_nyc_1_5-2.png")
 
@@ -228,7 +228,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map2_1_1 = weighted_pointmap(vega2_1, res2)
     weighted_point_map2_1_2 = weighted_pointmap(vega2_1, res2)
 
-    baseline_png2_1 = png_path + "weighted_point_map_nyc_2_1.png"
+    baseline_png2_1 = baseline_path + "weighted_point_map_nyc_2_1.png"
     save_png(weighted_point_map2_1_1, png_path + "test_weighted_point_map_nyc_2_1-1.png")
     save_png(weighted_point_map2_1_2, png_path + "test_weighted_point_map_nyc_2_1-2.png")
 
@@ -238,7 +238,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map2_2_1 = weighted_pointmap(vega2_2, res2)
     weighted_point_map2_2_2 = weighted_pointmap(vega2_2, res2)
 
-    baseline_png2_2 = png_path + "weighted_point_map_nyc_2_2.png"
+    baseline_png2_2 = baseline_path + "weighted_point_map_nyc_2_2.png"
     save_png(weighted_point_map2_2_1, png_path + "test_weighted_point_map_nyc_2_2-1.png")
     save_png(weighted_point_map2_2_2, png_path + "test_weighted_point_map_nyc_2_2-2.png")
 
@@ -248,7 +248,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map2_3_1 = weighted_pointmap(vega2_3, res2)
     weighted_point_map2_3_2 = weighted_pointmap(vega2_3, res2)
 
-    baseline_png2_3 = png_path + "weighted_point_map_nyc_2_3.png"
+    baseline_png2_3 = baseline_path + "weighted_point_map_nyc_2_3.png"
     save_png(weighted_point_map2_3_1, png_path + "test_weighted_point_map_nyc_2_3-1.png")
     save_png(weighted_point_map2_3_2, png_path + "test_weighted_point_map_nyc_2_3-2.png")
 
@@ -258,7 +258,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map2_4_1 = weighted_pointmap(vega2_4, res2)
     weighted_point_map2_4_2 = weighted_pointmap(vega2_4, res2)
 
-    baseline_png2_4 = png_path + "weighted_point_map_nyc_2_4.png"
+    baseline_png2_4 = baseline_path + "weighted_point_map_nyc_2_4.png"
     save_png(weighted_point_map2_4_1, png_path + "test_weighted_point_map_nyc_2_4-1.png")
     save_png(weighted_point_map2_4_2, png_path + "test_weighted_point_map_nyc_2_4-2.png")
 
@@ -268,7 +268,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map2_5_1 = weighted_pointmap(vega2_5, res2)
     weighted_point_map2_5_2 = weighted_pointmap(vega2_5, res2)
 
-    baseline_png2_5 = png_path + "weighted_point_map_nyc_2_5.png"
+    baseline_png2_5 = baseline_path + "weighted_point_map_nyc_2_5.png"
     save_png(weighted_point_map2_5_1, png_path + "test_weighted_point_map_nyc_2_5-1.png")
     save_png(weighted_point_map2_5_2, png_path + "test_weighted_point_map_nyc_2_5-2.png")
 
@@ -281,7 +281,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map3_1_1 = weighted_pointmap(vega3_1, res3)
     weighted_point_map3_1_2 = weighted_pointmap(vega3_1, res3)
 
-    baseline_png3_1 = png_path + "weighted_point_map_nyc_3_1.png"
+    baseline_png3_1 = baseline_path + "weighted_point_map_nyc_3_1.png"
     save_png(weighted_point_map3_1_1, png_path + "test_weighted_point_map_nyc_3_1-1.png")
     save_png(weighted_point_map3_1_2, png_path + "test_weighted_point_map_nyc_3_1-2.png")
 
@@ -291,7 +291,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map3_2_1 = weighted_pointmap(vega3_2, res3)
     weighted_point_map3_2_2 = weighted_pointmap(vega3_2, res3)
 
-    baseline_png3_2 = png_path + "weighted_point_map_nyc_3_2.png"
+    baseline_png3_2 = baseline_path + "weighted_point_map_nyc_3_2.png"
     save_png(weighted_point_map3_2_1, png_path + "test_weighted_point_map_nyc_3_2-1.png")
     save_png(weighted_point_map3_2_2, png_path + "test_weighted_point_map_nyc_3_2-2.png")
 
@@ -301,7 +301,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map3_3_1 = weighted_pointmap(vega3_3, res3)
     weighted_point_map3_3_2 = weighted_pointmap(vega3_3, res3)
 
-    baseline_png3_3 = png_path + "weighted_point_map_nyc_3_3.png"
+    baseline_png3_3 = baseline_path + "weighted_point_map_nyc_3_3.png"
     save_png(weighted_point_map3_3_1, png_path + "test_weighted_point_map_nyc_3_3-1.png")
     save_png(weighted_point_map3_3_2, png_path + "test_weighted_point_map_nyc_3_3-2.png")
 
@@ -311,7 +311,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map3_4_1 = weighted_pointmap(vega3_4, res3)
     weighted_point_map3_4_2 = weighted_pointmap(vega3_4, res3)
 
-    baseline_png3_4 = png_path + "weighted_point_map_nyc_3_4.png"
+    baseline_png3_4 = baseline_path + "weighted_point_map_nyc_3_4.png"
     save_png(weighted_point_map3_4_1, png_path + "test_weighted_point_map_nyc_3_4-1.png")
     save_png(weighted_point_map3_4_2, png_path + "test_weighted_point_map_nyc_3_4-2.png")
 
@@ -321,7 +321,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map3_5_1 = weighted_pointmap(vega3_5, res3)
     weighted_point_map3_5_2 = weighted_pointmap(vega3_5, res3)
 
-    baseline_png3_5 = png_path + "weighted_point_map_nyc_3_5.png"
+    baseline_png3_5 = baseline_path + "weighted_point_map_nyc_3_5.png"
     save_png(weighted_point_map3_5_1, png_path + "test_weighted_point_map_nyc_3_5-1.png")
     save_png(weighted_point_map3_5_2, png_path + "test_weighted_point_map_nyc_3_5-2.png")
 
@@ -334,7 +334,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map4_1_1 = weighted_pointmap(vega4_1, res4)
     weighted_point_map4_1_2 = weighted_pointmap(vega4_1, res4)
 
-    baseline_png4_1 = png_path + "weighted_point_map_nyc_4_1.png"
+    baseline_png4_1 = baseline_path + "weighted_point_map_nyc_4_1.png"
     save_png(weighted_point_map4_1_1, png_path + "test_weighted_point_map_nyc_4_1-1.png")
     save_png(weighted_point_map4_1_2, png_path + "test_weighted_point_map_nyc_4_1-2.png")
 
@@ -344,7 +344,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map4_2_1 = weighted_pointmap(vega4_2, res4)
     weighted_point_map4_2_2 = weighted_pointmap(vega4_2, res4)
 
-    baseline_png4_2 = png_path + "weighted_point_map_nyc_4_2.png"
+    baseline_png4_2 = baseline_path + "weighted_point_map_nyc_4_2.png"
     save_png(weighted_point_map4_2_1, png_path + "test_weighted_point_map_nyc_4_2-1.png")
     save_png(weighted_point_map4_2_2, png_path + "test_weighted_point_map_nyc_4_2-2.png")
 
@@ -354,7 +354,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map4_3_1 = weighted_pointmap(vega4_3, res4)
     weighted_point_map4_3_2 = weighted_pointmap(vega4_3, res4)
 
-    baseline_png4_3 = png_path + "weighted_point_map_nyc_4_3.png"
+    baseline_png4_3 = baseline_path + "weighted_point_map_nyc_4_3.png"
     save_png(weighted_point_map4_3_1, png_path + "test_weighted_point_map_nyc_4_3-1.png")
     save_png(weighted_point_map4_3_2, png_path + "test_weighted_point_map_nyc_4_3-2.png")
 
@@ -364,7 +364,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map4_4_1 = weighted_pointmap(vega4_4, res4)
     weighted_point_map4_4_2 = weighted_pointmap(vega4_4, res4)
 
-    baseline_png4_4 = png_path + "weighted_point_map_nyc_4_4.png"
+    baseline_png4_4 = baseline_path + "weighted_point_map_nyc_4_4.png"
     save_png(weighted_point_map4_4_1, png_path + "test_weighted_point_map_nyc_4_4-1.png")
     save_png(weighted_point_map4_4_2, png_path + "test_weighted_point_map_nyc_4_4-2.png")
 
@@ -374,7 +374,7 @@ def run_test_weighted_point_map(spark):
     weighted_point_map4_5_1 = weighted_pointmap(vega4_5, res4)
     weighted_point_map4_5_2 = weighted_pointmap(vega4_5, res4)
 
-    baseline_png4_5 = png_path + "weighted_point_map_nyc_4_5.png"
+    baseline_png4_5 = baseline_path + "weighted_point_map_nyc_4_5.png"
     save_png(weighted_point_map4_5_1, png_path + "test_weighted_point_map_nyc_4_5-1.png")
     save_png(weighted_point_map4_5_2, png_path + "test_weighted_point_map_nyc_4_5-2.png")
 
@@ -440,7 +440,7 @@ def run_test_heat_map(spark):
     heat_map1_1 = heatmap(vega_1, res)
     heat_map1_2 = heatmap(vega_1, res)
 
-    baseline_png1 = png_path + "heat_map_nyc_1.png"
+    baseline_png1 = baseline_path + "heat_map_nyc_1.png"
     save_png(heat_map1_1, png_path + "test_heat_map_nyc_1-1.png")
     save_png(heat_map1_2, png_path + "test_heat_map_nyc_1-2.png")
 
@@ -449,7 +449,7 @@ def run_test_heat_map(spark):
     heat_map2_1 = heatmap(vega_2, res)
     heat_map2_2 = heatmap(vega_2, res)
 
-    baseline_png2 = png_path + "heat_map_nyc_2.png"
+    baseline_png2 = baseline_path + "heat_map_nyc_2.png"
     save_png(heat_map2_1, png_path + "test_heat_map_nyc_2-1.png")
     save_png(heat_map2_2, png_path + "test_heat_map_nyc_2-2.png")
 
@@ -458,7 +458,7 @@ def run_test_heat_map(spark):
     heat_map3_1 = heatmap(vega_3, res)
     heat_map3_2 = heatmap(vega_3, res)
 
-    baseline_png3 = png_path + "heat_map_nyc_3.png"
+    baseline_png3 = baseline_path + "heat_map_nyc_3.png"
     save_png(heat_map3_1, png_path + "test_heat_map_nyc_3-1.png")
     save_png(heat_map3_2, png_path + "test_heat_map_nyc_3-2.png")
 
@@ -467,7 +467,7 @@ def run_test_heat_map(spark):
     heat_map4_1 = heatmap(vega_4, res)
     heat_map4_2 = heatmap(vega_4, res)
 
-    baseline_png4 = png_path + "heat_map_nyc_4.png"
+    baseline_png4 = baseline_path + "heat_map_nyc_4.png"
     save_png(heat_map4_1, png_path + "test_heat_map_nyc_4-1.png")
     save_png(heat_map4_2, png_path + "test_heat_map_nyc_4-2.png")
 
@@ -476,7 +476,7 @@ def run_test_heat_map(spark):
     heat_map5_1 = heatmap(vega_5, res)
     heat_map5_2 = heatmap(vega_5, res)
 
-    baseline_png5 = png_path + "heat_map_nyc_5.png"
+    baseline_png5 = baseline_path + "heat_map_nyc_5.png"
     save_png(heat_map5_1, png_path + "test_heat_map_nyc_5-1.png")
     save_png(heat_map5_2, png_path + "test_heat_map_nyc_5-2.png")
 
@@ -512,7 +512,7 @@ def run_test_choropleth_map(spark):
     choropleth_map1_1 = choroplethmap(vega_1, res)
     choropleth_map1_2 = choroplethmap(vega_1, res)
 
-    baseline_png1 = png_path + "choropleth_map_nyc_1.png"
+    baseline_png1 = baseline_path + "choropleth_map_nyc_1.png"
     save_png(choropleth_map1_1, png_path + "test_choropleth_map_nyc_1-1.png")
     save_png(choropleth_map1_2, png_path + "test_choropleth_map_nyc_1-2.png")
 
@@ -522,7 +522,7 @@ def run_test_choropleth_map(spark):
     choropleth_map2_1 = choroplethmap(vega_2, res)
     choropleth_map2_2 = choroplethmap(vega_2, res)
 
-    baseline_png2 = png_path + "choropleth_map_nyc_2.png"
+    baseline_png2 = baseline_path + "choropleth_map_nyc_2.png"
     save_png(choropleth_map2_1, png_path + "test_choropleth_map_nyc_2-1.png")
     save_png(choropleth_map2_2, png_path + "test_choropleth_map_nyc_2-2.png")
 
@@ -532,7 +532,7 @@ def run_test_choropleth_map(spark):
     choropleth_map3_1 = choroplethmap(vega_3, res)
     choropleth_map3_2 = choroplethmap(vega_3, res)
 
-    baseline_png3 = png_path + "choropleth_map_nyc_3.png"
+    baseline_png3 = baseline_path + "choropleth_map_nyc_3.png"
     save_png(choropleth_map3_1, png_path + "test_choropleth_map_nyc_3-1.png")
     save_png(choropleth_map3_2, png_path + "test_choropleth_map_nyc_3-2.png")
 
@@ -542,7 +542,7 @@ def run_test_choropleth_map(spark):
     choropleth_map4_1 = choroplethmap(vega_4, res)
     choropleth_map4_2 = choroplethmap(vega_4, res)
 
-    baseline_png4 = png_path + "choropleth_map_nyc_4.png"
+    baseline_png4 = baseline_path + "choropleth_map_nyc_4.png"
     save_png(choropleth_map4_1, png_path + "test_choropleth_map_nyc_4-1.png")
     save_png(choropleth_map4_2, png_path + "test_choropleth_map_nyc_4-2.png")
 
@@ -552,7 +552,7 @@ def run_test_choropleth_map(spark):
     choropleth_map5_1 = choroplethmap(vega_5, res)
     choropleth_map5_2 = choroplethmap(vega_5, res)
 
-    baseline_png5 = png_path + "choropleth_map_nyc_5.png"
+    baseline_png5 = baseline_path + "choropleth_map_nyc_5.png"
     save_png(choropleth_map5_1, png_path + "test_choropleth_map_nyc_5-1.png")
     save_png(choropleth_map5_2, png_path + "test_choropleth_map_nyc_5-2.png")
 
@@ -562,7 +562,7 @@ def run_test_choropleth_map(spark):
     choropleth_map6_1 = choroplethmap(vega_6, res)
     choropleth_map6_2 = choroplethmap(vega_6, res)
 
-    baseline_png6 = png_path + "choropleth_map_nyc_6.png"
+    baseline_png6 = baseline_path + "choropleth_map_nyc_6.png"
     save_png(choropleth_map6_1, png_path + "test_choropleth_map_nyc_6-1.png")
     save_png(choropleth_map6_2, png_path + "test_choropleth_map_nyc_6-2.png")
 
@@ -572,7 +572,7 @@ def run_test_choropleth_map(spark):
     choropleth_map7_1 = choroplethmap(vega_7, res)
     choropleth_map7_2 = choroplethmap(vega_7, res)
 
-    baseline_png7 = png_path + "choropleth_map_nyc_7.png"
+    baseline_png7 = baseline_path + "choropleth_map_nyc_7.png"
     save_png(choropleth_map7_1, png_path + "test_choropleth_map_nyc_7-1.png")
     save_png(choropleth_map7_2, png_path + "test_choropleth_map_nyc_7-2.png")
 
@@ -582,7 +582,7 @@ def run_test_choropleth_map(spark):
     choropleth_map8_1 = choroplethmap(vega_8, res)
     choropleth_map8_2 = choroplethmap(vega_8, res)
 
-    baseline_png8 = png_path + "choropleth_map_nyc_8.png"
+    baseline_png8 = baseline_path + "choropleth_map_nyc_8.png"
     save_png(choropleth_map8_1, png_path + "test_choropleth_map_nyc_8-1.png")
     save_png(choropleth_map8_2, png_path + "test_choropleth_map_nyc_8-2.png")
 
@@ -592,7 +592,7 @@ def run_test_choropleth_map(spark):
     choropleth_map9_1 = choroplethmap(vega_9, res)
     choropleth_map9_2 = choroplethmap(vega_9, res)
 
-    baseline_png9 = png_path + "choropleth_map_nyc_9.png"
+    baseline_png9 = baseline_path + "choropleth_map_nyc_9.png"
     save_png(choropleth_map9_1, png_path + "test_choropleth_map_nyc_9-1.png")
     save_png(choropleth_map9_2, png_path + "test_choropleth_map_nyc_9-2.png")
 
@@ -603,7 +603,7 @@ def run_test_choropleth_map(spark):
     choropleth_map10_1 = choroplethmap(vega_10, res)
     choropleth_map10_2 = choroplethmap(vega_10, res)
 
-    baseline_png10 = png_path + "choropleth_map_nyc_10.png"
+    baseline_png10 = baseline_path + "choropleth_map_nyc_10.png"
     save_png(choropleth_map10_1, png_path + "test_choropleth_map_nyc_10-1.png")
     save_png(choropleth_map10_2, png_path + "test_choropleth_map_nyc_10-2.png")
 
@@ -613,7 +613,7 @@ def run_test_choropleth_map(spark):
     choropleth_map11_1 = choroplethmap(vega_11, res)
     choropleth_map11_2 = choroplethmap(vega_11, res)
 
-    baseline_png11 = png_path + "choropleth_map_nyc_11.png"
+    baseline_png11 = baseline_path + "choropleth_map_nyc_11.png"
     save_png(choropleth_map11_1, png_path + "test_choropleth_map_nyc_11-1.png")
     save_png(choropleth_map11_2, png_path + "test_choropleth_map_nyc_11-2.png")
 
@@ -623,7 +623,7 @@ def run_test_choropleth_map(spark):
     choropleth_map12_1 = choroplethmap(vega_12, res)
     choropleth_map12_2 = choroplethmap(vega_12, res)
 
-    baseline_png12 = png_path + "choropleth_map_nyc_12.png"
+    baseline_png12 = baseline_path + "choropleth_map_nyc_12.png"
     save_png(choropleth_map12_1, png_path + "test_choropleth_map_nyc_12-1.png")
     save_png(choropleth_map12_2, png_path + "test_choropleth_map_nyc_12-2.png")
 
@@ -634,7 +634,7 @@ def run_test_choropleth_map(spark):
     choropleth_map13_1 = choroplethmap(vega_13, res)
     choropleth_map13_2 = choroplethmap(vega_13, res)
 
-    baseline_png13 = png_path + "choropleth_map_nyc_13.png"
+    baseline_png13 = baseline_path + "choropleth_map_nyc_13.png"
     save_png(choropleth_map13_1, png_path + "test_choropleth_map_nyc_13-1.png")
     save_png(choropleth_map13_2, png_path + "test_choropleth_map_nyc_13-2.png")
 
@@ -644,7 +644,7 @@ def run_test_choropleth_map(spark):
     choropleth_map14_1 = choroplethmap(vega_14, res)
     choropleth_map14_2 = choroplethmap(vega_14, res)
 
-    baseline_png14 = png_path + "choropleth_map_nyc_14.png"
+    baseline_png14 = baseline_path + "choropleth_map_nyc_14.png"
     save_png(choropleth_map14_1, png_path + "test_choropleth_map_nyc_14-1.png")
     save_png(choropleth_map14_2, png_path + "test_choropleth_map_nyc_14-2.png")
 
@@ -654,7 +654,7 @@ def run_test_choropleth_map(spark):
     choropleth_map15_1 = choroplethmap(vega_15, res)
     choropleth_map15_2 = choroplethmap(vega_15, res)
 
-    baseline_png15 = png_path + "choropleth_map_nyc_15.png"
+    baseline_png15 = baseline_path + "choropleth_map_nyc_15.png"
     save_png(choropleth_map15_1, png_path + "test_choropleth_map_nyc_15-1.png")
     save_png(choropleth_map15_2, png_path + "test_choropleth_map_nyc_15-2.png")
 
@@ -665,7 +665,7 @@ def run_test_choropleth_map(spark):
     choropleth_map16_1 = choroplethmap(vega_16, res)
     choropleth_map16_2 = choroplethmap(vega_16, res)
 
-    baseline_png16 = png_path + "choropleth_map_nyc_16.png"
+    baseline_png16 = baseline_path + "choropleth_map_nyc_16.png"
     save_png(choropleth_map16_1, png_path + "test_choropleth_map_nyc_16-1.png")
     save_png(choropleth_map16_2, png_path + "test_choropleth_map_nyc_16-2.png")
 
@@ -675,7 +675,7 @@ def run_test_choropleth_map(spark):
     choropleth_map17_1 = choroplethmap(vega_17, res)
     choropleth_map17_2 = choroplethmap(vega_17, res)
 
-    baseline_png17 = png_path + "choropleth_map_nyc_17.png"
+    baseline_png17 = baseline_path + "choropleth_map_nyc_17.png"
     save_png(choropleth_map17_1, png_path + "test_choropleth_map_nyc_17-1.png")
     save_png(choropleth_map17_2, png_path + "test_choropleth_map_nyc_17-2.png")
 
@@ -685,7 +685,7 @@ def run_test_choropleth_map(spark):
     choropleth_map18_1 = choroplethmap(vega_18, res)
     choropleth_map18_2 = choroplethmap(vega_18, res)
 
-    baseline_png18 = png_path + "choropleth_map_nyc_18.png"
+    baseline_png18 = baseline_path + "choropleth_map_nyc_18.png"
     save_png(choropleth_map18_1, png_path + "test_choropleth_map_nyc_18-1.png")
     save_png(choropleth_map18_2, png_path + "test_choropleth_map_nyc_18-2.png")
 
@@ -695,7 +695,7 @@ def run_test_choropleth_map(spark):
     choropleth_map19_1 = choroplethmap(vega_19, res)
     choropleth_map19_2 = choroplethmap(vega_19, res)
 
-    baseline_png19 = png_path + "choropleth_map_nyc_19.png"
+    baseline_png19 = baseline_path + "choropleth_map_nyc_19.png"
     save_png(choropleth_map19_1, png_path + "test_choropleth_map_nyc_19-1.png")
     save_png(choropleth_map19_2, png_path + "test_choropleth_map_nyc_19-2.png")
 
@@ -765,7 +765,7 @@ def run_test_icon_viz(spark):
     icon_viz1_1 = icon_viz(vega_1, res)
     icon_viz1_2 = icon_viz(vega_1, res)
 
-    baseline_png1 = png_path + "icon_viz_nyc_1.png"
+    baseline_png1 = baseline_path + "icon_viz_nyc_1.png"
     save_png(icon_viz1_1, png_path + "test_icon_viz_nyc_1-1.png")
     save_png(icon_viz1_2, png_path + "test_icon_viz_nyc_1-2.png")
 
@@ -774,7 +774,7 @@ def run_test_icon_viz(spark):
     icon_viz2_1 = icon_viz(vega_2, res)
     icon_viz2_2 = icon_viz(vega_2, res)
 
-    baseline_png2 = png_path + "icon_viz_nyc_2.png"
+    baseline_png2 = baseline_path + "icon_viz_nyc_2.png"
     save_png(icon_viz2_1, png_path + "test_icon_viz_nyc_2-1.png")
     save_png(icon_viz2_2, png_path + "test_icon_viz_nyc_2-2.png")
 
@@ -783,7 +783,7 @@ def run_test_icon_viz(spark):
     icon_viz3_1 = icon_viz(vega_3, res)
     icon_viz3_2 = icon_viz(vega_3, res)
 
-    baseline_png3 = png_path + "icon_viz_nyc_3.png"
+    baseline_png3 = baseline_path + "icon_viz_nyc_3.png"
     save_png(icon_viz3_1, png_path + "test_icon_viz_nyc_3-1.png")
     save_png(icon_viz3_2, png_path + "test_icon_viz_nyc_3-2.png")
 
@@ -816,7 +816,7 @@ def run_test_fishnet_map(spark):
     fishnet_map1_1 = fishnetmap(vega_1, res)
     fishnet_map1_2 = fishnetmap(vega_1, res)
 
-    baseline_png1 = png_path + "fishnet_map_nyc_1.png"
+    baseline_png1 = baseline_path + "fishnet_map_nyc_1.png"
     save_png(fishnet_map1_1, png_path + "test_fishnet_map_nyc_1-1.png")
     save_png(fishnet_map1_2, png_path + "test_fishnet_map_nyc_1-2.png")
 
@@ -825,7 +825,7 @@ def run_test_fishnet_map(spark):
     fishnet_map2_1 = fishnetmap(vega_2, res)
     fishnet_map2_2 = fishnetmap(vega_2, res)
 
-    baseline_png2 = png_path + "fishnet_map_nyc_2.png"
+    baseline_png2 = baseline_path + "fishnet_map_nyc_2.png"
     save_png(fishnet_map2_1, png_path + "test_fishnet_map_nyc_2-1.png")
     save_png(fishnet_map2_2, png_path + "test_fishnet_map_nyc_2-2.png")
 
@@ -834,7 +834,7 @@ def run_test_fishnet_map(spark):
     fishnet_map3_1 = fishnetmap(vega_3, res)
     fishnet_map3_2 = fishnetmap(vega_3, res)
 
-    baseline_png3 = png_path + "fishnet_map_nyc_3.png"
+    baseline_png3 = baseline_path + "fishnet_map_nyc_3.png"
     save_png(fishnet_map3_1, png_path + "test_fishnet_map_nyc_3-1.png")
     save_png(fishnet_map3_2, png_path + "test_fishnet_map_nyc_3-2.png")
 
@@ -843,7 +843,7 @@ def run_test_fishnet_map(spark):
     fishnet_map4_1 = fishnetmap(vega_4, res)
     fishnet_map4_2 = fishnetmap(vega_4, res)
 
-    baseline_png4 = png_path + "fishnet_map_nyc_4.png"
+    baseline_png4 = baseline_path + "fishnet_map_nyc_4.png"
     save_png(fishnet_map4_1, png_path + "test_fishnet_map_nyc_4-1.png")
     save_png(fishnet_map4_2, png_path + "test_fishnet_map_nyc_4-2.png")
 
@@ -852,7 +852,7 @@ def run_test_fishnet_map(spark):
     fishnet_map5_1 = fishnetmap(vega_5, res)
     fishnet_map5_2 = fishnetmap(vega_5, res)
 
-    baseline_png5 = png_path + "fishnet_map_nyc_5.png"
+    baseline_png5 = baseline_path + "fishnet_map_nyc_5.png"
     save_png(fishnet_map5_1, png_path + "test_fishnet_map_nyc_5-1.png")
     save_png(fishnet_map5_2, png_path + "test_fishnet_map_nyc_5-2.png")
 
