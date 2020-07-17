@@ -91,6 +91,7 @@ def read_file(*args, **kwargs):
         File path or file handle to read from.
     bbox : tuple or GeoSeries
         Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+
         * min_x: The minimum x coordinate of the bounding box.
         * min_y: The minimum y coordinate of the bounding box.
         * max_x: The maximum x coordinate of the bounding box.
@@ -100,12 +101,13 @@ def read_file(*args, **kwargs):
     rows : int or slice
         * If ``rows`` is an integer *n*, this function loads the first *n* rows.
         * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+
             * *start:* The position to start the slicing, by default 0.
             * *end:* The position to end the slicing.
             * *step:* The step of the slicing, by default 1.
 
     **kwargs :
-    Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
 
     Returns
     --------
@@ -193,16 +195,24 @@ def to_file(*args, **kwargs):
     driver: str
         The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
     schema: dict
+        Data schema.
+
         * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
         * If None (default), this function determines the schema based on each column's dtype.
     index: bool
+        Whether to write index.
+
         * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
         * If True, writes index into one or more columns (for MultiIndex).
         * If False, no index is written.
     mode: str
+        Mode of writing data to file.
+
         * 'a': Append
         * 'w' (default): Write
     crs: str
+        The coordinate reference system to use.
+        
         * If specified, the CRS is passed to Fiona to better control how the file is written.
         * If None (default), this function determines the crs based on crs df attribute.
     geometry: str

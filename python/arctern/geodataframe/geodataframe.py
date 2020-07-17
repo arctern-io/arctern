@@ -123,8 +123,10 @@ class GeoDataFrame(DataFrame):
             The name of column to be setten as a geometry column.
         inplace: bool, default false
             Whether to modify the GeoDataFrame in place.
+
             * *True:* Modifies the GeoDataFrame in place (does not create a new object).
             * *False:* Does not modifies the GeoDataFrame in place.
+
         crs: str
             The coordinate reference system to use.
 
@@ -175,18 +177,22 @@ class GeoDataFrame(DataFrame):
         ----------
         na: {'null', 'drop', 'keep'}
             Indicates how to output missing (NaN) values in the GeoDataFrame, by default 'null'.
+
             * 'null': Outputs the missing entries as JSON null.
             * 'drop': Removes the property from the feature. This applies to each feature individually so that features may have different properties.
             * 'keep': Outputs the missing entries as NaN.
+
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
+
             * *True:* Includes bounding box in the GeoJSON string.
             * *False:* Don't include bounding box in the GeoJSON string.
+
         geometry: str
             The name of geometry column.
 
         **kwargs:
-            Parameters to pass to `jump.dumps`.
+            Parameters to pass to ``jump.dumps``.
 
         Returns
         -------
@@ -404,20 +410,21 @@ class GeoDataFrame(DataFrame):
 
     def dissolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         """
-        Dissolves geometries within `by` into a single observation.
+        Dissolves geometries within ``by`` into a single observation.
 
-        This is accomplished by applying the `unary_union` method to all geometries within a group.
+        This is accomplished by applying the ``unary_union`` method to all geometries within a group.
 
-        Observations associated with each `by` group will be aggregated using the `aggfunc`.
+        Observations associated with each ``by`` group will be aggregated using the ``aggfunc``.
 
         Parameters
         ----------
         by: str
             Column whose values define groups to be dissolved, by default None.
         aggfunc: function or str
-            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas ``groupby.agg`` method.
         as_index: bool
             Whether to use the ``by`` column as the index of result, by default True.
+
             * *True:* The ``by`` column becomes the index of result.
             * *False:* The result uses the default ascending index that starts from 0.
 
@@ -530,7 +537,7 @@ class GeoDataFrame(DataFrame):
               join; preserve the order of the left keys.
         on : label or list
            Column or index level names to join on. These must be found in both
-           DataFrames. If `on` is None and not merging on indexes then this defaults
+           DataFrames. If ``on`` is None and not merging on indexes then this defaults
            to the intersection of the columns in both DataFrames.
         left_on : label or list, or array-like
             Column or index level names to join on in the left DataFrame. Can also
@@ -641,21 +648,26 @@ class GeoDataFrame(DataFrame):
             File path or file handle to read from.
         bbox: tuple or GeoSeries
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
             * max_y: The maximum y coordinate of the bounding box.
+
         mask: dict, GeoSeries
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
         rows: int or slice
+            Rows to load.
+
             * If ``rows`` is an integer *n*, this function loads the first *n* rows.
             * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+
                 * *start:* The position to start the slicing, by default 0.
                 * *end:* The position to end the slicing.
                 * *step:* The step of the slicing, by default 1.
 
         **kwargs:
-        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+            Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
 
         Notes
         -------
@@ -682,23 +694,31 @@ class GeoDataFrame(DataFrame):
         driver: str
             The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
         schema: dict
+            Data schema.
+
             * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the schema based on each column's dtype.
         index: bool
+            Whether to write index.
+
             * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
             * If True, writes index into one or more columns (for MultiIndex).
             * If False, no index is written.
         mode: str
+            Mode of writing data to file.
+
             * 'a': Append
             * 'w' (default): Write
         crs: str
+            The coordinate reference system to use.
+
             * If specified, the CRS is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the crs based on crs df attribute.
         geometry: str
             Specifys geometry column, by default None.
 
         **kwargs:
-        Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
+            Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
 
         Notes
         -----

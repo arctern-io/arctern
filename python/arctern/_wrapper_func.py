@@ -2055,6 +2055,7 @@ def fishnet_map_layer(vega, points, weights, transform=True):
 def within_which(left, right):
     """
     For each geometry in ``left``, search for a geometry in ``right`` that contains it.
+
     Parameters
     ----------
     left : GeoSeries
@@ -2086,6 +2087,7 @@ def within_which(left, right):
 def nearest_location_on_road(roads, points):
     """
     Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : Series
@@ -2113,6 +2115,7 @@ def nearest_location_on_road(roads, points):
 def nearest_road(roads, points,):
     """
     Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : Series
@@ -2139,6 +2142,7 @@ def nearest_road(roads, points,):
 def near_road(roads, points, distance=100):
     """
     For each point in ``points``, tests whether there is a road within the given ``distance`` of the point. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : Series

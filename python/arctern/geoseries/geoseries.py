@@ -2027,6 +2027,7 @@ class GeoSeries(Series):
 
         bbox : tuple
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box is denoted with ``(min_x, min_y, max_x, max_y)``.
+
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
@@ -2036,8 +2037,11 @@ class GeoSeries(Series):
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
 
         item : int or slice
+            Rows to load.
+
             * If ``item`` is an integer, this function loads the geometry with an index of the integer.
             * If ``item`` is a slice object (for example, *[start, end, step]*), this function loads items by skipping over items.
+
                 * *start:* The position to start the slicing, by default 0.
                 * *end:* The position to end the slicing.
                 * *step:* The step of the slicing, by default 1.
@@ -2095,6 +2099,8 @@ class GeoSeries(Series):
         fp: str, pathlib.Path, or file-like object
             A dataset resource identifier or file object.
         mode : str
+            Mode of writing data to file.
+
             * 'a': Append
             * 'w' (default): Write
             Not all driver support append, see the "supported drivers" below for more infomation.
