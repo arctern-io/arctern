@@ -212,7 +212,7 @@ def to_file(*args, **kwargs):
         * 'w' (default): Write
     crs: str
         The coordinate reference system to use.
-        
+
         * If specified, the CRS is passed to Fiona to better control how the file is written.
         * If None (default), this function determines the crs based on crs df attribute.
     geometry: str
