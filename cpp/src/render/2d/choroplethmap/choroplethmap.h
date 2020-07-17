@@ -21,28 +21,39 @@
 #include <vector>
 
 #include "render/2d/general_2d.h"
-#include "render/utils/vega/vega_icon/vega_icon.h"
+#include "render/utils/vega/vega_choroplethmap/vega_choroplethmap.h"
 
 namespace arctern {
 namespace render {
 
-class IconViz : public General2D {
+template <typename T>
+class ChoroplethMap : public General2D {
  public:
-  IconViz() = delete;
+  ChoroplethMap() = delete;
 
-  IconViz(uint32_t* input_x, uint32_t* input_y, int64_t num_icons);
+  ChoroplethMap(std::vector<OGRGeometry*> choropleth_wkb, std::vector<T> count,
+                int64_t num_vertices);
 
   std::vector<uint8_t> Render() final;
 
   void Draw() final;
 
-  VegaIcon& mutable_icon_vega() { return icon_vega_; }
+  VegaChoroplethMap& mutable_choroplethmap_vega() { return choropleth_vega_; }
 
  private:
-  uint32_t* vertices_x_;
-  uint32_t* vertices_y_;
-  size_t num_icons_;
-  VegaIcon icon_vega_;
+  void Transform();
+
+  void SetColor();
+
+ private:
+  std::vector<OGRGeometry*> choropleth_wkb_;
+  std::vector<T> count_;
+  int64_t num_buildings_;
+  VegaChoroplethMap choropleth_vega_;
+
+  std::vector<std::vector<int>> buildings_x_;
+  std::vector<std::vector<int>> buildings_y_;
+  std::vector<float> colors_;
 };
 
 }  // namespace render

@@ -15,14 +15,14 @@
  */
 #include <string>
 
-#include "render/utils/vega/vega_icon/vega_icon.h"
+#include "render/utils/vega/vega_iconviz/vega_iconviz.h"
 
 namespace arctern {
 namespace render {
 
-VegaIcon::VegaIcon(const std::string& json) { Parse(json); }
+VegaIconViz::VegaIconViz(const std::string& json) { Parse(json); }
 
-void VegaIcon::Parse(const std::string& json) {
+void VegaIconViz::Parse(const std::string& json) {
   rapidjson::Document document;
   document.Parse(json.c_str());
 

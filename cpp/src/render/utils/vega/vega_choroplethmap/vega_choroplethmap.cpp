@@ -16,7 +16,7 @@
 #include <string>
 #include <utility>
 
-#include "render/utils/vega/vega_choropleth_map/vega_choropleth_map.h"
+#include "render/utils/vega/vega_choroplethmap/vega_choroplethmap.h"
 
 namespace arctern {
 namespace render {

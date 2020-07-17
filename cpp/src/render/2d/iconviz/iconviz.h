@@ -15,38 +15,34 @@
  */
 #pragma once
 
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <string>
+#include <vector>
 
-#include "render/utils/color/color.h"
-#include "render/utils/vega/vega.h"
+#include "render/2d/general_2d.h"
+#include "render/utils/vega/vega_iconviz/vega_iconviz.h"
 
 namespace arctern {
 namespace render {
 
-class VegaIcon : public Vega {
+class IconViz : public General2D {
  public:
-  VegaIcon() = default;
+  IconViz() = delete;
 
-  explicit VegaIcon(const std::string& json);
+  IconViz(uint32_t* input_x, uint32_t* input_y, int64_t num_icons);
 
-  // TODO: add Build() api to build a vega json string.
-  // std::string Build() final;
+  std::vector<uint8_t> Render() final;
 
- public:
-  const std::string& icon_path() const { return icon_path_; }
+  void Draw() final;
 
-  const int& icon_width() const { return icon_width_; }
-
-  const int& icon_height() const { return icon_height_; }
-
- protected:
-  // vega json to vega struct
-  void Parse(const std::string& json) final;
+  VegaIconViz& mutable_icon_vega() { return icon_vega_; }
 
  private:
-  std::string icon_path_;
-  int icon_width_ = -1;
-  int icon_height_ = -1;
+  uint32_t* vertices_x_;
+  uint32_t* vertices_y_;
+  size_t num_icons_;
+  VegaIconViz icon_vega_;
 };
 
 }  // namespace render
