@@ -355,9 +355,9 @@ class GeoDataFrame(DataFrame):
 
     # pylint: disable=protected-access
     @classmethod
-    def from_geopandas(cls, pdf):
+    def from_geopandas(cls, gdf):
         """
-        Constructs an arctern.GeoSeries object from a geopandas.GeoSeries object.
+        Constructs an arctern.GeoDataFrame object from a geopandas.GeoDataFrame object.
 
         Parameters
         ----------
@@ -393,17 +393,17 @@ class GeoDataFrame(DataFrame):
         """
         import geopandas
         import shapely
-        if not isinstance(pdf, geopandas.GeoDataFrame):
-            raise TypeError(f"pdf must be {geopandas.GeoSeries}, got {type(pdf)}")
-        result = cls(pdf.values, columns=pdf.columns.values.tolist())
-        column_names = pdf.columns.values.tolist()
+        if not isinstance(gdf, geopandas.GeoDataFrame):
+            raise TypeError(f"pdf must be {geopandas.GeoSeries}, got {type(gdf)}")
+        result = cls(gdf.values, columns=gdf.columns.values.tolist())
+        column_names = gdf.columns.values.tolist()
         for col in column_names:
-            if isinstance(pdf[col][0], shapely.geometry.base.BaseGeometry):
-                geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
+            if isinstance(gdf[col][0], shapely.geometry.base.BaseGeometry):
+                geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(gdf[col]))
                 result[col] = geo_col
                 result._geometry_column_names.append(col)
-                if isinstance(pdf[col], geopandas.GeoSeries):
-                    result._crs_for_cols[col] = pdf[col].crs
+                if isinstance(gdf[col], geopandas.GeoSeries):
+                    result._crs_for_cols[col] = gdf[col].crs
                 else:
                     result._crs_for_cols[col] = None
         return result
