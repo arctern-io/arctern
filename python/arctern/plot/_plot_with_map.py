@@ -284,7 +284,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
                        aggregation_type='max',
                        **extra_contextily_params):
     """
-    Plots a choropleth map in matplotlib.
+    Plots a choropleth map in matplotlib with gradient colors.
 
     Parameters
     ----------
@@ -293,7 +293,7 @@ def choroplethmap(ax, region_boundaries, weights, bounding_box,
     region_boundaries : GeoSeries
         Sequence of polygons, as region boundaries to plot.
     weights : Series
-        Color weights for polygons
+        Color weights for polygons.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
     color_gradient : list
@@ -505,7 +505,7 @@ def unique_value_choroplethmap(ax, region_boundaries, labels, bounding_box,
                        coordinate_system='EPSG:3857',
                        **extra_contextily_params):
     """
-    Plots a choropleth map in matplotlib.
+    Plots a choropleth map in matplotlib with a set of unique colors.
 
     Parameters
     ----------
@@ -514,11 +514,11 @@ def unique_value_choroplethmap(ax, region_boundaries, labels, bounding_box,
     region_boundaries : GeoSeries
         Sequence of polygons, as region boundaries to plot.
     labels : Series
-        Color label for polygons
+        Color labels for polygons. Each label matches a unique color defined in ``unique_value_infos``.
     bounding_box : list
         Bounding box of the map. For example, [west, south, east, north].
     unique_value_infos : dict
-        key-value pairs, key represents the label, and value represents the color corresponding to the label.
+        Key-value pairs that specify the unique colors to use. The key represents the label, and the value represents the color corresponding to the label.
     opacity : float, optional
         Opacity of polygons, ranged from 0.0 to 1.0, by default 1.0.
     coordinate_system : str, optional

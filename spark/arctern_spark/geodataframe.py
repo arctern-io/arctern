@@ -535,6 +535,7 @@ class GeoDataFrame(DataFrame):
             The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
         schema: dict
             Data schema.
+
             * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the schema based on each column's dtype.
         index: bool

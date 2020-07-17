@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import os
-from arctern_spark.geoseries import GeoSeries
 from shapely import wkt
+from arctern_spark.geoseries import GeoSeries
 
 GEO_TYPES = ['POLYGON', 'POINT', 'LINESTRING', 'LINEARRING']
 GEO_COLLECTION_TYPES = [
