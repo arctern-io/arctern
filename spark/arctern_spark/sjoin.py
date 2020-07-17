@@ -31,11 +31,11 @@ def sjoin(
     how : string, default 'inner'
         The type of join:
 
-        # TODO: fix doc
-        * 'left': use keys from left_df; retain only left_df geometry column
-        * 'right': use keys from right_df; retain only right_df geometry column
-        * 'inner':
-        * 'full':
+        * *left:* uses keys from left_df
+        * *right:* uses keys from right_df
+        * *inner:* uses intersection from left_df keys with right_df keys
+        * *full:* uses union from left_df keys with right_df keys
+
     op : string, default 'intersects'
         Binary predicate, one of {'contains', 'within'}.
     lsuffix : string, default 'left'

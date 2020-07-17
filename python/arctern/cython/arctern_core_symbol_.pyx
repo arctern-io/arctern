@@ -57,6 +57,11 @@ def choropleth_map(vega,region_boundaries_list, weights_list):
 def icon_viz(vega, points_list):
     pass
 
+def fishnet_map(vega, points_list, weights_list):
+    pass
+
+def unique_value_choropleth_map(vega,region_boundaries_list, labels_list):
+    pass
 
 
 # gis api

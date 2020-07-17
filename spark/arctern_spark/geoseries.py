@@ -39,22 +39,23 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 
-from . import scala_wrapper
-
 
 # for unary or binary operation, which return koalas Series.
 def _column_op(f, *args):
+    from arctern_spark import scala_wrapper
     return ks.base.column_op(getattr(scala_wrapper, f))(*args)
 
 
 # for unary or binary operation, which return GeoSeries.
 # pylint: disable=no-value-for-parameter
 def _column_geo(f, *args, **kwargs):
+    from arctern_spark import scala_wrapper
     kss = ks.base.column_op(getattr(scala_wrapper, f))(*args)
     return GeoSeries(kss, **kwargs)
 
 
 def _agg(f, kss):
+    from arctern_spark import scala_wrapper
     scol = getattr(scala_wrapper, f)(kss.spark.column).alias(name_like_string(kss._internal.column_labels[0]))
     sdf = kss._internal._sdf.select(scol)
     kdf = sdf.to_koalas()
@@ -69,6 +70,7 @@ def _validate_crs(crs):
 
 
 def _validate_arg(arg):
+    from arctern_spark import scala_wrapper
     if isinstance(arg, str):
         arg = scala_wrapper.st_geomfromtext(F.lit(arg))
     elif isinstance(arg, (bytearray, bytes)):
@@ -187,7 +189,8 @@ class GeoSeries(Series):
             kss = anchor._kser_for(column_label)
 
             spark_dtype = kss.spark.data_type
-            if isinstance(spark_dtype, scala_wrapper.GeometryUDT):
+            from arctern_spark.scala_wrapper import GeometryUDT
+            if isinstance(spark_dtype, GeometryUDT):
                 pass
             elif isinstance(spark_dtype, BinaryType):
                 kss = _column_op("st_geomfromwkb", kss)
@@ -1662,6 +1665,7 @@ class GeoSeries(Series):
         min_x, min_y, max_x, max_y = _validate_args(
             min_x, min_y, max_x, max_y, dtype=dtype)
         _kdf = ks.DataFrame(min_x)
+        ks.set_option('compute.ops_on_diff_frames', True)
         kdf = _kdf.rename(columns={_kdf.columns[0]: "min_x"})
         kdf["min_y"] = min_y
         kdf["max_x"] = max_x
@@ -1920,9 +1924,11 @@ class GeoSeries(Series):
         Name: 0, dtype: object
         """
         if isinstance(other, Series):
-            other = scala_wrapper.st_geomfromwkb(other)
+            other = GeoSeries(other)
         elif other is None:
-            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+            pass
+        else:
+            other = _validate_arg(other)
         return super().where(cond=cond, other=other)
 
     def mask(self, cond, other=None):
@@ -1953,9 +1959,11 @@ class GeoSeries(Series):
         Name: 0, dtype: object
         """
         if isinstance(other, Series):
-            other = scala_wrapper.st_geomfromwkb(other)
+            other = GeoSeries(other)
         elif other is None:
-            other = scala_wrapper.st_geomfromwkb(F.lit(other))
+            pass
+        else:
+            other = _validate_arg(other)
         return super().mask(cond=cond, other=other)
 
     def replace(self, to_replace=None, value=None, regex=False):
@@ -2030,7 +2038,7 @@ class GeoSeries(Series):
                 )
             to_replace = dict(zip(to_replace, value))
 
-        current = F.when(self.spark.column.isin(scala_wrapper.st_geomfromwkb(F.lit(to_replace))), scala_wrapper.st_geomfromwkb(F.lit(value))).otherwise(self.spark.column)
+        current = F.when(self.spark.column.isin(_validate_arg(to_replace)), _validate_arg(value)).otherwise(self.spark.column)
 
         return self._with_new_scol(current)
 
@@ -2150,9 +2158,8 @@ class GeoSeries(Series):
         item: int or slice
             Load special items by skipping over items or stopping at a specific item.
 
-        **kwargs: Keyword arguments to `fiona.open()`. e.g. `layer`, `enabled_drivers`.
-                       see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for
-                       more info.
+        **kwargs:
+            Keyword arguments to ``fiona.open()``. e.g. ``layer``, ``enabled_drivers``. see https://fiona.readthedocs.io/en/latest/fiona.html#fiona.open for more info.
 
         Returns
         ----------
@@ -2229,7 +2236,8 @@ def first_series(df):
     assert isinstance(df, (DataFrame, pd.DataFrame)), type(df)
     if isinstance(df, DataFrame):
         kss = df._kser_for(df._internal.column_labels[0])
-        if isinstance(kss.spark.data_type, scala_wrapper.GeometryUDT):
+        from arctern_spark.scala_wrapper import GeometryUDT
+        if isinstance(kss.spark.data_type, GeometryUDT):
             return GeoSeries(kss)
         return kss
     return df[df.columns[0]]

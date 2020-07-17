@@ -242,3 +242,26 @@ def test_fishnet_map():
     ax = _get_matplot()
     ap.plot.fishnetmap(ax, points, arr_c, bounding_box=bounding_box, color_gradient=["#0000FF", "#FF0000"], cell_size=4, cell_spacing=1, opacity=1.0, coordinate_system='EPSG:4326')
     _finalize(ax, "test_fishnetmap")
+
+def test_unique_value_choroplethmap():
+    wkt_data = []
+    count_data = []
+
+    wkt_data.append("POLYGON (("
+                    "-73.97324 40.73747, "
+                    "-73.96524 40.74507, "
+                    "-73.96118 40.75890, "
+                    "-73.95556 40.77654, "
+                    "-73.97324 40.73747))")
+    count_data.append(5.0)
+
+    arr_wkt = pandas.Series(wkt_data)
+    arr_wkb = arctern.ST_GeomFromText(arr_wkt)
+    arr_count = pandas.Series(count_data)
+
+    ax = _get_matplot()
+    unique_value_infos = {1: "#FF0000", 2: "#00FF00", 3: "#0000FF", 4: "#00FFFF", 5: "#FF0000"}
+    ap.plot.unique_value_choroplethmap(ax, arr_wkb, arr_count, bounding_box=bounding_box,
+                                       unique_value_infos=unique_value_infos, opacity=1.0,
+                                       coordinate_system='EPSG:4326')
+    _finalize(ax, "test_unique_value_choropleth_map1")

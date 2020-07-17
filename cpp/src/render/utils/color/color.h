@@ -23,8 +23,8 @@ namespace render {
 struct Color {
   float r, g, b, a;
   Color() {}
-  Color(float red, float green, float blue, float value)
-      : r(red), g(green), b(blue), a(value) {}
+  Color(float red, float green, float blue, float alpha)
+      : r(red), g(green), b(blue), a(alpha) {}
   bool operator==(const Color& other) const {
     return r == other.r && g == other.g && b == other.b && a == other.a;
   }
@@ -37,6 +37,8 @@ class ColorParser {
   const Color& color() const { return color_; }
 
   const bool& is_css_hex_color() const { return is_css_hex_color_; }
+
+  const std::string& css_color_string() const { return css_color_string_; }
 
  private:
   void ParseHEX();

@@ -70,7 +70,7 @@ class GeoDataFrame(DataFrame):
     ... }
     >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
     >>> gdf
-    A    B  other_geom         geo1
+       A    B  other_geom         geo1
     0  0  0.0           1  POINT (0 0)
     1  1  1.0           1  POINT (1 1)
     2  2  2.0           1  POINT (2 2)
@@ -123,8 +123,10 @@ class GeoDataFrame(DataFrame):
             The name of column to be setten as a geometry column.
         inplace: bool, default false
             Whether to modify the GeoDataFrame in place.
+
             * *True:* Modifies the GeoDataFrame in place (does not create a new object).
             * *False:* Does not modifies the GeoDataFrame in place.
+
         crs: str
             The coordinate reference system to use.
 
@@ -144,17 +146,15 @@ class GeoDataFrame(DataFrame):
         ...    "geo2": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> print(gdf.geometries_name)
+        >>> gdf.geometries_name
         ['geo1']
-        >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True)
-        ['geo1','geo2']
+        >>> gdf.set_geometry(col="geo2",crs="epsg:4326",inplace=True).geometries_name
+        ['geo1', 'geo2']
         """
         if inplace:
             frame = self
         else:
             frame = self.copy()
-            frame._geometry_column_names = self.geometries_name
-            frame._crs_for_cols = self.crs
 
         geometry_cols = frame._geometry_column_names
         if not isinstance(frame[col], GeoSeries):
@@ -177,18 +177,22 @@ class GeoDataFrame(DataFrame):
         ----------
         na: {'null', 'drop', 'keep'}
             Indicates how to output missing (NaN) values in the GeoDataFrame, by default 'null'.
+
             * 'null': Outputs the missing entries as JSON null.
             * 'drop': Removes the property from the feature. This applies to each feature individually so that features may have different properties.
             * 'keep': Outputs the missing entries as NaN.
+
         show_bbow: bool, optional
             Indicates whether to include bbox (bounding box) in the GeoJSON string, by default False.
+
             * *True:* Includes bounding box in the GeoJSON string.
             * *False:* Don't include bounding box in the GeoJSON string.
+
         geometry: str
             The name of geometry column.
 
         **kwargs:
-            Parameters to pass to `jump.dumps`.
+            Parameters to pass to ``jump.dumps``.
 
         Returns
         -------
@@ -206,8 +210,8 @@ class GeoDataFrame(DataFrame):
         ...     "geometry": ["POINT (0 0)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geometry"], crs=["epsg:4326"])
-        >>> print(gdf.to_json(geometry="geometry"))
-        {"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}
+        >>> gdf.to_json(geometry="geometry")
+        '{"type": "FeatureCollection", "features": [{"id": "0", "type": "Feature", "properties": {"A": 0, "B": 0.0, "other_geom": 0}, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}]}'
         """
         return json.dumps(self._to_geo(na=na, show_bbox=show_bbox, geometry=geometry), **kwargs)
 
@@ -285,6 +289,34 @@ class GeoDataFrame(DataFrame):
             return gdf
         return None
 
+    # pylint: disable=protected-access
+    def copy(self, deep=True):
+        df = super(GeoDataFrame, self).copy(deep)
+        gdf = GeoDataFrame(df)
+        gdf._geometry_column_names = self._geometry_column_names
+        gdf._crs_for_cols = self._crs_for_cols
+        return gdf
+
+    # pylint: disable=protected-access
+    def drop(self, labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors="raise",):
+        geometry_column_names = self._geometry_column_names.copy()
+        crs_for_cols = self._crs_for_cols.copy()
+        df = super(GeoDataFrame, self).drop(labels, axis, index, columns, level, inplace, errors)
+
+        column_names = self.columns.values.tolist()
+        for col in geometry_column_names:
+            if col in column_names:
+                self._crs_for_cols[col] = crs_for_cols[col]
+                self._geometry_column_names.append(col)
+
+        if not inplace:
+            gdf = GeoDataFrame(df)
+            gdf._geometry_column_names = self._geometry_column_names
+            gdf._crs_for_cols = self._crs_for_cols
+            return gdf
+        return None
+
+
     def to_geopandas(self):
         """
         Transforms an arctern.GeoDataFrame object to a geopandas.GeoDataFrame object.
@@ -309,8 +341,8 @@ class GeoDataFrame(DataFrame):
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> pdf = gdf.to_geopandas()
         >>> pdf.set_geometry("geo1", inplace=True)
-        >>> print(pdf.geometry.name)
-        "geo1"
+        >>> pdf.geometry.name
+        'geo1'
         >>> type(pdf["geo1"])
         <class 'geopandas.geoseries.GeoSeries'>
         """
@@ -323,9 +355,9 @@ class GeoDataFrame(DataFrame):
 
     # pylint: disable=protected-access
     @classmethod
-    def from_geopandas(cls, pdf):
+    def from_geopandas(cls, gdf):
         """
-        Constructs an arctern.GeoSeries object from a geopandas.GeoSeries object.
+        Constructs an arctern.GeoDataFrame object from a geopandas.GeoDataFrame object.
 
         Parameters
         ----------
@@ -353,7 +385,7 @@ class GeoDataFrame(DataFrame):
         >>> pdf = geopandas.GeoDataFrame(data, geometry="geometry", crs='epsg:4326')
         >>> gdf = GeoDataFrame.from_geopandas(pdf)
         >>> gdf.geometries_name
-        ["geometry", "copy_geo"]
+        ['geometry', 'copy_geo']
         >>> type(gdf["geometry"])
         <class 'arctern.geoseries.geoseries.GeoSeries'>
         >>> gdf["geometry"].crs
@@ -361,37 +393,38 @@ class GeoDataFrame(DataFrame):
         """
         import geopandas
         import shapely
-        if not isinstance(pdf, geopandas.GeoDataFrame):
-            raise TypeError(f"pdf must be {geopandas.GeoSeries}, got {type(pdf)}")
-        result = cls(pdf.values, columns=pdf.columns.values.tolist())
-        column_names = pdf.columns.values.tolist()
+        if not isinstance(gdf, geopandas.GeoDataFrame):
+            raise TypeError(f"pdf must be {geopandas.GeoSeries}, got {type(gdf)}")
+        result = cls(gdf.values, columns=gdf.columns.values.tolist())
+        column_names = gdf.columns.values.tolist()
         for col in column_names:
-            if isinstance(pdf[col][0], shapely.geometry.base.BaseGeometry):
-                geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(pdf[col]))
+            if isinstance(gdf[col][0], shapely.geometry.base.BaseGeometry):
+                geo_col = GeoSeries.from_geopandas(geopandas.GeoSeries(gdf[col]))
                 result[col] = geo_col
                 result._geometry_column_names.append(col)
-                if isinstance(pdf[col], geopandas.GeoSeries):
-                    result._crs_for_cols[col] = pdf[col].crs
+                if isinstance(gdf[col], geopandas.GeoSeries):
+                    result._crs_for_cols[col] = gdf[col].crs
                 else:
                     result._crs_for_cols[col] = None
         return result
 
     def dissolve(self, by=None, col="geometry", aggfunc="first", as_index=True):
         """
-        Dissolves geometries within `by` into a single observation.
+        Dissolves geometries within ``by`` into a single observation.
 
-        This is accomplished by applying the `unary_union` method to all geometries within a group.
+        This is accomplished by applying the ``unary_union`` method to all geometries within a group.
 
-        Observations associated with each `by` group will be aggregated using the `aggfunc`.
+        Observations associated with each ``by`` group will be aggregated using the ``aggfunc``.
 
         Parameters
         ----------
         by: str
             Column whose values define groups to be dissolved, by default None.
         aggfunc: function or str
-            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas `groupby.agg` method.
+            Aggregation function for manipulation of data associated with each group, by default "first". Passed to pandas ``groupby.agg`` method.
         as_index: bool
             Whether to use the ``by`` column as the index of result, by default True.
+
             * *True:* The ``by`` column becomes the index of result.
             * *False:* The result uses the default ascending index that starts from 0.
 
@@ -411,7 +444,7 @@ class GeoDataFrame(DataFrame):
         ...     "geo1": ["POINT (0 0)", "POINT (1 1)", "POINT (2 2)", "POINT (3 3)", "POINT (4 4)"],
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1"], crs=["epsg:4326"])
-        >>> gdf.dissolve(by="other_geom", col="geo1")
+        >>> gdf.dissolve(by="other_geom", col="geo1") # doctest: +NORMALIZE_WHITESPACE
                                         geo1  A    B
         other_geom
         1           MULTIPOINT (0 0,1 1,2 2)  0  0.0
@@ -464,7 +497,7 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf = GeoDataFrame(data, geometries=["geo1", "geo2"], crs=["epsg:4326", "epsg:3857"])
         >>> gdf.crs
-        ["epsg:4326", "epsg:3857"]
+        {'geo1': 'epsg:4326', 'geo2': 'epsg:3857'}
         """
         return self._crs_for_cols
 
@@ -504,7 +537,7 @@ class GeoDataFrame(DataFrame):
               join; preserve the order of the left keys.
         on : label or list
            Column or index level names to join on. These must be found in both
-           DataFrames. If `on` is None and not merging on indexes then this defaults
+           DataFrames. If ``on`` is None and not merging on indexes then this defaults
            to the intersection of the columns in both DataFrames.
         left_on : label or list, or array-like
             Column or index level names to join on in the left DataFrame. Can also
@@ -572,7 +605,7 @@ class GeoDataFrame(DataFrame):
         ... }
         >>> gdf2 = GeoDataFrame(data2, geometries=["location"], crs=["epsg:4326"])
         >>> gdf1.merge(gdf2, left_on="A", right_on="A")
-        A    B  other_geom     geometry     location
+           A    B  other_geom     geometry     location
         0  0  0.0           0  POINT (0 0)  POINT (3 0)
         1  1  1.0           1  POINT (1 1)  POINT (1 6)
         2  2  2.0           2  POINT (2 2)  POINT (2 4)
@@ -597,7 +630,9 @@ class GeoDataFrame(DataFrame):
                 elif col in right.columns:
                     pick = right
 
-                kser.set_crs(pick._crs_for_cols.get(col, None))
+                picked_crs = pick._crs_for_cols.get(col, None)
+                kser.set_crs(picked_crs)
+                result._crs_for_cols[col] = picked_crs
 
         return result
 
@@ -613,21 +648,26 @@ class GeoDataFrame(DataFrame):
             File path or file handle to read from.
         bbox: tuple or GeoSeries
             Filters for geometries that spatially intersect with the provided bounding box. The bounding box can be a tuple ``(min_x, min_y, max_x, max_y)``, or a GeoSeries.
+
             * min_x: The minimum x coordinate of the bounding box.
             * min_y: The minimum y coordinate of the bounding box.
             * max_x: The maximum x coordinate of the bounding box.
             * max_y: The maximum y coordinate of the bounding box.
+
         mask: dict, GeoSeries
             Filters for geometries that spatially intersect with the geometries in ``mask``. ``mask`` should have the same crs with the GeoSeries that calls this method.
         rows: int or slice
+            Rows to load.
+
             * If ``rows`` is an integer *n*, this function loads the first *n* rows.
             * If ``rows`` is a slice object (for example, *[start, end, step]*), this function loads rows by skipping over rows.
+
                 * *start:* The position to start the slicing, by default 0.
                 * *end:* The position to end the slicing.
                 * *step:* The step of the slicing, by default 1.
 
         **kwargs:
-        Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
+            Parameters to be passed to the ``open`` or ``BytesCollection`` method in the fiona library when opening the file. For more information on possible keywords, type ``import fiona; help(fiona.open)``.
 
         Notes
         -------
@@ -654,23 +694,31 @@ class GeoDataFrame(DataFrame):
         driver: str
             The OGR format driver used to write the vector file, by default 'ESRI Shapefile'.
         schema: dict
+            Data schema.
+
             * If specified, the schema dictionary is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the schema based on each column's dtype.
         index: bool
+            Whether to write index.
+
             * If None (default), writes the index into one or more columns only if the index is named, is a MultiIndex, or has a non-integer data type.
             * If True, writes index into one or more columns (for MultiIndex).
             * If False, no index is written.
         mode: str
+            Mode of writing data to file.
+
             * 'a': Append
             * 'w' (default): Write
         crs: str
+            The coordinate reference system to use.
+
             * If specified, the CRS is passed to Fiona to better control how the file is written.
             * If None (default), this function determines the crs based on crs df attribute.
         geometry: str
             Specifys geometry column, by default None.
 
         **kwargs:
-        Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
+            Parameters to be passed to ``fiona.open``. Can be used to write to multi-layer data, store data within archives (zip files), etc.
 
         Notes
         -----
@@ -692,7 +740,7 @@ class GeoDataFrame(DataFrame):
         >>> gdf.to_file(filename="/tmp/test.shp", geometry="geo1", crs="epsg:3857")
         >>> read_gdf = GeoDataFrame.from_file(filename="/tmp/test.shp")
         >>> read_gdf
-        A    B  other_geom         geo2         geo3     geometry
+           A    B  other_geom         geo2         geo3     geometry
         0  0  0.0           0  POINT (1 1)  POINT (2 2)  POINT (0 0)
         1  1  1.0           1  POINT (2 2)  POINT (3 3)  POINT (1 1)
         2  2  2.0           2  POINT (3 3)  POINT (4 4)  POINT (2 2)

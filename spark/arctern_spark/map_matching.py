@@ -16,7 +16,6 @@
 
 from databricks.koalas import DataFrame, Series
 from arctern_spark import GeoSeries
-from arctern_spark import scala_wrapper
 
 __all__ = [
     "near_road",
@@ -31,6 +30,7 @@ def _invoke_scala_udf(func, points, roads, *args):
 
     if roads.crs != points.crs or roads.crs != "EPSG:4326":
         raise ValueError("Only can calculate with 'EPSG:4326' crs.")
+    from arctern_spark import scala_wrapper
     sdf = getattr(scala_wrapper, func)(points._kdf.spark.frame(), roads._kdf.spark.frame(), *args)
     kdf = DataFrame(sdf)
     return kdf
@@ -40,6 +40,7 @@ def near_road(roads, points, distance=100.0):
     # TODO: FIX the doc
     """
     Tests whether there is a road within the given ``distance`` of all ``points``. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : GeoSeries
@@ -71,6 +72,7 @@ def near_road(roads, points, distance=100.0):
 def nearest_road(roads, points):
     """
     Returns the road in ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : GeoSeries
@@ -99,6 +101,7 @@ def nearest_road(roads, points):
 def nearest_location_on_road(roads, points):
     """
     Returns the location on ``roads`` closest to the ``points``. The points do not need to be part of a continuous path.
+
     Parameters
     ----------
     roads : Series
