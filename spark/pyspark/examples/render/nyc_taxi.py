@@ -57,6 +57,7 @@ def draw_weighted_point_map(spark):
 
     # single color and single stroke width
     res1 = spark.sql("select ST_Point(pickup_longitude, pickup_latitude) as point from nyc_taxi where ST_Within(ST_Point(pickup_longitude, pickup_latitude),  ST_GeomFromText('POLYGON ((-73.998427 40.730309, -73.954348 40.730309, -73.954348 40.780816 ,-73.998427 40.780816, -73.998427 40.730309))'))")
+    res1.show()
     vega1 = vega_weighted_pointmap(1024, 896, bounding_box=[-73.998427, 40.730309, -73.954348, 40.780816], color_gradient=["#87CEEB"], opacity=1.0, coordinate_system="EPSG:4326")
     res1 = weighted_pointmap(vega1, res1)
     save_png(res1, '/tmp/weighted_pointmap_0_0.png')
@@ -170,11 +171,11 @@ if __name__ == "__main__":
 
     spark_session.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
-    draw_heat_map(spark_session)
-    draw_point_map(spark_session)
-    draw_choropleth_map(spark_session)
+    #draw_heat_map(spark_session)
+    #draw_point_map(spark_session)
+    #draw_choropleth_map(spark_session)
     draw_weighted_point_map(spark_session)
-    draw_icon_viz(spark_session)
-    draw_fishnet_map(spark_session)
+    #draw_icon_viz(spark_session)
+    #draw_fishnet_map(spark_session)
 
     spark_session.stop()
