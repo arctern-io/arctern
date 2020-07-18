@@ -131,73 +131,73 @@ pipeline {
             }
         }
 
-        stage('Build Arctern Web Server Image') {
-            agent {
-                kubernetes {
-                    label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-                    defaultContainer 'jnlp'
-                    yamlFile 'ci/jenkins/pod/docker-pod.yaml'
-                }
-            }
-
-            steps {
-                container('docker-env') {
-                    script {
-                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
-                    }
-                }
-            }
-        }
-
-        // stage('Build Arctern Docker Images') {
-        //     matrix {
-        //         agent none
-        //         axes {
-        //             axis {
-        //                 name 'OS_NAME'
-        //                 values 'ubuntu18.04', "centos7"
-        //             }
-        //             axis {
-        //                 name 'CPU_ARCH'
-        //                 values 'amd64'
-        //             }
-        //             axis {
-        //                 name 'BINARY_VERSION'
-        //                 values 'gpu', 'cpu'
-        //             }
+        // stage('Build Arctern Web Server Image') {
+        //     agent {
+        //         kubernetes {
+        //             label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+        //             defaultContainer 'jnlp'
+        //             yamlFile 'ci/jenkins/pod/docker-pod.yaml'
         //         }
+        //     }
 
-        //         environment {
-        //             ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${CPU_ARCH}/${BINARY_VERSION}"
-        //             REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
-        //             ARCTERN_SPARK_TARGET_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
-        //             ARCTERN_SPARK_SOURCE_REPO = "${ARCTERN_SPARK_TARGET_REPO}"
-        //             ARCTERN_SPARK_TARGET_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-        //             ARCTERN_SPARK_CHANGE_TAG = "${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
-        //             ARCTERN_SPARK_SOURCE_TAG = "${CHANGE_TARGET ? ARCTERN_SPARK_CHANGE_TAG : ARCTERN_SPARK_TARGET_TAG}"
-        //         }
-
-        //         stages {
-        //             stage('Build'){
-        //                 agent {
-        //                     kubernetes {
-        //                         label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-        //                         defaultContainer 'jnlp'
-        //                         yamlFile 'ci/jenkins/pod/docker-pod.yaml'
-        //                     }
-        //                 }
-
-        //                 steps {
-        //                     container('docker-env') {
-        //                         script {
-        //                             load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
-        //                         }
-        //                     }
-        //                 }
+        //     steps {
+        //         container('docker-env') {
+        //             script {
+        //                 load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
         //             }
         //         }
         //     }
         // }
+
+        stage('Build Arctern Docker Images') {
+            matrix {
+                agent none
+                axes {
+                    axis {
+                        name 'OS_NAME'
+                        values 'ubuntu18.04', "centos7"
+                    }
+                    axis {
+                        name 'CPU_ARCH'
+                        values 'amd64'
+                    }
+                    axis {
+                        name 'BINARY_VERSION'
+                        values 'gpu', 'cpu'
+                    }
+                }
+
+                environment {
+                    ARTFACTORY_URL = "${params.JFROG_ARTFACTORY_URL}/conda/channel/${env.PIPELINE_NAME}/${SEMVER}/${CPU_ARCH}/${BINARY_VERSION}"
+                    REPO_NAME = "${BINARY_VERSION.contains('gpu') ? GPU_IMAGE_REPOSITORY : IMAGE_REPOSITORY}"
+                    ARCTERN_SPARK_TARGET_REPO = "${params.DOKCER_REGISTRY_URL}/${REPO_NAME}"
+                    ARCTERN_SPARK_SOURCE_REPO = "${ARCTERN_SPARK_TARGET_REPO}"
+                    ARCTERN_SPARK_TARGET_TAG = "${SEMVER}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                    ARCTERN_SPARK_CHANGE_TAG = "${CHANGE_TARGET}-${OS_NAME}-${LOWER_BUILD_TYPE}"
+                    ARCTERN_SPARK_SOURCE_TAG = "${CHANGE_TARGET ? ARCTERN_SPARK_CHANGE_TAG : ARCTERN_SPARK_TARGET_TAG}"
+                }
+
+                stages {
+                    stage('Build'){
+                        agent {
+                            kubernetes {
+                                label "${OS_NAME}-${BINARY_VERSION}-build-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+                                defaultContainer 'jnlp'
+                                yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+                            }
+                        }
+
+                        steps {
+                            container('docker-env') {
+                                script {
+                                    load "${env.WORKSPACE}/ci/jenkins/step/buildArcternSparkImage.groovy"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Dev Test') {
             matrix {
