@@ -97,11 +97,8 @@ def run_test_plot(spark):
     df2 = spark.sql("select st_geomfromtext(geo) from geoms")
 
     # run baseline
-    fig1, ax1 = plt.subplots()
-    plot(ax1, df2)
-    ax1.grid()
     baseline_png1 = baseline_path + "plot_test_1.png"
-    fig1.savefig(baseline_png1)
+
 
     # run plot test
     fig2, ax2 = plt.subplots()
