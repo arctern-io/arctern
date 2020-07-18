@@ -131,23 +131,23 @@ pipeline {
             }
         }
 
-        stage('Build Arctern Web Server Image') {
-            agent {
-                kubernetes {
-                    label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
-                    defaultContainer 'jnlp'
-                    yamlFile 'ci/jenkins/pod/docker-pod.yaml'
-                }
-            }
+        // stage('Build Arctern Web Server Image') {
+        //     agent {
+        //         kubernetes {
+        //             label "build-webserver-docker-${env.PIPELINE_NAME}-${SEMVER}-${env.BUILD_NUMBER}"
+        //             defaultContainer 'jnlp'
+        //             yamlFile 'ci/jenkins/pod/docker-pod.yaml'
+        //         }
+        //     }
 
-            steps {
-                container('docker-env') {
-                    script {
-                        load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
-                    }
-                }
-            }
-        }
+        //     steps {
+        //         container('docker-env') {
+        //             script {
+        //                 load "${env.WORKSPACE}/ci/jenkins/step/buildArcternFlaskImage.groovy"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Build Arctern Docker Images') {
             matrix {
