@@ -27,5 +27,5 @@ else
 conda install -y -q -n arctern -c conda-forge -c ${ARCTERN_CHANNEL} ${ARCTERN_FILE}
 fi
 
-conda install -y -q -n arctern -c conda-forge pyyaml shapely
+conda install -y -q -n arctern -c conda-forge pyyaml shapely opencv matplotlib contextily pyproj descartes
 conda clean --all -y
