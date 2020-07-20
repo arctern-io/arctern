@@ -25,7 +25,7 @@ try {
     dir ("docker/test_env/spark/${BINARY_VERSION}") {
         sh "docker-compose -p ${composeProject} logs spark-master"
         sh "docker-compose -p ${composeProject} logs spark-worker"
-        sh "docker-compose -p ${composeProject} logs flask"
+        // sh "docker-compose -p ${composeProject} logs flask"
     }
     throw exc
 } finally {

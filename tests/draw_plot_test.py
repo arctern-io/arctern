@@ -29,7 +29,9 @@ import matplotlib.pyplot as plt
 from arctern_pyspark import register_funcs
 from arctern_pyspark import plot
 
-png_path = sys.path[0] + "/draw_map/"
+baseline_path = sys.path[0] + "/draw_map/"
+png_path = "/tmp/"
+
 
 def run_diff_png(baseline_png, compared_png, precision=0.0005):
     baseline_info = cv2.imread(baseline_png, cv2.IMREAD_UNCHANGED)
@@ -95,11 +97,8 @@ def run_test_plot(spark):
     df2 = spark.sql("select st_geomfromtext(geo) from geoms")
 
     # run baseline
-    fig1, ax1 = plt.subplots()
-    plot(ax1, df2)
-    ax1.grid()
-    baseline_png1 = png_path + "plot_test_1.png"
-    fig1.savefig(baseline_png1)
+    baseline_png1 = baseline_path + "plot_test_1.png"
+
 
     # run plot test
     fig2, ax2 = plt.subplots()
