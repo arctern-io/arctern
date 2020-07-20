@@ -161,4 +161,3 @@ target_link_libraries(arctern
 
 install(TARGETS arctern
         DESTINATION lib)
-
