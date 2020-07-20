@@ -483,7 +483,7 @@ class GeoDataFrame(DataFrame):
     @classmethod
     def from_file(cls, filename, **kwargs):
         """
-        Constructs a GeoDataFrame from a file or url.
+        Constructs a GeoDataFrame from a file or URL.
 
         Parameters
         -----------
