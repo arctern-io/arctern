@@ -27,7 +27,7 @@ if [ "$UPLOAD_ARCTERN" == "1" ]; then
     test -e ${ARCTERN_FILE}
     echo "Upload arctern..."
     echo ${ARCTERN_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
+    anaconda -v -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_FILE}
 fi
 
 if [ "$UPLOAD_ARCTERN_WEBSERVER" == "1" ]; then
@@ -38,5 +38,5 @@ if [ "$UPLOAD_ARCTERN_WEBSERVER" == "1" ]; then
     test -e ${ARCTERN_WEBSERVER_FILE}
     echo "Upload arctern-webserver..."
     echo ${ARCTERN_WEBSERVER_FILE}
-    anaconda -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_WEBSERVER_FILE}
+    anaconda -v -t ${MY_UPLOAD_KEY} upload -u ${CONDA_USERNAME:-arctern} ${LABEL_OPTION} --force ${ARCTERN_WEBSERVER_FILE}
 fi
