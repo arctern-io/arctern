@@ -836,7 +836,7 @@ class GeoSeries(Series):
 
     def symmetric_difference(self, other):
         """
-        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, returns a geometry representing the portions of the two geometries that do not interset.
+        For each geometry in the GeoSeries and the corresponding geometry given in ``other``, returns a geometry representing the portions of the two geometries that do not intersect.
 
         Parameters
         ----------
@@ -1652,7 +1652,7 @@ class GeoSeries(Series):
 
     def union(self, other):
         """
-        This function returns a geometry being a union of two input geometries.
+        Returns a geometry being a union of two input geometries.
 
         Parameters
         ----------
